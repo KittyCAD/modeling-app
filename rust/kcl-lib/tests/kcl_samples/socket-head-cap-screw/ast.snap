@@ -335,3180 +335,15 @@ description: Result of parsing socket-head-cap-screw.kcl
             "type": "Identifier"
           },
           "init": {
-<<<<<<< HEAD
-            "body": {
-              "body": [
-                {
-                  "commentStart": 666,
-                  "declaration": {
-                    "commentStart": 707,
-                    "end": 0,
-                    "id": {
-                      "commentStart": 707,
-                      "end": 0,
-                      "name": "boltHead",
-                      "start": 0,
-                      "type": "Identifier"
-                    },
-                    "init": {
-                      "body": [
-                        {
-                          "arguments": [
-                            {
-                              "abs_path": false,
-                              "commentStart": 732,
-                              "end": 0,
-                              "name": {
-                                "commentStart": 732,
-                                "end": 0,
-                                "name": "XZ",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "path": [],
-                              "start": 0,
-                              "type": "Name",
-                              "type": "Name"
-                            }
-                          ],
-                          "callee": {
-                            "abs_path": false,
-                            "commentStart": 718,
-                            "end": 0,
-                            "name": {
-                              "commentStart": 718,
-                              "end": 0,
-                              "name": "startSketchOn",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "path": [],
-                            "start": 0,
-                            "type": "Name"
-                          },
-                          "commentStart": 718,
-                          "end": 0,
-                          "start": 0,
-                          "type": "CallExpression",
-                          "type": "CallExpression"
-                        },
-                        {
-                          "arguments": [
-                            {
-                              "type": "LabeledArg",
-                              "label": {
-                                "commentStart": 750,
-                                "end": 0,
-                                "name": "center",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "arg": {
-                                "commentStart": 759,
-                                "elements": [
-                                  {
-                                    "commentStart": 760,
-                                    "end": 0,
-                                    "raw": "0",
-                                    "start": 0,
-                                    "type": "Literal",
-                                    "type": "Literal",
-                                    "value": {
-                                      "value": 0.0,
-                                      "suffix": "None"
-                                    }
-                                  },
-                                  {
-                                    "commentStart": 763,
-                                    "end": 0,
-                                    "raw": "0",
-                                    "start": 0,
-                                    "type": "Literal",
-                                    "type": "Literal",
-                                    "value": {
-                                      "value": 0.0,
-                                      "suffix": "None"
-                                    }
-                                  }
-                                ],
-                                "end": 0,
-                                "start": 0,
-                                "type": "ArrayExpression",
-                                "type": "ArrayExpression"
-                              }
-                            },
-                            {
-                              "type": "LabeledArg",
-                              "label": {
-                                "commentStart": 767,
-                                "end": 0,
-                                "name": "radius",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "arg": {
-                                "commentStart": 776,
-                                "end": 0,
-                                "left": {
-                                  "abs_path": false,
-                                  "commentStart": 776,
-                                  "end": 0,
-                                  "name": {
-                                    "commentStart": 776,
-                                    "end": 0,
-                                    "name": "boltHeadDiameter",
-                                    "start": 0,
-                                    "type": "Identifier"
-                                  },
-                                  "path": [],
-                                  "start": 0,
-                                  "type": "Name",
-                                  "type": "Name"
-                                },
-                                "operator": "/",
-                                "right": {
-                                  "commentStart": 795,
-                                  "end": 0,
-                                  "raw": "2",
-                                  "start": 0,
-                                  "type": "Literal",
-                                  "type": "Literal",
-                                  "value": {
-                                    "value": 2.0,
-                                    "suffix": "None"
-                                  }
-                                },
-                                "start": 0,
-                                "type": "BinaryExpression",
-                                "type": "BinaryExpression"
-                              }
-                            },
-                            {
-                              "type": "LabeledArg",
-                              "label": {
-                                "commentStart": 798,
-                                "end": 0,
-                                "name": "tag",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "arg": {
-                                "commentStart": 804,
-                                "end": 0,
-                                "start": 0,
-                                "type": "TagDeclarator",
-                                "type": "TagDeclarator",
-                                "value": "topEdge"
-                              }
-                            }
-                          ],
-                          "callee": {
-                            "abs_path": false,
-                            "commentStart": 743,
-                            "end": 0,
-                            "name": {
-                              "commentStart": 743,
-                              "end": 0,
-                              "name": "circle",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "path": [],
-                            "start": 0,
-                            "type": "Name"
-                          },
-                          "commentStart": 743,
-                          "end": 0,
-                          "start": 0,
-                          "type": "CallExpressionKw",
-                          "type": "CallExpressionKw",
-                          "unlabeled": null
-                        },
-                        {
-                          "arguments": [
-                            {
-                              "type": "LabeledArg",
-                              "label": {
-                                "commentStart": 829,
-                                "end": 0,
-                                "name": "length",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "arg": {
-                                "argument": {
-                                  "abs_path": false,
-                                  "commentStart": 839,
-                                  "end": 0,
-                                  "name": {
-                                    "commentStart": 839,
-                                    "end": 0,
-                                    "name": "boltHeadLength",
-                                    "start": 0,
-                                    "type": "Identifier"
-                                  },
-                                  "path": [],
-                                  "start": 0,
-                                  "type": "Name",
-                                  "type": "Name"
-                                },
-                                "commentStart": 838,
-                                "end": 0,
-                                "operator": "-",
-                                "start": 0,
-                                "type": "UnaryExpression",
-                                "type": "UnaryExpression"
-                              }
-                            }
-                          ],
-                          "callee": {
-                            "abs_path": false,
-                            "commentStart": 821,
-                            "end": 0,
-                            "name": {
-                              "commentStart": 821,
-                              "end": 0,
-                              "name": "extrude",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "path": [],
-                            "start": 0,
-                            "type": "Name"
-                          },
-                          "commentStart": 821,
-                          "end": 0,
-                          "start": 0,
-                          "type": "CallExpressionKw",
-                          "type": "CallExpressionKw",
-                          "unlabeled": null
-                        },
-                        {
-                          "arguments": [
-                            {
-                              "type": "LabeledArg",
-                              "label": {
-                                "commentStart": 869,
-                                "end": 0,
-                                "name": "radius",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "arg": {
-                                "commentStart": 878,
-                                "end": 0,
-                                "raw": "0.020",
-                                "start": 0,
-                                "type": "Literal",
-                                "type": "Literal",
-                                "value": {
-                                  "value": 0.02,
-                                  "suffix": "None"
-                                }
-                              }
-                            },
-                            {
-                              "type": "LabeledArg",
-                              "label": {
-                                "commentStart": 885,
-                                "end": 0,
-                                "name": "tags",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "arg": {
-                                "commentStart": 892,
-                                "elements": [
-                                  {
-                                    "abs_path": false,
-                                    "commentStart": 893,
-                                    "end": 0,
-                                    "name": {
-                                      "commentStart": 893,
-                                      "end": 0,
-                                      "name": "topEdge",
-                                      "start": 0,
-                                      "type": "Identifier"
-                                    },
-                                    "path": [],
-                                    "start": 0,
-                                    "type": "Name",
-                                    "type": "Name"
-                                  },
-                                  {
-                                    "arguments": [
-                                      {
-                                        "abs_path": false,
-                                        "commentStart": 918,
-                                        "end": 0,
-                                        "name": {
-                                          "commentStart": 918,
-                                          "end": 0,
-                                          "name": "topEdge",
-                                          "start": 0,
-                                          "type": "Identifier"
-                                        },
-                                        "path": [],
-                                        "start": 0,
-                                        "type": "Name",
-                                        "type": "Name"
-                                      }
-                                    ],
-                                    "callee": {
-                                      "abs_path": false,
-                                      "commentStart": 902,
-                                      "end": 0,
-                                      "name": {
-                                        "commentStart": 902,
-                                        "end": 0,
-                                        "name": "getOppositeEdge",
-                                        "start": 0,
-                                        "type": "Identifier"
-                                      },
-                                      "path": [],
-                                      "start": 0,
-                                      "type": "Name"
-                                    },
-                                    "commentStart": 902,
-                                    "end": 0,
-                                    "start": 0,
-                                    "type": "CallExpression",
-                                    "type": "CallExpression"
-                                  }
-                                ],
-                                "end": 0,
-                                "start": 0,
-                                "type": "ArrayExpression",
-                                "type": "ArrayExpression"
-                              }
-                            }
-                          ],
-                          "callee": {
-                            "abs_path": false,
-                            "commentStart": 862,
-                            "end": 0,
-                            "name": {
-                              "commentStart": 862,
-                              "end": 0,
-                              "name": "fillet",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "path": [],
-                            "start": 0,
-                            "type": "Name"
-                          },
-                          "commentStart": 862,
-                          "end": 0,
-                          "start": 0,
-                          "type": "CallExpressionKw",
-                          "type": "CallExpressionKw",
-                          "unlabeled": null
-                        }
-                      ],
-                      "commentStart": 718,
-                      "end": 0,
-                      "nonCodeMeta": {
-                        "nonCodeNodes": {
-                          "3": [
-                            {
-                              "commentStart": 930,
-                              "end": 0,
-                              "start": 0,
-                              "type": "NonCodeNode",
-                              "value": {
-                                "type": "newLineBlockComment",
-                                "value": "Define the sketch of the hex pattern on the screw head",
-                                "style": "line"
-                              }
-                            }
-                          ]
-                        },
-                        "startNodes": []
-                      },
-                      "start": 0,
-                      "type": "PipeExpression",
-                      "type": "PipeExpression"
-                    },
-                    "start": 0,
-                    "type": "VariableDeclarator"
-                  },
-                  "end": 0,
-                  "kind": "const",
-                  "preComments": [
-                    "// Create the head of the cap screw"
-                  ],
-                  "start": 0,
-                  "type": "VariableDeclaration",
-                  "type": "VariableDeclaration"
-                },
-                {
-                  "commentStart": 992,
-                  "declaration": {
-                    "commentStart": 992,
-                    "end": 0,
-                    "id": {
-                      "commentStart": 992,
-                      "end": 0,
-                      "name": "hexPatternSketch",
-                      "start": 0,
-                      "type": "Identifier"
-                    },
-                    "init": {
-                      "body": [
-                        {
-                          "arguments": [
-                            {
-                              "abs_path": false,
-                              "commentStart": 1025,
-                              "end": 0,
-                              "name": {
-                                "commentStart": 1025,
-                                "end": 0,
-                                "name": "boltHead",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "path": [],
-                              "start": 0,
-                              "type": "Name",
-                              "type": "Name"
-                            },
-                            {
-                              "commentStart": 1035,
-                              "end": 0,
-                              "raw": "'start'",
-                              "start": 0,
-                              "type": "Literal",
-                              "type": "Literal",
-                              "value": "start"
-                            }
-                          ],
-                          "callee": {
-                            "abs_path": false,
-                            "commentStart": 1011,
-                            "end": 0,
-                            "name": {
-                              "commentStart": 1011,
-                              "end": 0,
-                              "name": "startSketchOn",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "path": [],
-                            "start": 0,
-                            "type": "Name"
-                          },
-                          "commentStart": 1011,
-                          "end": 0,
-                          "start": 0,
-                          "type": "CallExpression",
-                          "type": "CallExpression"
-                        },
-                        {
-                          "arguments": [
-                            {
-                              "commentStart": 1066,
-                              "elements": [
-                                {
-                                  "commentStart": 1077,
-                                  "end": 0,
-                                  "left": {
-                                    "abs_path": false,
-                                    "commentStart": 1077,
-                                    "end": 0,
-                                    "name": {
-                                      "commentStart": 1077,
-                                      "end": 0,
-                                      "name": "boltHexDrive",
-                                      "start": 0,
-                                      "type": "Identifier"
-                                    },
-                                    "path": [],
-                                    "start": 0,
-                                    "type": "Name",
-                                    "type": "Name"
-                                  },
-                                  "operator": "/",
-                                  "right": {
-                                    "commentStart": 1092,
-                                    "end": 0,
-                                    "raw": "2",
-                                    "start": 0,
-                                    "type": "Literal",
-                                    "type": "Literal",
-                                    "value": {
-                                      "value": 2.0,
-                                      "suffix": "None"
-                                    }
-                                  },
-                                  "start": 0,
-                                  "type": "BinaryExpression",
-                                  "type": "BinaryExpression"
-                                },
-                                {
-                                  "commentStart": 1104,
-                                  "end": 0,
-                                  "left": {
-                                    "abs_path": false,
-                                    "commentStart": 1104,
-                                    "end": 0,
-                                    "name": {
-                                      "commentStart": 1104,
-                                      "end": 0,
-                                      "name": "boltHexFlatLength",
-                                      "start": 0,
-                                      "type": "Identifier"
-                                    },
-                                    "path": [],
-                                    "start": 0,
-                                    "type": "Name",
-                                    "type": "Name"
-                                  },
-                                  "operator": "/",
-                                  "right": {
-                                    "commentStart": 1124,
-                                    "end": 0,
-                                    "raw": "2",
-                                    "start": 0,
-                                    "type": "Literal",
-                                    "type": "Literal",
-                                    "value": {
-                                      "value": 2.0,
-                                      "suffix": "None"
-                                    }
-                                  },
-                                  "start": 0,
-                                  "type": "BinaryExpression",
-                                  "type": "BinaryExpression"
-                                }
-                              ],
-                              "end": 0,
-                              "start": 0,
-                              "type": "ArrayExpression",
-                              "type": "ArrayExpression"
-                            },
-                            {
-                              "commentStart": 1136,
-                              "end": 0,
-                              "start": 0,
-                              "type": "PipeSubstitution",
-                              "type": "PipeSubstitution"
-                            }
-                          ],
-                          "callee": {
-                            "abs_path": false,
-                            "commentStart": 1051,
-                            "end": 0,
-                            "name": {
-                              "commentStart": 1051,
-                              "end": 0,
-                              "name": "startProfileAt",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "path": [],
-                            "start": 0,
-                            "type": "Name"
-                          },
-                          "commentStart": 1051,
-                          "end": 0,
-                          "start": 0,
-                          "type": "CallExpression",
-                          "type": "CallExpression"
-                        },
-                        {
-                          "arguments": [
-                            {
-                              "type": "LabeledArg",
-                              "label": {
-                                "commentStart": 1167,
-                                "end": 0,
-                                "name": "angle",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "arg": {
-                                "commentStart": 1175,
-                                "end": 0,
-                                "raw": "270",
-                                "start": 0,
-                                "type": "Literal",
-                                "type": "Literal",
-                                "value": {
-                                  "value": 270.0,
-                                  "suffix": "None"
-                                }
-                              }
-                            },
-                            {
-                              "type": "LabeledArg",
-                              "label": {
-                                "commentStart": 1189,
-                                "end": 0,
-                                "name": "length",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "arg": {
-                                "abs_path": false,
-                                "commentStart": 1198,
-                                "end": 0,
-                                "name": {
-                                  "commentStart": 1198,
-                                  "end": 0,
-                                  "name": "boltHexFlatLength",
-                                  "start": 0,
-                                  "type": "Identifier"
-                                },
-                                "path": [],
-                                "start": 0,
-                                "type": "Name",
-                                "type": "Name"
-                              }
-                            }
-                          ],
-                          "callee": {
-                            "abs_path": false,
-                            "commentStart": 1146,
-                            "end": 0,
-                            "name": {
-                              "commentStart": 1146,
-                              "end": 0,
-                              "name": "angledLine",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "path": [],
-                            "start": 0,
-                            "type": "Name"
-                          },
-                          "commentStart": 1146,
-                          "end": 0,
-                          "start": 0,
-                          "type": "CallExpressionKw",
-                          "type": "CallExpressionKw",
-                          "unlabeled": null
-                        },
-                        {
-                          "arguments": [
-                            {
-                              "type": "LabeledArg",
-                              "label": {
-                                "commentStart": 1254,
-                                "end": 0,
-                                "name": "angle",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "arg": {
-                                "commentStart": 1262,
-                                "end": 0,
-                                "raw": "210",
-                                "start": 0,
-                                "type": "Literal",
-                                "type": "Literal",
-                                "value": {
-                                  "value": 210.0,
-                                  "suffix": "None"
-                                }
-                              }
-                            },
-                            {
-                              "type": "LabeledArg",
-                              "label": {
-                                "commentStart": 1276,
-                                "end": 0,
-                                "name": "length",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "arg": {
-                                "abs_path": false,
-                                "commentStart": 1285,
-                                "end": 0,
-                                "name": {
-                                  "commentStart": 1285,
-                                  "end": 0,
-                                  "name": "boltHexFlatLength",
-                                  "start": 0,
-                                  "type": "Identifier"
-                                },
-                                "path": [],
-                                "start": 0,
-                                "type": "Name",
-                                "type": "Name"
-                              }
-                            }
-                          ],
-                          "callee": {
-                            "abs_path": false,
-                            "commentStart": 1233,
-                            "end": 0,
-                            "name": {
-                              "commentStart": 1233,
-                              "end": 0,
-                              "name": "angledLine",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "path": [],
-                            "start": 0,
-                            "type": "Name"
-                          },
-                          "commentStart": 1233,
-                          "end": 0,
-                          "start": 0,
-                          "type": "CallExpressionKw",
-                          "type": "CallExpressionKw",
-                          "unlabeled": null
-                        },
-                        {
-                          "arguments": [
-                            {
-                              "type": "LabeledArg",
-                              "label": {
-                                "commentStart": 1341,
-                                "end": 0,
-                                "name": "angle",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "arg": {
-                                "commentStart": 1349,
-                                "end": 0,
-                                "raw": "150",
-                                "start": 0,
-                                "type": "Literal",
-                                "type": "Literal",
-                                "value": {
-                                  "value": 150.0,
-                                  "suffix": "None"
-                                }
-                              }
-                            },
-                            {
-                              "type": "LabeledArg",
-                              "label": {
-                                "commentStart": 1363,
-                                "end": 0,
-                                "name": "length",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "arg": {
-                                "abs_path": false,
-                                "commentStart": 1372,
-                                "end": 0,
-                                "name": {
-                                  "commentStart": 1372,
-                                  "end": 0,
-                                  "name": "boltHexFlatLength",
-                                  "start": 0,
-                                  "type": "Identifier"
-                                },
-                                "path": [],
-                                "start": 0,
-                                "type": "Name",
-                                "type": "Name"
-                              }
-                            }
-                          ],
-                          "callee": {
-                            "abs_path": false,
-                            "commentStart": 1320,
-                            "end": 0,
-                            "name": {
-                              "commentStart": 1320,
-                              "end": 0,
-                              "name": "angledLine",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "path": [],
-                            "start": 0,
-                            "type": "Name"
-                          },
-                          "commentStart": 1320,
-                          "end": 0,
-                          "start": 0,
-                          "type": "CallExpressionKw",
-                          "type": "CallExpressionKw",
-                          "unlabeled": null
-                        },
-                        {
-                          "arguments": [
-                            {
-                              "type": "LabeledArg",
-                              "label": {
-                                "commentStart": 1428,
-                                "end": 0,
-                                "name": "angle",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "arg": {
-                                "commentStart": 1436,
-                                "end": 0,
-                                "raw": "90",
-                                "start": 0,
-                                "type": "Literal",
-                                "type": "Literal",
-                                "value": {
-                                  "value": 90.0,
-                                  "suffix": "None"
-                                }
-                              }
-                            },
-                            {
-                              "type": "LabeledArg",
-                              "label": {
-                                "commentStart": 1449,
-                                "end": 0,
-                                "name": "length",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "arg": {
-                                "abs_path": false,
-                                "commentStart": 1458,
-                                "end": 0,
-                                "name": {
-                                  "commentStart": 1458,
-                                  "end": 0,
-                                  "name": "boltHexFlatLength",
-                                  "start": 0,
-                                  "type": "Identifier"
-                                },
-                                "path": [],
-                                "start": 0,
-                                "type": "Name",
-                                "type": "Name"
-                              }
-                            }
-                          ],
-                          "callee": {
-                            "abs_path": false,
-                            "commentStart": 1407,
-                            "end": 0,
-                            "name": {
-                              "commentStart": 1407,
-                              "end": 0,
-                              "name": "angledLine",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "path": [],
-                            "start": 0,
-                            "type": "Name"
-                          },
-                          "commentStart": 1407,
-                          "end": 0,
-                          "start": 0,
-                          "type": "CallExpressionKw",
-                          "type": "CallExpressionKw",
-                          "unlabeled": null
-                        },
-                        {
-                          "arguments": [
-                            {
-                              "type": "LabeledArg",
-                              "label": {
-                                "commentStart": 1514,
-                                "end": 0,
-                                "name": "angle",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "arg": {
-                                "commentStart": 1522,
-                                "end": 0,
-                                "raw": "30",
-                                "start": 0,
-                                "type": "Literal",
-                                "type": "Literal",
-                                "value": {
-                                  "value": 30.0,
-                                  "suffix": "None"
-                                }
-                              }
-                            },
-                            {
-                              "type": "LabeledArg",
-                              "label": {
-                                "commentStart": 1535,
-                                "end": 0,
-                                "name": "length",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "arg": {
-                                "abs_path": false,
-                                "commentStart": 1544,
-                                "end": 0,
-                                "name": {
-                                  "commentStart": 1544,
-                                  "end": 0,
-                                  "name": "boltHexFlatLength",
-                                  "start": 0,
-                                  "type": "Identifier"
-                                },
-                                "path": [],
-                                "start": 0,
-                                "type": "Name",
-                                "type": "Name"
-                              }
-                            }
-                          ],
-                          "callee": {
-                            "abs_path": false,
-                            "commentStart": 1493,
-                            "end": 0,
-                            "name": {
-                              "commentStart": 1493,
-                              "end": 0,
-                              "name": "angledLine",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "path": [],
-                            "start": 0,
-                            "type": "Name"
-                          },
-                          "commentStart": 1493,
-                          "end": 0,
-                          "start": 0,
-                          "type": "CallExpressionKw",
-                          "type": "CallExpressionKw",
-                          "unlabeled": null
-                        },
-                        {
-                          "arguments": [],
-                          "callee": {
-                            "abs_path": false,
-                            "commentStart": 1579,
-                            "end": 0,
-                            "name": {
-                              "commentStart": 1579,
-                              "end": 0,
-                              "name": "close",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "path": [],
-                            "start": 0,
-                            "type": "Name"
-                          },
-                          "commentStart": 1579,
-                          "end": 0,
-                          "start": 0,
-                          "type": "CallExpression",
-                          "type": "CallExpression"
-                        },
-                        {
-                          "arguments": [
-                            {
-                              "type": "LabeledArg",
-                              "label": {
-                                "commentStart": 1602,
-                                "end": 0,
-                                "name": "length",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "arg": {
-                                "commentStart": 1611,
-                                "end": 0,
-                                "left": {
-                                  "argument": {
-                                    "abs_path": false,
-                                    "commentStart": 1612,
-                                    "end": 0,
-                                    "name": {
-                                      "commentStart": 1612,
-                                      "end": 0,
-                                      "name": "boltHeadLength",
-                                      "start": 0,
-                                      "type": "Identifier"
-                                    },
-                                    "path": [],
-                                    "start": 0,
-                                    "type": "Name",
-                                    "type": "Name"
-                                  },
-                                  "commentStart": 1611,
-                                  "end": 0,
-                                  "operator": "-",
-                                  "start": 0,
-                                  "type": "UnaryExpression",
-                                  "type": "UnaryExpression"
-                                },
-                                "operator": "*",
-                                "right": {
-                                  "commentStart": 1629,
-                                  "end": 0,
-                                  "raw": "0.75",
-                                  "start": 0,
-                                  "type": "Literal",
-                                  "type": "Literal",
-                                  "value": {
-                                    "value": 0.75,
-                                    "suffix": "None"
-                                  }
-                                },
-                                "start": 0,
-                                "type": "BinaryExpression",
-                                "type": "BinaryExpression"
-                              }
-                            }
-                          ],
-                          "callee": {
-                            "abs_path": false,
-                            "commentStart": 1594,
-                            "end": 0,
-                            "name": {
-                              "commentStart": 1594,
-                              "end": 0,
-                              "name": "extrude",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "path": [],
-                            "start": 0,
-                            "type": "Name"
-                          },
-                          "commentStart": 1594,
-                          "end": 0,
-                          "start": 0,
-                          "type": "CallExpressionKw",
-                          "type": "CallExpressionKw",
-                          "unlabeled": null
-                        }
-                      ],
-                      "commentStart": 1011,
-                      "end": 0,
-                      "start": 0,
-                      "type": "PipeExpression",
-                      "type": "PipeExpression"
-                    },
-                    "start": 0,
-                    "type": "VariableDeclarator"
-                  },
-                  "end": 0,
-                  "kind": "const",
-                  "start": 0,
-                  "type": "VariableDeclaration",
-                  "type": "VariableDeclaration"
-                },
-                {
-                  "commentStart": 1637,
-                  "declaration": {
-                    "commentStart": 1637,
-                    "end": 0,
-                    "id": {
-                      "commentStart": 1637,
-                      "end": 0,
-                      "name": "boltBody",
-                      "start": 0,
-                      "type": "Identifier"
-                    },
-                    "init": {
-                      "body": [
-                        {
-                          "arguments": [
-                            {
-                              "abs_path": false,
-                              "commentStart": 1662,
-                              "end": 0,
-                              "name": {
-                                "commentStart": 1662,
-                                "end": 0,
-                                "name": "boltHead",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "path": [],
-                              "start": 0,
-                              "type": "Name",
-                              "type": "Name"
-                            },
-                            {
-                              "commentStart": 1672,
-                              "end": 0,
-                              "raw": "'end'",
-                              "start": 0,
-                              "type": "Literal",
-                              "type": "Literal",
-                              "value": "end"
-                            }
-                          ],
-                          "callee": {
-                            "abs_path": false,
-                            "commentStart": 1648,
-                            "end": 0,
-                            "name": {
-                              "commentStart": 1648,
-                              "end": 0,
-                              "name": "startSketchOn",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "path": [],
-                            "start": 0,
-                            "type": "Name"
-                          },
-                          "commentStart": 1648,
-                          "end": 0,
-                          "start": 0,
-                          "type": "CallExpression",
-                          "type": "CallExpression"
-                        },
-                        {
-                          "arguments": [
-                            {
-                              "type": "LabeledArg",
-                              "label": {
-                                "commentStart": 1693,
-                                "end": 0,
-                                "name": "center",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "arg": {
-                                "commentStart": 1702,
-                                "elements": [
-                                  {
-                                    "commentStart": 1703,
-                                    "end": 0,
-                                    "raw": "0",
-                                    "start": 0,
-                                    "type": "Literal",
-                                    "type": "Literal",
-                                    "value": {
-                                      "value": 0.0,
-                                      "suffix": "None"
-                                    }
-                                  },
-                                  {
-                                    "commentStart": 1706,
-                                    "end": 0,
-                                    "raw": "0",
-                                    "start": 0,
-                                    "type": "Literal",
-                                    "type": "Literal",
-                                    "value": {
-                                      "value": 0.0,
-                                      "suffix": "None"
-                                    }
-                                  }
-                                ],
-                                "end": 0,
-                                "start": 0,
-                                "type": "ArrayExpression",
-                                "type": "ArrayExpression"
-                              }
-                            },
-                            {
-                              "type": "LabeledArg",
-                              "label": {
-                                "commentStart": 1710,
-                                "end": 0,
-                                "name": "radius",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "arg": {
-                                "commentStart": 1719,
-                                "end": 0,
-                                "left": {
-                                  "abs_path": false,
-                                  "commentStart": 1719,
-                                  "end": 0,
-                                  "name": {
-                                    "commentStart": 1719,
-                                    "end": 0,
-                                    "name": "boltDiameter",
-                                    "start": 0,
-                                    "type": "Identifier"
-                                  },
-                                  "path": [],
-                                  "start": 0,
-                                  "type": "Name",
-                                  "type": "Name"
-                                },
-                                "operator": "/",
-                                "right": {
-                                  "commentStart": 1734,
-                                  "end": 0,
-                                  "raw": "2",
-                                  "start": 0,
-                                  "type": "Literal",
-                                  "type": "Literal",
-                                  "value": {
-                                    "value": 2.0,
-                                    "suffix": "None"
-                                  }
-                                },
-                                "start": 0,
-                                "type": "BinaryExpression",
-                                "type": "BinaryExpression"
-                              }
-                            },
-                            {
-                              "type": "LabeledArg",
-                              "label": {
-                                "commentStart": 1737,
-                                "end": 0,
-                                "name": "tag",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "arg": {
-                                "commentStart": 1743,
-                                "end": 0,
-                                "start": 0,
-                                "type": "TagDeclarator",
-                                "type": "TagDeclarator",
-                                "value": "filletEdge"
-                              }
-                            }
-                          ],
-                          "callee": {
-                            "abs_path": false,
-                            "commentStart": 1686,
-                            "end": 0,
-                            "name": {
-                              "commentStart": 1686,
-                              "end": 0,
-                              "name": "circle",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "path": [],
-                            "start": 0,
-                            "type": "Name"
-                          },
-                          "commentStart": 1686,
-                          "end": 0,
-                          "start": 0,
-                          "type": "CallExpressionKw",
-                          "type": "CallExpressionKw",
-                          "unlabeled": null
-                        },
-                        {
-                          "arguments": [
-                            {
-                              "type": "LabeledArg",
-                              "label": {
-                                "commentStart": 1771,
-                                "end": 0,
-                                "name": "length",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "arg": {
-                                "abs_path": false,
-                                "commentStart": 1780,
-                                "end": 0,
-                                "name": {
-                                  "commentStart": 1780,
-                                  "end": 0,
-                                  "name": "boltLength",
-                                  "start": 0,
-                                  "type": "Identifier"
-                                },
-                                "path": [],
-                                "start": 0,
-                                "type": "Name",
-                                "type": "Name"
-                              }
-                            }
-                          ],
-                          "callee": {
-                            "abs_path": false,
-                            "commentStart": 1763,
-                            "end": 0,
-                            "name": {
-                              "commentStart": 1763,
-                              "end": 0,
-                              "name": "extrude",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "path": [],
-                            "start": 0,
-                            "type": "Name"
-                          },
-                          "commentStart": 1763,
-                          "end": 0,
-                          "start": 0,
-                          "type": "CallExpressionKw",
-                          "type": "CallExpressionKw",
-                          "unlabeled": null
-                        },
-                        {
-                          "arguments": [
-                            {
-                              "type": "LabeledArg",
-                              "label": {
-                                "commentStart": 1806,
-                                "end": 0,
-                                "name": "radius",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "arg": {
-                                "commentStart": 1815,
-                                "end": 0,
-                                "raw": ".020",
-                                "start": 0,
-                                "type": "Literal",
-                                "type": "Literal",
-                                "value": {
-                                  "value": 0.02,
-                                  "suffix": "None"
-                                }
-                              }
-                            },
-                            {
-                              "type": "LabeledArg",
-                              "label": {
-                                "commentStart": 1821,
-                                "end": 0,
-                                "name": "tags",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "arg": {
-                                "commentStart": 1828,
-                                "elements": [
-                                  {
-                                    "arguments": [
-                                      {
-                                        "abs_path": false,
-                                        "commentStart": 1845,
-                                        "end": 0,
-                                        "name": {
-                                          "commentStart": 1845,
-                                          "end": 0,
-                                          "name": "filletEdge",
-                                          "start": 0,
-                                          "type": "Identifier"
-                                        },
-                                        "path": [],
-                                        "start": 0,
-                                        "type": "Name",
-                                        "type": "Name"
-                                      }
-                                    ],
-                                    "callee": {
-                                      "abs_path": false,
-                                      "commentStart": 1829,
-                                      "end": 0,
-                                      "name": {
-                                        "commentStart": 1829,
-                                        "end": 0,
-                                        "name": "getOppositeEdge",
-                                        "start": 0,
-                                        "type": "Identifier"
-                                      },
-                                      "path": [],
-                                      "start": 0,
-                                      "type": "Name"
-                                    },
-                                    "commentStart": 1829,
-                                    "end": 0,
-                                    "start": 0,
-                                    "type": "CallExpression",
-                                    "type": "CallExpression"
-                                  }
-                                ],
-                                "end": 0,
-                                "start": 0,
-                                "type": "ArrayExpression",
-                                "type": "ArrayExpression"
-                              }
-                            }
-                          ],
-                          "callee": {
-                            "abs_path": false,
-                            "commentStart": 1799,
-                            "end": 0,
-                            "name": {
-                              "commentStart": 1799,
-                              "end": 0,
-                              "name": "fillet",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "path": [],
-                            "start": 0,
-                            "type": "Name"
-                          },
-                          "commentStart": 1799,
-                          "end": 0,
-                          "start": 0,
-                          "type": "CallExpressionKw",
-                          "type": "CallExpressionKw",
-                          "unlabeled": null
-                        },
-                        {
-                          "arguments": [
-                            {
-                              "type": "LabeledArg",
-                              "label": {
-                                "commentStart": 1877,
-                                "end": 0,
-                                "name": "color",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "arg": {
-                                "commentStart": 1885,
-                                "end": 0,
-                                "raw": "\"#4dd043\"",
-                                "start": 0,
-                                "type": "Literal",
-                                "type": "Literal",
-                                "value": "#4dd043"
-                              }
-                            },
-                            {
-                              "type": "LabeledArg",
-                              "label": {
-                                "commentStart": 1896,
-                                "end": 0,
-                                "name": "metalness",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "arg": {
-                                "commentStart": 1908,
-                                "end": 0,
-                                "raw": "90",
-                                "start": 0,
-                                "type": "Literal",
-                                "type": "Literal",
-                                "value": {
-                                  "value": 90.0,
-                                  "suffix": "None"
-                                }
-                              }
-                            },
-                            {
-                              "type": "LabeledArg",
-                              "label": {
-                                "commentStart": 1912,
-                                "end": 0,
-                                "name": "roughness",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "arg": {
-                                "commentStart": 1924,
-                                "end": 0,
-                                "raw": "90",
-                                "start": 0,
-                                "type": "Literal",
-                                "type": "Literal",
-                                "value": {
-                                  "value": 90.0,
-                                  "suffix": "None"
-                                }
-                              }
-                            }
-                          ],
-                          "callee": {
-                            "abs_path": false,
-                            "commentStart": 1866,
-                            "end": 0,
-                            "name": {
-                              "commentStart": 1866,
-                              "end": 0,
-                              "name": "appearance",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "path": [],
-                            "start": 0,
-                            "type": "Name"
-                          },
-                          "commentStart": 1866,
-                          "end": 0,
-                          "start": 0,
-                          "type": "CallExpressionKw",
-                          "type": "CallExpressionKw",
-                          "unlabeled": null
-                        }
-                      ],
-                      "commentStart": 1648,
-                      "end": 0,
-                      "start": 0,
-                      "type": "PipeExpression",
-                      "type": "PipeExpression"
-                    },
-                    "start": 0,
-                    "type": "VariableDeclarator"
-                  },
-                  "end": 0,
-                  "kind": "const",
-                  "start": 0,
-                  "type": "VariableDeclaration",
-                  "type": "VariableDeclaration"
-                },
-                {
-                  "argument": {
-||||||| 2a56155587
-            "body": {
-              "body": [
-                {
-                  "commentStart": 666,
-                  "declaration": {
-                    "commentStart": 707,
-                    "end": 0,
-                    "id": {
-                      "commentStart": 707,
-                      "end": 0,
-                      "name": "boltHead",
-                      "start": 0,
-                      "type": "Identifier"
-                    },
-                    "init": {
-                      "body": [
-                        {
-                          "arguments": [
-                            {
-                              "abs_path": false,
-                              "commentStart": 732,
-                              "end": 0,
-                              "name": {
-                                "commentStart": 732,
-                                "end": 0,
-                                "name": "XZ",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "path": [],
-                              "start": 0,
-                              "type": "Name",
-                              "type": "Name"
-                            }
-                          ],
-                          "callee": {
-                            "abs_path": false,
-                            "commentStart": 718,
-                            "end": 0,
-                            "name": {
-                              "commentStart": 718,
-                              "end": 0,
-                              "name": "startSketchOn",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "path": [],
-                            "start": 0,
-                            "type": "Name"
-                          },
-                          "commentStart": 718,
-                          "end": 0,
-                          "start": 0,
-                          "type": "CallExpression",
-                          "type": "CallExpression"
-                        },
-                        {
-                          "arguments": [
-                            {
-                              "type": "LabeledArg",
-                              "label": {
-                                "commentStart": 750,
-                                "end": 0,
-                                "name": "center",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "arg": {
-                                "commentStart": 759,
-                                "elements": [
-                                  {
-                                    "commentStart": 760,
-                                    "end": 0,
-                                    "raw": "0",
-                                    "start": 0,
-                                    "type": "Literal",
-                                    "type": "Literal",
-                                    "value": {
-                                      "value": 0.0,
-                                      "suffix": "None"
-                                    }
-                                  },
-                                  {
-                                    "commentStart": 763,
-                                    "end": 0,
-                                    "raw": "0",
-                                    "start": 0,
-                                    "type": "Literal",
-                                    "type": "Literal",
-                                    "value": {
-                                      "value": 0.0,
-                                      "suffix": "None"
-                                    }
-                                  }
-                                ],
-                                "end": 0,
-                                "start": 0,
-                                "type": "ArrayExpression",
-                                "type": "ArrayExpression"
-                              }
-                            },
-                            {
-                              "type": "LabeledArg",
-                              "label": {
-                                "commentStart": 767,
-                                "end": 0,
-                                "name": "radius",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "arg": {
-                                "commentStart": 776,
-                                "end": 0,
-                                "left": {
-                                  "abs_path": false,
-                                  "commentStart": 776,
-                                  "end": 0,
-                                  "name": {
-                                    "commentStart": 776,
-                                    "end": 0,
-                                    "name": "boltHeadDiameter",
-                                    "start": 0,
-                                    "type": "Identifier"
-                                  },
-                                  "path": [],
-                                  "start": 0,
-                                  "type": "Name",
-                                  "type": "Name"
-                                },
-                                "operator": "/",
-                                "right": {
-                                  "commentStart": 795,
-                                  "end": 0,
-                                  "raw": "2",
-                                  "start": 0,
-                                  "type": "Literal",
-                                  "type": "Literal",
-                                  "value": {
-                                    "value": 2.0,
-                                    "suffix": "None"
-                                  }
-                                },
-                                "start": 0,
-                                "type": "BinaryExpression",
-                                "type": "BinaryExpression"
-                              }
-                            },
-                            {
-                              "type": "LabeledArg",
-                              "label": {
-                                "commentStart": 798,
-                                "end": 0,
-                                "name": "tag",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "arg": {
-                                "commentStart": 804,
-                                "end": 0,
-                                "start": 0,
-                                "type": "TagDeclarator",
-                                "type": "TagDeclarator",
-                                "value": "topEdge"
-                              }
-                            }
-                          ],
-                          "callee": {
-                            "abs_path": false,
-                            "commentStart": 743,
-                            "end": 0,
-                            "name": {
-                              "commentStart": 743,
-                              "end": 0,
-                              "name": "circle",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "path": [],
-                            "start": 0,
-                            "type": "Name"
-                          },
-                          "commentStart": 743,
-                          "end": 0,
-                          "start": 0,
-                          "type": "CallExpressionKw",
-                          "type": "CallExpressionKw",
-                          "unlabeled": null
-                        },
-                        {
-                          "arguments": [
-                            {
-                              "type": "LabeledArg",
-                              "label": {
-                                "commentStart": 829,
-                                "end": 0,
-                                "name": "length",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "arg": {
-                                "argument": {
-                                  "abs_path": false,
-                                  "commentStart": 839,
-                                  "end": 0,
-                                  "name": {
-                                    "commentStart": 839,
-                                    "end": 0,
-                                    "name": "boltHeadLength",
-                                    "start": 0,
-                                    "type": "Identifier"
-                                  },
-                                  "path": [],
-                                  "start": 0,
-                                  "type": "Name",
-                                  "type": "Name"
-                                },
-                                "commentStart": 838,
-                                "end": 0,
-                                "operator": "-",
-                                "start": 0,
-                                "type": "UnaryExpression",
-                                "type": "UnaryExpression"
-                              }
-                            }
-                          ],
-                          "callee": {
-                            "abs_path": false,
-                            "commentStart": 821,
-                            "end": 0,
-                            "name": {
-                              "commentStart": 821,
-                              "end": 0,
-                              "name": "extrude",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "path": [],
-                            "start": 0,
-                            "type": "Name"
-                          },
-                          "commentStart": 821,
-                          "end": 0,
-                          "start": 0,
-                          "type": "CallExpressionKw",
-                          "type": "CallExpressionKw",
-                          "unlabeled": null
-                        },
-                        {
-                          "arguments": [
-                            {
-                              "type": "LabeledArg",
-                              "label": {
-                                "commentStart": 869,
-                                "end": 0,
-                                "name": "radius",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "arg": {
-                                "commentStart": 878,
-                                "end": 0,
-                                "raw": "0.020",
-                                "start": 0,
-                                "type": "Literal",
-                                "type": "Literal",
-                                "value": {
-                                  "value": 0.02,
-                                  "suffix": "None"
-                                }
-                              }
-                            },
-                            {
-                              "type": "LabeledArg",
-                              "label": {
-                                "commentStart": 885,
-                                "end": 0,
-                                "name": "tags",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "arg": {
-                                "commentStart": 892,
-                                "elements": [
-                                  {
-                                    "abs_path": false,
-                                    "commentStart": 893,
-                                    "end": 0,
-                                    "name": {
-                                      "commentStart": 893,
-                                      "end": 0,
-                                      "name": "topEdge",
-                                      "start": 0,
-                                      "type": "Identifier"
-                                    },
-                                    "path": [],
-                                    "start": 0,
-                                    "type": "Name",
-                                    "type": "Name"
-                                  },
-                                  {
-                                    "arguments": [
-                                      {
-                                        "abs_path": false,
-                                        "commentStart": 918,
-                                        "end": 0,
-                                        "name": {
-                                          "commentStart": 918,
-                                          "end": 0,
-                                          "name": "topEdge",
-                                          "start": 0,
-                                          "type": "Identifier"
-                                        },
-                                        "path": [],
-                                        "start": 0,
-                                        "type": "Name",
-                                        "type": "Name"
-                                      }
-                                    ],
-                                    "callee": {
-                                      "abs_path": false,
-                                      "commentStart": 902,
-                                      "end": 0,
-                                      "name": {
-                                        "commentStart": 902,
-                                        "end": 0,
-                                        "name": "getOppositeEdge",
-                                        "start": 0,
-                                        "type": "Identifier"
-                                      },
-                                      "path": [],
-                                      "start": 0,
-                                      "type": "Name"
-                                    },
-                                    "commentStart": 902,
-                                    "end": 0,
-                                    "start": 0,
-                                    "type": "CallExpression",
-                                    "type": "CallExpression"
-                                  }
-                                ],
-                                "end": 0,
-                                "start": 0,
-                                "type": "ArrayExpression",
-                                "type": "ArrayExpression"
-                              }
-                            }
-                          ],
-                          "callee": {
-                            "abs_path": false,
-                            "commentStart": 862,
-                            "end": 0,
-                            "name": {
-                              "commentStart": 862,
-                              "end": 0,
-                              "name": "fillet",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "path": [],
-                            "start": 0,
-                            "type": "Name"
-                          },
-                          "commentStart": 862,
-                          "end": 0,
-                          "start": 0,
-                          "type": "CallExpressionKw",
-                          "type": "CallExpressionKw",
-                          "unlabeled": null
-                        }
-                      ],
-                      "commentStart": 718,
-                      "end": 0,
-                      "nonCodeMeta": {
-                        "nonCodeNodes": {
-                          "3": [
-                            {
-                              "commentStart": 930,
-                              "end": 0,
-                              "start": 0,
-                              "type": "NonCodeNode",
-                              "value": {
-                                "type": "newLineBlockComment",
-                                "value": "Define the sketch of the hex pattern on the screw head",
-                                "style": "line"
-                              }
-                            }
-                          ]
-                        },
-                        "startNodes": []
-                      },
-                      "start": 0,
-                      "type": "PipeExpression",
-                      "type": "PipeExpression"
-                    },
-                    "start": 0,
-                    "type": "VariableDeclarator"
-                  },
-                  "end": 0,
-                  "kind": "const",
-                  "preComments": [
-                    "// Create the head of the cap screw"
-                  ],
-                  "start": 0,
-                  "type": "VariableDeclaration",
-                  "type": "VariableDeclaration"
-                },
-                {
-                  "commentStart": 992,
-                  "declaration": {
-                    "commentStart": 992,
-                    "end": 0,
-                    "id": {
-                      "commentStart": 992,
-                      "end": 0,
-                      "name": "hexPatternSketch",
-                      "start": 0,
-                      "type": "Identifier"
-                    },
-                    "init": {
-                      "body": [
-                        {
-                          "arguments": [
-                            {
-                              "abs_path": false,
-                              "commentStart": 1025,
-                              "end": 0,
-                              "name": {
-                                "commentStart": 1025,
-                                "end": 0,
-                                "name": "boltHead",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "path": [],
-                              "start": 0,
-                              "type": "Name",
-                              "type": "Name"
-                            },
-                            {
-                              "commentStart": 1035,
-                              "end": 0,
-                              "raw": "'start'",
-                              "start": 0,
-                              "type": "Literal",
-                              "type": "Literal",
-                              "value": "start"
-                            }
-                          ],
-                          "callee": {
-                            "abs_path": false,
-                            "commentStart": 1011,
-                            "end": 0,
-                            "name": {
-                              "commentStart": 1011,
-                              "end": 0,
-                              "name": "startSketchOn",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "path": [],
-                            "start": 0,
-                            "type": "Name"
-                          },
-                          "commentStart": 1011,
-                          "end": 0,
-                          "start": 0,
-                          "type": "CallExpression",
-                          "type": "CallExpression"
-                        },
-                        {
-                          "arguments": [
-                            {
-                              "commentStart": 1066,
-                              "elements": [
-                                {
-                                  "commentStart": 1077,
-                                  "end": 0,
-                                  "left": {
-                                    "abs_path": false,
-                                    "commentStart": 1077,
-                                    "end": 0,
-                                    "name": {
-                                      "commentStart": 1077,
-                                      "end": 0,
-                                      "name": "boltHexDrive",
-                                      "start": 0,
-                                      "type": "Identifier"
-                                    },
-                                    "path": [],
-                                    "start": 0,
-                                    "type": "Name",
-                                    "type": "Name"
-                                  },
-                                  "operator": "/",
-                                  "right": {
-                                    "commentStart": 1092,
-                                    "end": 0,
-                                    "raw": "2",
-                                    "start": 0,
-                                    "type": "Literal",
-                                    "type": "Literal",
-                                    "value": {
-                                      "value": 2.0,
-                                      "suffix": "None"
-                                    }
-                                  },
-                                  "start": 0,
-                                  "type": "BinaryExpression",
-                                  "type": "BinaryExpression"
-                                },
-                                {
-                                  "commentStart": 1104,
-                                  "end": 0,
-                                  "left": {
-                                    "abs_path": false,
-                                    "commentStart": 1104,
-                                    "end": 0,
-                                    "name": {
-                                      "commentStart": 1104,
-                                      "end": 0,
-                                      "name": "boltHexFlatLength",
-                                      "start": 0,
-                                      "type": "Identifier"
-                                    },
-                                    "path": [],
-                                    "start": 0,
-                                    "type": "Name",
-                                    "type": "Name"
-                                  },
-                                  "operator": "/",
-                                  "right": {
-                                    "commentStart": 1124,
-                                    "end": 0,
-                                    "raw": "2",
-                                    "start": 0,
-                                    "type": "Literal",
-                                    "type": "Literal",
-                                    "value": {
-                                      "value": 2.0,
-                                      "suffix": "None"
-                                    }
-                                  },
-                                  "start": 0,
-                                  "type": "BinaryExpression",
-                                  "type": "BinaryExpression"
-                                }
-                              ],
-                              "end": 0,
-                              "start": 0,
-                              "type": "ArrayExpression",
-                              "type": "ArrayExpression"
-                            },
-                            {
-                              "commentStart": 1136,
-                              "end": 0,
-                              "start": 0,
-                              "type": "PipeSubstitution",
-                              "type": "PipeSubstitution"
-                            }
-                          ],
-                          "callee": {
-                            "abs_path": false,
-                            "commentStart": 1051,
-                            "end": 0,
-                            "name": {
-                              "commentStart": 1051,
-                              "end": 0,
-                              "name": "startProfileAt",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "path": [],
-                            "start": 0,
-                            "type": "Name"
-                          },
-                          "commentStart": 1051,
-                          "end": 0,
-                          "start": 0,
-                          "type": "CallExpression",
-                          "type": "CallExpression"
-                        },
-                        {
-                          "arguments": [
-                            {
-                              "commentStart": 1157,
-                              "end": 0,
-                              "properties": [
-                                {
-                                  "commentStart": 1168,
-                                  "end": 0,
-                                  "key": {
-                                    "commentStart": 1168,
-                                    "end": 0,
-                                    "name": "angle",
-                                    "start": 0,
-                                    "type": "Identifier"
-                                  },
-                                  "start": 0,
-                                  "type": "ObjectProperty",
-                                  "value": {
-                                    "commentStart": 1176,
-                                    "end": 0,
-                                    "raw": "270",
-                                    "start": 0,
-                                    "type": "Literal",
-                                    "type": "Literal",
-                                    "value": {
-                                      "value": 270.0,
-                                      "suffix": "None"
-                                    }
-                                  }
-                                },
-                                {
-                                  "commentStart": 1190,
-                                  "end": 0,
-                                  "key": {
-                                    "commentStart": 1190,
-                                    "end": 0,
-                                    "name": "length",
-                                    "start": 0,
-                                    "type": "Identifier"
-                                  },
-                                  "start": 0,
-                                  "type": "ObjectProperty",
-                                  "value": {
-                                    "abs_path": false,
-                                    "commentStart": 1199,
-                                    "end": 0,
-                                    "name": {
-                                      "commentStart": 1199,
-                                      "end": 0,
-                                      "name": "boltHexFlatLength",
-                                      "start": 0,
-                                      "type": "Identifier"
-                                    },
-                                    "path": [],
-                                    "start": 0,
-                                    "type": "Name",
-                                    "type": "Name"
-                                  }
-                                }
-                              ],
-                              "start": 0,
-                              "type": "ObjectExpression",
-                              "type": "ObjectExpression"
-                            },
-                            {
-                              "commentStart": 1227,
-                              "end": 0,
-                              "start": 0,
-                              "type": "PipeSubstitution",
-                              "type": "PipeSubstitution"
-                            }
-                          ],
-                          "callee": {
-                            "abs_path": false,
-                            "commentStart": 1146,
-                            "end": 0,
-                            "name": {
-                              "commentStart": 1146,
-                              "end": 0,
-                              "name": "angledLine",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "path": [],
-                            "start": 0,
-                            "type": "Name"
-                          },
-                          "commentStart": 1146,
-                          "end": 0,
-                          "start": 0,
-                          "type": "CallExpression",
-                          "type": "CallExpression"
-                        },
-                        {
-                          "arguments": [
-                            {
-                              "commentStart": 1248,
-                              "end": 0,
-                              "properties": [
-                                {
-                                  "commentStart": 1259,
-                                  "end": 0,
-                                  "key": {
-                                    "commentStart": 1259,
-                                    "end": 0,
-                                    "name": "angle",
-                                    "start": 0,
-                                    "type": "Identifier"
-                                  },
-                                  "start": 0,
-                                  "type": "ObjectProperty",
-                                  "value": {
-                                    "commentStart": 1267,
-                                    "end": 0,
-                                    "raw": "210",
-                                    "start": 0,
-                                    "type": "Literal",
-                                    "type": "Literal",
-                                    "value": {
-                                      "value": 210.0,
-                                      "suffix": "None"
-                                    }
-                                  }
-                                },
-                                {
-                                  "commentStart": 1281,
-                                  "end": 0,
-                                  "key": {
-                                    "commentStart": 1281,
-                                    "end": 0,
-                                    "name": "length",
-                                    "start": 0,
-                                    "type": "Identifier"
-                                  },
-                                  "start": 0,
-                                  "type": "ObjectProperty",
-                                  "value": {
-                                    "abs_path": false,
-                                    "commentStart": 1290,
-                                    "end": 0,
-                                    "name": {
-                                      "commentStart": 1290,
-                                      "end": 0,
-                                      "name": "boltHexFlatLength",
-                                      "start": 0,
-                                      "type": "Identifier"
-                                    },
-                                    "path": [],
-                                    "start": 0,
-                                    "type": "Name",
-                                    "type": "Name"
-                                  }
-                                }
-                              ],
-                              "start": 0,
-                              "type": "ObjectExpression",
-                              "type": "ObjectExpression"
-                            },
-                            {
-                              "commentStart": 1318,
-                              "end": 0,
-                              "start": 0,
-                              "type": "PipeSubstitution",
-                              "type": "PipeSubstitution"
-                            }
-                          ],
-                          "callee": {
-                            "abs_path": false,
-                            "commentStart": 1237,
-                            "end": 0,
-                            "name": {
-                              "commentStart": 1237,
-                              "end": 0,
-                              "name": "angledLine",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "path": [],
-                            "start": 0,
-                            "type": "Name"
-                          },
-                          "commentStart": 1237,
-                          "end": 0,
-                          "start": 0,
-                          "type": "CallExpression",
-                          "type": "CallExpression"
-                        },
-                        {
-                          "arguments": [
-                            {
-                              "commentStart": 1339,
-                              "end": 0,
-                              "properties": [
-                                {
-                                  "commentStart": 1350,
-                                  "end": 0,
-                                  "key": {
-                                    "commentStart": 1350,
-                                    "end": 0,
-                                    "name": "angle",
-                                    "start": 0,
-                                    "type": "Identifier"
-                                  },
-                                  "start": 0,
-                                  "type": "ObjectProperty",
-                                  "value": {
-                                    "commentStart": 1358,
-                                    "end": 0,
-                                    "raw": "150",
-                                    "start": 0,
-                                    "type": "Literal",
-                                    "type": "Literal",
-                                    "value": {
-                                      "value": 150.0,
-                                      "suffix": "None"
-                                    }
-                                  }
-                                },
-                                {
-                                  "commentStart": 1372,
-                                  "end": 0,
-                                  "key": {
-                                    "commentStart": 1372,
-                                    "end": 0,
-                                    "name": "length",
-                                    "start": 0,
-                                    "type": "Identifier"
-                                  },
-                                  "start": 0,
-                                  "type": "ObjectProperty",
-                                  "value": {
-                                    "abs_path": false,
-                                    "commentStart": 1381,
-                                    "end": 0,
-                                    "name": {
-                                      "commentStart": 1381,
-                                      "end": 0,
-                                      "name": "boltHexFlatLength",
-                                      "start": 0,
-                                      "type": "Identifier"
-                                    },
-                                    "path": [],
-                                    "start": 0,
-                                    "type": "Name",
-                                    "type": "Name"
-                                  }
-                                }
-                              ],
-                              "start": 0,
-                              "type": "ObjectExpression",
-                              "type": "ObjectExpression"
-                            },
-                            {
-                              "commentStart": 1409,
-                              "end": 0,
-                              "start": 0,
-                              "type": "PipeSubstitution",
-                              "type": "PipeSubstitution"
-                            }
-                          ],
-                          "callee": {
-                            "abs_path": false,
-                            "commentStart": 1328,
-                            "end": 0,
-                            "name": {
-                              "commentStart": 1328,
-                              "end": 0,
-                              "name": "angledLine",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "path": [],
-                            "start": 0,
-                            "type": "Name"
-                          },
-                          "commentStart": 1328,
-                          "end": 0,
-                          "start": 0,
-                          "type": "CallExpression",
-                          "type": "CallExpression"
-                        },
-                        {
-                          "arguments": [
-                            {
-                              "commentStart": 1430,
-                              "end": 0,
-                              "properties": [
-                                {
-                                  "commentStart": 1441,
-                                  "end": 0,
-                                  "key": {
-                                    "commentStart": 1441,
-                                    "end": 0,
-                                    "name": "angle",
-                                    "start": 0,
-                                    "type": "Identifier"
-                                  },
-                                  "start": 0,
-                                  "type": "ObjectProperty",
-                                  "value": {
-                                    "commentStart": 1449,
-                                    "end": 0,
-                                    "raw": "90",
-                                    "start": 0,
-                                    "type": "Literal",
-                                    "type": "Literal",
-                                    "value": {
-                                      "value": 90.0,
-                                      "suffix": "None"
-                                    }
-                                  }
-                                },
-                                {
-                                  "commentStart": 1462,
-                                  "end": 0,
-                                  "key": {
-                                    "commentStart": 1462,
-                                    "end": 0,
-                                    "name": "length",
-                                    "start": 0,
-                                    "type": "Identifier"
-                                  },
-                                  "start": 0,
-                                  "type": "ObjectProperty",
-                                  "value": {
-                                    "abs_path": false,
-                                    "commentStart": 1471,
-                                    "end": 0,
-                                    "name": {
-                                      "commentStart": 1471,
-                                      "end": 0,
-                                      "name": "boltHexFlatLength",
-                                      "start": 0,
-                                      "type": "Identifier"
-                                    },
-                                    "path": [],
-                                    "start": 0,
-                                    "type": "Name",
-                                    "type": "Name"
-                                  }
-                                }
-                              ],
-                              "start": 0,
-                              "type": "ObjectExpression",
-                              "type": "ObjectExpression"
-                            },
-                            {
-                              "commentStart": 1499,
-                              "end": 0,
-                              "start": 0,
-                              "type": "PipeSubstitution",
-                              "type": "PipeSubstitution"
-                            }
-                          ],
-                          "callee": {
-                            "abs_path": false,
-                            "commentStart": 1419,
-                            "end": 0,
-                            "name": {
-                              "commentStart": 1419,
-                              "end": 0,
-                              "name": "angledLine",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "path": [],
-                            "start": 0,
-                            "type": "Name"
-                          },
-                          "commentStart": 1419,
-                          "end": 0,
-                          "start": 0,
-                          "type": "CallExpression",
-                          "type": "CallExpression"
-                        },
-                        {
-                          "arguments": [
-                            {
-                              "commentStart": 1520,
-                              "end": 0,
-                              "properties": [
-                                {
-                                  "commentStart": 1531,
-                                  "end": 0,
-                                  "key": {
-                                    "commentStart": 1531,
-                                    "end": 0,
-                                    "name": "angle",
-                                    "start": 0,
-                                    "type": "Identifier"
-                                  },
-                                  "start": 0,
-                                  "type": "ObjectProperty",
-                                  "value": {
-                                    "commentStart": 1539,
-                                    "end": 0,
-                                    "raw": "30",
-                                    "start": 0,
-                                    "type": "Literal",
-                                    "type": "Literal",
-                                    "value": {
-                                      "value": 30.0,
-                                      "suffix": "None"
-                                    }
-                                  }
-                                },
-                                {
-                                  "commentStart": 1552,
-                                  "end": 0,
-                                  "key": {
-                                    "commentStart": 1552,
-                                    "end": 0,
-                                    "name": "length",
-                                    "start": 0,
-                                    "type": "Identifier"
-                                  },
-                                  "start": 0,
-                                  "type": "ObjectProperty",
-                                  "value": {
-                                    "abs_path": false,
-                                    "commentStart": 1561,
-                                    "end": 0,
-                                    "name": {
-                                      "commentStart": 1561,
-                                      "end": 0,
-                                      "name": "boltHexFlatLength",
-                                      "start": 0,
-                                      "type": "Identifier"
-                                    },
-                                    "path": [],
-                                    "start": 0,
-                                    "type": "Name",
-                                    "type": "Name"
-                                  }
-                                }
-                              ],
-                              "start": 0,
-                              "type": "ObjectExpression",
-                              "type": "ObjectExpression"
-                            },
-                            {
-                              "commentStart": 1589,
-                              "end": 0,
-                              "start": 0,
-                              "type": "PipeSubstitution",
-                              "type": "PipeSubstitution"
-                            }
-                          ],
-                          "callee": {
-                            "abs_path": false,
-                            "commentStart": 1509,
-                            "end": 0,
-                            "name": {
-                              "commentStart": 1509,
-                              "end": 0,
-                              "name": "angledLine",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "path": [],
-                            "start": 0,
-                            "type": "Name"
-                          },
-                          "commentStart": 1509,
-                          "end": 0,
-                          "start": 0,
-                          "type": "CallExpression",
-                          "type": "CallExpression"
-                        },
-                        {
-                          "arguments": [],
-                          "callee": {
-                            "abs_path": false,
-                            "commentStart": 1599,
-                            "end": 0,
-                            "name": {
-                              "commentStart": 1599,
-                              "end": 0,
-                              "name": "close",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "path": [],
-                            "start": 0,
-                            "type": "Name"
-                          },
-                          "commentStart": 1599,
-                          "end": 0,
-                          "start": 0,
-                          "type": "CallExpression",
-                          "type": "CallExpression"
-                        },
-                        {
-                          "arguments": [
-                            {
-                              "type": "LabeledArg",
-                              "label": {
-                                "commentStart": 1622,
-                                "end": 0,
-                                "name": "length",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "arg": {
-                                "commentStart": 1631,
-                                "end": 0,
-                                "left": {
-                                  "argument": {
-                                    "abs_path": false,
-                                    "commentStart": 1632,
-                                    "end": 0,
-                                    "name": {
-                                      "commentStart": 1632,
-                                      "end": 0,
-                                      "name": "boltHeadLength",
-                                      "start": 0,
-                                      "type": "Identifier"
-                                    },
-                                    "path": [],
-                                    "start": 0,
-                                    "type": "Name",
-                                    "type": "Name"
-                                  },
-                                  "commentStart": 1631,
-                                  "end": 0,
-                                  "operator": "-",
-                                  "start": 0,
-                                  "type": "UnaryExpression",
-                                  "type": "UnaryExpression"
-                                },
-                                "operator": "*",
-                                "right": {
-                                  "commentStart": 1649,
-                                  "end": 0,
-                                  "raw": "0.75",
-                                  "start": 0,
-                                  "type": "Literal",
-                                  "type": "Literal",
-                                  "value": {
-                                    "value": 0.75,
-                                    "suffix": "None"
-                                  }
-                                },
-                                "start": 0,
-                                "type": "BinaryExpression",
-                                "type": "BinaryExpression"
-                              }
-                            }
-                          ],
-                          "callee": {
-                            "abs_path": false,
-                            "commentStart": 1614,
-                            "end": 0,
-                            "name": {
-                              "commentStart": 1614,
-                              "end": 0,
-                              "name": "extrude",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "path": [],
-                            "start": 0,
-                            "type": "Name"
-                          },
-                          "commentStart": 1614,
-                          "end": 0,
-                          "start": 0,
-                          "type": "CallExpressionKw",
-                          "type": "CallExpressionKw",
-                          "unlabeled": null
-                        }
-                      ],
-                      "commentStart": 1011,
-                      "end": 0,
-                      "start": 0,
-                      "type": "PipeExpression",
-                      "type": "PipeExpression"
-                    },
-                    "start": 0,
-                    "type": "VariableDeclarator"
-                  },
-                  "end": 0,
-                  "kind": "const",
-                  "start": 0,
-                  "type": "VariableDeclaration",
-                  "type": "VariableDeclaration"
-                },
-                {
-                  "commentStart": 1657,
-                  "declaration": {
-                    "commentStart": 1657,
-                    "end": 0,
-                    "id": {
-                      "commentStart": 1657,
-                      "end": 0,
-                      "name": "boltBody",
-                      "start": 0,
-                      "type": "Identifier"
-                    },
-                    "init": {
-                      "body": [
-                        {
-                          "arguments": [
-                            {
-                              "abs_path": false,
-                              "commentStart": 1682,
-                              "end": 0,
-                              "name": {
-                                "commentStart": 1682,
-                                "end": 0,
-                                "name": "boltHead",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "path": [],
-                              "start": 0,
-                              "type": "Name",
-                              "type": "Name"
-                            },
-                            {
-                              "commentStart": 1692,
-                              "end": 0,
-                              "raw": "'end'",
-                              "start": 0,
-                              "type": "Literal",
-                              "type": "Literal",
-                              "value": "end"
-                            }
-                          ],
-                          "callee": {
-                            "abs_path": false,
-                            "commentStart": 1668,
-                            "end": 0,
-                            "name": {
-                              "commentStart": 1668,
-                              "end": 0,
-                              "name": "startSketchOn",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "path": [],
-                            "start": 0,
-                            "type": "Name"
-                          },
-                          "commentStart": 1668,
-                          "end": 0,
-                          "start": 0,
-                          "type": "CallExpression",
-                          "type": "CallExpression"
-                        },
-                        {
-                          "arguments": [
-                            {
-                              "type": "LabeledArg",
-                              "label": {
-                                "commentStart": 1713,
-                                "end": 0,
-                                "name": "center",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "arg": {
-                                "commentStart": 1722,
-                                "elements": [
-                                  {
-                                    "commentStart": 1723,
-                                    "end": 0,
-                                    "raw": "0",
-                                    "start": 0,
-                                    "type": "Literal",
-                                    "type": "Literal",
-                                    "value": {
-                                      "value": 0.0,
-                                      "suffix": "None"
-                                    }
-                                  },
-                                  {
-                                    "commentStart": 1726,
-                                    "end": 0,
-                                    "raw": "0",
-                                    "start": 0,
-                                    "type": "Literal",
-                                    "type": "Literal",
-                                    "value": {
-                                      "value": 0.0,
-                                      "suffix": "None"
-                                    }
-                                  }
-                                ],
-                                "end": 0,
-                                "start": 0,
-                                "type": "ArrayExpression",
-                                "type": "ArrayExpression"
-                              }
-                            },
-                            {
-                              "type": "LabeledArg",
-                              "label": {
-                                "commentStart": 1730,
-                                "end": 0,
-                                "name": "radius",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "arg": {
-                                "commentStart": 1739,
-                                "end": 0,
-                                "left": {
-                                  "abs_path": false,
-                                  "commentStart": 1739,
-                                  "end": 0,
-                                  "name": {
-                                    "commentStart": 1739,
-                                    "end": 0,
-                                    "name": "boltDiameter",
-                                    "start": 0,
-                                    "type": "Identifier"
-                                  },
-                                  "path": [],
-                                  "start": 0,
-                                  "type": "Name",
-                                  "type": "Name"
-                                },
-                                "operator": "/",
-                                "right": {
-                                  "commentStart": 1754,
-                                  "end": 0,
-                                  "raw": "2",
-                                  "start": 0,
-                                  "type": "Literal",
-                                  "type": "Literal",
-                                  "value": {
-                                    "value": 2.0,
-                                    "suffix": "None"
-                                  }
-                                },
-                                "start": 0,
-                                "type": "BinaryExpression",
-                                "type": "BinaryExpression"
-                              }
-                            },
-                            {
-                              "type": "LabeledArg",
-                              "label": {
-                                "commentStart": 1757,
-                                "end": 0,
-                                "name": "tag",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "arg": {
-                                "commentStart": 1763,
-                                "end": 0,
-                                "start": 0,
-                                "type": "TagDeclarator",
-                                "type": "TagDeclarator",
-                                "value": "filletEdge"
-                              }
-                            }
-                          ],
-                          "callee": {
-                            "abs_path": false,
-                            "commentStart": 1706,
-                            "end": 0,
-                            "name": {
-                              "commentStart": 1706,
-                              "end": 0,
-                              "name": "circle",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "path": [],
-                            "start": 0,
-                            "type": "Name"
-                          },
-                          "commentStart": 1706,
-                          "end": 0,
-                          "start": 0,
-                          "type": "CallExpressionKw",
-                          "type": "CallExpressionKw",
-                          "unlabeled": null
-                        },
-                        {
-                          "arguments": [
-                            {
-                              "type": "LabeledArg",
-                              "label": {
-                                "commentStart": 1791,
-                                "end": 0,
-                                "name": "length",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "arg": {
-                                "abs_path": false,
-                                "commentStart": 1800,
-                                "end": 0,
-                                "name": {
-                                  "commentStart": 1800,
-                                  "end": 0,
-                                  "name": "boltLength",
-                                  "start": 0,
-                                  "type": "Identifier"
-                                },
-                                "path": [],
-                                "start": 0,
-                                "type": "Name",
-                                "type": "Name"
-                              }
-                            }
-                          ],
-                          "callee": {
-                            "abs_path": false,
-                            "commentStart": 1783,
-                            "end": 0,
-                            "name": {
-                              "commentStart": 1783,
-                              "end": 0,
-                              "name": "extrude",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "path": [],
-                            "start": 0,
-                            "type": "Name"
-                          },
-                          "commentStart": 1783,
-                          "end": 0,
-                          "start": 0,
-                          "type": "CallExpressionKw",
-                          "type": "CallExpressionKw",
-                          "unlabeled": null
-                        },
-                        {
-                          "arguments": [
-                            {
-                              "type": "LabeledArg",
-                              "label": {
-                                "commentStart": 1826,
-                                "end": 0,
-                                "name": "radius",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "arg": {
-                                "commentStart": 1835,
-                                "end": 0,
-                                "raw": ".020",
-                                "start": 0,
-                                "type": "Literal",
-                                "type": "Literal",
-                                "value": {
-                                  "value": 0.02,
-                                  "suffix": "None"
-                                }
-                              }
-                            },
-                            {
-                              "type": "LabeledArg",
-                              "label": {
-                                "commentStart": 1841,
-                                "end": 0,
-                                "name": "tags",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "arg": {
-                                "commentStart": 1848,
-                                "elements": [
-                                  {
-                                    "arguments": [
-                                      {
-                                        "abs_path": false,
-                                        "commentStart": 1865,
-                                        "end": 0,
-                                        "name": {
-                                          "commentStart": 1865,
-                                          "end": 0,
-                                          "name": "filletEdge",
-                                          "start": 0,
-                                          "type": "Identifier"
-                                        },
-                                        "path": [],
-                                        "start": 0,
-                                        "type": "Name",
-                                        "type": "Name"
-                                      }
-                                    ],
-                                    "callee": {
-                                      "abs_path": false,
-                                      "commentStart": 1849,
-                                      "end": 0,
-                                      "name": {
-                                        "commentStart": 1849,
-                                        "end": 0,
-                                        "name": "getOppositeEdge",
-                                        "start": 0,
-                                        "type": "Identifier"
-                                      },
-                                      "path": [],
-                                      "start": 0,
-                                      "type": "Name"
-                                    },
-                                    "commentStart": 1849,
-                                    "end": 0,
-                                    "start": 0,
-                                    "type": "CallExpression",
-                                    "type": "CallExpression"
-                                  }
-                                ],
-                                "end": 0,
-                                "start": 0,
-                                "type": "ArrayExpression",
-                                "type": "ArrayExpression"
-                              }
-                            }
-                          ],
-                          "callee": {
-                            "abs_path": false,
-                            "commentStart": 1819,
-                            "end": 0,
-                            "name": {
-                              "commentStart": 1819,
-                              "end": 0,
-                              "name": "fillet",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "path": [],
-                            "start": 0,
-                            "type": "Name"
-                          },
-                          "commentStart": 1819,
-                          "end": 0,
-                          "start": 0,
-                          "type": "CallExpressionKw",
-                          "type": "CallExpressionKw",
-                          "unlabeled": null
-                        },
-                        {
-                          "arguments": [
-                            {
-                              "type": "LabeledArg",
-                              "label": {
-                                "commentStart": 1897,
-                                "end": 0,
-                                "name": "color",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "arg": {
-                                "commentStart": 1905,
-                                "end": 0,
-                                "raw": "\"#4dd043\"",
-                                "start": 0,
-                                "type": "Literal",
-                                "type": "Literal",
-                                "value": "#4dd043"
-                              }
-                            },
-                            {
-                              "type": "LabeledArg",
-                              "label": {
-                                "commentStart": 1916,
-                                "end": 0,
-                                "name": "metalness",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "arg": {
-                                "commentStart": 1928,
-                                "end": 0,
-                                "raw": "90",
-                                "start": 0,
-                                "type": "Literal",
-                                "type": "Literal",
-                                "value": {
-                                  "value": 90.0,
-                                  "suffix": "None"
-                                }
-                              }
-                            },
-                            {
-                              "type": "LabeledArg",
-                              "label": {
-                                "commentStart": 1932,
-                                "end": 0,
-                                "name": "roughness",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "arg": {
-                                "commentStart": 1944,
-                                "end": 0,
-                                "raw": "90",
-                                "start": 0,
-                                "type": "Literal",
-                                "type": "Literal",
-                                "value": {
-                                  "value": 90.0,
-                                  "suffix": "None"
-                                }
-                              }
-                            }
-                          ],
-                          "callee": {
-                            "abs_path": false,
-                            "commentStart": 1886,
-                            "end": 0,
-                            "name": {
-                              "commentStart": 1886,
-                              "end": 0,
-                              "name": "appearance",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "path": [],
-                            "start": 0,
-                            "type": "Name"
-                          },
-                          "commentStart": 1886,
-                          "end": 0,
-                          "start": 0,
-                          "type": "CallExpressionKw",
-                          "type": "CallExpressionKw",
-                          "unlabeled": null
-                        }
-                      ],
-                      "commentStart": 1668,
-                      "end": 0,
-                      "start": 0,
-                      "type": "PipeExpression",
-                      "type": "PipeExpression"
-                    },
-                    "start": 0,
-                    "type": "VariableDeclarator"
-                  },
-                  "end": 0,
-                  "kind": "const",
-                  "start": 0,
-                  "type": "VariableDeclaration",
-                  "type": "VariableDeclaration"
-                },
-                {
-                  "argument": {
-=======
             "body": [
               {
                 "arguments": [
                   {
->>>>>>> main
                     "abs_path": false,
-<<<<<<< HEAD
-                    "commentStart": 1938,
-||||||| 2a56155587
-                    "commentStart": 1958,
-=======
                     "commentStart": 664,
->>>>>>> main
                     "end": 0,
                     "name": {
-<<<<<<< HEAD
-                      "commentStart": 1938,
-||||||| 2a56155587
-                      "commentStart": 1958,
-=======
                       "commentStart": 664,
->>>>>>> main
                       "end": 0,
                       "name": "XZ",
                       "start": 0,
@@ -3925,11 +760,6 @@ description: Result of parsing socket-head-cap-screw.kcl
                     "type": "Name",
                     "type": "Name"
                   },
-<<<<<<< HEAD
-                  "commentStart": 1927,
-||||||| 2a56155587
-                  "commentStart": 1947,
-=======
                   {
                     "commentStart": 957,
                     "end": 0,
@@ -3943,7 +773,6 @@ description: Result of parsing socket-head-cap-screw.kcl
                 "callee": {
                   "abs_path": false,
                   "commentStart": 933,
->>>>>>> main
                   "end": 0,
                   "name": {
                     "commentStart": 933,
@@ -3954,49 +783,7 @@ description: Result of parsing socket-head-cap-screw.kcl
                   },
                   "path": [],
                   "start": 0,
-<<<<<<< HEAD
-                  "type": "ReturnStatement",
-                  "type": "ReturnStatement"
-                }
-              ],
-              "commentStart": 666,
-              "end": 0,
-              "nonCodeMeta": {
-                "nonCodeNodes": {
-                  "2": [
-                    {
-                      "commentStart": 1927,
-                      "end": 0,
-                      "start": 0,
-                      "type": "NonCodeNode",
-                      "value": {
-                        "type": "newLine"
-                      }
-                    }
-                  ]
-||||||| 2a56155587
-                  "type": "ReturnStatement",
-                  "type": "ReturnStatement"
-                }
-              ],
-              "commentStart": 666,
-              "end": 0,
-              "nonCodeMeta": {
-                "nonCodeNodes": {
-                  "2": [
-                    {
-                      "commentStart": 1947,
-                      "end": 0,
-                      "start": 0,
-                      "type": "NonCodeNode",
-                      "value": {
-                        "type": "newLine"
-                      }
-                    }
-                  ]
-=======
                   "type": "Name"
->>>>>>> main
                 },
                 "commentStart": 933,
                 "end": 0,
@@ -4119,74 +906,52 @@ description: Result of parsing socket-head-cap-screw.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 1069,
-                    "end": 0,
-                    "properties": [
-                      {
-                        "commentStart": 1078,
-                        "end": 0,
-                        "key": {
-                          "commentStart": 1078,
-                          "end": 0,
-                          "name": "angle",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "start": 0,
-                        "type": "ObjectProperty",
-                        "value": {
-                          "commentStart": 1086,
-                          "end": 0,
-                          "raw": "270",
-                          "start": 0,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": {
-                            "value": 270.0,
-                            "suffix": "None"
-                          }
-                        }
-                      },
-                      {
-                        "commentStart": 1098,
-                        "end": 0,
-                        "key": {
-                          "commentStart": 1098,
-                          "end": 0,
-                          "name": "length",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "start": 0,
-                        "type": "ObjectProperty",
-                        "value": {
-                          "abs_path": false,
-                          "commentStart": 1107,
-                          "end": 0,
-                          "name": {
-                            "commentStart": 1107,
-                            "end": 0,
-                            "name": "boltHexFlatLength",
-                            "start": 0,
-                            "type": "Identifier"
-                          },
-                          "path": [],
-                          "start": 0,
-                          "type": "Name",
-                          "type": "Name"
-                        }
+                    "type": "LabeledArg",
+                    "label": {
+                      "commentStart": 1077,
+                      "end": 0,
+                      "name": "angle",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "commentStart": 1085,
+                      "end": 0,
+                      "raw": "270",
+                      "start": 0,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 270.0,
+                        "suffix": "None"
                       }
-                    ],
-                    "start": 0,
-                    "type": "ObjectExpression",
-                    "type": "ObjectExpression"
+                    }
                   },
                   {
-                    "commentStart": 1133,
-                    "end": 0,
-                    "start": 0,
-                    "type": "PipeSubstitution",
-                    "type": "PipeSubstitution"
+                    "type": "LabeledArg",
+                    "label": {
+                      "commentStart": 1097,
+                      "end": 0,
+                      "name": "length",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "abs_path": false,
+                      "commentStart": 1106,
+                      "end": 0,
+                      "name": {
+                        "commentStart": 1106,
+                        "end": 0,
+                        "name": "boltHexFlatLength",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
+                    }
                   }
                 ],
                 "callee": {
@@ -4207,88 +972,67 @@ description: Result of parsing socket-head-cap-screw.kcl
                 "commentStart": 1058,
                 "end": 0,
                 "start": 0,
-                "type": "CallExpression",
-                "type": "CallExpression"
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
               },
               {
                 "arguments": [
                   {
-                    "commentStart": 1152,
-                    "end": 0,
-                    "properties": [
-                      {
-                        "commentStart": 1161,
-                        "end": 0,
-                        "key": {
-                          "commentStart": 1161,
-                          "end": 0,
-                          "name": "angle",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "start": 0,
-                        "type": "ObjectProperty",
-                        "value": {
-                          "commentStart": 1169,
-                          "end": 0,
-                          "raw": "210",
-                          "start": 0,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": {
-                            "value": 210.0,
-                            "suffix": "None"
-                          }
-                        }
-                      },
-                      {
-                        "commentStart": 1181,
-                        "end": 0,
-                        "key": {
-                          "commentStart": 1181,
-                          "end": 0,
-                          "name": "length",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "start": 0,
-                        "type": "ObjectProperty",
-                        "value": {
-                          "abs_path": false,
-                          "commentStart": 1190,
-                          "end": 0,
-                          "name": {
-                            "commentStart": 1190,
-                            "end": 0,
-                            "name": "boltHexFlatLength",
-                            "start": 0,
-                            "type": "Identifier"
-                          },
-                          "path": [],
-                          "start": 0,
-                          "type": "Name",
-                          "type": "Name"
-                        }
+                    "type": "LabeledArg",
+                    "label": {
+                      "commentStart": 1155,
+                      "end": 0,
+                      "name": "angle",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "commentStart": 1163,
+                      "end": 0,
+                      "raw": "210",
+                      "start": 0,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 210.0,
+                        "suffix": "None"
                       }
-                    ],
-                    "start": 0,
-                    "type": "ObjectExpression",
-                    "type": "ObjectExpression"
+                    }
                   },
                   {
-                    "commentStart": 1216,
-                    "end": 0,
-                    "start": 0,
-                    "type": "PipeSubstitution",
-                    "type": "PipeSubstitution"
+                    "type": "LabeledArg",
+                    "label": {
+                      "commentStart": 1175,
+                      "end": 0,
+                      "name": "length",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "abs_path": false,
+                      "commentStart": 1184,
+                      "end": 0,
+                      "name": {
+                        "commentStart": 1184,
+                        "end": 0,
+                        "name": "boltHexFlatLength",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
+                    }
                   }
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1141,
+                  "commentStart": 1136,
                   "end": 0,
                   "name": {
-                    "commentStart": 1141,
+                    "commentStart": 1136,
                     "end": 0,
                     "name": "angledLine",
                     "start": 0,
@@ -4298,91 +1042,70 @@ description: Result of parsing socket-head-cap-screw.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1141,
+                "commentStart": 1136,
                 "end": 0,
                 "start": 0,
-                "type": "CallExpression",
-                "type": "CallExpression"
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
               },
               {
                 "arguments": [
                   {
-                    "commentStart": 1235,
-                    "end": 0,
-                    "properties": [
-                      {
-                        "commentStart": 1244,
-                        "end": 0,
-                        "key": {
-                          "commentStart": 1244,
-                          "end": 0,
-                          "name": "angle",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "start": 0,
-                        "type": "ObjectProperty",
-                        "value": {
-                          "commentStart": 1252,
-                          "end": 0,
-                          "raw": "150",
-                          "start": 0,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": {
-                            "value": 150.0,
-                            "suffix": "None"
-                          }
-                        }
-                      },
-                      {
-                        "commentStart": 1264,
-                        "end": 0,
-                        "key": {
-                          "commentStart": 1264,
-                          "end": 0,
-                          "name": "length",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "start": 0,
-                        "type": "ObjectProperty",
-                        "value": {
-                          "abs_path": false,
-                          "commentStart": 1273,
-                          "end": 0,
-                          "name": {
-                            "commentStart": 1273,
-                            "end": 0,
-                            "name": "boltHexFlatLength",
-                            "start": 0,
-                            "type": "Identifier"
-                          },
-                          "path": [],
-                          "start": 0,
-                          "type": "Name",
-                          "type": "Name"
-                        }
+                    "type": "LabeledArg",
+                    "label": {
+                      "commentStart": 1233,
+                      "end": 0,
+                      "name": "angle",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "commentStart": 1241,
+                      "end": 0,
+                      "raw": "150",
+                      "start": 0,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 150.0,
+                        "suffix": "None"
                       }
-                    ],
-                    "start": 0,
-                    "type": "ObjectExpression",
-                    "type": "ObjectExpression"
+                    }
                   },
                   {
-                    "commentStart": 1299,
-                    "end": 0,
-                    "start": 0,
-                    "type": "PipeSubstitution",
-                    "type": "PipeSubstitution"
+                    "type": "LabeledArg",
+                    "label": {
+                      "commentStart": 1253,
+                      "end": 0,
+                      "name": "length",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "abs_path": false,
+                      "commentStart": 1262,
+                      "end": 0,
+                      "name": {
+                        "commentStart": 1262,
+                        "end": 0,
+                        "name": "boltHexFlatLength",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
+                    }
                   }
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1224,
+                  "commentStart": 1214,
                   "end": 0,
                   "name": {
-                    "commentStart": 1224,
+                    "commentStart": 1214,
                     "end": 0,
                     "name": "angledLine",
                     "start": 0,
@@ -4392,91 +1115,70 @@ description: Result of parsing socket-head-cap-screw.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1224,
+                "commentStart": 1214,
                 "end": 0,
                 "start": 0,
-                "type": "CallExpression",
-                "type": "CallExpression"
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
               },
               {
                 "arguments": [
                   {
-                    "commentStart": 1318,
-                    "end": 0,
-                    "properties": [
-                      {
-                        "commentStart": 1327,
-                        "end": 0,
-                        "key": {
-                          "commentStart": 1327,
-                          "end": 0,
-                          "name": "angle",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "start": 0,
-                        "type": "ObjectProperty",
-                        "value": {
-                          "commentStart": 1335,
-                          "end": 0,
-                          "raw": "90",
-                          "start": 0,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": {
-                            "value": 90.0,
-                            "suffix": "None"
-                          }
-                        }
-                      },
-                      {
-                        "commentStart": 1346,
-                        "end": 0,
-                        "key": {
-                          "commentStart": 1346,
-                          "end": 0,
-                          "name": "length",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "start": 0,
-                        "type": "ObjectProperty",
-                        "value": {
-                          "abs_path": false,
-                          "commentStart": 1355,
-                          "end": 0,
-                          "name": {
-                            "commentStart": 1355,
-                            "end": 0,
-                            "name": "boltHexFlatLength",
-                            "start": 0,
-                            "type": "Identifier"
-                          },
-                          "path": [],
-                          "start": 0,
-                          "type": "Name",
-                          "type": "Name"
-                        }
+                    "type": "LabeledArg",
+                    "label": {
+                      "commentStart": 1311,
+                      "end": 0,
+                      "name": "angle",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "commentStart": 1319,
+                      "end": 0,
+                      "raw": "90",
+                      "start": 0,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 90.0,
+                        "suffix": "None"
                       }
-                    ],
-                    "start": 0,
-                    "type": "ObjectExpression",
-                    "type": "ObjectExpression"
+                    }
                   },
                   {
-                    "commentStart": 1381,
-                    "end": 0,
-                    "start": 0,
-                    "type": "PipeSubstitution",
-                    "type": "PipeSubstitution"
+                    "type": "LabeledArg",
+                    "label": {
+                      "commentStart": 1330,
+                      "end": 0,
+                      "name": "length",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "abs_path": false,
+                      "commentStart": 1339,
+                      "end": 0,
+                      "name": {
+                        "commentStart": 1339,
+                        "end": 0,
+                        "name": "boltHexFlatLength",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
+                    }
                   }
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1307,
+                  "commentStart": 1292,
                   "end": 0,
                   "name": {
-                    "commentStart": 1307,
+                    "commentStart": 1292,
                     "end": 0,
                     "name": "angledLine",
                     "start": 0,
@@ -4486,91 +1188,70 @@ description: Result of parsing socket-head-cap-screw.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1307,
+                "commentStart": 1292,
                 "end": 0,
                 "start": 0,
-                "type": "CallExpression",
-                "type": "CallExpression"
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
               },
               {
                 "arguments": [
                   {
-                    "commentStart": 1400,
-                    "end": 0,
-                    "properties": [
-                      {
-                        "commentStart": 1409,
-                        "end": 0,
-                        "key": {
-                          "commentStart": 1409,
-                          "end": 0,
-                          "name": "angle",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "start": 0,
-                        "type": "ObjectProperty",
-                        "value": {
-                          "commentStart": 1417,
-                          "end": 0,
-                          "raw": "30",
-                          "start": 0,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": {
-                            "value": 30.0,
-                            "suffix": "None"
-                          }
-                        }
-                      },
-                      {
-                        "commentStart": 1428,
-                        "end": 0,
-                        "key": {
-                          "commentStart": 1428,
-                          "end": 0,
-                          "name": "length",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "start": 0,
-                        "type": "ObjectProperty",
-                        "value": {
-                          "abs_path": false,
-                          "commentStart": 1437,
-                          "end": 0,
-                          "name": {
-                            "commentStart": 1437,
-                            "end": 0,
-                            "name": "boltHexFlatLength",
-                            "start": 0,
-                            "type": "Identifier"
-                          },
-                          "path": [],
-                          "start": 0,
-                          "type": "Name",
-                          "type": "Name"
-                        }
+                    "type": "LabeledArg",
+                    "label": {
+                      "commentStart": 1388,
+                      "end": 0,
+                      "name": "angle",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "commentStart": 1396,
+                      "end": 0,
+                      "raw": "30",
+                      "start": 0,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 30.0,
+                        "suffix": "None"
                       }
-                    ],
-                    "start": 0,
-                    "type": "ObjectExpression",
-                    "type": "ObjectExpression"
+                    }
                   },
                   {
-                    "commentStart": 1463,
-                    "end": 0,
-                    "start": 0,
-                    "type": "PipeSubstitution",
-                    "type": "PipeSubstitution"
+                    "type": "LabeledArg",
+                    "label": {
+                      "commentStart": 1407,
+                      "end": 0,
+                      "name": "length",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "abs_path": false,
+                      "commentStart": 1416,
+                      "end": 0,
+                      "name": {
+                        "commentStart": 1416,
+                        "end": 0,
+                        "name": "boltHexFlatLength",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
+                    }
                   }
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1389,
+                  "commentStart": 1369,
                   "end": 0,
                   "name": {
-                    "commentStart": 1389,
+                    "commentStart": 1369,
                     "end": 0,
                     "name": "angledLine",
                     "start": 0,
@@ -4580,20 +1261,21 @@ description: Result of parsing socket-head-cap-screw.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1389,
+                "commentStart": 1369,
                 "end": 0,
                 "start": 0,
-                "type": "CallExpression",
-                "type": "CallExpression"
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
               },
               {
                 "arguments": [],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1471,
+                  "commentStart": 1446,
                   "end": 0,
                   "name": {
-                    "commentStart": 1471,
+                    "commentStart": 1446,
                     "end": 0,
                     "name": "close",
                     "start": 0,
@@ -4603,7 +1285,7 @@ description: Result of parsing socket-head-cap-screw.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1471,
+                "commentStart": 1446,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -4614,22 +1296,22 @@ description: Result of parsing socket-head-cap-screw.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1492,
+                      "commentStart": 1467,
                       "end": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1501,
+                      "commentStart": 1476,
                       "end": 0,
                       "left": {
                         "argument": {
                           "abs_path": false,
-                          "commentStart": 1502,
+                          "commentStart": 1477,
                           "end": 0,
                           "name": {
-                            "commentStart": 1502,
+                            "commentStart": 1477,
                             "end": 0,
                             "name": "boltHeadLength",
                             "start": 0,
@@ -4640,7 +1322,7 @@ description: Result of parsing socket-head-cap-screw.kcl
                           "type": "Name",
                           "type": "Name"
                         },
-                        "commentStart": 1501,
+                        "commentStart": 1476,
                         "end": 0,
                         "operator": "-",
                         "start": 0,
@@ -4649,7 +1331,7 @@ description: Result of parsing socket-head-cap-screw.kcl
                       },
                       "operator": "*",
                       "right": {
-                        "commentStart": 1519,
+                        "commentStart": 1494,
                         "end": 0,
                         "raw": "0.75",
                         "start": 0,
@@ -4668,10 +1350,10 @@ description: Result of parsing socket-head-cap-screw.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1484,
+                  "commentStart": 1459,
                   "end": 0,
                   "name": {
-                    "commentStart": 1484,
+                    "commentStart": 1459,
                     "end": 0,
                     "name": "extrude",
                     "start": 0,
@@ -4681,7 +1363,7 @@ description: Result of parsing socket-head-cap-screw.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1484,
+                "commentStart": 1459,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -4705,56 +1387,12 @@ description: Result of parsing socket-head-cap-screw.kcl
         "type": "VariableDeclaration"
       },
       {
-<<<<<<< HEAD
-        "commentStart": 1948,
-        "end": 0,
-        "expression": {
-          "arguments": [],
-          "callee": {
-            "abs_path": false,
-            "commentStart": 1950,
-            "end": 0,
-            "name": {
-              "commentStart": 1950,
-              "end": 0,
-              "name": "bolt",
-              "start": 0,
-              "type": "Identifier"
-            },
-            "path": [],
-            "start": 0,
-            "type": "Name"
-          },
-          "commentStart": 1950,
-||||||| 2a56155587
-        "commentStart": 1968,
-        "end": 0,
-        "expression": {
-          "arguments": [],
-          "callee": {
-            "abs_path": false,
-            "commentStart": 1970,
-            "end": 0,
-            "name": {
-              "commentStart": 1970,
-              "end": 0,
-              "name": "bolt",
-              "start": 0,
-              "type": "Identifier"
-            },
-            "path": [],
-            "start": 0,
-            "type": "Name"
-          },
-          "commentStart": 1970,
-=======
-        "commentStart": 1525,
+        "commentStart": 1500,
         "declaration": {
-          "commentStart": 1525,
->>>>>>> main
+          "commentStart": 1500,
           "end": 0,
           "id": {
-            "commentStart": 1525,
+            "commentStart": 1500,
             "end": 0,
             "name": "boltBody",
             "start": 0,
@@ -4766,10 +1404,10 @@ description: Result of parsing socket-head-cap-screw.kcl
                 "arguments": [
                   {
                     "abs_path": false,
-                    "commentStart": 1550,
+                    "commentStart": 1525,
                     "end": 0,
                     "name": {
-                      "commentStart": 1550,
+                      "commentStart": 1525,
                       "end": 0,
                       "name": "boltHead",
                       "start": 0,
@@ -4781,7 +1419,7 @@ description: Result of parsing socket-head-cap-screw.kcl
                     "type": "Name"
                   },
                   {
-                    "commentStart": 1560,
+                    "commentStart": 1535,
                     "end": 0,
                     "raw": "'end'",
                     "start": 0,
@@ -4792,10 +1430,10 @@ description: Result of parsing socket-head-cap-screw.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1536,
+                  "commentStart": 1511,
                   "end": 0,
                   "name": {
-                    "commentStart": 1536,
+                    "commentStart": 1511,
                     "end": 0,
                     "name": "startSketchOn",
                     "start": 0,
@@ -4805,7 +1443,7 @@ description: Result of parsing socket-head-cap-screw.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1536,
+                "commentStart": 1511,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -4816,17 +1454,17 @@ description: Result of parsing socket-head-cap-screw.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1579,
+                      "commentStart": 1554,
                       "end": 0,
                       "name": "center",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1588,
+                      "commentStart": 1563,
                       "elements": [
                         {
-                          "commentStart": 1589,
+                          "commentStart": 1564,
                           "end": 0,
                           "raw": "0",
                           "start": 0,
@@ -4838,7 +1476,7 @@ description: Result of parsing socket-head-cap-screw.kcl
                           }
                         },
                         {
-                          "commentStart": 1592,
+                          "commentStart": 1567,
                           "end": 0,
                           "raw": "0",
                           "start": 0,
@@ -4859,21 +1497,21 @@ description: Result of parsing socket-head-cap-screw.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1596,
+                      "commentStart": 1571,
                       "end": 0,
                       "name": "radius",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1605,
+                      "commentStart": 1580,
                       "end": 0,
                       "left": {
                         "abs_path": false,
-                        "commentStart": 1605,
+                        "commentStart": 1580,
                         "end": 0,
                         "name": {
-                          "commentStart": 1605,
+                          "commentStart": 1580,
                           "end": 0,
                           "name": "boltDiameter",
                           "start": 0,
@@ -4886,7 +1524,7 @@ description: Result of parsing socket-head-cap-screw.kcl
                       },
                       "operator": "/",
                       "right": {
-                        "commentStart": 1620,
+                        "commentStart": 1595,
                         "end": 0,
                         "raw": "2",
                         "start": 0,
@@ -4905,14 +1543,14 @@ description: Result of parsing socket-head-cap-screw.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1623,
+                      "commentStart": 1598,
                       "end": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1629,
+                      "commentStart": 1604,
                       "end": 0,
                       "start": 0,
                       "type": "TagDeclarator",
@@ -4923,10 +1561,10 @@ description: Result of parsing socket-head-cap-screw.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1572,
+                  "commentStart": 1547,
                   "end": 0,
                   "name": {
-                    "commentStart": 1572,
+                    "commentStart": 1547,
                     "end": 0,
                     "name": "circle",
                     "start": 0,
@@ -4936,7 +1574,7 @@ description: Result of parsing socket-head-cap-screw.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1572,
+                "commentStart": 1547,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -4948,7 +1586,7 @@ description: Result of parsing socket-head-cap-screw.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1655,
+                      "commentStart": 1630,
                       "end": 0,
                       "name": "length",
                       "start": 0,
@@ -4956,10 +1594,10 @@ description: Result of parsing socket-head-cap-screw.kcl
                     },
                     "arg": {
                       "abs_path": false,
-                      "commentStart": 1664,
+                      "commentStart": 1639,
                       "end": 0,
                       "name": {
-                        "commentStart": 1664,
+                        "commentStart": 1639,
                         "end": 0,
                         "name": "boltLength",
                         "start": 0,
@@ -4974,10 +1612,10 @@ description: Result of parsing socket-head-cap-screw.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1647,
+                  "commentStart": 1622,
                   "end": 0,
                   "name": {
-                    "commentStart": 1647,
+                    "commentStart": 1622,
                     "end": 0,
                     "name": "extrude",
                     "start": 0,
@@ -4987,7 +1625,7 @@ description: Result of parsing socket-head-cap-screw.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1647,
+                "commentStart": 1622,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -4999,14 +1637,14 @@ description: Result of parsing socket-head-cap-screw.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1688,
+                      "commentStart": 1663,
                       "end": 0,
                       "name": "radius",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1697,
+                      "commentStart": 1672,
                       "end": 0,
                       "raw": ".020",
                       "start": 0,
@@ -5021,23 +1659,23 @@ description: Result of parsing socket-head-cap-screw.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1703,
+                      "commentStart": 1678,
                       "end": 0,
                       "name": "tags",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1710,
+                      "commentStart": 1685,
                       "elements": [
                         {
                           "arguments": [
                             {
                               "abs_path": false,
-                              "commentStart": 1727,
+                              "commentStart": 1702,
                               "end": 0,
                               "name": {
-                                "commentStart": 1727,
+                                "commentStart": 1702,
                                 "end": 0,
                                 "name": "filletEdge",
                                 "start": 0,
@@ -5051,10 +1689,10 @@ description: Result of parsing socket-head-cap-screw.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 1711,
+                            "commentStart": 1686,
                             "end": 0,
                             "name": {
-                              "commentStart": 1711,
+                              "commentStart": 1686,
                               "end": 0,
                               "name": "getOppositeEdge",
                               "start": 0,
@@ -5064,7 +1702,7 @@ description: Result of parsing socket-head-cap-screw.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 1711,
+                          "commentStart": 1686,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -5080,10 +1718,10 @@ description: Result of parsing socket-head-cap-screw.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1681,
+                  "commentStart": 1656,
                   "end": 0,
                   "name": {
-                    "commentStart": 1681,
+                    "commentStart": 1656,
                     "end": 0,
                     "name": "fillet",
                     "start": 0,
@@ -5093,7 +1731,7 @@ description: Result of parsing socket-head-cap-screw.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1681,
+                "commentStart": 1656,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -5105,14 +1743,14 @@ description: Result of parsing socket-head-cap-screw.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1757,
+                      "commentStart": 1732,
                       "end": 0,
                       "name": "color",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1765,
+                      "commentStart": 1740,
                       "end": 0,
                       "raw": "\"#4dd043\"",
                       "start": 0,
@@ -5124,14 +1762,14 @@ description: Result of parsing socket-head-cap-screw.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1776,
+                      "commentStart": 1751,
                       "end": 0,
                       "name": "metalness",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1788,
+                      "commentStart": 1763,
                       "end": 0,
                       "raw": "90",
                       "start": 0,
@@ -5146,14 +1784,14 @@ description: Result of parsing socket-head-cap-screw.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1792,
+                      "commentStart": 1767,
                       "end": 0,
                       "name": "roughness",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1804,
+                      "commentStart": 1779,
                       "end": 0,
                       "raw": "90",
                       "start": 0,
@@ -5168,10 +1806,10 @@ description: Result of parsing socket-head-cap-screw.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1746,
+                  "commentStart": 1721,
                   "end": 0,
                   "name": {
-                    "commentStart": 1746,
+                    "commentStart": 1721,
                     "end": 0,
                     "name": "appearance",
                     "start": 0,
@@ -5181,7 +1819,7 @@ description: Result of parsing socket-head-cap-screw.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1746,
+                "commentStart": 1721,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -5189,7 +1827,7 @@ description: Result of parsing socket-head-cap-screw.kcl
                 "unlabeled": null
               }
             ],
-            "commentStart": 1536,
+            "commentStart": 1511,
             "end": 0,
             "start": 0,
             "type": "PipeExpression",
@@ -5261,59 +1899,7 @@ description: Result of parsing socket-head-cap-screw.kcl
       }
     ],
     "nonCodeMeta": {
-<<<<<<< HEAD
-      "nonCodeNodes": {
-        "5": [
-          {
-            "commentStart": 646,
-            "end": 0,
-            "start": 0,
-            "type": "NonCodeNode",
-            "value": {
-              "type": "newLine"
-            }
-          }
-        ],
-        "6": [
-          {
-            "commentStart": 1948,
-            "end": 0,
-            "start": 0,
-            "type": "NonCodeNode",
-            "value": {
-              "type": "newLine"
-            }
-          }
-        ]
-      },
-||||||| 2a56155587
-      "nonCodeNodes": {
-        "5": [
-          {
-            "commentStart": 646,
-            "end": 0,
-            "start": 0,
-            "type": "NonCodeNode",
-            "value": {
-              "type": "newLine"
-            }
-          }
-        ],
-        "6": [
-          {
-            "commentStart": 1968,
-            "end": 0,
-            "start": 0,
-            "type": "NonCodeNode",
-            "value": {
-              "type": "newLine"
-            }
-          }
-        ]
-      },
-=======
       "nonCodeNodes": {},
->>>>>>> main
       "startNodes": [
         {
           "commentStart": 404,
