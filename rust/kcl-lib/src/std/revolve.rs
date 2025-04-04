@@ -235,6 +235,32 @@ pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 ///     |> circle(center = [-10, 10], radius = 4)
 ///     |> revolve(angle = 90, axis = revolveAxis)
 /// ```
+///
+/// ```no_run
+/// // Symmetrically revolve around a path.
+///
+/// profile001 = startSketchOn('XY')
+///     |> startProfileAt([0, 0], %)
+///     |> line(end = [0, 20], tag = $revolveAxis)
+///     |> line(end = [20, 0])
+///
+/// sketch001 = startSketchOn('XY')
+///     |> circle(center = [-10, 10], radius = 4)
+///     |> revolve(angle = 90, axis = revolveAxis, symmetric = true)
+/// ```
+///
+/// ```no_run
+/// // Bidirectional revolve around a path.
+///
+/// profile001 = startSketchOn('XY')
+///     |> startProfileAt([0, 0], %)
+///     |> line(end = [0, 20], tag = $revolveAxis)
+///     |> line(end = [20, 0])
+///
+/// sketch001 = startSketchOn('XY')
+///     |> circle(center = [-10, 10], radius = 4, angle = 90, bidirectional = 180)
+///     |> revolve(angle = 90, axis = revolveAxis, symmetric = true)
+/// ```
 #[stdlib {
     name = "revolve",
     feature_tree_operation = true,

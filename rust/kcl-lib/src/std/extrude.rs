@@ -100,6 +100,50 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 ///
 /// example = extrude(exampleSketch, length = 10)
 /// ```
+///
+/// ```no_run
+/// exampleSketch = startSketchOn('XZ')
+///   |> startProfileAt([-10, 0], %)
+///   |> arc({
+///     angleStart = 120,
+///     angleEnd = -60,
+///     radius = 5,
+///   }, %)
+///   |> line(end = [10, 0])
+///   |> line(end = [5, 0])
+///   |> bezierCurve({
+///     control1 = [-3, 0],
+///     control2 = [2, 10],
+///     to = [-5, 10],
+///   }, %)
+///   |> line(end = [-4, 10])
+///   |> line(end = [-5, -2])
+///   |> close()
+///
+/// example = extrude(exampleSketch, length = 20, symmetric = true)
+/// ```
+///
+/// ```no_run
+/// exampleSketch = startSketchOn('XZ')
+///   |> startProfileAt([-10, 0], %)
+///   |> arc({
+///     angleStart = 120,
+///     angleEnd = -60,
+///     radius = 5,
+///   }, %)
+///   |> line(end = [10, 0])
+///   |> line(end = [5, 0])
+///   |> bezierCurve({
+///     control1 = [-3, 0],
+///     control2 = [2, 10],
+///     to = [-5, 10],
+///   }, %)
+///   |> line(end = [-4, 10])
+///   |> line(end = [-5, -2])
+///   |> close()
+///
+/// example = extrude(exampleSketch, length = 10, bidirectional = 50)
+/// ```
 #[stdlib {
     name = "extrude",
     feature_tree_operation = true,
