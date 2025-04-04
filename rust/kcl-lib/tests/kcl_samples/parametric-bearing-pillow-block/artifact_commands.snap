@@ -1,6 +1,6 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
-description: Artifact commands a-parametric-bearing-pillow-block.kcl
+description: Artifact commands parametric-bearing-pillow-block.kcl
 ---
 [
   {

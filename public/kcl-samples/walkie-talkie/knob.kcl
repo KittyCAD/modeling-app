@@ -1,28 +1,23 @@
-// Walkie talkie frequency knob
-// the frequency knob for the walkie talkie assembly
+// Walkie Talkie Frequency Knob
+// The frequency knob for the walkie talkie assembly
 
-// set units
+// Set units
 @settings(defaultLengthUnit = in)
 
-// import constants
-import width, thickness, height, knobDiameter, knobHeight, knobRadius from "globals.kcl"
+// Import parameters
+import width, thickness, height, knobDiameter, knobHeight, knobRadius from "parameters.kcl"
 
-// create a function to define the knob
-export fn knob() {
-  // Create the knob sketch and revolve
-  knob = startSketchOn(XZ)
-    |> startProfileAt([0.0001, 0], %)
-    |> xLine(length = knobDiameter / 2)
-    |> yLine(length = knobHeight - 0.05)
-    |> arc({
-         angleStart = 0,
-         angleEnd = 90,
-         radius = .05
-       }, %)
-    |> xLine(endAbsolute = 0.0001)
-    |> close()
-    |> revolve(axis = Y)
-    |> appearance(color = '#D0FF01', metalness = 90, roughness = 50)
-
-  return knob
-}
+// Create the knob sketch and revolve
+startSketchOn(XZ)
+  |> startProfileAt([0.0001, 0], %)
+  |> xLine(length = knobDiameter / 2)
+  |> yLine(length = knobHeight - 0.05)
+  |> arc({
+       angleStart = 0,
+       angleEnd = 90,
+       radius = .05
+     }, %)
+  |> xLine(endAbsolute = 0.0001)
+  |> close()
+  |> revolve(axis = Y)
+  |> appearance(color = '#D0FF01', metalness = 90, roughness = 50)

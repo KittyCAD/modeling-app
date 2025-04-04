@@ -1215,8 +1215,8 @@ description: Operations executed car-wheel-assembly.kcl
       "type": "FunctionCall",
       "name": "spoke",
       "functionSourceRange": [
-        2616,
-        4189,
+        2620,
+        4193,
         5
       ],
       "unlabeledArg": null,
@@ -1605,8 +1605,8 @@ description: Operations executed car-wheel-assembly.kcl
       "type": "FunctionCall",
       "name": "spoke",
       "functionSourceRange": [
-        2616,
-        4189,
+        2620,
+        4193,
         5
       ],
       "unlabeledArg": null,
@@ -2108,8 +2108,8 @@ description: Operations executed car-wheel-assembly.kcl
       "type": "FunctionCall",
       "name": "lug",
       "functionSourceRange": [
-        664,
-        1289,
+        668,
+        1293,
         8
       ],
       "unlabeledArg": null,

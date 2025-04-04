@@ -4,7 +4,7 @@
 // Set units in millimeters (mm)
 @settings(defaultLengthUnit = mm)
 
-// Define constants
+// Define parameters
 binLength = 42.0
 cornerRadius = 4.0
 firstStep = 0.7
@@ -18,7 +18,7 @@ countBinLength = 3
 // The total height of the baseplate is a summation of the vertical heights of the baseplate steps
 height = firstStep + secondStep + thirdStep
 
-// define a function which builds the profile of the baseplate bin
+// Define a function which builds the profile of the baseplate bin
 fn face(plane) {
   faceSketch = startSketchOn(plane)
     |> startProfileAt([0, 0], %)
@@ -30,10 +30,10 @@ fn face(plane) {
   return faceSketch
 }
 
-// extrude a single side of the bin
+// Extrude a single side of the bin
 singleSide = extrude(face(offsetPlane(YZ, offset = cornerRadius)), length = binLength - (cornerRadius * 2))
 
-// create the other sides of the bin by using a circular pattern
+// Create the other sides of the bin by using a circular pattern
 sides = patternCircular3d(
   singleSide,
   arcDegrees = 360,
@@ -43,16 +43,16 @@ sides = patternCircular3d(
   rotateDuplicates = true,
 )
 
-// define an axis axis000
+// Define an axis axis000
 axis000 = {
   direction = [0.0, 1.0],
   origin = [cornerRadius, cornerRadius]
 }
 
-// create a single corner of the bin
+// Create a single corner of the bin
 singleCorner = revolve(face(offsetPlane(YZ, offset = cornerRadius)), angle = -90, axis = axis000)
 
-// create the corners of the bin
+// Create the corners of the bin
 corners = patternCircular3d(
   singleCorner,
   arcDegrees = 360,
@@ -62,7 +62,7 @@ corners = patternCircular3d(
   rotateDuplicates = true,
 )
 
-// create the baseplate by patterning sides
+// Create the baseplate by patterning sides
 basePlateSides = patternLinear3d(
        sides,
        axis = [1.0, 0.0, 0.0],
@@ -71,7 +71,7 @@ basePlateSides = patternLinear3d(
      )
   |> patternLinear3d(axis = [0.0, 1.0, 0.0], instances = countBinLength, distance = binLength)
 
-// create the corners of the baseplate by patterning the corners
+// Create the corners of the baseplate by patterning the corners
 basePlateCorners = patternLinear3d(
        corners,
        axis = [1.0, 0.0, 0.0],

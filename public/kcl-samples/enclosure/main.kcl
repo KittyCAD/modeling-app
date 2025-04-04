@@ -4,6 +4,7 @@
 // Set units
 @settings(defaultLengthUnit = mm)
 
+// Define parameters
 length = 175
 width = 125
 height = 70

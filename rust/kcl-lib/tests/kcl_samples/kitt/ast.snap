@@ -698,7 +698,7 @@ description: Result of parsing kitt.kcl
           "// The beloved KittyCAD mascot in a voxelized style.",
           "",
           "",
-          "// pixel box function"
+          "// Pixel box function"
         ],
         "start": 0,
         "type": "VariableDeclaration",

@@ -13,7 +13,7 @@ use kcmc::{
     websocket::{ModelingCmdReq, OkWebSocketResponseData},
     ModelingCmd,
 };
-use kittycad_modeling_cmds as kcmc;
+use kittycad_modeling_cmds::{self as kcmc};
 use uuid::Uuid;
 
 use crate::{
@@ -168,13 +168,18 @@ pub(crate) async fn do_post_extrude<'a>(
     )
     .await?;
 
-    // The "get extrusion face info" API call requires *any* edge on the sketch being extruded.
-    // So, let's just use the first one.
-    let Some(any_edge_id) = sketch.paths.first().map(|edge| edge.get_base().geo_meta.id) else {
-        return Err(KclError::Type(KclErrorDetails {
-            message: "Expected a non-empty sketch".to_string(),
-            source_ranges: vec![args.source_range],
-        }));
+    let any_edge_id = if let Some(edge_id) = sketch.mirror {
+        edge_id
+    } else {
+        // The "get extrusion face info" API call requires *any* edge on the sketch being extruded.
+        // So, let's just use the first one.
+        let Some(any_edge_id) = sketch.paths.first().map(|edge| edge.get_base().geo_meta.id) else {
+            return Err(KclError::Type(KclErrorDetails {
+                message: "Expected a non-empty sketch".to_string(),
+                source_ranges: vec![args.source_range],
+            }));
+        };
+        any_edge_id
     };
 
     let mut sketch = sketch.clone();

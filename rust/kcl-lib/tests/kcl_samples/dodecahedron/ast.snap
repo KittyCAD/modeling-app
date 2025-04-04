@@ -99,7 +99,7 @@ description: Result of parsing dodecahedron.kcl
           "",
           "",
           "// Calculated parameters",
-          "// thickness of the dodecahedron"
+          "// Thickness of the dodecahedron"
         ],
         "start": 0,
         "type": "VariableDeclaration",
@@ -213,7 +213,7 @@ description: Result of parsing dodecahedron.kcl
         "preComments": [
           "",
           "",
-          "// angle between faces in radians"
+          "// Angle between faces in radians"
         ],
         "start": 0,
         "type": "VariableDeclaration",
@@ -383,7 +383,7 @@ description: Result of parsing dodecahedron.kcl
         "preComments": [
           "",
           "",
-          "// inscribed radius"
+          "// Inscribed radius"
         ],
         "start": 0,
         "type": "VariableDeclaration",
@@ -553,7 +553,7 @@ description: Result of parsing dodecahedron.kcl
         "preComments": [
           "",
           "",
-          "// pentagon edge length"
+          "// Pentagon edge length"
         ],
         "start": 0,
         "type": "VariableDeclaration",
@@ -683,7 +683,7 @@ description: Result of parsing dodecahedron.kcl
         "preComments": [
           "",
           "",
-          "// pentagon radius"
+          "// Pentagon radius"
         ],
         "start": 0,
         "type": "VariableDeclaration",
@@ -2493,7 +2493,7 @@ description: Result of parsing dodecahedron.kcl
         "preComments": [
           "",
           "",
-          "// pattern the bottom to create the top face"
+          "// Pattern the bottom to create the top face"
         ],
         "start": 0,
         "type": "ExpressionStatement",
@@ -2722,7 +2722,7 @@ description: Result of parsing dodecahedron.kcl
         "preComments": [
           "",
           "",
-          "// pattern the bottom angled faces to create the top"
+          "// Pattern the bottom angled faces to create the top"
         ],
         "start": 0,
         "type": "ExpressionStatement",

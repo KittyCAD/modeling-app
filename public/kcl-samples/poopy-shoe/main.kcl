@@ -4,6 +4,7 @@
 // Set units
 @settings(defaultLengthUnit = in)
 
+// Define parameters
 wallThickness = 0.125
 wallsWidth = 3
 height = 5.125
@@ -12,6 +13,7 @@ backLength = 6
 exitHeight = 1
 frontLength = 7
 
+// Create the curved portion that catches the printer poop
 sketch001 = startSketchOn(-YZ)
   |> startProfileAt([wallsWidth / 2, 0], %)
   |> xLine(length = wallThickness / 2)
@@ -78,6 +80,7 @@ sketch003 = startSketchOn(customPlane)
   |> close()
   |> extrude(length = wallThickness)
 
+// Create the right side wall of the tub
 sketch004 = startSketchOn(sketch002, 'END')
   |> startProfileAt([0, 0], %)
   |> yLine(endAbsolute = height)

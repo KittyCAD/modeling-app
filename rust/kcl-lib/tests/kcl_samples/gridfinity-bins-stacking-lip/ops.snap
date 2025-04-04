@@ -39,8 +39,8 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
       "type": "FunctionCall",
       "name": "face",
       "functionSourceRange": [
-        1133,
-        1506,
+        1134,
+        1507,
         0
       ],
       "unlabeledArg": null,
@@ -265,8 +265,8 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
       "type": "FunctionCall",
       "name": "face",
       "functionSourceRange": [
-        1133,
-        1506,
+        1134,
+        1507,
         0
       ],
       "unlabeledArg": null,
@@ -1580,8 +1580,8 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
       "type": "FunctionCall",
       "name": "lipFace",
       "functionSourceRange": [
-        5302,
-        5960,
+        5300,
+        5958,
         0
       ],
       "unlabeledArg": null,
@@ -1815,8 +1815,8 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
       "type": "FunctionCall",
       "name": "lipFace",
       "functionSourceRange": [
-        5302,
-        5960,
+        5300,
+        5958,
         0
       ],
       "unlabeledArg": null,
@@ -2324,8 +2324,8 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
       "type": "FunctionCall",
       "name": "lipFace",
       "functionSourceRange": [
-        5302,
-        5960,
+        5300,
+        5958,
         0
       ],
       "unlabeledArg": null,
@@ -2640,8 +2640,8 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
       "type": "FunctionCall",
       "name": "lipFace",
       "functionSourceRange": [
-        5302,
-        5960,
+        5300,
+        5958,
         0
       ],
       "unlabeledArg": null,

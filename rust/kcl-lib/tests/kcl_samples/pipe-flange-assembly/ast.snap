@@ -10,13 +10,13 @@ description: Result of parsing pipe-flange-assembly.kcl
         "end": 0,
         "path": {
           "type": "Kcl",
-          "filename": "globals.kcl"
+          "filename": "parameters.kcl"
         },
         "preComments": [
-          "// import constants"
+          "// Import parameters"
         ],
         "selector": {
-          "commentStart": 407,
+          "commentStart": 408,
           "end": 0,
           "start": 0,
           "type": "Glob"
@@ -26,26 +26,47 @@ description: Result of parsing pipe-flange-assembly.kcl
         "type": "ImportStatement"
       },
       {
-        "commentStart": 427,
+        "commentStart": 431,
+        "end": 0,
+        "path": {
+          "type": "Kcl",
+          "filename": "9472k188-gasket.kcl"
+        },
+        "preComments": [
+          "",
+          "",
+          "// Import parts"
+        ],
+        "selector": {
+          "type": "None",
+          "alias": {
+            "commentStart": 481,
+            "end": 0,
+            "name": "gasket",
+            "start": 0,
+            "type": "Identifier"
+          }
+        },
+        "start": 0,
+        "type": "ImportStatement",
+        "type": "ImportStatement"
+      },
+      {
+        "commentStart": 488,
         "end": 0,
         "path": {
           "type": "Kcl",
           "filename": "68095k348-flange.kcl"
         },
-        "preComments": [
-          "",
-          "",
-          "// import parts"
-        ],
         "selector": {
           "type": "List",
           "items": [
             {
               "alias": null,
-              "commentStart": 452,
+              "commentStart": 495,
               "end": 0,
               "name": {
-                "commentStart": 452,
+                "commentStart": 495,
                 "end": 0,
                 "name": "flange",
                 "start": 0,
@@ -61,37 +82,7 @@ description: Result of parsing pipe-flange-assembly.kcl
         "type": "ImportStatement"
       },
       {
-        "commentStart": 487,
-        "end": 0,
-        "path": {
-          "type": "Kcl",
-          "filename": "9472k188-gasket.kcl"
-        },
-        "selector": {
-          "type": "List",
-          "items": [
-            {
-              "alias": null,
-              "commentStart": 494,
-              "end": 0,
-              "name": {
-                "commentStart": 494,
-                "end": 0,
-                "name": "gasket",
-                "start": 0,
-                "type": "Identifier"
-              },
-              "start": 0,
-              "type": "ImportItem"
-            }
-          ]
-        },
-        "start": 0,
-        "type": "ImportStatement",
-        "type": "ImportStatement"
-      },
-      {
-        "commentStart": 528,
+        "commentStart": 530,
         "end": 0,
         "path": {
           "type": "Kcl",
@@ -102,10 +93,10 @@ description: Result of parsing pipe-flange-assembly.kcl
           "items": [
             {
               "alias": null,
-              "commentStart": 535,
+              "commentStart": 537,
               "end": 0,
               "name": {
-                "commentStart": 535,
+                "commentStart": 537,
                 "end": 0,
                 "name": "washer",
                 "start": 0,
@@ -121,7 +112,7 @@ description: Result of parsing pipe-flange-assembly.kcl
         "type": "ImportStatement"
       },
       {
-        "commentStart": 570,
+        "commentStart": 572,
         "end": 0,
         "path": {
           "type": "Kcl",
@@ -132,10 +123,10 @@ description: Result of parsing pipe-flange-assembly.kcl
           "items": [
             {
               "alias": null,
-              "commentStart": 577,
+              "commentStart": 579,
               "end": 0,
               "name": {
-                "commentStart": 577,
+                "commentStart": 579,
                 "end": 0,
                 "name": "bolt",
                 "start": 0,
@@ -151,7 +142,7 @@ description: Result of parsing pipe-flange-assembly.kcl
         "type": "ImportStatement"
       },
       {
-        "commentStart": 608,
+        "commentStart": 610,
         "end": 0,
         "path": {
           "type": "Kcl",
@@ -162,10 +153,10 @@ description: Result of parsing pipe-flange-assembly.kcl
           "items": [
             {
               "alias": null,
-              "commentStart": 615,
+              "commentStart": 617,
               "end": 0,
               "name": {
-                "commentStart": 615,
+                "commentStart": 617,
                 "end": 0,
                 "name": "hexNut",
                 "start": 0,
@@ -181,7 +172,7 @@ description: Result of parsing pipe-flange-assembly.kcl
         "type": "ImportStatement"
       },
       {
-        "commentStart": 651,
+        "commentStart": 653,
         "end": 0,
         "path": {
           "type": "Kcl",
@@ -192,10 +183,10 @@ description: Result of parsing pipe-flange-assembly.kcl
           "items": [
             {
               "alias": null,
-              "commentStart": 658,
+              "commentStart": 660,
               "end": 0,
               "name": {
-                "commentStart": 658,
+                "commentStart": 660,
                 "end": 0,
                 "name": "pipe",
                 "start": 0,
@@ -211,16 +202,16 @@ description: Result of parsing pipe-flange-assembly.kcl
         "type": "ImportStatement"
       },
       {
-        "commentStart": 686,
+        "commentStart": 688,
         "end": 0,
         "expression": {
           "arguments": [],
           "callee": {
             "abs_path": false,
-            "commentStart": 705,
+            "commentStart": 707,
             "end": 0,
             "name": {
-              "commentStart": 705,
+              "commentStart": 707,
               "end": 0,
               "name": "flange",
               "start": 0,
@@ -230,7 +221,7 @@ description: Result of parsing pipe-flange-assembly.kcl
             "start": 0,
             "type": "Name"
           },
-          "commentStart": 705,
+          "commentStart": 707,
           "end": 0,
           "start": 0,
           "type": "CallExpression",
@@ -239,14 +230,14 @@ description: Result of parsing pipe-flange-assembly.kcl
         "preComments": [
           "",
           "",
-          "// place flanges"
+          "// Place flanges"
         ],
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       },
       {
-        "commentStart": 714,
+        "commentStart": 716,
         "end": 0,
         "expression": {
           "body": [
@@ -254,10 +245,10 @@ description: Result of parsing pipe-flange-assembly.kcl
               "arguments": [],
               "callee": {
                 "abs_path": false,
-                "commentStart": 714,
+                "commentStart": 716,
                 "end": 0,
                 "name": {
-                  "commentStart": 714,
+                  "commentStart": 716,
                   "end": 0,
                   "name": "flange",
                   "start": 0,
@@ -267,7 +258,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                 "start": 0,
                 "type": "Name"
               },
-              "commentStart": 714,
+              "commentStart": 716,
               "end": 0,
               "start": 0,
               "type": "CallExpression",
@@ -278,17 +269,17 @@ description: Result of parsing pipe-flange-assembly.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "commentStart": 735,
+                    "commentStart": 737,
                     "end": 0,
                     "name": "axis",
                     "start": 0,
                     "type": "Identifier"
                   },
                   "arg": {
-                    "commentStart": 742,
+                    "commentStart": 744,
                     "elements": [
                       {
-                        "commentStart": 743,
+                        "commentStart": 745,
                         "end": 0,
                         "raw": "0",
                         "start": 0,
@@ -300,7 +291,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                         }
                       },
                       {
-                        "commentStart": 746,
+                        "commentStart": 748,
                         "end": 0,
                         "raw": "1",
                         "start": 0,
@@ -312,7 +303,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                         }
                       },
                       {
-                        "commentStart": 749,
+                        "commentStart": 751,
                         "end": 0,
                         "raw": "0",
                         "start": 0,
@@ -333,14 +324,14 @@ description: Result of parsing pipe-flange-assembly.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "commentStart": 753,
+                    "commentStart": 755,
                     "end": 0,
                     "name": "angle",
                     "start": 0,
                     "type": "Identifier"
                   },
                   "arg": {
-                    "commentStart": 761,
+                    "commentStart": 763,
                     "end": 0,
                     "raw": "180",
                     "start": 0,
@@ -355,10 +346,10 @@ description: Result of parsing pipe-flange-assembly.kcl
               ],
               "callee": {
                 "abs_path": false,
-                "commentStart": 728,
+                "commentStart": 730,
                 "end": 0,
                 "name": {
-                  "commentStart": 728,
+                  "commentStart": 730,
                   "end": 0,
                   "name": "rotate",
                   "start": 0,
@@ -368,7 +359,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                 "start": 0,
                 "type": "Name"
               },
-              "commentStart": 728,
+              "commentStart": 730,
               "end": 0,
               "start": 0,
               "type": "CallExpressionKw",
@@ -380,14 +371,14 @@ description: Result of parsing pipe-flange-assembly.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "commentStart": 781,
+                    "commentStart": 783,
                     "end": 0,
                     "name": "x",
                     "start": 0,
                     "type": "Identifier"
                   },
                   "arg": {
-                    "commentStart": 785,
+                    "commentStart": 787,
                     "end": 0,
                     "raw": "0",
                     "start": 0,
@@ -402,14 +393,14 @@ description: Result of parsing pipe-flange-assembly.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "commentStart": 788,
+                    "commentStart": 790,
                     "end": 0,
                     "name": "y",
                     "start": 0,
                     "type": "Identifier"
                   },
                   "arg": {
-                    "commentStart": 792,
+                    "commentStart": 794,
                     "end": 0,
                     "raw": "0",
                     "start": 0,
@@ -424,24 +415,24 @@ description: Result of parsing pipe-flange-assembly.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "commentStart": 795,
+                    "commentStart": 797,
                     "end": 0,
                     "name": "z",
                     "start": 0,
                     "type": "Identifier"
                   },
                   "arg": {
-                    "commentStart": 799,
+                    "commentStart": 801,
                     "end": 0,
                     "left": {
-                      "commentStart": 799,
+                      "commentStart": 801,
                       "end": 0,
                       "left": {
                         "abs_path": false,
-                        "commentStart": 799,
+                        "commentStart": 801,
                         "end": 0,
                         "name": {
-                          "commentStart": 799,
+                          "commentStart": 801,
                           "end": 0,
                           "name": "flangeBackHeight",
                           "start": 0,
@@ -454,7 +445,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                       },
                       "operator": "*",
                       "right": {
-                        "commentStart": 818,
+                        "commentStart": 820,
                         "end": 0,
                         "raw": "2",
                         "start": 0,
@@ -472,10 +463,10 @@ description: Result of parsing pipe-flange-assembly.kcl
                     "operator": "+",
                     "right": {
                       "abs_path": false,
-                      "commentStart": 822,
+                      "commentStart": 824,
                       "end": 0,
                       "name": {
-                        "commentStart": 822,
+                        "commentStart": 824,
                         "end": 0,
                         "name": "gasketThickness",
                         "start": 0,
@@ -494,10 +485,10 @@ description: Result of parsing pipe-flange-assembly.kcl
               ],
               "callee": {
                 "abs_path": false,
-                "commentStart": 771,
+                "commentStart": 773,
                 "end": 0,
                 "name": {
-                  "commentStart": 771,
+                  "commentStart": 773,
                   "end": 0,
                   "name": "translate",
                   "start": 0,
@@ -507,7 +498,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                 "start": 0,
                 "type": "Name"
               },
-              "commentStart": 771,
+              "commentStart": 773,
               "end": 0,
               "start": 0,
               "type": "CallExpressionKw",
@@ -515,19 +506,19 @@ description: Result of parsing pipe-flange-assembly.kcl
               "unlabeled": null
             }
           ],
-          "commentStart": 714,
+          "commentStart": 716,
           "end": 0,
           "nonCodeMeta": {
             "nonCodeNodes": {
               "2": [
                 {
-                  "commentStart": 838,
+                  "commentStart": 840,
                   "end": 0,
                   "start": 0,
                   "type": "NonCodeNode",
                   "value": {
                     "type": "newLineBlockComment",
-                    "value": "place gasket between the flanges",
+                    "value": "Place gasket between the flanges",
                     "style": "line"
                   }
                 }
@@ -544,32 +535,25 @@ description: Result of parsing pipe-flange-assembly.kcl
         "type": "ExpressionStatement"
       },
       {
-        "commentStart": 876,
+        "commentStart": 878,
         "end": 0,
         "expression": {
           "body": [
             {
-              "arguments": [],
-              "callee": {
-                "abs_path": false,
-                "commentStart": 876,
-                "end": 0,
-                "name": {
-                  "commentStart": 876,
-                  "end": 0,
-                  "name": "gasket",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "path": [],
-                "start": 0,
-                "type": "Name"
-              },
-              "commentStart": 876,
+              "abs_path": false,
+              "commentStart": 878,
               "end": 0,
+              "name": {
+                "commentStart": 878,
+                "end": 0,
+                "name": "gasket",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "CallExpression",
-              "type": "CallExpression"
+              "type": "Name",
+              "type": "Name"
             },
             {
               "arguments": [
@@ -699,7 +683,7 @@ description: Result of parsing pipe-flange-assembly.kcl
               "unlabeled": null
             }
           ],
-          "commentStart": 876,
+          "commentStart": 878,
           "end": 0,
           "nonCodeMeta": {
             "nonCodeNodes": {
@@ -711,7 +695,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                   "type": "NonCodeNode",
                   "value": {
                     "type": "newLineBlockComment",
-                    "value": "place eight washers (four front, four back)",
+                    "value": "Place eight washers (four front, four back)",
                     "style": "line"
                   }
                 }
@@ -1345,7 +1329,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                   "type": "NonCodeNode",
                   "value": {
                     "type": "newLineBlockComment",
-                    "value": "place four bolts",
+                    "value": "Place four bolts",
                     "style": "line"
                   }
                 }
@@ -1840,7 +1824,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                   "type": "NonCodeNode",
                   "value": {
                     "type": "newLineBlockComment",
-                    "value": "place four hex nuts",
+                    "value": "Place four hex nuts",
                     "style": "line"
                   }
                 }
@@ -2344,7 +2328,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                   "type": "NonCodeNode",
                   "value": {
                     "type": "newLineBlockComment",
-                    "value": "place both pieces of pipe",
+                    "value": "Place both pieces of pipe",
                     "style": "line"
                   }
                 }
@@ -3063,7 +3047,7 @@ description: Result of parsing pipe-flange-assembly.kcl
           "// A crucial component in various piping systems, designed to facilitate the connection, disconnection, and access to piping for inspection, cleaning, and modifications. This assembly combines pipes (long cylindrical conduits) with flanges (plate-like fittings) to create a secure yet detachable joint.",
           "",
           "",
-          "// set units"
+          "// Set units"
         ],
         "properties": [
           {

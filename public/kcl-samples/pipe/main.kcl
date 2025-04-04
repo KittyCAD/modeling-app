@@ -1,36 +1,21 @@
 // Pipe
-// A tubular section or hollow cylinder, usually but not necessarily of circular cross-section, used mainly to convey substances that can flow.
+// Piping for the pipe flange assembly
 
-// Set Units
+// Set units
 @settings(defaultLengthUnit = in)
 
-// Define constants
-pipeTotalLength = 20
-pipeLargeDiaLength = 1
-pipeLargeDia = 1
-pipeSmallDia = .75
-thickness = 0.125
-pipeTransitionAngle = 60
-pipeTransitionLength = 0.5
-pipeSmallDiaLength = pipeTotalLength - pipeTransitionLength - pipeLargeDiaLength
+// Define parameters
+pipeInnerDiameter = 2.0
+pipeOuterDiameter = 2.375
+pipeLength = 6
 
-// Create the sketch to be revolved around the y-axis. Use the small diameter, large diameter, length, and thickness to define the sketch.
-pipeSketch = startSketchOn(XY)
-  |> startProfileAt([pipeSmallDia - (thickness / 2), 38], %)
-  |> line(end = [thickness, 0])
-  |> line(end = [0, -pipeSmallDiaLength])
-  |> angledLineOfYLength({
-       angle = -60,
-       length = pipeTransitionLength
-     }, %)
-  |> line(end = [0, -pipeLargeDiaLength])
-  |> xLine(length = -thickness)
-  |> line(end = [0, pipeLargeDiaLength])
-  |> angledLineToX({
-       angle = -pipeTransitionAngle + 180,
-       to = pipeSmallDia - (thickness / 2)
-     }, %)
-  |> close()
+// Create the pipe base
+pipeBase = startSketchOn(XZ)
+  |> circle(%, center = [0, 0], radius = pipeOuterDiameter / 2)
+  |> extrude(%, length = pipeLength)
 
-// Revolve the sketch to create the pipe
-pipe = revolve(pipeSketch, axis = Y)
+// Extrude a hole through the length of the pipe
+pipe = startSketchOn(pipeBase, 'end')
+  |> circle(center = [0, 0], radius = pipeInnerDiameter / 2)
+  |> extrude(%, length = -pipeLength)
+  |> appearance(color = "#a24ed0")

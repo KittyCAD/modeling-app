@@ -1,7 +1,7 @@
 // Sheet Metal Bracket
 // A component typically made from flat sheet metal through various manufacturing processes such as bending, punching, cutting, and forming. These brackets are used to support, attach, or mount other hardware components, often providing a structural or functional base for assembly.
 
-// Set Units
+// Set units
 @settings(defaultLengthUnit = in)
 
 // Input bolt pattern dimensions to mount the bracket
@@ -14,13 +14,13 @@ componentBoltDiameter = 3 / 16
 componentBoltPatternX = 2
 componentBoltPatternY = 3
 
-// Define bracket constants such as sheet metal thickness, bend radius, flange length, etc.
+// Define bracket parameters such as sheet metal thickness, bend radius, flange length, etc.
 hatHeight = 2.5
 bendAngle = 75
 thickness = 0.125
 interiorBendRadius = 0.125
 
-// Calculate Remaining Parameters
+// Calculate remaining parameters
 exteriorBendRadius = interiorBendRadius + thickness
 overhang = 3 * mountingBoltDiameter
 flangeLength = 6 * mountingBoltDiameter

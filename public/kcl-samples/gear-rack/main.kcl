@@ -1,10 +1,10 @@
 // 100mm Gear Rack
 // A flat bar or rail that is engraved with teeth along its length. These teeth are designed to mesh with the teeth of a gear, known as a pinion. When the pinion, a small cylindrical gear, rotates, its teeth engage with the teeth on the rack, causing the rack to move linearly. Conversely, linear motion applied to the rack will cause the pinion to rotate.
 
-// Set Units
+// Set units
 @settings(defaultLengthUnit = mm)
 
-// Define constants
+// Define parameters
 length = 100
 pitchHeight = 11.5
 width = 5

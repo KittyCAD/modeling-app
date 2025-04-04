@@ -4,8 +4,8 @@
 // Set units
 @settings(defaultLengthUnit = in)
 
-// Import Constants
-import lugDiameter, lugHeadLength, lugThreadDiameter, lugLength, lugThreadDepth, lugSpacing from "globals.kcl"
+// Import parameters
+import lugDiameter, lugHeadLength, lugThreadDiameter, lugLength, lugThreadDepth, lugSpacing from "parameters.kcl"
 
 customPlane = {
   plane = {
