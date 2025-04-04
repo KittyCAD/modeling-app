@@ -103,6 +103,7 @@ const createWindow = (pathToOpen?: string, reuse?: boolean): BrowserWindow => {
 
   if (reuse) {
     newWindow = mainWindow
+    Menu.setApplicationMenu(null)
   }
   if (!newWindow) {
     const primaryDisplay = screen.getPrimaryDisplay()

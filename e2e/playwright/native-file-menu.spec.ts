@@ -14,11 +14,11 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
           if (!app || !app.applicationMenu) {
-            test.fail()
+            fail()
           }
           const newProject =
             app.applicationMenu.getMenuItemById('File.New project')
-          if (!newProject) test.fail()
+          if (!newProject) fail()
           newProject.click()
         })
         // Check that the command bar is opened
@@ -35,11 +35,11 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         // Run electron snippet to find the Menu!
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
-          if (!app || !app.applicationMenu) test.fail()
+          if (!app || !app.applicationMenu) fail()
           const openProject =
             app.applicationMenu.getMenuItemById('File.Open project')
           if (!openProject) {
-            test.fail()
+            fail()
           }
           openProject.click()
         })
@@ -57,17 +57,17 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         cmdBar,
         page,
       }) => {
-        if (!tronApp) test.fail()
+        if (!tronApp) fail()
         // Run electron snippet to find the Menu!
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
           if (!app || !app.applicationMenu) {
-            test.fail()
+            fail()
           }
           const userSettings = app.applicationMenu.getMenuItemById(
             'File.Preferences.User settings'
           )
-          if (!userSettings) test.fail()
+          if (!userSettings) fail()
           userSettings.click()
         })
         const settings = page.getByTestId('settings-dialog-panel')
@@ -84,17 +84,17 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         page,
       }) => {
         if (!tronApp) {
-          test.fail()
+          fail()
         }
         // Run electron snippet to find the Menu!
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
-          if (!app || !app.applicationMenu) test.fail()
+          if (!app || !app.applicationMenu) fail()
           const keybindings = app.applicationMenu.getMenuItemById(
             'File.Preferences.Keybindings'
           )
           if (!keybindings) {
-            test.fail()
+            fail()
           }
           keybindings.click()
         })
@@ -109,17 +109,17 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         cmdBar,
         page,
       }) => {
-        if (!tronApp) test.fail()
+        if (!tronApp) fail()
         // Run electron snippet to find the Menu!
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
           if (!app || !app.applicationMenu) {
-            test.fail()
+            fail()
           }
           const menu = app.applicationMenu.getMenuItemById(
             'File.Preferences.User default units'
           )
-          if (!menu) test.fail()
+          if (!menu) fail()
           menu.click()
         })
         const settings = page.getByTestId('settings-dialog-panel')
@@ -132,12 +132,12 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         // Run electron snippet to find the Menu!
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
-          if (!app || !app.applicationMenu) test.fail()
+          if (!app || !app.applicationMenu) fail()
           const menu = app.applicationMenu.getMenuItemById(
             'File.Preferences.Theme'
           )
           if (!menu) {
-            test.fail()
+            fail()
           }
           menu.click()
         })
@@ -155,17 +155,17 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         cmdBar,
         page,
       }) => {
-        if (!tronApp) test.fail()
+        if (!tronApp) fail()
         // Run electron snippet to find the Menu!
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
           if (!app || !app.applicationMenu) {
-            test.fail()
+            fail()
           }
           const menu = app.applicationMenu.getMenuItemById(
             'File.Preferences.Theme color'
           )
-          if (!menu) test.fail()
+          if (!menu) fail()
           menu.click()
         })
         const settings = page.getByTestId('settings-dialog-panel')
@@ -182,10 +182,10 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         // Run electron snippet to find the Menu!
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
-          if (!app || !app.applicationMenu) test.fail()
+          if (!app || !app.applicationMenu) fail()
           const menu = app.applicationMenu.getMenuItemById('File.Sign out')
           if (!menu) {
-            test.fail()
+            fail()
           }
           // FIXME: Add back when you can actually sign out
           // menu.click()
@@ -204,12 +204,12 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
           if (!app || !app.applicationMenu) {
-            test.fail()
+            fail()
           }
           const menu = app.applicationMenu.getMenuItemById(
             'Edit.Rename project'
           )
-          if (!menu) test.fail()
+          if (!menu) fail()
           menu.click()
         })
         // Check the placeholder project name exists
@@ -224,12 +224,12 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         // Run electron snippet to find the Menu!
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
-          if (!app || !app.applicationMenu) test.fail()
+          if (!app || !app.applicationMenu) fail()
           const menu = app.applicationMenu.getMenuItemById(
             'Edit.Delete project'
           )
           if (!menu) {
-            test.fail()
+            fail()
           }
           menu.click()
         })
@@ -244,17 +244,17 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         cmdBar,
         page,
       }) => {
-        if (!tronApp) test.fail()
+        if (!tronApp) fail()
         // Run electron snippet to find the Menu!
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
           if (!app || !app.applicationMenu) {
-            test.fail()
+            fail()
           }
           const menu = app.applicationMenu.getMenuItemById(
             'Edit.Change project directory'
           )
-          if (!menu) test.fail()
+          if (!menu) fail()
           menu.click()
         })
         const settings = page.getByTestId('settings-dialog-panel')
@@ -273,12 +273,12 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         // Run electron snippet to find the Menu!
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
-          if (!app || !app.applicationMenu) test.fail()
+          if (!app || !app.applicationMenu) fail()
           const menu = app.applicationMenu.getMenuItemById(
             'View.Command Palette...'
           )
           if (!menu) {
-            test.fail()
+            fail()
           }
           menu.click()
         })
@@ -294,12 +294,12 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
           if (!app || !app.applicationMenu) {
-            test.fail()
+            fail()
           }
           const menu = app.applicationMenu.getMenuItemById(
             'Help.Show all commands'
           )
-          if (!menu) test.fail()
+          if (!menu) fail()
           menu.click()
         })
         // Check the placeholder project name exists
@@ -311,12 +311,12 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         // Run electron snippet to find the Menu!
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
-          if (!app || !app.applicationMenu) test.fail()
+          if (!app || !app.applicationMenu) fail()
           const menu = app.applicationMenu.getMenuItemById(
             'Help.KCL code samples'
           )
           if (!menu) {
-            test.fail()
+            fail()
           }
         })
       })
@@ -325,17 +325,17 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         cmdBar,
         page,
       }) => {
-        if (!tronApp) test.fail()
+        if (!tronApp) fail()
         // Run electron snippet to find the Menu!
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
           if (!app || !app.applicationMenu) {
-            test.fail()
+            fail()
           }
           const menu = app.applicationMenu.getMenuItemById(
             'Help.Refresh and report a bug'
           )
-          if (!menu) test.fail()
+          if (!menu) fail()
           menu.click()
         })
         // Core dump and refresh magic number timeout
@@ -350,12 +350,12 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         // Run electron snippet to find the Menu!
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
-          if (!app || !app.applicationMenu) test.fail()
+          if (!app || !app.applicationMenu) fail()
           const menu = app.applicationMenu.getMenuItemById(
             'Help.Reset onboarding'
           )
           if (!menu) {
-            test.fail()
+            fail()
           }
           menu.click()
         })
