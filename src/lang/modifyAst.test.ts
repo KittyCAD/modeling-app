@@ -589,20 +589,19 @@ describe('Testing deleteSegmentFromPipeExpression', () => {
 `)
   })
   describe('Should delete a segment WITH any dependent segments, unconstraining the dependent parts', () => {
-    const makeCode = (
-      line: string,
-      replace1 = '',
-      replace2 = ''
-    ) => `part001 = startSketchOn(-XZ)
+    const makeCode = (line: string, replace1 = '', replace2 = '') => {
+      const lengthVal = !replace1 ? 'segLen(a)' : replace1
+
+      const out = `part001 = startSketchOn(-XZ)
   |> startProfileAt([54.78, -95.91], %)
   |> line(end = [306.21, 198.82], tag = $b)
-${!replace1 ? `  |> ${line}\n` : ''}  |> angledLine(angle = -65, length = ${
-      !replace1 ? 'segLen(a)' : replace1
-    })
+${!replace1 ? `  |> ${line}\n` : ''}  |> angledLine(angle = -65, length = ${lengthVal})
   |> line(end = [306.21, 198.87])
   |> angledLine(angle = 65, length = ${!replace2 ? 'segAng(a)' : replace2})
   |> line(end = [-963.39, -154.67])
 `
+      return out
+    }
     test.each([
       ['line', 'line(end = [306.21, 198.85], tag = $a)', ['365.11', '33']],
       [
@@ -621,7 +620,7 @@ ${!replace1 ? `  |> ${line}\n` : ''}  |> angledLine(angle = -65, length = ${
       ],
       [
         'angledLine',
-        'angledLine(angle = 45.5, length = 198.85, %, $a)',
+        'angledLine(angle = 45.5, length = 198.85, tag = $a)',
         ['283.7', '45.5'],
       ],
       [
@@ -789,23 +788,31 @@ describe('Testing removeSingleConstraintInfo', () => {
   describe('with array notation', () => {
     const code = `part001 = startSketchOn(-XZ)
   |> startProfileAt([0, 0], %)
-  |> angledLine(angle = 3.14 + 0, length = 3.14 + 0)
-  |> angledLine(angle = 3 + 0, lengthX = 3.14 + 0)
-  |> angledLine(angle = 30 + 0, lengthY = 3 + 0)
-  |> angledLine(angle = 12.14 + 0, endAbsoluteX = 12 + 0)
-  |> angledLine(angle = 30 + 0, endAbsoluteY = 10.14 + 0)`
+  |> /*0*/ angledLine(angle = 3.14 + 0, length = 3.14 + 0)
+  |> /*1*/ angledLine(angle = 3 + 0, lengthX = 3.14 + 0)
+  |> /*2*/ angledLine(angle = 30 + 0, lengthY = 3 + 0)
+  |> /*3*/ angledLine(angle = 12.14 + 0, endAbsoluteX = 12 + 0)
+  |> /*4*/ angledLine(angle = 30 + 0, endAbsoluteY = 10.14 + 0)`
     const ang: InputArgKeys = 'angle'
     test.each([
-      ['angledLine(angle = 3, length = 3.14 + 0)', 'labeledArg', ang],
-      ['angledLine(angle = 3, lengthX = 3.14 + 0)', 'labeledArg', 'angle'],
-      ['angledLine(angle = 30 + 0, lengthY = 3)', 'labeledArg', 'lengthY'],
+      ['/*0*/ angledLine(angle = 3, length = 3.14 + 0)', 'labeledArg', ang],
       [
-        'angledLine(angle = 12.14 + 0, endAbsoluteX = 12)',
+        '/*1*/ angledLine(angle = 3, lengthX = 3.14 + 0)',
+        'labeledArg',
+        'angle',
+      ],
+      [
+        '/*2*/ angledLine(angle = 30 + 0, lengthY = 3)',
+        'labeledArg',
+        'lengthY',
+      ],
+      [
+        '/*3*/ angledLine(angle = 12.14 + 0, endAbsoluteX = 12)',
         'labeledArg',
         'endAbsoluteX',
       ],
       [
-        'angledLine(angle = 30, endAbsoluteY = 10.14 + 0)',
+        '/*4*/ angledLine(angle = 30, endAbsoluteY = 10.14 + 0)',
         'labeledArg',
         'angle',
       ],

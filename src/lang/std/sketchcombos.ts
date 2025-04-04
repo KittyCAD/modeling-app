@@ -1491,9 +1491,6 @@ export function removeSingleConstraint({
       // So we should update the call expression to use the inputs, except for
       // the inputDetails, input where we should use the rawValue(s)
 
-      console.warn('ADAM: calling transform createNode', inputToReplace)
-      console.warn('ADAM: calling transform createNode', inputs)
-      console.warn('ADAM: calling transform createNode', rawArgs)
       if (inputToReplace.type === 'labeledArg') {
         if (callExp.node.type !== 'CallExpressionKw') {
           return new Error(
