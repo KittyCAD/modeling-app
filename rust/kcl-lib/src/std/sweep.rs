@@ -51,6 +51,13 @@ pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// You can provide more than one sketch to sweep, and they will all be
 /// swept along the same path.
 ///
+/// By default, we set `sectional` to `true`, which means that the sweep will
+/// be broken up into sub-sweeps (extrusions, revolves, sweeps) based on
+/// the trajectory path components.
+///
+/// If your sweep fails, try setting `sectional` to `false` to create a single
+/// solid.
+///
 /// ```no_run
 /// // Create a pipe using a sweep.
 ///
@@ -82,7 +89,7 @@ pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///         radius = 2,
 ///         )              
 ///     |> hole(pipeHole, %)
-///     |> sweep(path = sweepPath)   
+///     |> sweep(path = sweepPath, sectional = false)   
 /// ```
 ///
 /// ```no_run
@@ -133,7 +140,7 @@ pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///     }, %)
 ///     |> xLine(length = 384.93)
 ///
-/// sweep([rectangleSketch, circleSketch], path = sweepPath)
+/// sweep([rectangleSketch, circleSketch], path = sweepPath, sectional = false)
 /// ```
 /// ```
 /// // Sectionally sweep one sketch along the path
@@ -161,7 +168,7 @@ pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     args = {
         sketches = { docs = "The sketch or set of sketches that should be swept in space" },
         path = { docs = "The path to sweep the sketch along" },
-        sectional = { docs = "If true, the sweep will be broken up into sub-sweeps (extrusions, revolves, sweeps) based on the trajectory path components." },
+        sectional = { docs = "If true, the sweep will be broken up into sub-sweeps (extrusions, revolves, sweeps) based on the trajectory path components. This defaults to true." },
         tolerance = { docs = "Tolerance for this operation" },
         tag_start = { docs = "A named tag for the face at the start of the sweep, i.e. the original sketch" },
         tag_end = { docs = "A named tag for the face at the end of the sweep" },
@@ -191,7 +198,7 @@ async fn inner_sweep(
             ModelingCmd::from(mcmd::Sweep {
                 target: sketch.id.into(),
                 trajectory,
-                sectional: sectional.unwrap_or(false),
+                sectional: sectional.unwrap_or(true),
                 tolerance: LengthUnit(tolerance.unwrap_or(DEFAULT_TOLERANCE)),
             }),
         )
