@@ -149,7 +149,6 @@ export function useEngineConnectionSubscriptions() {
                 return
               }
               const artifact = kclManager.artifactGraph.get(planeOrFaceId)
-              console.log('artifact', artifact)
 
               if (artifact?.type === 'plane') {
                 const planeInfo =
@@ -190,19 +189,18 @@ export function useEngineConnectionSubscriptions() {
                 faceId,
                 kclManager.artifactGraph
               )
-              console.log('extrusion', extrusion)
               if (!err(extrusion)) {
                 const fileIndex = sourceRangeFileIndex(extrusion.codeRef.range)
                 if (fileIndex !== 0) {
                   const importDetails =
                     kclManager.execState.filenames[fileIndex]
-                  console.log('fileName', importDetails)
                   if (importDetails?.type === 'Local') {
                     const paths = importDetails.value.split('/')
                     const fileName = paths[paths.length - 1]
                     showSketchOnImportToast(fileName)
+                  } else {
+                    toast.error("can't sketch on this face")
                   }
-                  toast.error("can't sketch on this face")
                 }
               }
 
