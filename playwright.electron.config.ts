@@ -6,7 +6,9 @@ const platform = os.platform() // 'linux' (Ubuntu), 'darwin' (macOS), 'win32' (W
 let workers: number | string
 
 if (process.env.E2E_WORKERS) {
-  workers = process.env.E2E_WORKERS
+  workers = process.env.E2E_WORKERS.includes('%')
+    ? process.env.E2E_WORKERS
+    : parseInt(process.env.E2E_WORKERS)
 } else if (!process.env.CI) {
   workers = 1 // Local dev: keep things simple and deterministic by default
 } else {
