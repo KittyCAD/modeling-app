@@ -4,8 +4,8 @@
 // Set units
 @settings(defaultLengthUnit = in)
 
-// Import Constants
-import lugDiameter, lugHeadLength, lugThreadDiameter, lugLength, lugThreadDepth, lugSpacing from "globals.kcl"
+// Import parameters
+import lugDiameter, lugHeadLength, lugThreadDiameter, lugLength, lugThreadDepth, lugSpacing from "parameters.kcl"
 
 customPlane = {
   plane = {
@@ -32,7 +32,7 @@ fn lug(plane, length, diameter) {
     |> xLine(endAbsolute = lugThreadDiameter)
     |> yLine(endAbsolute = 0)
     |> close()
-    |> revolve(axis = "Y")
+    |> revolve(axis = Y)
     |> appearance(color = "#dbcd70", roughness = 90, metalness = 90)
   return lugSketch
 }

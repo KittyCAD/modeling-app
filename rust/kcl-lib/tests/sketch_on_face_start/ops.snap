@@ -4,15 +4,18 @@ description: Operations executed sketch_on_face_start.kcl
 ---
 [
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "cube",
-    "functionSourceRange": [
-      7,
-      184,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "cube",
+      "functionSourceRange": [
+        7,
+        184,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -31,7 +34,7 @@ description: Operations executed sketch_on_face_start.kcl
     "unlabeledArg": null
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
     "labeledArgs": {

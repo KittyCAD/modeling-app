@@ -1,15 +1,16 @@
-// 95479A127 Hex Nut
-// hex nut for the screws in the pipe flange assembly.
+// Hex Nut
+// Hex nut for the screws in the pipe flange assembly.
 
-// set units
+// Set units
 @settings(defaultLengthUnit = in)
 
-// import constants
-import hexNutDiameter, hexNutFlatToFlat, hexNutThickness, hexNutFlatLength from "globals.kcl"
+// Import parameters
+import hexNutDiameter, hexNutFlatToFlat, hexNutThickness, hexNutFlatLength from "parameters.kcl"
 
-// create a function to make the hex nut
+// Create a function to make the hex nut. Must be a function since multiple hex nuts are used
 export fn hexNut() {
-  // create the base of the hex nut
+
+  // Create the base of the hex nut
   hexNutBase = startSketchOn(XY)
     |> startProfileAt([
          hexNutFlatToFlat / 2,
@@ -38,7 +39,7 @@ export fn hexNut() {
     |> close()
     |> extrude(length = hexNutThickness)
 
-  // create the hole in the center of the hex nut
+  // Create the hole in the center of the hex nut
   hexNut = startSketchOn(hexNutBase, 'end')
     |> circle(center = [0, 0], radius = hexNutDiameter / 2)
     |> extrude(%, length = -hexNutThickness)
@@ -46,4 +47,3 @@ export fn hexNut() {
 
   return hexNut
 }
-// https://www.mcmaster.com/95479A127/

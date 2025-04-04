@@ -1,6 +1,6 @@
 ---
 title: "KCL Standard Library"
-excerpt: "Documentation for the KCL standard library for the Zoo Modeling App."
+excerpt: "Documentation for the KCL standard library for the Zoo Design Studio."
 layout: manual
 ---
 
@@ -22,6 +22,9 @@ layout: manual
   * [`string`](kcl/types/string)
   * [`tag`](kcl/types/tag)
 * **std**
+  * [`Axis2d`](kcl/types/Axis2d)
+  * [`Axis3d`](kcl/types/Axis3d)
+  * [`Edge`](kcl/types/Edge)
   * [`Face`](kcl/types/Face)
   * [`Helix`](kcl/types/Helix)
   * [`Plane`](kcl/types/Plane)
@@ -29,9 +32,12 @@ layout: manual
   * [`Point3d`](kcl/types/Point3d)
   * [`Sketch`](kcl/types/Sketch)
   * [`Solid`](kcl/types/Solid)
+  * [`X`](kcl/consts/std-X)
   * [`XY`](kcl/consts/std-XY)
   * [`XZ`](kcl/consts/std-XZ)
+  * [`Y`](kcl/consts/std-Y)
   * [`YZ`](kcl/consts/std-YZ)
+  * [`Z`](kcl/consts/std-Z)
   * [`abs`](kcl/abs)
   * [`acos`](kcl/acos)
   * [`angleToMatchLengthX`](kcl/angleToMatchLengthX)
@@ -68,7 +74,7 @@ layout: manual
   * [`getNextAdjacentEdge`](kcl/getNextAdjacentEdge)
   * [`getOppositeEdge`](kcl/getOppositeEdge)
   * [`getPreviousAdjacentEdge`](kcl/getPreviousAdjacentEdge)
-  * [`helix`](kcl/helix)
+  * [`helix`](kcl/std-helix)
   * [`hole`](kcl/hole)
   * [`hollow`](kcl/hollow)
   * [`inch`](kcl/inch)
@@ -87,7 +93,6 @@ layout: manual
   * [`map`](kcl/map)
   * [`max`](kcl/max)
   * [`min`](kcl/min)
-  * [`mirror2d`](kcl/mirror2d)
   * [`mm`](kcl/mm)
   * [`offsetPlane`](kcl/offsetPlane)
   * [`patternCircular2d`](kcl/patternCircular2d)
@@ -106,7 +111,7 @@ layout: manual
   * [`push`](kcl/push)
   * [`reduce`](kcl/reduce)
   * [`rem`](kcl/rem)
-  * [`revolve`](kcl/revolve)
+  * [`revolve`](kcl/std-revolve)
   * [`rotate`](kcl/rotate)
   * [`round`](kcl/round)
   * [`scale`](kcl/scale)
@@ -142,6 +147,7 @@ layout: manual
   * [`tan`](kcl/std-math-tan)
 * **std::sketch**
   * [`circle`](kcl/std-sketch-circle)
+  * [`mirror2d`](kcl/std-sketch-mirror2d)
 * **std::turns**
   * [`turns::HALF_TURN`](kcl/consts/std-turns-HALF_TURN)
   * [`turns::QUARTER_TURN`](kcl/consts/std-turns-QUARTER_TURN)

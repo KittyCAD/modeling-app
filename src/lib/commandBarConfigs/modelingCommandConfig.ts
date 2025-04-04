@@ -1,7 +1,7 @@
 import type { Models } from '@kittycad/lib'
 import { DEV } from '@src/env'
 
-import { angleLengthInfo } from '@src/components/Toolbar/setAngleLength'
+import { angleLengthInfo } from '@src/components/Toolbar/angleLengthInfo'
 import { getNodeFromPath } from '@src/lang/queryAst'
 import { getVariableDeclaration } from '@src/lang/queryAst/getVariableDeclaration'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
@@ -28,7 +28,7 @@ import type { Selections } from '@src/lib/selections'
 import { codeManager, kclManager } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
 import type { SketchTool, modelingMachine } from '@src/machines/modelingMachine'
-import { IS_NIGHTLY_OR_DEBUG } from '@src/routes/Settings'
+import { IS_NIGHTLY_OR_DEBUG } from '@src/routes/utils'
 
 type OutputFormat = Models['OutputFormat3d_type']
 type OutputTypeKey = OutputFormat['type']
