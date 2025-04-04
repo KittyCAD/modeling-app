@@ -19,7 +19,7 @@ import { useKclContext } from '@src/lang/KclProvider'
 import type { KCLError } from '@src/lang/errors'
 import { kclErrorsByFilename } from '@src/lang/errors'
 import { normalizeLineEndings } from '@src/lib/codeEditor'
-import { FILE_EXT } from '@src/lib/constants'
+import { FILE_EXT, INSERT_FOREIGN_TOAST_ID } from '@src/lib/constants'
 import { sortFilesAndDirectories } from '@src/lib/desktopFS'
 import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
 import { PATHS } from '@src/lib/paths'
@@ -28,7 +28,10 @@ import { codeManager, kclManager } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
 import type { IndexLoaderData } from '@src/lib/types'
 
+import { commandBarActor } from '@src/machines/commandBarMachine'
+import toast from 'react-hot-toast'
 import styles from './FileTree.module.css'
+import { ToastInsert } from './ToastInsert'
 
 function getIndentationCSS(level: number) {
   return `calc(1rem * ${level + 1})`
@@ -264,16 +267,26 @@ const FileTreeItem = ({
     if (fileOrDir.children !== null) return // Don't open directories
 
     if (fileOrDir.name?.endsWith(FILE_EXT) === false && project?.path) {
-      // Import non-kcl files
-      // We want to update both the state and editor here.
-      codeManager.updateCodeStateEditor(
-        `import("${fileOrDir.path.replace(project.path, '.')}")\n` +
-          codeManager.code
+      toast.custom(
+        ToastInsert({
+          onInsert: () => {
+            const relativeFilePath = fileOrDir.path.replace(
+              project.path + window.electron.sep,
+              ''
+            )
+            commandBarActor.send({
+              type: 'Find and select command',
+              data: {
+                name: 'Insert',
+                groupId: 'code',
+                argDefaultValues: { path: relativeFilePath },
+              },
+            })
+            toast.dismiss(INSERT_FOREIGN_TOAST_ID)
+          },
+        }),
+        { duration: 30000, id: INSERT_FOREIGN_TOAST_ID }
       )
-      await codeManager.writeToFile()
-
-      // Prevent seeing the model built one piece at a time when changing files
-      await kclManager.executeCode()
     } else {
       // Let the lsp servers know we closed a file.
       onFileClose(currentFile?.path || null, project?.path || null)
