@@ -234,11 +234,10 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
           menu.click()
         })
         // Check the placeholder project name exists
-        const actual = await cmdBar.cmdBarElement
-          .getByTestId('command-name')
-          .textContent()
+        const actual = async () =>
+          cmdBar.cmdBarElement.getByTestId('command-name').textContent()
         const expected = 'Delete project'
-        expect(actual).toBe(expected)
+        await expect.poll(async () => await actual()).toBe(expected)
       })
       test('Home.Edit.Change project directory', async ({
         tronApp,
