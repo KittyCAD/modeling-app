@@ -15,9 +15,9 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1604,
-            "end": 1615,
-            "start": 1604,
+            "commentStart": 1499,
+            "end": 1510,
+            "start": 1499,
             "type": "TagDeclarator",
             "value": "filletEdge"
           },
@@ -44,9 +44,9 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
             ],
             "radius": 0.095,
             "tag": {
-              "commentStart": 1604,
-              "end": 1615,
-              "start": 1604,
+              "commentStart": 1499,
+              "end": 1510,
+              "start": 1499,
               "type": "TagDeclarator",
               "value": "filletEdge"
             },
