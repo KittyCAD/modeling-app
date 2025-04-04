@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react'
 
+import { showSketchOnImportToast } from '@src/components/SketchOnImportToast'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { getNodeFromPath } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
@@ -24,10 +25,12 @@ import {
   sceneInfra,
 } from '@src/lib/singletons'
 import { err, reportRejection } from '@src/lib/trap'
+import { sourceRangeFileIndex } from '@src/lib/utils'
 import type {
   EdgeCutInfo,
   ExtrudeFacePlane,
 } from '@src/machines/modelingMachine'
+import toast from 'react-hot-toast'
 
 export function useEngineConnectionSubscriptions() {
   const { send, context, state } = useModelingContext()
@@ -146,6 +149,7 @@ export function useEngineConnectionSubscriptions() {
                 return
               }
               const artifact = kclManager.artifactGraph.get(planeOrFaceId)
+              console.log('artifact', artifact)
 
               if (artifact?.type === 'plane') {
                 const planeInfo =
@@ -186,6 +190,21 @@ export function useEngineConnectionSubscriptions() {
                 faceId,
                 kclManager.artifactGraph
               )
+              console.log('extrusion', extrusion)
+              if (!err(extrusion)) {
+                const fileIndex = sourceRangeFileIndex(extrusion.codeRef.range)
+                if (fileIndex !== 0) {
+                  const importDetails =
+                    kclManager.execState.filenames[fileIndex]
+                  console.log('fileName', importDetails)
+                  if (importDetails?.type === 'Local') {
+                    const paths = importDetails.value.split('/')
+                    const fileName = paths[paths.length - 1]
+                    showSketchOnImportToast(fileName)
+                  }
+                  toast.error("can't sketch on this face")
+                }
+              }
 
               if (
                 artifact?.type !== 'cap' &&

@@ -469,3 +469,7 @@ export function binaryToUuid(
     hexValues.slice(10, 16).join(''),
   ].join('-')
 }
+
+export function sourceRangeFileIndex(sourceRange: SourceRange) {
+  return sourceRange[2]
+}

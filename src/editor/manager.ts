@@ -151,15 +151,22 @@ export default class EditorManager {
     selection: Array<Selection['codeRef']['range']>
   ): Array<[number, number]> {
     if (!this._editorView) {
-      return selection.map((s): [number, number] => {
-        return [s[0], s[1]]
-      })
+      return selection
+        .filter((s) => s[2] === 0)
+        .map((s): [number, number] => {
+          return [s[0], s[1]]
+        })
     }
 
-    return selection.map((s): [number, number] => {
-      const safeEnd = Math.min(s[1], this._editorView?.state.doc.length || s[1])
-      return [s[0], safeEnd]
-    })
+    return selection
+      .filter((s) => s[2] === 0)
+      .map((s): [number, number] => {
+        const safeEnd = Math.min(
+          s[1],
+          this._editorView?.state.doc.length || s[1]
+        )
+        return [s[0], safeEnd]
+      })
   }
 
   set selectionRanges(selectionRanges: Selections) {
