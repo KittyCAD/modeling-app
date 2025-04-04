@@ -113,6 +113,8 @@ export class ElectronZoo {
       })
     })
 
+    await this.context.tracing.stopChunk({ path: 'trace.zip' })
+
     // Only after cleanup we're ready.
     this.available = true
   }
@@ -153,7 +155,28 @@ export class ElectronZoo {
       this.electron = await electron.launch(options)
 
       this.page = await this.electron.firstWindow()
+      // Mac takes quite a long time to create the first window in CI.
+      // Turns out we can't trust firstWindow() either. So loop.
+      let timeoutId: ReturnType<typeof setTimeout>
+      const tryToGetWindowPage = () =>
+        new Promise((resolve) => {
+          const fn = () => {
+            this.page = this.electron.windows()[0]
+            timeoutId = setTimeout(() => {
+              if (this.page) {
+                clearTimeout(timeoutId)
+                return resolve(undefined)
+              }
+              fn()
+            }, 0)
+          }
+          fn()
+        })
+
+      await tryToGetWindowPage()
+
       this.context = this.electron.context()
+      await this.context.tracing.start({ screenshots: true, snapshots: true })
 
       // We need to patch this because addInitScript will bind too late in our
       // electron tests, never running. We need to call reload() after each call
@@ -174,6 +197,8 @@ export class ElectronZoo {
         await that.page.reload()
       }
     }
+
+    await this.context.tracing.startChunk()
 
     // THIS IS ABSOLUTELY NECESSARY TO CHANGE THE PROJECT DIRECTORY BETWEEN
     // TESTS BECAUSE OF THE ELECTRON INSTANCE REUSE.
