@@ -589,19 +589,20 @@ describe('Testing deleteSegmentFromPipeExpression', () => {
 `)
   })
   describe('Should delete a segment WITH any dependent segments, unconstraining the dependent parts', () => {
-    const makeCode = (line: string, replace1 = '', replace2 = '') => {
-      const lengthVal = !replace1 ? 'segLen(a)' : replace1
-
-      const out = `part001 = startSketchOn(-XZ)
+    const makeCode = (
+      line: string,
+      replace1 = '',
+      replace2 = ''
+    ) => `part001 = startSketchOn(-XZ)
   |> startProfileAt([54.78, -95.91], %)
   |> line(end = [306.21, 198.82], tag = $b)
-${!replace1 ? `  |> ${line}\n` : ''}  |> angledLine(angle = -65, length = ${lengthVal})
+${!replace1 ? `  |> ${line}\n` : ''}  |> angledLine(angle = -65, length = ${
+      !replace1 ? 'segLen(a)' : replace1
+    })
   |> line(end = [306.21, 198.87])
   |> angledLine(angle = 65, length = ${!replace2 ? 'segAng(a)' : replace2})
   |> line(end = [-963.39, -154.67])
 `
-      return out
-    }
     test.each([
       ['line', 'line(end = [306.21, 198.85], tag = $a)', ['365.11', '33']],
       [
@@ -615,12 +616,12 @@ ${!replace1 ? `  |> ${line}\n` : ''}  |> angledLine(angle = -65, length = ${leng
       ['xLineTo', 'xLine(endAbsolute = 198.85, tag = $a)', ['162.14', '180']],
       [
         'angledLine',
-        'angledLine(angle = 45.5, length = 198.85 , tag = $a)',
+        'angledLine(angle = 45.5, length = 198.85, tag = $a)',
         ['198.85', '45.5'],
       ],
       [
         'angledLine',
-        'angledLine(angle = 45.5, length = 198.85, tag = $a)',
+        'angledLine(angle = 45.5, lengthX = 198.85, tag = $a)',
         ['283.7', '45.5'],
       ],
       [
@@ -630,12 +631,12 @@ ${!replace1 ? `  |> ${line}\n` : ''}  |> angledLine(angle = -65, length = ${leng
       ],
       [
         'angledLine',
-        'angledLine(angle = 45.5, endAbsoluteX =  198.85, tag = $a)',
+        'angledLine(angle = 45.5, endAbsoluteX = 198.85, tag = $a)',
         ['231.33', '134.5'],
       ],
       [
         'angledLine',
-        'angledLine(angle = 45.5, endAbsoluteY =  198.85, tag = $a)',
+        'angledLine(angle = 45.5, endAbsoluteY = 198.85, tag = $a)',
         ['134.51', '45.5'],
       ],
       [
@@ -648,12 +649,11 @@ ${!replace1 ? `  |> ${line}\n` : ''}  |> angledLine(angle = -65, length = ${leng
       const ast = assertParse(code)
       const execState = await enginelessExecutor(ast)
       const lineOfInterest = line
-      const range = topLevelRange(
-        code.indexOf(lineOfInterest),
-        code.indexOf(lineOfInterest) + lineOfInterest.length
-      )
+      const start = code.indexOf(lineOfInterest)
+      const range = topLevelRange(start, start + lineOfInterest.length)
       const pathToNode = getNodePathFromSourceRange(ast, range)
       const dependentSegments = findUsesOfTagInPipe(ast, pathToNode)
+      console.warn('ADAM: dependentSegments', dependentSegments)
       const modifiedAst = deleteSegmentFromPipeExpression(
         dependentSegments,
         ast,
@@ -663,7 +663,10 @@ ${!replace1 ? `  |> ${line}\n` : ''}  |> angledLine(angle = -65, length = ${leng
       )
       if (err(modifiedAst)) throw modifiedAst
       const newCode = recast(modifiedAst)
-      expect(newCode).toBe(makeCode(line, replace1, replace2))
+      const expected = makeCode(line, replace1, replace2)
+      // .replace('/*a*/ ', '')
+      // .replace('/*b*/ ', '')
+      expect(newCode).toBe(expected)
     })
   })
 })

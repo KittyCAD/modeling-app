@@ -1,5 +1,6 @@
 import type { Name } from '@rust/kcl-lib/bindings/Name'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
+import { NonCodeMeta } from '@rust/kcl-lib/bindings/NonCodeMeta'
 import type { TagDeclarator } from '@rust/kcl-lib/bindings/TagDeclarator'
 
 import { ARG_TAG } from '@src/lang/constants'
@@ -158,7 +159,8 @@ export const nonCodeMetaEmpty = () => {
 export function createCallExpressionStdLibKw(
   name: string,
   unlabeled: CallExpressionKw['unlabeled'],
-  args: CallExpressionKw['arguments']
+  args: CallExpressionKw['arguments'],
+  nonCodeMeta?: NonCodeMeta
 ): Node<CallExpressionKw> {
   return {
     type: 'CallExpressionKw',
@@ -168,7 +170,7 @@ export function createCallExpressionStdLibKw(
     outerAttrs: [],
     preComments: [],
     commentStart: 0,
-    nonCodeMeta: nonCodeMetaEmpty(),
+    nonCodeMeta: nonCodeMeta ?? nonCodeMetaEmpty(),
     callee: createLocalName(name),
     unlabeled,
     arguments: args,

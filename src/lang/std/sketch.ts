@@ -2264,8 +2264,10 @@ export const angledLine: SketchLineHelperKw = {
     if (err(_node1)) return _node1
     const { node: pipe } = _node1
 
+    console.warn('ADAM: from, to', from, to)
     const newAngleVal = createLiteral(roundOff(getAngle(from, to), 0))
     const newLengthVal = createLiteral(roundOff(getLength(from, to), 2))
+    console.warn('ADAM: newAngle, newLength', newAngleVal, newLengthVal)
     const newLine = createCallExpressionStdLibKw('angledLine', null, [
       createLabeledArg('angle', newAngleVal),
       createLabeledArg('length', newLengthVal),
@@ -2276,15 +2278,13 @@ export const angledLine: SketchLineHelperKw = {
       const { index: callIndex } = splitPathAtPipeExpression(pathToNode)
       const result = replaceExistingCallback([
         {
-          type: 'arrayOrObjItem',
-          index: 0,
+          type: 'labeledArg',
           key: 'angle',
           argType: 'angle',
           expr: newAngleVal,
         },
         {
-          type: 'arrayOrObjItem',
-          index: 1,
+          type: 'labeledArg',
           key: 'length',
           argType: 'length',
           expr: newLengthVal,

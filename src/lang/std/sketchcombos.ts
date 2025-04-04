@@ -1,4 +1,5 @@
 import type { Node } from '@rust/kcl-lib/bindings/Node'
+import { NonCodeMeta } from '@rust/kcl-lib/bindings/NonCodeMeta'
 
 import {
   ARG_ANGLE,
@@ -311,7 +312,8 @@ function createStdlibCallExpressionKw(
   labeled: LabeledArg[],
   tag?: Expr,
   valueUsedInTransform?: number,
-  unlabeled?: Expr
+  unlabeled?: Expr,
+  noncode?: NonCodeMeta
 ): CreatedSketchExprResult {
   const args = labeled
   if (tag) {
@@ -321,7 +323,8 @@ function createStdlibCallExpressionKw(
     callExp: createCallExpressionStdLibKw(
       tool,
       unlabeled ? unlabeled : null,
-      args
+      args,
+      noncode
     ),
     valueUsedInTransform,
   }
@@ -1499,20 +1502,23 @@ export function removeSingleConstraint({
         }
         const toReplace = inputToReplace.key
         const args = inputs.map((arg) => {
-          console.log('ADAM: arg is', arg)
+          // console.log('ADAM: arg is', arg)
           const k = arg.key
           if (k !== toReplace) {
             return createLabeledArg(k, arg.expr)
           } else {
             const rawArgVersion = rawArgs.find((a) => a.key === k)
-            console.warn('ADAM: rawArgVersion is', rawArgVersion)
             return createLabeledArg(k, rawArgVersion.expr)
           }
         })
+        const noncode = callExp.node.nonCodeMeta
         return createStdlibCallExpressionKw(
           callExp.node.callee.name.name as ToolTip,
           args,
-          tag
+          tag,
+          undefined,
+          undefined,
+          noncode
         )
       }
       if (inputToReplace.type === 'arrayItem') {
