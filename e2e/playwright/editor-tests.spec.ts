@@ -82,7 +82,7 @@ sketch001 = startSketchOn(XY)
       .poll(() =>
         page.locator('[data-receive-command-type="scene_clear_all"]').count()
       )
-      .toBe(3)
+      .toBe(1)
     await expect
       .poll(() => page.locator('[data-message-type="execution-done"]').count())
       .toBe(2)
@@ -106,7 +106,7 @@ sketch001 = startSketchOn(XY)
     ).toHaveCount(3)
     await expect(
       page.locator('[data-receive-command-type="scene_clear_all"]')
-    ).toHaveCount(3)
+    ).toHaveCount(1)
   })
 
   test('ensure we use the cache, and do not clear on append', async ({
@@ -133,7 +133,7 @@ sketch001 = startSketchOn(XY)
     await u.openDebugPanel()
     await expect(
       page.locator('[data-receive-command-type="scene_clear_all"]')
-    ).toHaveCount(2)
+    ).toHaveCount(1)
     await expect(
       page.locator('[data-message-type="execution-done"]')
     ).toHaveCount(2)
@@ -161,7 +161,7 @@ sketch001 = startSketchOn(XY)
     ).toHaveCount(3)
     await expect(
       page.locator('[data-receive-command-type="scene_clear_all"]')
-    ).toHaveCount(2)
+    ).toHaveCount(1)
   })
 
   test('if you click the format button it formats your code', async ({
