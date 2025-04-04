@@ -1491,6 +1491,33 @@ export function removeSingleConstraint({
       // So we should update the call expression to use the inputs, except for
       // the inputDetails, input where we should use the rawValue(s)
 
+      console.warn('ADAM: calling transform createNode', inputToReplace)
+      console.warn('ADAM: calling transform createNode', inputs)
+      console.warn('ADAM: calling transform createNode', rawArgs)
+      if (inputToReplace.type === 'labeledArg') {
+        if (callExp.node.type !== 'CallExpressionKw') {
+          return new Error(
+            'ADAM: This code path only works with callExpressionKw but a positional call was somehow passed'
+          )
+        }
+        const toReplace = inputToReplace.key
+        const args = inputs.map((arg) => {
+          console.log('ADAM: arg is', arg)
+          const k = arg.key
+          if (k !== toReplace) {
+            return createLabeledArg(k, arg.expr)
+          } else {
+            const rawArgVersion = rawArgs.find((a) => a.key === k)
+            console.warn('ADAM: rawArgVersion is', rawArgVersion)
+            return createLabeledArg(k, rawArgVersion.expr)
+          }
+        })
+        return createStdlibCallExpressionKw(
+          callExp.node.callee.name.name as ToolTip,
+          args,
+          tag
+        )
+      }
       if (inputToReplace.type === 'arrayItem') {
         const values = inputs.map((arg) => {
           if (
@@ -2092,34 +2119,53 @@ export function transformAstSketchLines({
       const nodeMeta = getNodeFromPath<Expr>(ast, a.pathToNode)
       if (err(nodeMeta)) return
 
-      if (a?.argPosition?.type === 'arrayItem') {
-        inputs.push({
-          type: 'arrayItem',
-          index: a.argPosition.index,
-          expr: nodeMeta.node,
-          argType: a.type,
-        })
-      } else if (a?.argPosition?.type === 'objectProperty') {
-        inputs.push({
-          type: 'objectProperty',
-          key: a.argPosition.key,
-          expr: nodeMeta.node,
-          argType: a.type,
-        })
-      } else if (a?.argPosition?.type === 'singleValue') {
-        inputs.push({
-          type: 'singleValue',
-          argType: a.type,
-          expr: nodeMeta.node,
-        })
-      } else if (a?.argPosition?.type === 'arrayInObject') {
-        inputs.push({
-          type: 'arrayInObject',
-          key: a.argPosition.key,
-          index: a.argPosition.index,
-          expr: nodeMeta.node,
-          argType: a.type,
-        })
+      switch (a?.argPosition?.type) {
+        case 'arrayItem':
+          inputs.push({
+            type: 'arrayItem',
+            index: a.argPosition.index,
+            expr: nodeMeta.node,
+            argType: a.type,
+          })
+          break
+        case 'objectProperty':
+          inputs.push({
+            type: 'objectProperty',
+            key: a.argPosition.key,
+            expr: nodeMeta.node,
+            argType: a.type,
+          })
+          break
+        case 'singleValue':
+          inputs.push({
+            type: 'singleValue',
+            argType: a.type,
+            expr: nodeMeta.node,
+          })
+          break
+        case 'labeledArg':
+          inputs.push({
+            type: 'labeledArg',
+            key: a.argPosition.key,
+            expr: nodeMeta.node,
+            argType: a.type,
+          })
+          break
+        case 'arrayInObject':
+          inputs.push({
+            type: 'arrayInObject',
+            key: a.argPosition.key,
+            index: a.argPosition.index,
+            expr: nodeMeta.node,
+            argType: a.type,
+          })
+          break
+        case 'arrayOrObjItem':
+          break
+        case undefined:
+          break
+        default:
+          const _exhaustiveCheck: never = a?.argPosition
       }
     })
 

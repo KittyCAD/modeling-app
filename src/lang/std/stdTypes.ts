@@ -163,6 +163,7 @@ type _InputArg<T> =
   | ObjectPropertyInput<T>
   | ArrayOrObjItemInput<T>
   | ArrayInObject<T>
+  | LabeledArg<T>
 
 /**
  * {@link RawArg.expr} is the current expression for each of the args for a segment

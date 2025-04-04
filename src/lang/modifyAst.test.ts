@@ -25,7 +25,7 @@ import { findUsesOfTagInPipe } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import type { Artifact } from '@src/lang/std/artifactGraph'
 import { codeRefFromRange } from '@src/lang/std/artifactGraph'
-import type { SimplifiedArgDetails } from '@src/lang/std/stdTypes'
+import type { InputArgKeys, SimplifiedArgDetails } from '@src/lang/std/stdTypes'
 import { topLevelRange } from '@src/lang/util'
 import type { Identifier, Literal, LiteralValue } from '@src/lang/wasm'
 import { assertParse, initPromise, recast } from '@src/lang/wasm'
@@ -596,9 +596,9 @@ describe('Testing deleteSegmentFromPipeExpression', () => {
     ) => `part001 = startSketchOn(-XZ)
   |> startProfileAt([54.78, -95.91], %)
   |> line(end = [306.21, 198.82], tag = $b)
-${!replace1 ? `  |> ${line}\n` : ''}  |> angledLine([-65, ${
+${!replace1 ? `  |> ${line}\n` : ''}  |> angledLine(angle = -65, length = ${
       !replace1 ? 'segLen(a)' : replace1
-    }], %)
+    })
   |> line(end = [306.21, 198.87])
   |> angledLine(angle = 65, length = ${!replace2 ? 'segAng(a)' : replace2})
   |> line(end = [-963.39, -154.67])
@@ -620,22 +620,22 @@ ${!replace1 ? `  |> ${line}\n` : ''}  |> angledLine([-65, ${
         ['198.85', '45.5'],
       ],
       [
-        'angledLineOfXLength',
-        'angledLineOfXLength({ angle = 45.5, length = 198.85 }, %, $a)',
+        'angledLine',
+        'angledLine(angle = 45.5, length = 198.85, %, $a)',
         ['283.7', '45.5'],
       ],
       [
-        'angledLineOfYLength',
-        'angledLineOfYLength({ angle = 45.5, length = 198.85 }, %, $a)',
+        'angledLine',
+        'angledLine(angle = 45.5, lengthY = 198.85, tag = $a)',
         ['278.79', '45.5'],
       ],
       [
-        'angledLineToX',
+        'angledLine',
         'angledLine(angle = 45.5, endAbsoluteX =  198.85, tag = $a)',
         ['231.33', '134.5'],
       ],
       [
-        'angledLineToY',
+        'angledLine',
         'angledLine(angle = 45.5, endAbsoluteY =  198.85, tag = $a)',
         ['134.51', '45.5'],
       ],
@@ -674,16 +674,16 @@ describe('Testing removeSingleConstraintInfo', () => {
     const code = `part001 = startSketchOn(-XZ)
   |> startProfileAt([0, 0], %)
   |> line(end = [3 + 0, 4 + 0])
-  |> angledLine(angle = 3 + 0, length = 3.14 + 0 )
+  |> /*0*/ angledLine(angle = 3 + 0, length = 3.14 + 0)
   |> line(endAbsolute = [6.14 + 0, 3.14 + 0])
   |> xLine(/*xAbs*/ endAbsolute = 8 + 0)
   |> yLine(/*yAbs*/ endAbsolute = 5 + 0)
   |> yLine(/*yRel*/ length = 3.14 + 0, tag = $a)
   |> xLine(/*xRel*/ length = 3.14 + 0)
-  |> angledLineOfXLength({ angle = 3 + 0, length = 3.14 + 0 }, %)
-  |> angledLineOfYLength({ angle = 30 + 0, length = 3 + 0 }, %)
-  |> angledLine(angle = 12.14 + 0, endAbsoluteX =  12 + 0)
-  |> angledLine(angle = 30 + 0, endAbsoluteY =  10.14 + 0)
+  |> /*1*/ angledLine(angle = 3 + 0, lengthX = 3.14 + 0)
+  |> /*2*/ angledLine(angle = 30 + 0, lengthY = 3 + 0)
+  |> /*3*/ angledLine(angle = 12.14 + 0, endAbsoluteX =  12 + 0)
+  |> /*4*/ angledLine(angle = 30 + 0, endAbsoluteY =  10.14 + 0)
   |> angledLineThatIntersects({
         angle = 3.14 + 0,
         intersectTag = a,
@@ -693,8 +693,8 @@ describe('Testing removeSingleConstraintInfo', () => {
     test.each([
       [' line(end = [3 + 0, 4])', 'arrayIndex', 1, ''],
       [
-        'angledLine(angle = 3, length = 3.14 + 0 )',
-        'objectProperty',
+        '/*0*/ angledLine(angle = 3, length = 3.14 + 0)',
+        'labeledArg',
         'angle',
         '',
       ],
@@ -704,26 +704,26 @@ describe('Testing removeSingleConstraintInfo', () => {
       ['yLine(length = 3.14, tag = $a)', '', '', '/*yRel*/'],
       ['xLine(length = 3.14)', '', '', '/*xRel*/'],
       [
-        'angledLineOfXLength({ angle = 3, length = 3.14 + 0 }, %)',
-        'objectProperty',
+        '/*1*/ angledLine(angle = 3, lengthX = 3.14 + 0)',
+        'labeledArg',
         'angle',
         '',
       ],
       [
-        'angledLineOfYLength({ angle = 30 + 0, length = 3 }, %)',
-        'objectProperty',
+        '/*2*/ angledLine(angle = 30 + 0, lengthY = 3)',
+        'labeledArg',
         'length',
         '',
       ],
       [
-        'angledLine(angle = 12.14 + 0, endAbsoluteX =  12)',
-        'objectProperty',
-        'to',
+        '/*3*/ angledLine(angle = 12.14 + 0, endAbsoluteX = 12)',
+        'labeledArg',
+        'endAbsoluteX',
         '',
       ],
       [
-        'angledLine(angle = 30, endAbsoluteY =  10.14 + 0)',
-        'objectProperty',
+        '/*4*/ angledLine(angle = 30, endAbsoluteY = 10.14 + 0)',
+        'labeledArg',
         'angle',
         '',
       ],
@@ -766,6 +766,11 @@ describe('Testing removeSingleConstraintInfo', () => {
           argPosition = {
             type: 'singleValue',
           }
+        } else if (key === 'labeledArg') {
+          argPosition = {
+            type: 'labeledArg',
+            key: value,
+          }
         } else {
           throw new Error('argPosition is undefined')
         }
@@ -789,12 +794,21 @@ describe('Testing removeSingleConstraintInfo', () => {
   |> angledLine(angle = 30 + 0, lengthY = 3 + 0)
   |> angledLine(angle = 12.14 + 0, endAbsoluteX = 12 + 0)
   |> angledLine(angle = 30 + 0, endAbsoluteY = 10.14 + 0)`
+    const ang: InputArgKeys = 'angle'
     test.each([
-      ['angledLine(angle = 3, length = 3.14 + 0)', 'arrayIndex', 0],
-      ['angledLine(angle = 3, lengthX = 3.14 + 0)', 'arrayIndex', 0],
-      ['angledLine(angle = 30 + 0, lengthY = 3)', 'arrayIndex', 1],
-      ['angledLine(angle = 12.14 + 0, endAbsoluteX = 12)', 'arrayIndex', 1],
-      ['angledLine(angle = 30, endAbsoluteY = 10.14 + 0)', 'arrayIndex', 0],
+      ['angledLine(angle = 3, length = 3.14 + 0)', 'labeledArg', ang],
+      ['angledLine(angle = 3, lengthX = 3.14 + 0)', 'labeledArg', 'angle'],
+      ['angledLine(angle = 30 + 0, lengthY = 3)', 'labeledArg', 'lengthY'],
+      [
+        'angledLine(angle = 12.14 + 0, endAbsoluteX = 12)',
+        'labeledArg',
+        'endAbsoluteX',
+      ],
+      [
+        'angledLine(angle = 30, endAbsoluteY = 10.14 + 0)',
+        'labeledArg',
+        'angle',
+      ],
     ])('stdlib fn: %s', async (expectedFinish, key, value) => {
       const ast = assertParse(code)
 
@@ -803,16 +817,22 @@ describe('Testing removeSingleConstraintInfo', () => {
       const start = code.indexOf(lineOfInterest)
       expect(start).toBeGreaterThanOrEqual(0)
       const range = topLevelRange(start + 1, start + lineOfInterest.length)
+      console.warn('ADAM: range', range)
       let argPosition: SimplifiedArgDetails
       if (key === 'arrayIndex' && typeof value === 'number') {
         argPosition = {
           type: 'arrayItem',
           index: value === 0 ? 0 : 1,
         }
-      } else if (key === 'objectProperty' && typeof value === 'string') {
+        // } else if (key === 'objectProperty' && typeof value === 'string') {
+        //   argPosition = {
+        //     type: 'objectProperty',
+        //     key: value,
+        //   }
+      } else if (key === 'labeledArg') {
         argPosition = {
-          type: 'objectProperty',
-          key: value,
+          type: 'labeledArg',
+          key: value as InputArgKeys,
         }
       } else {
         throw new Error('argPosition is undefined')
