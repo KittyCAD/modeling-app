@@ -10,6 +10,7 @@ use kcmc::{
     ok_response::OkModelingCmdResponse,
     output::ExtrusionFaceInfo,
     shared::ExtrusionFaceCapType,
+    shared::Opposite,
     websocket::{ModelingCmdReq, OkWebSocketResponseData},
     ModelingCmd,
 };
@@ -138,6 +139,14 @@ async fn inner_extrude(
 
     let bidirection = bidirectional_distance.map(LengthUnit);
 
+    let opposite = match (symmetric, bidirection) {
+        (Some(true), _) => Opposite::Symmetric,
+        (None, None) => Opposite::None,
+        (Some(false), None) => Opposite::None,
+        (None, Some(length)) => Opposite::Other(length),
+        (Some(false), Some(length)) => Opposite::Other(length),
+    };
+
     for sketch in &sketches {
         let id = exec_state.next_uuid();
         args.batch_modeling_cmds(&sketch.build_sketch_mode_cmds(
@@ -148,8 +157,7 @@ async fn inner_extrude(
                     target: sketch.id.into(),
                     distance: LengthUnit(length),
                     faces: Default::default(),
-                    symmetric: symmetric.unwrap_or_default(),
-                    bidirectional_distance: bidirection,
+                    opposite: opposite.clone(),
                 }),
             },
         ))
