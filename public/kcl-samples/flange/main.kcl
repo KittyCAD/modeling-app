@@ -4,7 +4,7 @@
 // Set units
 @settings(defaultLengthUnit = in)
 
-// Define constants
+// Define parameters
 mountingHoleDia = .625
 baseDia = 4.625
 pipeDia = 1.25

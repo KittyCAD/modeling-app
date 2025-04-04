@@ -1,10 +1,10 @@
 // Zoo Keyboard
 // A custom keyboard with Zoo brand lettering
 
-// Set Units
+// Set units
 @settings(defaultLengthUnit = in)
 
-// Define constants
+// Define parameters
 baseColor = "#0f0f0f"
 highlightColor1 = "#b0b0b0"
 highlightColor2 = "#23af93"
