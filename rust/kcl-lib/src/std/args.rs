@@ -370,17 +370,6 @@ impl Args {
         self.ctx.engine.batch_modeling_cmd(id, self.source_range, &cmd).await
     }
 
-    pub(crate) async fn batch_modeling_cmd_ignore_failure(
-        &self,
-        id: uuid::Uuid,
-        cmd: ModelingCmd,
-    ) -> Result<(), crate::errors::KclError> {
-        self.ctx
-            .engine
-            .batch_modeling_cmd_ignore_failure(id, self.source_range, &cmd)
-            .await
-    }
-
     // Add multiple modeling commands to the batch but don't fire them right away.
     pub(crate) async fn batch_modeling_cmds(&self, cmds: &[ModelingCmdReq]) -> Result<(), crate::errors::KclError> {
         self.ctx.engine.batch_modeling_cmds(self.source_range, cmds).await

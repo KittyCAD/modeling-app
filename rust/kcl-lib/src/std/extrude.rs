@@ -130,6 +130,7 @@ async fn inner_extrude(
                 sketch,
                 id.into(),
                 length,
+                false,
                 &NamedCapTags {
                     start: tag_start.as_ref(),
                     end: tag_end.as_ref(),
@@ -154,6 +155,7 @@ pub(crate) async fn do_post_extrude<'a>(
     sketch: &Sketch,
     solid_id: ArtifactId,
     length: f64,
+    sectional: bool,
     named_cap_tags: &'a NamedCapTags<'a>,
     exec_state: &mut ExecState,
     args: &Args,
@@ -206,43 +208,45 @@ pub(crate) async fn do_post_extrude<'a>(
         vec![]
     };
 
-    for (curve_id, face_id) in face_infos
-        .iter()
-        .filter(|face_info| face_info.cap == ExtrusionFaceCapType::None)
-        .filter_map(|face_info| {
-            if let (Some(curve_id), Some(face_id)) = (face_info.curve_id, face_info.face_id) {
-                Some((curve_id, face_id))
-            } else {
-                None
-            }
-        })
-    {
-        // Batch these commands, because the Rust code doesn't actually care about the outcome.
-        // So, there's no need to await them.
-        // Instead, the Typescript codebases (which handles WebSocket sends when compiled via Wasm)
-        // uses this to build the artifact graph, which the UI needs.
-        //
-        // We ignore the failure here because if one of these fails, in the case of a sectional
-        // sweep, the whole model should not fail, this is merely for the artifact graph.
-        args.batch_modeling_cmd_ignore_failure(
-            exec_state.next_uuid(),
-            ModelingCmd::from(mcmd::Solid3dGetOppositeEdge {
-                edge_id: curve_id,
-                object_id: sketch.id,
-                face_id,
-            }),
-        )
-        .await?;
+    // Face filtering attempt in order to resolve https://github.com/KittyCAD/modeling-app/issues/5328
+    // We need to not run Solid3dGetOppositeEdge and Solid3dGetNextAdjacentEdge because it is too
+    // hard to know when they work or fail.
+    if !sectional {
+        for (curve_id, face_id) in face_infos
+            .iter()
+            .filter(|face_info| face_info.cap == ExtrusionFaceCapType::None)
+            .filter_map(|face_info| {
+                if let (Some(curve_id), Some(face_id)) = (face_info.curve_id, face_info.face_id) {
+                    Some((curve_id, face_id))
+                } else {
+                    None
+                }
+            })
+        {
+            // Batch these commands, because the Rust code doesn't actually care about the outcome.
+            // So, there's no need to await them.
+            // Instead, the Typescript codebases (which handles WebSocket sends when compiled via Wasm)
+            // uses this to build the artifact graph, which the UI needs.
+            args.batch_modeling_cmd(
+                exec_state.next_uuid(),
+                ModelingCmd::from(mcmd::Solid3dGetOppositeEdge {
+                    edge_id: curve_id,
+                    object_id: sketch.id,
+                    face_id,
+                }),
+            )
+            .await?;
 
-        args.batch_modeling_cmd_ignore_failure(
-            exec_state.next_uuid(),
-            ModelingCmd::from(mcmd::Solid3dGetNextAdjacentEdge {
-                edge_id: curve_id,
-                object_id: sketch.id,
-                face_id,
-            }),
-        )
-        .await?;
+            args.batch_modeling_cmd(
+                exec_state.next_uuid(),
+                ModelingCmd::from(mcmd::Solid3dGetNextAdjacentEdge {
+                    edge_id: curve_id,
+                    object_id: sketch.id,
+                    face_id,
+                }),
+            )
+            .await?;
+        }
     }
 
     let Faces {
