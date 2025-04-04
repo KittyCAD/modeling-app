@@ -419,7 +419,6 @@ test(
     const PUR = 400 / 37.5 //pixeltoUnitRatio
     await u.waitForAuthSkipAppStart()
 
-
     const startXPx = 600
     const [endOfTangentClk, endOfTangentMv] = scene.makeMouseHelpers(
       startXPx + PUR * 30,
@@ -548,7 +547,6 @@ test(
 
     await u.waitForAuthSkipAppStart()
 
-
     // click on "Start Sketch" button
     await u.doAndWaitForImageDiff(
       () => page.getByRole('button', { name: 'Start Sketch' }).click(),
@@ -593,7 +591,6 @@ test(
     const PUR = 400 / 37.5 //pixeltoUnitRatio
 
     await u.waitForAuthSkipAppStart()
-
 
     await u.doAndWaitForImageDiff(
       () => page.getByRole('button', { name: 'Start Sketch' }).click(),
@@ -644,7 +641,6 @@ test.describe(
       const PUR = 400 / 37.5 //pixeltoUnitRatio
 
       await u.waitForAuthSkipAppStart()
-
 
       await u.doAndWaitForImageDiff(
         () => page.getByRole('button', { name: 'Start Sketch' }).click(),
