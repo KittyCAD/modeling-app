@@ -370,8 +370,8 @@ jobs:
         with:
           shell: bash
           command: .github/ci-cd-scripts/playwright-electron.sh ${{matrix.shardIndex}} ${{matrix.shardTotal}} ${{ env.OS_NAME }}
-          timeout_minutes: 45
-          max_attempts: 15
+          timeout_minutes: 30
+          max_attempts: 9
         env:
           FAIL_ON_CONSOLE_ERRORS: true
           token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}

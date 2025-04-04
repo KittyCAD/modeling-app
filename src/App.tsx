@@ -10,7 +10,6 @@ import {
 } from 'react-router-dom'
 
 import { AppHeader } from '@src/components/AppHeader'
-import { CameraProjectionToggle } from '@src/components/CameraProjectionToggle'
 import { useEngineCommands } from '@src/components/EngineCommands'
 import { EngineStream } from '@src/components/EngineStream'
 import Gizmo from '@src/components/Gizmo'
@@ -175,7 +174,6 @@ export function App() {
       <LowerRightControls coreDumpManager={coreDumpManager}>
         <UnitsMenu />
         <Gizmo />
-        <CameraProjectionToggle />
       </LowerRightControls>
     </div>
   )

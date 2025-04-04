@@ -1,10 +1,10 @@
-// Hex nut
+// Hex Nut
 // A hex nut is a type of fastener with a threaded hole and a hexagonal outer shape, used in a wide variety of applications to secure parts together. The hexagonal shape allows for a greater torque to be applied with wrenches or tools, making it one of the most common nut types in hardware.
 
 // Set Units
 @settings(defaultLengthUnit = in)
 
-// Define constants (5/16" - 24 thread size)
+// Define parameters (5/16" - 24 thread size)
 wallToWallLength = 0.5
 thickness = 0.266
 diameter = 0.3125

@@ -6,15 +6,9 @@ description: Operations executed walkie-talkie.kcl
   {
     "type": "GroupBegin",
     "group": {
-      "type": "FunctionCall",
+      "type": "ModuleInstance",
       "name": "body",
-      "functionSourceRange": [
-        359,
-        2786,
-        6
-      ],
-      "unlabeledArg": null,
-      "labeledArgs": {}
+      "moduleId": 6
     },
     "sourceRange": []
   },
@@ -367,15 +361,9 @@ description: Operations executed walkie-talkie.kcl
   {
     "type": "GroupBegin",
     "group": {
-      "type": "FunctionCall",
+      "type": "ModuleInstance",
       "name": "antenna",
-      "functionSourceRange": [
-        266,
-        1051,
-        9
-      ],
-      "unlabeledArg": null,
-      "labeledArgs": {}
+      "moduleId": 8
     },
     "sourceRange": []
   },
@@ -473,62 +461,11 @@ description: Operations executed walkie-talkie.kcl
   {
     "type": "GroupBegin",
     "group": {
-      "type": "FunctionCall",
+      "type": "ModuleInstance",
       "name": "case",
-      "functionSourceRange": [
-        454,
-        3283,
-        7
-      ],
-      "unlabeledArg": null,
-      "labeledArgs": {}
+      "moduleId": 7
     },
     "sourceRange": []
-  },
-  {
-    "labeledArgs": {
-      "data": {
-        "value": {
-          "type": "Plane",
-          "artifact_id": "[uuid]"
-        },
-        "sourceRange": []
-      }
-    },
-    "name": "startSketchOn",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": null
-  },
-  {
-    "labeledArgs": {
-      "data": {
-        "value": {
-          "type": "Plane",
-          "artifact_id": "[uuid]"
-        },
-        "sourceRange": []
-      }
-    },
-    "name": "startSketchOn",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": null
-  },
-  {
-    "labeledArgs": {
-      "data": {
-        "value": {
-          "type": "Plane",
-          "artifact_id": "[uuid]"
-        },
-        "sourceRange": []
-      }
-    },
-    "name": "startSketchOn",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": null
   },
   {
     "labeledArgs": {
@@ -1579,7 +1516,7 @@ description: Operations executed walkie-talkie.kcl
       "functionSourceRange": [
         69,
         1088,
-        8
+        12
       ],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -1638,7 +1575,7 @@ description: Operations executed walkie-talkie.kcl
       "functionSourceRange": [
         1146,
         1656,
-        8
+        12
       ],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -1697,7 +1634,7 @@ description: Operations executed walkie-talkie.kcl
       "functionSourceRange": [
         1674,
         2184,
-        8
+        12
       ],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -1756,7 +1693,7 @@ description: Operations executed walkie-talkie.kcl
       "functionSourceRange": [
         1146,
         1656,
-        8
+        12
       ],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -1815,7 +1752,7 @@ description: Operations executed walkie-talkie.kcl
       "functionSourceRange": [
         1674,
         2184,
-        8
+        12
       ],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -1889,15 +1826,9 @@ description: Operations executed walkie-talkie.kcl
   {
     "type": "GroupBegin",
     "group": {
-      "type": "FunctionCall",
+      "type": "ModuleInstance",
       "name": "talkButton",
-      "functionSourceRange": [
-        202,
-        1023,
-        10
-      ],
-      "unlabeledArg": null,
-      "labeledArgs": {}
+      "moduleId": 9
     },
     "sourceRange": []
   },
@@ -2010,15 +1941,9 @@ description: Operations executed walkie-talkie.kcl
   {
     "type": "GroupBegin",
     "group": {
-      "type": "FunctionCall",
+      "type": "ModuleInstance",
       "name": "knob",
-      "functionSourceRange": [
-        298,
-        746,
-        11
-      ],
-      "unlabeledArg": null,
-      "labeledArgs": {}
+      "moduleId": 10
     },
     "sourceRange": []
   },
@@ -2132,9 +2057,9 @@ description: Operations executed walkie-talkie.kcl
       "type": "FunctionCall",
       "name": "button",
       "functionSourceRange": [
-        221,
-        827,
-        12
+        308,
+        900,
+        11
       ],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -2245,9 +2170,9 @@ description: Operations executed walkie-talkie.kcl
       "type": "FunctionCall",
       "name": "button",
       "functionSourceRange": [
-        221,
-        827,
-        12
+        308,
+        900,
+        11
       ],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -2358,9 +2283,9 @@ description: Operations executed walkie-talkie.kcl
       "type": "FunctionCall",
       "name": "button",
       "functionSourceRange": [
-        221,
-        827,
-        12
+        308,
+        900,
+        11
       ],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -2471,9 +2396,9 @@ description: Operations executed walkie-talkie.kcl
       "type": "FunctionCall",
       "name": "button",
       "functionSourceRange": [
-        221,
-        827,
-        12
+        308,
+        900,
+        11
       ],
       "unlabeledArg": null,
       "labeledArgs": {}

@@ -9,8 +9,8 @@ description: Operations executed makeup-mirror.kcl
       "type": "FunctionCall",
       "name": "hingeFn",
       "functionSourceRange": [
-        444,
-        623,
+        507,
+        686,
         0
       ],
       "unlabeledArg": null,
@@ -98,8 +98,8 @@ description: Operations executed makeup-mirror.kcl
       "type": "FunctionCall",
       "name": "hingeFn",
       "functionSourceRange": [
-        444,
-        623,
+        507,
+        686,
         0
       ],
       "unlabeledArg": null,
@@ -181,8 +181,8 @@ description: Operations executed makeup-mirror.kcl
       "type": "FunctionCall",
       "name": "hingeFn",
       "functionSourceRange": [
-        444,
-        623,
+        507,
+        686,
         0
       ],
       "unlabeledArg": null,
@@ -264,8 +264,8 @@ description: Operations executed makeup-mirror.kcl
       "type": "FunctionCall",
       "name": "hingeFn",
       "functionSourceRange": [
-        444,
-        623,
+        507,
+        686,
         0
       ],
       "unlabeledArg": null,
@@ -347,8 +347,8 @@ description: Operations executed makeup-mirror.kcl
       "type": "FunctionCall",
       "name": "hingeFn",
       "functionSourceRange": [
-        444,
-        623,
+        507,
+        686,
         0
       ],
       "unlabeledArg": null,
@@ -430,8 +430,8 @@ description: Operations executed makeup-mirror.kcl
       "type": "FunctionCall",
       "name": "hingeFn",
       "functionSourceRange": [
-        444,
-        623,
+        507,
+        686,
         0
       ],
       "unlabeledArg": null,
@@ -513,8 +513,8 @@ description: Operations executed makeup-mirror.kcl
       "type": "FunctionCall",
       "name": "hingeFn",
       "functionSourceRange": [
-        444,
-        623,
+        507,
+        686,
         0
       ],
       "unlabeledArg": null,
@@ -596,8 +596,8 @@ description: Operations executed makeup-mirror.kcl
       "type": "FunctionCall",
       "name": "armFn",
       "functionSourceRange": [
-        1068,
-        1245,
+        1160,
+        1337,
         0
       ],
       "unlabeledArg": null,
@@ -661,8 +661,8 @@ description: Operations executed makeup-mirror.kcl
       "type": "FunctionCall",
       "name": "armFn",
       "functionSourceRange": [
-        1068,
-        1245,
+        1160,
+        1337,
         0
       ],
       "unlabeledArg": null,
@@ -726,8 +726,8 @@ description: Operations executed makeup-mirror.kcl
       "type": "FunctionCall",
       "name": "mirrorFn",
       "functionSourceRange": [
-        1389,
-        2151,
+        1510,
+        2272,
         0
       ],
       "unlabeledArg": null,

@@ -5,36 +5,36 @@
 @settings(defaultLengthUnit = in)
 
 // import constants
-import * from "globals.kcl"
+import * from "parameters.kcl"
 
-// import parts and constants
-import body from "body.kcl"
-import case from "case.kcl"
-import antenna from "antenna.kcl"
-import talkButton from "talk-button.kcl"
-import knob from "knob.kcl"
+// import parts and parameters
+import "body.kcl" as body
+import "case.kcl" as case
+import "antenna.kcl" as antenna
+import "talk-button.kcl" as talkButton
+import "knob.kcl" as knob
 import button from "button.kcl"
 
-// import the body
-body()
+// Import the body
+body
 
-// import the antenna
-antenna()
+// Import the antenna
+antenna
   |> translate(x = -width / 2 + .45, y = -0.10, z = height / 2)
 
-// import the case
-case()
+// Import the case
+case
   |> translate(x = 0, y = -1, z = 0)
 
-// import the talk button
-talkButton()
+// Import the talk button
+talkButton
   |> translate(x = width / 2, y = -thickness / 2, z = .5)
 
-// import the frequency knob
-knob()
+// Import the frequency knob
+knob
   |> translate(x = width / 2 - 0.70, y = -thickness / 2, z = height / 2)
 
-// import the buttons
+// Import the buttons
 button()
   |> translate(x = -(screenWidth / 2 + tolerance), y = -1, z = screenYPosition)
 button()
