@@ -9,7 +9,6 @@ import pipeDiameter, mountingHoleDiameter, mountingHolePlacementDiameter, flange
 
 // Create a function to create the flange. We must create a function since we are using multiple flanges.
 export fn flange() {
-
   // Sketch the mounting hole pattern
   mountingHoles = startSketchOn(XY)
     |> circle(%, center = [0, mountingHolePlacementDiameter / 2], radius = mountingHoleDiameter / 2)

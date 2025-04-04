@@ -7,7 +7,7 @@
 // Import parameters
 import washerInnerDia, washerOuterDia, washerThickness from "parameters.kcl"
 
-// Create a function to make the washer. Must be a function since multiple washers are used. 
+// Create a function to make the washer. Must be a function since multiple washers are used.
 export fn washer() {
   // Create the base of the washer
   washerBase = startSketchOn(XY)
