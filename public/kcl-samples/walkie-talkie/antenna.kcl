@@ -30,4 +30,3 @@ antennaTopSketch = startSketchOn(loftPlane)
 // Create the antenna using a loft
 loft([antennaBaseSketch, antennaTopSketch])
   |> appearance(color = "#000000")
-

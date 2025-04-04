@@ -8,12 +8,12 @@
 import * from "parameters.kcl"
 
 // import parts and parameters
-import 'body.kcl' as body
-import 'case.kcl' as case
-import 'antenna.kcl' as antenna
-import 'talk-button.kcl' as talkButton
-import 'knob.kcl' as knob
-import button from 'button.kcl'
+import "body.kcl" as body
+import "case.kcl" as case
+import "antenna.kcl" as antenna
+import "talk-button.kcl" as talkButton
+import "knob.kcl" as knob
+import button from "button.kcl"
 
 // Import the body
 body

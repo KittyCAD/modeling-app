@@ -19,6 +19,5 @@ startSketchOn(XZ)
      }, %)
   |> xLine(endAbsolute = 0.0001)
   |> close()
-  |> revolve(axis = "Y")
+  |> revolve(axis = Y)
   |> appearance(color = '#D0FF01', metalness = 90, roughness = 50)
-  

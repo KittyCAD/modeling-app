@@ -73,7 +73,7 @@ case = startSketchOn(XZ)
   |> hole(screenSketch, %)
   |> hole(squareHolePatternSketch, %)
 
-// Create the Zoo logo
+  // Create the Zoo logo
   |> hole(zLogo(startSketchOn(XZ), [-.30, -1.825], .20), %)
   |> hole(oLogo(startSketchOn(XZ), [-.075, -1.825], .20), %)
   |> hole(oLogo2(startSketchOn(XZ), [-.075, -1.825], .20), %)

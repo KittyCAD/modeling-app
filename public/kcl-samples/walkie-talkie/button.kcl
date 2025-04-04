@@ -9,7 +9,8 @@ import buttonWidth, buttonHeight, buttonThickness from "parameters.kcl"
 
 // Create a function for the button. We need to create a function to use multiple buttons.
 
-export fn button () {
+
+export fn button() {
   // Sketch the button profile and extrude
   buttonSketch = startSketchOn(XZ)
     |> startProfileAt([0, 0], %)
@@ -17,7 +18,6 @@ export fn button () {
     |> angledLine({ angle = 270, length = buttonHeight }, %, $tag2)
     |> angledLine({ angle = 0, length = buttonWidth }, %)
     |> close()
-  
   button = extrude(buttonSketch, length = buttonThickness)
     |> chamfer(
          length = .050,
@@ -29,5 +29,4 @@ export fn button () {
     |> appearance(color = "#ff0000")
 
   return button
-
 }
