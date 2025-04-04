@@ -49,20 +49,7 @@ description: Variables in memory after executing i-beam.kcl
       }
     }
   },
-  "rootRadius": {
-    "type": "Number",
-    "value": 0.457,
-    "ty": {
-      "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
-    }
-  },
-  "sketch001": {
+  "iBeam": {
     "type": "Solid",
     "value": {
       "type": "Solid",
@@ -232,6 +219,19 @@ description: Variables in memory after executing i-beam.kcl
       "endCapId": null,
       "units": {
         "type": "Inches"
+      }
+    }
+  },
+  "rootRadius": {
+    "type": "Number",
+    "value": 0.457,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
       }
     }
   },

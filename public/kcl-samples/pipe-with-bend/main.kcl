@@ -4,24 +4,24 @@
 // Set units
 @settings(defaultLengthUnit = in)
 
-// Define constants
+// Define parameters
 innerDiameter = 10
 outerDiameter = 20
 bendRadius = 30
 bendAngle = 90
 
-// create a sketch in the 'XZ' plane
+// Create a sketch in the 'XZ' plane
 sketch000 = startSketchOn(XZ)
 
-// create a profile for the outer diameter
+// Create a profile for the outer diameter
 outerProfile = circle(sketch000, center = [bendRadius, 0], radius = outerDiameter / 2)
 
-// create a profile for the inner diameter
+// Create a profile for the inner diameter
 innerProfile = circle(sketch000, center = [bendRadius, 0], radius = innerDiameter / 2)
 
-// create the profile of the pipe
+// Create the profile of the pipe
 pipeProfile = outerProfile
   |> hole(innerProfile, %)
 
-// revolve the pipe profile at the desired angle
+// Revolve the pipe profile at the desired angle
 pipe = revolve(pipeProfile, axis = Y, angle = bendAngle)

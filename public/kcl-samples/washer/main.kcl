@@ -4,21 +4,16 @@
 // Set units
 @settings(defaultLengthUnit = in)
 
-// Define constants in inches (in)
+// Define parameters
 innerDiameter = 0.203
 outerDiameter = 0.438
 thicknessMax = 0.038
+thicknessNom = 0.032
 thicknessMin = 0.024
 
-// Write a function that defines the washer and extrude it.
-fn washer(plane, innerDia, outerDia, thk) {
-  // Define the sketch of the washer
-  washerSketch = startSketchOn(plane)
-    |> circle(center = [0, 0], radius = outerDia / 2)
-    |> hole(circle(center = [0, 0], radius = innerDia / 2), %)
+// Define the sketch of the washer
+washerSketch = startSketchOn(XY)
+  |> circle(center = [0, 0], radius = outerDiameter / 2)
+  |> hole(circle(center = [0, 0], radius = innerDiameter / 2), %)
 
-  washer = extrude(washerSketch, length = thk)
-  return washer
-}
-
-washer(XY, innerDiameter, outerDiameter, thicknessMax)
+washer = extrude(washerSketch, length = thicknessNom)

@@ -1,13 +1,13 @@
-// 91251A404 Socket Head Cap Screw
+// Socket Head Cap Screw
 // screw for mating the flanges together in the pipe flange assembly
 
-// set units
+// Set units
 @settings(defaultLengthUnit = in)
 
-// import constants
-import boltDiameter, boltLength, boltHeadLength, boltHeadDiameter, boltHexDrive, boltHexFlatLength, boltThreadLength from "globals.kcl"
+// Import parameters
+import boltDiameter, boltLength, boltHeadLength, boltHeadDiameter, boltHexDrive, boltHexFlatLength, boltThreadLength from "parameters.kcl"
 
-// create a function to make a the bolt
+// Create a function to make a the bolt
 export fn bolt() {
   // Create the head of the cap screw
   boltHead = startSketchOn(XZ)
@@ -52,5 +52,3 @@ export fn bolt() {
 
   return boltBody
 }
-
-// https://www.mcmaster.com/91251a404/
