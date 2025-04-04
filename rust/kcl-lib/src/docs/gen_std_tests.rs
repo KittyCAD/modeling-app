@@ -24,8 +24,9 @@ use crate::{
 const TYPES_DIR: &str = "../../docs/kcl/types";
 const LANG_TOPICS: [&str; 5] = ["Types", "Modules", "Settings", "Known Issues", "Constants"];
 // These types are declared in std.
-const DECLARED_TYPES: [&str; 11] = [
-    "number", "string", "tag", "bool", "Sketch", "Solid", "Plane", "Helix", "Face", "Point2d", "Point3d",
+const DECLARED_TYPES: [&str; 14] = [
+    "number", "string", "tag", "bool", "Sketch", "Solid", "Plane", "Helix", "Face", "Edge", "Point2d", "Point3d",
+    "Axis2d", "Axis3d",
 ];
 
 fn init_handlebars() -> Result<handlebars::Handlebars<'static>> {
@@ -241,7 +242,7 @@ fn init_handlebars() -> Result<handlebars::Handlebars<'static>> {
              out: &mut dyn handlebars::Output|
              -> handlebars::HelperResult {
                 let param = h.param(0).and_then(|v| v.value().as_str()).unwrap_or("");
-                let basename = param.split('/').last().unwrap_or("");
+                let basename = param.split('/').next_back().unwrap_or("");
                 out.write(&format!("`{}`", basename))?;
                 Ok(())
             },

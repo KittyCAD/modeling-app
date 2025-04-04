@@ -4,18 +4,21 @@ description: Operations executed computed_var.kcl
 ---
 [
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "cos",
-    "functionSourceRange": [
-      0,
-      0,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "cos",
+      "functionSourceRange": [
+        0,
+        0,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   }
 ]

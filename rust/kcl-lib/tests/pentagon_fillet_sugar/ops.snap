@@ -51,15 +51,18 @@ description: Operations executed pentagon_fillet_sugar.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "circl",
-    "functionSourceRange": [
-      421,
-      571,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "circl",
+      "functionSourceRange": [
+        421,
+        571,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -88,7 +91,7 @@ description: Operations executed pentagon_fillet_sugar.kcl
     "unlabeledArg": null
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
     "labeledArgs": {
@@ -172,15 +175,18 @@ description: Operations executed pentagon_fillet_sugar.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "circl",
-    "functionSourceRange": [
-      421,
-      571,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "circl",
+      "functionSourceRange": [
+        421,
+        571,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -209,7 +215,7 @@ description: Operations executed pentagon_fillet_sugar.kcl
     "unlabeledArg": null
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
     "labeledArgs": {

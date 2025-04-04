@@ -4,15 +4,18 @@ description: Operations executed sketch_in_object.kcl
 ---
 [
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "test",
-    "functionSourceRange": [
-      7,
-      170,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "test",
+      "functionSourceRange": [
+        7,
+        170,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -31,7 +34,7 @@ description: Operations executed sketch_in_object.kcl
     "unlabeledArg": null
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
     "labeledArgs": {
@@ -66,15 +69,18 @@ description: Operations executed sketch_in_object.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "test2",
-    "functionSourceRange": [
-      180,
-      405,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "test2",
+      "functionSourceRange": [
+        180,
+        405,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -93,7 +99,7 @@ description: Operations executed sketch_in_object.kcl
     "unlabeledArg": null
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
     "labeledArgs": {
