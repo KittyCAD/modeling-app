@@ -1,88 +1,4 @@
-export const bracket = `// Shelf Bracket
-// This is a bracket that holds a shelf. It is made of aluminum and is designed to hold a force of 300 lbs. The bracket is 6 inches wide and the force is applied at the end of the shelf, 12 inches from the wall. The bracket has a factor of safety of 1.2. The legs of the bracket are 5 inches and 2 inches long. The thickness of the bracket is calculated from the constraints provided.
-
-// Set units
-@settings(defaultLengthUnit = in)
-
-// Define parameters
-sigmaAllow = 35000 // psi (6061-T6 aluminum)
-width = 5.0
-p = 300 // Force on shelf - lbs
-fos = 1.2 // Factor of safety of 1.2
-shelfMountLength = 5.0
-wallMountLength = 2.25
-shelfDepth = 12 // Shelf is 12 inches deep from the wall
-shelfMountingHoleDiameter = .50
-wallMountingHoleDiameter = .625
-
-// Calculated parameters
-moment = shelfDepth * p // assume the force is applied at the end of the shelf
-thickness = sqrt(moment * fos * 6 / (sigmaAllow * width)) // required thickness for two brackets to hold up the shelf
-bendRadius = 0.25
-extBendRadius = bendRadius + thickness
-filletRadius = .5
-shelfMountingHolePlacementOffset = shelfMountingHoleDiameter * 1.5
-wallMountingHolePlacementOffset = wallMountingHoleDiameter * 1.5
-
-// Add checks to ensure bracket is possible. These make sure that there is adequate distance between holes and edges.
-assertGreaterThanOrEq(wallMountLength, wallMountingHoleDiameter * 3, "Holes not possible. Either decrease hole diameter or increase wallMountLength")
-assertGreaterThanOrEq(shelfMountLength, shelfMountingHoleDiameter * 5.5, "wallMountLength must be longer for hole sizes to work. Either decrease mounting hole diameters or increase shelfMountLength")
-assertGreaterThanOrEq(width, shelfMountingHoleDiameter * 5.5, "Holes not possible. Either decrease hole diameter or increase width")
-assertGreaterThanOrEq(width, wallMountingHoleDiameter * 5.5, "Holes not possible. Either decrease hole diameter or increase width")
-
-// Create the body of the bracket
-bracketBody = startSketchOn(XZ)
-  |> startProfileAt([0, 0], %)
-  |> xLine(length = shelfMountLength - thickness, tag = $seg01)
-  |> yLine(length = thickness, tag = $seg02)
-  |> xLine(length = -shelfMountLength, tag = $seg03)
-  |> yLine(length = -wallMountLength, tag = $seg04)
-  |> xLine(length = thickness, tag = $seg05)
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg06)
-  |> close()
-  |> extrude(%, length = width)
-
-// Add mounting holes to mount to the shelf
-shelfMountingHoles = startSketchOn(bracketBody, seg03)
-  |> circle(
-       center = [
-         -(bendRadius + shelfMountingHolePlacementOffset),
-         shelfMountingHolePlacementOffset
-       ],
-       radius = shelfMountingHoleDiameter / 2,
-     )
-  |> patternLinear2d(instances = 2, distance = -(extBendRadius + shelfMountingHolePlacementOffset) + shelfMountLength - shelfMountingHolePlacementOffset, axis = [-1, 0])
-  |> patternLinear2d(instances = 2, distance = width - (shelfMountingHolePlacementOffset * 2), axis = [0, 1])
-  |> extrude(%, length = -thickness - .01)
-
-// Add mounting holes to mount to the wall
-wallMountingHoles = startSketchOn(bracketBody, seg04)
-  |> circle(
-       center = [
-         wallMountLength - wallMountingHolePlacementOffset - bendRadius,
-         wallMountingHolePlacementOffset
-       ],
-       radius = wallMountingHoleDiameter / 2,
-     )
-  |> patternLinear2d(instances = 2, distance = width - (wallMountingHolePlacementOffset * 2), axis = [0, 1])
-  |> extrude(%, length = -thickness - 0.1)
-
-// Apply bends
-fillet(bracketBody, radius = extBendRadius, tags = [getNextAdjacentEdge(seg03)])
-fillet(bracketBody, radius = bendRadius, tags = [getNextAdjacentEdge(seg06)])
-
-// Apply corner fillets
-fillet(
-  bracketBody,
-  radius = filletRadius,
-  tags = [
-    seg02,
-    getOppositeEdge(seg02),
-    seg05,
-    getOppositeEdge(seg05)
-  ],
-)
-`
+import bracket from '@public/kcl-samples/bracket/main.kcl?raw'
 
 /**
  * @throws Error if the search text is not found in the example code.
@@ -105,7 +21,6 @@ function findLineInExampleCode({
   }
   return lineNumber
 }
-
 export const bracketWidthConstantLine = findLineInExampleCode({
   searchText: 'width =',
 })
