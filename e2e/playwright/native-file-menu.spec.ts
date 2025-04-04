@@ -362,7 +362,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         const actualArgument = await cmdBar.cmdBarElement
           .getByTestId('cmd-bar-arg-value')
           .inputValue()
-        const expectedArgument = 'project-$nnn'
+        const expectedArgument = 'untitled'
         expect(actualArgument).toBe(expectedArgument)
       })
       test('Modeling.File.Open project', async ({
