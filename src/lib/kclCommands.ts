@@ -2,6 +2,7 @@ import type { UnitLength_type } from '@kittycad/lib/dist/types/src/models'
 import toast from 'react-hot-toast'
 
 import { CommandBarOverwriteWarning } from '@src/components/CommandBarOverwriteWarning'
+import { DEV } from '@src/env'
 import { updateModelingState } from '@src/lang/modelingWorkflows'
 import { addImportAndInsert } from '@src/lang/modifyAst'
 import {
@@ -22,6 +23,7 @@ import { baseUnitsUnion } from '@src/lib/settings/settingsTypes'
 import { codeManager, editorManager, kclManager } from '@src/lib/singletons'
 import { err, reportRejection } from '@src/lib/trap'
 import type { IndexLoaderData } from '@src/lib/types'
+import { IS_NIGHTLY_OR_DEBUG } from '@src/routes/utils'
 
 interface OnSubmitProps {
   sampleName: string
@@ -106,9 +108,11 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
       name: 'Insert',
       description: 'Insert from a file in the current project directory',
       icon: 'import',
-      needsReview: false,
       groupId: 'code',
-      hide: 'web',
+      hide: DEV || IS_NIGHTLY_OR_DEBUG ? 'web' : 'both',
+      needsReview: true,
+      reviewMessage:
+        'Reminder: point-and-click insert is in development and only supports one part instance per assembly.',
       args: {
         path: {
           inputType: 'options',

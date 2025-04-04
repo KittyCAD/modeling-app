@@ -800,13 +800,15 @@ export function addImportAndInsert({
   const modifiedAst = structuredClone(node)
 
   // Add import statement
-  // TODO: add it to the end of existing imports, only if it doesn't exist
   const importStatement = createImportStatement(
     createImportAsSelector(localName),
     { type: 'Kcl', filename: path }
   )
-  const importIndex = 0
-  modifiedAst.body.unshift(importStatement)
+  const lastImportIndex = node.body.findLastIndex(
+    (v) => v.type === 'ImportStatement'
+  )
+  const importIndex = lastImportIndex + 1 // either -1 + 1 = 0 or after the last import
+  modifiedAst.body.splice(importIndex, 0, importStatement)
   const pathToImportNode: PathToNode = [
     ['body', ''],
     [importIndex, 'index'],
@@ -814,7 +816,6 @@ export function addImportAndInsert({
   ]
 
   // Add insert statement
-  // TODO: check that pushing to the end of the body is good here
   const insertStatement = createExpressionStatement(createLocalName(localName))
   const insertIndex = modifiedAst.body.length
   modifiedAst.body.push(insertStatement)

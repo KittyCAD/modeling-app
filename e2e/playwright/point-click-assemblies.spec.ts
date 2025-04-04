@@ -65,6 +65,12 @@ test.describe('Point-and-click assemblies tests', () => {
         })
         await page.keyboard.insertText('cylinder')
         await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          stage: 'review',
+          headerArguments: { Path: 'cylinder.kcl', LocalName: 'cylinder' },
+          commandName: 'Insert',
+        })
+        await cmdBar.progressCmdBar()
         await editor.expectEditor.toContain(
           `
         import "cylinder.kcl" as cylinder
@@ -88,19 +94,22 @@ test.describe('Point-and-click assemblies tests', () => {
         })
         await page.keyboard.insertText('bracket')
         await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          stage: 'review',
+          headerArguments: { Path: 'bracket.kcl', LocalName: 'bracket' },
+          commandName: 'Insert',
+        })
+        await cmdBar.progressCmdBar()
         await editor.expectEditor.toContain(
           `
-        import "bracket.kcl" as bracket
         import "cylinder.kcl" as cylinder
+        import "bracket.kcl" as bracket
         cylinder
         bracket
       `,
           { shouldNormalise: true }
         )
       })
-
-      // TODO: remove
-      await page.waitForTimeout(10000)
     }
   )
 })
