@@ -22,7 +22,6 @@ body = startSketchOn(XY)
   |> line(endAbsolute = [-width / 2, length / 2])
   |> close()
   |> extrude(length = height)
-  
 counterBoreHoles = startSketchOn(body, 'end')
   |> circle(
        center = [
