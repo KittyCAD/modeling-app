@@ -342,17 +342,7 @@ jobs:
       - name: Install vector
         if: ${{ needs.conditions.outputs.should-run == 'true' && !contains(matrix.os, 'windows') }}
         shell: bash
-        run: |
-          curl --proto '=https' --tlsv1.2 -sSfL https://sh.vector.dev | bash -s -- -y || brew tap vectordotdev/brew && brew install vector
-          mkdir -p /tmp/vector
-          cp .github/workflows/vector.toml /tmp/vector.toml
-          sed -i "s#GITHUB_WORKFLOW#${GITHUB_WORKFLOW}#g" /tmp/vector.toml
-          sed -i "s#GITHUB_REPOSITORY#${GITHUB_REPOSITORY}#g" /tmp/vector.toml
-          sed -i "s#GITHUB_SHA#${GITHUB_SHA}#g" /tmp/vector.toml
-          sed -i "s#GITHUB_REF_NAME#${GITHUB_REF_NAME}#g" /tmp/vector.toml
-          sed -i "s#GH_ACTIONS_AXIOM_TOKEN#${{secrets.GH_ACTIONS_AXIOM_TOKEN}}#g" /tmp/vector.toml
-          cat /tmp/vector.toml
-          ${HOME}/.vector/bin/vector --config /tmp/vector.toml &
+        run: .github/ci-cd-scripts/start-vector-${{ env.OS_NAME }}.sh
 
       - uses: actions/download-artifact@v4
         if: ${{ needs.conditions.outputs.should-run == 'true' && !cancelled() && (success() || failure()) }}
