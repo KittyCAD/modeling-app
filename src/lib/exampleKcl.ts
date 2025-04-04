@@ -1,5 +1,7 @@
 import bracket from '@public/kcl-samples/bracket/main.kcl?raw'
 
+export { bracket }
+
 /**
  * @throws Error if the search text is not found in the example code.
  */
