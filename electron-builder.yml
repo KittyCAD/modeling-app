@@ -4,7 +4,7 @@ directories:
   buildResources: assets
 files:
   - .vite/**
-  - "!node_modules/win-ca/pem"
+  - "!node_modules/win-ca/pem/**"
 mac:
   category: public.app-category.developer-tools
   artifactName: "${productName}-${version}-${arch}-${os}.${ext}"
