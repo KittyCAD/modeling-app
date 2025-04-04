@@ -1,5 +1,4 @@
 import { useSelector } from '@xstate/react'
-import type { ActorRefFrom } from 'xstate'
 import { createActor, setup, spawnChild } from 'xstate'
 
 import { createSettings } from '@src/lib/settings/initialSettings'
@@ -14,9 +13,14 @@ const appMachineActors = {
 } as const
 
 const appMachine = setup({
+  types: {} as {
+    children: {
+      auth: typeof AUTH
+      settings: typeof SETTINGS
+    }
+  },
   actors: appMachineActors,
 }).createMachine({
-  /** @xstate-layout N4IgpgJg5mDOIC5gF8A0IB2B7CdGgAoBbAQwGMALASwzAEp8QAHLWKgFyqw0YA9EAjACZ0AT0FDkU5EA */
   id: 'modeling-app',
   entry: [
     spawnChild(AUTH, { id: AUTH, systemId: AUTH }),
@@ -29,18 +33,24 @@ const appMachine = setup({
 })
 
 export const appActor = createActor(appMachine)
-export const authActor = appActor.system.get(AUTH) as ActorRefFrom<
-  typeof authMachine
->
+/**
+ * GOTCHA: the type coercion of this actor works because it is spawned for
+ * the lifetime of {appActor}, but would not work if it were invoked
+ * or if it were destroyed under any conditions during {appActor}'s life
+ */
+export const authActor = appActor.getSnapshot().children.auth!
 export const useAuthState = () => useSelector(authActor, (state) => state)
 export const useToken = () =>
   useSelector(authActor, (state) => state.context.token)
 export const useUser = () =>
   useSelector(authActor, (state) => state.context.user)
 
-export const settingsActor = appActor.system.get(SETTINGS) as ActorRefFrom<
-  typeof settingsMachine
->
+/**
+ * GOTCHA: the type coercion of this actor works because it is spawned for
+ * the lifetime of {appActor}, but would not work if it were invoked
+ * or if it were destroyed under any conditions during {appActor}'s life
+ */
+export const settingsActor = appActor.getSnapshot().children.settings!
 export const getSettings = () => {
   const { currentProject: _, ...settings } = settingsActor.getSnapshot().context
   return settings

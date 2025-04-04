@@ -249,7 +249,7 @@ export const AllSettingsFields = forwardRef(
             </div>
           </SettingsSection>
           <h2 id="settings-about" className="text-2xl mt-6 font-bold">
-            About Modeling App
+            About Design Studio
           </h2>
           <div className="text-sm mb-12">
             <p>
@@ -306,7 +306,7 @@ export const AllSettingsFields = forwardRef(
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  Click here to grab Zoo Modeling App (Nightly)
+                  Click here to grab Zoo Design Studio (Nightly)
                 </a>
                 . It can be installed side-by-side with the stable version
                 you're running now. But careful there, a lot less testing is
