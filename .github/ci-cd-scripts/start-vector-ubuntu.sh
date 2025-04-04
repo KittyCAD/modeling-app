@@ -17,4 +17,4 @@ sed -i "s#GITHUB_REF_NAME#${GITHUB_REF_NAME}#g" /tmp/vector.toml
 cat /tmp/vector.toml
 
 # Start in background
-/opt/homebrew/opt/vector/bin/vector --config /opt/homebrew/etc/vector/vector.yaml &
+${HOME}/.vector/bin/vector --config /tmp/vector.toml &
