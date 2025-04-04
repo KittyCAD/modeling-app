@@ -78,6 +78,7 @@ import {
   deletionErrorMessage,
 } from '@src/lang/modifyAst/deleteSelection'
 import { setAppearance } from '@src/lang/modifyAst/setAppearance'
+import { setTransform } from '@src/lang/modifyAst/setTransform'
 import {
   getNodeFromPath,
   isNodeSafeToReplacePath,
@@ -367,6 +368,7 @@ export type ModelingMachineEvent =
       data: ModelingCommandSchema['Delete selection']
     }
   | { type: 'Appearance'; data: ModelingCommandSchema['Appearance'] }
+  | { type: 'Transform'; data: ModelingCommandSchema['Transform'] }
   | {
       type:
         | 'Add circle origin'
@@ -2676,6 +2678,45 @@ export const modelingMachine = setup({
         )
       }
     ),
+    transformAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input: ModelingCommandSchema['Transform'] | undefined
+      }) => {
+        if (!input) return new Error('No input provided')
+        // Extract inputs
+        const ast = kclManager.ast
+        const { tx, ty, tz, rr, rp, ry, nodeToEdit } = input
+        if (!(nodeToEdit && typeof nodeToEdit[1][0] === 'number')) {
+          return new Error('Appearance is only an edit flow')
+        }
+
+        const result = setTransform({
+          ast,
+          nodeToEdit,
+          // TODO: change
+          color: '#000000',
+        })
+
+        if (err(result)) {
+          return err(result)
+        }
+
+        await updateModelingState(
+          result.modifiedAst,
+          EXECUTION_TYPE_REAL,
+          {
+            kclManager,
+            editorManager,
+            codeManager,
+          },
+          {
+            focusPath: [result.pathToNode],
+          }
+        )
+      }
+    ),
     exportFromEngine: fromPromise(
       async ({}: { input?: ModelingCommandSchema['Export'] }) => {
         return undefined as Error | undefined
@@ -2860,6 +2901,11 @@ export const modelingMachine = setup({
 
         Appearance: {
           target: 'Applying appearance',
+          reenter: true,
+        },
+
+        Transform: {
+          target: 'Applying transform',
           reenter: true,
         },
 
@@ -4228,6 +4274,19 @@ export const modelingMachine = setup({
         id: 'appearanceAstMod',
         input: ({ event }) => {
           if (event.type !== 'Appearance') return undefined
+          return event.data
+        },
+        onDone: ['idle'],
+        onError: ['idle'],
+      },
+    },
+
+    'Applying transform': {
+      invoke: {
+        src: 'transformAstMod',
+        id: 'transformAstMod',
+        input: ({ event }) => {
+          if (event.type !== 'Transform') return undefined
           return event.data
         },
         onDone: ['idle'],

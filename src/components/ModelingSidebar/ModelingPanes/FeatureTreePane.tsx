@@ -346,6 +346,22 @@ const OperationItem = (props: {
     }
   }
 
+  function enterTransformFlow() {
+    if (
+      props.item.type === 'StdLibCall' ||
+      props.item.type === 'GroupBegin' ||
+      props.item.type === 'KclStdLibCall'
+    ) {
+      props.send({
+        type: 'enterTransformFlow',
+        data: {
+          targetSourceRange: sourceRangeFromRust(props.item.sourceRange),
+          currentOperation: props.item,
+        },
+      })
+    }
+  }
+
   function deleteOperation() {
     if (
       props.item.type === 'StdLibCall' ||
@@ -425,6 +441,12 @@ const OperationItem = (props: {
             </ContextMenuItem>,
           ]
         : []),
+      <ContextMenuItem
+        onClick={enterTransformFlow}
+        data-testid="context-menu-set-transform"
+      >
+        Set transform
+      </ContextMenuItem>,
       <ContextMenuItem
         onClick={deleteOperation}
         hotkey="Delete"

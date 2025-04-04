@@ -1294,7 +1294,6 @@ export async function enterAppearanceFlow({
         sourceRangeFromRust(operation.sourceRange)
       ),
     }
-    console.log('argDefaultValues', argDefaultValues)
     return {
       type: 'Find and select command',
       data: {
@@ -1308,4 +1307,34 @@ export async function enterAppearanceFlow({
   return new Error(
     'Appearance setting not yet supported for this operation. Please edit in the code editor.'
   )
+}
+
+export async function enterTransformFlow({
+  operation,
+  artifact,
+}: EnterEditFlowProps): Promise<Error | CommandBarMachineEvent> {
+  if (
+    operation.type !== 'StdLibCall' &&
+    operation.type !== 'KclStdLibCall' &&
+    operation.type !== 'GroupBegin'
+  ) {
+    return new Error(
+      'Appearance setting not yet supported for user-defined functions or modules. Please edit in the code editor.'
+    )
+  }
+  const argDefaultValues = {
+    nodeToEdit: getNodePathFromSourceRange(
+      kclManager.ast,
+      sourceRangeFromRust(operation.sourceRange)
+    ),
+  }
+  console.log('argDefaultValues', argDefaultValues)
+  return {
+    type: 'Find and select command',
+    data: {
+      name: 'Transform',
+      groupId: 'modeling',
+      argDefaultValues,
+    },
+  }
 }

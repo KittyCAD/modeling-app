@@ -163,6 +163,15 @@ export type ModelingCommandSchema = {
     nodeToEdit?: PathToNode
     color: string
   }
+  Transform: {
+    nodeToEdit?: PathToNode
+    tx: KclCommandValue
+    ty: KclCommandValue
+    tz: KclCommandValue
+    rr: KclCommandValue
+    rp: KclCommandValue
+    ry: KclCommandValue
+  }
   'Boolean Subtract': {
     target: Selections
     tool: Selections
@@ -1024,6 +1033,51 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         ],
       },
       // Add more fields
+    },
+  },
+  Transform: {
+    description: 'Set the rotation and translation.',
+    icon: 'angle', // TODO: find proper icon
+    needsReview: true,
+    args: {
+      nodeToEdit: {
+        description:
+          'Path to the node in the AST to edit. Never shown to the user.',
+        skip: true,
+        inputType: 'text',
+        required: false,
+        hidden: true,
+      },
+      tx: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_LENGTH,
+        required: true,
+      },
+      ty: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_LENGTH,
+        required: true,
+      },
+      tz: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_LENGTH,
+        required: true,
+      },
+      rr: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_DEGREE,
+        required: true,
+      },
+      rp: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_DEGREE,
+        required: true,
+      },
+      ry: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_DEGREE,
+        required: true,
+      },
     },
   },
 }
