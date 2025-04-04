@@ -46,12 +46,5 @@ export function angleLengthInfo({
     selectionRanges.graphSelections.length <= 1 &&
     isAllTooltips &&
     transforms.every(Boolean)
-  console.log(
-    'enabled',
-    enabled,
-    selectionRanges.graphSelections.length,
-    isAllTooltips,
-    transforms.every(Boolean)
-  )
   return { enabled, transforms }
 }
