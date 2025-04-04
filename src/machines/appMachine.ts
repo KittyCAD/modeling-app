@@ -5,11 +5,13 @@ import { createSettings } from '@src/lib/settings/initialSettings'
 import { authMachine } from '@src/machines/authMachine'
 import { ACTOR_IDS } from '@src/machines/machineConstants'
 import { settingsMachine } from '@src/machines/settingsMachine'
+import { systemIOMachine, SystemIOMachineEvents } from "@src/machines/systemIOMachine"
 
-const { AUTH, SETTINGS } = ACTOR_IDS
+const { AUTH, SETTINGS, SYSTEM_IO } = ACTOR_IDS
 const appMachineActors = {
   [AUTH]: authMachine,
   [SETTINGS]: settingsMachine,
+  [SYSTEM_IO]: systemIOMachine
 } as const
 
 const appMachine = setup({
@@ -17,6 +19,7 @@ const appMachine = setup({
     children: {
       auth: typeof AUTH
       settings: typeof SETTINGS
+      systemIO: typeof SYSTEM_IO
     }
   },
   actors: appMachineActors,
@@ -29,10 +32,12 @@ const appMachine = setup({
       systemId: SETTINGS,
       input: createSettings(),
     }),
+    spawnChild(SYSTEM_IO, {id: SYSTEM_IO, systemId: SYSTEM_IO})
   ],
 })
 
 export const appActor = createActor(appMachine)
+
 /**
  * GOTCHA: the type coercion of this actor works because it is spawned for
  * the lifetime of {appActor}, but would not work if it were invoked
@@ -61,3 +66,9 @@ export const useSettings = () =>
     const { currentProject, ...settings } = state.context
     return settings
   })
+
+// TODO: Debugging
+const systemIOActor = appActor.getSnapshot().children.systemIO!
+// systemIOActor.send({type:SystemIOMachineEvents.readFoldersFromProjectDirectory, data: {}})
+systemIOActor.send({type:SystemIOMachineEvents.setProjectDirectoryPath, data: {requestedProjectDirectoryPath:'/home/kevin-nadro/Documents/zoo-modeling-app-projects'}})
+window.systemIOActor = systemIOActor
