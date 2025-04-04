@@ -166,7 +166,9 @@ export const AllSettingsFields = forwardRef(
           >
             <ActionButton
               Element="button"
-              onClick={restartOnboarding}
+              onClick={() => {
+                restartOnboarding().catch(reportRejection)
+              }}
               iconStart={{
                 icon: 'refresh',
                 size: 'sm',
