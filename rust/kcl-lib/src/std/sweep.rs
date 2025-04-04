@@ -157,7 +157,7 @@ pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///     }, %)
 ///     |> xLine(length = 384.93)
 ///
-/// sweep(circleSketch, path = sweepPath, sectional = true)
+/// sweep(circleSketch, path = sweepPath)
 /// ```
 
 #[stdlib {
