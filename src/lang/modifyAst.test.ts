@@ -1030,19 +1030,25 @@ sketch003 = startSketchOn(XZ)
 
 describe('Testing splitPipedProfile', () => {
   it('should split the pipe expression correctly', () => {
-    const codeBefore = `part001 = startSketchOn(XZ)
+    const codeBefore = `// comment 1
+    part001 = startSketchOn(XZ)
   |> startProfileAt([1, 2], %)
+  // comment 2
   |> line([3, 4], %)
   |> line([5, 6], %)
   |> close(%)
+// comment 3
 extrude001 = extrude(5, part001)
     `
 
-    const expectedCodeAfter = `sketch001 = startSketchOn(XZ)
+    const expectedCodeAfter = `// comment 1
+sketch001 = startSketchOn(XZ)
 part001 = startProfileAt([1, 2], sketch001)
+  // comment 2
   |> line([3, 4], %)
   |> line([5, 6], %)
   |> close(%)
+// comment 3
 extrude001 = extrude(5, part001)
     `
 

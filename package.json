@@ -2,13 +2,13 @@
   "name": "zoo-modeling-app",
   "version": "0.0.0",
   "private": true,
-  "productName": "Zoo Modeling App",
+  "productName": "Zoo Design Studio",
   "author": {
     "name": "Zoo Corporation",
     "email": "info@zoo.dev",
     "url": "https://zoo.dev"
   },
-  "description": "Zoo Modeling App",
+  "description": "Zoo Design Studio",
   "main": ".vite/build/main.js",
   "license": "MIT",
   "dependencies": {
@@ -26,7 +26,7 @@
     "@fortawesome/react-fontawesome": "^0.2.0",
     "@headlessui/react": "^1.7.19",
     "@headlessui/tailwindcss": "^0.2.2",
-    "@kittycad/lib": "2.0.25",
+    "@kittycad/lib": "2.0.26",
     "@lezer/highlight": "^1.2.1",
     "@lezer/lr": "^1.4.1",
     "@react-hook/resize-observer": "^2.0.1",

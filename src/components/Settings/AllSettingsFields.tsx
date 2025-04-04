@@ -1,7 +1,6 @@
-import { useSelector } from '@xstate/react'
 import decamelize from 'decamelize'
 import type { ForwardedRef } from 'react'
-import { forwardRef, useEffect, useMemo } from 'react'
+import { forwardRef, useMemo } from 'react'
 import toast from 'react-hot-toast'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { Fragment } from 'react/jsx-runtime'
@@ -31,6 +30,7 @@ import { reportRejection } from '@src/lib/trap'
 import { toSync } from '@src/lib/utils'
 import { settingsActor, useSettings } from '@src/machines/appMachine'
 import { APP_VERSION, IS_NIGHTLY, getReleaseUrl } from '@src/routes/utils'
+import { waitFor } from 'xstate'
 
 interface AllSettingsFieldsProps {
   searchParamTab: SettingsLevel
@@ -65,44 +65,25 @@ export const AllSettingsFields = forwardRef(
       return projectPath
     }, [location.pathname])
 
-    function restartOnboarding() {
+    async function restartOnboarding() {
       settingsActor.send({
         type: `set.app.onboardingStatus`,
         data: { level: 'user', value: '' },
       })
-    }
+      await waitFor(settingsActor, (s) => s.matches('idle'), {
+        timeout: 10_000,
+      }).catch(reportRejection)
 
-    /**
-     * A "listener" for the XState to return to "idle" state
-     * when the user resets the onboarding, using the callback above
-     */
-    const isSettingsMachineIdle = useSelector(settingsActor, (s) =>
-      s.matches('idle')
-    )
-    useEffect(() => {
-      async function navigateToOnboardingStart() {
-        if (
-          context.app.onboardingStatus.current === '' &&
-          isSettingsMachineIdle
-        ) {
-          if (isFileSettings) {
-            // If we're in a project, first navigate to the onboarding start here
-            // so we can trigger the warning screen if necessary
-            navigate(dotDotSlash(1) + PATHS.ONBOARDING.INDEX)
-          } else {
-            // If we're in the global settings, create a new project and navigate
-            // to the onboarding start in that project
-            await createAndOpenNewTutorialProject({ onProjectOpen, navigate })
-          }
-        }
+      if (isFileSettings) {
+        // If we're in a project, first navigate to the onboarding start here
+        // so we can trigger the warning screen if necessary
+        navigate(dotDotSlash(1) + PATHS.ONBOARDING.INDEX)
+      } else {
+        // If we're in the global settings, create a new project and navigate
+        // to the onboarding start in that project
+        await createAndOpenNewTutorialProject({ onProjectOpen, navigate })
       }
-      navigateToOnboardingStart().catch(reportRejection)
-    }, [
-      isFileSettings,
-      navigate,
-      isSettingsMachineIdle,
-      context.app.onboardingStatus.current,
-    ])
+    }
 
     return (
       <div className="relative overflow-y-auto">
@@ -185,7 +166,9 @@ export const AllSettingsFields = forwardRef(
           >
             <ActionButton
               Element="button"
-              onClick={restartOnboarding}
+              onClick={() => {
+                restartOnboarding().catch(reportRejection)
+              }}
               iconStart={{
                 icon: 'refresh',
                 size: 'sm',
@@ -249,7 +232,7 @@ export const AllSettingsFields = forwardRef(
             </div>
           </SettingsSection>
           <h2 id="settings-about" className="text-2xl mt-6 font-bold">
-            About Modeling App
+            About Design Studio
           </h2>
           <div className="text-sm mb-12">
             <p>
@@ -306,7 +289,7 @@ export const AllSettingsFields = forwardRef(
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  Click here to grab Zoo Modeling App (Nightly)
+                  Click here to grab Zoo Design Studio (Nightly)
                 </a>
                 . It can be installed side-by-side with the stable version
                 you're running now. But careful there, a lot less testing is
