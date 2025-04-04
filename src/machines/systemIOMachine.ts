@@ -28,8 +28,12 @@ type SystemIOContext = {
 export const systemIO = setup({
   types: {
     context: {} as SystemIOContext
+  },
+  actors: {
+
   }
 }).createMachine({
+  id:'SystemIOMachine',
   // Remember, this machine and change its projectDirectory at any point
   // '' will be no project directory, aka clear this machine out!
   // To be the aboslute root of someones computer we should take the string of path.resolve() in node.js which is different for each OS
