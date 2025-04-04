@@ -1,9 +1,10 @@
 // Cycloidal Gear
 // A cycloidal gear is a gear with a continuous, curved tooth profile. They are used in watchmaking and high precision robotics actuation
 
-// Set Units
+// Set units
 @settings(defaultLengthUnit = in)
 
+// Create a function for the cycloidal gear
 fn cycloidalGear(gearPitch, gearHeight, holeDiameter, helixAngle) {
   // Create a function to draw the gear profile as a sketch. Rotate each profile about the gear's axis by an helix angle proportional to the total gear height
   fn gearSketch(gHeight) {
@@ -44,4 +45,5 @@ fn cycloidalGear(gearPitch, gearHeight, holeDiameter, helixAngle) {
   return gearLoft
 }
 
+// Call the cycloidal gear function
 cycloidalGear(.3, 1.5, 0.297, -80)
