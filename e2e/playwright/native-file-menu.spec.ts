@@ -378,7 +378,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
       }) => {
         if (!tronApp) fail()
         await homePage.goToModelingScene()
-        await scene.waitForExecutionDone()
+        await scene.connectionEstablished()
 
         // Run electron snippet to find the Menu!
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
@@ -410,7 +410,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
           return
         }
         await homePage.goToModelingScene()
-        await scene.waitForExecutionDone()
+        await scene.connectionEstablished()
 
         // Run electron snippet to find the Menu!
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
@@ -446,7 +446,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
           return
         }
         await homePage.goToModelingScene()
-        await scene.waitForExecutionDone()
+        await scene.connectionEstablished()
 
         // Run electron snippet to find the Menu!
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
@@ -483,7 +483,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
           return
         }
         await homePage.goToModelingScene()
-        await scene.waitForExecutionDone()
+        await scene.connectionEstablished()
 
         // Run electron snippet to find the Menu!
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
@@ -520,7 +520,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
           return
         }
         await homePage.goToModelingScene()
-        await scene.waitForExecutionDone()
+        await scene.connectionEstablished()
 
         // Run electron snippet to find the Menu!
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
@@ -556,7 +556,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
           return
         }
         await homePage.goToModelingScene()
-        await scene.waitForExecutionDone()
+        await scene.connectionEstablished()
 
         // Run electron snippet to find the Menu!
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
@@ -593,7 +593,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
           return
         }
         await homePage.goToModelingScene()
-        await scene.waitForExecutionDone()
+        await scene.connectionEstablished()
 
         // Run electron snippet to find the Menu!
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
@@ -629,7 +629,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
           return
         }
         await homePage.goToModelingScene()
-        await scene.waitForExecutionDone()
+        await scene.connectionEstablished()
 
         // Run electron snippet to find the Menu!
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
@@ -663,7 +663,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
           return
         }
         await homePage.goToModelingScene()
-        await scene.waitForExecutionDone()
+        await scene.connectionEstablished()
 
         // Run electron snippet to find the Menu!
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
@@ -696,7 +696,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
           return
         }
         await homePage.goToModelingScene()
-        await scene.waitForExecutionDone()
+        await scene.connectionEstablished()
 
         // Run electron snippet to find the Menu!
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
@@ -733,7 +733,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
           return
         }
         await homePage.goToModelingScene()
-        await scene.waitForExecutionDone()
+        await scene.connectionEstablished()
 
         // Run electron snippet to find the Menu!
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
@@ -766,7 +766,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
           return
         }
         await homePage.goToModelingScene()
-        await scene.waitForExecutionDone()
+        await scene.connectionEstablished()
 
         // Run electron snippet to find the Menu!
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
@@ -800,7 +800,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
           return
         }
         await homePage.goToModelingScene()
-        await scene.waitForExecutionDone()
+        await scene.connectionEstablished()
 
         // Run electron snippet to find the Menu!
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
@@ -835,7 +835,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
           return
         }
         await homePage.goToModelingScene()
-        await scene.waitForExecutionDone()
+        await scene.connectionEstablished()
 
         // Run electron snippet to find the Menu!
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
@@ -870,7 +870,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
           return
         }
         await homePage.goToModelingScene()
-        await scene.waitForExecutionDone()
+        await scene.connectionEstablished()
 
         // Run electron snippet to find the Menu!
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
@@ -900,7 +900,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
           return
         }
         await homePage.goToModelingScene()
-        await scene.waitForExecutionDone()
+        await scene.connectionEstablished()
 
         // Run electron snippet to find the Menu!
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
@@ -935,7 +935,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
           return
         }
         await homePage.goToModelingScene()
-        await scene.waitForExecutionDone()
+        await scene.connectionEstablished()
 
         // Run electron snippet to find the Menu!
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
@@ -970,7 +970,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
           return
         }
         await homePage.goToModelingScene()
-        await scene.waitForExecutionDone()
+        await scene.connectionEstablished()
         // Run electron snippet to find the Menu!
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
@@ -1004,7 +1004,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
           return
         }
         await homePage.goToModelingScene()
-        await scene.waitForExecutionDone()
+        await scene.connectionEstablished()
 
         // Run electron snippet to find the Menu!
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
@@ -1036,7 +1036,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
           return
         }
         await homePage.goToModelingScene()
-        await scene.waitForExecutionDone()
+        await scene.connectionEstablished()
 
         // Run electron snippet to find the Menu!
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
@@ -1072,7 +1072,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
           return
         }
         await homePage.goToModelingScene()
-        await scene.waitForExecutionDone()
+        await scene.connectionEstablished()
 
         // Run electron snippet to find the Menu!
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
@@ -1108,7 +1108,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
           return
         }
         await homePage.goToModelingScene()
-        await scene.waitForExecutionDone()
+        await scene.connectionEstablished()
 
         // Run electron snippet to find the Menu!
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
@@ -1145,7 +1145,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
           return
         }
         await homePage.goToModelingScene()
-        await scene.waitForExecutionDone()
+        await scene.connectionEstablished()
 
         // Run electron snippet to find the Menu!
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
@@ -1174,7 +1174,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
           return
         }
         await homePage.goToModelingScene()
-        await scene.waitForExecutionDone()
+        await scene.connectionEstablished()
 
         // Run electron snippet to find the Menu!
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
@@ -1203,7 +1203,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
           return
         }
         await homePage.goToModelingScene()
-        await scene.waitForExecutionDone()
+        await scene.connectionEstablished()
 
         // Run electron snippet to find the Menu!
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
@@ -1232,7 +1232,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
           return
         }
         await homePage.goToModelingScene()
-        await scene.waitForExecutionDone()
+        await scene.connectionEstablished()
 
         // Run electron snippet to find the Menu!
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
@@ -1261,7 +1261,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
           return
         }
         await homePage.goToModelingScene()
-        await scene.waitForExecutionDone()
+        await scene.connectionEstablished()
 
         // Run electron snippet to find the Menu!
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
@@ -1290,7 +1290,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
           return
         }
         await homePage.goToModelingScene()
-        await scene.waitForExecutionDone()
+        await scene.connectionEstablished()
 
         // Run electron snippet to find the Menu!
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
@@ -1319,7 +1319,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
           return
         }
         await homePage.goToModelingScene()
-        await scene.waitForExecutionDone()
+        await scene.connectionEstablished()
 
         // Run electron snippet to find the Menu!
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
@@ -1348,7 +1348,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
           return
         }
         await homePage.goToModelingScene()
-        await scene.waitForExecutionDone()
+        await scene.connectionEstablished()
 
         // Run electron snippet to find the Menu!
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
@@ -1377,7 +1377,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
           return
         }
         await homePage.goToModelingScene()
-        await scene.waitForExecutionDone()
+        await scene.connectionEstablished()
 
         // Run electron snippet to find the Menu!
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
@@ -1414,7 +1414,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
           return
         }
         await homePage.goToModelingScene()
-        await scene.waitForExecutionDone()
+        await scene.connectionEstablished()
 
         // Run electron snippet to find the Menu!
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
@@ -1451,7 +1451,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
           return
         }
         await homePage.goToModelingScene()
-        await scene.waitForExecutionDone()
+        await scene.connectionEstablished()
 
         // Run electron snippet to find the Menu!
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
@@ -1488,7 +1488,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
           return
         }
         await homePage.goToModelingScene()
-        await scene.waitForExecutionDone()
+        await scene.connectionEstablished()
 
         // Run electron snippet to find the Menu!
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
@@ -1521,7 +1521,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
           return
         }
         await homePage.goToModelingScene()
-        await scene.waitForExecutionDone()
+        await scene.connectionEstablished()
 
         // Run electron snippet to find the Menu!
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
@@ -1554,7 +1554,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
           return
         }
         await homePage.goToModelingScene()
-        await scene.waitForExecutionDone()
+        await scene.connectionEstablished()
 
         // Run electron snippet to find the Menu!
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
@@ -1587,7 +1587,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
           return
         }
         await homePage.goToModelingScene()
-        await scene.waitForExecutionDone()
+        await scene.connectionEstablished()
 
         // Run electron snippet to find the Menu!
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
@@ -1620,7 +1620,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
           return
         }
         await homePage.goToModelingScene()
-        await scene.waitForExecutionDone()
+        await scene.connectionEstablished()
 
         // Run electron snippet to find the Menu!
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
@@ -1654,7 +1654,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
           return
         }
         await homePage.goToModelingScene()
-        await scene.waitForExecutionDone()
+        await scene.connectionEstablished()
 
         // Run electron snippet to find the Menu!
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
@@ -1691,7 +1691,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
           return
         }
         await homePage.goToModelingScene()
-        await scene.waitForExecutionDone()
+        await scene.connectionEstablished()
 
         // Run electron snippet to find the Menu!
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
@@ -1728,7 +1728,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
           return
         }
         await homePage.goToModelingScene()
-        await scene.waitForExecutionDone()
+        await scene.connectionEstablished()
 
         // Run electron snippet to find the Menu!
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
@@ -1766,7 +1766,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
           return
         }
         await homePage.goToModelingScene()
-        await scene.waitForExecutionDone()
+        await scene.connectionEstablished()
 
         // Run electron snippet to find the Menu!
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
@@ -1803,7 +1803,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
           return
         }
         await homePage.goToModelingScene()
-        await scene.waitForExecutionDone()
+        await scene.connectionEstablished()
 
         // Run electron snippet to find the Menu!
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
@@ -1840,7 +1840,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
           return
         }
         await homePage.goToModelingScene()
-        await scene.waitForExecutionDone()
+        await scene.connectionEstablished()
 
         // Run electron snippet to find the Menu!
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
@@ -1877,7 +1877,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
           return
         }
         await homePage.goToModelingScene()
-        await scene.waitForExecutionDone()
+        await scene.connectionEstablished()
 
         // Run electron snippet to find the Menu!
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
@@ -1914,7 +1914,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
           return
         }
         await homePage.goToModelingScene()
-        await scene.waitForExecutionDone()
+        await scene.connectionEstablished()
 
         // Run electron snippet to find the Menu!
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
@@ -1951,7 +1951,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
           return
         }
         await homePage.goToModelingScene()
-        await scene.waitForExecutionDone()
+        await scene.connectionEstablished()
 
         // Run electron snippet to find the Menu!
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
@@ -1989,7 +1989,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
           return
         }
         await homePage.goToModelingScene()
-        await scene.waitForExecutionDone()
+        await scene.connectionEstablished()
 
         // Run electron snippet to find the Menu!
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
@@ -2027,7 +2027,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
           return
         }
         await homePage.goToModelingScene()
-        await scene.waitForExecutionDone()
+        await scene.connectionEstablished()
 
         // Run electron snippet to find the Menu!
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
@@ -2065,7 +2065,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
           return
         }
         await homePage.goToModelingScene()
-        await scene.waitForExecutionDone()
+        await scene.connectionEstablished()
 
         // Run electron snippet to find the Menu!
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
@@ -2104,7 +2104,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
           return
         }
         await homePage.goToModelingScene()
-        await scene.waitForExecutionDone()
+        await scene.connectionEstablished()
 
         // Run electron snippet to find the Menu!
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
@@ -2132,7 +2132,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
           return
         }
         await homePage.goToModelingScene()
-        await scene.waitForExecutionDone()
+        await scene.connectionEstablished()
 
         // Run electron snippet to find the Menu!
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
@@ -2157,7 +2157,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
           return
         }
         await homePage.goToModelingScene()
-        await scene.waitForExecutionDone()
+        await scene.connectionEstablished()
 
         // Run electron snippet to find the Menu!
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
@@ -2170,7 +2170,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
           menu.click()
         })
         // Core dump and refresh magic number timeout
-        await scene.waitForExecutionDone()
+        await scene.connectionEstablished()
         await expect(toolbar.startSketchBtn).toBeVisible()
       })
       test('Modeling.Help.Reset onboarding', async ({
@@ -2185,7 +2185,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
           return
         }
         await homePage.goToModelingScene()
-        await scene.waitForExecutionDone()
+        await scene.connectionEstablished()
 
         // Run electron snippet to find the Menu!
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
