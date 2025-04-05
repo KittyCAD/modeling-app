@@ -34,15 +34,18 @@ description: Operations executed gridfinity-bins.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "face",
-    "functionSourceRange": [
-      874,
-      1247,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "face",
+      "functionSourceRange": [
+        875,
+        1248,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -61,7 +64,7 @@ description: Operations executed gridfinity-bins.kcl
     "unlabeledArg": null
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
     "labeledArgs": {
@@ -257,15 +260,18 @@ description: Operations executed gridfinity-bins.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "face",
-    "functionSourceRange": [
-      874,
-      1247,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "face",
+      "functionSourceRange": [
+        875,
+        1248,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -284,7 +290,7 @@ description: Operations executed gridfinity-bins.kcl
     "unlabeledArg": null
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
     "type": "KclStdLibCall",

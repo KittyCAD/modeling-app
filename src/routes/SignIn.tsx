@@ -15,7 +15,7 @@ import { Themes, getSystemTheme } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
 import { toSync } from '@src/lib/utils'
 import { authActor, useSettings } from '@src/machines/appMachine'
-import { APP_VERSION } from '@src/routes/utils'
+import { APP_VERSION, IS_NIGHTLY } from '@src/routes/utils'
 
 const subtleBorder =
   'border border-solid border-chalkboard-30 dark:border-chalkboard-80'
@@ -101,7 +101,7 @@ const SignIn = () => {
               <Logo className="text-primary h-10 lg:h-12 xl:h-16 relative translate-y-1 mr-4 lg:mr-6 xl:mr-8" />
               <h1 className="text-3xl lg:text-4xl xl:text-5xl">{APP_NAME}</h1>
               <span className="px-3 py-1 text-base rounded-full bg-primary/10 text-primary self-start">
-                alpha v{APP_VERSION}
+                {IS_NIGHTLY ? 'nightly' : ''} v{APP_VERSION}
               </span>
             </div>
             <p className="my-4 text-lg xl:text-xl">
@@ -233,7 +233,7 @@ const SignIn = () => {
               <div className="flex gap-4 flex-wrap items-center">
                 <ActionButton
                   Element="externalLink"
-                  to="https://zoo.dev/docs/kcl-samples/a-parametric-bearing-pillow-block"
+                  to="https://zoo.dev/docs/kcl-samples/parametric-bearing-pillow-block"
                   iconStart={{
                     icon: 'settings',
                     bgClassName: '!bg-transparent',

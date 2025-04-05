@@ -2,7 +2,7 @@ import type { Models } from '@kittycad/lib/dist/types/src'
 
 import type { UnitAngle, UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
 
-export const APP_NAME = 'Modeling App'
+export const APP_NAME = 'Design Studio'
 /** Search string in new project names to increment as an index */
 export const INDEX_IDENTIFIER = '$n'
 /** The maximum number of 0's to pad a default project name's index with */
@@ -11,7 +11,7 @@ export const MAX_PADDING = 7
  * This is used as a template for new projects, with $nnn being replaced by an index
  * This is available for users to edit as a setting.
  */
-export const DEFAULT_PROJECT_NAME = 'project-$nnn'
+export const DEFAULT_PROJECT_NAME = 'untitled'
 export const DEFAULT_PROJECT_KCL_FILE = 'main.kcl'
 /** Name given the temporary "project" in the browser version of the app */
 export const BROWSER_PROJECT_NAME = 'browser'
@@ -21,9 +21,9 @@ export const BROWSER_FILE_NAME = 'main'
  * The default name of the project in Desktop.
  * This is prefixed by the Documents directory path.
  */
-export const PROJECT_FOLDER = 'zoo-modeling-app-projects'
+export const PROJECT_FOLDER = 'zoo-design-studio-projects'
 /**
- * File extension for Modeling App's files, which are written in kcl
+ * File extension for Design Studio's files, which are written in kcl
  * @link - https://zoo.dev/docs/kcl
  * */
 export const FILE_EXT = '.kcl'

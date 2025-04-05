@@ -242,7 +242,7 @@ fn init_handlebars() -> Result<handlebars::Handlebars<'static>> {
              out: &mut dyn handlebars::Output|
              -> handlebars::HelperResult {
                 let param = h.param(0).and_then(|v| v.value().as_str()).unwrap_or("");
-                let basename = param.split('/').last().unwrap_or("");
+                let basename = param.split('/').next_back().unwrap_or("");
                 out.write(&format!("`{}`", basename))?;
                 Ok(())
             },

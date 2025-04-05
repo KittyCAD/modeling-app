@@ -87,7 +87,7 @@ lint: install ## Lint the code
 ###############################################################################
 # RUN
 
-TARGET ?= web
+TARGET ?= desktop
 
 .PHONY: run
 run: run-$(TARGET)
@@ -103,9 +103,9 @@ run-desktop: install build-desktop ## Start the desktop app
 ###############################################################################
 # TEST
 
-E2E_WORKERS ?= 1
+E2E_GREP ?=
+E2E_WORKERS ?=
 E2E_FAILURES ?= 1
-E2E_GREP ?= ""
 
 .PHONY: test
 test: test-unit test-e2e
@@ -121,11 +121,19 @@ test-e2e: test-e2e-$(TARGET)
 .PHONY: test-e2e-web
 test-e2e-web: install build-web ## Run the web e2e tests
 	@ curl -fs localhost:3000 >/dev/null || ( echo "Error: localhost:3000 not available, 'make run-web' first" && exit 1 )
-	yarn chrome:test --headed --workers=$(E2E_WORKERS) --max-failures=$(E2E_FAILURES) --grep=$(E2E_GREP)
+ifdef E2E_GREP
+	yarn chrome:test --headed --grep="$(E2E_GREP)" --max-failures=$(E2E_FAILURES)
+else
+	yarn chrome:test --headed --workers='100%'
+endif
 
 .PHONY: test-e2e-desktop
 test-e2e-desktop: install build-desktop ## Run the desktop e2e tests
-	yarn test:playwright:electron --workers=$(E2E_WORKERS) --max-failures=$(E2E_FAILURES) --grep="$(E2E_GREP)"
+ifdef E2E_GREP
+	yarn test:playwright:electron --grep="$(E2E_GREP)" --max-failures=$(E2E_FAILURES)
+else
+	yarn test:playwright:electron --workers='100%'
+endif
 
 ###############################################################################
 # CLEAN

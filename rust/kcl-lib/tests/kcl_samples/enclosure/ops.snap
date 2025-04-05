@@ -145,15 +145,18 @@ description: Operations executed enclosure.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "function001",
-    "functionSourceRange": [
-      1254,
-      1851,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "function001",
+      "functionSourceRange": [
+        1275,
+        1872,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -412,18 +415,21 @@ description: Operations executed enclosure.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "function001",
-    "functionSourceRange": [
-      1254,
-      1851,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "function001",
+      "functionSourceRange": [
+        1275,
+        1872,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -682,18 +688,21 @@ description: Operations executed enclosure.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "function001",
-    "functionSourceRange": [
-      1254,
-      1851,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "function001",
+      "functionSourceRange": [
+        1275,
+        1872,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -952,18 +961,21 @@ description: Operations executed enclosure.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "function001",
-    "functionSourceRange": [
-      1254,
-      1851,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "function001",
+      "functionSourceRange": [
+        1275,
+        1872,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -1222,7 +1234,7 @@ description: Operations executed enclosure.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
     "labeledArgs": {

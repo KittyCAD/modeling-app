@@ -34,15 +34,18 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "face",
-    "functionSourceRange": [
-      868,
-      1182,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "face",
+      "functionSourceRange": [
+        869,
+        1183,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -61,7 +64,7 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
     "unlabeledArg": null
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
     "labeledArgs": {
@@ -257,15 +260,18 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "face",
-    "functionSourceRange": [
-      868,
-      1182,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "face",
+      "functionSourceRange": [
+        869,
+        1183,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -284,7 +290,7 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
     "unlabeledArg": null
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
     "type": "KclStdLibCall",
@@ -1066,15 +1072,18 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
     "unlabeledArg": null
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "magnetBase",
-    "functionSourceRange": [
-      4348,
-      4690,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "magnetBase",
+      "functionSourceRange": [
+        4349,
+        4691,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -1093,15 +1102,18 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
     "unlabeledArg": null
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "magnetCenterCutout",
-    "functionSourceRange": [
-      2697,
-      4288,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "magnetCenterCutout",
+      "functionSourceRange": [
+        2698,
+        4289,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -1120,7 +1132,7 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
     "unlabeledArg": null
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
     "labeledArgs": {
@@ -1149,7 +1161,7 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
     "unlabeledArg": null
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
     "labeledArgs": {
@@ -1319,15 +1331,18 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "magnetBase",
-    "functionSourceRange": [
-      4348,
-      4690,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "magnetBase",
+      "functionSourceRange": [
+        4349,
+        4691,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -1346,15 +1361,18 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
     "unlabeledArg": null
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "magnetCenterCutout",
-    "functionSourceRange": [
-      2697,
-      4288,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "magnetCenterCutout",
+      "functionSourceRange": [
+        2698,
+        4289,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -1373,7 +1391,7 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
     "unlabeledArg": null
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
     "labeledArgs": {
@@ -1402,7 +1420,7 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
     "unlabeledArg": null
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
     "labeledArgs": {

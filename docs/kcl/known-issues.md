@@ -1,6 +1,6 @@
 ---
 title: "KCL Known Issues"
-excerpt: "Known issues with the KCL standard library for the Zoo Modeling App."
+excerpt: "Known issues with the KCL standard library for the Zoo Design Studio."
 layout: manual
 ---
 

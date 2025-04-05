@@ -4,15 +4,18 @@ description: Operations executed hex-nut.kcl
 ---
 [
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "hexNut",
-    "functionSourceRange": [
-      503,
-      1054,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "hexNut",
+      "functionSourceRange": [
+        504,
+        1055,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -89,6 +92,6 @@ description: Operations executed hex-nut.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   }
 ]

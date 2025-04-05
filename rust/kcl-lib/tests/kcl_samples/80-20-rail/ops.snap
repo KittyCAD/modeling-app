@@ -4,15 +4,18 @@ description: Operations executed 80-20-rail.kcl
 ---
 [
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "rail8020",
-    "functionSourceRange": [
-      214,
-      7479,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "rail8020",
+      "functionSourceRange": [
+        239,
+        7504,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -297,6 +300,6 @@ description: Operations executed 80-20-rail.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   }
 ]

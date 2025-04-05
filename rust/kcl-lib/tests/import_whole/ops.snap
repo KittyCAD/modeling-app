@@ -4,6 +4,15 @@ description: Operations executed import_whole.kcl
 ---
 [
   {
+    "type": "GroupBegin",
+    "group": {
+      "type": "ModuleInstance",
+      "name": "foo",
+      "moduleId": 5
+    },
+    "sourceRange": []
+  },
+  {
     "labeledArgs": {
       "data": {
         "value": {
@@ -49,6 +58,9 @@ description: Operations executed import_whole.kcl
       },
       "sourceRange": []
     }
+  },
+  {
+    "type": "GroupEnd"
   },
   {
     "labeledArgs": {

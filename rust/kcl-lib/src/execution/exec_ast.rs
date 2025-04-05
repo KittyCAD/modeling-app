@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use async_recursion::async_recursion;
 use indexmap::IndexMap;
 
-use super::{kcl_value::TypeDef, types::PrimitiveType};
+use super::{cad_op::Group, kcl_value::TypeDef, types::PrimitiveType};
 use crate::{
     engine::ExecutionKind,
     errors::{KclError, KclErrorDetails},
@@ -20,7 +20,7 @@ use crate::{
     modules::{ModuleId, ModulePath, ModuleRepr},
     parsing::ast::types::{
         Annotation, ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem,
-        CallExpression, CallExpressionKw, Expr, FunctionExpression, IfExpression, ImportPath, ImportSelector,
+        BoxNode, CallExpression, CallExpressionKw, Expr, FunctionExpression, IfExpression, ImportPath, ImportSelector,
         ItemVisibility, LiteralIdentifier, LiteralValue, MemberExpression, MemberObject, Name, Node, NodeRef,
         ObjectExpression, PipeExpression, Program, TagDeclarator, Type, UnaryExpression, UnaryOperator,
     },
@@ -564,10 +564,19 @@ impl ExecutorContext {
     async fn exec_module_for_result(
         &self,
         module_id: ModuleId,
+        module_name: &BoxNode<Name>,
         exec_state: &mut ExecState,
         exec_kind: ExecutionKind,
         source_range: SourceRange,
     ) -> Result<Option<KclValue>, KclError> {
+        exec_state.global.operations.push(Operation::GroupBegin {
+            group: Group::ModuleInstance {
+                name: module_name.to_string(),
+                module_id,
+            },
+            source_range,
+        });
+
         let path = exec_state.global.module_infos[&module_id].path.clone();
         let mut repr = exec_state.global.module_infos[&module_id].take_repr();
         // DON'T EARLY RETURN! We need to restore the module repr
@@ -593,6 +602,9 @@ impl ExecutorContext {
         };
 
         exec_state.global.module_infos[&module_id].restore_repr(repr);
+
+        exec_state.global.operations.push(Operation::GroupEnd);
+
         result
     }
 
@@ -644,7 +656,7 @@ impl ExecutorContext {
             Expr::Name(name) => {
                 let value = name.get_result(exec_state, self).await?.clone();
                 if let KclValue::Module { value: module_id, meta } = value {
-                    self.exec_module_for_result(module_id, exec_state, ExecutionKind::Normal, metadata.source_range)
+                    self.exec_module_for_result(module_id, name, exec_state, ExecutionKind::Normal, metadata.source_range)
                         .await?
                         .unwrap_or_else(|| {
                             exec_state.warn(CompilationError::err(
@@ -1401,7 +1413,7 @@ impl Node<CallExpressionKw> {
 
                 if matches!(fn_src, FunctionSource::User { .. }) && !ctx.is_isolated_execution().await {
                     // Track return operation.
-                    exec_state.global.operations.push(Operation::UserDefinedFunctionReturn);
+                    exec_state.global.operations.push(Operation::GroupEnd);
                 }
 
                 let result = return_value.ok_or_else(move || {
@@ -1511,12 +1523,14 @@ impl Node<CallExpression> {
 
                 if !ctx.is_isolated_execution().await {
                     // Track call operation.
-                    exec_state.global.operations.push(Operation::UserDefinedFunctionCall {
-                        name: Some(fn_name.to_string()),
-                        function_source_range: func.function_def_source_range().unwrap_or_default(),
-                        unlabeled_arg: None,
-                        // TODO: Add the arguments for legacy positional parameters.
-                        labeled_args: Default::default(),
+                    exec_state.global.operations.push(Operation::GroupBegin {
+                        group: Group::FunctionCall {
+                            name: Some(fn_name.to_string()),
+                            function_source_range: func.function_def_source_range().unwrap_or_default(),
+                            unlabeled_arg: None,
+                            // TODO: Add the arguments for legacy positional parameters.
+                            labeled_args: Default::default(),
+                        },
                         source_range: callsite,
                     });
                 }
@@ -1550,7 +1564,7 @@ impl Node<CallExpression> {
 
                 if !ctx.is_isolated_execution().await {
                     // Track return operation.
-                    exec_state.global.operations.push(Operation::UserDefinedFunctionReturn);
+                    exec_state.global.operations.push(Operation::GroupEnd);
                 }
 
                 Ok(result)
@@ -2331,15 +2345,17 @@ impl FunctionSource {
                         .iter()
                         .map(|(k, arg)| (k.clone(), OpArg::new(OpKclValue::from(&arg.value), arg.source_range)))
                         .collect();
-                    exec_state.global.operations.push(Operation::UserDefinedFunctionCall {
-                        name: fn_name,
-                        function_source_range: ast.as_source_range(),
-                        unlabeled_arg: args
-                            .kw_args
-                            .unlabeled
-                            .as_ref()
-                            .map(|arg| OpArg::new(OpKclValue::from(&arg.value), arg.source_range)),
-                        labeled_args: op_labeled_args,
+                    exec_state.global.operations.push(Operation::GroupBegin {
+                        group: Group::FunctionCall {
+                            name: fn_name,
+                            function_source_range: ast.as_source_range(),
+                            unlabeled_arg: args
+                                .kw_args
+                                .unlabeled
+                                .as_ref()
+                                .map(|arg| OpArg::new(OpKclValue::from(&arg.value), arg.source_range)),
+                            labeled_args: op_labeled_args,
+                        },
                         source_range: callsite,
                     });
                 }
