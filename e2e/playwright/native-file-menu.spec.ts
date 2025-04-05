@@ -1,6 +1,6 @@
 import { throwTronAppMissing } from '@e2e/playwright/lib/electron-helpers'
+import { orRunWhenFullSuiteEnabled } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
-import { orRunWhenFullSuiteEnabled } from './test-utils'
 
 /**
  * Not all menu actions are tested. Some are default electron menu actions.
