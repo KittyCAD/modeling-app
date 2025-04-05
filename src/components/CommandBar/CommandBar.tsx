@@ -7,6 +7,8 @@ import CommandBarReview from '@src/components/CommandBar/CommandBarReview'
 import CommandComboBox from '@src/components/CommandComboBox'
 import { CustomIcon } from '@src/components/CustomIcon'
 import Tooltip from '@src/components/Tooltip'
+import { useNetworkContext } from '@src/hooks/useNetworkContext'
+import { EngineConnectionStateType } from '@src/lang/std/engineConnection'
 import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
 import {
   commandBarActor,
@@ -18,6 +20,7 @@ export const COMMAND_PALETTE_HOTKEY = 'mod+k'
 export const CommandBar = () => {
   const { pathname } = useLocation()
   const commandBarState = useCommandBarState()
+  const { immediateState } = useNetworkContext()
   const {
     context: { selectedCommand, currentArgument, commands },
   } = commandBarState
@@ -31,6 +34,14 @@ export const CommandBar = () => {
     if (commandBarState.matches('Closed')) return
     commandBarActor.send({ type: 'Close' })
   }, [pathname])
+
+  useEffect(() => {
+    if (
+      immediateState.type !== EngineConnectionStateType.ConnectionEstablished
+    ) {
+      commandBarActor.send({ type: 'Close' })
+    }
+  }, [immediateState])
 
   // Hook up keyboard shortcuts
   useHotkeyWrapper([COMMAND_PALETTE_HOTKEY], () => {

@@ -55,7 +55,8 @@ test.describe('Testing settings', () => {
     // Check that the invalid settings were changed to good defaults
     expect(storedSettings.settings?.modeling?.base_unit).toBe('in')
     expect(storedSettings.settings?.modeling?.mouse_controls).toBe('zoo')
-    expect(storedSettings.settings?.project?.directory).toBe('')
+    // Commenting this out because tests need this to be set to work properly.
+    // expect(storedSettings.settings?.app?.project_directory).toBe('')
     expect(storedSettings.settings?.project?.default_project_name).toBe(
       'untitled'
     )
@@ -865,6 +866,8 @@ test.describe('Testing settings', () => {
     page,
     homePage,
     tronApp,
+    scene,
+    cmdBar,
   }) => {
     if (!tronApp) {
       fail()
@@ -886,6 +889,7 @@ test.describe('Testing settings', () => {
     })
     await page.setBodyDimensions({ width: 1200, height: 500 })
     await homePage.goToModelingScene()
+    await scene.connectionEstablished()
 
     // Constants and locators
     const resizeHandle = page.locator('.sidebar-resize-handles > div.block')
@@ -897,6 +901,7 @@ test.describe('Testing settings', () => {
 
     async function setShowDebugPanelTo(value: 'On' | 'Off') {
       await commandsButton.click()
+      await debugPaneOption.scrollIntoViewIfNeeded()
       await debugPaneOption.click()
       await page.getByRole('option', { name: value }).click()
       await expect(

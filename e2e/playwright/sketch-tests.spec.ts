@@ -22,6 +22,7 @@ test.describe('Sketch tests', { tag: ['@skipWin'] }, () => {
     context,
     homePage,
     scene,
+    cmdBar,
   }) => {
     const u = await getUtils(page)
     const selectionsSnippets = {
@@ -82,7 +83,7 @@ test.describe('Sketch tests', { tag: ['@skipWin'] }, () => {
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
     await homePage.goToModelingScene()
-    await scene.waitForExecutionDone()
+    await scene.settled(cmdBar)
 
     // wait for execution done
     await u.openDebugPanel()
@@ -108,6 +109,7 @@ test.describe('Sketch tests', { tag: ['@skipWin'] }, () => {
     page,
     scene,
     homePage,
+    cmdBar,
   }) => {
     const u = await getUtils(page)
     await page.addInitScript(async () => {
@@ -122,7 +124,7 @@ sketch001 = startSketchOn(XZ)
     })
 
     await homePage.goToModelingScene()
-    await scene.waitForExecutionDone()
+    await scene.settled(cmdBar)
 
     await scene.expectPixelColor(TEST_COLORS.WHITE, { x: 587, y: 270 }, 15)
 
@@ -673,6 +675,7 @@ sketch001 = startSketchOn(XZ)
     homePage,
     scene,
     editor,
+    cmdBar,
   }) => {
     const u = await getUtils(page)
     await page.addInitScript(async () => {
@@ -689,7 +692,7 @@ sketch001 = startSketchOn(XZ)
     })
 
     await homePage.goToModelingScene()
-    await scene.waitForExecutionDone()
+    await scene.settled(cmdBar)
 
     await expect(
       page.getByRole('button', { name: 'Start Sketch' })
@@ -1614,7 +1617,7 @@ profile002 = startProfileAt([117.2, 56.08], sketch001)
   test(
     `snapToProfile start only works for current profile`,
     { tag: ['@skipWin'] },
-    async ({ context, page, scene, toolbar, editor, homePage }) => {
+    async ({ context, page, scene, toolbar, editor, homePage, cmdBar }) => {
       // We seed the scene with a single offset plane
       await context.addInitScript(() => {
         localStorage.setItem(
@@ -1630,6 +1633,8 @@ profile003 = startProfileAt([206.63, -56.73], sketch001)
       })
 
       await homePage.goToModelingScene()
+      await scene.settled(cmdBar)
+
       await expect(
         page.getByRole('button', { name: 'Start Sketch' })
       ).not.toBeDisabled()
@@ -1651,9 +1656,13 @@ profile003 = startProfileAt([206.63, -56.73], sketch001)
       const codeFromTangentialArc = `  |> tangentialArcTo([39.49, 88.22], %)`
       await test.step('check that tangential tool does not snap to other profile starts', async () => {
         await toolbar.tangentialArcBtn.click()
+        await page.waitForTimeout(1000)
         await endOfLowerSegMove()
+        await page.waitForTimeout(1000)
         await endOfLowerSegClick()
+        await page.waitForTimeout(1000)
         await profileStartOfHigherSegClick()
+        await page.waitForTimeout(1000)
         await editor.expectEditor.toContain(codeFromTangentialArc)
         await editor.expectEditor.not.toContain(
           `[profileStartX(%), profileStartY(%)]`
@@ -2242,8 +2251,9 @@ profile004 = circleThreePoint(sketch001, p1 = [13.44, -6.8], p2 = [13.39, -2.07]
 
       await test.step('enter sketch and setup', async () => {
         await moveToClearToolBarPopover()
+        await page.waitForTimeout(1000)
         await pointOnSegment({ shouldDbClick: true })
-        await page.waitForTimeout(600)
+        await page.waitForTimeout(2000)
 
         await toolbar.lineBtn.click()
         await page.waitForTimeout(100)
@@ -2359,7 +2369,7 @@ profile003 = circle(sketch001, center = [6.92, -4.2], radius = 3.16)
 
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
-      await scene.waitForExecutionDone()
+      await scene.settled(cmdBar)
       await expect(
         page.getByRole('button', { name: 'Start Sketch' })
       ).not.toBeDisabled()
@@ -2965,6 +2975,7 @@ test.describe(`Click based selection don't brick the app when clicked out of ran
     toolbar,
     editor,
     homePage,
+    cmdBar,
   }) => {
     // We seed the scene with a single offset plane
     await context.addInitScript(() => {
@@ -2982,7 +2993,7 @@ test.describe(`Click based selection don't brick the app when clicked out of ran
     })
 
     await homePage.goToModelingScene()
-    await scene.waitForExecutionDone()
+    await scene.settled(cmdBar)
 
     await test.step(`format the code`, async () => {
       // doesn't contain condensed version
@@ -3047,6 +3058,7 @@ test.describe('Redirecting to home page and back to the original file should cle
     toolbar,
     editor,
     homePage,
+    cmdBar,
   }) => {
     // We seed the scene with a single offset plane
     await context.addInitScript(() => {
@@ -3059,7 +3071,7 @@ test.describe('Redirecting to home page and back to the original file should cle
       )
     })
     await homePage.goToModelingScene()
-    await scene.waitForExecutionDone()
+    await scene.settled(cmdBar)
 
     const [objClick] = scene.makeMouseHelpers(634, 274)
     await objClick()

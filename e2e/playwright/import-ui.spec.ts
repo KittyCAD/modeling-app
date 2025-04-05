@@ -10,6 +10,7 @@ test.describe('Import UI tests', () => {
     toolbar,
     scene,
     editor,
+    cmdBar,
   }) => {
     await context.folderSetupFn(async (dir) => {
       const projectDir = path.join(dir, 'import-test')
@@ -61,7 +62,7 @@ sketch002 = startSketchOn(extrude001, seg01)`
     })
 
     await homePage.openProject('import-test')
-    await scene.waitForExecutionDone()
+    await scene.settled(cmdBar)
 
     await scene.moveCameraTo(
       {

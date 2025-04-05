@@ -90,6 +90,7 @@ export const KclEditorPane = () => {
     return () => {
       kclEditorActor.send({ type: 'setKclEditorMounted', data: false })
       kclEditorActor.send({ type: 'setLastSelectionEvent', data: undefined })
+      kclManager.diagnostics = []
     }
   }, [])
 

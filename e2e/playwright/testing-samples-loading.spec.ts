@@ -11,7 +11,8 @@ test.describe('Testing in-app sample loading', () => {
    * Note this test implicitly depends on the KCL sample "parametric-bearing-pillow-block",
    * its title, and its units settings. https://github.com/KittyCAD/kcl-samples/blob/main/parametric-bearing-pillow-block/main.kcl
    */
-  test('Web: should overwrite current code, cannot create new file', async ({
+  // We have no more web tests
+  test.skip('Web: should overwrite current code, cannot create new file', async ({
     editor,
     context,
     page,
@@ -78,7 +79,7 @@ test.describe('Testing in-app sample loading', () => {
   test(
     'Desktop: should create new file by default, optionally overwrite',
     { tag: '@electron' },
-    async ({ editor, context, page }, testInfo) => {
+    async ({ editor, context, page, scene, cmdBar }, testInfo) => {
       const { dir } = await context.folderSetupFn(async (dir) => {
         const bracketDir = join(dir, 'bracket')
         await fsp.mkdir(bracketDir, { recursive: true })
@@ -125,7 +126,7 @@ test.describe('Testing in-app sample loading', () => {
       await test.step(`Test setup`, async () => {
         await page.setBodyDimensions({ width: 1200, height: 500 })
         await projectCard.click()
-        await u.waitForPageLoad()
+        await scene.settled(cmdBar)
       })
 
       await test.step(`Precondition: check the initial code`, async () => {
@@ -140,11 +141,14 @@ test.describe('Testing in-app sample loading', () => {
 
       await test.step(`Load a KCL sample with the command palette`, async () => {
         await commandBarButton.click()
+        await page.waitForTimeout(1000)
         await commandOption.click()
+        await page.waitForTimeout(1000)
         await commandSampleOption(sampleOne.title).click()
         await expect(overwriteWarning).not.toBeVisible()
         await expect(newFileWarning).toBeVisible()
         await confirmButton.click()
+        await page.waitForTimeout(1000)
       })
 
       await test.step(`Ensure we made and opened a new file`, async () => {
@@ -155,14 +159,20 @@ test.describe('Testing in-app sample loading', () => {
 
       await test.step(`Now overwrite the current file`, async () => {
         await commandBarButton.click()
+        await page.waitForTimeout(1000)
         await commandOption.click()
+        await page.waitForTimeout(1000)
         await commandSampleOption(sampleTwo.title).click()
+        await page.waitForTimeout(1000)
         await commandMethodArgButton.click()
+        await page.waitForTimeout(1000)
         await commandMethodOption.click()
+        await page.waitForTimeout(1000)
         await expect(commandMethodArgButton).toContainText('overwrite')
         await expect(newFileWarning).not.toBeVisible()
         await expect(overwriteWarning).toBeVisible()
         await confirmButton.click()
+        await page.waitForTimeout(1000)
       })
 
       await test.step(`Ensure we overwrote the current file without navigating`, async () => {

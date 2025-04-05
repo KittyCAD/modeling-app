@@ -72,7 +72,6 @@ export interface IElectronAPI {
   process: {
     env: {
       BASE_URL: string
-      TEST_SETTINGS_FILE_KEY: string
       IS_PLAYWRIGHT: string
       VITE_KC_DEV_TOKEN: string
       VITE_KC_API_WS_MODELING_URL: string

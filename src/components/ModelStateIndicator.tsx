@@ -1,31 +1,45 @@
-import { CustomIcon } from '@src/components/CustomIcon'
-import { useEngineCommands } from '@src/components/EngineCommands'
-import { Spinner } from '@src/components/Spinner'
+import { engineStreamActor } from '@src/machines/appMachine'
+import { EngineStreamState } from '@src/machines/engineStreamMachine'
+import { useSelector } from '@xstate/react'
+
+import { faPause, faPlay, faSpinner } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 export const ModelStateIndicator = () => {
-  const [commands] = useEngineCommands()
-  const lastCommandType = commands[commands.length - 1]?.type
+  const engineStreamState = useSelector(engineStreamActor, (state) => state)
 
   let className = 'w-6 h-6 '
-  let icon = <Spinner className={className} />
+  let icon = <div className={className}></div>
   let dataTestId = 'model-state-indicator'
 
-  if (lastCommandType === 'receive-reliable') {
-    className +=
-      'bg-chalkboard-20 dark:bg-chalkboard-80 !group-disabled:bg-chalkboard-30 !dark:group-disabled:bg-chalkboard-80 rounded-sm bg-succeed-10/30 dark:bg-succeed'
+  if (engineStreamState.value === EngineStreamState.Paused) {
+    className += 'text-secondary'
     icon = (
-      <CustomIcon
-        data-testid={dataTestId + '-receive-reliable'}
-        name="checkmark"
+      <FontAwesomeIcon
+        data-testid={dataTestId + '-paused'}
+        icon={faPause}
+        width="20"
+        height="20"
       />
     )
-  } else if (lastCommandType === 'execution-done') {
-    className +=
-      'border-6 border border-solid border-chalkboard-60 dark:border-chalkboard-80 bg-chalkboard-20 dark:bg-chalkboard-80 !group-disabled:bg-chalkboard-30 !dark:group-disabled:bg-chalkboard-80 rounded-sm bg-succeed-10/30 dark:bg-succeed'
+  } else if (engineStreamState.value === EngineStreamState.Playing) {
+    className += 'text-secondary'
     icon = (
-      <CustomIcon
-        data-testid={dataTestId + '-execution-done'}
-        name="checkmark"
+      <FontAwesomeIcon
+        data-testid={dataTestId + '-playing'}
+        icon={faPlay}
+        width="20"
+        height="20"
+      />
+    )
+  } else {
+    className += 'text-secondary'
+    icon = (
+      <FontAwesomeIcon
+        data-testid={dataTestId + '-resuming'}
+        icon={faSpinner}
+        width="20"
+        height="20"
       />
     )
   }

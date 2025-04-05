@@ -6,15 +6,16 @@ import {
   useLoaderData,
   useNavigate,
   useRouteLoaderData,
+  useSearchParams,
 } from 'react-router-dom'
 
 import { AppHeader } from '@src/components/AppHeader'
 import { useEngineCommands } from '@src/components/EngineCommands'
+import { EngineStream } from '@src/components/EngineStream'
 import Gizmo from '@src/components/Gizmo'
 import { LowerRightControls } from '@src/components/LowerRightControls'
 import { useLspContext } from '@src/components/LspProvider'
 import { ModelingSidebar } from '@src/components/ModelingSidebar/ModelingSidebar'
-import { Stream } from '@src/components/Stream'
 import { UnitsMenu } from '@src/components/UnitsMenu'
 import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
 import { useCreateFileLinkQuery } from '@src/hooks/useCreateFileLinkQueryWatcher'
@@ -30,12 +31,21 @@ import {
   codeManager,
   engineCommandManager,
   rustContext,
+  sceneInfra,
 } from '@src/lib/singletons'
 import { maybeWriteToDisk } from '@src/lib/telemetry'
 import { type IndexLoaderData } from '@src/lib/types'
-import { useSettings, useToken } from '@src/machines/appMachine'
+import {
+  engineStreamActor,
+  useSettings,
+  useToken,
+} from '@src/machines/appMachine'
 import { commandBarActor } from '@src/machines/commandBarMachine'
+import { EngineStreamTransition } from '@src/machines/engineStreamMachine'
 import { onboardingPaths } from '@src/routes/Onboarding/paths'
+
+// CYCLIC REF
+sceneInfra.camControls.engineStreamActor = engineStreamActor
 
 maybeWriteToDisk()
   .then(() => {})
@@ -63,6 +73,10 @@ export function App() {
   // the coredump.
   const ref = useRef<HTMLDivElement>(null)
 
+  // Stream related refs and data
+  let [searchParams] = useSearchParams()
+  const pool = searchParams.get('pool')
+
   const projectName = project?.name || null
   const projectPath = project?.path || null
 
@@ -77,7 +91,7 @@ export function App() {
   useHotKeyListener()
 
   const settings = useSettings()
-  const token = useToken()
+  const authToken = useToken()
 
   const coreDumpManager = useMemo(
     () =>
@@ -85,7 +99,7 @@ export function App() {
         engineCommandManager,
         codeManager,
         rustContext,
-        token
+        authToken
       ),
     []
   )
@@ -139,6 +153,13 @@ export function App() {
     }
   }, [lastCommandType])
 
+  useEffect(() => {
+    // When leaving the modeling scene, cut the engine stream.
+    return () => {
+      engineStreamActor.send({ type: EngineStreamTransition.Pause })
+    }
+  }, [])
+
   return (
     <div className="relative h-full flex flex-col" ref={ref}>
       <AppHeader
@@ -148,7 +169,7 @@ export function App() {
       />
       <ModalContainer />
       <ModelingSidebar paneOpacity={paneOpacity} />
-      <Stream />
+      <EngineStream pool={pool} authToken={authToken} />
       {/* <CamToggle /> */}
       <LowerRightControls coreDumpManager={coreDumpManager}>
         <UnitsMenu />

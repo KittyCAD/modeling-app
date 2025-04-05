@@ -5,12 +5,18 @@ import { getUtils, orRunWhenFullSuiteEnabled } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
 test.describe('Testing Camera Movement', { tag: ['@skipWin'] }, () => {
-  test('Can move camera reliably', async ({ page, context, homePage }) => {
+  test('Can move camera reliably', async ({
+    page,
+    context,
+    homePage,
+    scene,
+  }) => {
     const u = await getUtils(page)
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
     await homePage.goToModelingScene()
-    await u.waitForPageLoad()
+    await scene.connectionEstablished()
+
     await u.openAndClearDebugPanel()
     await u.closeKclCodePanel()
 

@@ -317,9 +317,13 @@ test.describe('Command bar tests', { tag: ['@skipWin'] }, () => {
   test('Can switch between sketch tools via command bar', async ({
     page,
     homePage,
+    scene,
+    cmdBar,
+    toolbar,
   }) => {
     await page.setBodyDimensions({ width: 1200, height: 500 })
     await homePage.goToModelingScene()
+    await scene.settled(cmdBar)
 
     const sketchButton = page.getByRole('button', { name: 'Start Sketch' })
     const cmdBarButton = page.getByRole('button', { name: 'Commands' })
@@ -343,7 +347,9 @@ test.describe('Command bar tests', { tag: ['@skipWin'] }, () => {
 
     // Start a sketch
     await sketchButton.click()
+
     await page.mouse.click(700, 200)
+    await toolbar.waitUntilSketchingReady()
 
     // Switch between sketch tools via the command bar
     await expect(lineToolButton).toHaveAttribute('aria-pressed', 'true')
