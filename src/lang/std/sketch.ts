@@ -15,10 +15,12 @@ import {
 } from '@src/lang/constants'
 import {
   createArrayExpression,
+  createBinaryExpression,
   createCallExpression,
   createCallExpressionStdLibKw,
   createLabeledArg,
   createLiteral,
+  createLocalName,
   createObjectExpression,
   createPipeExpression,
   createPipeSubstitution,
@@ -55,6 +57,7 @@ import type {
   SingleValueInput,
   SketchLineHelper,
   SketchLineHelperKw,
+  addCall,
 } from '@src/lang/std/stdTypes'
 import {
   findKwArg,
@@ -2170,7 +2173,7 @@ export const circleThreePoint: SketchLineHelperKw = {
   },
 }
 export const angledLine: SketchLineHelper = {
-  add: ({ node, pathToNode, segmentInput, replaceExistingCallback }) => {
+  add: ({ node, pathToNode, segmentInput, replaceExistingCallback, snaps }) => {
     if (segmentInput.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR
     const { from, to } = segmentInput
     const _node = { ...node }
@@ -2179,10 +2182,29 @@ export const angledLine: SketchLineHelper = {
     if (err(_node1)) return _node1
     const { node: pipe } = _node1
 
-    const newAngleVal = createLiteral(roundOff(getAngle(from, to), 0))
+    // When snapping to previous arc's tangent direction, create this expression:
+    //  angledLine({ angle = tangentToEnd(arc001), length = 12 }, %)
+    // Or if snapping to the negative direction:
+    //  angledLine({ angle = tangentToEnd(arc001) + turns::HALF_TURN, length = 12 }, %)
+    const newAngleVal = snaps?.previousArcTag
+      ? snaps.negativeTangentDirection
+        ? createBinaryExpression([
+            createCallExpression('tangentToEnd', [
+              createLocalName(snaps?.previousArcTag),
+            ]),
+            '+',
+            createLocalName('turns::HALF_TURN'),
+          ])
+        : createCallExpression('tangentToEnd', [
+            createLocalName(snaps?.previousArcTag),
+          ])
+      : createLiteral(roundOff(getAngle(from, to), 0))
     const newLengthVal = createLiteral(roundOff(getLength(from, to), 2))
     const newLine = createCallExpression('angledLine', [
-      createArrayExpression([newAngleVal, newLengthVal]),
+      createObjectExpression({
+        angle: newAngleVal,
+        length: newLengthVal,
+      }),
       createPipeSubstitution(),
     ])
 
@@ -2194,7 +2216,11 @@ export const angledLine: SketchLineHelper = {
           index: 0,
           key: 'angle',
           argType: 'angle',
-          expr: newAngleVal,
+          // We cannot pass newAngleVal to expr because it is a Node<Literal>.
+          // We couldn't change that type to be Node<Expr> because there is a lot of code assuming it to be Node<Literal>.
+          // So we added a new optional overrideExpr which can be Node<Expr> and this is used if present in sketchcombos/createNode().
+          expr: createLiteral(''),
+          overrideExpr: newAngleVal,
         },
         {
           type: 'arrayOrObjItem',
@@ -3136,6 +3162,7 @@ interface CreateLineFnCallArgs {
   fnName: ToolTip
   pathToNode: PathToNode
   spliceBetween?: boolean
+  snaps?: addCall['snaps']
 }
 
 export function addNewSketchLn({
@@ -3145,6 +3172,7 @@ export function addNewSketchLn({
   pathToNode,
   input: segmentInput,
   spliceBetween = false,
+  snaps,
 }: CreateLineFnCallArgs):
   | {
       modifiedAst: Node<Program>
@@ -3174,6 +3202,7 @@ export function addNewSketchLn({
     pathToNode,
     segmentInput,
     spliceBetween,
+    snaps,
   })
 }
 

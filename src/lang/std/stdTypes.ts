@@ -36,6 +36,7 @@ interface StraightSegmentInput {
   type: 'straight-segment'
   from: [number, number]
   to: [number, number]
+  snap?: boolean
 }
 
 /** Inputs for arcs, excluding tangentialArcTo for reasons explain in
@@ -84,6 +85,12 @@ export interface addCall extends ModifyAstBase {
   ) => CreatedSketchExprResult | Error
   referencedSegment?: Path
   spliceBetween?: boolean
+  snaps?: {
+    previousArcTag?: string
+    negativeTangentDirection: boolean
+    xAxis?: boolean
+    yAxis?: boolean
+  }
 }
 
 interface updateArgs extends ModifyAstBase {
@@ -108,18 +115,21 @@ export interface SingleValueInput<T> {
   type: 'singleValue'
   argType: LineInputsType
   expr: T
+  overrideExpr?: Node<Expr>
 }
 export interface ArrayItemInput<T> {
   type: 'arrayItem'
   index: 0 | 1
   argType: LineInputsType
   expr: T
+  overrideExpr?: Node<Expr>
 }
 export interface ObjectPropertyInput<T> {
   type: 'objectProperty'
   key: InputArgKeys
   argType: LineInputsType
   expr: T
+  overrideExpr?: Node<Expr>
 }
 
 interface ArrayOrObjItemInput<T> {
@@ -128,6 +138,7 @@ interface ArrayOrObjItemInput<T> {
   index: 0 | 1
   argType: LineInputsType
   expr: T
+  overrideExpr?: Node<Expr>
 }
 
 interface ArrayInObject<T> {
@@ -136,6 +147,7 @@ interface ArrayInObject<T> {
   argType: LineInputsType
   index: 0 | 1
   expr: T
+  overrideExpr?: Node<Expr>
 }
 
 type _InputArg<T> =
