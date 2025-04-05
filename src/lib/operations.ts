@@ -1,6 +1,7 @@
 import type { Operation, OpKclValue } from '@rust/kcl-lib/bindings/Operation'
 
 import type { CustomIconName } from '@src/components/CustomIcon'
+import { getNodeFromPath } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import type { Artifact } from '@src/lang/std/artifactGraph'
 import {
@@ -10,7 +11,7 @@ import {
   getSweepEdgeCodeRef,
   getWallCodeRef,
 } from '@src/lang/std/artifactGraph'
-import { sourceRangeFromRust } from '@src/lang/wasm'
+import { type PipeExpression, sourceRangeFromRust } from '@src/lang/wasm'
 import type {
   HelixModes,
   ModelingCommandSchema,
@@ -1311,22 +1312,110 @@ export async function enterAppearanceFlow({
 
 export async function enterTransformFlow({
   operation,
-  artifact,
 }: EnterEditFlowProps): Promise<Error | CommandBarMachineEvent> {
-  if (
-    operation.type !== 'StdLibCall' &&
-    operation.type !== 'KclStdLibCall' &&
-    operation.type !== 'GroupBegin'
-  ) {
+  // TODO: check how to extend to more types
+  if (operation.type !== 'GroupBegin') {
     return new Error(
-      'Appearance setting not yet supported for user-defined functions or modules. Please edit in the code editor.'
+      'Transform setting not yet supported outside of imports. Please edit in the code editor.'
     )
   }
+  const nodeToEdit = getNodePathFromSourceRange(
+    kclManager.ast,
+    sourceRangeFromRust(operation.sourceRange)
+  )
+
+  // TODO: clean up this extreme verbosity
+  let tx: KclExpression | undefined = undefined
+  let ty: KclExpression | undefined = undefined
+  let tz: KclExpression | undefined = undefined
+  let rr: KclExpression | undefined = undefined
+  let rp: KclExpression | undefined = undefined
+  let ry: KclExpression | undefined = undefined
+  const pipe = getNodeFromPath<PipeExpression>(
+    kclManager.ast,
+    nodeToEdit,
+    'PipeExpression'
+  )
+  if (!err(pipe) && pipe.node.body) {
+    const translate = pipe.node.body.find(
+      (n) => n.type === 'CallExpressionKw' && n.callee.name.name === 'translate'
+    )
+    if (translate?.type === 'CallExpressionKw') {
+      const xArg = translate.arguments.find(
+        (a) => a.label.type === 'Identifier' && a.label.name === 'x'
+      )
+      if (xArg?.type === 'LabeledArg' && xArg.arg.type === 'Literal') {
+        const result = await stringToKclExpression(xArg.arg.raw)
+        if (!(err(result) || 'errors' in result)) {
+          tx = result
+        }
+      }
+
+      const yArg = translate.arguments.find(
+        (a) => a.label.type === 'Identifier' && a.label.name === 'y'
+      )
+      if (yArg?.type === 'LabeledArg' && yArg.arg.type === 'Literal') {
+        const result = await stringToKclExpression(yArg.arg.raw)
+        if (!(err(result) || 'errors' in result)) {
+          ty = result
+        }
+      }
+
+      const zArg = translate.arguments.find(
+        (a) => a.label.type === 'Identifier' && a.label.name === 'z'
+      )
+      if (zArg?.type === 'LabeledArg' && zArg.arg.type === 'Literal') {
+        const result = await stringToKclExpression(zArg.arg.raw)
+        if (!(err(result) || 'errors' in result)) {
+          tz = result
+        }
+      }
+    }
+
+    const rotate = pipe.node.body.find(
+      (n) => n.type === 'CallExpressionKw' && n.callee.name.name === 'rotate'
+    )
+    if (rotate?.type === 'CallExpressionKw') {
+      const rollArg = rotate.arguments.find(
+        (a) => a.label.type === 'Identifier' && a.label.name === 'roll'
+      )
+      if (rollArg?.type === 'LabeledArg' && rollArg.arg.type === 'Literal') {
+        const result = await stringToKclExpression(rollArg.arg.raw)
+        if (!(err(result) || 'errors' in result)) {
+          rr = result
+        }
+      }
+
+      const pitch = rotate.arguments.find(
+        (a) => a.label.type === 'Identifier' && a.label.name === 'pitch'
+      )
+      if (pitch?.type === 'LabeledArg' && pitch.arg.type === 'Literal') {
+        const result = await stringToKclExpression(pitch.arg.raw)
+        if (!(err(result) || 'errors' in result)) {
+          rp = result
+        }
+      }
+
+      const yawArg = rotate.arguments.find(
+        (a) => a.label.type === 'Identifier' && a.label.name === 'yaw'
+      )
+      if (yawArg?.type === 'LabeledArg' && yawArg.arg.type === 'Literal') {
+        const result = await stringToKclExpression(yawArg.arg.raw)
+        if (!(err(result) || 'errors' in result)) {
+          ry = result
+        }
+      }
+    }
+  }
+
   const argDefaultValues = {
-    nodeToEdit: getNodePathFromSourceRange(
-      kclManager.ast,
-      sourceRangeFromRust(operation.sourceRange)
-    ),
+    nodeToEdit,
+    tx,
+    ty,
+    tz,
+    rr,
+    rp,
+    ry,
   }
   console.log('argDefaultValues', argDefaultValues)
   return {

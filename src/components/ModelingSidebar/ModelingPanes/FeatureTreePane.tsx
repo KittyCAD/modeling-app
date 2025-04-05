@@ -347,11 +347,7 @@ const OperationItem = (props: {
   }
 
   function enterTransformFlow() {
-    if (
-      props.item.type === 'StdLibCall' ||
-      props.item.type === 'GroupBegin' ||
-      props.item.type === 'KclStdLibCall'
-    ) {
+    if (props.item.type === 'GroupBegin') {
       props.send({
         type: 'enterTransformFlow',
         data: {
@@ -422,6 +418,16 @@ const OperationItem = (props: {
             </ContextMenuItem>,
           ]
         : []),
+      ...(props.item.type === 'GroupBegin'
+        ? [
+            <ContextMenuItem
+              onClick={enterTransformFlow}
+              data-testid="context-menu-set-transform"
+            >
+              Set transform
+            </ContextMenuItem>,
+          ]
+        : []),
       ...(props.item.type === 'StdLibCall' ||
       props.item.type === 'KclStdLibCall'
         ? [
@@ -441,12 +447,6 @@ const OperationItem = (props: {
             </ContextMenuItem>,
           ]
         : []),
-      <ContextMenuItem
-        onClick={enterTransformFlow}
-        data-testid="context-menu-set-transform"
-      >
-        Set transform
-      </ContextMenuItem>,
       <ContextMenuItem
         onClick={deleteOperation}
         hotkey="Delete"

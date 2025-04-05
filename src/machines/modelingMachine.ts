@@ -2689,19 +2689,43 @@ export const modelingMachine = setup({
         const ast = kclManager.ast
         const { tx, ty, tz, rr, rp, ry, nodeToEdit } = input
         if (!(nodeToEdit && typeof nodeToEdit[1][0] === 'number')) {
-          return new Error('Appearance is only an edit flow')
+          return new Error('Transform is only an edit flow')
+        }
+
+        for (const v of [tx, ty, tz, rr, rp, ry]) {
+          if (v === undefined) {
+            continue
+          }
+          // Insert the variable if it exists
+          if ('variableName' in v && v.variableName) {
+            const newBody = [...ast.body]
+            newBody.splice(v.insertIndex, 0, v.variableDeclarationAst)
+            ast.body = newBody
+          }
+        }
+
+        const valueOrVariable = (variable: KclCommandValue) => {
+          return 'variableName' in variable
+            ? variable.variableIdentifierAst
+            : variable.valueAst
         }
 
         const result = setTransform({
           ast,
           nodeToEdit,
-          // TODO: change
-          color: '#000000',
+          tx: valueOrVariable(tx),
+          ty: valueOrVariable(ty),
+          tz: valueOrVariable(tz),
+          rr: valueOrVariable(rr),
+          rp: valueOrVariable(rp),
+          ry: valueOrVariable(ry),
         })
 
         if (err(result)) {
           return err(result)
         }
+
+        console.log('result.modifiedAst', result.modifiedAst)
 
         await updateModelingState(
           result.modifiedAst,

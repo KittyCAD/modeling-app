@@ -22,7 +22,11 @@ import type {
   KclCommandValue,
   StateMachineCommandSetConfig,
 } from '@src/lib/commandTypes'
-import { KCL_DEFAULT_DEGREE, KCL_DEFAULT_LENGTH } from '@src/lib/constants'
+import {
+  KCL_DEFAULT_DEGREE,
+  KCL_DEFAULT_LENGTH,
+  KCL_DEFAULT_TRANSFORM,
+} from '@src/lib/constants'
 import type { components } from '@src/lib/machine-api'
 import type { Selections } from '@src/lib/selections'
 import { codeManager, kclManager } from '@src/lib/singletons'
@@ -1050,32 +1054,32 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       tx: {
         inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_LENGTH,
+        defaultValue: KCL_DEFAULT_TRANSFORM,
         required: true,
       },
       ty: {
         inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_LENGTH,
+        defaultValue: KCL_DEFAULT_TRANSFORM,
         required: true,
       },
       tz: {
         inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_LENGTH,
+        defaultValue: KCL_DEFAULT_TRANSFORM,
         required: true,
       },
       rr: {
         inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_DEGREE,
+        defaultValue: KCL_DEFAULT_TRANSFORM,
         required: true,
       },
       rp: {
         inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_DEGREE,
+        defaultValue: KCL_DEFAULT_TRANSFORM,
         required: true,
       },
       ry: {
         inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_DEGREE,
+        defaultValue: KCL_DEFAULT_TRANSFORM,
         required: true,
       },
     },
