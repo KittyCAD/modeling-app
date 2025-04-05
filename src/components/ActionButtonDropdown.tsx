@@ -69,6 +69,7 @@ export function ActionButtonDropdown({
                     close()
                   }}
                   className="group/button flex items-center gap-6 px-3 py-1 font-sans text-xs hover:bg-primary/10 dark:hover:bg-chalkboard-80 border-0 m-0 w-full rounded-none text-left disabled:!bg-transparent dark:disabled:text-chalkboard-60"
+                  tabIndex={-1}
                   disabled={item.disabled}
                   data-testid={'dropdown-' + item.id}
                 >
