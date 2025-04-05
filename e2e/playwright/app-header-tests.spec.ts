@@ -1,5 +1,19 @@
 import { expect, test } from '@e2e/playwright/zoo-test'
 
+import { runningOnLinux, runningOnMac } from './test-utils'
+
+test('Linux placeholder 1', {}, async ({}, testInfo) => {
+  if (runningOnLinux()) {
+    fail()
+  }
+})
+
+test('macOS placeholder 2', {}, async ({}, testInfo) => {
+  if (runningOnMac()) {
+    fail()
+  }
+})
+
 test.describe('Electron app header tests', () => {
   test(
     'Open Command Palette button has correct shortcut',

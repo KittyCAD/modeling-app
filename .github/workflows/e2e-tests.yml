@@ -339,7 +339,7 @@ jobs:
         if: needs.conditions.outputs.should-run == 'true'
         run: yarn tronb:vite:dev
 
-      - name: Install vector
+      - name: Start Vector
         if: ${{ needs.conditions.outputs.should-run == 'true' && !contains(matrix.os, 'windows') }}
         shell: bash
         run: .github/ci-cd-scripts/start-vector-${{ env.OS_NAME }}.sh
@@ -359,7 +359,7 @@ jobs:
           shell: bash
           command: .github/ci-cd-scripts/playwright-electron.sh ${{matrix.shardIndex}} ${{matrix.shardTotal}} ${{ env.OS_NAME }}
           timeout_minutes: 30
-          max_attempts: 9
+          max_attempts: 1
         env:
           FAIL_ON_CONSOLE_ERRORS: true
           token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}

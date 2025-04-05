@@ -14,7 +14,10 @@ sed -i "s#GITHUB_REF_NAME#${GITHUB_REF_NAME}#g" /tmp/vector.toml
 # sed -i "s#GH_ACTIONS_AXIOM_TOKEN#${GH_ACTIONS_AXIOM_TOKEN}#g" /tmp/vector.toml
 
 # Display settings
+echo
+echo 'Vector config:'
 cat /tmp/vector.toml
+echo
 
 # Start in background
 ${HOME}/.vector/bin/vector --config /tmp/vector.toml &
