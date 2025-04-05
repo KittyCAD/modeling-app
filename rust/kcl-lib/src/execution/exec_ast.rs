@@ -224,6 +224,7 @@ impl ExecutorContext {
 
                     match &import_stmt.selector {
                         ImportSelector::List { items } => {
+                            println!("Importing items from module {}", import_stmt.path,);
                             let (env_ref, module_exports) =
                                 self.exec_module_for_items(module_id, exec_state, source_range).await?;
                             for import_item in items {
@@ -266,6 +267,7 @@ impl ExecutorContext {
                             }
                         }
                         ImportSelector::Glob(_) => {
+                            println!("Importing all items from module {}", import_stmt.path);
                             let (env_ref, module_exports) =
                                 self.exec_module_for_items(module_id, exec_state, source_range).await?;
                             for name in module_exports.iter() {

@@ -739,6 +739,7 @@ impl ExecutorContext {
                 let exec_ctxt = self.clone();
 
                 set.spawn(async move {
+                    println!("Running module {module} from run_concurrent");
                     let mut exec_state = exec_state;
                     let exec_ctxt = exec_ctxt;
                     let program = program;
@@ -810,11 +811,11 @@ impl ExecutorContext {
             )
         })?;
 
-        if !self.is_mock() {
+        /*        if !self.is_mock() {
             let mut mem = exec_state.stack().deep_clone();
             mem.restore_env(env_ref);
             cache::write_old_memory((mem, exec_state.global.module_infos.clone())).await;
-        }
+        }*/
         let session_data = self.engine.get_session_data().await;
         Ok((env_ref, session_data))
     }
