@@ -46,7 +46,7 @@ test(
       // Click the export button
       const exportButton = page.getByTestId('export-pane-button')
       await expect(exportButton).toBeVisible()
-      
+
       await exportButton.click()
       await page.waitForTimeout(1_000) // wait for export options to be available
 
