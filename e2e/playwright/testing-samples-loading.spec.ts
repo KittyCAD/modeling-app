@@ -1,5 +1,5 @@
+import { bracket } from '@e2e/playwright/fixtures/bracket'
 import { FILE_EXT } from '@src/lib/constants'
-import { bracket } from '@src/lib/exampleKcl'
 import * as fsp from 'fs/promises'
 import { join } from 'path'
 
