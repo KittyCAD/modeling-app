@@ -484,12 +484,12 @@ impl ExecutorContext {
 
         let result = match &mut repr {
             ModuleRepr::Root => Err(exec_state.circular_import_error(&path, source_range)),
-            ModuleRepr::Kcl(_, Some((env_ref, items))) => Ok((*env_ref, items.clone())),
+            ModuleRepr::Kcl(_, Some((_, env_ref, items))) => Ok((*env_ref, items.clone())),
             ModuleRepr::Kcl(program, cache) => self
                 .exec_module_from_ast(program, module_id, &path, exec_state, source_range)
                 .await
-                .map(|(_, er, items)| {
-                    *cache = Some((er, items.clone()));
+                .map(|(val, er, items)| {
+                    *cache = Some((val, er, items.clone()));
                     (er, items)
                 }),
             ModuleRepr::Foreign(geom) => Err(KclError::Semantic(KclErrorDetails {
@@ -524,13 +524,14 @@ impl ExecutorContext {
 
         let result = match &mut repr {
             ModuleRepr::Root => Err(exec_state.circular_import_error(&path, source_range)),
+            ModuleRepr::Kcl(_, Some((val, _, _))) => Ok(val.clone()),
             ModuleRepr::Kcl(program, cached_items) => {
                 let result = self
                     .exec_module_from_ast(program, module_id, &path, exec_state, source_range)
                     .await;
                 match result {
                     Ok((val, env, items)) => {
-                        *cached_items = Some((env, items));
+                        *cached_items = Some((val.clone(), env, items));
                         Ok(val)
                     }
                     Err(e) => Err(e),
@@ -2302,14 +2303,16 @@ impl FunctionSource {
 
 #[cfg(test)]
 mod test {
+    use std::sync::Arc;
+
+    use tokio::io::AsyncWriteExt;
+
     use super::*;
     use crate::{
         execution::{memory::Stack, parse_execute, ContextType},
         parsing::ast::types::{DefaultParamVal, Identifier, Parameter},
         ExecutorSettings,
     };
-    use std::sync::Arc;
-    use tokio::io::AsyncWriteExt;
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_assign_args_to_params() {

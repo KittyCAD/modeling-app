@@ -780,7 +780,10 @@ impl ExecutorContext {
                             )
                             .await;
 
-                        results_tx.send((module_id, module_path, result)).await.unwrap();
+                        results_tx
+                            .send((module_id, module_path, result))
+                            .await
+                            .unwrap_or_default();
                     });
                 }
                 #[cfg(not(target_arch = "wasm32"))]
@@ -800,7 +803,10 @@ impl ExecutorContext {
                             )
                             .await;
 
-                        results_tx.send((module_id, module_path, result)).await.unwrap();
+                        results_tx
+                            .send((module_id, module_path, result))
+                            .await
+                            .unwrap_or_default();
                     });
                 }
             }
@@ -809,13 +815,13 @@ impl ExecutorContext {
 
             while let Some((module_id, _, result)) = results_rx.recv().await {
                 match result {
-                    Ok((_, session_data, variables)) => {
+                    Ok((val, session_data, variables)) => {
                         let mut repr = exec_state.global.module_infos[&module_id].take_repr();
 
                         let ModuleRepr::Kcl(_, cache) = &mut repr else {
                             continue;
                         };
-                        *cache = Some((session_data, variables.clone()));
+                        *cache = Some((val, session_data, variables.clone()));
 
                         exec_state.global.module_infos[&module_id].restore_repr(repr);
                     }
