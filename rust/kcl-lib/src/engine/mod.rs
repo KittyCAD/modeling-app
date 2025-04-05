@@ -338,7 +338,6 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         batch_end: bool,
         source_range: SourceRange,
     ) -> Result<OkWebSocketResponseData, crate::errors::KclError> {
-        println!("Flushing batch queue");
         let all_requests = if batch_end {
             let mut requests = self.take_batch().await.clone();
             requests.extend(self.take_batch_end().await.values().cloned());

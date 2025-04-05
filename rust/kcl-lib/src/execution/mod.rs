@@ -823,7 +823,6 @@ impl ExecutorContext {
                         exec_state.global.module_infos[&module_id].restore_repr(repr);
                     }
                     Err(e) => {
-                        println!("Error in module {:?}: {e}", module_path);
                         let module_id_to_module_path: IndexMap<ModuleId, ModulePath> = exec_state
                             .global
                             .path_to_source_id
