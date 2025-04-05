@@ -17,9 +17,13 @@
   "extends": [
     "plugin:css-modules/recommended",
     "plugin:jsx-a11y/recommended",
-    "plugin:react-hooks/recommended"
+    "plugin:react-hooks/recommended",
+    "plugin:react-perf/recommended"
   ],
   "rules": {
+    "react-perf/jsx-no-new-object-as-prop": "off", // We don't think this helps anything.
+    "react-perf/jsx-no-new-function-as-prop": "off", // We don't think this helps anything.
+    "react-perf/jsx-no-new-array-as-prop": "off", // We don't think this helps anything.
     "no-array-constructor": "off", // This is wrong; use the @typescript-eslint one instead.
     "@typescript-eslint/no-array-constructor": "error",
     "@typescript-eslint/no-array-delete": "error",
