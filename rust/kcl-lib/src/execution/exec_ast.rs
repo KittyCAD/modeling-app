@@ -460,7 +460,7 @@ impl ExecutorContext {
         Ok(last_expr)
     }
 
-    pub(super) async fn open_module(
+    pub async fn open_module(
         &self,
         path: &ImportPath,
         attrs: &[Node<Annotation>],
@@ -468,6 +468,7 @@ impl ExecutorContext {
         source_range: SourceRange,
     ) -> Result<ModuleId, KclError> {
         let resolved_path = ModulePath::from_import_path(path, &self.settings.project_directory);
+
         match path {
             ImportPath::Kcl { .. } => {
                 exec_state.global.mod_loader.cycle_check(&resolved_path, source_range)?;
@@ -597,7 +598,7 @@ impl ExecutorContext {
         result
     }
 
-    async fn exec_module_from_ast(
+    pub async fn exec_module_from_ast(
         &self,
         program: &Node<Program>,
         module_id: ModuleId,
@@ -605,6 +606,7 @@ impl ExecutorContext {
         exec_state: &mut ExecState,
         source_range: SourceRange,
     ) -> Result<(Option<KclValue>, EnvironmentRef, Vec<String>), KclError> {
+        println!("exec_module_from_ast {path}");
         exec_state.global.mod_loader.enter_module(path);
         let result = self.exec_module_body(program, exec_state, false, module_id, path).await;
         exec_state.global.mod_loader.leave_module(path);
@@ -2658,6 +2660,7 @@ d = b + c
                     original_file_contents: "".to_owned(),
                 },
                 &mut exec_state,
+                false,
             )
             .await
             .unwrap();

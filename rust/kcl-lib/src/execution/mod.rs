@@ -31,14 +31,14 @@ use tokio::task::JoinSet;
 
 use crate::{
     engine::EngineManager,
-    errors::KclError,
+    errors::{KclError, KclErrorDetails},
     execution::{
         artifact::build_artifact_graph,
         cache::{CacheInformation, CacheResult},
         types::{UnitAngle, UnitLen},
     },
     fs::FileManager,
-    modules::{ModuleId, ModulePath},
+    modules::{ModuleId, ModulePath, ModuleRepr},
     parsing::ast::types::{Expr, ImportPath, NodeRef},
     source_range::SourceRange,
     std::StdLib,
@@ -671,7 +671,7 @@ impl ExecutorContext {
             (program, exec_state, false)
         };
 
-        let result = self.inner_run(&program, &mut exec_state, preserve_mem).await;
+        let result = self.run_concurrent(&program, &mut exec_state, preserve_mem).await;
 
         if result.is_err() {
             cache::bust_cache().await;
@@ -704,7 +704,7 @@ impl ExecutorContext {
         program: &crate::Program,
         exec_state: &mut ExecState,
     ) -> Result<(EnvironmentRef, Option<ModelingSessionData>), KclErrorWithOutputs> {
-        self.run_concurrent(program, exec_state).await
+        self.run_concurrent(program, exec_state, false).await
     }
 
     /// Perform the execution of a program using an (experimental!) concurrent
@@ -721,46 +721,107 @@ impl ExecutorContext {
         &self,
         program: &crate::Program,
         exec_state: &mut ExecState,
+        preserve_mem: bool,
     ) -> Result<(EnvironmentRef, Option<ModelingSessionData>), KclErrorWithOutputs> {
         self.prepare_mem(exec_state).await.unwrap();
 
         let mut universe = std::collections::HashMap::new();
+        let mut out_id_map = std::collections::HashMap::new();
 
-        crate::walk::import_universe(self, &program.ast, &mut universe)
+        crate::walk::import_universe(self, &program.ast, &mut universe, &mut out_id_map, exec_state)
             .await
             .unwrap();
 
         for modules in crate::walk::import_graph(&universe).unwrap().into_iter() {
-            let mut set = JoinSet::new();
+            println!("Running module {modules:?}");
+            //let mut set = JoinSet::new();
+            println!("AFTER Running module {modules:?}");
+            let (results_tx, mut results_rx): (
+                tokio::sync::mpsc::Sender<(
+                    String,
+                    Result<(Option<KclValue>, EnvironmentRef, Vec<String>), KclError>,
+                )>,
+                tokio::sync::mpsc::Receiver<_>,
+            ) = tokio::sync::mpsc::channel(1);
 
             for module in modules {
                 let program = universe.get(&module).unwrap().clone();
+                let Some(module_id) = out_id_map.get(&module) else {
+                    panic!("Module {module} not found in exec_state");
+                };
+                let module_id = module_id.clone();
+                let module_path = {
+                    let module_info = exec_state.get_module(module_id).unwrap();
+                    let module_path = module_info.path.clone();
+                    module_path
+                };
                 let exec_state = exec_state.clone();
                 let exec_ctxt = self.clone();
+                let results_tx = results_tx.clone();
 
-                set.spawn(async move {
-                    println!("Running module {module} from run_concurrent");
-                    let mut exec_state = exec_state;
-                    let exec_ctxt = exec_ctxt;
-                    let program = program;
+                println!("before spawn");
+                #[cfg(target_arch = "wasm32")]
+                {
+                    wasm_bindgen_futures::spawn_local(async move {
+                        //set.spawn(async move {
+                        println!("Running module {module} from run_concurrent");
+                        let mut exec_state = exec_state;
+                        let exec_ctxt = exec_ctxt;
+                        let program = program;
 
-                    exec_ctxt
-                        .inner_run(
-                            &crate::Program {
-                                ast: program.clone(),
-                                original_file_contents: "".to_owned(),
-                            },
-                            &mut exec_state,
-                            false,
-                        )
-                        .await
-                });
+                        let result = exec_ctxt
+                            .exec_module_from_ast(
+                                &program,
+                                module_id,
+                                &module_path,
+                                &mut exec_state,
+                                Default::default(),
+                            )
+                            .await;
+
+                        results_tx.send((module, result)).await.unwrap();
+                    });
+                }
             }
 
-            set.join_all().await;
+            drop(results_tx);
+
+            while let Some((module, result)) = results_rx.recv().await {
+                match result {
+                    Ok((env_ref, session_data, variables)) => {
+                        println!("{module} {:?}", variables);
+                        let Some(module_id) = out_id_map.get(&module) else {
+                            //let snapshot_png_bytes = self.prepare_snapshot().await.unwrap().contents.0;
+                            // Save to a file.
+                            //tokio::fs::write("snapshot.png", snapshot_png_bytes).await.unwrap();
+
+                            return Err(KclErrorWithOutputs::no_outputs(KclError::Internal(KclErrorDetails {
+                                message: format!("Module {module} not found in exec_state"),
+                                source_ranges: Default::default(),
+                            })));
+                        };
+                        let path = exec_state.global.module_infos[module_id].path.clone();
+                        let mut repr = exec_state.global.module_infos[module_id].take_repr();
+
+                        let ModuleRepr::Kcl(program, cache) = &mut repr else {
+                            continue;
+                        };
+
+                        *cache = Some((session_data, variables.clone()));
+
+                        exec_state.global.module_infos[module_id].restore_repr(repr);
+                    }
+                    Err(e) => {
+                        //let snapshot_png_bytes = self.prepare_snapshot().await.unwrap().contents.0;
+                        // Save to a file.
+                        //tokio::fs::write("snapshot.png", snapshot_png_bytes).await.unwrap();
+                        return Err(KclErrorWithOutputs::no_outputs(e));
+                    }
+                }
+            }
         }
 
-        self.inner_run(program, exec_state, false).await
+        self.inner_run(program, exec_state, preserve_mem).await
     }
 
     /// Perform the execution of a program.  Accept all possible parameters and

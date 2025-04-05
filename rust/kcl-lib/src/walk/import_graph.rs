@@ -6,10 +6,10 @@ use std::{
 use anyhow::Result;
 
 use crate::{
-    fs::FileSystem,
+    modules::ModuleRepr,
     parsing::ast::types::{ImportPath, Node as AstNode, NodeRef, Program},
     walk::{Node, Visitable},
-    ExecutorContext, SourceRange,
+    ExecState, ExecutorContext, ModuleId,
 };
 
 /// Specific dependency between two modules. The 0th element of this tuple
@@ -43,6 +43,9 @@ pub fn import_graph(progs: &HashMap<String, AstNode<Program>>) -> Result<Vec<Vec
 
 #[allow(clippy::iter_over_hash_type)]
 fn topsort(all_modules: &[&str], graph: Graph) -> Result<Vec<Vec<String>>> {
+    if all_modules.is_empty() {
+        return Ok(vec![]);
+    }
     let mut dep_map = HashMap::<String, Vec<String>>::new();
 
     for (dependent, dependency) in graph.iter() {
@@ -59,6 +62,7 @@ fn topsort(all_modules: &[&str], graph: Graph) -> Result<Vec<Vec<String>>> {
     let mut order = vec![];
 
     loop {
+        println!("waiting_modules: {:?}", waiting_modules);
         // Each pass through we need to find any modules which have nothing
         // "pointing at it" -- so-called reverse dependencies. This is an entry
         // that is either not in the dep_map OR an empty list.
@@ -131,30 +135,42 @@ pub(crate) async fn import_universe<'prog>(
     ctx: &ExecutorContext,
     prog: NodeRef<'prog, Program>,
     out: &mut HashMap<String, AstNode<Program>>,
+    out_id_map: &mut HashMap<String, ModuleId>,
+    exec_state: &mut ExecState,
 ) -> Result<()> {
-    for module in import_dependencies(prog)? {
+    let modules = import_dependencies(prog)?;
+    for module in modules {
         eprintln!("{:?}", module);
 
         if out.contains_key(&module) {
             continue;
         }
 
-        // TODO: use open_module and find a way to pass attrs cleanly
-        let kcl = ctx
-            .fs
-            .read_to_string(
-                ctx.settings
-                    .project_directory
-                    .clone()
-                    .unwrap_or("".into())
-                    .join(&module),
-                SourceRange::default(),
+        let module_id = ctx
+            .open_module(
+                &ImportPath::Kcl {
+                    filename: module.to_string(),
+                },
+                &[],
+                exec_state,
+                Default::default(),
             )
             .await?;
-        let program = crate::parsing::parse_str(&kcl, crate::ModuleId::default()).parse_errs_as_err()?;
+        out_id_map.insert(module.clone(), module_id);
+
+        let program = {
+            let Some(module_info) = exec_state.get_module(module_id) else {
+                // We should never get here we just fucking added it.
+                anyhow::bail!("Module {} not found", module);
+            };
+            let ModuleRepr::Kcl(program, _) = &module_info.repr else {
+                anyhow::bail!("Module {} is not a KCL program", module);
+            };
+            program.clone()
+        };
 
         out.insert(module.clone(), program.clone());
-        Box::pin(import_universe(ctx, &program, out)).await?;
+        Box::pin(import_universe(ctx, &program, out, out_id_map, exec_state)).await?;
     }
 
     Ok(())

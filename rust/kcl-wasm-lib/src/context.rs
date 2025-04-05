@@ -77,7 +77,8 @@ impl Context {
         let program: Program = serde_json::from_str(program_ast_json).map_err(|e| e.to_string())?;
 
         let ctx = self.create_executor_ctx(settings, path, false)?;
-        match ctx.run_with_caching(program).await {
+        let mut exec_state = kcl_lib::ExecState::new(&ctx);
+        match ctx.run(&program, &mut exec_state).await {
             // The serde-wasm-bindgen does not work here because of weird HashMap issues.
             // DO NOT USE serde_wasm_bindgen::to_value it will break the frontend.
             Ok(outcome) => JsValue::from_serde(&outcome).map_err(|e| e.to_string()),

@@ -1965,6 +1965,7 @@ export class EngineCommandManager extends EventTarget {
       range,
       idToRangeMap,
     })
+      console.log("responose to wasm", resp)
     return BSON.serialize(resp[0])
   }
   /**
