@@ -3079,4 +3079,84 @@ test.describe('Redirecting to home page and back to the original file should cle
     await homePage.openProject('testDefault')
     await expect(page.getByText('323.49')).not.toBeVisible()
   })
+
+  test('Straight line snapping to previous tangent', async ({
+    page,
+    homePage,
+    toolbar,
+    scene,
+    cmdBar,
+    context,
+    editor,
+  }) => {
+    await context.addInitScript(() => {
+      localStorage.setItem('persistCode', `@settings(defaultLengthUnit = mm)`)
+    })
+
+    const viewportSize = { width: 1200, height: 900 }
+    await page.setBodyDimensions(viewportSize)
+    await homePage.goToModelingScene()
+
+    // wait until scene is ready to be interacted with
+    await scene.connectionEstablished()
+    await scene.settled(cmdBar)
+
+    await page.getByRole('button', { name: 'Start Sketch' }).click()
+
+    // select an axis plane
+    await page.mouse.click(700, 200)
+
+    // Needed as we don't yet have a way to get a signal from the engine that the camera has animated to the sketch plane
+    await page.waitForTimeout(3000)
+
+    const center = { x: viewportSize.width / 2, y: viewportSize.height / 2 }
+    const { click00r } = getMovementUtils({ center, page })
+
+    // Draw line
+    await click00r(0, 0)
+    await click00r(200, -200)
+
+    // Draw arc
+    await toolbar.tangentialArcBtn.click()
+    await click00r(0, 0)
+    await click00r(100, 100)
+
+    // Switch back to line
+    await toolbar.selectLine()
+    await click00r(0, 0)
+    await click00r(-100, 100)
+
+    // Draw a 3 point arc
+    await toolbar.selectThreePointArc()
+    await click00r(0, 0)
+    await click00r(0, 100)
+    await click00r(100, 0)
+
+    // draw a line to opposite tangnet direction of previous arc
+    await toolbar.selectLine()
+    await click00r(0, 0)
+    await click00r(-200, 200)
+
+    await editor.expectEditor.toContain(
+      `@settings(defaultLengthUnit = mm)
+
+sketch001 = startSketchOn(XZ)
+profile001 = startProfileAt([0, 0], sketch001)
+  |> line(end = [191.39, 191.39])
+  |> tangentialArcTo([287.08, 95.69], %, $seg01)
+  |> angledLine({
+       angle = tangentToEnd(seg01),
+       length = 135.34
+     }, %)
+  |> arcTo({
+       interior = [191.39, -95.69],
+       end = [287.08, -95.69]
+     }, %, $seg02)
+  |> angledLine({
+       angle = tangentToEnd(seg02) + turns::HALF_TURN,
+       length = 270.67
+     }, %)
+`.replaceAll('\n', '')
+    )
+  })
 })

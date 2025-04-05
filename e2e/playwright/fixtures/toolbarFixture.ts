@@ -219,6 +219,11 @@ export class ToolbarFixture {
     ).toBeVisible()
     await this.page.getByTestId('dropdown-three-point-arc').click()
   }
+  selectLine = async () => {
+    await this.page
+      .getByRole('button', { name: 'line Line', exact: true })
+      .click()
+  }
 
   async closePane(paneId: SidebarType) {
     return closePane(this.page, paneId + SIDEBAR_BUTTON_SUFFIX)
