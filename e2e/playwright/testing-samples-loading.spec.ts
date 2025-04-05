@@ -91,8 +91,8 @@ test.describe('Testing in-app sample loading', () => {
 
       // Locators and constants
       const sampleOne = {
-        file: 'a-parametric-bearing-pillow-block' + FILE_EXT,
-        title: 'A Parametric Bearing Pillow Block',
+        file: 'parametric-bearing-pillow-block' + FILE_EXT,
+        title: 'Parametric Bearing Pillow Block',
       }
       const sampleTwo = {
         file: 'gear-rack' + FILE_EXT,

@@ -662,8 +662,8 @@ part001 = startSketchOn(XZ)
               for (const rgb of RGBs) {
                 const [r, g, b] = rgb
                 const RGAverage = (r + g) / 2
-                const isRedGreenSameIsh = Math.abs(r - g) < 3
-                const isBlueLessThanRG = RGAverage - b > 45
+                const isRedGreenSameIsh = Math.abs(r - g) < 10
+                const isBlueLessThanRG = RGAverage - b > 40
                 const isYellowy = isRedGreenSameIsh && isBlueLessThanRG
                 if (isYellowy) return true
               }
