@@ -810,7 +810,7 @@ impl ExecutorContext {
 
             drop(results_tx);
 
-            while let Some((module_id, module_path, result)) = results_rx.recv().await {
+            while let Some((module_id, _, result)) = results_rx.recv().await {
                 match result {
                     Ok((val, session_data, variables)) => {
                         let mut repr = exec_state.global.module_infos[&module_id].take_repr();
