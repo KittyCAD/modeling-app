@@ -149,55 +149,6 @@ impl ExecutorContext {
 
     /// Execute an AST's program.
     #[async_recursion]
-    pub(super) async fn preload_all_modules<'a>(
-        &'a self,
-        modules: &mut HashMap<String, Program>,
-        program: NodeRef<'a, Program>,
-        exec_state: &mut ExecState,
-    ) -> Result<(), KclError> {
-        for statement in &program.body {
-            if let BodyItem::ImportStatement(import_stmt) = statement {
-                let path_str = import_stmt.path.to_string();
-
-                if modules.contains_key(&path_str) {
-                    // don't waste our time if we've already loaded the
-                    // module.
-                    continue;
-                }
-
-                let source_range = SourceRange::from(import_stmt);
-                let attrs = &import_stmt.outer_attrs;
-                let module_id = self
-                    .open_module(&import_stmt.path, attrs, exec_state, source_range)
-                    .await?;
-
-                let Some(module) = exec_state.get_module(module_id) else {
-                    crate::log::log("we got back a module id that doesn't exist");
-                    unreachable!();
-                };
-
-                let progn = {
-                    // this dance is to avoid taking out a mut borrow
-                    // below on exec_state after borrowing here. As a
-                    // result, we need to clone (ugh) the program for
-                    // now.
-                    let ModuleRepr::Kcl(ref progn, _) = module.repr else {
-                        // not a kcl file, we can skip this
-                        continue;
-                    };
-                    progn.clone()
-                };
-
-                modules.insert(path_str, progn.clone().inner);
-
-                self.preload_all_modules(modules, &progn, exec_state).await?;
-            };
-        }
-        Ok(())
-    }
-
-    /// Execute an AST's program.
-    #[async_recursion]
     pub(super) async fn exec_block<'a>(
         &'a self,
         program: NodeRef<'a, Program>,
@@ -460,7 +411,7 @@ impl ExecutorContext {
         Ok(last_expr)
     }
 
-    pub(super) async fn open_module(
+    pub async fn open_module(
         &self,
         path: &ImportPath,
         attrs: &[Node<Annotation>],
@@ -468,6 +419,7 @@ impl ExecutorContext {
         source_range: SourceRange,
     ) -> Result<ModuleId, KclError> {
         let resolved_path = ModulePath::from_import_path(path, &self.settings.project_directory);
+
         match path {
             ImportPath::Kcl { .. } => {
                 exec_state.global.mod_loader.cycle_check(&resolved_path, source_range)?;
@@ -597,7 +549,7 @@ impl ExecutorContext {
         result
     }
 
-    async fn exec_module_from_ast(
+    pub async fn exec_module_from_ast(
         &self,
         program: &Node<Program>,
         module_id: ModuleId,
@@ -605,6 +557,7 @@ impl ExecutorContext {
         exec_state: &mut ExecState,
         source_range: SourceRange,
     ) -> Result<(Option<KclValue>, EnvironmentRef, Vec<String>), KclError> {
+        println!("exec_module_from_ast {path}");
         exec_state.global.mod_loader.enter_module(path);
         let result = self.exec_module_body(program, exec_state, false, module_id, path).await;
         exec_state.global.mod_loader.leave_module(path);
@@ -2658,6 +2611,7 @@ d = b + c
                     original_file_contents: "".to_owned(),
                 },
                 &mut exec_state,
+                false,
             )
             .await
             .unwrap();
