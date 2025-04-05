@@ -42,7 +42,7 @@ use crate::{
     parsing::ast::types::{Expr, ImportPath, NodeRef},
     source_range::SourceRange,
     std::StdLib,
-    CompilationError, ExecError, ExecutionKind, KclErrorWithOutputs,
+    CompilationError, ExecError, KclErrorWithOutputs,
 };
 
 pub(crate) mod annotations;
@@ -498,13 +498,9 @@ impl ExecutorContext {
         self.context_type == ContextType::Mock || self.context_type == ContextType::MockCustomForwarded
     }
 
-    pub async fn is_isolated_execution(&self) -> bool {
-        self.engine.execution_kind().await.is_isolated()
-    }
-
     /// Returns true if we should not send engine commands for any reason.
     pub async fn no_engine_commands(&self) -> bool {
-        self.is_mock() || self.is_isolated_execution().await
+        self.is_mock()
     }
 
     pub async fn send_clear_scene(
@@ -708,7 +704,7 @@ impl ExecutorContext {
         program: &crate::Program,
         exec_state: &mut ExecState,
     ) -> Result<(EnvironmentRef, Option<ModelingSessionData>), KclErrorWithOutputs> {
-        self.inner_run(program, exec_state, false).await
+        self.run_concurrent(program, exec_state).await
     }
 
     /// Perform the execution of a program using an (experimental!) concurrent
@@ -750,12 +746,13 @@ impl ExecutorContext {
                     let program = program;
 
                     exec_ctxt
-                        .run(
+                        .inner_run(
                             &crate::Program {
                                 ast: program.clone(),
                                 original_file_contents: "".to_owned(),
                             },
                             &mut exec_state,
+                            false,
                         )
                         .await
                 });
@@ -764,7 +761,7 @@ impl ExecutorContext {
             set.join_all().await;
         }
 
-        self.run(&program, exec_state).await
+        self.inner_run(&program, exec_state, false).await
     }
 
     /// Perform the execution of a program.  Accept all possible parameters and
@@ -842,7 +839,6 @@ impl ExecutorContext {
             .exec_module_body(
                 program,
                 exec_state,
-                ExecutionKind::Normal,
                 preserve_mem,
                 ModuleId::default(),
                 &ModulePath::Main,
@@ -896,9 +892,7 @@ impl ExecutorContext {
                     source_range,
                 )
                 .await?;
-            let (module_memory, _) = self
-                .exec_module_for_items(id, exec_state, ExecutionKind::Isolated, source_range)
-                .await?;
+            let (module_memory, _) = self.exec_module_for_items(id, exec_state, source_range).await?;
 
             exec_state.mut_stack().memory.set_std(module_memory);
         }

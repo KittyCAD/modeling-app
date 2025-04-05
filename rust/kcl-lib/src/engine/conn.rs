@@ -18,7 +18,7 @@ use tokio::sync::{mpsc, oneshot, RwLock};
 use tokio_tungstenite::tungstenite::Message as WsMsg;
 use uuid::Uuid;
 
-use super::{EngineStats, ExecutionKind};
+use super::EngineStats;
 use crate::{
     engine::EngineManager,
     errors::{KclError, KclErrorDetails},
@@ -51,7 +51,6 @@ pub struct EngineConnection {
     /// If the server sends session data, it'll be copied to here.
     session_data: Arc<RwLock<Option<ModelingSessionData>>>,
 
-    execution_kind: Arc<RwLock<ExecutionKind>>,
     stats: EngineStats,
 }
 
@@ -344,7 +343,6 @@ impl EngineConnection {
             artifact_commands: Arc::new(RwLock::new(Vec::new())),
             default_planes: Default::default(),
             session_data,
-            execution_kind: Default::default(),
             stats: Default::default(),
         })
     }
@@ -366,18 +364,6 @@ impl EngineManager for EngineConnection {
 
     fn artifact_commands(&self) -> Arc<RwLock<Vec<ArtifactCommand>>> {
         self.artifact_commands.clone()
-    }
-
-    async fn execution_kind(&self) -> ExecutionKind {
-        let guard = self.execution_kind.read().await;
-        *guard
-    }
-
-    async fn replace_execution_kind(&self, execution_kind: ExecutionKind) -> ExecutionKind {
-        let mut guard = self.execution_kind.write().await;
-        let original = *guard;
-        *guard = execution_kind;
-        original
     }
 
     fn stats(&self) -> &EngineStats {
