@@ -67,8 +67,16 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
     /// Get the batch of commands to be sent to the engine.
     fn batch(&self) -> Arc<RwLock<Vec<(WebSocketRequest, SourceRange)>>>;
 
+    async fn take_batch(&self) -> Vec<(WebSocketRequest, SourceRange)> {
+        std::mem::take(&mut *self.batch().write().await)
+    }
+
     /// Get the batch of end commands to be sent to the engine.
     fn batch_end(&self) -> Arc<RwLock<IndexMap<uuid::Uuid, (WebSocketRequest, SourceRange)>>>;
+
+    async fn take_batch_end(&self) -> IndexMap<uuid::Uuid, (WebSocketRequest, SourceRange)> {
+        std::mem::take(&mut *self.batch_end().write().await)
+    }
 
     /// Get the command responses from the engine.
     fn responses(&self) -> Arc<RwLock<IndexMap<Uuid, WebSocketResponse>>>;
@@ -330,12 +338,13 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         batch_end: bool,
         source_range: SourceRange,
     ) -> Result<OkWebSocketResponseData, crate::errors::KclError> {
+        println!("Flushing batch queue");
         let all_requests = if batch_end {
-            let mut requests = self.batch().read().await.clone();
-            requests.extend(self.batch_end().read().await.values().cloned());
+            let mut requests = self.take_batch().await.clone();
+            requests.extend(self.take_batch_end().await.values().cloned());
             requests
         } else {
-            self.batch().read().await.clone()
+            self.take_batch().await.clone()
         };
 
         // Return early if we have no commands to send.
@@ -404,10 +413,6 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         }
 
         // Throw away the old batch queue.
-        self.batch().write().await.clear();
-        if batch_end {
-            self.batch_end().write().await.clear();
-        }
         self.stats().batches_sent.fetch_add(1, Ordering::Relaxed);
 
         // We pop off the responses to cleanup our mappings.

@@ -766,7 +766,6 @@ impl ExecutorContext {
                 {
                     wasm_bindgen_futures::spawn_local(async move {
                         //set.spawn(async move {
-                        println!("Running module {module} from run_concurrent");
                         let mut exec_state = exec_state;
                         let exec_ctxt = exec_ctxt;
 
@@ -789,7 +788,6 @@ impl ExecutorContext {
                 #[cfg(not(target_arch = "wasm32"))]
                 {
                     set.spawn(async move {
-                        println!("Running module {module} from run_concurrent");
                         let mut exec_state = exec_state;
                         let exec_ctxt = exec_ctxt;
 
@@ -813,7 +811,7 @@ impl ExecutorContext {
 
             drop(results_tx);
 
-            while let Some((module_id, _, result)) = results_rx.recv().await {
+            while let Some((module_id, module_path, result)) = results_rx.recv().await {
                 match result {
                     Ok((val, session_data, variables)) => {
                         let mut repr = exec_state.global.module_infos[&module_id].take_repr();
@@ -826,7 +824,24 @@ impl ExecutorContext {
                         exec_state.global.module_infos[&module_id].restore_repr(repr);
                     }
                     Err(e) => {
-                        return Err(KclErrorWithOutputs::no_outputs(e));
+                        println!("Error in module {:?}: {e}", module_path);
+                        let module_id_to_module_path: IndexMap<ModuleId, ModulePath> = exec_state
+                            .global
+                            .path_to_source_id
+                            .iter()
+                            .map(|(k, v)| ((*v), k.clone()))
+                            .collect();
+                        let default_planes = self.engine.get_default_planes().read().await.clone();
+
+                        return Err(KclErrorWithOutputs::new(
+                            e,
+                            exec_state.global.operations.clone(),
+                            exec_state.global.artifact_commands.clone(),
+                            exec_state.global.artifact_graph.clone(),
+                            module_id_to_module_path,
+                            exec_state.global.id_to_source.clone(),
+                            default_planes,
+                        ));
                     }
                 }
             }
@@ -883,11 +898,12 @@ impl ExecutorContext {
             )
         })?;
 
-        if !self.is_mock() {
+        // TODO: fix this
+        /* if !self.is_mock() {
             let mut mem = exec_state.stack().deep_clone();
             mem.restore_env(env_ref);
             cache::write_old_memory((mem, exec_state.global.module_infos.clone())).await;
-        }
+        }*/
         let session_data = self.engine.get_session_data().await;
         Ok((env_ref, session_data))
     }

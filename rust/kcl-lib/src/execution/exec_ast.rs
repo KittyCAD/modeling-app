@@ -175,7 +175,6 @@ impl ExecutorContext {
 
                     match &import_stmt.selector {
                         ImportSelector::List { items } => {
-                            println!("Importing items from module {}", import_stmt.path,);
                             let (env_ref, module_exports) =
                                 self.exec_module_for_items(module_id, exec_state, source_range).await?;
                             for import_item in items {
@@ -218,7 +217,6 @@ impl ExecutorContext {
                             }
                         }
                         ImportSelector::Glob(_) => {
-                            println!("Importing all items from module {}", import_stmt.path);
                             let (env_ref, module_exports) =
                                 self.exec_module_for_items(module_id, exec_state, source_range).await?;
                             for name in module_exports.iter() {
@@ -558,7 +556,6 @@ impl ExecutorContext {
         exec_state: &mut ExecState,
         source_range: SourceRange,
     ) -> Result<(Option<KclValue>, EnvironmentRef, Vec<String>), KclError> {
-        println!("exec_module_from_ast {path}");
         exec_state.global.mod_loader.enter_module(path);
         let result = self.exec_module_body(program, exec_state, false, module_id, path).await;
         exec_state.global.mod_loader.leave_module(path);
