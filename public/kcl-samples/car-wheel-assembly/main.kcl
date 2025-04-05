@@ -4,16 +4,24 @@
 // Set units
 @settings(defaultLengthUnit = in)
 
+// Import parts
 import "car-wheel.kcl" as carWheel
 import "car-rotor.kcl" as carRotor
 import "brake-caliper.kcl" as brakeCaliper
 import "lug-nut.kcl" as lugNut
 import "car-tire.kcl" as carTire
-import lugCount from "globals.kcl"
 
+// Import parameters
+import * from "parameters.kcl"
+
+// Place the car rotor
 carRotor
   |> translate(x = 0, y = 0.5, z = 0)
+
+// Place the car wheel
 carWheel
+
+// Place the lug nuts
 lugNut
   |> patternCircular3d(
        arcDegrees = 360,
@@ -22,6 +30,10 @@ lugNut
        instances = lugCount,
        rotateDuplicates = false,
      )
+
+// Place the brake caliper
 brakeCaliper
   |> translate(x = 0, y = 0.5, z = 0)
+
+// Place the car tire
 carTire

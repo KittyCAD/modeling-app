@@ -4,8 +4,8 @@
 // Set units
 @settings(defaultLengthUnit = in)
 
-// Import Constants
-import tireInnerDiameter, tireOuterDiameter, tireDepth, bendRadius, tireTreadWidth, tireTreadDepth, tireTreadOffset from "globals.kcl"
+// Import parameters
+import tireInnerDiameter, tireOuterDiameter, tireDepth, bendRadius, tireTreadWidth, tireTreadDepth, tireTreadOffset from "parameters.kcl"
 
 // Create the sketch of the tire
 tireSketch = startSketchOn(XY)

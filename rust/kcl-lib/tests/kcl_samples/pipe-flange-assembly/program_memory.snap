@@ -185,7 +185,8 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
     }
   },
   "gasket": {
-    "type": "Function"
+    "type": "Module",
+    "value": 6
   },
   "gasketInnerDiameter": {
     "type": "Number",

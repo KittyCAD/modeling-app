@@ -25,8 +25,6 @@ When you submit a PR to add or modify KCL samples, images and STEP files will be
 ---
 #### [80-20-rail](80-20-rail/main.kcl) ([screenshot](screenshots/80-20-rail.png))
 [![80-20-rail](screenshots/80-20-rail.png)](80-20-rail/main.kcl)
-#### [a-parametric-bearing-pillow-block](a-parametric-bearing-pillow-block/main.kcl) ([screenshot](screenshots/a-parametric-bearing-pillow-block.png))
-[![a-parametric-bearing-pillow-block](screenshots/a-parametric-bearing-pillow-block.png)](a-parametric-bearing-pillow-block/main.kcl)
 #### [ball-bearing](ball-bearing/main.kcl) ([screenshot](screenshots/ball-bearing.png))
 [![ball-bearing](screenshots/ball-bearing.png)](ball-bearing/main.kcl)
 #### [bench](bench/main.kcl) ([screenshot](screenshots/bench.png))
@@ -83,6 +81,8 @@ When you submit a PR to add or modify KCL samples, images and STEP files will be
 [![mounting-plate](screenshots/mounting-plate.png)](mounting-plate/main.kcl)
 #### [multi-axis-robot](multi-axis-robot/main.kcl) ([screenshot](screenshots/multi-axis-robot.png))
 [![multi-axis-robot](screenshots/multi-axis-robot.png)](multi-axis-robot/main.kcl)
+#### [parametric-bearing-pillow-block](parametric-bearing-pillow-block/main.kcl) ([screenshot](screenshots/parametric-bearing-pillow-block.png))
+[![parametric-bearing-pillow-block](screenshots/parametric-bearing-pillow-block.png)](parametric-bearing-pillow-block/main.kcl)
 #### [pipe](pipe/main.kcl) ([screenshot](screenshots/pipe.png))
 [![pipe](screenshots/pipe.png)](pipe/main.kcl)
 #### [pipe-flange-assembly](pipe-flange-assembly/main.kcl) ([screenshot](screenshots/pipe-flange-assembly.png))

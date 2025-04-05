@@ -4,7 +4,7 @@
 // Set units in millimeters (mm)
 @settings(defaultLengthUnit = mm)
 
-// Define constants
+// Define parameters
 binLength = 41.5
 binHeight = 7.0
 binBaseLength = 2.95
@@ -26,7 +26,7 @@ countBinHeight = 2
 // The total height of the baseplate is a summation of the vertical heights of the baseplate steps
 height = firstStep + secondStep + thirdStep
 
-// define a function which builds the profile of the baseplate bin
+// Define a function which builds the profile of the baseplate bin
 fn face(plane) {
   faceSketch = startSketchOn(plane)
     |> startProfileAt([binBaseLength + binTol, 0], %)
@@ -39,10 +39,10 @@ fn face(plane) {
   return faceSketch
 }
 
-// extrude a single side of the bin
+// Extrude a single side of the bin
 singleSide = extrude(face(offsetPlane(YZ, offset = cornerRadius + binTol)), length = binLength - (cornerRadius * 2))
 
-// create the other sides of the bin by using a circular pattern
+// Create the other sides of the bin by using a circular pattern
 sides = patternCircular3d(
   singleSide,
   arcDegrees = 360,
@@ -56,7 +56,7 @@ sides = patternCircular3d(
   rotateDuplicates = true,
 )
 
-// define an axis axis000
+// Define an axis axis000
 axis000 = {
   direction = [0.0, 1.0],
   origin = [
@@ -65,10 +65,10 @@ axis000 = {
   ]
 }
 
-// create a single corner of the bin
+// Create a single corner of the bin
 singleCorner = revolve(face(offsetPlane(YZ, offset = cornerRadius + binTol)), angle = -90, axis = axis000)
 
-// create the corners of the bin
+// Create the corners of the bin
 corners = patternCircular3d(
   singleCorner,
   arcDegrees = 360,
@@ -121,7 +121,7 @@ magCutout000 = startSketchOn(singleBinFill, "start")
      )
   |> extrude(length = -magDepth)
 
-// create the baseplate by patterning sides
+// Create the baseplate by patterning sides
 binSides = patternLinear3d(
        sides,
        axis = [1.0, 0.0, 0.0],
@@ -130,7 +130,7 @@ binSides = patternLinear3d(
      )
   |> patternLinear3d(axis = [0.0, 1.0, 0.0], instances = countBinLength, distance = binLength + binTol * 2)
 
-// create the corners of the baseplate by patterning the corners
+// Create the corners of the baseplate by patterning the corners
 binCorners = patternLinear3d(
        corners,
        axis = [1.0, 0.0, 0.0],
@@ -139,7 +139,7 @@ binCorners = patternLinear3d(
      )
   |> patternLinear3d(axis = [0.0, 1.0, 0.0], instances = countBinLength, distance = binLength + binTol * 2)
 
-// create the fill of the bin by patterning the corners
+// Create the fill of the bin by patterning the corners
 binFill = patternLinear3d(
        singleBinFill,
        axis = [1.0, 0.0, 0.0],
@@ -148,7 +148,7 @@ binFill = patternLinear3d(
      )
   |> patternLinear3d(axis = [0.0, 1.0, 0.0], instances = countBinLength, distance = binLength + binTol * 2)
 
-// create the top of the bin
+// Create the top of the bin
 binTop = startSketchOn(offsetPlane(XY, offset = height))
   |> startProfileAt([0, 0], %)
   |> xLine(length = (binLength + 2 * binTol) * countBinWidth, tag = $line010)

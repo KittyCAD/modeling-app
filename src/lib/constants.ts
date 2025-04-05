@@ -67,6 +67,9 @@ export const KCL_DEFAULT_CONSTANT_PREFIXES = {
 /** The default KCL length expression */
 export const KCL_DEFAULT_LENGTH = `5`
 
+/** The default KCL transform arg value that means no transform */
+export const KCL_DEFAULT_TRANSFORM = `0`
+
 /** The default KCL degree expression */
 export const KCL_DEFAULT_DEGREE = `360`
 

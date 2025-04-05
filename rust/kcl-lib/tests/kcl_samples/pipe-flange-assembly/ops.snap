@@ -9,9 +9,9 @@ description: Operations executed pipe-flange-assembly.kcl
       "type": "FunctionCall",
       "name": "flange",
       "functionSourceRange": [
-        451,
-        1670,
-        6
+        509,
+        1728,
+        7
       ],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -306,9 +306,9 @@ description: Operations executed pipe-flange-assembly.kcl
       "type": "FunctionCall",
       "name": "flange",
       "functionSourceRange": [
-        451,
-        1670,
-        6
+        509,
+        1728,
+        7
       ],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -600,15 +600,9 @@ description: Operations executed pipe-flange-assembly.kcl
   {
     "type": "GroupBegin",
     "group": {
-      "type": "FunctionCall",
+      "type": "ModuleInstance",
       "name": "gasket",
-      "functionSourceRange": [
-        414,
-        870,
-        7
-      ],
-      "unlabeledArg": null,
-      "labeledArgs": {}
+      "moduleId": 6
     },
     "sourceRange": []
   },
@@ -724,8 +718,8 @@ description: Operations executed pipe-flange-assembly.kcl
       "type": "FunctionCall",
       "name": "washer",
       "functionSourceRange": [
-        274,
-        695,
+        331,
+        752,
         8
       ],
       "unlabeledArg": null,
@@ -1106,8 +1100,8 @@ description: Operations executed pipe-flange-assembly.kcl
       "type": "FunctionCall",
       "name": "bolt",
       "functionSourceRange": [
-        364,
-        1663,
+        358,
+        1657,
         9
       ],
       "unlabeledArg": null,
@@ -1475,8 +1469,8 @@ description: Operations executed pipe-flange-assembly.kcl
       "type": "FunctionCall",
       "name": "hexNut",
       "functionSourceRange": [
-        297,
-        1231,
+        344,
+        1278,
         10
       ],
       "unlabeledArg": null,
@@ -1733,8 +1727,8 @@ description: Operations executed pipe-flange-assembly.kcl
       "type": "FunctionCall",
       "name": "pipe",
       "functionSourceRange": [
-        244,
-        658,
+        256,
+        670,
         11
       ],
       "unlabeledArg": null,
@@ -1854,8 +1848,8 @@ description: Operations executed pipe-flange-assembly.kcl
       "type": "FunctionCall",
       "name": "pipe",
       "functionSourceRange": [
-        244,
-        658,
+        256,
+        670,
         11
       ],
       "unlabeledArg": null,

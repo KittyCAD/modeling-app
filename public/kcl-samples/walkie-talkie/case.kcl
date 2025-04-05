@@ -1,88 +1,83 @@
-// Walkie talkie case
-// the plastic case for the front of the walkie talkie
+// Walkie Talkie Case
+// The plastic case for the front of the walkie talkie
 
-// set units
+// Set units
 @settings(defaultLengthUnit = in)
 
-// import constants and Zoo logo
-import width, height, chamferLength, offset, screenWidth, screenHeight, screenYPosition, screenDepth, speakerBoxWidth, speakerBoxHeight, squareHoleSideLength, caseTolerance from "globals.kcl"
+// Import parameters and Zoo logo
+import width, height, chamferLength, offset, screenWidth, screenHeight, screenYPosition, screenDepth, speakerBoxWidth, speakerBoxHeight, squareHoleSideLength, caseTolerance from "parameters.kcl"
 import zLogo, oLogo, oLogo2 from "zoo-logo.kcl"
 
-// create a function to define the case
-export fn case() {
-  // sketch the profile of the screen
-  sketch006 = startSketchOn(startSketchOn(XZ))
-    |> startProfileAt([-screenWidth / 2, screenYPosition], %)
-    |> xLine(length = screenWidth)
-    |> yLine(length = -screenHeight)
-    |> xLine(length = -screenWidth)
-    |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-    |> close()
+// Sketch the profile of the screen
+screenSketch = startSketchOn(XZ)
+  |> startProfileAt([-screenWidth / 2, screenYPosition], %)
+  |> xLine(length = screenWidth)
+  |> yLine(length = -screenHeight)
+  |> xLine(length = -screenWidth)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
 
-  // create transform functions for the speaker grid pattern
-  fn transformX(i) {
-    return { translate = [.125 * i, 0] }
-  }
-  fn transformY(i) {
-    return { translate = [0, -.125 * i] }
-  }
-
-  // sketch the square hole grid pattern
-  squareHolePatternSketch = startSketchOn(startSketchOn(XZ))
-    |> startProfileAt([-screenWidth / 2 + .100, 0], %)
-    |> line(end = [squareHoleSideLength / 2, 0])
-    |> line(end = [0, -squareHoleSideLength / 2])
-    |> line(end = [-squareHoleSideLength / 2, 0])
-    |> close()
-    |> patternTransform2d(instances = 13, transform = transformX)
-    |> patternTransform2d(instances = 11, transform = transformY)
-
-  // sketch the outer profile of the case and extrude with holes using the previously made profiles
-  sketch005 = startSketchOn(startSketchOn(XZ))
-    |> startProfileAt([
-         -width / 2 + offset + caseTolerance,
-         height / 2 - (chamferLength + (offset + caseTolerance) / 2 * cos(toRadians(45)))
-       ], %)
-    |> angledLineToY({
-         angle = 45,
-         to = height / 2 - (offset + caseTolerance)
-       }, %)
-    |> line(endAbsolute = [
-         width / 2 - (chamferLength + (offset + caseTolerance) / 2 * cos(toRadians(45))),
-         height / 2 - (offset + caseTolerance)
-       ])
-    |> angledLineToX({
-         angle = -45,
-         to = width / 2 - (offset + caseTolerance)
-       }, %)
-    |> line(endAbsolute = [
-         width / 2 - (offset + caseTolerance),
-         -(height / 2 - (chamferLength + (offset + caseTolerance) / 2 * cos(toRadians(45))))
-       ])
-    |> angledLineToY({
-         angle = -135,
-         to = -height / 2 + offset + caseTolerance
-       }, %)
-    |> line(endAbsolute = [
-         -(width / 2 - (chamferLength + (offset + caseTolerance) / 2 * cos(toRadians(45)))),
-         -height / 2 + offset + caseTolerance
-       ])
-    |> angledLineToX({
-         angle = -225,
-         to = -width / 2 + offset + caseTolerance
-       }, %)
-    |> close()
-    |> hole(sketch006, %)
-    |> hole(squareHolePatternSketch, %)
-
-    // create the Zoo logo
-    |> hole(zLogo(startSketchOn(XZ), [-.30, -1.825], .20), %)
-    |> hole(oLogo(startSketchOn(XZ), [-.075, -1.825], .20), %)
-    |> hole(oLogo2(startSketchOn(XZ), [-.075, -1.825], .20), %)
-    |> hole(oLogo(startSketchOn(XZ), [.175, -1.825], .20), %)
-    |> hole(oLogo2(startSketchOn(XZ), [.175, -1.825], .20), %)
-  case = extrude(sketch005, length = -0.0625)
-    |> appearance(color = '#D0FF01', metalness = 0, roughness = 50)
-
-  return case
+// Create transform functions for the speaker grid pattern
+fn transformX(i) {
+  return { translate = [.125 * i, 0] }
 }
+fn transformY(i) {
+  return { translate = [0, -.125 * i] }
+}
+
+// Sketch the square hole grid pattern
+squareHolePatternSketch = startSketchOn(XZ)
+  |> startProfileAt([-screenWidth / 2 + .100, 0], %)
+  |> line(end = [squareHoleSideLength / 2, 0])
+  |> line(end = [0, -squareHoleSideLength / 2])
+  |> line(end = [-squareHoleSideLength / 2, 0])
+  |> close()
+  |> patternTransform2d(instances = 13, transform = transformX)
+  |> patternTransform2d(instances = 11, transform = transformY)
+
+// Sketch the outer profile of the case and extrude with holes using the previously made profiles
+case = startSketchOn(XZ)
+  |> startProfileAt([
+       -width / 2 + offset + caseTolerance,
+       height / 2 - (chamferLength + (offset + caseTolerance) / 2 * cos(toRadians(45)))
+     ], %)
+  |> angledLineToY({
+       angle = 45,
+       to = height / 2 - (offset + caseTolerance)
+     }, %)
+  |> line(endAbsolute = [
+       width / 2 - (chamferLength + (offset + caseTolerance) / 2 * cos(toRadians(45))),
+       height / 2 - (offset + caseTolerance)
+     ])
+  |> angledLineToX({
+       angle = -45,
+       to = width / 2 - (offset + caseTolerance)
+     }, %)
+  |> line(endAbsolute = [
+       width / 2 - (offset + caseTolerance),
+       -(height / 2 - (chamferLength + (offset + caseTolerance) / 2 * cos(toRadians(45))))
+     ])
+  |> angledLineToY({
+       angle = -135,
+       to = -height / 2 + offset + caseTolerance
+     }, %)
+  |> line(endAbsolute = [
+       -(width / 2 - (chamferLength + (offset + caseTolerance) / 2 * cos(toRadians(45)))),
+       -height / 2 + offset + caseTolerance
+     ])
+  |> angledLineToX({
+       angle = -225,
+       to = -width / 2 + offset + caseTolerance
+     }, %)
+  |> close()
+  |> hole(screenSketch, %)
+  |> hole(squareHolePatternSketch, %)
+
+  // Create the Zoo logo
+  |> hole(zLogo(startSketchOn(XZ), [-.30, -1.825], .20), %)
+  |> hole(oLogo(startSketchOn(XZ), [-.075, -1.825], .20), %)
+  |> hole(oLogo2(startSketchOn(XZ), [-.075, -1.825], .20), %)
+  |> hole(oLogo(startSketchOn(XZ), [.175, -1.825], .20), %)
+  |> hole(oLogo2(startSketchOn(XZ), [.175, -1.825], .20), %)
+extrude(case, length = -0.0625)
+  |> appearance(color = '#D0FF01', metalness = 0, roughness = 50)

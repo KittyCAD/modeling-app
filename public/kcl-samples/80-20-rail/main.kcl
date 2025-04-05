@@ -4,7 +4,7 @@
 // Set units
 @settings(defaultLengthUnit = in)
 
-// Define function
+// Create a function to make the 80-20 rail
 fn rail8020(originStart, railHeight, railLength) {
   // Sketch side 1 of profile
   sketch001 = startSketchOn(-XZ)

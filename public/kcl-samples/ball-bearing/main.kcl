@@ -4,7 +4,7 @@
 // Set units
 @settings(defaultLengthUnit = in)
 
-// Define constants like ball diameter, inside diamter, overhange length, and thickness
+// Define parameters
 outsideDiameter = 1.625
 sphereDia = 0.25
 shaftDia = 0.75
@@ -95,5 +95,3 @@ outsideWallSketch = startSketchOn(offsetPlane(XY, offset = -overallThickness / 2
   |> hole(circle(center = [0, 0], radius = shaftDia / 2 + wallThickness + sphereDia), %)
 
 outsideWall = extrude(outsideWallSketch, length = overallThickness)
-
-// https://www.mcmaster.com/60355K185/

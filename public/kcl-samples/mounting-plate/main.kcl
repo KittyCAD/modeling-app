@@ -1,10 +1,10 @@
 // Mounting Plate
 // A flat piece of material, often metal or plastic, that serves as a support or base for attaching, securing, or mounting various types of equipment, devices, or components.
 
-// Set Units
+// Set units
 @settings(defaultLengthUnit = in)
 
-// Define constants
+// Define parameters
 plateLength = 10
 plateWidth = 6
 filletRadius = 0.5

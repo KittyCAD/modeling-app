@@ -4,8 +4,8 @@
 // Set Units
 @settings(defaultLengthUnit = in)
 
-// Define constants
-lbumps = 4 // number of bumps long
+// Define parameters
+lbumps = 3 // number of bumps long
 wbumps = 2 // number of bumps wide
 pitch = 8.0
 clearance = 0.1

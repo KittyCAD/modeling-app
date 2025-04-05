@@ -4,21 +4,6 @@ description: Operations executed washer.kcl
 ---
 [
   {
-    "type": "GroupBegin",
-    "group": {
-      "type": "FunctionCall",
-      "name": "washer",
-      "functionSourceRange": [
-        711,
-        1003,
-        0
-      ],
-      "unlabeledArg": null,
-      "labeledArgs": {}
-    },
-    "sourceRange": []
-  },
-  {
     "labeledArgs": {
       "data": {
         "value": {
@@ -64,7 +49,7 @@ description: Operations executed washer.kcl
       "length": {
         "value": {
           "type": "Number",
-          "value": 0.038,
+          "value": 0.032,
           "ty": {
             "type": "Default",
             "len": {
@@ -90,8 +75,5 @@ description: Operations executed washer.kcl
       },
       "sourceRange": []
     }
-  },
-  {
-    "type": "GroupEnd"
   }
 ]

@@ -1,10 +1,10 @@
 // I-beam
 // A structural metal beam with an I shaped cross section. Often used in construction and architecture
 
-// Set Units
+// Set units
 @settings(defaultLengthUnit = in)
 
-// Define Beam Dimensions
+// Define parameters
 beamLength = 6 * ft()
 beamHeight = 4
 flangeWidth = 2.663
@@ -13,7 +13,7 @@ webThickness = 0.193
 rootRadius = 0.457
 
 // Sketch a quadrant of the beam cross section, then mirror for symmetry across each axis. Extrude to the appropriate length
-sketch001 = startSketchOn(-XZ)
+iBeam = startSketchOn(-XZ)
   |> startProfileAt([0, beamHeight / 2], %)
   |> xLine(length = flangeWidth / 2)
   |> yLine(length = -flangeThickness)

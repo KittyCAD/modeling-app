@@ -1,18 +1,23 @@
 // Router template for a cross bar
 // A guide for routing a notch into a cross bar.
 
-// Set Units
+// Set units
 @settings(defaultLengthUnit = mm)
 
+// Define parameters
 routerDiameter = 12.7
 templateDiameter = 11 / 16 * inch()
-templateGap = (templateDiameter - routerDiameter) / 2 - 0.5
 slateWidthHalf = 41.5 / 2
 minClampingDistance = 50 + 30
 templateThickness = 10
 radius = 10
 depth = 30
+
+// Calculated parameters
+templateGap = (templateDiameter - routerDiameter) / 2 - 0.5
 distanceToInsideEdge = slateWidthHalf + templateThickness + templateGap
+
+// Create the first sketch
 sketch001 = startSketchOn(XZ)
   |> startProfileAt([0, depth + templateGap], %)
   |> xLine(length = slateWidthHalf - radius, tag = $seg01)
@@ -44,9 +49,12 @@ sketch001 = startSketchOn(XZ)
      }, %)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
+
+// Extrude the first sketch
 extrude001 = extrude(sketch001, length = 5)
 
-sketch003 = startSketchOn(extrude001, 'START')
+// Create the second sketch
+sketch002 = startSketchOn(extrude001, 'START')
   |> startProfileAt([distanceToInsideEdge, 0], %)
   |> angledLine([180, templateThickness], %, $rectangleSegmentA002)
   |> angledLine([
@@ -59,9 +67,12 @@ sketch003 = startSketchOn(extrude001, 'START')
      ], %, $rectangleSegmentC002)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-extrude003 = extrude(sketch003, length = 13)
 
-sketch002 = startSketchOn(extrude001, 'START')
+// Extrude the second sketch
+extrude002 = extrude(sketch002, length = 13)
+
+// Create the third sketch
+sketch003 = startSketchOn(extrude001, 'START')
   |> startProfileAt([-distanceToInsideEdge, 0], %)
   |> angledLine([0, templateThickness], %, $rectangleSegmentA001)
   |> angledLine([
@@ -75,8 +86,10 @@ sketch002 = startSketchOn(extrude001, 'START')
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 
-extrude002 = extrude(sketch002, length = 13)
+// Extrude the third sketch
+extrude003 = extrude(sketch003, length = 13)
 
+// Create the fourth sketch
 sketch004 = startSketchOn(extrude002, 'END')
   |> startProfileAt([-distanceToInsideEdge, 0], %)
   |> angledLine([0, distanceToInsideEdge * 2], %, $rectangleSegmentA003)
@@ -90,4 +103,6 @@ sketch004 = startSketchOn(extrude002, 'END')
      ], %, $rectangleSegmentC003)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
+
+// Extrude the fourth sketch
 extrude004 = extrude(sketch004, length = 4)

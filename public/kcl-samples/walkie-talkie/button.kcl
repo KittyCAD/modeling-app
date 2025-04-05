@@ -1,21 +1,24 @@
-// Walkie Talkie button
+// Walkie Talkie Button
+// Button for the walkie talkie
 
-// set units
+// Set units
 @settings(defaultLengthUnit = in)
 
-// import constants
-import buttonWidth, buttonHeight, buttonThickness from "globals.kcl"
+// Import parameters
+import buttonWidth, buttonHeight, buttonThickness from "parameters.kcl"
 
-// create a function to define the button
+// Create a function for the button. We need to create a function to use multiple buttons.
+
+
 export fn button() {
-  // sketch the button profile and extrude
+  // Sketch the button profile and extrude
   buttonSketch = startSketchOn(XZ)
     |> startProfileAt([0, 0], %)
     |> angledLine({ angle = 180, length = buttonWidth }, %, $tag1)
     |> angledLine({ angle = 270, length = buttonHeight }, %, $tag2)
     |> angledLine({ angle = 0, length = buttonWidth }, %)
     |> close()
-  buttonExtrude = extrude(buttonSketch, length = buttonThickness)
+  button = extrude(buttonSketch, length = buttonThickness)
     |> chamfer(
          length = .050,
          tags = [
@@ -25,5 +28,5 @@ export fn button() {
        )
     |> appearance(color = "#ff0000")
 
-  return buttonExtrude
+  return button
 }

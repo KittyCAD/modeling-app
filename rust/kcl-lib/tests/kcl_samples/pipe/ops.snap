@@ -19,94 +19,91 @@ description: Operations executed pipe.kcl
     "unlabeledArg": null
   },
   {
-    "type": "KclStdLibCall",
-    "name": "revolve",
-    "unlabeledArg": {
-      "value": {
-        "type": "Array",
-        "value": [
-          {
-            "type": "Sketch",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          }
-        ]
-      },
-      "sourceRange": []
-    },
     "labeledArgs": {
-      "axis": {
+      "length": {
         "value": {
-          "type": "Object",
-          "value": {
-            "direction": {
-              "type": "Array",
-              "value": [
-                {
-                  "type": "Number",
-                  "value": 0.0,
-                  "ty": {
-                    "type": "Default",
-                    "len": {
-                      "type": "Mm"
-                    },
-                    "angle": {
-                      "type": "Degrees"
-                    }
-                  }
-                },
-                {
-                  "type": "Number",
-                  "value": 1.0,
-                  "ty": {
-                    "type": "Default",
-                    "len": {
-                      "type": "Mm"
-                    },
-                    "angle": {
-                      "type": "Degrees"
-                    }
-                  }
-                }
-              ]
+          "type": "Number",
+          "value": 6.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
             },
-            "origin": {
-              "type": "Array",
-              "value": [
-                {
-                  "type": "Number",
-                  "value": 0.0,
-                  "ty": {
-                    "type": "Default",
-                    "len": {
-                      "type": "Mm"
-                    },
-                    "angle": {
-                      "type": "Degrees"
-                    }
-                  }
-                },
-                {
-                  "type": "Number",
-                  "value": 0.0,
-                  "ty": {
-                    "type": "Default",
-                    "len": {
-                      "type": "Mm"
-                    },
-                    "angle": {
-                      "type": "Degrees"
-                    }
-                  }
-                }
-              ]
+            "angle": {
+              "type": "Degrees"
             }
           }
         },
         "sourceRange": []
       }
     },
-    "sourceRange": []
+    "name": "extrude",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "tag": {
+        "value": {
+          "type": "String",
+          "value": "end"
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "length": {
+        "value": {
+          "type": "Number",
+          "value": -6.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "extrude",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
   }
 ]

@@ -4,8 +4,8 @@
 // Set units
 @settings(defaultLengthUnit = in)
 
-// Import Constants
-import rotorDiameter, rotorInnerDiameter, rotorSinglePlateThickness, rotorInnerDiameterThickness, lugHolePatternDia, lugSpacing, rotorTotalThickness, spacerPatternDiameter, spacerDiameter, spacerLength, spacerCount, wheelDiameter, lugCount, yAxisOffset, drillAndSlotCount from "globals.kcl"
+// Import parameters
+import rotorDiameter, rotorInnerDiameter, rotorSinglePlateThickness, rotorInnerDiameterThickness, lugHolePatternDia, lugSpacing, rotorTotalThickness, spacerPatternDiameter, spacerDiameter, spacerLength, spacerCount, wheelDiameter, lugCount, yAxisOffset, drillAndSlotCount from "parameters.kcl"
 
 rotorSketch = startSketchOn(XZ)
   |> circle(center = [0, 0], radius = rotorDiameter / 2)
