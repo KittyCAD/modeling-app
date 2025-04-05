@@ -14,6 +14,7 @@ import type {
 } from '@src/components/ModelingSidebar/ModelingPanes'
 import { sidebarPanes } from '@src/components/ModelingSidebar/ModelingPanes'
 import Tooltip from '@src/components/Tooltip'
+import { DEV } from '@src/env'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { useKclContext } from '@src/lang/KclProvider'
 import { SIDEBAR_BUTTON_SUFFIX } from '@src/lib/constants'
@@ -21,6 +22,7 @@ import { isDesktop } from '@src/lib/isDesktop'
 import { useSettings } from '@src/machines/appMachine'
 import { commandBarActor } from '@src/machines/commandBarMachine'
 import { onboardingPaths } from '@src/routes/Onboarding/paths'
+import { IS_NIGHTLY_OR_DEBUG } from '@src/routes/utils'
 
 interface ModelingSidebarProps {
   paneOpacity: '' | 'opacity-20' | 'opacity-40'
@@ -60,6 +62,19 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
   )
 
   const sidebarActions: SidebarAction[] = [
+    {
+      id: 'insert',
+      title: 'Insert from project file',
+      sidebarName: 'Insert from project file',
+      icon: 'import',
+      keybinding: 'Ctrl + Shift + I',
+      hide: (a) => a.platform === 'web' || !(DEV || IS_NIGHTLY_OR_DEBUG),
+      action: () =>
+        commandBarActor.send({
+          type: 'Find and select command',
+          data: { name: 'Insert', groupId: 'code' },
+        }),
+    },
     {
       id: 'export',
       title: 'Export part',

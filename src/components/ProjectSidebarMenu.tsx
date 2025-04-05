@@ -113,6 +113,7 @@ function ProjectMenuPopover({
   const commands = useSelector(commandBarActor, commandsSelector)
 
   const { onProjectClose } = useLspContext()
+  const insertCommandInfo = { name: 'Insert', groupId: 'code' }
   const exportCommandInfo = { name: 'Export', groupId: 'modeling' }
   const makeCommandInfo = { name: 'Make', groupId: 'modeling' }
   const shareCommandInfo = { name: 'share-file-link', groupId: 'code' }
@@ -145,6 +146,29 @@ function ProjectMenuPopover({
           },
         },
         'break',
+        {
+          id: 'insert',
+          Element: 'button',
+          children: (
+            <>
+              <span>Insert from project file</span>
+              {!findCommand(insertCommandInfo) && (
+                <Tooltip
+                  position="right"
+                  wrapperClassName="!max-w-none min-w-fit"
+                >
+                  Awaiting engine connection
+                </Tooltip>
+              )}
+            </>
+          ),
+          disabled: !findCommand(insertCommandInfo),
+          onClick: () =>
+            commandBarActor.send({
+              type: 'Find and select command',
+              data: insertCommandInfo,
+            }),
+        },
         {
           id: 'export',
           Element: 'button',

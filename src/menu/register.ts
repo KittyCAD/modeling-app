@@ -92,6 +92,14 @@ export function modelingMenuCallbackMostActions(
       }).catch(reportRejection)
     } else if (data.menuLabel === 'File.Preferences.User default units') {
       navigate(filePath + PATHS.SETTINGS_USER + '#defaultUnit')
+    } else if (data.menuLabel === 'File.Insert from project file') {
+      commandBarActor.send({
+        type: 'Find and select command',
+        data: {
+          groupId: 'code',
+          name: 'Insert',
+        },
+      })
     } else if (data.menuLabel === 'File.Export current part') {
       commandBarActor.send({
         type: 'Find and select command',

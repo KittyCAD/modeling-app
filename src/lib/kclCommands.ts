@@ -2,6 +2,9 @@ import type { UnitLength_type } from '@kittycad/lib/dist/types/src/models'
 import toast from 'react-hot-toast'
 
 import { CommandBarOverwriteWarning } from '@src/components/CommandBarOverwriteWarning'
+import { DEV } from '@src/env'
+import { updateModelingState } from '@src/lang/modelingWorkflows'
+import { addImportAndInsert } from '@src/lang/modifyAst'
 import {
   changeKclSettings,
   unitAngleToUnitAng,
@@ -11,14 +14,16 @@ import type { Command, CommandArgumentOption } from '@src/lib/commandTypes'
 import {
   DEFAULT_DEFAULT_ANGLE_UNIT,
   DEFAULT_DEFAULT_LENGTH_UNIT,
+  EXECUTION_TYPE_REAL,
   FILE_EXT,
 } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 import { copyFileShareLink } from '@src/lib/links'
 import { baseUnitsUnion } from '@src/lib/settings/settingsTypes'
-import { codeManager, kclManager } from '@src/lib/singletons'
+import { codeManager, editorManager, kclManager } from '@src/lib/singletons'
 import { err, reportRejection } from '@src/lib/trap'
 import type { IndexLoaderData } from '@src/lib/types'
+import { IS_NIGHTLY_OR_DEBUG } from '@src/routes/utils'
 
 interface OnSubmitProps {
   sampleName: string
@@ -32,6 +37,9 @@ interface KclCommandConfig {
   // special props for a single command
   specialPropsForSampleCommand: {
     onSubmit: (p: OnSubmitProps) => Promise<void>
+    providedOptions: CommandArgumentOption<string>[]
+  }
+  specialPropsForInsertCommand: {
     providedOptions: CommandArgumentOption<string>[]
   }
   projectData: IndexLoaderData
@@ -94,6 +102,50 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
             'Failed to set per-file units: no value provided to submit function. This is a bug.'
           )
         }
+      },
+    },
+    {
+      name: 'Insert',
+      description: 'Insert from a file in the current project directory',
+      icon: 'import',
+      groupId: 'code',
+      hide: DEV || IS_NIGHTLY_OR_DEBUG ? 'web' : 'both',
+      needsReview: true,
+      reviewMessage:
+        'Reminder: point-and-click insert is in development and only supports one part instance per assembly.',
+      args: {
+        path: {
+          inputType: 'options',
+          required: true,
+          options: commandProps.specialPropsForInsertCommand.providedOptions,
+        },
+        localName: {
+          inputType: 'string',
+          required: true,
+        },
+      },
+      onSubmit: (data) => {
+        if (!data) {
+          return new Error('No input provided')
+        }
+
+        const ast = kclManager.ast
+        const { path, localName } = data
+        const { modifiedAst, pathToImportNode, pathToInsertNode } =
+          addImportAndInsert({
+            node: ast,
+            path,
+            localName,
+          })
+        updateModelingState(
+          modifiedAst,
+          EXECUTION_TYPE_REAL,
+          { kclManager, editorManager, codeManager },
+          {
+            skipUpdateAst: true,
+            focusPath: [pathToImportNode, pathToInsertNode],
+          }
+        ).catch(reportRejection)
       },
     },
     {

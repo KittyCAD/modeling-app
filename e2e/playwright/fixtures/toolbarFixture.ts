@@ -44,6 +44,7 @@ export class ToolbarFixture {
   featureTreePane!: Locator
   gizmo!: Locator
   gizmoDisabled!: Locator
+  insertButton!: Locator
 
   constructor(page: Page) {
     this.page = page
@@ -78,6 +79,8 @@ export class ToolbarFixture {
     // element or two different elements can represent these states.
     this.gizmo = page.getByTestId('gizmo')
     this.gizmoDisabled = page.getByTestId('gizmo-disabled')
+
+    this.insertButton = page.getByTestId('insert-pane-button')
   }
 
   get logoLink() {

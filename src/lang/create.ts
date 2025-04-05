@@ -1,7 +1,11 @@
+import type { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
 import type { Name } from '@rust/kcl-lib/bindings/Name'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { TagDeclarator } from '@rust/kcl-lib/bindings/TagDeclarator'
 
+import type { ImportPath } from '@rust/kcl-lib/bindings/ImportPath'
+import type { ImportSelector } from '@rust/kcl-lib/bindings/ImportSelector'
+import type { ItemVisibility } from '@rust/kcl-lib/bindings/ItemVisibility'
 import { ARG_TAG } from '@src/lang/constants'
 import { getNodeFromPath } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
@@ -12,6 +16,7 @@ import type {
   CallExpression,
   CallExpressionKw,
   Expr,
+  ExpressionStatement,
   Identifier,
   LabeledArg,
   Literal,
@@ -331,6 +336,44 @@ export function createBinaryExpressionWithUnary([left, right]: [
   if (right.type === 'UnaryExpression' && right.operator === '-')
     return createBinaryExpression([left, '-', right.argument])
   return createBinaryExpression([left, '+', right])
+}
+
+export function createImportAsSelector(name: string): ImportSelector {
+  return { type: 'None', alias: createIdentifier(name) }
+}
+
+export function createImportStatement(
+  selector: ImportSelector,
+  path: ImportPath,
+  visibility: ItemVisibility = 'default'
+): Node<ImportStatement> {
+  return {
+    type: 'ImportStatement',
+    start: 0,
+    end: 0,
+    moduleId: 0,
+    outerAttrs: [],
+    preComments: [],
+    commentStart: 0,
+    selector,
+    path,
+    visibility,
+  }
+}
+
+export function createExpressionStatement(
+  expression: Expr
+): Node<ExpressionStatement> {
+  return {
+    type: 'ExpressionStatement',
+    start: 0,
+    end: 0,
+    moduleId: 0,
+    outerAttrs: [],
+    preComments: [],
+    commentStart: 0,
+    expression,
+  }
 }
 
 export function findUniqueName(
