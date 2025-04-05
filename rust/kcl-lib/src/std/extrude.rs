@@ -10,6 +10,7 @@ use kcmc::{
     ok_response::OkModelingCmdResponse,
     output::ExtrusionFaceInfo,
     shared::ExtrusionFaceCapType,
+    shared::Opposite,
     websocket::{ModelingCmdReq, OkWebSocketResponseData},
     ModelingCmd,
 };
@@ -32,8 +33,20 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     let length = args.get_kw_arg("length")?;
     let tag_start = args.get_kw_arg_opt("tagStart")?;
     let tag_end = args.get_kw_arg_opt("tagEnd")?;
+    let symmetric = args.get_kw_arg_opt("symmetric")?;
+    let bidirectional_distance = args.get_kw_arg_opt("bidirectional")?;
 
-    let result = inner_extrude(sketches, length, tag_start, tag_end, exec_state, args).await?;
+    let result = inner_extrude(
+        sketches,
+        length,
+        tag_start,
+        tag_end,
+        symmetric,
+        bidirectional_distance,
+        exec_state,
+        args,
+    )
+    .await?;
 
     Ok(result.into())
 }
@@ -87,6 +100,50 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 ///
 /// example = extrude(exampleSketch, length = 10)
 /// ```
+///
+/// ```no_run
+/// exampleSketch = startSketchOn('XZ')
+///   |> startProfileAt([-10, 0], %)
+///   |> arc({
+///     angleStart = 120,
+///     angleEnd = -60,
+///     radius = 5,
+///   }, %)
+///   |> line(end = [10, 0])
+///   |> line(end = [5, 0])
+///   |> bezierCurve({
+///     control1 = [-3, 0],
+///     control2 = [2, 10],
+///     to = [-5, 10],
+///   }, %)
+///   |> line(end = [-4, 10])
+///   |> line(end = [-5, -2])
+///   |> close()
+///
+/// example = extrude(exampleSketch, length = 20, symmetric = true)
+/// ```
+///
+/// ```no_run
+/// exampleSketch = startSketchOn('XZ')
+///   |> startProfileAt([-10, 0], %)
+///   |> arc({
+///     angleStart = 120,
+///     angleEnd = -60,
+///     radius = 5,
+///   }, %)
+///   |> line(end = [10, 0])
+///   |> line(end = [5, 0])
+///   |> bezierCurve({
+///     control1 = [-3, 0],
+///     control2 = [2, 10],
+///     to = [-5, 10],
+///   }, %)
+///   |> line(end = [-4, 10])
+///   |> line(end = [-5, -2])
+///   |> close()
+///
+/// example = extrude(exampleSketch, length = 10, bidirectional = 50)
+/// ```
 #[stdlib {
     name = "extrude",
     feature_tree_operation = true,
@@ -97,6 +154,9 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
         length = { docs = "How far to extrude the given sketches"},
         tag_start = { docs = "A named tag for the face at the start of the extrusion, i.e. the original sketch" },
         tag_end = { docs = "A named tag for the face at the end of the extrusion, i.e. the new face created by extruding the original sketch" },
+        symmetric = { docs = "If true, the extrusion will happen symmetrically around the sketch. Otherwise, the
+            extrusion will happen on only one side of the sketch." },
+        bidirectional_distance = { docs = "If specified, will also extrude in the opposite direction to 'distance' to the specified distance. If 'symmetric' is true, this value is ignored."},
     }
 }]
 #[allow(clippy::too_many_arguments)]
@@ -105,11 +165,32 @@ async fn inner_extrude(
     length: f64,
     tag_start: Option<TagNode>,
     tag_end: Option<TagNode>,
+    symmetric: Option<bool>,
+    bidirectional_distance: Option<f64>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Vec<Solid>, KclError> {
     // Extrude the element(s).
     let mut solids = Vec::new();
+
+    if symmetric.is_some() && symmetric.unwrap() && bidirectional_distance.is_some() {
+        return Err(KclError::Semantic(KclErrorDetails {
+            source_ranges: vec![args.source_range],
+            message: "You cannot give both `symmetric` and `bidirectional` params, you have to choose one or the other"
+                .to_owned(),
+        }));
+    }
+
+    let bidirection = bidirectional_distance.map(LengthUnit);
+
+    let opposite = match (symmetric, bidirection) {
+        (Some(true), _) => Opposite::Symmetric,
+        (None, None) => Opposite::None,
+        (Some(false), None) => Opposite::None,
+        (None, Some(length)) => Opposite::Other(length),
+        (Some(false), Some(length)) => Opposite::Other(length),
+    };
+
     for sketch in &sketches {
         let id = exec_state.next_uuid();
         args.batch_modeling_cmds(&sketch.build_sketch_mode_cmds(
@@ -120,6 +201,7 @@ async fn inner_extrude(
                     target: sketch.id.into(),
                     distance: LengthUnit(length),
                     faces: Default::default(),
+                    opposite: opposite.clone(),
                 }),
             },
         ))
