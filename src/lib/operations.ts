@@ -1323,6 +1323,14 @@ export async function enterTransformFlow({
     kclManager.ast,
     sourceRangeFromRust(operation.sourceRange)
   )
+  // TODO: this specifically isn't true on first insertion, not sure why.
+  // This is temporary but we should understand why this happens.
+  const hasExpressionStatement = nodeToEdit.some(
+    ([_, desc]) => desc === 'ExpressionStatement'
+  )
+  if (!hasExpressionStatement) {
+    return new Error("Couldn't find node to transform")
+  }
 
   // TODO: clean up this extreme verbosity
   let tx: KclExpression | undefined = undefined
