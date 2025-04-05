@@ -22,21 +22,6 @@ description: Operations executed socket-head-cap-screw.kcl
     "type": "GroupEnd"
   },
   {
-    "type": "GroupBegin",
-    "group": {
-      "type": "FunctionCall",
-      "name": "bolt",
-      "functionSourceRange": [
-        662,
-        1968,
-        0
-      ],
-      "unlabeledArg": null,
-      "labeledArgs": {}
-    },
-    "sourceRange": []
-  },
-  {
     "labeledArgs": {
       "data": {
         "value": {
@@ -281,8 +266,5 @@ description: Operations executed socket-head-cap-screw.kcl
       },
       "sourceRange": []
     }
-  },
-  {
-    "type": "GroupEnd"
   }
 ]

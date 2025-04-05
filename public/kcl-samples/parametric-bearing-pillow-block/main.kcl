@@ -1,10 +1,10 @@
-// A Parametric Bearing Pillow Block
+// Parametric Bearing Pillow Block
 // A bearing pillow block, also known as a plummer block or pillow block bearing, is a pedestal used to provide support for a rotating shaft with the help of compatible bearings and various accessories. Housing a bearing, the pillow block provides a secure and stable foundation that allows the shaft to rotate smoothly within its machinery setup. These components are essential in a wide range of mechanical systems and machinery, playing a key role in reducing friction and supporting radial and axial loads.
 
 // Set units
 @settings(defaultLengthUnit = in)
 
-// Define constants such as length, width, height, counter-bore depth and diameter, bearing diameter, hole location padding, and more
+// Define parameters
 length = 6
 width = 4
 height = 1
@@ -14,15 +14,15 @@ holeDia = .375
 padding = 1.5
 bearingDia = 3
 
-// (Needs to be updated). Sketch the block and extrude up to where the counterbore diameter starts.
-extrude001 = startSketchOn(XY)
+// Sketch the block body
+body = startSketchOn(XY)
   |> startProfileAt([-width / 2, -length / 2], %)
   |> line(endAbsolute = [width / 2, -length / 2])
   |> line(endAbsolute = [width / 2, length / 2])
   |> line(endAbsolute = [-width / 2, length / 2])
   |> close()
   |> extrude(length = height)
-extrude002 = startSketchOn(extrude001, 'end')
+counterBoreHoles = startSketchOn(body, 'end')
   |> circle(
        center = [
          -(width / 2 - (padding / 2)),
@@ -34,7 +34,7 @@ extrude002 = startSketchOn(extrude001, 'end')
   |> patternLinear2d(instances = 2, distance = width - padding, axis = [1, 0])
   |> extrude(%, length = -cbDepth)
 
-extrude003 = startSketchOn(extrude001, 'start')
+boltHoles = startSketchOn(body, 'start')
   |> circle(
        center = [
          -(width / 2 - (padding / 2)),
@@ -46,6 +46,6 @@ extrude003 = startSketchOn(extrude001, 'start')
   |> patternLinear2d(instances = 2, distance = width - padding, axis = [1, 0])
   |> extrude(length = -height + cbDepth)
 
-extrude004 = startSketchOn(extrude001, 'end')
+centerHole = startSketchOn(body, 'end')
   |> circle(center = [0, 0], radius = bearingDia / 2)
   |> extrude(length = -height)
