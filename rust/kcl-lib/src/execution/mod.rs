@@ -748,7 +748,7 @@ impl ExecutorContext {
             ) = tokio::sync::mpsc::channel(1);
 
             for module in modules {
-                let Some((module_id, module_path, program)) = universe.get(&module) else {
+                let Some((import_stmt, module_id, module_path, program)) = universe.get(&module) else {
                     return Err(KclErrorWithOutputs::no_outputs(KclError::Internal(KclErrorDetails {
                         message: format!("Module {module} not found in universe"),
                         source_ranges: Default::default(),
@@ -760,6 +760,7 @@ impl ExecutorContext {
                 let exec_state = exec_state.clone();
                 let exec_ctxt = self.clone();
                 let results_tx = results_tx.clone();
+                let source_range = SourceRange::from(import_stmt);
 
                 #[cfg(target_arch = "wasm32")]
                 {
@@ -769,13 +770,7 @@ impl ExecutorContext {
                         let exec_ctxt = exec_ctxt;
 
                         let result = exec_ctxt
-                            .exec_module_from_ast(
-                                &program,
-                                module_id,
-                                &module_path,
-                                &mut exec_state,
-                                Default::default(),
-                            )
+                            .exec_module_from_ast(&program, module_id, &module_path, &mut exec_state, source_range)
                             .await;
 
                         results_tx
@@ -791,13 +786,7 @@ impl ExecutorContext {
                         let exec_ctxt = exec_ctxt;
 
                         let result = exec_ctxt
-                            .exec_module_from_ast(
-                                &program,
-                                module_id,
-                                &module_path,
-                                &mut exec_state,
-                                Default::default(),
-                            )
+                            .exec_module_from_ast(&program, module_id, &module_path, &mut exec_state, source_range)
                             .await;
 
                         results_tx
