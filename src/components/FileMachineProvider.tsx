@@ -466,10 +466,30 @@ export const FileMachineProvider = ({
             name: sample.title,
           })),
         },
+        specialPropsForInsertCommand: {
+          providedOptions: (isDesktop() && project?.children
+            ? project.children
+            : []
+          ).flatMap((v) => {
+            // TODO: add support for full tree traversal when KCL support subdir imports
+            const relativeFilePath = v.path.replace(
+              project?.path + window.electron.sep,
+              ''
+            )
+            const isDirectory = v.children
+            const isCurrentFile = v.path === file?.path
+            return isDirectory || isCurrentFile
+              ? []
+              : {
+                  name: relativeFilePath,
+                  value: relativeFilePath,
+                }
+          }),
+        },
       }).filter(
         (command) => kclSamples.length || command.name !== 'open-kcl-example'
       ),
-    [codeManager, kclManager, send, kclSamples]
+    [codeManager, kclManager, send, kclSamples, project, file]
   )
 
   useEffect(() => {

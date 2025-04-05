@@ -25,6 +25,7 @@ export type MenuLabels =
   | 'File.Create new file'
   | 'File.Create new folder'
   | 'File.Load a sample model'
+  | 'File.Insert from project file'
   | 'File.Export current part'
   | 'File.Share current part (via Zoo link)'
   | 'File.Preferences.Project settings'
