@@ -1315,4 +1315,38 @@ sketch001 = startSketchOn(XZ)
     const element = page.locator('[data-overlay-index="1"]')
     await expect(element).toHaveAttribute('data-overlay-visible', 'true')
   })
+
+  test(`Only show axis planes when there are no errors`, async ({
+    page,
+    homePage,
+    scene,
+    cmdBar,
+  }) => {
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `sketch001 = startSketchOn(XZ)
+    profile001 = circle(sketch001, center = [-100.0, -100.0], radius = 50.0)
+
+    sketch002 = startSketchOn(XZ)
+    profile002 = circle(sketch002, center = [-100.0, 100.0], radius = 50.0)
+    extrude001 = extrude(profile002, length = 0)` // length = 0 is causing the error
+      )
+    })
+
+    const viewportSize = { width: 1200, height: 800 }
+    await page.setBodyDimensions(viewportSize)
+
+    await homePage.goToModelingScene()
+
+    await scene.connectionEstablished()
+    await scene.settled(cmdBar)
+
+    await scene.expectPixelColor(
+      TEST_COLORS.DARK_MODE_BKGD,
+      // This is a position where the blue part of the axis plane is visible if its rendered
+      { x: viewportSize.width * 0.75, y: viewportSize.height * 0.2 },
+      15
+    )
+  })
 })
