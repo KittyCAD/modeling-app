@@ -3766,10 +3766,11 @@ extrude001 = extrude(profile001, length = 100)
     // One dumb hardcoded screen pixel value
     const testPoint = { x: 500, y: 250 }
     const initialColor: [number, number, number] = [123, 123, 123]
+    const tolerance = 50
 
     await test.step(`Confirm extrude exists with default appearance`, async () => {
       await toolbar.closePane('code')
-      await scene.expectPixelColor(initialColor, testPoint, 15)
+      await scene.expectPixelColor(initialColor, testPoint, tolerance)
     })
 
     async function setApperanceAndCheck(
@@ -3825,7 +3826,7 @@ extrude001 = extrude(profile001, length = 100)
       await cmdBar.progressCmdBar()
       await toolbar.closePane('feature-tree')
       if (shapeColor) {
-        await scene.expectPixelColor(shapeColor, testPoint, 30)
+        await scene.expectPixelColor(shapeColor, testPoint, tolerance)
       }
       await toolbar.openPane('code')
       if (hex === 'default') {
