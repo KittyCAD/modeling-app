@@ -508,7 +508,7 @@ impl SketchSurface {
 pub(crate) enum GetTangentialInfoFromPathsResult {
     PreviousPoint([f64; 2]),
     Arc { center: [f64; 2], ccw: bool },
-    Circle { center: [f64; 2], ccw: bool, radius: f64 },
+    Circle { center: [f64; 2], ccw: bool, _radius: f64 },
 }
 
 impl GetTangentialInfoFromPathsResult {
@@ -1058,7 +1058,7 @@ impl Path {
                 GetTangentialInfoFromPathsResult::Circle {
                     center: center_point,
                     ccw: crate::std::utils::is_points_ccw(&[*p1, *p2, *p3]) > 0,
-                    radius,
+                    _radius: radius,
                 }
             }
             Path::Circle {
@@ -1066,7 +1066,7 @@ impl Path {
             } => GetTangentialInfoFromPathsResult::Circle {
                 center: *center,
                 ccw: *ccw,
-                radius: *radius,
+                _radius: *radius,
             },
             Path::CircleThreePoint { p1, p2, p3, .. } => {
                 let circle_center =
@@ -1077,7 +1077,7 @@ impl Path {
                     center: center_point,
                     // Note should a circle always be ccw regardless  of the order of points?
                     ccw: crate::std::utils::is_points_ccw(&[*p1, *p2, *p3]) > 0,
-                    radius,
+                    _radius: radius,
                 }
             }
             Path::ToPoint { .. } | Path::Horizontal { .. } | Path::AngledLineTo { .. } | Path::Base { .. } => {
