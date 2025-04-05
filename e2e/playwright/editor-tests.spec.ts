@@ -1349,4 +1349,51 @@ sketch001 = startSketchOn(XZ)
       15
     )
   })
+
+  test(`test-toolbar-buttons`, async ({
+    page,
+    homePage,
+    toolbar,
+    scene,
+    cmdBar,
+  }) => {
+    await test.step('Load an empty file', async () => {
+      await page.addInitScript(async () => {
+        localStorage.setItem('persistCode', '')
+      })
+      await page.setBodyDimensions({ width: 1200, height: 500 })
+      await homePage.goToModelingScene()
+
+      // wait until scene is ready to be interacted with
+      await scene.connectionEstablished()
+      await scene.settled(cmdBar)
+    })
+
+    await test.step('Test toolbar button correct selection', async () => {
+      await toolbar.expectToolbarMode.toBe('modeling')
+
+      await toolbar.startSketchPlaneSelection()
+
+      // Click on a default plane
+      await page.mouse.click(700, 200)
+
+      // tools cannot be selected immediately, couldn't find an event to await instead.
+      await page.waitForTimeout(1000)
+
+      await toolbar.selectCenterRectangle()
+
+      await expect(page.getByTestId('center-rectangle')).toHaveAttribute(
+        'aria-pressed',
+        'true'
+      )
+    })
+
+    await test.step('Test Toolbar dropdown remembering last selection', async () => {
+      // Select another tool
+      await page.getByTestId('circle-center').click()
+
+      // center-rectangle should still be the active option in the rectangle dropdown
+      await expect(page.getByTestId('center-rectangle')).toBeVisible()
+    })
+  })
 })
