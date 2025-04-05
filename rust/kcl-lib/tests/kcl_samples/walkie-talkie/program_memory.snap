@@ -5,7 +5,7 @@ description: Variables in memory after executing walkie-talkie.kcl
 {
   "antenna": {
     "type": "Module",
-    "value": 8
+    "value": 9
   },
   "antennaBaseHeight": {
     "type": "Number",
@@ -157,7 +157,7 @@ description: Variables in memory after executing walkie-talkie.kcl
   },
   "knob": {
     "type": "Module",
-    "value": 10
+    "value": 11
   },
   "knobDiameter": {
     "type": "Number",
@@ -318,7 +318,7 @@ description: Variables in memory after executing walkie-talkie.kcl
   },
   "talkButton": {
     "type": "Module",
-    "value": 9
+    "value": 10
   },
   "talkButtonHeight": {
     "type": "Number",

@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Error from executing import_file_not_exist_error.kcl
 ---
 KCL I/O error
@@ -8,6 +8,6 @@ KCL I/O error
   │ exist.kcl`: No such file or directory (os error 2)
    ╭────
  1 │ import hotdog from "not-exist.kcl"
-   · ─────────────────┬────────────────
-   ·                  ╰── tests/import_file_not_exist_error/input.kcl
+   · ▲
+   · ╰── main
    ╰────

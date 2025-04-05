@@ -9,6 +9,6 @@ description: Variables in memory after executing assembly_non_default_units.kcl
   },
   "other2": {
     "type": "Module",
-    "value": 6
+    "value": 7
   }
 }
