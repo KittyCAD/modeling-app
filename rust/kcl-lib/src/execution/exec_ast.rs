@@ -156,44 +156,41 @@ impl ExecutorContext {
         exec_state: &mut ExecState,
     ) -> Result<(), KclError> {
         for statement in &program.body {
-            match statement {
-                BodyItem::ImportStatement(import_stmt) => {
-                    let path_str = import_stmt.path.to_string();
+            if let BodyItem::ImportStatement(import_stmt) = statement {
+                let path_str = import_stmt.path.to_string();
 
-                    if modules.contains_key(&path_str) {
-                        // don't waste our time if we've already loaded the
-                        // module.
-                        continue;
-                    }
-
-                    let source_range = SourceRange::from(import_stmt);
-                    let attrs = &import_stmt.outer_attrs;
-                    let module_id = self
-                        .open_module(&import_stmt.path, attrs, exec_state, source_range)
-                        .await?;
-
-                    let Some(module) = exec_state.get_module(module_id) else {
-                        crate::log::log("we got back a module id that doesn't exist");
-                        unreachable!();
-                    };
-
-                    let progn = {
-                        // this dance is to avoid taking out a mut borrow
-                        // below on exec_state after borrowing here. As a
-                        // result, we need to clone (ugh) the program for
-                        // now.
-                        let ModuleRepr::Kcl(ref progn, _) = module.repr else {
-                            // not a kcl file, we can skip this
-                            continue;
-                        };
-                        progn.clone()
-                    };
-
-                    modules.insert(path_str, progn.clone().inner);
-
-                    self.preload_all_modules(modules, &progn, exec_state).await?;
+                if modules.contains_key(&path_str) {
+                    // don't waste our time if we've already loaded the
+                    // module.
+                    continue;
                 }
-                _ => {}
+
+                let source_range = SourceRange::from(import_stmt);
+                let attrs = &import_stmt.outer_attrs;
+                let module_id = self
+                    .open_module(&import_stmt.path, attrs, exec_state, source_range)
+                    .await?;
+
+                let Some(module) = exec_state.get_module(module_id) else {
+                    crate::log::log("we got back a module id that doesn't exist");
+                    unreachable!();
+                };
+
+                let progn = {
+                    // this dance is to avoid taking out a mut borrow
+                    // below on exec_state after borrowing here. As a
+                    // result, we need to clone (ugh) the program for
+                    // now.
+                    let ModuleRepr::Kcl(ref progn, _) = module.repr else {
+                        // not a kcl file, we can skip this
+                        continue;
+                    };
+                    progn.clone()
+                };
+
+                modules.insert(path_str, progn.clone().inner);
+
+                self.preload_all_modules(modules, &progn, exec_state).await?;
             };
         }
         Ok(())
@@ -2571,8 +2568,6 @@ a = foo()
 
     #[tokio::test(flavor = "multi_thread")]
     async fn load_all_modules() {
-        let mut universe = HashMap::<String, Node<Program>>::new();
-
         // program a.kcl
         let programa_kcl = r#"
 export a = 1
@@ -2598,7 +2593,7 @@ import c from 'c.kcl'
 d = b + c
 "#;
 
-        let main = crate::parsing::parse_str(&main_kcl, ModuleId::default())
+        let main = crate::parsing::parse_str(main_kcl, ModuleId::default())
             .parse_errs_as_err()
             .unwrap();
 

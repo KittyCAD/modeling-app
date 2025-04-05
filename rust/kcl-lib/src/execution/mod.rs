@@ -735,12 +735,10 @@ impl ExecutorContext {
 
             for module in modules {
                 let program = universe.get(&module).unwrap().clone();
-                let module = module.clone();
-                let mut exec_state = exec_state.clone();
+                let exec_state = exec_state.clone();
                 let exec_ctxt = self.clone();
 
                 set.spawn(async move {
-                    let module = module;
                     let mut exec_state = exec_state;
                     let exec_ctxt = exec_ctxt;
                     let program = program;
@@ -761,7 +759,7 @@ impl ExecutorContext {
             set.join_all().await;
         }
 
-        self.inner_run(&program, exec_state, false).await
+        self.inner_run(program, exec_state, false).await
     }
 
     /// Perform the execution of a program.  Accept all possible parameters and
