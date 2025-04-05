@@ -3843,12 +3843,12 @@ extrude001 = extrude(profile001, length = 100)
     }
 
     await test.step(`Go through the Set Appearance flow for all options`, async () => {
-      await setApperanceAndCheck('Red', '#FF0000', [180, 0, 0])
-      await setApperanceAndCheck('Green', '#00FF00', [0, 180, 0])
+      await setApperanceAndCheck('Red', '#FF0000', [180, 20, 15])
+      await setApperanceAndCheck('Green', '#00FF00', [60, 180, 55])
       await setApperanceAndCheck('Blue', '#0000FF', [0, 0, 180])
-      await setApperanceAndCheck('Turquoise', '#00FFFF', [0, 180, 180])
-      await setApperanceAndCheck('Purple', '#FF00FF', [180, 0, 180])
-      await setApperanceAndCheck('Yellow', '#FFFF00', [180, 180, 0])
+      await setApperanceAndCheck('Turquoise', '#00FFFF', [60, 180, 180])
+      await setApperanceAndCheck('Purple', '#FF00FF', [180, 15, 180])
+      await setApperanceAndCheck('Yellow', '#FFFF00', [180, 180, 40])
       await setApperanceAndCheck('Black', '#000000', [0, 0, 0])
       await setApperanceAndCheck('Dark Grey', '#080808', [0x33, 0x33, 0x33])
       await setApperanceAndCheck('Light Grey', '#D3D3D3', [176, 176, 176])
