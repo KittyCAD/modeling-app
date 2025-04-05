@@ -179,6 +179,7 @@
     "@electron/notarize": "^2.5.0",
     "@iarna/toml": "^2.2.5",
     "@lezer/generator": "^1.7.2",
+    "@million/lint": "^1.0.14",
     "@nabla/vite-plugin-eslint": "^2.0.5",
     "@playwright/test": "^1.51.1",
     "@testing-library/jest-dom": "^5.14.1",
