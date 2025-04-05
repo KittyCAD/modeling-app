@@ -451,14 +451,16 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
     "type": "Number",
     "value": 0.1563,
     "ty": {
-      "type": "Unknown"
+      "type": "Known",
+      "type": "Count"
     }
   },
   "boltHexFlatLength": {
     "type": "Number",
     "value": 0.0902,
     "ty": {
-      "type": "Unknown"
+      "type": "Known",
+      "type": "Count"
     }
   },
   "boltLength": {

@@ -1334,7 +1334,8 @@ description: Operations executed french-press.kcl
           "type": "Number",
           "value": 0.325,
           "ty": {
-            "type": "Unknown"
+            "type": "Known",
+            "type": "Count"
           }
         },
         "sourceRange": []
