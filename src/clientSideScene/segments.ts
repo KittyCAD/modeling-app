@@ -1705,6 +1705,10 @@ function createLengthIndicator({
   lengthIndicatorText.innerText = roundOff(length).toString()
   const lengthIndicatorWrapper = document.createElement('div')
 
+  lengthIndicatorWrapper.addEventListener('wheel', (e) => {
+    // dispatch to cameraControls, without this mouse wheel wouldn't work when hovering this segment label
+    sceneInfra.camControls.onMouseWheel(e)
+  })
   // Double click workflow
   lengthIndicatorWrapper.ondblclick = () => {
     const selection = lengthIndicatorGroup.parent?.userData.selection
