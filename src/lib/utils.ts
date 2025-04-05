@@ -16,6 +16,10 @@ export function isArray(val: any): val is unknown[] {
   return Array.isArray(val)
 }
 
+export type SafeArray<T> = Omit<Array<T>, number> & {
+  [index: number]: T | undefined
+}
+
 /**
  * An alternative to `Object.keys()` that returns an array of keys with types.
  *

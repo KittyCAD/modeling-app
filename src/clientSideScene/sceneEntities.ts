@@ -37,7 +37,7 @@ import type { Sketch } from '@rust/kcl-lib/bindings/Sketch'
 import type { SourceRange } from '@rust/kcl-lib/bindings/SourceRange'
 import type { VariableDeclaration } from '@rust/kcl-lib/bindings/VariableDeclaration'
 import type { VariableDeclarator } from '@rust/kcl-lib/bindings/VariableDeclarator'
-import { getAngle, getLength, uuidv4 } from '@src/lib/utils'
+import { getAngle, getLength, SafeArray, uuidv4 } from '@src/lib/utils'
 
 import {
   createGridHelper,
@@ -2626,11 +2626,11 @@ export class SceneEntities {
     const disableTangentSnapping = mouseEvent.ctrlKey || mouseEvent.altKey
     const forceDirectionSnapping = mouseEvent.shiftKey
     if (!disableTangentSnapping) {
-      const segments = Object.values(this.activeSegments) // Using the order in the object feels wrong
+      const segments: SafeArray<Group> = Object.values(this.activeSegments) // Using the order in the object feels wrong
       const current = segments[segments.length - 1]
-      if (current.userData.type === STRAIGHT_SEGMENT) {
+      if (current?.userData.type === STRAIGHT_SEGMENT) {
         const prev = segments[segments.length - 2]
-        if (ARC_SEGMENT_TYPES.includes(prev.userData.type)) {
+        if (prev && ARC_SEGMENT_TYPES.includes(prev.userData.type)) {
           const snapDirection = findTangentDirection(prev)
           if (snapDirection) {
             const SNAP_TOLERANCE_PIXELS = 12 * window.devicePixelRatio
