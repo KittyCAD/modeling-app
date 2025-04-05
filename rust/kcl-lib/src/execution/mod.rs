@@ -27,7 +27,6 @@ pub use memory::EnvironmentRef;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 pub use state::{ExecState, MetaSettings};
-use tokio::task::JoinSet;
 
 use crate::{
     engine::EngineManager,
@@ -736,7 +735,7 @@ impl ExecutorContext {
             .into_iter()
         {
             #[cfg(not(target_arch = "wasm32"))]
-            let mut set = JoinSet::new();
+            let mut set = tokio::task::JoinSet::new();
 
             #[allow(clippy::type_complexity)]
             let (results_tx, mut results_rx): (
