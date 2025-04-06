@@ -508,17 +508,21 @@ impl SketchSurface {
 pub(crate) enum GetTangentialInfoFromPathsResult {
     PreviousPoint([f64; 2]),
     Arc { center: [f64; 2], ccw: bool },
-    Circle { center: [f64; 2], ccw: bool, _radius: f64 },
+    Circle { center: [f64; 2], ccw: bool, radius: f64 },
 }
 
 impl GetTangentialInfoFromPathsResult {
     pub(crate) fn tan_previous_point(&self, last_arc_end: crate::std::utils::Coords2d) -> [f64; 2] {
         match self {
             GetTangentialInfoFromPathsResult::PreviousPoint(p) => *p,
-            GetTangentialInfoFromPathsResult::Arc { center, ccw }
-            | GetTangentialInfoFromPathsResult::Circle { center, ccw, .. } => {
+            GetTangentialInfoFromPathsResult::Arc { center, ccw } => {
                 crate::std::utils::get_tangent_point_from_previous_arc(*center, *ccw, last_arc_end)
             }
+            // The circle always starts at 0 degrees, so a suitable tangent
+            // point is either directly above or below.
+            GetTangentialInfoFromPathsResult::Circle {
+                center, radius, ccw, ..
+            } => [center[0] + radius, center[1] + if *ccw { -1.0 } else { 1.0 }],
         }
     }
 }
@@ -1053,12 +1057,10 @@ impl Path {
             Path::ArcThreePoint { p1, p2, p3, .. } => {
                 let circle_center =
                     crate::std::utils::calculate_circle_from_3_points([(*p1).into(), (*p2).into(), (*p3).into()]);
-                let radius = linear_distance(&[circle_center.center.x, circle_center.center.y], p1);
-                let center_point = [circle_center.center.x, circle_center.center.y];
-                GetTangentialInfoFromPathsResult::Circle {
-                    center: center_point,
+                let center = [circle_center.center.x, circle_center.center.y];
+                GetTangentialInfoFromPathsResult::Arc {
+                    center,
                     ccw: crate::std::utils::is_points_ccw(&[*p1, *p2, *p3]) > 0,
-                    _radius: radius,
                 }
             }
             Path::Circle {
@@ -1066,7 +1068,7 @@ impl Path {
             } => GetTangentialInfoFromPathsResult::Circle {
                 center: *center,
                 ccw: *ccw,
-                _radius: *radius,
+                radius: *radius,
             },
             Path::CircleThreePoint { p1, p2, p3, .. } => {
                 let circle_center =
@@ -1077,7 +1079,7 @@ impl Path {
                     center: center_point,
                     // Note should a circle always be ccw regardless  of the order of points?
                     ccw: crate::std::utils::is_points_ccw(&[*p1, *p2, *p3]) > 0,
-                    _radius: radius,
+                    radius,
                 }
             }
             Path::ToPoint { .. } | Path::Horizontal { .. } | Path::AngledLineTo { .. } | Path::Base { .. } => {
