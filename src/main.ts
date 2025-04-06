@@ -39,6 +39,9 @@ import {
   enableMenu,
 } from '@src/menu'
 
+// If we're on Windows, pull the local system TLS CAs in
+require('win-ca')
+
 let mainWindow: BrowserWindow | null = null
 
 // Preemptive code, GC may delete a menu while a user is using it as seen in VSCode
