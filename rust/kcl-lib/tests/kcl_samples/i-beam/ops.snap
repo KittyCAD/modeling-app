@@ -23,7 +23,7 @@ description: Operations executed i-beam.kcl
       "length": {
         "value": {
           "type": "Number",
-          "value": 72.00000000000001,
+          "value": 72.0,
           "ty": {
             "type": "Unknown"
           }
