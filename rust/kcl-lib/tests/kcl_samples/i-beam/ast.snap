@@ -18,47 +18,40 @@ description: Result of parsing i-beam.kcl
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 0,
-            "end": 0,
-            "left": {
-              "commentStart": 0,
-              "end": 0,
-              "raw": "6",
-              "start": 0,
-              "type": "Literal",
-              "type": "Literal",
-              "value": {
-                "value": 6.0,
-                "suffix": "None"
-              }
-            },
-            "operator": "*",
-            "right": {
-              "arguments": [],
-              "callee": {
-                "abs_path": false,
+            "arguments": [
+              {
                 "commentStart": 0,
                 "end": 0,
-                "name": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "name": "ft",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "path": [],
+                "raw": "6",
                 "start": 0,
-                "type": "Name"
-              },
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 6.0,
+                  "suffix": "None"
+                }
+              }
+            ],
+            "callee": {
+              "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "name": {
+                "commentStart": 0,
+                "end": 0,
+                "name": "fromFt",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "CallExpression",
-              "type": "CallExpression"
+              "type": "Name"
             },
+            "commentStart": 0,
+            "end": 0,
             "start": 0,
-            "type": "BinaryExpression",
-            "type": "BinaryExpression"
+            "type": "CallExpression",
+            "type": "CallExpression"
           },
           "start": 0,
           "type": "VariableDeclarator"
