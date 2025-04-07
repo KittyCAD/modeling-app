@@ -78,7 +78,7 @@ assertEqual(sum, 6, 0.00001, "1 + 2 + 3 summed is 6")
 ```js
 // Declare a function that sketches a decagon.
 fn decagon(radius) {
-  // Each side of the decagon is turned this many degrees from the previous angle.
+  // Each side of the decagon is turned this many radians from the previous angle.
   stepAngle = 1 / 10 * TAU
 
   // Start the decagon sketch at this point.
