@@ -1329,15 +1329,13 @@ part001 = startSketchOn(XZ)
       'yLine(endAbsolute = -4, tag = $seg01)',
       'angledLine(angle = 3, lengthX = 30, tag = $seg01)',
       'angledLine(angle = 3, lengthY = 1.5, tag = $seg01)',
-      'angledLineToX([3, 30], %, $seg01)',
-      'angledLineToX({ angle = 3, to = 30 }, %, $seg01)',
-      'angledLineToY([3, 7], %, $seg01)',
-      'angledLineToY({ angle = 3, to = 7 }, %, $seg01)',
+      'angledLine(angle = 3, endAbsoluteX = 30, tag = $seg01)',
+      'angledLine(angle = 3, endAbsoluteY = 7, tag = $seg01)',
     ]
     for (const doesHaveTagOutsideSketch of [true, false]) {
       for (const lineOfInterest of cases) {
         const isObj = lineOfInterest.includes('{ angle = 3,')
-        test(`${lineOfInterest.split('=')[0]}${isObj ? '-[obj-input]' : ''}${
+        test(`${lineOfInterest}${isObj ? '-[obj-input]' : ''}${
           doesHaveTagOutsideSketch ? '-[tagOutsideSketch]' : ''
         }`, async ({ page, editor, homePage }) => {
           await page.addInitScript(
@@ -1462,7 +1460,7 @@ part001 = startSketchOn(XZ)
       },
 
       {
-        before: `angledLine([5 + 0, 23.03 + 0], %, $seg01)`,
+        before: `angledLine(angle = 5 + 0, length = 23.03 + 0, tag = $seg01)`,
         after: `line(end = [22.94, 2.01], tag = $seg01)`,
       },
       {
@@ -1500,7 +1498,7 @@ part001 = startSketchOn(XZ)
     ]
 
     for (const { before, after } of cases) {
-      test(`${before.split('=')[0]}`, async ({ page, editor, homePage }) => {
+      test(before, async ({ page, editor, homePage }) => {
         await page.addInitScript(
           async ({ lineToBeDeleted }) => {
             localStorage.setItem(
