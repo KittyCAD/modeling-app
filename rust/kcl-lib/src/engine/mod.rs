@@ -272,8 +272,6 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         self.batch().write().await.push((req, source_range));
         self.stats().commands_batched.fetch_add(1, Ordering::Relaxed);
 
-        self.flush_batch(false, source_range).await?;
-
         Ok(())
     }
 
