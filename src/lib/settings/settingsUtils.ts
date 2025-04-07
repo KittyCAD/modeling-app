@@ -33,6 +33,10 @@ import { appThemeToTheme } from '@src/lib/theme'
 import { err } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
 
+type OmitNull<T> = T extends null ? undefined : T
+const toUndefinedIfNull = (a: any): OmitNull<any> =>
+  a === null ? undefined : a
+
 /**
  * Convert from a rust settings struct into the JS settings struct.
  * We do this because the JS settings type has all the fancy shit
@@ -49,7 +53,9 @@ export function configurationToSettingsPayload(
         : undefined,
       onboardingStatus: configuration?.settings?.app?.onboarding_status,
       dismissWebBanner: configuration?.settings?.app?.dismiss_web_banner,
-      streamIdleMode: configuration?.settings?.app?.stream_idle_mode,
+      streamIdleMode: toUndefinedIfNull(
+        configuration?.settings?.app?.stream_idle_mode
+      ),
       allowOrbitInSketchMode:
         configuration?.settings?.app?.allow_orbit_in_sketch_mode,
       projectDirectory: configuration?.settings?.project?.directory,
@@ -128,7 +134,6 @@ export function projectConfigurationToSettingsPayload(
         : undefined,
       onboardingStatus: configuration?.settings?.app?.onboarding_status,
       dismissWebBanner: configuration?.settings?.app?.dismiss_web_banner,
-      streamIdleMode: configuration?.settings?.app?.stream_idle_mode,
       allowOrbitInSketchMode:
         configuration?.settings?.app?.allow_orbit_in_sketch_mode,
       namedViews: deepPartialNamedViewsToNamedViews(
