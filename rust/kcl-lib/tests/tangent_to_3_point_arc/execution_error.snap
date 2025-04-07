@@ -1,0 +1,15 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Error from executing tangent_to_3_point_arc.kcl
+---
+KCL Engine error
+
+  × engine: Modeling command failed: [ApiError { error_code: AuthTokenMissing,
+  │ message: "Please send the following object over this websocket:\n
+  │ { headers: { Authorization: Bearer <token> } }" }]
+   ╭─[1:1]
+ 1 │ sketch001 = startSketchOn(XZ)
+   · ▲
+   · ╰── main
+ 2 │ profile001 = startProfileAt([100.0, 0.0], sketch001)
+   ╰────

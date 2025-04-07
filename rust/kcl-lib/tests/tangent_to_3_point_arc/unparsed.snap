@@ -1,0 +1,15 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing tangent_to_3_point_arc.kcl
+---
+sketch001 = startSketchOn(XZ)
+profile001 = startProfileAt([100.0, 0.0], sketch001)
+  |> line(end = [0.0, 120.0])
+  |> arcTo({
+       interior = [300.0, 100.0],
+       end = [200.0, -100.0]
+     }, %, $seg01)
+  |> angledLine({
+       angle = tangentToEnd(seg01),
+       length = 100.0
+     }, %)
