@@ -23,714 +23,918 @@ description: Variables in memory after executing gear.kcl
         "type": "Number",
         "value": 0.0,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 3.2781,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 4.6327,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 5.67,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 6.5427,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 7.31,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 8.0023,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 8.6377,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 9.2278,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 9.781,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 10.3031,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 10.7987,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 11.2713,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 11.7237,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 12.1581,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 12.5764,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 12.9802,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 13.3708,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 13.7492,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 14.1166,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 14.4737,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 14.8213,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 15.16,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 15.4905,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 15.8132,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 16.1286,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 16.4372,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 16.7393,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 17.0353,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 17.3255,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 17.6101,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 17.8895,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 18.1639,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 18.4335,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 18.6985,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 18.9591,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 19.2156,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 19.468,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 19.7165,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 19.9613,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 20.2026,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 20.4404,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 20.6748,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 20.906,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 21.1341,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 21.3592,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 21.5814,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 21.8007,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 22.0174,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 22.2313,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 22.4427,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 22.6516,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 22.858,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 23.0621,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 23.2639,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 23.4635,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 23.6608,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 23.8561,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 24.0492,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 24.2404,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 24.4296,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 24.6168,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 24.8022,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 24.9858,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 25.1675,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 25.3475,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 25.5258,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 25.7024,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 25.8774,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 26.0508,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 26.2226,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 26.3928,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 26.5616,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 26.7289,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 26.8947,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 27.0591,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 27.2221,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 27.3837,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 27.544,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 27.703,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 27.8607,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 28.0171,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 28.1723,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 28.3263,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 28.479,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 28.6306,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 28.781,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 28.9302,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 29.0783,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 29.2254,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 29.3713,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 29.5162,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 29.66,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 29.8028,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 29.9445,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 30.0853,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 30.225,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 30.3638,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 30.5016,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 30.6385,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 30.7744,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 30.9094,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       }
     ]
@@ -2923,7 +3127,9 @@ description: Variables in memory after executing gear.kcl
     "type": "Number",
     "value": 0.1253,
     "ty": {
-      "type": "Unknown"
+      "type": "Known",
+      "type": "Angle",
+      "type": "Radians"
     }
   },
   "teeth": {

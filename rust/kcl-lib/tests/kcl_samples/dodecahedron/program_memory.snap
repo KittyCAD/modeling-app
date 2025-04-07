@@ -1765,7 +1765,9 @@ description: Variables in memory after executing dodecahedron.kcl
     "type": "Number",
     "value": 2.0344,
     "ty": {
-      "type": "Unknown"
+      "type": "Known",
+      "type": "Angle",
+      "type": "Radians"
     }
   },
   "edgeL": {

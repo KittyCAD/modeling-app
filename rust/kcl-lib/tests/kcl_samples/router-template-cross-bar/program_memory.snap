@@ -20,7 +20,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
     "type": "Number",
     "value": 32.6313,
     "ty": {
-      "type": "Unknown"
+      "type": "Known",
+      "type": "Count"
     }
   },
   "extrude001": {
@@ -7938,14 +7939,21 @@ description: Variables in memory after executing router-template-cross-bar.kcl
     "type": "Number",
     "value": 17.4625,
     "ty": {
-      "type": "Unknown"
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
     }
   },
   "templateGap": {
     "type": "Number",
     "value": 1.8812,
     "ty": {
-      "type": "Unknown"
+      "type": "Known",
+      "type": "Count"
     }
   },
   "templateThickness": {

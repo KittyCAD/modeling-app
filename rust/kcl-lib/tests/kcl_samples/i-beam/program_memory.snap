@@ -20,7 +20,13 @@ description: Variables in memory after executing i-beam.kcl
     "type": "Number",
     "value": 72.0,
     "ty": {
-      "type": "Unknown"
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
     }
   },
   "flangeThickness": {

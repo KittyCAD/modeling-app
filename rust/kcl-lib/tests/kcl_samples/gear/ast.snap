@@ -4321,85 +4321,65 @@ description: Result of parsing gear.kcl
                             "commentStart": 0,
                             "end": 0,
                             "left": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "left": {
+                              "argument": {
                                 "commentStart": 0,
                                 "end": 0,
-                                "left": {
-                                  "argument": {
+                                "raw": "1",
+                                "start": 0,
+                                "type": "Literal",
+                                "type": "Literal",
+                                "value": {
+                                  "value": 1.0,
+                                  "suffix": "None"
+                                }
+                              },
+                              "commentStart": 0,
+                              "end": 0,
+                              "operator": "-",
+                              "start": 0,
+                              "type": "UnaryExpression",
+                              "type": "UnaryExpression"
+                            },
+                            "operator": "*",
+                            "right": {
+                              "arguments": [
+                                {
+                                  "abs_path": false,
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "name": {
                                     "commentStart": 0,
                                     "end": 0,
-                                    "raw": "1",
+                                    "name": "startAngle",
                                     "start": 0,
-                                    "type": "Literal",
-                                    "type": "Literal",
-                                    "value": {
-                                      "value": 1.0,
-                                      "suffix": "None"
-                                    }
+                                    "type": "Identifier"
                                   },
-                                  "commentStart": 0,
-                                  "end": 0,
-                                  "operator": "-",
+                                  "path": [],
                                   "start": 0,
-                                  "type": "UnaryExpression",
-                                  "type": "UnaryExpression"
-                                },
-                                "operator": "*",
-                                "right": {
-                                  "commentStart": 0,
-                                  "end": 0,
-                                  "raw": "180",
-                                  "start": 0,
-                                  "type": "Literal",
-                                  "type": "Literal",
-                                  "value": {
-                                    "value": 180.0,
-                                    "suffix": "None"
-                                  }
-                                },
-                                "start": 0,
-                                "type": "BinaryExpression",
-                                "type": "BinaryExpression"
-                              },
-                              "operator": "/",
-                              "right": {
+                                  "type": "Name",
+                                  "type": "Name"
+                                }
+                              ],
+                              "callee": {
                                 "abs_path": false,
                                 "commentStart": 0,
                                 "end": 0,
                                 "name": {
                                   "commentStart": 0,
                                   "end": 0,
-                                  "name": "PI",
+                                  "name": "toDegrees",
                                   "start": 0,
                                   "type": "Identifier"
                                 },
                                 "path": [],
                                 "start": 0,
-                                "type": "Name",
                                 "type": "Name"
                               },
-                              "start": 0,
-                              "type": "BinaryExpression",
-                              "type": "BinaryExpression"
-                            },
-                            "operator": "*",
-                            "right": {
-                              "abs_path": false,
                               "commentStart": 0,
                               "end": 0,
-                              "name": {
-                                "commentStart": 0,
-                                "end": 0,
-                                "name": "startAngle",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "path": [],
                               "start": 0,
-                              "type": "Name",
-                              "type": "Name"
+                              "type": "CallExpression",
+                              "type": "CallExpression"
                             },
                             "start": 0,
                             "type": "BinaryExpression",
@@ -4505,32 +4485,15 @@ description: Result of parsing gear.kcl
                         "start": 0,
                         "type": "ObjectProperty",
                         "value": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "left": {
-                            "commentStart": 0,
-                            "end": 0,
-                            "left": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "raw": "180",
-                              "start": 0,
-                              "type": "Literal",
-                              "type": "Literal",
-                              "value": {
-                                "value": 180.0,
-                                "suffix": "None"
-                              }
-                            },
-                            "operator": "/",
-                            "right": {
+                          "arguments": [
+                            {
                               "abs_path": false,
                               "commentStart": 0,
                               "end": 0,
                               "name": {
                                 "commentStart": 0,
                                 "end": 0,
-                                "name": "PI",
+                                "name": "startAngle",
                                 "start": 0,
                                 "type": "Identifier"
                               },
@@ -4538,31 +4501,28 @@ description: Result of parsing gear.kcl
                               "start": 0,
                               "type": "Name",
                               "type": "Name"
-                            },
-                            "start": 0,
-                            "type": "BinaryExpression",
-                            "type": "BinaryExpression"
-                          },
-                          "operator": "*",
-                          "right": {
+                            }
+                          ],
+                          "callee": {
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
-                              "name": "startAngle",
+                              "name": "toDegrees",
                               "start": 0,
                               "type": "Identifier"
                             },
                             "path": [],
                             "start": 0,
-                            "type": "Name",
                             "type": "Name"
                           },
+                          "commentStart": 0,
+                          "end": 0,
                           "start": 0,
-                          "type": "BinaryExpression",
-                          "type": "BinaryExpression"
+                          "type": "CallExpression",
+                          "type": "CallExpression"
                         }
                       },
                       {
