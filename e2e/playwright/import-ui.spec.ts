@@ -3,7 +3,7 @@ import * as fsp from 'fs/promises'
 import path from 'path'
 
 test.describe('Import UI tests', () => {
-  test('shows toast when trying to sketch on imported face', async ({
+  test('shows toast when trying to sketch on imported face, and hovering over imported geometry should NOT highlight any code', async ({
     context,
     page,
     homePage,
@@ -104,7 +104,6 @@ sketch002 = startSketchOn(extrude001, seg01)`
       await toolbar.startSketchPlaneSelection()
 
       // Click on a face from the imported model
-      // await new Promise(() => {})
       await importedFaceClick()
 
       // Verify toast appears with correct content

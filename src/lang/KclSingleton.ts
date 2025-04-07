@@ -22,7 +22,6 @@ import type {
   ExecState,
   PathToNode,
   Program,
-  SourceRange,
   VariableMap,
 } from '@src/lang/wasm'
 import {
@@ -53,7 +52,7 @@ import {
   sceneInfra,
 } from '@src/lib/singletons'
 import { err, reportRejection } from '@src/lib/trap'
-import { deferExecution, isOverlap, uuidv4 } from '@src/lib/utils'
+import { deferExecution, uuidv4 } from '@src/lib/utils'
 
 interface ExecuteArgs {
   ast?: Node<Program>
@@ -309,6 +308,7 @@ export class KclManager {
   private async updateArtifactGraph(
     execStateArtifactGraph: ExecState['artifactGraph']
   ) {
+    console.log('updating artifact graph', this.artifactGraph.size)
     this.artifactGraph = execStateArtifactGraph
     this.artifactIndex = buildArtifactIndex(execStateArtifactGraph)
     if (this.artifactGraph.size) {
@@ -327,24 +327,6 @@ export class KclManager {
         })
       }, 200)(null)
     }
-  }
-
-  // Some "objects" have the same source range, such as sketch_mode_start and start_path.
-  // So when passing a range, we need to also specify the command type
-  private mapRangeToObjectId(
-    range: SourceRange,
-    commandTypeToTarget: string
-  ): string | undefined {
-    for (const [artifactId, artifact] of this.artifactGraph) {
-      if (
-        'codeRef' in artifact &&
-        artifact.codeRef &&
-        isOverlap(range, artifact.codeRef.range)
-      ) {
-        if (commandTypeToTarget === artifact.type) return artifactId
-      }
-    }
-    return undefined
   }
 
   async safeParse(code: string): Promise<Node<Program> | null> {

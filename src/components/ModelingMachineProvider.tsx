@@ -808,6 +808,7 @@ export const ModelingMachineProvider = ({
             await letEngineAnimateAndSyncCamAfter(engineCommandManager, id)
             sceneInfra.camControls.syncDirection = 'clientToEngine'
             return {
+              planeArtifactIdFromLastFullExecution: id,
               sketchEntryNodePath: [],
               planeNodePath: pathToNewSketchNode,
               sketchNodePaths: [],
@@ -831,6 +832,7 @@ export const ModelingMachineProvider = ({
           )
 
           return {
+            planeArtifactIdFromLastFullExecution: input.planeId,
             sketchEntryNodePath: [],
             planeNodePath: pathToNode,
             sketchNodePaths: [],
@@ -856,6 +858,7 @@ export const ModelingMachineProvider = ({
                 : plane?.pathIds[0]
             let sketch: KclValue | null = null
             let planeVar: Plane | null = null
+
             for (const variable of Object.values(
               kclManager.execState.variables
             )) {
@@ -886,6 +889,7 @@ export const ModelingMachineProvider = ({
                 planeVar = variable.value
               }
             }
+
             if (!sketch || sketch.type !== 'Sketch') {
               if (artifact?.type !== 'plane')
                 return Promise.reject(new Error('No sketch'))
@@ -905,12 +909,14 @@ export const ModelingMachineProvider = ({
                   artifact.id
                 )
                 return {
+                  planeArtifactIdFromLastFullExecution: artifact.id,
                   sketchEntryNodePath: [],
                   planeNodePath: planPath,
                   sketchNodePaths: [],
                   zAxis: toTuple(planeVar.zAxis),
                   yAxis: toTuple(planeVar.yAxis),
                   origin: toTuple(planeVar.origin),
+                  animateTargetId: artifact.id,
                 }
               }
               return Promise.reject(new Error('No sketch'))
@@ -941,6 +947,7 @@ export const ModelingMachineProvider = ({
               codeRef.range
             )
             return {
+              planeArtifactIdFromLastFullExecution: plane.id,
               sketchEntryNodePath: sketchArtifact.codeRef.pathToNode || [],
               sketchNodePaths: sketchPaths,
               planeNodePath,
