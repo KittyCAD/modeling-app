@@ -11,7 +11,7 @@ import { expect, test } from '@e2e/playwright/zoo-test'
 test(
   'export works on the first try',
   { tag: ['@electron', '@skipLocalEngine'] },
-  async ({ page, context, scene, tronApp }, testInfo) => {
+  async ({ page, context, scene, tronApp, cmdBar }, testInfo) => {
     if (!tronApp) {
       fail()
     }
@@ -37,7 +37,7 @@ test(
       const projectName = page.getByText(`bracket`)
       await expect(projectName).toBeVisible()
       await projectName.click()
-      await scene.waitForExecutionDone()
+      await scene.settled(cmdBar)
       await page.waitForTimeout(1_000) // wait for panel buttons to be available
 
       // Expect zero errors in gutter
@@ -46,6 +46,7 @@ test(
       // Click the export button
       const exportButton = page.getByTestId('export-pane-button')
       await expect(exportButton).toBeVisible()
+
       await exportButton.click()
       await page.waitForTimeout(1_000) // wait for export options to be available
 
@@ -110,10 +111,9 @@ test(
 
       // Close the file pane
       await u.closeFilePanel()
-      await scene.waitForExecutionDone()
-      await page.waitForTimeout(1_000) // wait for panel buttons to be available
+      await scene.settled(cmdBar)
 
-      // Expect zero errors in gutter
+      // expect zero errors in guter
       await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
 
       // Click the export button
