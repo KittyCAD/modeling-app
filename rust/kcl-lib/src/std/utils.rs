@@ -247,7 +247,7 @@ pub fn calculate_circle_center(p1: [f64; 2], p2: [f64; 2], p3: [f64; 2]) -> [f64
     let d = 2.0 * (x1 * (y2 - y3) + x2 * (y3 - y1) + x3 * (y1 - y2));
 
     // If d is nearly zero, the points are collinear, and a unique circle cannot be defined.
-    if d.abs() < std::f64::EPSILON {
+    if d.abs() < f64::EPSILON {
         return [(x1 + x2 + x3) / 3.0, (y1 + y2 + y3) / 3.0];
     }
 
