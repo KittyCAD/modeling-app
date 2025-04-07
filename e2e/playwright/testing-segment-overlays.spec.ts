@@ -1207,8 +1207,7 @@ part001 = startSketchOn(XZ)
       ang = await u.getAngle('[data-overlay-index="8"]')
       await deleteSegmentSequence({
         hoverPos: { x: segmentToDelete.x, y: segmentToDelete.y },
-        codeToBeDeleted:
-          'angledLineOfYLength({ angle = -91, length = 19 + 0 }, %)',
+        codeToBeDeleted: 'angledLine(angle = -91, lengthY = 19 + 0)',
         stdLibFnName: 'angledLineOfYLength',
         ang: ang + 180,
         locator: '[data-overlay-toolbar-index="8"]',
