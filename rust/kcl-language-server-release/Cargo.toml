@@ -14,14 +14,14 @@ bench = false
 [dependencies]
 anyhow = { workspace = true }
 clap = { workspace = true, features = ["cargo", "derive", "env", "unicode"] }
-flate2 = "1.1.0"
+flate2 = "1.1.1"
 lazy_static = { workspace = true }
-log = { version = "0.4.26", features = ["serde"] }
+log = { version = "0.4.27", features = ["serde"] }
 slog = { workspace = true }
 slog-async = { workspace = true }
 slog-json = { workspace = true }
 slog-term = { workspace = true }
-time = "0.3.40"
+time = "0.3.41"
 tokio = { workspace = true, features = ["full"] }
 tracing-subscriber = { workspace = true }
 xshell = "0.2.6"
