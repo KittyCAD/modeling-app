@@ -256,10 +256,10 @@ pub fn calculate_circle_center(p1: [f64; 2], p2: [f64; 2], p3: [f64; 2]) -> [f64
     let p2_sq = x2 * x2 + y2 * y2;
     let p3_sq = x3 * x3 + y3 * y3;
 
-    // This formula is derived from the circle equations,
+    // This formula is derived from the circle equations:
     //   (x - cx)^2 + (y - cy)^2 = r^2
     // All 3 points will satisfy this equation, so we have 3 equations. Radius can be eliminated
-    // by subtracting one of the equations from the other two.and the remaining 2 equations can
+    // by subtracting one of the equations from the other two and the remaining 2 equations can
     // be solved for cx and cy.
     [
         (p1_sq * (y2 - y3) + p2_sq * (y3 - y1) + p3_sq * (y1 - y2)) / d,
