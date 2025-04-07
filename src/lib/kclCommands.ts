@@ -40,6 +40,7 @@ interface KclCommandConfig {
     providedOptions: CommandArgumentOption<string>[]
   }
   specialPropsForInsertCommand: {
+    defaultName: string
     providedOptions: CommandArgumentOption<string>[]
   }
   projectData: IndexLoaderData
@@ -122,6 +123,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
         localName: {
           inputType: 'string',
           required: true,
+          defaultValue: commandProps.specialPropsForInsertCommand.defaultName,
         },
       },
       onSubmit: (data) => {

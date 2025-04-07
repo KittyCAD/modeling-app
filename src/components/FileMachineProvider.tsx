@@ -13,6 +13,7 @@ import { fromPromise } from 'xstate'
 
 import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
 import { useMenuListener } from '@src/hooks/useMenu'
+import { findUniqueName } from '@src/lang/create'
 import { newKclFile } from '@src/lang/project'
 import { createNamedViewsCommand } from '@src/lib/commandBarConfigs/namedViewsConfig'
 import { createRouteCommands } from '@src/lib/commandBarConfigs/routeCommandConfig'
@@ -460,6 +461,7 @@ export const FileMachineProvider = ({
           })),
         },
         specialPropsForInsertCommand: {
+          defaultName: findUniqueName(kclManager.ast, 'part'),
           providedOptions: (isDesktop() && project?.children
             ? project.children
             : []
@@ -469,7 +471,7 @@ export const FileMachineProvider = ({
               project?.path + window.electron.sep,
               ''
             )
-            const isDirectory = v.children
+            const isDirectory = !!v.children
             const isCurrentFile = v.path === file?.path
             return isDirectory || isCurrentFile
               ? []
@@ -482,7 +484,15 @@ export const FileMachineProvider = ({
       }).filter(
         (command) => kclSamples.length || command.name !== 'open-kcl-example'
       ),
-    [codeManager, kclManager, send, kclSamples, project, file]
+    [
+      codeManager,
+      kclManager,
+      send,
+      kclSamples,
+      project,
+      file,
+      kclManager.ast.body,
+    ]
   )
 
   useEffect(() => {
