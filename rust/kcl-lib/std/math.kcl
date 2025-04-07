@@ -95,3 +95,25 @@ export fn sin(@num: number(rad)): number(_) {}
 /// ```
 @(impl = std_rust)
 export fn tan(@num: number(rad)): number(_) {}
+
+/// Convert polar/sphere (azimuth, elevation, distance) coordinates to
+/// cartesian (x/y/z grid) coordinates.
+///
+/// ```
+/// exampleSketch = startSketchOn(XZ)
+///   |> startProfileAt([0, 0], %)
+///   |> line(end = polar(angle = 30, length = 5), tag = $thing)
+///   |> line(end = [0, 5])
+///   |> line(end = [segEndX(thing), 0])
+///   |> line(end = [-20, 10])
+///   |> close()
+///  
+/// example = extrude(exampleSketch, length = 5)
+/// ```
+export fn polar(angle: number(deg), length: number(mm)): [number(mm); 2] {
+  // TODO could be done by implicit conversion when UoM coercions are activated.
+  rads = toRadians(angle)
+  x = length * cos(rads)
+  y = length * sin(rads)
+  return [x, y]
+}
