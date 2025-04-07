@@ -18,7 +18,7 @@ description: Result of parsing array_index_oob.kcl
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 6,
+            "commentStart": 0,
             "elements": [],
             "end": 0,
             "start": 0,
@@ -35,23 +35,23 @@ description: Result of parsing array_index_oob.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 9,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 9,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 9,
+            "commentStart": 0,
             "end": 0,
             "name": "x",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 13,
+            "commentStart": 0,
             "computed": false,
             "end": 0,
             "object": {
-              "commentStart": 13,
+              "commentStart": 0,
               "end": 0,
               "name": "arr",
               "start": 0,
@@ -59,7 +59,7 @@ description: Result of parsing array_index_oob.kcl
               "type": "Identifier"
             },
             "property": {
-              "commentStart": 17,
+              "commentStart": 0,
               "end": 0,
               "raw": "0",
               "start": 0,

@@ -17,10 +17,10 @@ description: Result of parsing pattern_circular_in_module.kcl
           "items": [
             {
               "alias": null,
-              "commentStart": 7,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 7,
+                "commentStart": 0,
                 "end": 0,
                 "name": "thing",
                 "start": 0,
@@ -36,16 +36,16 @@ description: Result of parsing pattern_circular_in_module.kcl
         "type": "ImportStatement"
       },
       {
-        "commentStart": 29,
+        "commentStart": 0,
         "end": 0,
         "expression": {
           "arguments": [],
           "callee": {
             "abs_path": false,
-            "commentStart": 31,
+            "commentStart": 0,
             "end": 0,
             "name": {
-              "commentStart": 31,
+              "commentStart": 0,
               "end": 0,
               "name": "thing",
               "start": 0,
@@ -55,7 +55,7 @@ description: Result of parsing pattern_circular_in_module.kcl
             "start": 0,
             "type": "Name"
           },
-          "commentStart": 31,
+          "commentStart": 0,
           "end": 0,
           "start": 0,
           "type": "CallExpression",
@@ -72,7 +72,7 @@ description: Result of parsing pattern_circular_in_module.kcl
       "nonCodeNodes": {
         "0": [
           {
-            "commentStart": 29,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",

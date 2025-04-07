@@ -97,11 +97,11 @@ keyWay = startSketchOn(body, 'END')
   |> xLine(length = -keywayDepth)
   |> arc({
        angleEnd = 180,
-       angleStart = -1 * 180 / PI * startAngle + 360,
+       angleStart = -1 * toDegrees(startAngle) + 360,
        radius = holeRadius
      }, %)
   |> arc({
-       angleEnd = 180 / PI * startAngle,
+       angleEnd = toDegrees(startAngle),
        angleStart = 180,
        radius = holeRadius
      }, %)

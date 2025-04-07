@@ -6,14 +6,14 @@ use kcl_derive_docs::stdlib;
 use crate::{
     errors::KclError,
     execution::{types::UnitLen, ExecState, KclValue},
-    std::Args,
+    std::{args::TyF64, Args},
 };
 
 /// Millimeters conversion factor for current projects units.
 pub async fn mm(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let result = inner_mm(exec_state)?;
 
-    Ok(args.make_user_val_from_f64(result))
+    Ok(args.make_user_val_from_f64_with_type(TyF64::new(result, exec_state.current_default_units())))
 }
 
 /// Millimeters conversion factor for current projects units.
@@ -54,7 +54,7 @@ fn inner_mm(exec_state: &ExecState) -> Result<f64, KclError> {
 pub async fn inch(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let result = inner_inch(exec_state)?;
 
-    Ok(args.make_user_val_from_f64(result))
+    Ok(args.make_user_val_from_f64_with_type(TyF64::new(result, exec_state.current_default_units())))
 }
 
 /// Inches conversion factor for current projects units.
@@ -95,7 +95,7 @@ fn inner_inch(exec_state: &ExecState) -> Result<f64, KclError> {
 pub async fn ft(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let result = inner_ft(exec_state)?;
 
-    Ok(args.make_user_val_from_f64(result))
+    Ok(args.make_user_val_from_f64_with_type(TyF64::new(result, exec_state.current_default_units())))
 }
 
 /// Feet conversion factor for current projects units.
@@ -137,7 +137,7 @@ fn inner_ft(exec_state: &ExecState) -> Result<f64, KclError> {
 pub async fn m(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let result = inner_m(exec_state)?;
 
-    Ok(args.make_user_val_from_f64(result))
+    Ok(args.make_user_val_from_f64_with_type(TyF64::new(result, exec_state.current_default_units())))
 }
 
 /// Meters conversion factor for current projects units.
@@ -179,7 +179,7 @@ fn inner_m(exec_state: &ExecState) -> Result<f64, KclError> {
 pub async fn cm(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let result = inner_cm(exec_state)?;
 
-    Ok(args.make_user_val_from_f64(result))
+    Ok(args.make_user_val_from_f64_with_type(TyF64::new(result, exec_state.current_default_units())))
 }
 
 /// Centimeters conversion factor for current projects units.
@@ -221,7 +221,7 @@ fn inner_cm(exec_state: &ExecState) -> Result<f64, KclError> {
 pub async fn yd(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let result = inner_yd(exec_state)?;
 
-    Ok(args.make_user_val_from_f64(result))
+    Ok(args.make_user_val_from_f64_with_type(TyF64::new(result, exec_state.current_default_units())))
 }
 
 /// Yards conversion factor for current projects units.

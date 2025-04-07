@@ -40,7 +40,13 @@ description: Variables in memory after executing bracket.kcl
     "type": "Number",
     "value": 3600.0,
     "ty": {
-      "type": "Unknown"
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
     }
   },
   "mountingHoleDiameter": {
