@@ -43,6 +43,7 @@ import {
   isOverlap,
   uuidv4,
 } from '@src/lib/utils'
+import { engineStreamActor } from '@src/machines/appMachine'
 import type { ModelingMachineEvent } from '@src/machines/modelingMachine'
 
 export const X_AXIS_UUID = 'ad792545-7fd3-482a-a602-a93924e3055b'
@@ -649,12 +650,13 @@ export async function sendSelectEventToEngine(
   e: React.MouseEvent<HTMLDivElement, MouseEvent>
 ) {
   // No video stream to normalise against, return immediately
-  if (!engineCommandManager.elVideo)
+  const engineStreamState = engineStreamActor.getSnapshot().context
+  if (!engineStreamState.videoRef.current)
     return Promise.reject('video element not ready')
 
   const { x, y } = getNormalisedCoordinates(
     e,
-    engineCommandManager.elVideo,
+    engineStreamState.videoRef.current,
     engineCommandManager.streamDimensions
   )
   const res = await engineCommandManager.sendSceneCommand({

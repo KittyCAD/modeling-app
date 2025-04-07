@@ -1,4 +1,5 @@
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
+import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
 
 import { createSettings } from '@src/lib/settings/initialSettings'
 import {
@@ -43,11 +44,10 @@ describe(`testing settings initialization`, () => {
         },
       },
     }
-    const projectConfiguration: DeepPartial<Configuration> = {
+    const projectConfiguration: DeepPartial<ProjectConfiguration> = {
       settings: {
         app: {
           appearance: {
-            theme: 'light',
             color: 200,
           },
         },
@@ -82,11 +82,10 @@ describe(`testing getAllCurrentSettings`, () => {
         },
       },
     }
-    const projectConfiguration: DeepPartial<Configuration> = {
+    const projectConfiguration: DeepPartial<ProjectConfiguration> = {
       settings: {
         app: {
           appearance: {
-            theme: 'light',
             color: 200,
           },
         },
