@@ -8,10 +8,10 @@ description: Result of parsing kw_fn_unlabeled_but_has_label.kcl
       {
         "commentStart": 0,
         "declaration": {
-          "commentStart": 3,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 3,
+            "commentStart": 0,
             "end": 0,
             "name": "add",
             "start": 0,
@@ -22,14 +22,14 @@ description: Result of parsing kw_fn_unlabeled_but_has_label.kcl
               "body": [
                 {
                   "argument": {
-                    "commentStart": 22,
+                    "commentStart": 0,
                     "end": 0,
                     "left": {
                       "abs_path": false,
-                      "commentStart": 22,
+                      "commentStart": 0,
                       "end": 0,
                       "name": {
-                        "commentStart": 22,
+                        "commentStart": 0,
                         "end": 0,
                         "name": "x",
                         "start": 0,
@@ -42,7 +42,7 @@ description: Result of parsing kw_fn_unlabeled_but_has_label.kcl
                     },
                     "operator": "+",
                     "right": {
-                      "commentStart": 26,
+                      "commentStart": 0,
                       "end": 0,
                       "raw": "1",
                       "start": 0,
@@ -57,24 +57,24 @@ description: Result of parsing kw_fn_unlabeled_but_has_label.kcl
                     "type": "BinaryExpression",
                     "type": "BinaryExpression"
                   },
-                  "commentStart": 15,
+                  "commentStart": 0,
                   "end": 0,
                   "start": 0,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
                 }
               ],
-              "commentStart": 11,
+              "commentStart": 0,
               "end": 0,
               "start": 0
             },
-            "commentStart": 6,
+            "commentStart": 0,
             "end": 0,
             "params": [
               {
                 "type": "Parameter",
                 "identifier": {
-                  "commentStart": 8,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "x",
                   "start": 0,
@@ -97,12 +97,12 @@ description: Result of parsing kw_fn_unlabeled_but_has_label.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 29,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 31,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 31,
+            "commentStart": 0,
             "end": 0,
             "name": "two",
             "start": 0,
@@ -113,14 +113,14 @@ description: Result of parsing kw_fn_unlabeled_but_has_label.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "commentStart": 41,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "x",
                   "start": 0,
                   "type": "Identifier"
                 },
                 "arg": {
-                  "commentStart": 45,
+                  "commentStart": 0,
                   "end": 0,
                   "raw": "1",
                   "start": 0,
@@ -135,10 +135,10 @@ description: Result of parsing kw_fn_unlabeled_but_has_label.kcl
             ],
             "callee": {
               "abs_path": false,
-              "commentStart": 37,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 37,
+                "commentStart": 0,
                 "end": 0,
                 "name": "add",
                 "start": 0,
@@ -148,7 +148,7 @@ description: Result of parsing kw_fn_unlabeled_but_has_label.kcl
               "start": 0,
               "type": "Name"
             },
-            "commentStart": 37,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "CallExpressionKw",
@@ -171,7 +171,7 @@ description: Result of parsing kw_fn_unlabeled_but_has_label.kcl
       "nonCodeNodes": {
         "0": [
           {
-            "commentStart": 29,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",

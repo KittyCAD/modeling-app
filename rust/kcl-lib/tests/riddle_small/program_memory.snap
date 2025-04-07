@@ -20,14 +20,16 @@ description: Variables in memory after executing riddle_small.kcl
     "type": "Number",
     "value": -26.0,
     "ty": {
-      "type": "Unknown"
+      "type": "Known",
+      "type": "Count"
     }
   },
   "oy": {
     "type": "Number",
     "value": 34.0,
     "ty": {
-      "type": "Unknown"
+      "type": "Known",
+      "type": "Count"
     }
   },
   "r": {

@@ -15,7 +15,7 @@ description: Result of parsing import_foreign.kcl
         "selector": {
           "type": "None",
           "alias": {
-            "commentStart": 32,
+            "commentStart": 0,
             "end": 0,
             "name": "cube",
             "start": 0,
@@ -27,12 +27,12 @@ description: Result of parsing import_foreign.kcl
         "type": "ImportStatement"
       },
       {
-        "commentStart": 36,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 38,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 38,
+            "commentStart": 0,
             "end": 0,
             "name": "model",
             "start": 0,
@@ -40,10 +40,10 @@ description: Result of parsing import_foreign.kcl
           },
           "init": {
             "abs_path": false,
-            "commentStart": 46,
+            "commentStart": 0,
             "end": 0,
             "name": {
-              "commentStart": 46,
+              "commentStart": 0,
               "end": 0,
               "name": "cube",
               "start": 0,
@@ -70,7 +70,7 @@ description: Result of parsing import_foreign.kcl
       "nonCodeNodes": {
         "0": [
           {
-            "commentStart": 36,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",

@@ -33,7 +33,8 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
     "type": "Number",
     "value": 1800.0,
     "ty": {
-      "type": "Unknown"
+      "type": "Known",
+      "type": "Count"
     }
   },
   "bracket": {

@@ -6,7 +6,7 @@ description: Result of parsing assembly_mixed_units_cubes.kcl
   "Ok": {
     "body": [
       {
-        "commentStart": 33,
+        "commentStart": 0,
         "end": 0,
         "path": {
           "type": "Kcl",
@@ -15,7 +15,7 @@ description: Result of parsing assembly_mixed_units_cubes.kcl
         "selector": {
           "type": "None",
           "alias": {
-            "commentStart": 63,
+            "commentStart": 0,
             "end": 0,
             "name": "cubeIn",
             "start": 0,
@@ -27,7 +27,7 @@ description: Result of parsing assembly_mixed_units_cubes.kcl
         "type": "ImportStatement"
       },
       {
-        "commentStart": 70,
+        "commentStart": 0,
         "end": 0,
         "path": {
           "type": "Kcl",
@@ -36,7 +36,7 @@ description: Result of parsing assembly_mixed_units_cubes.kcl
         "selector": {
           "type": "None",
           "alias": {
-            "commentStart": 94,
+            "commentStart": 0,
             "end": 0,
             "name": "cubeMm",
             "start": 0,
@@ -48,14 +48,14 @@ description: Result of parsing assembly_mixed_units_cubes.kcl
         "type": "ImportStatement"
       },
       {
-        "commentStart": 100,
+        "commentStart": 0,
         "end": 0,
         "expression": {
           "abs_path": false,
-          "commentStart": 102,
+          "commentStart": 0,
           "end": 0,
           "name": {
-            "commentStart": 102,
+            "commentStart": 0,
             "end": 0,
             "name": "cubeIn",
             "start": 0,
@@ -71,14 +71,14 @@ description: Result of parsing assembly_mixed_units_cubes.kcl
         "type": "ExpressionStatement"
       },
       {
-        "commentStart": 109,
+        "commentStart": 0,
         "end": 0,
         "expression": {
           "abs_path": false,
-          "commentStart": 109,
+          "commentStart": 0,
           "end": 0,
           "name": {
-            "commentStart": 109,
+            "commentStart": 0,
             "end": 0,
             "name": "cubeMm",
             "start": 0,
@@ -101,7 +101,7 @@ description: Result of parsing assembly_mixed_units_cubes.kcl
         "commentStart": 0,
         "end": 0,
         "name": {
-          "commentStart": 1,
+          "commentStart": 0,
           "end": 0,
           "name": "settings",
           "start": 0,
@@ -109,10 +109,10 @@ description: Result of parsing assembly_mixed_units_cubes.kcl
         },
         "properties": [
           {
-            "commentStart": 10,
+            "commentStart": 0,
             "end": 0,
             "key": {
-              "commentStart": 10,
+              "commentStart": 0,
               "end": 0,
               "name": "defaultLengthUnit",
               "start": 0,
@@ -122,10 +122,10 @@ description: Result of parsing assembly_mixed_units_cubes.kcl
             "type": "ObjectProperty",
             "value": {
               "abs_path": false,
-              "commentStart": 30,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 30,
+                "commentStart": 0,
                 "end": 0,
                 "name": "in",
                 "start": 0,
@@ -146,7 +146,7 @@ description: Result of parsing assembly_mixed_units_cubes.kcl
       "nonCodeNodes": {
         "1": [
           {
-            "commentStart": 100,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -158,7 +158,7 @@ description: Result of parsing assembly_mixed_units_cubes.kcl
       },
       "startNodes": [
         {
-          "commentStart": 33,
+          "commentStart": 0,
           "end": 0,
           "start": 0,
           "type": "NonCodeNode",

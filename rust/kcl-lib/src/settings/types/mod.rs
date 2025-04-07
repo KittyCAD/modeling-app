@@ -5,7 +5,7 @@ pub mod project;
 use anyhow::Result;
 use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
-use serde::{Deserialize, Serialize};
+use serde::{Deserialize, Deserializer, Serialize};
 use validator::{Validate, ValidateRange};
 
 const DEFAULT_THEME_COLOR: f64 = 264.5;
@@ -131,9 +131,14 @@ pub struct AppSettings {
     /// This setting only applies to the web app. And is temporary until we have Linux support.
     #[serde(default, alias = "dismissWebBanner", skip_serializing_if = "is_default")]
     pub dismiss_web_banner: bool,
-    /// When the user is idle, and this is true, the stream will be torn down.
-    #[serde(default, alias = "streamIdleMode", skip_serializing_if = "is_default")]
-    pub stream_idle_mode: bool,
+    /// When the user is idle, teardown the stream after some time.
+    #[serde(
+        default,
+        deserialize_with = "deserialize_stream_idle_mode",
+        alias = "streamIdleMode",
+        skip_serializing_if = "is_default"
+    )]
+    stream_idle_mode: Option<u32>,
     /// When the user is idle, and this is true, the stream will be torn down.
     #[serde(default, alias = "allowOrbitInSketchMode", skip_serializing_if = "is_default")]
     pub allow_orbit_in_sketch_mode: bool,
@@ -143,7 +148,31 @@ pub struct AppSettings {
     pub show_debug_panel: bool,
 }
 
-// TODO: When we remove backwards compatibility with the old settings file, we can remove this.
+fn deserialize_stream_idle_mode<'de, D>(deserializer: D) -> Result<Option<u32>, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    #[derive(Deserialize)]
+    #[serde(untagged)]
+    enum StreamIdleModeValue {
+        Number(u32),
+        String(String),
+        Boolean(bool),
+    }
+
+    const DEFAULT_TIMEOUT: u32 = 1000 * 60 * 5;
+
+    Ok(match StreamIdleModeValue::deserialize(deserializer) {
+        Ok(StreamIdleModeValue::Number(value)) => Some(value),
+        Ok(StreamIdleModeValue::String(value)) => Some(value.parse::<u32>().unwrap_or(DEFAULT_TIMEOUT)),
+        // The old type of this value. I'm willing to say no one used it but
+        // we can never guarantee it.
+        Ok(StreamIdleModeValue::Boolean(true)) => Some(DEFAULT_TIMEOUT),
+        Ok(StreamIdleModeValue::Boolean(false)) => None,
+        _ => None,
+    })
+}
+
 #[derive(Debug, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq)]
 #[ts(export)]
 #[serde(untagged)]
@@ -626,7 +655,7 @@ textWrapping = true
                         theme_color: None,
                         dismiss_web_banner: false,
                         enable_ssao: None,
-                        stream_idle_mode: false,
+                        stream_idle_mode: None,
                         allow_orbit_in_sketch_mode: false,
                         show_debug_panel: true,
                     },
@@ -691,7 +720,7 @@ includeSettings = false
                         dismiss_web_banner: false,
                         enable_ssao: None,
                         show_debug_panel: true,
-                        stream_idle_mode: false,
+                        stream_idle_mode: None,
                         allow_orbit_in_sketch_mode: false,
                     },
                     modeling: ModelingSettings {
@@ -759,7 +788,7 @@ defaultProjectName = "projects-$nnn"
                         theme_color: None,
                         dismiss_web_banner: false,
                         enable_ssao: None,
-                        stream_idle_mode: false,
+                        stream_idle_mode: None,
                         allow_orbit_in_sketch_mode: false,
                         show_debug_panel: true,
                     },
@@ -841,7 +870,7 @@ projectDirectory = "/Users/macinatormax/Documents/kittycad-modeling-projects""#;
                         dismiss_web_banner: false,
                         enable_ssao: None,
                         show_debug_panel: false,
-                        stream_idle_mode: false,
+                        stream_idle_mode: None,
                         allow_orbit_in_sketch_mode: false,
                     },
                     modeling: ModelingSettings {

@@ -120,7 +120,7 @@ impl From<KclErrorWithOutputs> for KclError {
     }
 }
 
-#[derive(Error, Debug, Serialize, Deserialize, ts_rs::TS, Clone, PartialEq)]
+#[derive(Error, Debug, Serialize, ts_rs::TS, Clone, PartialEq)]
 #[error("{error}")]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]

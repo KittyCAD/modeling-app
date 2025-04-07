@@ -18,7 +18,7 @@ description: Result of parsing invalid_member_object_prop.kcl
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 4,
+            "commentStart": 0,
             "end": 0,
             "raw": "true",
             "start": 0,
@@ -36,23 +36,23 @@ description: Result of parsing invalid_member_object_prop.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 9,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 9,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 9,
+            "commentStart": 0,
             "end": 0,
             "name": "x",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 13,
+            "commentStart": 0,
             "computed": false,
             "end": 0,
             "object": {
-              "commentStart": 13,
+              "commentStart": 0,
               "end": 0,
               "name": "b",
               "start": 0,
@@ -60,7 +60,7 @@ description: Result of parsing invalid_member_object_prop.kcl
               "type": "Identifier"
             },
             "property": {
-              "commentStart": 15,
+              "commentStart": 0,
               "end": 0,
               "raw": "\"property\"",
               "start": 0,

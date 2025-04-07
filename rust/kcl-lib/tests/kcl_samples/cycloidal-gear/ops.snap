@@ -201,7 +201,8 @@ description: Operations executed cycloidal-gear.kcl
           "type": "Number",
           "value": 0.75,
           "ty": {
-            "type": "Unknown"
+            "type": "Known",
+            "type": "Count"
           }
         },
         "sourceRange": []

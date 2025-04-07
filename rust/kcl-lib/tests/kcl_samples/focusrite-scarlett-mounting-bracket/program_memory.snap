@@ -471,7 +471,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 "type": "Number",
                 "value": 44.0,
                 "ty": {
-                  "type": "Unknown"
+                  "type": "Known",
+                  "type": "Count"
                 }
               },
               "z": {
@@ -1401,7 +1402,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 "type": "Number",
                 "value": -52.0,
                 "ty": {
-                  "type": "Unknown"
+                  "type": "Known",
+                  "type": "Count"
                 }
               },
               "y": {

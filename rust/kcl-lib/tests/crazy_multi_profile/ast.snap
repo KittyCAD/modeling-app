@@ -20,7 +20,7 @@ description: Result of parsing crazy_multi_profile.kcl
           "init": {
             "arguments": [
               {
-                "commentStart": 26,
+                "commentStart": 0,
                 "end": 0,
                 "raw": "'XZ'",
                 "start": 0,
@@ -31,10 +31,10 @@ description: Result of parsing crazy_multi_profile.kcl
             ],
             "callee": {
               "abs_path": false,
-              "commentStart": 12,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 12,
+                "commentStart": 0,
                 "end": 0,
                 "name": "startSketchOn",
                 "start": 0,
@@ -44,7 +44,7 @@ description: Result of parsing crazy_multi_profile.kcl
               "start": 0,
               "type": "Name"
             },
-            "commentStart": 12,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "CallExpression",
@@ -60,12 +60,12 @@ description: Result of parsing crazy_multi_profile.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 32,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 32,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 32,
+            "commentStart": 0,
             "end": 0,
             "name": "profile001",
             "start": 0,
@@ -76,10 +76,10 @@ description: Result of parsing crazy_multi_profile.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 60,
+                    "commentStart": 0,
                     "elements": [
                       {
-                        "commentStart": 61,
+                        "commentStart": 0,
                         "end": 0,
                         "raw": "6.71",
                         "start": 0,
@@ -92,7 +92,7 @@ description: Result of parsing crazy_multi_profile.kcl
                       },
                       {
                         "argument": {
-                          "commentStart": 68,
+                          "commentStart": 0,
                           "end": 0,
                           "raw": "3.66",
                           "start": 0,
@@ -103,7 +103,7 @@ description: Result of parsing crazy_multi_profile.kcl
                             "suffix": "None"
                           }
                         },
-                        "commentStart": 67,
+                        "commentStart": 0,
                         "end": 0,
                         "operator": "-",
                         "start": 0,
@@ -118,10 +118,10 @@ description: Result of parsing crazy_multi_profile.kcl
                   },
                   {
                     "abs_path": false,
-                    "commentStart": 75,
+                    "commentStart": 0,
                     "end": 0,
                     "name": {
-                      "commentStart": 75,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "sketch001",
                       "start": 0,
@@ -135,10 +135,10 @@ description: Result of parsing crazy_multi_profile.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 45,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 45,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "startProfileAt",
                     "start": 0,
@@ -148,7 +148,7 @@ description: Result of parsing crazy_multi_profile.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 45,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -159,17 +159,17 @@ description: Result of parsing crazy_multi_profile.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 96,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 102,
+                      "commentStart": 0,
                       "elements": [
                         {
-                          "commentStart": 103,
+                          "commentStart": 0,
                           "end": 0,
                           "raw": "2.65",
                           "start": 0,
@@ -181,7 +181,7 @@ description: Result of parsing crazy_multi_profile.kcl
                           }
                         },
                         {
-                          "commentStart": 109,
+                          "commentStart": 0,
                           "end": 0,
                           "raw": "9.02",
                           "start": 0,
@@ -202,14 +202,14 @@ description: Result of parsing crazy_multi_profile.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 116,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 122,
+                      "commentStart": 0,
                       "end": 0,
                       "start": 0,
                       "type": "TagDeclarator",
@@ -220,10 +220,10 @@ description: Result of parsing crazy_multi_profile.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 91,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 91,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "line",
                     "start": 0,
@@ -233,7 +233,7 @@ description: Result of parsing crazy_multi_profile.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 91,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -245,17 +245,17 @@ description: Result of parsing crazy_multi_profile.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 140,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 146,
+                      "commentStart": 0,
                       "elements": [
                         {
-                          "commentStart": 147,
+                          "commentStart": 0,
                           "end": 0,
                           "raw": "3.73",
                           "start": 0,
@@ -268,7 +268,7 @@ description: Result of parsing crazy_multi_profile.kcl
                         },
                         {
                           "argument": {
-                            "commentStart": 154,
+                            "commentStart": 0,
                             "end": 0,
                             "raw": "9.36",
                             "start": 0,
@@ -279,7 +279,7 @@ description: Result of parsing crazy_multi_profile.kcl
                               "suffix": "None"
                             }
                           },
-                          "commentStart": 153,
+                          "commentStart": 0,
                           "end": 0,
                           "operator": "-",
                           "start": 0,
@@ -296,14 +296,14 @@ description: Result of parsing crazy_multi_profile.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 161,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 167,
+                      "commentStart": 0,
                       "end": 0,
                       "start": 0,
                       "type": "TagDeclarator",
@@ -314,10 +314,10 @@ description: Result of parsing crazy_multi_profile.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 135,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 135,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "line",
                     "start": 0,
@@ -327,7 +327,7 @@ description: Result of parsing crazy_multi_profile.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 135,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -339,19 +339,19 @@ description: Result of parsing crazy_multi_profile.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 185,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "endAbsolute",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 199,
+                      "commentStart": 0,
                       "elements": [
                         {
                           "arguments": [
                             {
-                              "commentStart": 214,
+                              "commentStart": 0,
                               "end": 0,
                               "start": 0,
                               "type": "PipeSubstitution",
@@ -360,10 +360,10 @@ description: Result of parsing crazy_multi_profile.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 200,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 200,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "profileStartX",
                               "start": 0,
@@ -373,7 +373,7 @@ description: Result of parsing crazy_multi_profile.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 200,
+                          "commentStart": 0,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -382,7 +382,7 @@ description: Result of parsing crazy_multi_profile.kcl
                         {
                           "arguments": [
                             {
-                              "commentStart": 232,
+                              "commentStart": 0,
                               "end": 0,
                               "start": 0,
                               "type": "PipeSubstitution",
@@ -391,10 +391,10 @@ description: Result of parsing crazy_multi_profile.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 218,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 218,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "profileStartY",
                               "start": 0,
@@ -404,7 +404,7 @@ description: Result of parsing crazy_multi_profile.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 218,
+                          "commentStart": 0,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -420,10 +420,10 @@ description: Result of parsing crazy_multi_profile.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 180,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 180,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "line",
                     "start": 0,
@@ -433,7 +433,7 @@ description: Result of parsing crazy_multi_profile.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 180,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -444,10 +444,10 @@ description: Result of parsing crazy_multi_profile.kcl
                 "arguments": [],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 242,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 242,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "close",
                     "start": 0,
@@ -457,14 +457,14 @@ description: Result of parsing crazy_multi_profile.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 242,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               }
             ],
-            "commentStart": 45,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "PipeExpression",
@@ -480,12 +480,12 @@ description: Result of parsing crazy_multi_profile.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 250,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 250,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 250,
+            "commentStart": 0,
             "end": 0,
             "name": "extrude001",
             "start": 0,
@@ -496,14 +496,14 @@ description: Result of parsing crazy_multi_profile.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "commentStart": 283,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "length",
                   "start": 0,
                   "type": "Identifier"
                 },
                 "arg": {
-                  "commentStart": 292,
+                  "commentStart": 0,
                   "end": 0,
                   "raw": "20",
                   "start": 0,
@@ -518,10 +518,10 @@ description: Result of parsing crazy_multi_profile.kcl
             ],
             "callee": {
               "abs_path": false,
-              "commentStart": 263,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 263,
+                "commentStart": 0,
                 "end": 0,
                 "name": "extrude",
                 "start": 0,
@@ -531,17 +531,17 @@ description: Result of parsing crazy_multi_profile.kcl
               "start": 0,
               "type": "Name"
             },
-            "commentStart": 263,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
               "abs_path": false,
-              "commentStart": 271,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 271,
+                "commentStart": 0,
                 "end": 0,
                 "name": "profile001",
                 "start": 0,
@@ -563,12 +563,12 @@ description: Result of parsing crazy_multi_profile.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 296,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 296,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 296,
+            "commentStart": 0,
             "end": 0,
             "name": "sketch002",
             "start": 0,
@@ -578,10 +578,10 @@ description: Result of parsing crazy_multi_profile.kcl
             "arguments": [
               {
                 "abs_path": false,
-                "commentStart": 322,
+                "commentStart": 0,
                 "end": 0,
                 "name": {
-                  "commentStart": 322,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "extrude001",
                   "start": 0,
@@ -594,10 +594,10 @@ description: Result of parsing crazy_multi_profile.kcl
               },
               {
                 "abs_path": false,
-                "commentStart": 334,
+                "commentStart": 0,
                 "end": 0,
                 "name": {
-                  "commentStart": 334,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "seg01",
                   "start": 0,
@@ -611,10 +611,10 @@ description: Result of parsing crazy_multi_profile.kcl
             ],
             "callee": {
               "abs_path": false,
-              "commentStart": 308,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 308,
+                "commentStart": 0,
                 "end": 0,
                 "name": "startSketchOn",
                 "start": 0,
@@ -624,7 +624,7 @@ description: Result of parsing crazy_multi_profile.kcl
               "start": 0,
               "type": "Name"
             },
-            "commentStart": 308,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "CallExpression",
@@ -640,12 +640,12 @@ description: Result of parsing crazy_multi_profile.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 341,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 341,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 341,
+            "commentStart": 0,
             "end": 0,
             "name": "profile002",
             "start": 0,
@@ -656,10 +656,10 @@ description: Result of parsing crazy_multi_profile.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 369,
+                    "commentStart": 0,
                     "elements": [
                       {
-                        "commentStart": 370,
+                        "commentStart": 0,
                         "end": 0,
                         "raw": "0.75",
                         "start": 0,
@@ -671,7 +671,7 @@ description: Result of parsing crazy_multi_profile.kcl
                         }
                       },
                       {
-                        "commentStart": 376,
+                        "commentStart": 0,
                         "end": 0,
                         "raw": "13.46",
                         "start": 0,
@@ -690,10 +690,10 @@ description: Result of parsing crazy_multi_profile.kcl
                   },
                   {
                     "abs_path": false,
-                    "commentStart": 384,
+                    "commentStart": 0,
                     "end": 0,
                     "name": {
-                      "commentStart": 384,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "sketch002",
                       "start": 0,
@@ -707,10 +707,10 @@ description: Result of parsing crazy_multi_profile.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 354,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 354,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "startProfileAt",
                     "start": 0,
@@ -720,7 +720,7 @@ description: Result of parsing crazy_multi_profile.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 354,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -731,17 +731,17 @@ description: Result of parsing crazy_multi_profile.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 405,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 411,
+                      "commentStart": 0,
                       "elements": [
                         {
-                          "commentStart": 412,
+                          "commentStart": 0,
                           "end": 0,
                           "raw": "4.52",
                           "start": 0,
@@ -753,7 +753,7 @@ description: Result of parsing crazy_multi_profile.kcl
                           }
                         },
                         {
-                          "commentStart": 418,
+                          "commentStart": 0,
                           "end": 0,
                           "raw": "3.79",
                           "start": 0,
@@ -774,10 +774,10 @@ description: Result of parsing crazy_multi_profile.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 400,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 400,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "line",
                     "start": 0,
@@ -787,7 +787,7 @@ description: Result of parsing crazy_multi_profile.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 400,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -799,17 +799,17 @@ description: Result of parsing crazy_multi_profile.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 435,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 441,
+                      "commentStart": 0,
                       "elements": [
                         {
-                          "commentStart": 442,
+                          "commentStart": 0,
                           "end": 0,
                           "raw": "5.98",
                           "start": 0,
@@ -822,7 +822,7 @@ description: Result of parsing crazy_multi_profile.kcl
                         },
                         {
                           "argument": {
-                            "commentStart": 449,
+                            "commentStart": 0,
                             "end": 0,
                             "raw": "2.81",
                             "start": 0,
@@ -833,7 +833,7 @@ description: Result of parsing crazy_multi_profile.kcl
                               "suffix": "None"
                             }
                           },
-                          "commentStart": 448,
+                          "commentStart": 0,
                           "end": 0,
                           "operator": "-",
                           "start": 0,
@@ -850,10 +850,10 @@ description: Result of parsing crazy_multi_profile.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 430,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 430,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "line",
                     "start": 0,
@@ -863,7 +863,7 @@ description: Result of parsing crazy_multi_profile.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 430,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -871,7 +871,7 @@ description: Result of parsing crazy_multi_profile.kcl
                 "unlabeled": null
               }
             ],
-            "commentStart": 354,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "PipeExpression",
@@ -887,12 +887,12 @@ description: Result of parsing crazy_multi_profile.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 456,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 456,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 456,
+            "commentStart": 0,
             "end": 0,
             "name": "profile003",
             "start": 0,
@@ -903,10 +903,10 @@ description: Result of parsing crazy_multi_profile.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 484,
+                    "commentStart": 0,
                     "elements": [
                       {
-                        "commentStart": 485,
+                        "commentStart": 0,
                         "end": 0,
                         "raw": "3.19",
                         "start": 0,
@@ -918,7 +918,7 @@ description: Result of parsing crazy_multi_profile.kcl
                         }
                       },
                       {
-                        "commentStart": 491,
+                        "commentStart": 0,
                         "end": 0,
                         "raw": "13.3",
                         "start": 0,
@@ -937,10 +937,10 @@ description: Result of parsing crazy_multi_profile.kcl
                   },
                   {
                     "abs_path": false,
-                    "commentStart": 498,
+                    "commentStart": 0,
                     "end": 0,
                     "name": {
-                      "commentStart": 498,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "sketch002",
                       "start": 0,
@@ -954,10 +954,10 @@ description: Result of parsing crazy_multi_profile.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 469,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 469,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "startProfileAt",
                     "start": 0,
@@ -967,7 +967,7 @@ description: Result of parsing crazy_multi_profile.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 469,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -976,10 +976,10 @@ description: Result of parsing crazy_multi_profile.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 525,
+                    "commentStart": 0,
                     "elements": [
                       {
-                        "commentStart": 526,
+                        "commentStart": 0,
                         "end": 0,
                         "raw": "0",
                         "start": 0,
@@ -991,7 +991,7 @@ description: Result of parsing crazy_multi_profile.kcl
                         }
                       },
                       {
-                        "commentStart": 529,
+                        "commentStart": 0,
                         "end": 0,
                         "raw": "6.64",
                         "start": 0,
@@ -1009,14 +1009,14 @@ description: Result of parsing crazy_multi_profile.kcl
                     "type": "ArrayExpression"
                   },
                   {
-                    "commentStart": 536,
+                    "commentStart": 0,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   },
                   {
-                    "commentStart": 539,
+                    "commentStart": 0,
                     "end": 0,
                     "start": 0,
                     "type": "TagDeclarator",
@@ -1026,10 +1026,10 @@ description: Result of parsing crazy_multi_profile.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 514,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 514,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "angledLine",
                     "start": 0,
@@ -1039,7 +1039,7 @@ description: Result of parsing crazy_multi_profile.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 514,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -1048,19 +1048,19 @@ description: Result of parsing crazy_multi_profile.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 578,
+                    "commentStart": 0,
                     "elements": [
                       {
-                        "commentStart": 587,
+                        "commentStart": 0,
                         "end": 0,
                         "left": {
                           "arguments": [
                             {
                               "abs_path": false,
-                              "commentStart": 594,
+                              "commentStart": 0,
                               "end": 0,
                               "name": {
-                                "commentStart": 594,
+                                "commentStart": 0,
                                 "end": 0,
                                 "name": "rectangleSegmentA001",
                                 "start": 0,
@@ -1074,10 +1074,10 @@ description: Result of parsing crazy_multi_profile.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 587,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 587,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "segAng",
                               "start": 0,
@@ -1087,7 +1087,7 @@ description: Result of parsing crazy_multi_profile.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 587,
+                          "commentStart": 0,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -1095,7 +1095,7 @@ description: Result of parsing crazy_multi_profile.kcl
                         },
                         "operator": "-",
                         "right": {
-                          "commentStart": 618,
+                          "commentStart": 0,
                           "end": 0,
                           "raw": "90",
                           "start": 0,
@@ -1111,7 +1111,7 @@ description: Result of parsing crazy_multi_profile.kcl
                         "type": "BinaryExpression"
                       },
                       {
-                        "commentStart": 629,
+                        "commentStart": 0,
                         "end": 0,
                         "raw": "2.81",
                         "start": 0,
@@ -1129,7 +1129,7 @@ description: Result of parsing crazy_multi_profile.kcl
                     "type": "ArrayExpression"
                   },
                   {
-                    "commentStart": 642,
+                    "commentStart": 0,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -1138,10 +1138,10 @@ description: Result of parsing crazy_multi_profile.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 567,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 567,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "angledLine",
                     "start": 0,
@@ -1151,7 +1151,7 @@ description: Result of parsing crazy_multi_profile.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 567,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -1160,16 +1160,16 @@ description: Result of parsing crazy_multi_profile.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 661,
+                    "commentStart": 0,
                     "elements": [
                       {
                         "arguments": [
                           {
                             "abs_path": false,
-                            "commentStart": 677,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 677,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "rectangleSegmentA001",
                               "start": 0,
@@ -1183,10 +1183,10 @@ description: Result of parsing crazy_multi_profile.kcl
                         ],
                         "callee": {
                           "abs_path": false,
-                          "commentStart": 670,
+                          "commentStart": 0,
                           "end": 0,
                           "name": {
-                            "commentStart": 670,
+                            "commentStart": 0,
                             "end": 0,
                             "name": "segAng",
                             "start": 0,
@@ -1196,7 +1196,7 @@ description: Result of parsing crazy_multi_profile.kcl
                           "start": 0,
                           "type": "Name"
                         },
-                        "commentStart": 670,
+                        "commentStart": 0,
                         "end": 0,
                         "start": 0,
                         "type": "CallExpression",
@@ -1207,10 +1207,10 @@ description: Result of parsing crazy_multi_profile.kcl
                           "arguments": [
                             {
                               "abs_path": false,
-                              "commentStart": 715,
+                              "commentStart": 0,
                               "end": 0,
                               "name": {
-                                "commentStart": 715,
+                                "commentStart": 0,
                                 "end": 0,
                                 "name": "rectangleSegmentA001",
                                 "start": 0,
@@ -1224,10 +1224,10 @@ description: Result of parsing crazy_multi_profile.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 708,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 708,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "segLen",
                               "start": 0,
@@ -1237,13 +1237,13 @@ description: Result of parsing crazy_multi_profile.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 708,
+                          "commentStart": 0,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
-                        "commentStart": 707,
+                        "commentStart": 0,
                         "end": 0,
                         "operator": "-",
                         "start": 0,
@@ -1257,7 +1257,7 @@ description: Result of parsing crazy_multi_profile.kcl
                     "type": "ArrayExpression"
                   },
                   {
-                    "commentStart": 745,
+                    "commentStart": 0,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -1266,10 +1266,10 @@ description: Result of parsing crazy_multi_profile.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 650,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 650,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "angledLine",
                     "start": 0,
@@ -1279,7 +1279,7 @@ description: Result of parsing crazy_multi_profile.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 650,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -1290,19 +1290,19 @@ description: Result of parsing crazy_multi_profile.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 758,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "endAbsolute",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 772,
+                      "commentStart": 0,
                       "elements": [
                         {
                           "arguments": [
                             {
-                              "commentStart": 787,
+                              "commentStart": 0,
                               "end": 0,
                               "start": 0,
                               "type": "PipeSubstitution",
@@ -1311,10 +1311,10 @@ description: Result of parsing crazy_multi_profile.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 773,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 773,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "profileStartX",
                               "start": 0,
@@ -1324,7 +1324,7 @@ description: Result of parsing crazy_multi_profile.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 773,
+                          "commentStart": 0,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -1333,7 +1333,7 @@ description: Result of parsing crazy_multi_profile.kcl
                         {
                           "arguments": [
                             {
-                              "commentStart": 805,
+                              "commentStart": 0,
                               "end": 0,
                               "start": 0,
                               "type": "PipeSubstitution",
@@ -1342,10 +1342,10 @@ description: Result of parsing crazy_multi_profile.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 791,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 791,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "profileStartY",
                               "start": 0,
@@ -1355,7 +1355,7 @@ description: Result of parsing crazy_multi_profile.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 791,
+                          "commentStart": 0,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -1371,10 +1371,10 @@ description: Result of parsing crazy_multi_profile.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 753,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 753,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "line",
                     "start": 0,
@@ -1384,7 +1384,7 @@ description: Result of parsing crazy_multi_profile.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 753,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1395,10 +1395,10 @@ description: Result of parsing crazy_multi_profile.kcl
                 "arguments": [],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 815,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 815,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "close",
                     "start": 0,
@@ -1408,14 +1408,14 @@ description: Result of parsing crazy_multi_profile.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 815,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               }
             ],
-            "commentStart": 469,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "PipeExpression",
@@ -1431,12 +1431,12 @@ description: Result of parsing crazy_multi_profile.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 823,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 823,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 823,
+            "commentStart": 0,
             "end": 0,
             "name": "profile004",
             "start": 0,
@@ -1447,10 +1447,10 @@ description: Result of parsing crazy_multi_profile.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 851,
+                    "commentStart": 0,
                     "elements": [
                       {
-                        "commentStart": 852,
+                        "commentStart": 0,
                         "end": 0,
                         "raw": "3.15",
                         "start": 0,
@@ -1462,7 +1462,7 @@ description: Result of parsing crazy_multi_profile.kcl
                         }
                       },
                       {
-                        "commentStart": 858,
+                        "commentStart": 0,
                         "end": 0,
                         "raw": "9.39",
                         "start": 0,
@@ -1481,10 +1481,10 @@ description: Result of parsing crazy_multi_profile.kcl
                   },
                   {
                     "abs_path": false,
-                    "commentStart": 865,
+                    "commentStart": 0,
                     "end": 0,
                     "name": {
-                      "commentStart": 865,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "sketch002",
                       "start": 0,
@@ -1498,10 +1498,10 @@ description: Result of parsing crazy_multi_profile.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 836,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 836,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "startProfileAt",
                     "start": 0,
@@ -1511,7 +1511,7 @@ description: Result of parsing crazy_multi_profile.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 836,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -1522,14 +1522,14 @@ description: Result of parsing crazy_multi_profile.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 887,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 896,
+                      "commentStart": 0,
                       "end": 0,
                       "raw": "6.92",
                       "start": 0,
@@ -1544,10 +1544,10 @@ description: Result of parsing crazy_multi_profile.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 881,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 881,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "xLine",
                     "start": 0,
@@ -1557,7 +1557,7 @@ description: Result of parsing crazy_multi_profile.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 881,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1569,18 +1569,18 @@ description: Result of parsing crazy_multi_profile.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 912,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 918,
+                      "commentStart": 0,
                       "elements": [
                         {
                           "argument": {
-                            "commentStart": 920,
+                            "commentStart": 0,
                             "end": 0,
                             "raw": "7.41",
                             "start": 0,
@@ -1591,7 +1591,7 @@ description: Result of parsing crazy_multi_profile.kcl
                               "suffix": "None"
                             }
                           },
-                          "commentStart": 919,
+                          "commentStart": 0,
                           "end": 0,
                           "operator": "-",
                           "start": 0,
@@ -1600,7 +1600,7 @@ description: Result of parsing crazy_multi_profile.kcl
                         },
                         {
                           "argument": {
-                            "commentStart": 927,
+                            "commentStart": 0,
                             "end": 0,
                             "raw": "2.85",
                             "start": 0,
@@ -1611,7 +1611,7 @@ description: Result of parsing crazy_multi_profile.kcl
                               "suffix": "None"
                             }
                           },
-                          "commentStart": 926,
+                          "commentStart": 0,
                           "end": 0,
                           "operator": "-",
                           "start": 0,
@@ -1628,10 +1628,10 @@ description: Result of parsing crazy_multi_profile.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 907,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 907,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "line",
                     "start": 0,
@@ -1641,7 +1641,7 @@ description: Result of parsing crazy_multi_profile.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 907,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1653,19 +1653,19 @@ description: Result of parsing crazy_multi_profile.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 944,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "endAbsolute",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 958,
+                      "commentStart": 0,
                       "elements": [
                         {
                           "arguments": [
                             {
-                              "commentStart": 973,
+                              "commentStart": 0,
                               "end": 0,
                               "start": 0,
                               "type": "PipeSubstitution",
@@ -1674,10 +1674,10 @@ description: Result of parsing crazy_multi_profile.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 959,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 959,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "profileStartX",
                               "start": 0,
@@ -1687,7 +1687,7 @@ description: Result of parsing crazy_multi_profile.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 959,
+                          "commentStart": 0,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -1696,7 +1696,7 @@ description: Result of parsing crazy_multi_profile.kcl
                         {
                           "arguments": [
                             {
-                              "commentStart": 991,
+                              "commentStart": 0,
                               "end": 0,
                               "start": 0,
                               "type": "PipeSubstitution",
@@ -1705,10 +1705,10 @@ description: Result of parsing crazy_multi_profile.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 977,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 977,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "profileStartY",
                               "start": 0,
@@ -1718,7 +1718,7 @@ description: Result of parsing crazy_multi_profile.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 977,
+                          "commentStart": 0,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -1734,10 +1734,10 @@ description: Result of parsing crazy_multi_profile.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 939,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 939,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "line",
                     "start": 0,
@@ -1747,7 +1747,7 @@ description: Result of parsing crazy_multi_profile.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 939,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1758,10 +1758,10 @@ description: Result of parsing crazy_multi_profile.kcl
                 "arguments": [],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1001,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1001,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "close",
                     "start": 0,
@@ -1771,14 +1771,14 @@ description: Result of parsing crazy_multi_profile.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1001,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               }
             ],
-            "commentStart": 836,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "PipeExpression",
@@ -1794,12 +1794,12 @@ description: Result of parsing crazy_multi_profile.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 1009,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 1009,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 1009,
+            "commentStart": 0,
             "end": 0,
             "name": "profile005",
             "start": 0,
@@ -1810,17 +1810,17 @@ description: Result of parsing crazy_multi_profile.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "commentStart": 1040,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "center",
                   "start": 0,
                   "type": "Identifier"
                 },
                 "arg": {
-                  "commentStart": 1049,
+                  "commentStart": 0,
                   "elements": [
                     {
-                      "commentStart": 1050,
+                      "commentStart": 0,
                       "end": 0,
                       "raw": "5.15",
                       "start": 0,
@@ -1832,7 +1832,7 @@ description: Result of parsing crazy_multi_profile.kcl
                       }
                     },
                     {
-                      "commentStart": 1056,
+                      "commentStart": 0,
                       "end": 0,
                       "raw": "4.34",
                       "start": 0,
@@ -1853,14 +1853,14 @@ description: Result of parsing crazy_multi_profile.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "commentStart": 1063,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "radius",
                   "start": 0,
                   "type": "Identifier"
                 },
                 "arg": {
-                  "commentStart": 1072,
+                  "commentStart": 0,
                   "end": 0,
                   "raw": "1.66",
                   "start": 0,
@@ -1875,10 +1875,10 @@ description: Result of parsing crazy_multi_profile.kcl
             ],
             "callee": {
               "abs_path": false,
-              "commentStart": 1022,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 1022,
+                "commentStart": 0,
                 "end": 0,
                 "name": "circle",
                 "start": 0,
@@ -1888,17 +1888,17 @@ description: Result of parsing crazy_multi_profile.kcl
               "start": 0,
               "type": "Name"
             },
-            "commentStart": 1022,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
               "abs_path": false,
-              "commentStart": 1029,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 1029,
+                "commentStart": 0,
                 "end": 0,
                 "name": "sketch002",
                 "start": 0,
@@ -1920,12 +1920,12 @@ description: Result of parsing crazy_multi_profile.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 1078,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 1078,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 1078,
+            "commentStart": 0,
             "end": 0,
             "name": "profile006",
             "start": 0,
@@ -1936,10 +1936,10 @@ description: Result of parsing crazy_multi_profile.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 1106,
+                    "commentStart": 0,
                     "elements": [
                       {
-                        "commentStart": 1107,
+                        "commentStart": 0,
                         "end": 0,
                         "raw": "9.65",
                         "start": 0,
@@ -1951,7 +1951,7 @@ description: Result of parsing crazy_multi_profile.kcl
                         }
                       },
                       {
-                        "commentStart": 1113,
+                        "commentStart": 0,
                         "end": 0,
                         "raw": "3.82",
                         "start": 0,
@@ -1970,10 +1970,10 @@ description: Result of parsing crazy_multi_profile.kcl
                   },
                   {
                     "abs_path": false,
-                    "commentStart": 1120,
+                    "commentStart": 0,
                     "end": 0,
                     "name": {
-                      "commentStart": 1120,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "sketch002",
                       "start": 0,
@@ -1987,10 +1987,10 @@ description: Result of parsing crazy_multi_profile.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1091,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1091,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "startProfileAt",
                     "start": 0,
@@ -2000,7 +2000,7 @@ description: Result of parsing crazy_multi_profile.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1091,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -2011,17 +2011,17 @@ description: Result of parsing crazy_multi_profile.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1141,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1147,
+                      "commentStart": 0,
                       "elements": [
                         {
-                          "commentStart": 1148,
+                          "commentStart": 0,
                           "end": 0,
                           "raw": "2.38",
                           "start": 0,
@@ -2033,7 +2033,7 @@ description: Result of parsing crazy_multi_profile.kcl
                           }
                         },
                         {
-                          "commentStart": 1154,
+                          "commentStart": 0,
                           "end": 0,
                           "raw": "5.62",
                           "start": 0,
@@ -2054,10 +2054,10 @@ description: Result of parsing crazy_multi_profile.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1136,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1136,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "line",
                     "start": 0,
@@ -2067,7 +2067,7 @@ description: Result of parsing crazy_multi_profile.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1136,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -2079,17 +2079,17 @@ description: Result of parsing crazy_multi_profile.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1171,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1177,
+                      "commentStart": 0,
                       "elements": [
                         {
-                          "commentStart": 1178,
+                          "commentStart": 0,
                           "end": 0,
                           "raw": "2.13",
                           "start": 0,
@@ -2102,7 +2102,7 @@ description: Result of parsing crazy_multi_profile.kcl
                         },
                         {
                           "argument": {
-                            "commentStart": 1185,
+                            "commentStart": 0,
                             "end": 0,
                             "raw": "5.57",
                             "start": 0,
@@ -2113,7 +2113,7 @@ description: Result of parsing crazy_multi_profile.kcl
                               "suffix": "None"
                             }
                           },
-                          "commentStart": 1184,
+                          "commentStart": 0,
                           "end": 0,
                           "operator": "-",
                           "start": 0,
@@ -2130,10 +2130,10 @@ description: Result of parsing crazy_multi_profile.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1166,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1166,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "line",
                     "start": 0,
@@ -2143,7 +2143,7 @@ description: Result of parsing crazy_multi_profile.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1166,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -2155,19 +2155,19 @@ description: Result of parsing crazy_multi_profile.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1202,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "endAbsolute",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1216,
+                      "commentStart": 0,
                       "elements": [
                         {
                           "arguments": [
                             {
-                              "commentStart": 1231,
+                              "commentStart": 0,
                               "end": 0,
                               "start": 0,
                               "type": "PipeSubstitution",
@@ -2176,10 +2176,10 @@ description: Result of parsing crazy_multi_profile.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 1217,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 1217,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "profileStartX",
                               "start": 0,
@@ -2189,7 +2189,7 @@ description: Result of parsing crazy_multi_profile.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 1217,
+                          "commentStart": 0,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -2198,7 +2198,7 @@ description: Result of parsing crazy_multi_profile.kcl
                         {
                           "arguments": [
                             {
-                              "commentStart": 1249,
+                              "commentStart": 0,
                               "end": 0,
                               "start": 0,
                               "type": "PipeSubstitution",
@@ -2207,10 +2207,10 @@ description: Result of parsing crazy_multi_profile.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 1235,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 1235,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "profileStartY",
                               "start": 0,
@@ -2220,7 +2220,7 @@ description: Result of parsing crazy_multi_profile.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 1235,
+                          "commentStart": 0,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -2236,10 +2236,10 @@ description: Result of parsing crazy_multi_profile.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1197,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1197,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "line",
                     "start": 0,
@@ -2249,7 +2249,7 @@ description: Result of parsing crazy_multi_profile.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1197,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -2260,10 +2260,10 @@ description: Result of parsing crazy_multi_profile.kcl
                 "arguments": [],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1259,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1259,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "close",
                     "start": 0,
@@ -2273,14 +2273,14 @@ description: Result of parsing crazy_multi_profile.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1259,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               }
             ],
-            "commentStart": 1091,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "PipeExpression",
@@ -2296,12 +2296,12 @@ description: Result of parsing crazy_multi_profile.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 1267,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 1267,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 1267,
+            "commentStart": 0,
             "end": 0,
             "name": "revolve001",
             "start": 0,
@@ -2312,14 +2312,14 @@ description: Result of parsing crazy_multi_profile.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "commentStart": 1300,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "angle",
                   "start": 0,
                   "type": "Identifier"
                 },
                 "arg": {
-                  "commentStart": 1308,
+                  "commentStart": 0,
                   "end": 0,
                   "raw": "45",
                   "start": 0,
@@ -2334,7 +2334,7 @@ description: Result of parsing crazy_multi_profile.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "commentStart": 1312,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "axis",
                   "start": 0,
@@ -2344,10 +2344,10 @@ description: Result of parsing crazy_multi_profile.kcl
                   "arguments": [
                     {
                       "abs_path": false,
-                      "commentStart": 1339,
+                      "commentStart": 0,
                       "end": 0,
                       "name": {
-                        "commentStart": 1339,
+                        "commentStart": 0,
                         "end": 0,
                         "name": "seg01",
                         "start": 0,
@@ -2361,10 +2361,10 @@ description: Result of parsing crazy_multi_profile.kcl
                   ],
                   "callee": {
                     "abs_path": false,
-                    "commentStart": 1319,
+                    "commentStart": 0,
                     "end": 0,
                     "name": {
-                      "commentStart": 1319,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "getNextAdjacentEdge",
                       "start": 0,
@@ -2374,7 +2374,7 @@ description: Result of parsing crazy_multi_profile.kcl
                     "start": 0,
                     "type": "Name"
                   },
-                  "commentStart": 1319,
+                  "commentStart": 0,
                   "end": 0,
                   "start": 0,
                   "type": "CallExpression",
@@ -2384,10 +2384,10 @@ description: Result of parsing crazy_multi_profile.kcl
             ],
             "callee": {
               "abs_path": false,
-              "commentStart": 1280,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 1280,
+                "commentStart": 0,
                 "end": 0,
                 "name": "revolve",
                 "start": 0,
@@ -2397,17 +2397,17 @@ description: Result of parsing crazy_multi_profile.kcl
               "start": 0,
               "type": "Name"
             },
-            "commentStart": 1280,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
               "abs_path": false,
-              "commentStart": 1288,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 1288,
+                "commentStart": 0,
                 "end": 0,
                 "name": "profile004",
                 "start": 0,
@@ -2429,12 +2429,12 @@ description: Result of parsing crazy_multi_profile.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 1347,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 1347,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 1347,
+            "commentStart": 0,
             "end": 0,
             "name": "extrude002",
             "start": 0,
@@ -2445,14 +2445,14 @@ description: Result of parsing crazy_multi_profile.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "commentStart": 1380,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "length",
                   "start": 0,
                   "type": "Identifier"
                 },
                 "arg": {
-                  "commentStart": 1389,
+                  "commentStart": 0,
                   "end": 0,
                   "raw": "4",
                   "start": 0,
@@ -2467,10 +2467,10 @@ description: Result of parsing crazy_multi_profile.kcl
             ],
             "callee": {
               "abs_path": false,
-              "commentStart": 1360,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 1360,
+                "commentStart": 0,
                 "end": 0,
                 "name": "extrude",
                 "start": 0,
@@ -2480,17 +2480,17 @@ description: Result of parsing crazy_multi_profile.kcl
               "start": 0,
               "type": "Name"
             },
-            "commentStart": 1360,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
               "abs_path": false,
-              "commentStart": 1368,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 1368,
+                "commentStart": 0,
                 "end": 0,
                 "name": "profile006",
                 "start": 0,
@@ -2512,12 +2512,12 @@ description: Result of parsing crazy_multi_profile.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 1392,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 1392,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 1392,
+            "commentStart": 0,
             "end": 0,
             "name": "sketch003",
             "start": 0,
@@ -2526,7 +2526,7 @@ description: Result of parsing crazy_multi_profile.kcl
           "init": {
             "arguments": [
               {
-                "commentStart": 1418,
+                "commentStart": 0,
                 "end": 0,
                 "raw": "'-XZ'",
                 "start": 0,
@@ -2537,10 +2537,10 @@ description: Result of parsing crazy_multi_profile.kcl
             ],
             "callee": {
               "abs_path": false,
-              "commentStart": 1404,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 1404,
+                "commentStart": 0,
                 "end": 0,
                 "name": "startSketchOn",
                 "start": 0,
@@ -2550,7 +2550,7 @@ description: Result of parsing crazy_multi_profile.kcl
               "start": 0,
               "type": "Name"
             },
-            "commentStart": 1404,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "CallExpression",
@@ -2566,12 +2566,12 @@ description: Result of parsing crazy_multi_profile.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 1425,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 1425,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 1425,
+            "commentStart": 0,
             "end": 0,
             "name": "profile007",
             "start": 0,
@@ -2582,10 +2582,10 @@ description: Result of parsing crazy_multi_profile.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 1453,
+                    "commentStart": 0,
                     "elements": [
                       {
-                        "commentStart": 1454,
+                        "commentStart": 0,
                         "end": 0,
                         "raw": "4.8",
                         "start": 0,
@@ -2597,7 +2597,7 @@ description: Result of parsing crazy_multi_profile.kcl
                         }
                       },
                       {
-                        "commentStart": 1459,
+                        "commentStart": 0,
                         "end": 0,
                         "raw": "7.55",
                         "start": 0,
@@ -2616,10 +2616,10 @@ description: Result of parsing crazy_multi_profile.kcl
                   },
                   {
                     "abs_path": false,
-                    "commentStart": 1466,
+                    "commentStart": 0,
                     "end": 0,
                     "name": {
-                      "commentStart": 1466,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "sketch003",
                       "start": 0,
@@ -2633,10 +2633,10 @@ description: Result of parsing crazy_multi_profile.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1438,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1438,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "startProfileAt",
                     "start": 0,
@@ -2646,7 +2646,7 @@ description: Result of parsing crazy_multi_profile.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1438,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -2657,17 +2657,17 @@ description: Result of parsing crazy_multi_profile.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1487,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1493,
+                      "commentStart": 0,
                       "elements": [
                         {
-                          "commentStart": 1494,
+                          "commentStart": 0,
                           "end": 0,
                           "raw": "7.39",
                           "start": 0,
@@ -2679,7 +2679,7 @@ description: Result of parsing crazy_multi_profile.kcl
                           }
                         },
                         {
-                          "commentStart": 1500,
+                          "commentStart": 0,
                           "end": 0,
                           "raw": "2.58",
                           "start": 0,
@@ -2700,10 +2700,10 @@ description: Result of parsing crazy_multi_profile.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1482,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1482,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "line",
                     "start": 0,
@@ -2713,7 +2713,7 @@ description: Result of parsing crazy_multi_profile.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1482,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -2725,17 +2725,17 @@ description: Result of parsing crazy_multi_profile.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1517,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1523,
+                      "commentStart": 0,
                       "elements": [
                         {
-                          "commentStart": 1524,
+                          "commentStart": 0,
                           "end": 0,
                           "raw": "7.02",
                           "start": 0,
@@ -2748,7 +2748,7 @@ description: Result of parsing crazy_multi_profile.kcl
                         },
                         {
                           "argument": {
-                            "commentStart": 1531,
+                            "commentStart": 0,
                             "end": 0,
                             "raw": "2.85",
                             "start": 0,
@@ -2759,7 +2759,7 @@ description: Result of parsing crazy_multi_profile.kcl
                               "suffix": "None"
                             }
                           },
-                          "commentStart": 1530,
+                          "commentStart": 0,
                           "end": 0,
                           "operator": "-",
                           "start": 0,
@@ -2776,10 +2776,10 @@ description: Result of parsing crazy_multi_profile.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1512,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1512,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "line",
                     "start": 0,
@@ -2789,7 +2789,7 @@ description: Result of parsing crazy_multi_profile.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1512,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -2797,7 +2797,7 @@ description: Result of parsing crazy_multi_profile.kcl
                 "unlabeled": null
               }
             ],
-            "commentStart": 1438,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "PipeExpression",
@@ -2813,12 +2813,12 @@ description: Result of parsing crazy_multi_profile.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 1538,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 1538,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 1538,
+            "commentStart": 0,
             "end": 0,
             "name": "profile008",
             "start": 0,
@@ -2829,10 +2829,10 @@ description: Result of parsing crazy_multi_profile.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 1566,
+                    "commentStart": 0,
                     "elements": [
                       {
-                        "commentStart": 1567,
+                        "commentStart": 0,
                         "end": 0,
                         "raw": "5.54",
                         "start": 0,
@@ -2844,7 +2844,7 @@ description: Result of parsing crazy_multi_profile.kcl
                         }
                       },
                       {
-                        "commentStart": 1573,
+                        "commentStart": 0,
                         "end": 0,
                         "raw": "5.49",
                         "start": 0,
@@ -2863,10 +2863,10 @@ description: Result of parsing crazy_multi_profile.kcl
                   },
                   {
                     "abs_path": false,
-                    "commentStart": 1580,
+                    "commentStart": 0,
                     "end": 0,
                     "name": {
-                      "commentStart": 1580,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "sketch003",
                       "start": 0,
@@ -2880,10 +2880,10 @@ description: Result of parsing crazy_multi_profile.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1551,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1551,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "startProfileAt",
                     "start": 0,
@@ -2893,7 +2893,7 @@ description: Result of parsing crazy_multi_profile.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1551,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -2904,17 +2904,17 @@ description: Result of parsing crazy_multi_profile.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1601,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1607,
+                      "commentStart": 0,
                       "elements": [
                         {
-                          "commentStart": 1608,
+                          "commentStart": 0,
                           "end": 0,
                           "raw": "6.34",
                           "start": 0,
@@ -2926,7 +2926,7 @@ description: Result of parsing crazy_multi_profile.kcl
                           }
                         },
                         {
-                          "commentStart": 1614,
+                          "commentStart": 0,
                           "end": 0,
                           "raw": "2.64",
                           "start": 0,
@@ -2947,10 +2947,10 @@ description: Result of parsing crazy_multi_profile.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1596,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1596,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "line",
                     "start": 0,
@@ -2960,7 +2960,7 @@ description: Result of parsing crazy_multi_profile.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1596,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -2972,17 +2972,17 @@ description: Result of parsing crazy_multi_profile.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1631,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1637,
+                      "commentStart": 0,
                       "elements": [
                         {
-                          "commentStart": 1638,
+                          "commentStart": 0,
                           "end": 0,
                           "raw": "6.33",
                           "start": 0,
@@ -2995,7 +2995,7 @@ description: Result of parsing crazy_multi_profile.kcl
                         },
                         {
                           "argument": {
-                            "commentStart": 1645,
+                            "commentStart": 0,
                             "end": 0,
                             "raw": "2.96",
                             "start": 0,
@@ -3006,7 +3006,7 @@ description: Result of parsing crazy_multi_profile.kcl
                               "suffix": "None"
                             }
                           },
-                          "commentStart": 1644,
+                          "commentStart": 0,
                           "end": 0,
                           "operator": "-",
                           "start": 0,
@@ -3023,10 +3023,10 @@ description: Result of parsing crazy_multi_profile.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1626,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1626,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "line",
                     "start": 0,
@@ -3036,7 +3036,7 @@ description: Result of parsing crazy_multi_profile.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1626,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -3048,19 +3048,19 @@ description: Result of parsing crazy_multi_profile.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1662,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "endAbsolute",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1676,
+                      "commentStart": 0,
                       "elements": [
                         {
                           "arguments": [
                             {
-                              "commentStart": 1691,
+                              "commentStart": 0,
                               "end": 0,
                               "start": 0,
                               "type": "PipeSubstitution",
@@ -3069,10 +3069,10 @@ description: Result of parsing crazy_multi_profile.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 1677,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 1677,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "profileStartX",
                               "start": 0,
@@ -3082,7 +3082,7 @@ description: Result of parsing crazy_multi_profile.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 1677,
+                          "commentStart": 0,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -3091,7 +3091,7 @@ description: Result of parsing crazy_multi_profile.kcl
                         {
                           "arguments": [
                             {
-                              "commentStart": 1709,
+                              "commentStart": 0,
                               "end": 0,
                               "start": 0,
                               "type": "PipeSubstitution",
@@ -3100,10 +3100,10 @@ description: Result of parsing crazy_multi_profile.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 1695,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 1695,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "profileStartY",
                               "start": 0,
@@ -3113,7 +3113,7 @@ description: Result of parsing crazy_multi_profile.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 1695,
+                          "commentStart": 0,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -3129,10 +3129,10 @@ description: Result of parsing crazy_multi_profile.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1657,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1657,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "line",
                     "start": 0,
@@ -3142,7 +3142,7 @@ description: Result of parsing crazy_multi_profile.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1657,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -3153,10 +3153,10 @@ description: Result of parsing crazy_multi_profile.kcl
                 "arguments": [],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1719,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1719,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "close",
                     "start": 0,
@@ -3166,14 +3166,14 @@ description: Result of parsing crazy_multi_profile.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1719,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               }
             ],
-            "commentStart": 1551,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "PipeExpression",
@@ -3189,12 +3189,12 @@ description: Result of parsing crazy_multi_profile.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 1727,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 1727,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 1727,
+            "commentStart": 0,
             "end": 0,
             "name": "profile009",
             "start": 0,
@@ -3205,10 +3205,10 @@ description: Result of parsing crazy_multi_profile.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 1755,
+                    "commentStart": 0,
                     "elements": [
                       {
-                        "commentStart": 1756,
+                        "commentStart": 0,
                         "end": 0,
                         "raw": "5.23",
                         "start": 0,
@@ -3220,7 +3220,7 @@ description: Result of parsing crazy_multi_profile.kcl
                         }
                       },
                       {
-                        "commentStart": 1762,
+                        "commentStart": 0,
                         "end": 0,
                         "raw": "1.95",
                         "start": 0,
@@ -3239,10 +3239,10 @@ description: Result of parsing crazy_multi_profile.kcl
                   },
                   {
                     "abs_path": false,
-                    "commentStart": 1769,
+                    "commentStart": 0,
                     "end": 0,
                     "name": {
-                      "commentStart": 1769,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "sketch003",
                       "start": 0,
@@ -3256,10 +3256,10 @@ description: Result of parsing crazy_multi_profile.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1740,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1740,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "startProfileAt",
                     "start": 0,
@@ -3269,7 +3269,7 @@ description: Result of parsing crazy_multi_profile.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1740,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -3280,17 +3280,17 @@ description: Result of parsing crazy_multi_profile.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1790,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1796,
+                      "commentStart": 0,
                       "elements": [
                         {
-                          "commentStart": 1797,
+                          "commentStart": 0,
                           "end": 0,
                           "raw": "6.8",
                           "start": 0,
@@ -3302,7 +3302,7 @@ description: Result of parsing crazy_multi_profile.kcl
                           }
                         },
                         {
-                          "commentStart": 1802,
+                          "commentStart": 0,
                           "end": 0,
                           "raw": "2.17",
                           "start": 0,
@@ -3323,10 +3323,10 @@ description: Result of parsing crazy_multi_profile.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1785,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1785,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "line",
                     "start": 0,
@@ -3336,7 +3336,7 @@ description: Result of parsing crazy_multi_profile.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1785,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -3348,17 +3348,17 @@ description: Result of parsing crazy_multi_profile.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1819,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1825,
+                      "commentStart": 0,
                       "elements": [
                         {
-                          "commentStart": 1826,
+                          "commentStart": 0,
                           "end": 0,
                           "raw": "7.34",
                           "start": 0,
@@ -3371,7 +3371,7 @@ description: Result of parsing crazy_multi_profile.kcl
                         },
                         {
                           "argument": {
-                            "commentStart": 1833,
+                            "commentStart": 0,
                             "end": 0,
                             "raw": "2.75",
                             "start": 0,
@@ -3382,7 +3382,7 @@ description: Result of parsing crazy_multi_profile.kcl
                               "suffix": "None"
                             }
                           },
-                          "commentStart": 1832,
+                          "commentStart": 0,
                           "end": 0,
                           "operator": "-",
                           "start": 0,
@@ -3399,10 +3399,10 @@ description: Result of parsing crazy_multi_profile.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1814,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1814,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "line",
                     "start": 0,
@@ -3412,7 +3412,7 @@ description: Result of parsing crazy_multi_profile.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1814,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -3424,19 +3424,19 @@ description: Result of parsing crazy_multi_profile.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1850,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "endAbsolute",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1864,
+                      "commentStart": 0,
                       "elements": [
                         {
                           "arguments": [
                             {
-                              "commentStart": 1879,
+                              "commentStart": 0,
                               "end": 0,
                               "start": 0,
                               "type": "PipeSubstitution",
@@ -3445,10 +3445,10 @@ description: Result of parsing crazy_multi_profile.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 1865,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 1865,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "profileStartX",
                               "start": 0,
@@ -3458,7 +3458,7 @@ description: Result of parsing crazy_multi_profile.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 1865,
+                          "commentStart": 0,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -3467,7 +3467,7 @@ description: Result of parsing crazy_multi_profile.kcl
                         {
                           "arguments": [
                             {
-                              "commentStart": 1897,
+                              "commentStart": 0,
                               "end": 0,
                               "start": 0,
                               "type": "PipeSubstitution",
@@ -3476,10 +3476,10 @@ description: Result of parsing crazy_multi_profile.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 1883,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 1883,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "profileStartY",
                               "start": 0,
@@ -3489,7 +3489,7 @@ description: Result of parsing crazy_multi_profile.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 1883,
+                          "commentStart": 0,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -3505,10 +3505,10 @@ description: Result of parsing crazy_multi_profile.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1845,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1845,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "line",
                     "start": 0,
@@ -3518,7 +3518,7 @@ description: Result of parsing crazy_multi_profile.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1845,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -3529,10 +3529,10 @@ description: Result of parsing crazy_multi_profile.kcl
                 "arguments": [],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1907,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1907,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "close",
                     "start": 0,
@@ -3542,14 +3542,14 @@ description: Result of parsing crazy_multi_profile.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1907,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               }
             ],
-            "commentStart": 1740,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "PipeExpression",
@@ -3565,12 +3565,12 @@ description: Result of parsing crazy_multi_profile.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 1915,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 1915,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 1915,
+            "commentStart": 0,
             "end": 0,
             "name": "profile010",
             "start": 0,
@@ -3581,17 +3581,17 @@ description: Result of parsing crazy_multi_profile.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "commentStart": 1946,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "center",
                   "start": 0,
                   "type": "Identifier"
                 },
                 "arg": {
-                  "commentStart": 1955,
+                  "commentStart": 0,
                   "elements": [
                     {
-                      "commentStart": 1956,
+                      "commentStart": 0,
                       "end": 0,
                       "raw": "7.18",
                       "start": 0,
@@ -3604,7 +3604,7 @@ description: Result of parsing crazy_multi_profile.kcl
                     },
                     {
                       "argument": {
-                        "commentStart": 1963,
+                        "commentStart": 0,
                         "end": 0,
                         "raw": "2.11",
                         "start": 0,
@@ -3615,7 +3615,7 @@ description: Result of parsing crazy_multi_profile.kcl
                           "suffix": "None"
                         }
                       },
-                      "commentStart": 1962,
+                      "commentStart": 0,
                       "end": 0,
                       "operator": "-",
                       "start": 0,
@@ -3632,14 +3632,14 @@ description: Result of parsing crazy_multi_profile.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "commentStart": 1970,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "radius",
                   "start": 0,
                   "type": "Identifier"
                 },
                 "arg": {
-                  "commentStart": 1979,
+                  "commentStart": 0,
                   "end": 0,
                   "raw": "2.67",
                   "start": 0,
@@ -3654,10 +3654,10 @@ description: Result of parsing crazy_multi_profile.kcl
             ],
             "callee": {
               "abs_path": false,
-              "commentStart": 1928,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 1928,
+                "commentStart": 0,
                 "end": 0,
                 "name": "circle",
                 "start": 0,
@@ -3667,17 +3667,17 @@ description: Result of parsing crazy_multi_profile.kcl
               "start": 0,
               "type": "Name"
             },
-            "commentStart": 1928,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
               "abs_path": false,
-              "commentStart": 1935,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 1935,
+                "commentStart": 0,
                 "end": 0,
                 "name": "sketch003",
                 "start": 0,
@@ -3699,12 +3699,12 @@ description: Result of parsing crazy_multi_profile.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 1985,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 1985,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 1985,
+            "commentStart": 0,
             "end": 0,
             "name": "profile011",
             "start": 0,
@@ -3715,10 +3715,10 @@ description: Result of parsing crazy_multi_profile.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 2013,
+                    "commentStart": 0,
                     "elements": [
                       {
-                        "commentStart": 2014,
+                        "commentStart": 0,
                         "end": 0,
                         "raw": "5.07",
                         "start": 0,
@@ -3731,7 +3731,7 @@ description: Result of parsing crazy_multi_profile.kcl
                       },
                       {
                         "argument": {
-                          "commentStart": 2021,
+                          "commentStart": 0,
                           "end": 0,
                           "raw": "6.39",
                           "start": 0,
@@ -3742,7 +3742,7 @@ description: Result of parsing crazy_multi_profile.kcl
                             "suffix": "None"
                           }
                         },
-                        "commentStart": 2020,
+                        "commentStart": 0,
                         "end": 0,
                         "operator": "-",
                         "start": 0,
@@ -3757,10 +3757,10 @@ description: Result of parsing crazy_multi_profile.kcl
                   },
                   {
                     "abs_path": false,
-                    "commentStart": 2028,
+                    "commentStart": 0,
                     "end": 0,
                     "name": {
-                      "commentStart": 2028,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "sketch003",
                       "start": 0,
@@ -3774,10 +3774,10 @@ description: Result of parsing crazy_multi_profile.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1998,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1998,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "startProfileAt",
                     "start": 0,
@@ -3787,7 +3787,7 @@ description: Result of parsing crazy_multi_profile.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1998,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -3796,10 +3796,10 @@ description: Result of parsing crazy_multi_profile.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 2055,
+                    "commentStart": 0,
                     "elements": [
                       {
-                        "commentStart": 2056,
+                        "commentStart": 0,
                         "end": 0,
                         "raw": "0",
                         "start": 0,
@@ -3811,7 +3811,7 @@ description: Result of parsing crazy_multi_profile.kcl
                         }
                       },
                       {
-                        "commentStart": 2059,
+                        "commentStart": 0,
                         "end": 0,
                         "raw": "4.54",
                         "start": 0,
@@ -3829,14 +3829,14 @@ description: Result of parsing crazy_multi_profile.kcl
                     "type": "ArrayExpression"
                   },
                   {
-                    "commentStart": 2066,
+                    "commentStart": 0,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   },
                   {
-                    "commentStart": 2069,
+                    "commentStart": 0,
                     "end": 0,
                     "start": 0,
                     "type": "TagDeclarator",
@@ -3846,10 +3846,10 @@ description: Result of parsing crazy_multi_profile.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 2044,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 2044,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "angledLine",
                     "start": 0,
@@ -3859,7 +3859,7 @@ description: Result of parsing crazy_multi_profile.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 2044,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -3868,19 +3868,19 @@ description: Result of parsing crazy_multi_profile.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 2108,
+                    "commentStart": 0,
                     "elements": [
                       {
-                        "commentStart": 2117,
+                        "commentStart": 0,
                         "end": 0,
                         "left": {
                           "arguments": [
                             {
                               "abs_path": false,
-                              "commentStart": 2124,
+                              "commentStart": 0,
                               "end": 0,
                               "name": {
-                                "commentStart": 2124,
+                                "commentStart": 0,
                                 "end": 0,
                                 "name": "rectangleSegmentA002",
                                 "start": 0,
@@ -3894,10 +3894,10 @@ description: Result of parsing crazy_multi_profile.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 2117,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 2117,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "segAng",
                               "start": 0,
@@ -3907,7 +3907,7 @@ description: Result of parsing crazy_multi_profile.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 2117,
+                          "commentStart": 0,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -3915,7 +3915,7 @@ description: Result of parsing crazy_multi_profile.kcl
                         },
                         "operator": "-",
                         "right": {
-                          "commentStart": 2148,
+                          "commentStart": 0,
                           "end": 0,
                           "raw": "90",
                           "start": 0,
@@ -3931,7 +3931,7 @@ description: Result of parsing crazy_multi_profile.kcl
                         "type": "BinaryExpression"
                       },
                       {
-                        "commentStart": 2159,
+                        "commentStart": 0,
                         "end": 0,
                         "raw": "4.17",
                         "start": 0,
@@ -3949,7 +3949,7 @@ description: Result of parsing crazy_multi_profile.kcl
                     "type": "ArrayExpression"
                   },
                   {
-                    "commentStart": 2172,
+                    "commentStart": 0,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -3958,10 +3958,10 @@ description: Result of parsing crazy_multi_profile.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 2097,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 2097,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "angledLine",
                     "start": 0,
@@ -3971,7 +3971,7 @@ description: Result of parsing crazy_multi_profile.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 2097,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -3980,16 +3980,16 @@ description: Result of parsing crazy_multi_profile.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 2191,
+                    "commentStart": 0,
                     "elements": [
                       {
                         "arguments": [
                           {
                             "abs_path": false,
-                            "commentStart": 2207,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 2207,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "rectangleSegmentA002",
                               "start": 0,
@@ -4003,10 +4003,10 @@ description: Result of parsing crazy_multi_profile.kcl
                         ],
                         "callee": {
                           "abs_path": false,
-                          "commentStart": 2200,
+                          "commentStart": 0,
                           "end": 0,
                           "name": {
-                            "commentStart": 2200,
+                            "commentStart": 0,
                             "end": 0,
                             "name": "segAng",
                             "start": 0,
@@ -4016,7 +4016,7 @@ description: Result of parsing crazy_multi_profile.kcl
                           "start": 0,
                           "type": "Name"
                         },
-                        "commentStart": 2200,
+                        "commentStart": 0,
                         "end": 0,
                         "start": 0,
                         "type": "CallExpression",
@@ -4027,10 +4027,10 @@ description: Result of parsing crazy_multi_profile.kcl
                           "arguments": [
                             {
                               "abs_path": false,
-                              "commentStart": 2245,
+                              "commentStart": 0,
                               "end": 0,
                               "name": {
-                                "commentStart": 2245,
+                                "commentStart": 0,
                                 "end": 0,
                                 "name": "rectangleSegmentA002",
                                 "start": 0,
@@ -4044,10 +4044,10 @@ description: Result of parsing crazy_multi_profile.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 2238,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 2238,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "segLen",
                               "start": 0,
@@ -4057,13 +4057,13 @@ description: Result of parsing crazy_multi_profile.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 2238,
+                          "commentStart": 0,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
-                        "commentStart": 2237,
+                        "commentStart": 0,
                         "end": 0,
                         "operator": "-",
                         "start": 0,
@@ -4077,7 +4077,7 @@ description: Result of parsing crazy_multi_profile.kcl
                     "type": "ArrayExpression"
                   },
                   {
-                    "commentStart": 2275,
+                    "commentStart": 0,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -4086,10 +4086,10 @@ description: Result of parsing crazy_multi_profile.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 2180,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 2180,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "angledLine",
                     "start": 0,
@@ -4099,7 +4099,7 @@ description: Result of parsing crazy_multi_profile.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 2180,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -4110,19 +4110,19 @@ description: Result of parsing crazy_multi_profile.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 2288,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "endAbsolute",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 2302,
+                      "commentStart": 0,
                       "elements": [
                         {
                           "arguments": [
                             {
-                              "commentStart": 2317,
+                              "commentStart": 0,
                               "end": 0,
                               "start": 0,
                               "type": "PipeSubstitution",
@@ -4131,10 +4131,10 @@ description: Result of parsing crazy_multi_profile.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 2303,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 2303,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "profileStartX",
                               "start": 0,
@@ -4144,7 +4144,7 @@ description: Result of parsing crazy_multi_profile.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 2303,
+                          "commentStart": 0,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -4153,7 +4153,7 @@ description: Result of parsing crazy_multi_profile.kcl
                         {
                           "arguments": [
                             {
-                              "commentStart": 2335,
+                              "commentStart": 0,
                               "end": 0,
                               "start": 0,
                               "type": "PipeSubstitution",
@@ -4162,10 +4162,10 @@ description: Result of parsing crazy_multi_profile.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 2321,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 2321,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "profileStartY",
                               "start": 0,
@@ -4175,7 +4175,7 @@ description: Result of parsing crazy_multi_profile.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 2321,
+                          "commentStart": 0,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -4191,10 +4191,10 @@ description: Result of parsing crazy_multi_profile.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 2283,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 2283,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "line",
                     "start": 0,
@@ -4204,7 +4204,7 @@ description: Result of parsing crazy_multi_profile.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 2283,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -4215,10 +4215,10 @@ description: Result of parsing crazy_multi_profile.kcl
                 "arguments": [],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 2345,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 2345,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "close",
                     "start": 0,
@@ -4228,14 +4228,14 @@ description: Result of parsing crazy_multi_profile.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 2345,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               }
             ],
-            "commentStart": 1998,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "PipeExpression",
@@ -4251,12 +4251,12 @@ description: Result of parsing crazy_multi_profile.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 2353,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 2353,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 2353,
+            "commentStart": 0,
             "end": 0,
             "name": "extrude003",
             "start": 0,
@@ -4267,14 +4267,14 @@ description: Result of parsing crazy_multi_profile.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "commentStart": 2386,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "length",
                   "start": 0,
                   "type": "Identifier"
                 },
                 "arg": {
-                  "commentStart": 2395,
+                  "commentStart": 0,
                   "end": 0,
                   "raw": "2.5",
                   "start": 0,
@@ -4289,10 +4289,10 @@ description: Result of parsing crazy_multi_profile.kcl
             ],
             "callee": {
               "abs_path": false,
-              "commentStart": 2366,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 2366,
+                "commentStart": 0,
                 "end": 0,
                 "name": "extrude",
                 "start": 0,
@@ -4302,17 +4302,17 @@ description: Result of parsing crazy_multi_profile.kcl
               "start": 0,
               "type": "Name"
             },
-            "commentStart": 2366,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
               "abs_path": false,
-              "commentStart": 2374,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 2374,
+                "commentStart": 0,
                 "end": 0,
                 "name": "profile011",
                 "start": 0,
@@ -4334,12 +4334,12 @@ description: Result of parsing crazy_multi_profile.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 2400,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 2400,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 2400,
+            "commentStart": 0,
             "end": 0,
             "name": "revolve002",
             "start": 0,
@@ -4350,14 +4350,14 @@ description: Result of parsing crazy_multi_profile.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "commentStart": 2433,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "angle",
                   "start": 0,
                   "type": "Identifier"
                 },
                 "arg": {
-                  "commentStart": 2441,
+                  "commentStart": 0,
                   "end": 0,
                   "raw": "45",
                   "start": 0,
@@ -4372,7 +4372,7 @@ description: Result of parsing crazy_multi_profile.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "commentStart": 2445,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "axis",
                   "start": 0,
@@ -4380,10 +4380,10 @@ description: Result of parsing crazy_multi_profile.kcl
                 },
                 "arg": {
                   "abs_path": false,
-                  "commentStart": 2452,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 2452,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "seg02",
                     "start": 0,
@@ -4398,10 +4398,10 @@ description: Result of parsing crazy_multi_profile.kcl
             ],
             "callee": {
               "abs_path": false,
-              "commentStart": 2413,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 2413,
+                "commentStart": 0,
                 "end": 0,
                 "name": "revolve",
                 "start": 0,
@@ -4411,17 +4411,17 @@ description: Result of parsing crazy_multi_profile.kcl
               "start": 0,
               "type": "Name"
             },
-            "commentStart": 2413,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
               "abs_path": false,
-              "commentStart": 2421,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 2421,
+                "commentStart": 0,
                 "end": 0,
                 "name": "profile008",
                 "start": 0,

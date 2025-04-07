@@ -19603,7 +19603,13 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "type": "Number",
                 "value": 11.75,
                 "ty": {
-                  "type": "Unknown"
+                  "type": "Default",
+                  "len": {
+                    "type": "Mm"
+                  },
+                  "angle": {
+                    "type": "Degrees"
+                  }
                 }
               }
             ]
@@ -19783,7 +19789,13 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "type": "Number",
                 "value": 11.75,
                 "ty": {
-                  "type": "Unknown"
+                  "type": "Default",
+                  "len": {
+                    "type": "Mm"
+                  },
+                  "angle": {
+                    "type": "Degrees"
+                  }
                 }
               }
             ]
@@ -19937,7 +19949,13 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "type": "Number",
                 "value": 80.25,
                 "ty": {
-                  "type": "Unknown"
+                  "type": "Default",
+                  "len": {
+                    "type": "Mm"
+                  },
+                  "angle": {
+                    "type": "Degrees"
+                  }
                 }
               },
               {
@@ -19957,7 +19975,13 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "type": "Number",
                 "value": 11.75,
                 "ty": {
-                  "type": "Unknown"
+                  "type": "Default",
+                  "len": {
+                    "type": "Mm"
+                  },
+                  "angle": {
+                    "type": "Degrees"
+                  }
                 }
               }
             ]
