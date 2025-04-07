@@ -14,7 +14,7 @@ There are three levels of settings available in Zoo Design Studio:
 
 ## Configuration Files
 
-The KittyCAD Design Studio uses TOML files for configuration:
+Zoo Design Studio uses TOML files for configuration:
 
 * **User Settings**: `user.toml` - See [complete documentation](/docs/kcl/settings/user)
 * **Project Settings**: `project.toml` - See [complete documentation](/docs/kcl/settings/project)
