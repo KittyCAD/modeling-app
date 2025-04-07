@@ -4,7 +4,7 @@
 // Set units
 @settings(defaultLengthUnit = mm)
 
-// Define constants in millimeters (mm)
+// Define parameters
 flipperThickness = 3.5
 flipperLength = 70.0
 handleWidth = 15.0
@@ -16,7 +16,7 @@ gripHeight = 20.0
 gripFilletRadius = 3.0
 gripSlotWidth = 8.0
 
-// function for drawing slots on a sketch given the start and end points as well as a width
+// Function for drawing slots on a sketch given the start and end points as well as a width
 fn slot(sketch1, start, end, width) {
   angle = if start[0] == end[0] {
     if end[1] > start[1] {
@@ -43,10 +43,10 @@ fn slot(sketch1, start, end, width) {
   return slotSketch
 }
 
-// create a sketch on the "XY" plane
+// Create a sketch on the "XY" plane
 sketch000 = startSketchOn(XY)
 
-// create a profile of the flipper
+// Create a profile of the flipper
 flipperProfile = startProfileAt([-flipperLength, -32.0], sketch000)
   |> line(end = [flipperLength, 2.0])
   |> yLine(length = 60.0, tag = $backEdge)
@@ -58,25 +58,25 @@ flipperProfile = startProfileAt([-flipperLength, -32.0], sketch000)
      }, %)
   |> close()
 
-// create a profile of the middle
+// Create a profile of the middle
 slotProfile000 = slot(sketch000, [-25, 0], [-55, 0], flipperSlotWidth)
 
-// create a profile of the top slot
+// Create a profile of the top slot
 slotProfile001 = slot(sketch000, [-25, 18], [-55, 19], flipperSlotWidth)
 
-// create a profile of the bottom slot
+// Create a profile of the bottom slot
 slotProfile002 = slot(sketch000, [-25, -18], [-55, -19], flipperSlotWidth)
 
-// create a profile with slots for the spatula
+// Create a profile with slots for the spatula
 spatulaProfile = flipperProfile
   |> hole(slotProfile000, %)
   |> hole(slotProfile001, %)
   |> hole(slotProfile002, %)
 
-// extrude the profile to create the spatula flipper
+// Extrude the profile to create the spatula flipper
 flipper = extrude(spatulaProfile, length = flipperThickness)
 
-// fillet the edges of the flipper
+// Fillet the edges of the flipper
 fillet(
   flipper,
   radius = flipperFilletRadius,
@@ -86,10 +86,10 @@ fillet(
   ],
 )
 
-// create a sketch on the "XZ" plane offset by half the thickness
+// Create a sketch on the "XZ" plane offset by half the thickness
 sketch001 = startSketchOn(offsetPlane(XZ, offset = -handleWidth / 2))
 
-// create a profile of the spatula handle
+// Create a profile of the spatula handle
 handleProfile = startProfileAt([0.0, flipperThickness], sketch001)
   |> line(end = [31.819805, 31.819805], tag = $handleBottomEdge)
   |> line(end = [140.953893, 51.303021])
@@ -99,10 +99,10 @@ handleProfile = startProfileAt([0.0, flipperThickness], sketch001)
   |> xLine(length = 7.071068)
   |> close()
 
-// create an extrusion extrude001
+// Create an extrusion extrude001
 handle = extrude(handleProfile, length = handleWidth)
 
-// fillet the bend of the spatula handle
+// Fillet the bend of the spatula handle
 fillet(
   handle,
   radius = 4,
@@ -112,7 +112,7 @@ fillet(
   ],
 )
 
-// define a plane which is at the end of the handle
+// Define a plane which is at the end of the handle
 handlePlane = {
   plane = {
     origin = [208.593833, 0.0, 75.921946],
@@ -122,10 +122,10 @@ handlePlane = {
   }
 }
 
-// create a sketch on the handle plane
+// Create a sketch on the handle plane
 sketch002 = startSketchOn(handlePlane)
 
-// create a profile of the grip
+// Create a profile of the grip
 gripProfile = startProfileAt([-26.806746, -10.0], sketch002)
   |> xLine(length = gripWidth - (2 * gripFilletRadius))
   |> arc({
@@ -153,14 +153,14 @@ gripProfile = startProfileAt([-26.806746, -10.0], sketch002)
      }, %)
   |> close()
 
-// extrude the grip profile to create the grip
+// Extrude the grip profile to create the grip
 grip = extrude(gripProfile, length = -gripLength)
 
-// create a sketch on the grip for the hole
+// Create a sketch on the grip for the hole
 sketch003 = startSketchOn(grip, gripEdgeTop)
 
-// create a profile for the grip hole
+// Create a profile for the grip hole
 gripHoleProfile = slot(sketch003, [0, 200], [0, 210], gripSlotWidth)
 
-// cut a hole in the grip
+// Cut a hole in the grip
 extrude(gripHoleProfile, length = -gripWidth - 20)

@@ -83,9 +83,6 @@ export const KCL_DEFAULT_DEGREE = `360`
 /** The default KCL color expression */
 export const KCL_DEFAULT_COLOR = `#3c73ff`
 
-/** localStorage key for the playwright test-specific app settings file */
-export const TEST_SETTINGS_FILE_KEY = 'playwright-test-settings'
-
 export const SETTINGS_FILE_NAME = 'settings.toml'
 export const TOKEN_FILE_NAME = 'token.txt'
 export const PROJECT_SETTINGS_FILE_NAME = 'project.toml'

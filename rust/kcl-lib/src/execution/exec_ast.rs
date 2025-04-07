@@ -3,7 +3,11 @@ use std::collections::HashMap;
 use async_recursion::async_recursion;
 use indexmap::IndexMap;
 
-use super::{cad_op::Group, kcl_value::TypeDef, types::PrimitiveType};
+use super::{
+    cad_op::Group,
+    kcl_value::TypeDef,
+    types::{PrimitiveType, CHECK_NUMERIC_TYPES},
+};
 use crate::{
     engine::ExecutionKind,
     errors::{KclError, KclErrorDetails},
@@ -26,7 +30,7 @@ use crate::{
     },
     source_range::SourceRange,
     std::{
-        args::{Arg, KwArgs},
+        args::{Arg, KwArgs, TyF64},
         FunctionKind,
     },
     CompilationError,
@@ -705,14 +709,14 @@ impl ExecutorContext {
                 let result = self
                     .execute_expr(&expr.expr, exec_state, metadata, &[], statement_kind)
                     .await?;
-                coerce(&result, &expr.ty, exec_state, expr.into())?
+                apply_ascription(&result, &expr.ty, exec_state, expr.into())?
             }
         };
         Ok(item)
     }
 }
 
-fn coerce(
+fn apply_ascription(
     value: &KclValue,
     ty: &Node<Type>,
     exec_state: &mut ExecState,
@@ -721,7 +725,24 @@ fn coerce(
     let ty = RuntimeType::from_parsed(ty.inner.clone(), exec_state, value.into())
         .map_err(|e| KclError::Semantic(e.into()))?;
 
-    value.coerce(&ty, exec_state).ok_or_else(|| {
+    if let KclValue::Number {
+        ty: NumericType::Unknown,
+        value,
+        meta,
+    } = value
+    {
+        // If the number has unknown units but the user is explicitly specifying them, treat the value as having had it's units erased,
+        // rather than forcing the user to explicitly erase them.
+        KclValue::Number {
+            ty: NumericType::Any,
+            value: *value,
+            meta: meta.clone(),
+        }
+        .coerce(&ty, exec_state)
+    } else {
+        value.coerce(&ty, exec_state)
+    }
+    .map_err(|_| {
         KclError::Semantic(KclErrorDetails {
             message: format!("could not coerce {} value to type {}", value.human_friendly_type(), ty),
             source_ranges: vec![source_range],
@@ -977,68 +998,84 @@ impl Node<BinaryExpression> {
             return Ok(KclValue::Bool { value: raw_value, meta });
         }
 
-        let (left, lty) = parse_number_as_f64(&left_value, self.left.clone().into())?;
-        let (right, rty) = parse_number_as_f64(&right_value, self.right.clone().into())?;
+        let left = number_as_f64(&left_value, self.left.clone().into())?;
+        let right = number_as_f64(&right_value, self.right.clone().into())?;
 
         let value = match self.operator {
-            BinaryOperator::Add => KclValue::Number {
-                value: left + right,
-                meta,
-                ty: NumericType::combine_add(lty, rty),
-            },
-            BinaryOperator::Sub => KclValue::Number {
-                value: left - right,
-                meta,
-                ty: NumericType::combine_add(lty, rty),
-            },
-            BinaryOperator::Mul => KclValue::Number {
-                value: left * right,
-                meta,
-                ty: NumericType::combine_mul(lty, rty),
-            },
-            BinaryOperator::Div => KclValue::Number {
-                value: left / right,
-                meta,
-                ty: NumericType::combine_div(lty, rty),
-            },
-            BinaryOperator::Mod => KclValue::Number {
-                value: left % right,
-                meta,
-                ty: NumericType::combine_div(lty, rty),
-            },
+            BinaryOperator::Add => {
+                let (l, r, ty) = NumericType::combine_eq(left, right);
+                self.warn_on_unknown(&ty, "Adding", exec_state);
+                KclValue::Number { value: l + r, meta, ty }
+            }
+            BinaryOperator::Sub => {
+                let (l, r, ty) = NumericType::combine_eq(left, right);
+                self.warn_on_unknown(&ty, "Subtracting", exec_state);
+                KclValue::Number { value: l - r, meta, ty }
+            }
+            BinaryOperator::Mul => {
+                let (l, r, ty) = NumericType::combine_mul(left, right);
+                self.warn_on_unknown(&ty, "Multiplying", exec_state);
+                KclValue::Number { value: l * r, meta, ty }
+            }
+            BinaryOperator::Div => {
+                let (l, r, ty) = NumericType::combine_div(left, right);
+                self.warn_on_unknown(&ty, "Dividing", exec_state);
+                KclValue::Number { value: l / r, meta, ty }
+            }
+            BinaryOperator::Mod => {
+                let (l, r, ty) = NumericType::combine_div(left, right);
+                self.warn_on_unknown(&ty, "Modulo of", exec_state);
+                KclValue::Number { value: l % r, meta, ty }
+            }
             BinaryOperator::Pow => KclValue::Number {
-                value: left.powf(right),
+                value: left.n.powf(right.n),
                 meta,
                 ty: NumericType::Unknown,
             },
-            BinaryOperator::Neq => KclValue::Bool {
-                value: left != right,
-                meta,
-            },
-            BinaryOperator::Gt => KclValue::Bool {
-                value: left > right,
-                meta,
-            },
-            BinaryOperator::Gte => KclValue::Bool {
-                value: left >= right,
-                meta,
-            },
-            BinaryOperator::Lt => KclValue::Bool {
-                value: left < right,
-                meta,
-            },
-            BinaryOperator::Lte => KclValue::Bool {
-                value: left <= right,
-                meta,
-            },
-            BinaryOperator::Eq => KclValue::Bool {
-                value: left == right,
-                meta,
-            },
+            BinaryOperator::Neq => {
+                let (l, r, ty) = NumericType::combine_eq(left, right);
+                self.warn_on_unknown(&ty, "Comparing", exec_state);
+                KclValue::Bool { value: l != r, meta }
+            }
+            BinaryOperator::Gt => {
+                let (l, r, ty) = NumericType::combine_eq(left, right);
+                self.warn_on_unknown(&ty, "Comparing", exec_state);
+                KclValue::Bool { value: l > r, meta }
+            }
+            BinaryOperator::Gte => {
+                let (l, r, ty) = NumericType::combine_eq(left, right);
+                self.warn_on_unknown(&ty, "Comparing", exec_state);
+                KclValue::Bool { value: l >= r, meta }
+            }
+            BinaryOperator::Lt => {
+                let (l, r, ty) = NumericType::combine_eq(left, right);
+                self.warn_on_unknown(&ty, "Comparing", exec_state);
+                KclValue::Bool { value: l < r, meta }
+            }
+            BinaryOperator::Lte => {
+                let (l, r, ty) = NumericType::combine_eq(left, right);
+                self.warn_on_unknown(&ty, "Comparing", exec_state);
+                KclValue::Bool { value: l <= r, meta }
+            }
+            BinaryOperator::Eq => {
+                let (l, r, ty) = NumericType::combine_eq(left, right);
+                self.warn_on_unknown(&ty, "Comparing", exec_state);
+                KclValue::Bool { value: l == r, meta }
+            }
             BinaryOperator::And | BinaryOperator::Or => unreachable!(),
         };
 
         Ok(value)
+    }
+
+    fn warn_on_unknown(&self, ty: &NumericType, verb: &str, exec_state: &mut ExecState) {
+        if *CHECK_NUMERIC_TYPES && ty == &NumericType::Unknown {
+            // TODO suggest how to fix this
+            exec_state.warn(CompilationError::err(
+                self.as_source_range(),
+                format!("{} numbers which have unknown or incompatible units.", verb),
+            ));
+        }
     }
 }
 
@@ -1759,21 +1796,15 @@ fn article_for(s: &str) -> &'static str {
     }
 }
 
-pub fn parse_number_as_f64(v: &KclValue, source_range: SourceRange) -> Result<(f64, NumericType), KclError> {
-    if let KclValue::Number { value: n, ty, .. } = &v {
-        Ok((*n, ty.clone()))
-    } else {
+fn number_as_f64(v: &KclValue, source_range: SourceRange) -> Result<TyF64, KclError> {
+    v.as_ty_f64().ok_or_else(|| {
         let actual_type = v.human_friendly_type();
-        let article = if actual_type.starts_with(['a', 'e', 'i', 'o', 'u']) {
-            "an"
-        } else {
-            "a"
-        };
-        Err(KclError::Semantic(KclErrorDetails {
+        let article = article_for(actual_type);
+        KclError::Semantic(KclErrorDetails {
             source_ranges: vec![source_range],
             message: format!("Expected a number, but found {article} {actual_type}",),
-        }))
-    }
+        })
+    })
 }
 
 impl Node<IfExpression> {
@@ -1975,31 +2006,101 @@ fn assign_args_to_params(
     Ok(())
 }
 
-fn assign_args_to_params_kw(
+fn type_check_params_kw(
+    fn_name: Option<&str>,
     function_expression: NodeRef<'_, FunctionExpression>,
-    mut args: crate::std::args::KwArgs,
+    args: &mut crate::std::args::KwArgs,
     exec_state: &mut ExecState,
 ) -> Result<(), KclError> {
-    for (label, arg) in &args.labeled {
+    for (label, arg) in &mut args.labeled {
         match function_expression.params.iter().find(|p| &p.identifier.name == label) {
             Some(p) => {
                 if !p.labeled {
                     exec_state.err(CompilationError::err(
                         arg.source_range,
                         format!(
-                            "This function expects an unlabeled first parameter (`{label}`), but it is labelled in the call"
+                            "{} expects an unlabeled first parameter (`{label}`), but it is labelled in the call",
+                            fn_name
+                                .map(|n| format!("The function `{}`", n))
+                                .unwrap_or_else(|| "This function".to_owned()),
                         ),
                     ));
+                }
+
+                if let Some(ty) = &p.type_ {
+                    arg.value = arg
+                        .value
+                        .coerce(
+                            &RuntimeType::from_parsed(ty.inner.clone(), exec_state, arg.source_range).unwrap(),
+                            exec_state,
+                        )
+                        .map_err(|e| {
+                            let mut message = format!(
+                                "{label} requires a value with type `{}`, but found {}",
+                                ty.inner,
+                                arg.value.human_friendly_type(),
+                            );
+                            if let Some(ty) = e.explicit_coercion {
+                                // TODO if we have access to the AST for the argument we could choose which example to suggest.
+                                message = format!("{message}\n\nYou may need to add information about the type of the argument, for example:\n  using a numeric suffix: `42{ty}`\n  or using type ascription: `foo(): number({ty})`");
+                            }
+                            KclError::Semantic(KclErrorDetails {
+                                message,
+                                source_ranges: vec![arg.source_range],
+                            })
+                        })?;
                 }
             }
             None => {
                 exec_state.err(CompilationError::err(
                     arg.source_range,
-                    format!("`{label}` is not an argument of this function"),
+                    format!(
+                        "`{label}` is not an argument of {}",
+                        fn_name
+                            .map(|n| format!("`{}`", n))
+                            .unwrap_or_else(|| "this function".to_owned()),
+                    ),
                 ));
             }
         }
     }
+
+    if let Some(arg) = &mut args.unlabeled {
+        if let Some(p) = function_expression.params.iter().find(|p| !p.labeled) {
+            if let Some(ty) = &p.type_ {
+                arg.value = arg
+                    .value
+                    .coerce(
+                        &RuntimeType::from_parsed(ty.inner.clone(), exec_state, arg.source_range).unwrap(),
+                        exec_state,
+                    )
+                    .map_err(|_| {
+                        KclError::Semantic(KclErrorDetails {
+                            message: format!(
+                                "The input argument of {} requires a value with type `{}`, but found {}",
+                                fn_name
+                                    .map(|n| format!("`{}`", n))
+                                    .unwrap_or_else(|| "this function".to_owned()),
+                                ty.inner,
+                                arg.value.human_friendly_type()
+                            ),
+                            source_ranges: vec![arg.source_range],
+                        })
+                    })?;
+            }
+        }
+    }
+
+    Ok(())
+}
+
+fn assign_args_to_params_kw(
+    fn_name: Option<&str>,
+    function_expression: NodeRef<'_, FunctionExpression>,
+    mut args: crate::std::args::KwArgs,
+    exec_state: &mut ExecState,
+) -> Result<(), KclError> {
+    type_check_params_kw(fn_name, function_expression, &mut args, exec_state)?;
 
     // Add the arguments to the memory.  A new call frame should have already
     // been created.
@@ -2087,6 +2188,7 @@ async fn call_user_defined_function(
 }
 
 async fn call_user_defined_function_kw(
+    fn_name: Option<&str>,
     args: crate::std::args::KwArgs,
     memory: EnvironmentRef,
     function_expression: NodeRef<'_, FunctionExpression>,
@@ -2097,7 +2199,7 @@ async fn call_user_defined_function_kw(
     // variables shadow variables in the parent scope.  The new environment's
     // parent should be the environment of the closure.
     exec_state.mut_stack().push_new_env_for_call(memory);
-    if let Err(e) = assign_args_to_params_kw(function_expression, args, exec_state) {
+    if let Err(e) = assign_args_to_params_kw(fn_name, function_expression, args, exec_state) {
         exec_state.mut_stack().pop_env();
         return Err(e);
     }
@@ -2175,47 +2277,7 @@ impl FunctionSource {
                     ));
                 }
 
-                for (label, arg) in &mut args.kw_args.labeled {
-                    match ast.params.iter().find(|p| &p.identifier.name == label) {
-                        Some(p) => {
-                            if !p.labeled {
-                                exec_state.err(CompilationError::err(
-                                    arg.source_range,
-                                    format!(
-                                        "The function `{}` expects an unlabeled first parameter (`{label}`), but it is labelled in the call",
-                                        props.name
-                                    ),
-                                ));
-                            }
-
-                            if let Some(ty) = &p.type_ {
-                                arg.value = arg
-                                    .value
-                                    .coerce(
-                                        &RuntimeType::from_parsed(ty.inner.clone(), exec_state, arg.source_range)
-                                            .unwrap(),
-                                        exec_state,
-                                    )
-                                    .ok_or_else(|| {
-                                        KclError::Semantic(KclErrorDetails {
-                                            message: format!(
-                                                "{label} requires a value with type `{}`, but found {}",
-                                                ty.inner,
-                                                arg.value.human_friendly_type()
-                                            ),
-                                            source_ranges: vec![callsite],
-                                        })
-                                    })?;
-                            }
-                        }
-                        None => {
-                            exec_state.err(CompilationError::err(
-                                arg.source_range,
-                                format!("`{label}` is not an argument of `{}`", props.name),
-                            ));
-                        }
-                    }
-                }
+                type_check_params_kw(Some(&props.name), ast, &mut args.kw_args, exec_state)?;
 
                 if let Some(arg) = &mut args.kw_args.unlabeled {
                     if let Some(p) = ast.params.iter().find(|p| !p.labeled) {
@@ -2226,13 +2288,13 @@ impl FunctionSource {
                                     &RuntimeType::from_parsed(ty.inner.clone(), exec_state, arg.source_range).unwrap(),
                                     exec_state,
                                 )
-                                .ok_or_else(|| {
+                                .map_err(|_| {
                                     KclError::Semantic(KclErrorDetails {
                                         message: format!(
                                             "The input argument of {} requires a value with type `{}`, but found {}",
                                             props.name,
                                             ty.inner,
-                                            arg.value.human_friendly_type()
+                                            arg.value.human_friendly_type(),
                                         ),
                                         source_ranges: vec![callsite],
                                     })
@@ -2295,7 +2357,7 @@ impl FunctionSource {
                         .collect();
                     exec_state.global.operations.push(Operation::GroupBegin {
                         group: Group::FunctionCall {
-                            name: fn_name,
+                            name: fn_name.clone(),
                             function_source_range: ast.as_source_range(),
                             unlabeled_arg: args
                                 .kw_args
@@ -2308,7 +2370,7 @@ impl FunctionSource {
                     });
                 }
 
-                call_user_defined_function_kw(args.kw_args, *memory, ast, exec_state, ctx).await
+                call_user_defined_function_kw(fn_name.as_deref(), args.kw_args, *memory, ast, exec_state, ctx).await
             }
             FunctionSource::None => unreachable!(),
         }
@@ -2533,5 +2595,26 @@ a = foo()
 
         let result = parse_execute(program).await;
         assert!(result.unwrap_err().to_string().contains("return"));
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn user_coercion() {
+        let program = r#"fn foo(x: Axis2d) {
+  return 0
+}
+
+foo(x = { direction = [0, 0], origin = [0, 0]})
+"#;
+
+        parse_execute(program).await.unwrap();
+
+        let program = r#"fn foo(x: Axis3d) {
+  return 0
+}
+
+foo(x = { direction = [0, 0], origin = [0, 0]})
+"#;
+
+        parse_execute(program).await.unwrap_err();
     }
 }

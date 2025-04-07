@@ -61,7 +61,7 @@ test.describe('Prompt-to-edit tests', { tag: '@skipWin' }, () => {
           localStorage.setItem('persistCode', file)
         }, file)
         await homePage.goToModelingScene()
-        await scene.waitForExecutionDone()
+        await scene.settled(cmdBar)
 
         const body1CapCoords = { x: 571, y: 311 }
         const greenCheckCoords = { x: 565, y: 305 }
@@ -156,7 +156,7 @@ test.describe('Prompt-to-edit tests', { tag: '@skipWin' }, () => {
       localStorage.setItem('persistCode', file)
     }, file)
     await homePage.goToModelingScene()
-    await scene.waitForExecutionDone()
+    await scene.settled(cmdBar)
 
     const body1CapCoords = { x: 571, y: 311 }
     const [clickBody1Cap] = scene.makeMouseHelpers(
@@ -212,7 +212,7 @@ test.describe('Prompt-to-edit tests', { tag: '@skipWin' }, () => {
       localStorage.setItem('persistCode', file)
     }, file)
     await homePage.goToModelingScene()
-    await scene.waitForExecutionDone()
+    await scene.settled(cmdBar)
 
     const submittingToast = page.getByText('Submitting to Text-to-CAD API...')
     const successToast = page.getByText('Prompt to edit successful')
@@ -281,7 +281,7 @@ test.describe('Prompt-to-edit tests', { tag: '@skipWin' }, () => {
       localStorage.setItem('persistCode', file)
     }, file)
     await homePage.goToModelingScene()
-    await scene.waitForExecutionDone()
+    await scene.settled(cmdBar)
 
     const submittingToast = page.getByText('Submitting to Text-to-CAD API...')
     const successToast = page.getByText('Prompt to edit successful')

@@ -1,10 +1,10 @@
 // Dual-Basin Utility Sink
 // A stainless steel sink unit with dual rectangular basins and six under-counter storage compartments.
 
-// set units
+// Set units
 @settings(defaultLengthUnit = mm)
 
-// globals
+// Define parameters
 tableHeight = 850
 tableWidth = 3400
 tableDepth = 400

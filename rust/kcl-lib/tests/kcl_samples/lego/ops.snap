@@ -81,7 +81,8 @@ description: Operations executed lego.kcl
           "type": "Number",
           "value": -1.7000000000000002,
           "ty": {
-            "type": "Unknown"
+            "type": "Known",
+            "type": "Count"
           }
         },
         "sourceRange": []
@@ -185,18 +186,6 @@ description: Operations executed lego.kcl
             "value": {
               "artifactId": "[uuid]"
             }
-          },
-          {
-            "type": "Sketch",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          },
-          {
-            "type": "Sketch",
-            "value": {
-              "artifactId": "[uuid]"
-            }
           }
         ]
       },
@@ -253,12 +242,6 @@ description: Operations executed lego.kcl
       "value": {
         "type": "Array",
         "value": [
-          {
-            "type": "Sketch",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          },
           {
             "type": "Sketch",
             "value": {

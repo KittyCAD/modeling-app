@@ -89,7 +89,7 @@ test.describe('Test network and connection issues', () => {
   test(
     'Engine disconnect & reconnect in sketch mode',
     { tag: '@skipLocalEngine' },
-    async ({ page, homePage, toolbar }) => {
+    async ({ page, homePage, toolbar, scene, cmdBar }) => {
       test.fixme(orRunWhenFullSuiteEnabled())
       const networkToggle = page.getByTestId('network-toggle')
 
@@ -169,7 +169,7 @@ test.describe('Test network and connection issues', () => {
 
       // Expect the network to be up
       await expect(networkToggle).toContainText('Connected')
-      await expect(page.getByTestId('loading-stream')).not.toBeAttached()
+      await scene.settled(cmdBar)
 
       // Click off the code pane.
       await page.mouse.click(100, 100)

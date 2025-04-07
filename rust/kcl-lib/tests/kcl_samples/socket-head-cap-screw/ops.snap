@@ -22,21 +22,6 @@ description: Operations executed socket-head-cap-screw.kcl
     "type": "GroupEnd"
   },
   {
-    "type": "GroupBegin",
-    "group": {
-      "type": "FunctionCall",
-      "name": "bolt",
-      "functionSourceRange": [
-        662,
-        1968,
-        0
-      ],
-      "unlabeledArg": null,
-      "labeledArgs": {}
-    },
-    "sourceRange": []
-  },
-  {
     "labeledArgs": {
       "data": {
         "value": {
@@ -163,7 +148,13 @@ description: Operations executed socket-head-cap-screw.kcl
           "type": "Number",
           "value": -0.14250000000000002,
           "ty": {
-            "type": "Unknown"
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -281,8 +272,5 @@ description: Operations executed socket-head-cap-screw.kcl
       },
       "sourceRange": []
     }
-  },
-  {
-    "type": "GroupEnd"
   }
 ]

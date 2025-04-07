@@ -18,10 +18,10 @@ description: Result of parsing array_elem_pop_fail.kcl
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 6,
+            "commentStart": 0,
             "elements": [
               {
-                "commentStart": 7,
+                "commentStart": 0,
                 "end": 0,
                 "raw": "1",
                 "start": 0,
@@ -33,7 +33,7 @@ description: Result of parsing array_elem_pop_fail.kcl
                 }
               },
               {
-                "commentStart": 10,
+                "commentStart": 0,
                 "end": 0,
                 "raw": "2",
                 "start": 0,
@@ -45,7 +45,7 @@ description: Result of parsing array_elem_pop_fail.kcl
                 }
               },
               {
-                "commentStart": 13,
+                "commentStart": 0,
                 "end": 0,
                 "raw": "3",
                 "start": 0,
@@ -72,12 +72,12 @@ description: Result of parsing array_elem_pop_fail.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 16,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 16,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 16,
+            "commentStart": 0,
             "end": 0,
             "name": "pushedArr",
             "start": 0,
@@ -87,10 +87,10 @@ description: Result of parsing array_elem_pop_fail.kcl
             "arguments": [
               {
                 "abs_path": false,
-                "commentStart": 32,
+                "commentStart": 0,
                 "end": 0,
                 "name": {
-                  "commentStart": 32,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "arr",
                   "start": 0,
@@ -104,10 +104,10 @@ description: Result of parsing array_elem_pop_fail.kcl
             ],
             "callee": {
               "abs_path": false,
-              "commentStart": 28,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 28,
+                "commentStart": 0,
                 "end": 0,
                 "name": "pop",
                 "start": 0,
@@ -117,7 +117,7 @@ description: Result of parsing array_elem_pop_fail.kcl
               "start": 0,
               "type": "Name"
             },
-            "commentStart": 28,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "CallExpression",
@@ -133,23 +133,23 @@ description: Result of parsing array_elem_pop_fail.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 37,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 37,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 37,
+            "commentStart": 0,
             "end": 0,
             "name": "fail",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 44,
+            "commentStart": 0,
             "computed": false,
             "end": 0,
             "object": {
-              "commentStart": 44,
+              "commentStart": 0,
               "end": 0,
               "name": "pushedArr",
               "start": 0,
@@ -157,7 +157,7 @@ description: Result of parsing array_elem_pop_fail.kcl
               "type": "Identifier"
             },
             "property": {
-              "commentStart": 54,
+              "commentStart": 0,
               "end": 0,
               "raw": "2",
               "start": 0,
