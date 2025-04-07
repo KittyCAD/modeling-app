@@ -22,7 +22,7 @@ description: Result of parsing basic_fillet_cube_start.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 24,
+                    "commentStart": 0,
                     "end": 0,
                     "raw": "'XY'",
                     "start": 0,
@@ -33,10 +33,10 @@ description: Result of parsing basic_fillet_cube_start.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 10,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 10,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "startSketchOn",
                     "start": 0,
@@ -46,7 +46,7 @@ description: Result of parsing basic_fillet_cube_start.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 10,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -55,10 +55,10 @@ description: Result of parsing basic_fillet_cube_start.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 50,
+                    "commentStart": 0,
                     "elements": [
                       {
-                        "commentStart": 51,
+                        "commentStart": 0,
                         "end": 0,
                         "raw": "0",
                         "start": 0,
@@ -70,7 +70,7 @@ description: Result of parsing basic_fillet_cube_start.kcl
                         }
                       },
                       {
-                        "commentStart": 54,
+                        "commentStart": 0,
                         "end": 0,
                         "raw": "0",
                         "start": 0,
@@ -88,7 +88,7 @@ description: Result of parsing basic_fillet_cube_start.kcl
                     "type": "ArrayExpression"
                   },
                   {
-                    "commentStart": 58,
+                    "commentStart": 0,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -97,10 +97,10 @@ description: Result of parsing basic_fillet_cube_start.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 35,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 35,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "startProfileAt",
                     "start": 0,
@@ -110,7 +110,7 @@ description: Result of parsing basic_fillet_cube_start.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 35,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -121,17 +121,17 @@ description: Result of parsing basic_fillet_cube_start.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 71,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 77,
+                      "commentStart": 0,
                       "elements": [
                         {
-                          "commentStart": 78,
+                          "commentStart": 0,
                           "end": 0,
                           "raw": "0",
                           "start": 0,
@@ -143,7 +143,7 @@ description: Result of parsing basic_fillet_cube_start.kcl
                           }
                         },
                         {
-                          "commentStart": 81,
+                          "commentStart": 0,
                           "end": 0,
                           "raw": "10",
                           "start": 0,
@@ -164,14 +164,14 @@ description: Result of parsing basic_fillet_cube_start.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 86,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 92,
+                      "commentStart": 0,
                       "end": 0,
                       "start": 0,
                       "type": "TagDeclarator",
@@ -182,10 +182,10 @@ description: Result of parsing basic_fillet_cube_start.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 66,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 66,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "line",
                     "start": 0,
@@ -195,7 +195,7 @@ description: Result of parsing basic_fillet_cube_start.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 66,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -207,17 +207,17 @@ description: Result of parsing basic_fillet_cube_start.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 110,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 116,
+                      "commentStart": 0,
                       "elements": [
                         {
-                          "commentStart": 117,
+                          "commentStart": 0,
                           "end": 0,
                           "raw": "10",
                           "start": 0,
@@ -229,7 +229,7 @@ description: Result of parsing basic_fillet_cube_start.kcl
                           }
                         },
                         {
-                          "commentStart": 121,
+                          "commentStart": 0,
                           "end": 0,
                           "raw": "0",
                           "start": 0,
@@ -250,10 +250,10 @@ description: Result of parsing basic_fillet_cube_start.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 105,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 105,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "line",
                     "start": 0,
@@ -263,7 +263,7 @@ description: Result of parsing basic_fillet_cube_start.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 105,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -275,17 +275,17 @@ description: Result of parsing basic_fillet_cube_start.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 135,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 141,
+                      "commentStart": 0,
                       "elements": [
                         {
-                          "commentStart": 142,
+                          "commentStart": 0,
                           "end": 0,
                           "raw": "0",
                           "start": 0,
@@ -298,7 +298,7 @@ description: Result of parsing basic_fillet_cube_start.kcl
                         },
                         {
                           "argument": {
-                            "commentStart": 146,
+                            "commentStart": 0,
                             "end": 0,
                             "raw": "10",
                             "start": 0,
@@ -309,7 +309,7 @@ description: Result of parsing basic_fillet_cube_start.kcl
                               "suffix": "None"
                             }
                           },
-                          "commentStart": 145,
+                          "commentStart": 0,
                           "end": 0,
                           "operator": "-",
                           "start": 0,
@@ -326,14 +326,14 @@ description: Result of parsing basic_fillet_cube_start.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 151,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 157,
+                      "commentStart": 0,
                       "end": 0,
                       "start": 0,
                       "type": "TagDeclarator",
@@ -344,10 +344,10 @@ description: Result of parsing basic_fillet_cube_start.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 130,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 130,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "line",
                     "start": 0,
@@ -357,7 +357,7 @@ description: Result of parsing basic_fillet_cube_start.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 130,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -367,7 +367,7 @@ description: Result of parsing basic_fillet_cube_start.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 177,
+                    "commentStart": 0,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -376,10 +376,10 @@ description: Result of parsing basic_fillet_cube_start.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 171,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 171,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "close",
                     "start": 0,
@@ -389,7 +389,7 @@ description: Result of parsing basic_fillet_cube_start.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 171,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -400,14 +400,14 @@ description: Result of parsing basic_fillet_cube_start.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 193,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 202,
+                      "commentStart": 0,
                       "end": 0,
                       "raw": "10",
                       "start": 0,
@@ -422,10 +422,10 @@ description: Result of parsing basic_fillet_cube_start.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 185,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 185,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "extrude",
                     "start": 0,
@@ -435,7 +435,7 @@ description: Result of parsing basic_fillet_cube_start.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 185,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -447,14 +447,14 @@ description: Result of parsing basic_fillet_cube_start.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 218,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "radius",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 227,
+                      "commentStart": 0,
                       "end": 0,
                       "raw": "2",
                       "start": 0,
@@ -469,21 +469,21 @@ description: Result of parsing basic_fillet_cube_start.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 230,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "tags",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 237,
+                      "commentStart": 0,
                       "elements": [
                         {
                           "abs_path": false,
-                          "commentStart": 238,
+                          "commentStart": 0,
                           "end": 0,
                           "name": {
-                            "commentStart": 238,
+                            "commentStart": 0,
                             "end": 0,
                             "name": "thing",
                             "start": 0,
@@ -496,10 +496,10 @@ description: Result of parsing basic_fillet_cube_start.kcl
                         },
                         {
                           "abs_path": false,
-                          "commentStart": 245,
+                          "commentStart": 0,
                           "end": 0,
                           "name": {
-                            "commentStart": 245,
+                            "commentStart": 0,
                             "end": 0,
                             "name": "thing2",
                             "start": 0,
@@ -520,10 +520,10 @@ description: Result of parsing basic_fillet_cube_start.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 211,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 211,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "fillet",
                     "start": 0,
@@ -533,7 +533,7 @@ description: Result of parsing basic_fillet_cube_start.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 211,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -541,7 +541,7 @@ description: Result of parsing basic_fillet_cube_start.kcl
                 "unlabeled": null
               }
             ],
-            "commentStart": 10,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "PipeExpression",

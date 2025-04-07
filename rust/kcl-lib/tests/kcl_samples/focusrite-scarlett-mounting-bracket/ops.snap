@@ -47,7 +47,8 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
                       "type": "Number",
                       "value": 44.0,
                       "ty": {
-                        "type": "Unknown"
+                        "type": "Known",
+                        "type": "Count"
                       }
                     },
                     "z": {
@@ -219,7 +220,13 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
           "type": "Number",
           "value": 88.0,
           "ty": {
-            "type": "Unknown"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -556,7 +563,8 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
           "type": "Number",
           "value": 2.5,
           "ty": {
-            "type": "Unknown"
+            "type": "Known",
+            "type": "Count"
           }
         },
         "sourceRange": []
@@ -645,7 +653,8 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
           "type": "Number",
           "value": 54.666666666666664,
           "ty": {
-            "type": "Unknown"
+            "type": "Known",
+            "type": "Count"
           }
         },
         "sourceRange": []
@@ -942,7 +951,8 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
           "type": "Number",
           "value": 2.5,
           "ty": {
-            "type": "Unknown"
+            "type": "Known",
+            "type": "Count"
           }
         },
         "sourceRange": []
@@ -1031,7 +1041,8 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
           "type": "Number",
           "value": 54.666666666666664,
           "ty": {
-            "type": "Unknown"
+            "type": "Known",
+            "type": "Count"
           }
         },
         "sourceRange": []
@@ -1082,7 +1093,8 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
                       "type": "Number",
                       "value": -52.0,
                       "ty": {
-                        "type": "Unknown"
+                        "type": "Known",
+                        "type": "Count"
                       }
                     },
                     "y": {
@@ -1305,7 +1317,8 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
                       "type": "Number",
                       "value": -52.0,
                       "ty": {
-                        "type": "Unknown"
+                        "type": "Known",
+                        "type": "Count"
                       }
                     },
                     "y": {

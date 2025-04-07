@@ -63,7 +63,7 @@ test.describe('edit with AI example snapshots', () => {
         localStorage.setItem('persistCode', file)
       }, file)
       await homePage.goToModelingScene()
-      await scene.waitForExecutionDone()
+      await scene.settled(cmdBar)
 
       const body1CapCoords = { x: 571, y: 351 }
       const [clickBody1Cap] = scene.makeMouseHelpers(

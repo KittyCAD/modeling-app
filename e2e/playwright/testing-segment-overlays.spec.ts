@@ -1498,7 +1498,7 @@ part001 = startSketchOn(XZ)
     ]
 
     for (const { before, after } of cases) {
-      test(before, async ({ page, editor, homePage }) => {
+      test(before, async ({ page, editor, homePage, scene, cmdBar }) => {
         await page.addInitScript(
           async ({ lineToBeDeleted }) => {
             localStorage.setItem(
@@ -1519,7 +1519,8 @@ part001 = startSketchOn(XZ)
         await page.setBodyDimensions({ width: 1200, height: 500 })
 
         await homePage.goToModelingScene()
-        await u.waitForPageLoad()
+        await scene.connectionEstablished()
+        await scene.settled(cmdBar)
         await page.waitForTimeout(300)
 
         await page.getByText(before).click()

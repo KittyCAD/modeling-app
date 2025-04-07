@@ -865,7 +865,7 @@ part = rectShape([0, 0], 20, 20)
     };
     assert_eq!(
         err.error.message(),
-        "The input argument of std::sketch::circle requires a value with type `Sketch | Plane | Face`, but found string (text)"
+        "The input argument of `std::sketch::circle` requires a value with type `Sketch | Plane | Face`, but found string (text)"
     );
 }
 

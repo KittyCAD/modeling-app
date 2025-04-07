@@ -22,7 +22,7 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 26,
+                    "commentStart": 0,
                     "end": 0,
                     "raw": "'XZ'",
                     "start": 0,
@@ -33,10 +33,10 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 12,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 12,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "startSketchOn",
                     "start": 0,
@@ -46,7 +46,7 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 12,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -55,10 +55,10 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 52,
+                    "commentStart": 0,
                     "elements": [
                       {
-                        "commentStart": 53,
+                        "commentStart": 0,
                         "end": 0,
                         "raw": "75.8",
                         "start": 0,
@@ -70,7 +70,7 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                         }
                       },
                       {
-                        "commentStart": 59,
+                        "commentStart": 0,
                         "end": 0,
                         "raw": "317.2",
                         "start": 0,
@@ -88,7 +88,7 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                     "type": "ArrayExpression"
                   },
                   {
-                    "commentStart": 67,
+                    "commentStart": 0,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -97,10 +97,10 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 37,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 37,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "startProfileAt",
                     "start": 0,
@@ -110,7 +110,7 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 37,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -121,14 +121,14 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 116,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "angle",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 124,
+                      "commentStart": 0,
                       "end": 0,
                       "raw": "0",
                       "start": 0,
@@ -143,14 +143,14 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 127,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 136,
+                      "commentStart": 0,
                       "end": 0,
                       "raw": "268.43",
                       "start": 0,
@@ -165,14 +165,14 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 144,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 150,
+                      "commentStart": 0,
                       "end": 0,
                       "start": 0,
                       "type": "TagDeclarator",
@@ -183,10 +183,10 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 105,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 105,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "angledLine",
                     "start": 0,
@@ -196,7 +196,7 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 105,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -208,23 +208,23 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 189,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "angle",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 197,
+                      "commentStart": 0,
                       "end": 0,
                       "left": {
                         "arguments": [
                           {
                             "abs_path": false,
-                            "commentStart": 204,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 204,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "rectangleSegmentA001",
                               "start": 0,
@@ -238,10 +238,10 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                         ],
                         "callee": {
                           "abs_path": false,
-                          "commentStart": 197,
+                          "commentStart": 0,
                           "end": 0,
                           "name": {
-                            "commentStart": 197,
+                            "commentStart": 0,
                             "end": 0,
                             "name": "segAng",
                             "start": 0,
@@ -251,7 +251,7 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                           "start": 0,
                           "type": "Name"
                         },
-                        "commentStart": 197,
+                        "commentStart": 0,
                         "end": 0,
                         "start": 0,
                         "type": "CallExpression",
@@ -259,7 +259,7 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                       },
                       "operator": "-",
                       "right": {
-                        "commentStart": 228,
+                        "commentStart": 0,
                         "end": 0,
                         "raw": "90",
                         "start": 0,
@@ -278,14 +278,14 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 232,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 241,
+                      "commentStart": 0,
                       "end": 0,
                       "raw": "217.26",
                       "start": 0,
@@ -300,14 +300,14 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 249,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 255,
+                      "commentStart": 0,
                       "end": 0,
                       "start": 0,
                       "type": "TagDeclarator",
@@ -318,10 +318,10 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 178,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 178,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "angledLine",
                     "start": 0,
@@ -331,7 +331,7 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 178,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -343,7 +343,7 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 279,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "angle",
                       "start": 0,
@@ -353,10 +353,10 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                       "arguments": [
                         {
                           "abs_path": false,
-                          "commentStart": 294,
+                          "commentStart": 0,
                           "end": 0,
                           "name": {
-                            "commentStart": 294,
+                            "commentStart": 0,
                             "end": 0,
                             "name": "rectangleSegmentA001",
                             "start": 0,
@@ -370,10 +370,10 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                       ],
                       "callee": {
                         "abs_path": false,
-                        "commentStart": 287,
+                        "commentStart": 0,
                         "end": 0,
                         "name": {
-                          "commentStart": 287,
+                          "commentStart": 0,
                           "end": 0,
                           "name": "segAng",
                           "start": 0,
@@ -383,7 +383,7 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                         "start": 0,
                         "type": "Name"
                       },
-                      "commentStart": 287,
+                      "commentStart": 0,
                       "end": 0,
                       "start": 0,
                       "type": "CallExpression",
@@ -393,7 +393,7 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 317,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "length",
                       "start": 0,
@@ -404,10 +404,10 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                         "arguments": [
                           {
                             "abs_path": false,
-                            "commentStart": 334,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 334,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "rectangleSegmentA001",
                               "start": 0,
@@ -421,10 +421,10 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                         ],
                         "callee": {
                           "abs_path": false,
-                          "commentStart": 327,
+                          "commentStart": 0,
                           "end": 0,
                           "name": {
-                            "commentStart": 327,
+                            "commentStart": 0,
                             "end": 0,
                             "name": "segLen",
                             "start": 0,
@@ -434,13 +434,13 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                           "start": 0,
                           "type": "Name"
                         },
-                        "commentStart": 327,
+                        "commentStart": 0,
                         "end": 0,
                         "start": 0,
                         "type": "CallExpression",
                         "type": "CallExpression"
                       },
-                      "commentStart": 326,
+                      "commentStart": 0,
                       "end": 0,
                       "operator": "-",
                       "start": 0,
@@ -451,10 +451,10 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 268,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 268,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "angledLine",
                     "start": 0,
@@ -464,7 +464,7 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 268,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -476,19 +476,19 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 367,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "endAbsolute",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 381,
+                      "commentStart": 0,
                       "elements": [
                         {
                           "arguments": [
                             {
-                              "commentStart": 396,
+                              "commentStart": 0,
                               "end": 0,
                               "start": 0,
                               "type": "PipeSubstitution",
@@ -497,10 +497,10 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 382,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 382,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "profileStartX",
                               "start": 0,
@@ -510,7 +510,7 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 382,
+                          "commentStart": 0,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -519,7 +519,7 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                         {
                           "arguments": [
                             {
-                              "commentStart": 414,
+                              "commentStart": 0,
                               "end": 0,
                               "start": 0,
                               "type": "PipeSubstitution",
@@ -528,10 +528,10 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 400,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 400,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "profileStartY",
                               "start": 0,
@@ -541,7 +541,7 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 400,
+                          "commentStart": 0,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -557,14 +557,14 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 419,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 425,
+                      "commentStart": 0,
                       "end": 0,
                       "start": 0,
                       "type": "TagDeclarator",
@@ -575,10 +575,10 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 362,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 362,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "line",
                     "start": 0,
@@ -588,7 +588,7 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 362,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -598,7 +598,7 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 444,
+                    "commentStart": 0,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -607,10 +607,10 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 438,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 438,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "close",
                     "start": 0,
@@ -620,20 +620,20 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 438,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               }
             ],
-            "commentStart": 12,
+            "commentStart": 0,
             "end": 0,
             "nonCodeMeta": {
               "nonCodeNodes": {
                 "1": [
                   {
-                    "commentStart": 69,
+                    "commentStart": 0,
                     "end": 0,
                     "start": 0,
                     "type": "NonCodeNode",
@@ -661,12 +661,12 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 447,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 447,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 447,
+            "commentStart": 0,
             "end": 0,
             "name": "extrude001",
             "start": 0,
@@ -679,14 +679,14 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 479,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 488,
+                      "commentStart": 0,
                       "end": 0,
                       "raw": "100",
                       "start": 0,
@@ -701,10 +701,10 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 460,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 460,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "extrude",
                     "start": 0,
@@ -714,17 +714,17 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 460,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": {
                   "abs_path": false,
-                  "commentStart": 468,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 468,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "sketch001",
                     "start": 0,
@@ -741,14 +741,14 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 505,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "radius",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 514,
+                      "commentStart": 0,
                       "end": 0,
                       "raw": "20",
                       "start": 0,
@@ -763,21 +763,21 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 518,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "tags",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 525,
+                      "commentStart": 0,
                       "elements": [
                         {
                           "abs_path": false,
-                          "commentStart": 526,
+                          "commentStart": 0,
                           "end": 0,
                           "name": {
-                            "commentStart": 526,
+                            "commentStart": 0,
                             "end": 0,
                             "name": "seg01",
                             "start": 0,
@@ -798,10 +798,10 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 498,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 498,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "fillet",
                     "start": 0,
@@ -811,7 +811,7 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 498,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -823,14 +823,14 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 547,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 556,
+                      "commentStart": 0,
                       "end": 0,
                       "raw": "50",
                       "start": 0,
@@ -845,21 +845,21 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 560,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "tags",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 567,
+                      "commentStart": 0,
                       "elements": [
                         {
                           "abs_path": false,
-                          "commentStart": 568,
+                          "commentStart": 0,
                           "end": 0,
                           "name": {
-                            "commentStart": 568,
+                            "commentStart": 0,
                             "end": 0,
                             "name": "seg02",
                             "start": 0,
@@ -880,14 +880,14 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 576,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 582,
+                      "commentStart": 0,
                       "end": 0,
                       "start": 0,
                       "type": "TagDeclarator",
@@ -898,10 +898,10 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 539,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 539,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "chamfer",
                     "start": 0,
@@ -911,7 +911,7 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 539,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -923,14 +923,14 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 603,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 612,
+                      "commentStart": 0,
                       "end": 0,
                       "raw": "50",
                       "start": 0,
@@ -945,23 +945,23 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 616,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "tags",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 623,
+                      "commentStart": 0,
                       "elements": [
                         {
                           "arguments": [
                             {
                               "abs_path": false,
-                              "commentStart": 640,
+                              "commentStart": 0,
                               "end": 0,
                               "name": {
-                                "commentStart": 640,
+                                "commentStart": 0,
                                 "end": 0,
                                 "name": "seg01",
                                 "start": 0,
@@ -975,10 +975,10 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 624,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 624,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "getOppositeEdge",
                               "start": 0,
@@ -988,7 +988,7 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 624,
+                          "commentStart": 0,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -1004,14 +1004,14 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 649,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 655,
+                      "commentStart": 0,
                       "end": 0,
                       "start": 0,
                       "type": "TagDeclarator",
@@ -1022,10 +1022,10 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 595,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 595,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "chamfer",
                     "start": 0,
@@ -1035,7 +1035,7 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 595,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1043,7 +1043,7 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                 "unlabeled": null
               }
             ],
-            "commentStart": 460,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "PipeExpression",
@@ -1059,12 +1059,12 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 662,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 664,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 664,
+            "commentStart": 0,
             "end": 0,
             "name": "sketch003",
             "start": 0,
@@ -1076,10 +1076,10 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                 "arguments": [
                   {
                     "abs_path": false,
-                    "commentStart": 690,
+                    "commentStart": 0,
                     "end": 0,
                     "name": {
-                      "commentStart": 690,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "extrude001",
                       "start": 0,
@@ -1092,10 +1092,10 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                   },
                   {
                     "abs_path": false,
-                    "commentStart": 702,
+                    "commentStart": 0,
                     "end": 0,
                     "name": {
-                      "commentStart": 702,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "seg04",
                       "start": 0,
@@ -1109,10 +1109,10 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 676,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 676,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "startSketchOn",
                     "start": 0,
@@ -1122,7 +1122,7 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 676,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -1131,11 +1131,11 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 729,
+                    "commentStart": 0,
                     "elements": [
                       {
                         "argument": {
-                          "commentStart": 731,
+                          "commentStart": 0,
                           "end": 0,
                           "raw": "69.1",
                           "start": 0,
@@ -1146,7 +1146,7 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                             "suffix": "None"
                           }
                         },
-                        "commentStart": 730,
+                        "commentStart": 0,
                         "end": 0,
                         "operator": "-",
                         "start": 0,
@@ -1154,7 +1154,7 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                         "type": "UnaryExpression"
                       },
                       {
-                        "commentStart": 737,
+                        "commentStart": 0,
                         "end": 0,
                         "raw": "277.34",
                         "start": 0,
@@ -1172,7 +1172,7 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                     "type": "ArrayExpression"
                   },
                   {
-                    "commentStart": 746,
+                    "commentStart": 0,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -1181,10 +1181,10 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 714,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 714,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "startProfileAt",
                     "start": 0,
@@ -1194,7 +1194,7 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 714,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -1205,14 +1205,14 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 765,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "angle",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 773,
+                      "commentStart": 0,
                       "end": 0,
                       "raw": "0",
                       "start": 0,
@@ -1227,14 +1227,14 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 776,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 785,
+                      "commentStart": 0,
                       "end": 0,
                       "raw": "41.48",
                       "start": 0,
@@ -1249,14 +1249,14 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 792,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 798,
+                      "commentStart": 0,
                       "end": 0,
                       "start": 0,
                       "type": "TagDeclarator",
@@ -1267,10 +1267,10 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 754,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 754,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "angledLine",
                     "start": 0,
@@ -1280,7 +1280,7 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 754,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1292,23 +1292,23 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 837,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "angle",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 845,
+                      "commentStart": 0,
                       "end": 0,
                       "left": {
                         "arguments": [
                           {
                             "abs_path": false,
-                            "commentStart": 852,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 852,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "rectangleSegmentA003",
                               "start": 0,
@@ -1322,10 +1322,10 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                         ],
                         "callee": {
                           "abs_path": false,
-                          "commentStart": 845,
+                          "commentStart": 0,
                           "end": 0,
                           "name": {
-                            "commentStart": 845,
+                            "commentStart": 0,
                             "end": 0,
                             "name": "segAng",
                             "start": 0,
@@ -1335,7 +1335,7 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                           "start": 0,
                           "type": "Name"
                         },
-                        "commentStart": 845,
+                        "commentStart": 0,
                         "end": 0,
                         "start": 0,
                         "type": "CallExpression",
@@ -1343,7 +1343,7 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                       },
                       "operator": "-",
                       "right": {
-                        "commentStart": 876,
+                        "commentStart": 0,
                         "end": 0,
                         "raw": "90",
                         "start": 0,
@@ -1362,14 +1362,14 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 880,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 889,
+                      "commentStart": 0,
                       "end": 0,
                       "raw": "104.8",
                       "start": 0,
@@ -1384,14 +1384,14 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 896,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 902,
+                      "commentStart": 0,
                       "end": 0,
                       "start": 0,
                       "type": "TagDeclarator",
@@ -1402,10 +1402,10 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 826,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 826,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "angledLine",
                     "start": 0,
@@ -1415,7 +1415,7 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 826,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1427,7 +1427,7 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 941,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "angle",
                       "start": 0,
@@ -1437,10 +1437,10 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                       "arguments": [
                         {
                           "abs_path": false,
-                          "commentStart": 956,
+                          "commentStart": 0,
                           "end": 0,
                           "name": {
-                            "commentStart": 956,
+                            "commentStart": 0,
                             "end": 0,
                             "name": "rectangleSegmentA003",
                             "start": 0,
@@ -1454,10 +1454,10 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                       ],
                       "callee": {
                         "abs_path": false,
-                        "commentStart": 949,
+                        "commentStart": 0,
                         "end": 0,
                         "name": {
-                          "commentStart": 949,
+                          "commentStart": 0,
                           "end": 0,
                           "name": "segAng",
                           "start": 0,
@@ -1467,7 +1467,7 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                         "start": 0,
                         "type": "Name"
                       },
-                      "commentStart": 949,
+                      "commentStart": 0,
                       "end": 0,
                       "start": 0,
                       "type": "CallExpression",
@@ -1477,7 +1477,7 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 979,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "length",
                       "start": 0,
@@ -1488,10 +1488,10 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                         "arguments": [
                           {
                             "abs_path": false,
-                            "commentStart": 996,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 996,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "rectangleSegmentA003",
                               "start": 0,
@@ -1505,10 +1505,10 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                         ],
                         "callee": {
                           "abs_path": false,
-                          "commentStart": 989,
+                          "commentStart": 0,
                           "end": 0,
                           "name": {
-                            "commentStart": 989,
+                            "commentStart": 0,
                             "end": 0,
                             "name": "segLen",
                             "start": 0,
@@ -1518,13 +1518,13 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                           "start": 0,
                           "type": "Name"
                         },
-                        "commentStart": 989,
+                        "commentStart": 0,
                         "end": 0,
                         "start": 0,
                         "type": "CallExpression",
                         "type": "CallExpression"
                       },
-                      "commentStart": 988,
+                      "commentStart": 0,
                       "end": 0,
                       "operator": "-",
                       "start": 0,
@@ -1535,14 +1535,14 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1019,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1025,
+                      "commentStart": 0,
                       "end": 0,
                       "start": 0,
                       "type": "TagDeclarator",
@@ -1553,10 +1553,10 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 930,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 930,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "angledLine",
                     "start": 0,
@@ -1566,7 +1566,7 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 930,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1578,19 +1578,19 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1058,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "endAbsolute",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1072,
+                      "commentStart": 0,
                       "elements": [
                         {
                           "arguments": [
                             {
-                              "commentStart": 1087,
+                              "commentStart": 0,
                               "end": 0,
                               "start": 0,
                               "type": "PipeSubstitution",
@@ -1599,10 +1599,10 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 1073,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 1073,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "profileStartX",
                               "start": 0,
@@ -1612,7 +1612,7 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 1073,
+                          "commentStart": 0,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -1621,7 +1621,7 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                         {
                           "arguments": [
                             {
-                              "commentStart": 1105,
+                              "commentStart": 0,
                               "end": 0,
                               "start": 0,
                               "type": "PipeSubstitution",
@@ -1630,10 +1630,10 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 1091,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 1091,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "profileStartY",
                               "start": 0,
@@ -1643,7 +1643,7 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 1091,
+                          "commentStart": 0,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -1659,10 +1659,10 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1053,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1053,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "line",
                     "start": 0,
@@ -1672,7 +1672,7 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1053,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1682,7 +1682,7 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 1121,
+                    "commentStart": 0,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -1691,10 +1691,10 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1115,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1115,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "close",
                     "start": 0,
@@ -1704,14 +1704,14 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1115,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               }
             ],
-            "commentStart": 676,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "PipeExpression",
@@ -1727,12 +1727,12 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 1124,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 1124,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 1124,
+            "commentStart": 0,
             "end": 0,
             "name": "sketch002",
             "start": 0,
@@ -1744,10 +1744,10 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                 "arguments": [
                   {
                     "abs_path": false,
-                    "commentStart": 1150,
+                    "commentStart": 0,
                     "end": 0,
                     "name": {
-                      "commentStart": 1150,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "extrude001",
                       "start": 0,
@@ -1760,10 +1760,10 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                   },
                   {
                     "abs_path": false,
-                    "commentStart": 1162,
+                    "commentStart": 0,
                     "end": 0,
                     "name": {
-                      "commentStart": 1162,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "seg03",
                       "start": 0,
@@ -1777,10 +1777,10 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1136,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1136,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "startSketchOn",
                     "start": 0,
@@ -1790,7 +1790,7 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1136,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -1799,10 +1799,10 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 1189,
+                    "commentStart": 0,
                     "elements": [
                       {
-                        "commentStart": 1190,
+                        "commentStart": 0,
                         "end": 0,
                         "raw": "159.25",
                         "start": 0,
@@ -1814,7 +1814,7 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                         }
                       },
                       {
-                        "commentStart": 1198,
+                        "commentStart": 0,
                         "end": 0,
                         "raw": "278.35",
                         "start": 0,
@@ -1832,7 +1832,7 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                     "type": "ArrayExpression"
                   },
                   {
-                    "commentStart": 1207,
+                    "commentStart": 0,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -1841,10 +1841,10 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1174,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1174,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "startProfileAt",
                     "start": 0,
@@ -1854,7 +1854,7 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1174,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -1865,14 +1865,14 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1226,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "angle",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1234,
+                      "commentStart": 0,
                       "end": 0,
                       "raw": "0",
                       "start": 0,
@@ -1887,14 +1887,14 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1237,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1246,
+                      "commentStart": 0,
                       "end": 0,
                       "raw": "40.82",
                       "start": 0,
@@ -1909,14 +1909,14 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1253,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1259,
+                      "commentStart": 0,
                       "end": 0,
                       "start": 0,
                       "type": "TagDeclarator",
@@ -1927,10 +1927,10 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1215,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1215,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "angledLine",
                     "start": 0,
@@ -1940,7 +1940,7 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1215,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1952,23 +1952,23 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1298,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "angle",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1306,
+                      "commentStart": 0,
                       "end": 0,
                       "left": {
                         "arguments": [
                           {
                             "abs_path": false,
-                            "commentStart": 1313,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 1313,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "rectangleSegmentA002",
                               "start": 0,
@@ -1982,10 +1982,10 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                         ],
                         "callee": {
                           "abs_path": false,
-                          "commentStart": 1306,
+                          "commentStart": 0,
                           "end": 0,
                           "name": {
-                            "commentStart": 1306,
+                            "commentStart": 0,
                             "end": 0,
                             "name": "segAng",
                             "start": 0,
@@ -1995,7 +1995,7 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                           "start": 0,
                           "type": "Name"
                         },
-                        "commentStart": 1306,
+                        "commentStart": 0,
                         "end": 0,
                         "start": 0,
                         "type": "CallExpression",
@@ -2003,7 +2003,7 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                       },
                       "operator": "-",
                       "right": {
-                        "commentStart": 1337,
+                        "commentStart": 0,
                         "end": 0,
                         "raw": "90",
                         "start": 0,
@@ -2022,14 +2022,14 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1341,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1350,
+                      "commentStart": 0,
                       "end": 0,
                       "raw": "132.27",
                       "start": 0,
@@ -2044,14 +2044,14 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1358,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1364,
+                      "commentStart": 0,
                       "end": 0,
                       "start": 0,
                       "type": "TagDeclarator",
@@ -2062,10 +2062,10 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1287,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1287,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "angledLine",
                     "start": 0,
@@ -2075,7 +2075,7 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1287,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -2087,7 +2087,7 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1403,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "angle",
                       "start": 0,
@@ -2097,10 +2097,10 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                       "arguments": [
                         {
                           "abs_path": false,
-                          "commentStart": 1418,
+                          "commentStart": 0,
                           "end": 0,
                           "name": {
-                            "commentStart": 1418,
+                            "commentStart": 0,
                             "end": 0,
                             "name": "rectangleSegmentA002",
                             "start": 0,
@@ -2114,10 +2114,10 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                       ],
                       "callee": {
                         "abs_path": false,
-                        "commentStart": 1411,
+                        "commentStart": 0,
                         "end": 0,
                         "name": {
-                          "commentStart": 1411,
+                          "commentStart": 0,
                           "end": 0,
                           "name": "segAng",
                           "start": 0,
@@ -2127,7 +2127,7 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                         "start": 0,
                         "type": "Name"
                       },
-                      "commentStart": 1411,
+                      "commentStart": 0,
                       "end": 0,
                       "start": 0,
                       "type": "CallExpression",
@@ -2137,7 +2137,7 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1441,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "length",
                       "start": 0,
@@ -2148,10 +2148,10 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                         "arguments": [
                           {
                             "abs_path": false,
-                            "commentStart": 1458,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 1458,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "rectangleSegmentA002",
                               "start": 0,
@@ -2165,10 +2165,10 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                         ],
                         "callee": {
                           "abs_path": false,
-                          "commentStart": 1451,
+                          "commentStart": 0,
                           "end": 0,
                           "name": {
-                            "commentStart": 1451,
+                            "commentStart": 0,
                             "end": 0,
                             "name": "segLen",
                             "start": 0,
@@ -2178,13 +2178,13 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                           "start": 0,
                           "type": "Name"
                         },
-                        "commentStart": 1451,
+                        "commentStart": 0,
                         "end": 0,
                         "start": 0,
                         "type": "CallExpression",
                         "type": "CallExpression"
                       },
-                      "commentStart": 1450,
+                      "commentStart": 0,
                       "end": 0,
                       "operator": "-",
                       "start": 0,
@@ -2195,14 +2195,14 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1481,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1487,
+                      "commentStart": 0,
                       "end": 0,
                       "start": 0,
                       "type": "TagDeclarator",
@@ -2213,10 +2213,10 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1392,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1392,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "angledLine",
                     "start": 0,
@@ -2226,7 +2226,7 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1392,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -2238,19 +2238,19 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1520,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "endAbsolute",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1534,
+                      "commentStart": 0,
                       "elements": [
                         {
                           "arguments": [
                             {
-                              "commentStart": 1549,
+                              "commentStart": 0,
                               "end": 0,
                               "start": 0,
                               "type": "PipeSubstitution",
@@ -2259,10 +2259,10 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 1535,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 1535,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "profileStartX",
                               "start": 0,
@@ -2272,7 +2272,7 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 1535,
+                          "commentStart": 0,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -2281,7 +2281,7 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                         {
                           "arguments": [
                             {
-                              "commentStart": 1567,
+                              "commentStart": 0,
                               "end": 0,
                               "start": 0,
                               "type": "PipeSubstitution",
@@ -2290,10 +2290,10 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 1553,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 1553,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "profileStartY",
                               "start": 0,
@@ -2303,7 +2303,7 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 1553,
+                          "commentStart": 0,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -2319,10 +2319,10 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1515,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1515,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "line",
                     "start": 0,
@@ -2332,7 +2332,7 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1515,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -2342,7 +2342,7 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 1583,
+                    "commentStart": 0,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -2351,10 +2351,10 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1577,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1577,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "close",
                     "start": 0,
@@ -2364,14 +2364,14 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1577,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               }
             ],
-            "commentStart": 1136,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "PipeExpression",
@@ -2387,12 +2387,12 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 1586,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 1586,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 1586,
+            "commentStart": 0,
             "end": 0,
             "name": "extrude002",
             "start": 0,
@@ -2403,14 +2403,14 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "commentStart": 1618,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "length",
                   "start": 0,
                   "type": "Identifier"
                 },
                 "arg": {
-                  "commentStart": 1627,
+                  "commentStart": 0,
                   "end": 0,
                   "raw": "50",
                   "start": 0,
@@ -2425,10 +2425,10 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
             ],
             "callee": {
               "abs_path": false,
-              "commentStart": 1599,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 1599,
+                "commentStart": 0,
                 "end": 0,
                 "name": "extrude",
                 "start": 0,
@@ -2438,17 +2438,17 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
               "start": 0,
               "type": "Name"
             },
-            "commentStart": 1599,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
               "abs_path": false,
-              "commentStart": 1607,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 1607,
+                "commentStart": 0,
                 "end": 0,
                 "name": "sketch002",
                 "start": 0,
@@ -2476,7 +2476,7 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
       "nonCodeNodes": {
         "1": [
           {
-            "commentStart": 662,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",

@@ -42,7 +42,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                 "type": "Number",
                 "value": -1.4375,
                 "ty": {
-                  "type": "Unknown"
+                  "type": "Known",
+                  "type": "Count"
                 }
               },
               "z": {
@@ -209,7 +210,13 @@ description: Variables in memory after executing poopy-shoe.kcl
                 "type": "Number",
                 "value": -3.875,
                 "ty": {
-                  "type": "Unknown"
+                  "type": "Default",
+                  "len": {
+                    "type": "Inches"
+                  },
+                  "angle": {
+                    "type": "Degrees"
+                  }
                 }
               },
               "y": {
@@ -389,7 +396,13 @@ description: Variables in memory after executing poopy-shoe.kcl
                 "type": "Number",
                 "value": -3.875,
                 "ty": {
-                  "type": "Unknown"
+                  "type": "Default",
+                  "len": {
+                    "type": "Inches"
+                  },
+                  "angle": {
+                    "type": "Degrees"
+                  }
                 }
               },
               "y": {

@@ -18,7 +18,7 @@ description: Result of parsing pentagon_fillet_sugar.kcl
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 17,
+            "commentStart": 0,
             "end": 0,
             "raw": "200",
             "start": 0,
@@ -39,19 +39,19 @@ description: Result of parsing pentagon_fillet_sugar.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 21,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 21,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 21,
+            "commentStart": 0,
             "end": 0,
             "name": "plumbusLen",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 34,
+            "commentStart": 0,
             "end": 0,
             "raw": "100",
             "start": 0,
@@ -72,19 +72,19 @@ description: Result of parsing pentagon_fillet_sugar.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 38,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 38,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 38,
+            "commentStart": 0,
             "end": 0,
             "name": "radius",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 47,
+            "commentStart": 0,
             "end": 0,
             "raw": "80",
             "start": 0,
@@ -105,26 +105,26 @@ description: Result of parsing pentagon_fillet_sugar.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 50,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 50,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 50,
+            "commentStart": 0,
             "end": 0,
             "name": "circ",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 57,
+            "commentStart": 0,
             "end": 0,
             "properties": [
               {
-                "commentStart": 61,
+                "commentStart": 0,
                 "end": 0,
                 "key": {
-                  "commentStart": 61,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "angleStart",
                   "start": 0,
@@ -133,7 +133,7 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                 "start": 0,
                 "type": "ObjectProperty",
                 "value": {
-                  "commentStart": 74,
+                  "commentStart": 0,
                   "end": 0,
                   "raw": "0",
                   "start": 0,
@@ -146,10 +146,10 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                 }
               },
               {
-                "commentStart": 79,
+                "commentStart": 0,
                 "end": 0,
                 "key": {
-                  "commentStart": 79,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "angleEnd",
                   "start": 0,
@@ -158,7 +158,7 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                 "start": 0,
                 "type": "ObjectProperty",
                 "value": {
-                  "commentStart": 90,
+                  "commentStart": 0,
                   "end": 0,
                   "raw": "360",
                   "start": 0,
@@ -171,10 +171,10 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                 }
               },
               {
-                "commentStart": 97,
+                "commentStart": 0,
                 "end": 0,
                 "key": {
-                  "commentStart": 97,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "radius",
                   "start": 0,
@@ -184,10 +184,10 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                 "type": "ObjectProperty",
                 "value": {
                   "abs_path": false,
-                  "commentStart": 106,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 106,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "radius",
                     "start": 0,
@@ -214,19 +214,19 @@ description: Result of parsing pentagon_fillet_sugar.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 114,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 116,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 116,
+            "commentStart": 0,
             "end": 0,
             "name": "triangleLen",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 130,
+            "commentStart": 0,
             "end": 0,
             "raw": "500",
             "start": 0,
@@ -247,12 +247,12 @@ description: Result of parsing pentagon_fillet_sugar.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 134,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 134,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 134,
+            "commentStart": 0,
             "end": 0,
             "name": "p",
             "start": 0,
@@ -263,7 +263,7 @@ description: Result of parsing pentagon_fillet_sugar.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 152,
+                    "commentStart": 0,
                     "end": 0,
                     "raw": "'XY'",
                     "start": 0,
@@ -274,10 +274,10 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 138,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 138,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "startSketchOn",
                     "start": 0,
@@ -287,7 +287,7 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 138,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -296,10 +296,10 @@ description: Result of parsing pentagon_fillet_sugar.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 178,
+                    "commentStart": 0,
                     "elements": [
                       {
-                        "commentStart": 179,
+                        "commentStart": 0,
                         "end": 0,
                         "raw": "0",
                         "start": 0,
@@ -311,7 +311,7 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                         }
                       },
                       {
-                        "commentStart": 182,
+                        "commentStart": 0,
                         "end": 0,
                         "raw": "0",
                         "start": 0,
@@ -329,7 +329,7 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                     "type": "ArrayExpression"
                   },
                   {
-                    "commentStart": 186,
+                    "commentStart": 0,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -338,10 +338,10 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 163,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 163,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "startProfileAt",
                     "start": 0,
@@ -351,7 +351,7 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 163,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -362,14 +362,14 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 205,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "angle",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 213,
+                      "commentStart": 0,
                       "end": 0,
                       "raw": "60",
                       "start": 0,
@@ -384,7 +384,7 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 217,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "length",
                       "start": 0,
@@ -392,10 +392,10 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                     },
                     "arg": {
                       "abs_path": false,
-                      "commentStart": 226,
+                      "commentStart": 0,
                       "end": 0,
                       "name": {
-                        "commentStart": 226,
+                        "commentStart": 0,
                         "end": 0,
                         "name": "triangleLen",
                         "start": 0,
@@ -410,14 +410,14 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 239,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 245,
+                      "commentStart": 0,
                       "end": 0,
                       "start": 0,
                       "type": "TagDeclarator",
@@ -428,10 +428,10 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 194,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 194,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "angledLine",
                     "start": 0,
@@ -441,7 +441,7 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 194,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -453,14 +453,14 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 265,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "angle",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 273,
+                      "commentStart": 0,
                       "end": 0,
                       "raw": "180",
                       "start": 0,
@@ -475,7 +475,7 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 278,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "length",
                       "start": 0,
@@ -483,10 +483,10 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                     },
                     "arg": {
                       "abs_path": false,
-                      "commentStart": 287,
+                      "commentStart": 0,
                       "end": 0,
                       "name": {
-                        "commentStart": 287,
+                        "commentStart": 0,
                         "end": 0,
                         "name": "triangleLen",
                         "start": 0,
@@ -501,14 +501,14 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 300,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 306,
+                      "commentStart": 0,
                       "end": 0,
                       "start": 0,
                       "type": "TagDeclarator",
@@ -519,10 +519,10 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 254,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 254,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "angledLine",
                     "start": 0,
@@ -532,7 +532,7 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 254,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -544,14 +544,14 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 326,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "angle",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 334,
+                      "commentStart": 0,
                       "end": 0,
                       "raw": "300",
                       "start": 0,
@@ -566,7 +566,7 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 339,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "length",
                       "start": 0,
@@ -574,10 +574,10 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                     },
                     "arg": {
                       "abs_path": false,
-                      "commentStart": 348,
+                      "commentStart": 0,
                       "end": 0,
                       "name": {
-                        "commentStart": 348,
+                        "commentStart": 0,
                         "end": 0,
                         "name": "triangleLen",
                         "start": 0,
@@ -592,14 +592,14 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 361,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 367,
+                      "commentStart": 0,
                       "end": 0,
                       "start": 0,
                       "type": "TagDeclarator",
@@ -610,10 +610,10 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 315,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 315,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "angledLine",
                     "start": 0,
@@ -623,7 +623,7 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 315,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -635,7 +635,7 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 384,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "length",
                       "start": 0,
@@ -643,10 +643,10 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                     },
                     "arg": {
                       "abs_path": false,
-                      "commentStart": 393,
+                      "commentStart": 0,
                       "end": 0,
                       "name": {
-                        "commentStart": 393,
+                        "commentStart": 0,
                         "end": 0,
                         "name": "triangleHeight",
                         "start": 0,
@@ -661,10 +661,10 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 376,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 376,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "extrude",
                     "start": 0,
@@ -674,7 +674,7 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 376,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -682,7 +682,7 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                 "unlabeled": null
               }
             ],
-            "commentStart": 138,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "PipeExpression",
@@ -698,12 +698,12 @@ description: Result of parsing pentagon_fillet_sugar.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 408,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 413,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 413,
+            "commentStart": 0,
             "end": 0,
             "name": "circl",
             "start": 0,
@@ -719,10 +719,10 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                         "arguments": [
                           {
                             "abs_path": false,
-                            "commentStart": 453,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 453,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "p",
                               "start": 0,
@@ -735,10 +735,10 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                           },
                           {
                             "abs_path": false,
-                            "commentStart": 456,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 456,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "face",
                               "start": 0,
@@ -752,10 +752,10 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                         ],
                         "callee": {
                           "abs_path": false,
-                          "commentStart": 439,
+                          "commentStart": 0,
                           "end": 0,
                           "name": {
-                            "commentStart": 439,
+                            "commentStart": 0,
                             "end": 0,
                             "name": "startSketchOn",
                             "start": 0,
@@ -765,7 +765,7 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                           "start": 0,
                           "type": "Name"
                         },
-                        "commentStart": 439,
+                        "commentStart": 0,
                         "end": 0,
                         "start": 0,
                         "type": "CallExpression",
@@ -774,17 +774,17 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                       {
                         "arguments": [
                           {
-                            "commentStart": 484,
+                            "commentStart": 0,
                             "elements": [
                               {
-                                "commentStart": 485,
+                                "commentStart": 0,
                                 "end": 0,
                                 "left": {
                                   "abs_path": false,
-                                  "commentStart": 485,
+                                  "commentStart": 0,
                                   "end": 0,
                                   "name": {
-                                    "commentStart": 485,
+                                    "commentStart": 0,
                                     "end": 0,
                                     "name": "x",
                                     "start": 0,
@@ -798,10 +798,10 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                                 "operator": "+",
                                 "right": {
                                   "abs_path": false,
-                                  "commentStart": 489,
+                                  "commentStart": 0,
                                   "end": 0,
                                   "name": {
-                                    "commentStart": 489,
+                                    "commentStart": 0,
                                     "end": 0,
                                     "name": "radius",
                                     "start": 0,
@@ -817,14 +817,14 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                                 "type": "BinaryExpression"
                               },
                               {
-                                "commentStart": 497,
+                                "commentStart": 0,
                                 "end": 0,
                                 "left": {
                                   "abs_path": false,
-                                  "commentStart": 497,
+                                  "commentStart": 0,
                                   "end": 0,
                                   "name": {
-                                    "commentStart": 497,
+                                    "commentStart": 0,
                                     "end": 0,
                                     "name": "triangleHeight",
                                     "start": 0,
@@ -837,7 +837,7 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                                 },
                                 "operator": "/",
                                 "right": {
-                                  "commentStart": 514,
+                                  "commentStart": 0,
                                   "end": 0,
                                   "raw": "2",
                                   "start": 0,
@@ -859,7 +859,7 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                             "type": "ArrayExpression"
                           },
                           {
-                            "commentStart": 518,
+                            "commentStart": 0,
                             "end": 0,
                             "start": 0,
                             "type": "PipeSubstitution",
@@ -868,10 +868,10 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                         ],
                         "callee": {
                           "abs_path": false,
-                          "commentStart": 469,
+                          "commentStart": 0,
                           "end": 0,
                           "name": {
-                            "commentStart": 469,
+                            "commentStart": 0,
                             "end": 0,
                             "name": "startProfileAt",
                             "start": 0,
@@ -881,7 +881,7 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                           "start": 0,
                           "type": "Name"
                         },
-                        "commentStart": 469,
+                        "commentStart": 0,
                         "end": 0,
                         "start": 0,
                         "type": "CallExpression",
@@ -891,10 +891,10 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                         "arguments": [
                           {
                             "abs_path": false,
-                            "commentStart": 532,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 532,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "circ",
                               "start": 0,
@@ -906,14 +906,14 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                             "type": "Name"
                           },
                           {
-                            "commentStart": 538,
+                            "commentStart": 0,
                             "end": 0,
                             "start": 0,
                             "type": "PipeSubstitution",
                             "type": "PipeSubstitution"
                           },
                           {
-                            "commentStart": 541,
+                            "commentStart": 0,
                             "end": 0,
                             "start": 0,
                             "type": "TagDeclarator",
@@ -923,10 +923,10 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                         ],
                         "callee": {
                           "abs_path": false,
-                          "commentStart": 528,
+                          "commentStart": 0,
                           "end": 0,
                           "name": {
-                            "commentStart": 528,
+                            "commentStart": 0,
                             "end": 0,
                             "name": "arc",
                             "start": 0,
@@ -936,7 +936,7 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                           "start": 0,
                           "type": "Name"
                         },
-                        "commentStart": 528,
+                        "commentStart": 0,
                         "end": 0,
                         "start": 0,
                         "type": "CallExpression",
@@ -945,7 +945,7 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                       {
                         "arguments": [
                           {
-                            "commentStart": 564,
+                            "commentStart": 0,
                             "end": 0,
                             "start": 0,
                             "type": "PipeSubstitution",
@@ -954,10 +954,10 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                         ],
                         "callee": {
                           "abs_path": false,
-                          "commentStart": 558,
+                          "commentStart": 0,
                           "end": 0,
                           "name": {
-                            "commentStart": 558,
+                            "commentStart": 0,
                             "end": 0,
                             "name": "close",
                             "start": 0,
@@ -967,37 +967,37 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                           "start": 0,
                           "type": "Name"
                         },
-                        "commentStart": 558,
+                        "commentStart": 0,
                         "end": 0,
                         "start": 0,
                         "type": "CallExpression",
                         "type": "CallExpression"
                       }
                     ],
-                    "commentStart": 439,
+                    "commentStart": 0,
                     "end": 0,
                     "start": 0,
                     "type": "PipeExpression",
                     "type": "PipeExpression"
                   },
-                  "commentStart": 432,
+                  "commentStart": 0,
                   "end": 0,
                   "start": 0,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
                 }
               ],
-              "commentStart": 428,
+              "commentStart": 0,
               "end": 0,
               "start": 0
             },
-            "commentStart": 418,
+            "commentStart": 0,
             "end": 0,
             "params": [
               {
                 "type": "Parameter",
                 "identifier": {
-                  "commentStart": 419,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "x",
                   "start": 0,
@@ -1007,7 +1007,7 @@ description: Result of parsing pentagon_fillet_sugar.kcl
               {
                 "type": "Parameter",
                 "identifier": {
-                  "commentStart": 422,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "face",
                   "start": 0,
@@ -1029,12 +1029,12 @@ description: Result of parsing pentagon_fillet_sugar.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 568,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 570,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 570,
+            "commentStart": 0,
             "end": 0,
             "name": "c1",
             "start": 0,
@@ -1044,7 +1044,7 @@ description: Result of parsing pentagon_fillet_sugar.kcl
             "arguments": [
               {
                 "argument": {
-                  "commentStart": 582,
+                  "commentStart": 0,
                   "end": 0,
                   "raw": "200",
                   "start": 0,
@@ -1055,7 +1055,7 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                     "suffix": "None"
                   }
                 },
-                "commentStart": 581,
+                "commentStart": 0,
                 "end": 0,
                 "operator": "-",
                 "start": 0,
@@ -1064,10 +1064,10 @@ description: Result of parsing pentagon_fillet_sugar.kcl
               },
               {
                 "abs_path": false,
-                "commentStart": 587,
+                "commentStart": 0,
                 "end": 0,
                 "name": {
-                  "commentStart": 587,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "c",
                   "start": 0,
@@ -1081,10 +1081,10 @@ description: Result of parsing pentagon_fillet_sugar.kcl
             ],
             "callee": {
               "abs_path": false,
-              "commentStart": 575,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 575,
+                "commentStart": 0,
                 "end": 0,
                 "name": "circl",
                 "start": 0,
@@ -1094,7 +1094,7 @@ description: Result of parsing pentagon_fillet_sugar.kcl
               "start": 0,
               "type": "Name"
             },
-            "commentStart": 575,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "CallExpression",
@@ -1110,12 +1110,12 @@ description: Result of parsing pentagon_fillet_sugar.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 590,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 590,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 590,
+            "commentStart": 0,
             "end": 0,
             "name": "plumbus1",
             "start": 0,
@@ -1125,10 +1125,10 @@ description: Result of parsing pentagon_fillet_sugar.kcl
             "body": [
               {
                 "abs_path": false,
-                "commentStart": 601,
+                "commentStart": 0,
                 "end": 0,
                 "name": {
-                  "commentStart": 601,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "c1",
                   "start": 0,
@@ -1144,7 +1144,7 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 617,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "length",
                       "start": 0,
@@ -1152,10 +1152,10 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                     },
                     "arg": {
                       "abs_path": false,
-                      "commentStart": 626,
+                      "commentStart": 0,
                       "end": 0,
                       "name": {
-                        "commentStart": 626,
+                        "commentStart": 0,
                         "end": 0,
                         "name": "plumbusLen",
                         "start": 0,
@@ -1170,10 +1170,10 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 609,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 609,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "extrude",
                     "start": 0,
@@ -1183,7 +1183,7 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 609,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1195,14 +1195,14 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 658,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "radius",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 667,
+                      "commentStart": 0,
                       "end": 0,
                       "raw": "5",
                       "start": 0,
@@ -1217,25 +1217,25 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 677,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "tags",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 684,
+                      "commentStart": 0,
                       "elements": [
                         {
-                          "commentStart": 695,
+                          "commentStart": 0,
                           "computed": false,
                           "end": 0,
                           "object": {
-                            "commentStart": 695,
+                            "commentStart": 0,
                             "computed": false,
                             "end": 0,
                             "object": {
-                              "commentStart": 695,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "c1",
                               "start": 0,
@@ -1243,7 +1243,7 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                               "type": "Identifier"
                             },
                             "property": {
-                              "commentStart": 698,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "tags",
                               "start": 0,
@@ -1255,7 +1255,7 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                             "type": "MemberExpression"
                           },
                           "property": {
-                            "commentStart": 703,
+                            "commentStart": 0,
                             "end": 0,
                             "name": "arc_tag",
                             "start": 0,
@@ -1269,15 +1269,15 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                         {
                           "arguments": [
                             {
-                              "commentStart": 737,
+                              "commentStart": 0,
                               "computed": false,
                               "end": 0,
                               "object": {
-                                "commentStart": 737,
+                                "commentStart": 0,
                                 "computed": false,
                                 "end": 0,
                                 "object": {
-                                  "commentStart": 737,
+                                  "commentStart": 0,
                                   "end": 0,
                                   "name": "c1",
                                   "start": 0,
@@ -1285,7 +1285,7 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                                   "type": "Identifier"
                                 },
                                 "property": {
-                                  "commentStart": 740,
+                                  "commentStart": 0,
                                   "end": 0,
                                   "name": "tags",
                                   "start": 0,
@@ -1297,7 +1297,7 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                                 "type": "MemberExpression"
                               },
                               "property": {
-                                "commentStart": 745,
+                                "commentStart": 0,
                                 "end": 0,
                                 "name": "arc_tag",
                                 "start": 0,
@@ -1311,10 +1311,10 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 721,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 721,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "getOppositeEdge",
                               "start": 0,
@@ -1324,7 +1324,7 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 721,
+                          "commentStart": 0,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -1340,10 +1340,10 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 643,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 643,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "fillet",
                     "start": 0,
@@ -1353,7 +1353,7 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 643,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1361,7 +1361,7 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                 "unlabeled": null
               }
             ],
-            "commentStart": 601,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "PipeExpression",
@@ -1377,12 +1377,12 @@ description: Result of parsing pentagon_fillet_sugar.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 771,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 771,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 771,
+            "commentStart": 0,
             "end": 0,
             "name": "c2",
             "start": 0,
@@ -1391,7 +1391,7 @@ description: Result of parsing pentagon_fillet_sugar.kcl
           "init": {
             "arguments": [
               {
-                "commentStart": 782,
+                "commentStart": 0,
                 "end": 0,
                 "raw": "200",
                 "start": 0,
@@ -1404,10 +1404,10 @@ description: Result of parsing pentagon_fillet_sugar.kcl
               },
               {
                 "abs_path": false,
-                "commentStart": 787,
+                "commentStart": 0,
                 "end": 0,
                 "name": {
-                  "commentStart": 787,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "a",
                   "start": 0,
@@ -1421,10 +1421,10 @@ description: Result of parsing pentagon_fillet_sugar.kcl
             ],
             "callee": {
               "abs_path": false,
-              "commentStart": 776,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 776,
+                "commentStart": 0,
                 "end": 0,
                 "name": "circl",
                 "start": 0,
@@ -1434,7 +1434,7 @@ description: Result of parsing pentagon_fillet_sugar.kcl
               "start": 0,
               "type": "Name"
             },
-            "commentStart": 776,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "CallExpression",
@@ -1450,12 +1450,12 @@ description: Result of parsing pentagon_fillet_sugar.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 790,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 790,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 790,
+            "commentStart": 0,
             "end": 0,
             "name": "plumbus0",
             "start": 0,
@@ -1465,10 +1465,10 @@ description: Result of parsing pentagon_fillet_sugar.kcl
             "body": [
               {
                 "abs_path": false,
-                "commentStart": 801,
+                "commentStart": 0,
                 "end": 0,
                 "name": {
-                  "commentStart": 801,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "c2",
                   "start": 0,
@@ -1484,7 +1484,7 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 817,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "length",
                       "start": 0,
@@ -1492,10 +1492,10 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                     },
                     "arg": {
                       "abs_path": false,
-                      "commentStart": 826,
+                      "commentStart": 0,
                       "end": 0,
                       "name": {
-                        "commentStart": 826,
+                        "commentStart": 0,
                         "end": 0,
                         "name": "plumbusLen",
                         "start": 0,
@@ -1510,10 +1510,10 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 809,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 809,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "extrude",
                     "start": 0,
@@ -1523,7 +1523,7 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 809,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1535,14 +1535,14 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 858,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "radius",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 867,
+                      "commentStart": 0,
                       "end": 0,
                       "raw": "5",
                       "start": 0,
@@ -1557,25 +1557,25 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 877,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "tags",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 884,
+                      "commentStart": 0,
                       "elements": [
                         {
-                          "commentStart": 895,
+                          "commentStart": 0,
                           "computed": false,
                           "end": 0,
                           "object": {
-                            "commentStart": 895,
+                            "commentStart": 0,
                             "computed": false,
                             "end": 0,
                             "object": {
-                              "commentStart": 895,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "c2",
                               "start": 0,
@@ -1583,7 +1583,7 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                               "type": "Identifier"
                             },
                             "property": {
-                              "commentStart": 898,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "tags",
                               "start": 0,
@@ -1595,7 +1595,7 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                             "type": "MemberExpression"
                           },
                           "property": {
-                            "commentStart": 903,
+                            "commentStart": 0,
                             "end": 0,
                             "name": "arc_tag",
                             "start": 0,
@@ -1609,15 +1609,15 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                         {
                           "arguments": [
                             {
-                              "commentStart": 937,
+                              "commentStart": 0,
                               "computed": false,
                               "end": 0,
                               "object": {
-                                "commentStart": 937,
+                                "commentStart": 0,
                                 "computed": false,
                                 "end": 0,
                                 "object": {
-                                  "commentStart": 937,
+                                  "commentStart": 0,
                                   "end": 0,
                                   "name": "c2",
                                   "start": 0,
@@ -1625,7 +1625,7 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                                   "type": "Identifier"
                                 },
                                 "property": {
-                                  "commentStart": 940,
+                                  "commentStart": 0,
                                   "end": 0,
                                   "name": "tags",
                                   "start": 0,
@@ -1637,7 +1637,7 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                                 "type": "MemberExpression"
                               },
                               "property": {
-                                "commentStart": 945,
+                                "commentStart": 0,
                                 "end": 0,
                                 "name": "arc_tag",
                                 "start": 0,
@@ -1651,10 +1651,10 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 921,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 921,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "getOppositeEdge",
                               "start": 0,
@@ -1664,7 +1664,7 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 921,
+                          "commentStart": 0,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -1680,10 +1680,10 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 843,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 843,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "fillet",
                     "start": 0,
@@ -1693,7 +1693,7 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 843,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1701,7 +1701,7 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                 "unlabeled": null
               }
             ],
-            "commentStart": 801,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "PipeExpression",
@@ -1723,7 +1723,7 @@ description: Result of parsing pentagon_fillet_sugar.kcl
       "nonCodeNodes": {
         "3": [
           {
-            "commentStart": 114,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -1734,7 +1734,7 @@ description: Result of parsing pentagon_fillet_sugar.kcl
         ],
         "5": [
           {
-            "commentStart": 408,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -1745,7 +1745,7 @@ description: Result of parsing pentagon_fillet_sugar.kcl
         ],
         "6": [
           {
-            "commentStart": 568,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",

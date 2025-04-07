@@ -7,10 +7,10 @@ use kittycad_modeling_cmds::shared::Angle;
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
-        types::{PrimitiveType, RuntimeType},
+        types::{NumericType, PrimitiveType, RuntimeType},
         ExecState, KclValue, Point2d, Sketch, TagIdentifier,
     },
-    std::{utils::between, Args},
+    std::{args::TyF64, utils::between, Args},
 };
 
 /// Returns the point at the end of the given segment.
@@ -54,7 +54,7 @@ pub async fn segment_end(exec_state: &mut ExecState, args: Args) -> Result<KclVa
         tag = { docs = "The line segment being queried by its tag"},
     }
 }]
-fn inner_segment_end(tag: &TagIdentifier, exec_state: &mut ExecState, args: Args) -> Result<[f64; 2], KclError> {
+fn inner_segment_end(tag: &TagIdentifier, exec_state: &mut ExecState, args: Args) -> Result<[TyF64; 2], KclError> {
     let line = args.get_tag_engine_info(exec_state, tag)?;
     let path = line.path.clone().ok_or_else(|| {
         KclError::Type(KclErrorDetails {
@@ -63,7 +63,7 @@ fn inner_segment_end(tag: &TagIdentifier, exec_state: &mut ExecState, args: Args
         })
     })?;
 
-    Ok(path.get_base().to)
+    Ok(path.get_to().clone())
 }
 
 /// Returns the segment end of x.
@@ -71,7 +71,7 @@ pub async fn segment_end_x(exec_state: &mut ExecState, args: Args) -> Result<Kcl
     let tag: TagIdentifier = args.get_unlabeled_kw_arg("tag")?;
     let result = inner_segment_end_x(&tag, exec_state, args.clone())?;
 
-    Ok(args.make_user_val_from_f64(result))
+    Ok(args.make_user_val_from_f64_with_type(result))
 }
 
 /// Compute the ending point of the provided line segment along the 'x' axis.
@@ -95,7 +95,7 @@ pub async fn segment_end_x(exec_state: &mut ExecState, args: Args) -> Result<Kcl
         tag = { docs = "The line segment being queried by its tag"},
     }
 }]
-fn inner_segment_end_x(tag: &TagIdentifier, exec_state: &mut ExecState, args: Args) -> Result<f64, KclError> {
+fn inner_segment_end_x(tag: &TagIdentifier, exec_state: &mut ExecState, args: Args) -> Result<TyF64, KclError> {
     let line = args.get_tag_engine_info(exec_state, tag)?;
     let path = line.path.clone().ok_or_else(|| {
         KclError::Type(KclErrorDetails {
@@ -104,7 +104,7 @@ fn inner_segment_end_x(tag: &TagIdentifier, exec_state: &mut ExecState, args: Ar
         })
     })?;
 
-    Ok(path.get_base().to[0])
+    Ok(TyF64::new(path.get_base().to[0], path.get_base().units.into()))
 }
 
 /// Returns the segment end of y.
@@ -112,7 +112,7 @@ pub async fn segment_end_y(exec_state: &mut ExecState, args: Args) -> Result<Kcl
     let tag: TagIdentifier = args.get_unlabeled_kw_arg("tag")?;
     let result = inner_segment_end_y(&tag, exec_state, args.clone())?;
 
-    Ok(args.make_user_val_from_f64(result))
+    Ok(args.make_user_val_from_f64_with_type(result))
 }
 
 /// Compute the ending point of the provided line segment along the 'y' axis.
@@ -137,7 +137,7 @@ pub async fn segment_end_y(exec_state: &mut ExecState, args: Args) -> Result<Kcl
         tag = { docs = "The line segment being queried by its tag"},
     }
 }]
-fn inner_segment_end_y(tag: &TagIdentifier, exec_state: &mut ExecState, args: Args) -> Result<f64, KclError> {
+fn inner_segment_end_y(tag: &TagIdentifier, exec_state: &mut ExecState, args: Args) -> Result<TyF64, KclError> {
     let line = args.get_tag_engine_info(exec_state, tag)?;
     let path = line.path.clone().ok_or_else(|| {
         KclError::Type(KclErrorDetails {
@@ -146,7 +146,7 @@ fn inner_segment_end_y(tag: &TagIdentifier, exec_state: &mut ExecState, args: Ar
         })
     })?;
 
-    Ok(path.get_to()[1])
+    Ok(path.get_to()[1].clone())
 }
 
 /// Returns the point at the start of the given segment.
@@ -190,7 +190,7 @@ pub async fn segment_start(exec_state: &mut ExecState, args: Args) -> Result<Kcl
         tag = { docs = "The line segment being queried by its tag"},
     }
 }]
-fn inner_segment_start(tag: &TagIdentifier, exec_state: &mut ExecState, args: Args) -> Result<[f64; 2], KclError> {
+fn inner_segment_start(tag: &TagIdentifier, exec_state: &mut ExecState, args: Args) -> Result<[TyF64; 2], KclError> {
     let line = args.get_tag_engine_info(exec_state, tag)?;
     let path = line.path.clone().ok_or_else(|| {
         KclError::Type(KclErrorDetails {
@@ -207,7 +207,7 @@ pub async fn segment_start_x(exec_state: &mut ExecState, args: Args) -> Result<K
     let tag: TagIdentifier = args.get_unlabeled_kw_arg("tag")?;
     let result = inner_segment_start_x(&tag, exec_state, args.clone())?;
 
-    Ok(args.make_user_val_from_f64(result))
+    Ok(args.make_user_val_from_f64_with_type(result))
 }
 
 /// Compute the starting point of the provided line segment along the 'x' axis.
@@ -231,7 +231,7 @@ pub async fn segment_start_x(exec_state: &mut ExecState, args: Args) -> Result<K
         tag = { docs = "The line segment being queried by its tag"},
     }
 }]
-fn inner_segment_start_x(tag: &TagIdentifier, exec_state: &mut ExecState, args: Args) -> Result<f64, KclError> {
+fn inner_segment_start_x(tag: &TagIdentifier, exec_state: &mut ExecState, args: Args) -> Result<TyF64, KclError> {
     let line = args.get_tag_engine_info(exec_state, tag)?;
     let path = line.path.clone().ok_or_else(|| {
         KclError::Type(KclErrorDetails {
@@ -240,7 +240,7 @@ fn inner_segment_start_x(tag: &TagIdentifier, exec_state: &mut ExecState, args: 
         })
     })?;
 
-    Ok(path.get_from()[0])
+    Ok(path.get_from()[0].clone())
 }
 
 /// Returns the segment start of y.
@@ -248,7 +248,7 @@ pub async fn segment_start_y(exec_state: &mut ExecState, args: Args) -> Result<K
     let tag: TagIdentifier = args.get_unlabeled_kw_arg("tag")?;
     let result = inner_segment_start_y(&tag, exec_state, args.clone())?;
 
-    Ok(args.make_user_val_from_f64(result))
+    Ok(args.make_user_val_from_f64_with_type(result))
 }
 
 /// Compute the starting point of the provided line segment along the 'y' axis.
@@ -273,7 +273,7 @@ pub async fn segment_start_y(exec_state: &mut ExecState, args: Args) -> Result<K
         tag = { docs = "The line segment being queried by its tag"},
     }
 }]
-fn inner_segment_start_y(tag: &TagIdentifier, exec_state: &mut ExecState, args: Args) -> Result<f64, KclError> {
+fn inner_segment_start_y(tag: &TagIdentifier, exec_state: &mut ExecState, args: Args) -> Result<TyF64, KclError> {
     let line = args.get_tag_engine_info(exec_state, tag)?;
     let path = line.path.clone().ok_or_else(|| {
         KclError::Type(KclErrorDetails {
@@ -282,7 +282,7 @@ fn inner_segment_start_y(tag: &TagIdentifier, exec_state: &mut ExecState, args: 
         })
     })?;
 
-    Ok(path.get_from()[1])
+    Ok(path.get_from()[1].clone())
 }
 /// Returns the last segment of x.
 pub async fn last_segment_x(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
@@ -290,7 +290,7 @@ pub async fn last_segment_x(exec_state: &mut ExecState, args: Args) -> Result<Kc
         args.get_unlabeled_kw_arg_typed("sketch", &RuntimeType::Primitive(PrimitiveType::Sketch), exec_state)?;
     let result = inner_last_segment_x(sketch, args.clone())?;
 
-    Ok(args.make_user_val_from_f64(result))
+    Ok(args.make_user_val_from_f64_with_type(result))
 }
 
 /// Extract the 'x' axis value of the last line segment in the provided 2-d
@@ -315,7 +315,7 @@ pub async fn last_segment_x(exec_state: &mut ExecState, args: Args) -> Result<Kc
         sketch = { docs = "The sketch whose line segment is being queried"},
     }
 }]
-fn inner_last_segment_x(sketch: Sketch, args: Args) -> Result<f64, KclError> {
+fn inner_last_segment_x(sketch: Sketch, args: Args) -> Result<TyF64, KclError> {
     let last_line = sketch
         .paths
         .last()
@@ -327,7 +327,7 @@ fn inner_last_segment_x(sketch: Sketch, args: Args) -> Result<f64, KclError> {
         })?
         .get_base();
 
-    Ok(last_line.to[0])
+    Ok(TyF64::new(last_line.to[0], last_line.units.into()))
 }
 
 /// Returns the last segment of y.
@@ -336,7 +336,7 @@ pub async fn last_segment_y(exec_state: &mut ExecState, args: Args) -> Result<Kc
         args.get_unlabeled_kw_arg_typed("sketch", &RuntimeType::Primitive(PrimitiveType::Sketch), exec_state)?;
     let result = inner_last_segment_y(sketch, args.clone())?;
 
-    Ok(args.make_user_val_from_f64(result))
+    Ok(args.make_user_val_from_f64_with_type(result))
 }
 
 /// Extract the 'y' axis value of the last line segment in the provided 2-d
@@ -361,7 +361,7 @@ pub async fn last_segment_y(exec_state: &mut ExecState, args: Args) -> Result<Kc
         sketch = { docs = "The sketch whose line segment is being queried"},
     }
 }]
-fn inner_last_segment_y(sketch: Sketch, args: Args) -> Result<f64, KclError> {
+fn inner_last_segment_y(sketch: Sketch, args: Args) -> Result<TyF64, KclError> {
     let last_line = sketch
         .paths
         .last()
@@ -373,14 +373,14 @@ fn inner_last_segment_y(sketch: Sketch, args: Args) -> Result<f64, KclError> {
         })?
         .get_base();
 
-    Ok(last_line.to[1])
+    Ok(TyF64::new(last_line.to[1], last_line.units.into()))
 }
 
 /// Returns the length of the segment.
 pub async fn segment_length(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let tag: TagIdentifier = args.get_unlabeled_kw_arg("tag")?;
     let result = inner_segment_length(&tag, exec_state, args.clone())?;
-    Ok(args.make_user_val_from_f64(result))
+    Ok(args.make_user_val_from_f64_with_type(result))
 }
 
 /// Compute the length of the provided line segment.
@@ -413,7 +413,7 @@ pub async fn segment_length(exec_state: &mut ExecState, args: Args) -> Result<Kc
         tag = { docs = "The line segment being queried by its tag"},
     }
 }]
-fn inner_segment_length(tag: &TagIdentifier, exec_state: &mut ExecState, args: Args) -> Result<f64, KclError> {
+fn inner_segment_length(tag: &TagIdentifier, exec_state: &mut ExecState, args: Args) -> Result<TyF64, KclError> {
     let line = args.get_tag_engine_info(exec_state, tag)?;
     let path = line.path.clone().ok_or_else(|| {
         KclError::Type(KclErrorDetails {
@@ -422,9 +422,7 @@ fn inner_segment_length(tag: &TagIdentifier, exec_state: &mut ExecState, args: A
         })
     })?;
 
-    let result = path.length();
-
-    Ok(result)
+    Ok(path.length())
 }
 
 /// Returns the angle of the segment.
@@ -432,7 +430,7 @@ pub async fn segment_angle(exec_state: &mut ExecState, args: Args) -> Result<Kcl
     let tag: TagIdentifier = args.get_unlabeled_kw_arg("tag")?;
 
     let result = inner_segment_angle(&tag, exec_state, args.clone())?;
-    Ok(args.make_user_val_from_f64(result))
+    Ok(args.make_user_val_from_f64_with_type(TyF64::new(result, NumericType::degrees())))
 }
 
 /// Compute the angle (in degrees) of the provided line segment.
@@ -477,7 +475,7 @@ pub async fn tangent_to_end(exec_state: &mut ExecState, args: Args) -> Result<Kc
     let tag: TagIdentifier = args.get_unlabeled_kw_arg("tag")?;
 
     let result = inner_tangent_to_end(&tag, exec_state, args.clone()).await?;
-    Ok(args.make_user_val_from_f64(result))
+    Ok(args.make_user_val_from_f64_with_type(TyF64::new(result, NumericType::degrees())))
 }
 
 /// Returns the angle coming out of the end of the segment in degrees.
@@ -587,7 +585,7 @@ async fn inner_tangent_to_end(tag: &TagIdentifier, exec_state: &mut ExecState, a
 pub async fn angle_to_match_length_x(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (tag, to, sketch) = args.get_tag_to_number_sketch()?;
     let result = inner_angle_to_match_length_x(&tag, to, sketch, exec_state, args.clone())?;
-    Ok(args.make_user_val_from_f64(result))
+    Ok(args.make_user_val_from_f64_with_type(TyF64::new(result, NumericType::degrees())))
 }
 
 /// Returns the angle to match the given length for x.
@@ -622,7 +620,7 @@ fn inner_angle_to_match_length_x(
         })
     })?;
 
-    let length = path.length();
+    let length = path.length().n;
 
     let last_line = sketch
         .paths
@@ -635,6 +633,7 @@ fn inner_angle_to_match_length_x(
         })?
         .get_base();
 
+    // TODO assumption about the units of to
     let diff = (to - last_line.to[0]).abs();
 
     let angle_r = (diff / length).acos();
@@ -650,7 +649,7 @@ fn inner_angle_to_match_length_x(
 pub async fn angle_to_match_length_y(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (tag, to, sketch) = args.get_tag_to_number_sketch()?;
     let result = inner_angle_to_match_length_y(&tag, to, sketch, exec_state, args.clone())?;
-    Ok(args.make_user_val_from_f64(result))
+    Ok(args.make_user_val_from_f64_with_type(TyF64::new(result, NumericType::degrees())))
 }
 
 /// Returns the angle to match the given length for y.
@@ -686,7 +685,7 @@ fn inner_angle_to_match_length_y(
         })
     })?;
 
-    let length = path.length();
+    let length = path.length().n;
 
     let last_line = sketch
         .paths
@@ -699,6 +698,7 @@ fn inner_angle_to_match_length_y(
         })?
         .get_base();
 
+    // TODO assumption about the units of to
     let diff = (to - last_line.to[1]).abs();
 
     let angle_r = (diff / length).asin();

@@ -18,7 +18,7 @@ description: Result of parsing fillet-and-shell.kcl
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 12,
+            "commentStart": 0,
             "end": 0,
             "raw": "30",
             "start": 0,
@@ -39,19 +39,19 @@ description: Result of parsing fillet-and-shell.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 15,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 15,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 15,
+            "commentStart": 0,
             "end": 0,
             "name": "rpizLength",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 28,
+            "commentStart": 0,
             "end": 0,
             "raw": "65",
             "start": 0,
@@ -72,19 +72,19 @@ description: Result of parsing fillet-and-shell.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 30,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 32,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 32,
+            "commentStart": 0,
             "end": 0,
             "name": "caseThickness",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 48,
+            "commentStart": 0,
             "end": 0,
             "raw": "1",
             "start": 0,
@@ -105,19 +105,19 @@ description: Result of parsing fillet-and-shell.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 49,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 51,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 51,
+            "commentStart": 0,
             "end": 0,
             "name": "border",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 60,
+            "commentStart": 0,
             "end": 0,
             "raw": "4",
             "start": 0,
@@ -138,19 +138,19 @@ description: Result of parsing fillet-and-shell.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 61,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 63,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 63,
+            "commentStart": 0,
             "end": 0,
             "name": "screwHeight",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 77,
+            "commentStart": 0,
             "end": 0,
             "raw": "4",
             "start": 0,
@@ -171,26 +171,26 @@ description: Result of parsing fillet-and-shell.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 78,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 80,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 80,
+            "commentStart": 0,
             "end": 0,
             "name": "caseWidth",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 92,
+            "commentStart": 0,
             "end": 0,
             "left": {
               "abs_path": false,
-              "commentStart": 92,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 92,
+                "commentStart": 0,
                 "end": 0,
                 "name": "rpizWidth",
                 "start": 0,
@@ -203,14 +203,14 @@ description: Result of parsing fillet-and-shell.kcl
             },
             "operator": "+",
             "right": {
-              "commentStart": 104,
+              "commentStart": 0,
               "end": 0,
               "left": {
                 "abs_path": false,
-                "commentStart": 104,
+                "commentStart": 0,
                 "end": 0,
                 "name": {
-                  "commentStart": 104,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "border",
                   "start": 0,
@@ -223,7 +223,7 @@ description: Result of parsing fillet-and-shell.kcl
               },
               "operator": "*",
               "right": {
-                "commentStart": 113,
+                "commentStart": 0,
                 "end": 0,
                 "raw": "2",
                 "start": 0,
@@ -252,26 +252,26 @@ description: Result of parsing fillet-and-shell.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 115,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 115,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 115,
+            "commentStart": 0,
             "end": 0,
             "name": "caseLength",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 128,
+            "commentStart": 0,
             "end": 0,
             "left": {
               "abs_path": false,
-              "commentStart": 128,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 128,
+                "commentStart": 0,
                 "end": 0,
                 "name": "rpizLength",
                 "start": 0,
@@ -284,14 +284,14 @@ description: Result of parsing fillet-and-shell.kcl
             },
             "operator": "+",
             "right": {
-              "commentStart": 141,
+              "commentStart": 0,
               "end": 0,
               "left": {
                 "abs_path": false,
-                "commentStart": 141,
+                "commentStart": 0,
                 "end": 0,
                 "name": {
-                  "commentStart": 141,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "border",
                   "start": 0,
@@ -304,7 +304,7 @@ description: Result of parsing fillet-and-shell.kcl
               },
               "operator": "*",
               "right": {
-                "commentStart": 150,
+                "commentStart": 0,
                 "end": 0,
                 "raw": "2",
                 "start": 0,
@@ -333,19 +333,19 @@ description: Result of parsing fillet-and-shell.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 152,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 152,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 152,
+            "commentStart": 0,
             "end": 0,
             "name": "caseHeight",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 165,
+            "commentStart": 0,
             "end": 0,
             "raw": "8",
             "start": 0,
@@ -366,19 +366,19 @@ description: Result of parsing fillet-and-shell.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 166,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 168,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 168,
+            "commentStart": 0,
             "end": 0,
             "name": "widthBetweenScrews",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 189,
+            "commentStart": 0,
             "end": 0,
             "raw": "23",
             "start": 0,
@@ -399,22 +399,22 @@ description: Result of parsing fillet-and-shell.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 192,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 192,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 192,
+            "commentStart": 0,
             "end": 0,
             "name": "lengthBetweenScrews",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 214,
+            "commentStart": 0,
             "end": 0,
             "left": {
-              "commentStart": 214,
+              "commentStart": 0,
               "end": 0,
               "raw": "29",
               "start": 0,
@@ -427,7 +427,7 @@ description: Result of parsing fillet-and-shell.kcl
             },
             "operator": "*",
             "right": {
-              "commentStart": 219,
+              "commentStart": 0,
               "end": 0,
               "raw": "2",
               "start": 0,
@@ -452,19 +452,19 @@ description: Result of parsing fillet-and-shell.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 220,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 222,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 222,
+            "commentStart": 0,
             "end": 0,
             "name": "miniHdmiDistance",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 241,
+            "commentStart": 0,
             "end": 0,
             "raw": "12.4",
             "start": 0,
@@ -485,19 +485,19 @@ description: Result of parsing fillet-and-shell.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 246,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 246,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 246,
+            "commentStart": 0,
             "end": 0,
             "name": "microUsb1Distance",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 266,
+            "commentStart": 0,
             "end": 0,
             "raw": "41.4",
             "start": 0,
@@ -518,19 +518,19 @@ description: Result of parsing fillet-and-shell.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 271,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 271,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 271,
+            "commentStart": 0,
             "end": 0,
             "name": "microUsb2Distance",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 291,
+            "commentStart": 0,
             "end": 0,
             "raw": "54",
             "start": 0,
@@ -551,19 +551,19 @@ description: Result of parsing fillet-and-shell.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 293,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 295,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 295,
+            "commentStart": 0,
             "end": 0,
             "name": "miniHdmiWidth",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 311,
+            "commentStart": 0,
             "end": 0,
             "raw": "11.2",
             "start": 0,
@@ -584,19 +584,19 @@ description: Result of parsing fillet-and-shell.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 316,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 316,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 316,
+            "commentStart": 0,
             "end": 0,
             "name": "microUsbWidth",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 332,
+            "commentStart": 0,
             "end": 0,
             "raw": "7.4",
             "start": 0,
@@ -617,19 +617,19 @@ description: Result of parsing fillet-and-shell.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 336,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 336,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 336,
+            "commentStart": 0,
             "end": 0,
             "name": "connectorPadding",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 355,
+            "commentStart": 0,
             "end": 0,
             "raw": "4",
             "start": 0,
@@ -650,12 +650,12 @@ description: Result of parsing fillet-and-shell.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 356,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 358,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 358,
+            "commentStart": 0,
             "end": 0,
             "name": "miniHdmiHole",
             "start": 0,
@@ -667,10 +667,10 @@ description: Result of parsing fillet-and-shell.kcl
                 "arguments": [
                   {
                     "abs_path": false,
-                    "commentStart": 387,
+                    "commentStart": 0,
                     "end": 0,
                     "name": {
-                      "commentStart": 387,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "XY",
                       "start": 0,
@@ -684,10 +684,10 @@ description: Result of parsing fillet-and-shell.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 373,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 373,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "startSketchOn",
                     "start": 0,
@@ -697,7 +697,7 @@ description: Result of parsing fillet-and-shell.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 373,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -706,10 +706,10 @@ description: Result of parsing fillet-and-shell.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 411,
+                    "commentStart": 0,
                     "elements": [
                       {
-                        "commentStart": 420,
+                        "commentStart": 0,
                         "end": 0,
                         "raw": "0",
                         "start": 0,
@@ -721,17 +721,17 @@ description: Result of parsing fillet-and-shell.kcl
                         }
                       },
                       {
-                        "commentStart": 430,
+                        "commentStart": 0,
                         "end": 0,
                         "left": {
-                          "commentStart": 430,
+                          "commentStart": 0,
                           "end": 0,
                           "left": {
                             "abs_path": false,
-                            "commentStart": 430,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 430,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "border",
                               "start": 0,
@@ -745,10 +745,10 @@ description: Result of parsing fillet-and-shell.kcl
                           "operator": "+",
                           "right": {
                             "abs_path": false,
-                            "commentStart": 439,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 439,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "miniHdmiDistance",
                               "start": 0,
@@ -765,14 +765,14 @@ description: Result of parsing fillet-and-shell.kcl
                         },
                         "operator": "-",
                         "right": {
-                          "commentStart": 459,
+                          "commentStart": 0,
                           "end": 0,
                           "left": {
                             "abs_path": false,
-                            "commentStart": 459,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 459,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "miniHdmiWidth",
                               "start": 0,
@@ -785,7 +785,7 @@ description: Result of parsing fillet-and-shell.kcl
                           },
                           "operator": "/",
                           "right": {
-                            "commentStart": 475,
+                            "commentStart": 0,
                             "end": 0,
                             "raw": "2",
                             "start": 0,
@@ -811,7 +811,7 @@ description: Result of parsing fillet-and-shell.kcl
                     "type": "ArrayExpression"
                   },
                   {
-                    "commentStart": 486,
+                    "commentStart": 0,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -820,10 +820,10 @@ description: Result of parsing fillet-and-shell.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 396,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 396,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "startProfileAt",
                     "start": 0,
@@ -833,7 +833,7 @@ description: Result of parsing fillet-and-shell.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 396,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -844,17 +844,17 @@ description: Result of parsing fillet-and-shell.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 499,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "endAbsolute",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 513,
+                      "commentStart": 0,
                       "elements": [
                         {
-                          "commentStart": 522,
+                          "commentStart": 0,
                           "end": 0,
                           "raw": "0",
                           "start": 0,
@@ -866,17 +866,17 @@ description: Result of parsing fillet-and-shell.kcl
                           }
                         },
                         {
-                          "commentStart": 532,
+                          "commentStart": 0,
                           "end": 0,
                           "left": {
-                            "commentStart": 532,
+                            "commentStart": 0,
                             "end": 0,
                             "left": {
                               "abs_path": false,
-                              "commentStart": 532,
+                              "commentStart": 0,
                               "end": 0,
                               "name": {
-                                "commentStart": 532,
+                                "commentStart": 0,
                                 "end": 0,
                                 "name": "border",
                                 "start": 0,
@@ -890,10 +890,10 @@ description: Result of parsing fillet-and-shell.kcl
                             "operator": "+",
                             "right": {
                               "abs_path": false,
-                              "commentStart": 541,
+                              "commentStart": 0,
                               "end": 0,
                               "name": {
-                                "commentStart": 541,
+                                "commentStart": 0,
                                 "end": 0,
                                 "name": "miniHdmiDistance",
                                 "start": 0,
@@ -910,14 +910,14 @@ description: Result of parsing fillet-and-shell.kcl
                           },
                           "operator": "+",
                           "right": {
-                            "commentStart": 560,
+                            "commentStart": 0,
                             "end": 0,
                             "left": {
                               "abs_path": false,
-                              "commentStart": 560,
+                              "commentStart": 0,
                               "end": 0,
                               "name": {
-                                "commentStart": 560,
+                                "commentStart": 0,
                                 "end": 0,
                                 "name": "miniHdmiWidth",
                                 "start": 0,
@@ -930,7 +930,7 @@ description: Result of parsing fillet-and-shell.kcl
                             },
                             "operator": "/",
                             "right": {
-                              "commentStart": 576,
+                              "commentStart": 0,
                               "end": 0,
                               "raw": "2",
                               "start": 0,
@@ -959,10 +959,10 @@ description: Result of parsing fillet-and-shell.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 494,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 494,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "line",
                     "start": 0,
@@ -972,7 +972,7 @@ description: Result of parsing fillet-and-shell.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 494,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -984,17 +984,17 @@ description: Result of parsing fillet-and-shell.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 596,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "endAbsolute",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 610,
+                      "commentStart": 0,
                       "elements": [
                         {
-                          "commentStart": 619,
+                          "commentStart": 0,
                           "end": 0,
                           "raw": "1",
                           "start": 0,
@@ -1006,17 +1006,17 @@ description: Result of parsing fillet-and-shell.kcl
                           }
                         },
                         {
-                          "commentStart": 629,
+                          "commentStart": 0,
                           "end": 0,
                           "left": {
-                            "commentStart": 629,
+                            "commentStart": 0,
                             "end": 0,
                             "left": {
                               "abs_path": false,
-                              "commentStart": 629,
+                              "commentStart": 0,
                               "end": 0,
                               "name": {
-                                "commentStart": 629,
+                                "commentStart": 0,
                                 "end": 0,
                                 "name": "border",
                                 "start": 0,
@@ -1030,10 +1030,10 @@ description: Result of parsing fillet-and-shell.kcl
                             "operator": "+",
                             "right": {
                               "abs_path": false,
-                              "commentStart": 638,
+                              "commentStart": 0,
                               "end": 0,
                               "name": {
-                                "commentStart": 638,
+                                "commentStart": 0,
                                 "end": 0,
                                 "name": "miniHdmiDistance",
                                 "start": 0,
@@ -1050,14 +1050,14 @@ description: Result of parsing fillet-and-shell.kcl
                           },
                           "operator": "+",
                           "right": {
-                            "commentStart": 657,
+                            "commentStart": 0,
                             "end": 0,
                             "left": {
                               "abs_path": false,
-                              "commentStart": 657,
+                              "commentStart": 0,
                               "end": 0,
                               "name": {
-                                "commentStart": 657,
+                                "commentStart": 0,
                                 "end": 0,
                                 "name": "miniHdmiWidth",
                                 "start": 0,
@@ -1070,7 +1070,7 @@ description: Result of parsing fillet-and-shell.kcl
                             },
                             "operator": "/",
                             "right": {
-                              "commentStart": 673,
+                              "commentStart": 0,
                               "end": 0,
                               "raw": "2",
                               "start": 0,
@@ -1099,10 +1099,10 @@ description: Result of parsing fillet-and-shell.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 591,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 591,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "line",
                     "start": 0,
@@ -1112,7 +1112,7 @@ description: Result of parsing fillet-and-shell.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 591,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1124,17 +1124,17 @@ description: Result of parsing fillet-and-shell.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 693,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "endAbsolute",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 707,
+                      "commentStart": 0,
                       "elements": [
                         {
-                          "commentStart": 716,
+                          "commentStart": 0,
                           "end": 0,
                           "raw": "1",
                           "start": 0,
@@ -1146,17 +1146,17 @@ description: Result of parsing fillet-and-shell.kcl
                           }
                         },
                         {
-                          "commentStart": 726,
+                          "commentStart": 0,
                           "end": 0,
                           "left": {
-                            "commentStart": 726,
+                            "commentStart": 0,
                             "end": 0,
                             "left": {
                               "abs_path": false,
-                              "commentStart": 726,
+                              "commentStart": 0,
                               "end": 0,
                               "name": {
-                                "commentStart": 726,
+                                "commentStart": 0,
                                 "end": 0,
                                 "name": "border",
                                 "start": 0,
@@ -1170,10 +1170,10 @@ description: Result of parsing fillet-and-shell.kcl
                             "operator": "+",
                             "right": {
                               "abs_path": false,
-                              "commentStart": 735,
+                              "commentStart": 0,
                               "end": 0,
                               "name": {
-                                "commentStart": 735,
+                                "commentStart": 0,
                                 "end": 0,
                                 "name": "miniHdmiDistance",
                                 "start": 0,
@@ -1190,14 +1190,14 @@ description: Result of parsing fillet-and-shell.kcl
                           },
                           "operator": "-",
                           "right": {
-                            "commentStart": 755,
+                            "commentStart": 0,
                             "end": 0,
                             "left": {
                               "abs_path": false,
-                              "commentStart": 755,
+                              "commentStart": 0,
                               "end": 0,
                               "name": {
-                                "commentStart": 755,
+                                "commentStart": 0,
                                 "end": 0,
                                 "name": "miniHdmiWidth",
                                 "start": 0,
@@ -1210,7 +1210,7 @@ description: Result of parsing fillet-and-shell.kcl
                             },
                             "operator": "/",
                             "right": {
-                              "commentStart": 771,
+                              "commentStart": 0,
                               "end": 0,
                               "raw": "2",
                               "start": 0,
@@ -1239,10 +1239,10 @@ description: Result of parsing fillet-and-shell.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 688,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 688,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "line",
                     "start": 0,
@@ -1252,7 +1252,7 @@ description: Result of parsing fillet-and-shell.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 688,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1262,7 +1262,7 @@ description: Result of parsing fillet-and-shell.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 793,
+                    "commentStart": 0,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -1271,10 +1271,10 @@ description: Result of parsing fillet-and-shell.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 787,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 787,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "close",
                     "start": 0,
@@ -1284,14 +1284,14 @@ description: Result of parsing fillet-and-shell.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 787,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               }
             ],
-            "commentStart": 373,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "PipeExpression",
@@ -1307,12 +1307,12 @@ description: Result of parsing fillet-and-shell.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 795,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 797,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 797,
+            "commentStart": 0,
             "end": 0,
             "name": "case",
             "start": 0,
@@ -1323,7 +1323,7 @@ description: Result of parsing fillet-and-shell.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 818,
+                    "commentStart": 0,
                     "end": 0,
                     "raw": "'XY'",
                     "start": 0,
@@ -1334,10 +1334,10 @@ description: Result of parsing fillet-and-shell.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 804,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 804,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "startSketchOn",
                     "start": 0,
@@ -1347,7 +1347,7 @@ description: Result of parsing fillet-and-shell.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 804,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -1356,10 +1356,10 @@ description: Result of parsing fillet-and-shell.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 844,
+                    "commentStart": 0,
                     "elements": [
                       {
-                        "commentStart": 845,
+                        "commentStart": 0,
                         "end": 0,
                         "raw": "0",
                         "start": 0,
@@ -1371,7 +1371,7 @@ description: Result of parsing fillet-and-shell.kcl
                         }
                       },
                       {
-                        "commentStart": 848,
+                        "commentStart": 0,
                         "end": 0,
                         "raw": "0",
                         "start": 0,
@@ -1389,7 +1389,7 @@ description: Result of parsing fillet-and-shell.kcl
                     "type": "ArrayExpression"
                   },
                   {
-                    "commentStart": 852,
+                    "commentStart": 0,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -1398,10 +1398,10 @@ description: Result of parsing fillet-and-shell.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 829,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 829,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "startProfileAt",
                     "start": 0,
@@ -1411,7 +1411,7 @@ description: Result of parsing fillet-and-shell.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 829,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -1422,21 +1422,21 @@ description: Result of parsing fillet-and-shell.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 865,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "endAbsolute",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 879,
+                      "commentStart": 0,
                       "elements": [
                         {
                           "abs_path": false,
-                          "commentStart": 880,
+                          "commentStart": 0,
                           "end": 0,
                           "name": {
-                            "commentStart": 880,
+                            "commentStart": 0,
                             "end": 0,
                             "name": "caseWidth",
                             "start": 0,
@@ -1448,7 +1448,7 @@ description: Result of parsing fillet-and-shell.kcl
                           "type": "Name"
                         },
                         {
-                          "commentStart": 891,
+                          "commentStart": 0,
                           "end": 0,
                           "raw": "0",
                           "start": 0,
@@ -1469,14 +1469,14 @@ description: Result of parsing fillet-and-shell.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 895,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 901,
+                      "commentStart": 0,
                       "end": 0,
                       "start": 0,
                       "type": "TagDeclarator",
@@ -1487,10 +1487,10 @@ description: Result of parsing fillet-and-shell.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 860,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 860,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "line",
                     "start": 0,
@@ -1500,7 +1500,7 @@ description: Result of parsing fillet-and-shell.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 860,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1512,21 +1512,21 @@ description: Result of parsing fillet-and-shell.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 919,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "endAbsolute",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 933,
+                      "commentStart": 0,
                       "elements": [
                         {
                           "abs_path": false,
-                          "commentStart": 934,
+                          "commentStart": 0,
                           "end": 0,
                           "name": {
-                            "commentStart": 934,
+                            "commentStart": 0,
                             "end": 0,
                             "name": "caseWidth",
                             "start": 0,
@@ -1539,10 +1539,10 @@ description: Result of parsing fillet-and-shell.kcl
                         },
                         {
                           "abs_path": false,
-                          "commentStart": 945,
+                          "commentStart": 0,
                           "end": 0,
                           "name": {
-                            "commentStart": 945,
+                            "commentStart": 0,
                             "end": 0,
                             "name": "caseLength",
                             "start": 0,
@@ -1563,14 +1563,14 @@ description: Result of parsing fillet-and-shell.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 958,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 964,
+                      "commentStart": 0,
                       "end": 0,
                       "start": 0,
                       "type": "TagDeclarator",
@@ -1581,10 +1581,10 @@ description: Result of parsing fillet-and-shell.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 914,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 914,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "line",
                     "start": 0,
@@ -1594,7 +1594,7 @@ description: Result of parsing fillet-and-shell.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 914,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1606,17 +1606,17 @@ description: Result of parsing fillet-and-shell.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 982,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "endAbsolute",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 996,
+                      "commentStart": 0,
                       "elements": [
                         {
-                          "commentStart": 997,
+                          "commentStart": 0,
                           "end": 0,
                           "raw": "0",
                           "start": 0,
@@ -1629,10 +1629,10 @@ description: Result of parsing fillet-and-shell.kcl
                         },
                         {
                           "abs_path": false,
-                          "commentStart": 1000,
+                          "commentStart": 0,
                           "end": 0,
                           "name": {
-                            "commentStart": 1000,
+                            "commentStart": 0,
                             "end": 0,
                             "name": "caseLength",
                             "start": 0,
@@ -1653,14 +1653,14 @@ description: Result of parsing fillet-and-shell.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1013,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1019,
+                      "commentStart": 0,
                       "end": 0,
                       "start": 0,
                       "type": "TagDeclarator",
@@ -1671,10 +1671,10 @@ description: Result of parsing fillet-and-shell.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 977,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 977,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "line",
                     "start": 0,
@@ -1684,7 +1684,7 @@ description: Result of parsing fillet-and-shell.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 977,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1696,14 +1696,14 @@ description: Result of parsing fillet-and-shell.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1038,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1044,
+                      "commentStart": 0,
                       "end": 0,
                       "start": 0,
                       "type": "TagDeclarator",
@@ -1714,10 +1714,10 @@ description: Result of parsing fillet-and-shell.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1032,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1032,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "close",
                     "start": 0,
@@ -1727,7 +1727,7 @@ description: Result of parsing fillet-and-shell.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1032,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1739,7 +1739,7 @@ description: Result of parsing fillet-and-shell.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1065,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "length",
                       "start": 0,
@@ -1747,10 +1747,10 @@ description: Result of parsing fillet-and-shell.kcl
                     },
                     "arg": {
                       "abs_path": false,
-                      "commentStart": 1074,
+                      "commentStart": 0,
                       "end": 0,
                       "name": {
-                        "commentStart": 1074,
+                        "commentStart": 0,
                         "end": 0,
                         "name": "caseHeight",
                         "start": 0,
@@ -1765,10 +1765,10 @@ description: Result of parsing fillet-and-shell.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1057,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1057,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "extrude",
                     "start": 0,
@@ -1778,7 +1778,7 @@ description: Result of parsing fillet-and-shell.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1057,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1790,14 +1790,14 @@ description: Result of parsing fillet-and-shell.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1106,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "radius",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1115,
+                      "commentStart": 0,
                       "end": 0,
                       "raw": "1",
                       "start": 0,
@@ -1812,23 +1812,23 @@ description: Result of parsing fillet-and-shell.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1125,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "tags",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1132,
+                      "commentStart": 0,
                       "elements": [
                         {
                           "arguments": [
                             {
                               "abs_path": false,
-                              "commentStart": 1163,
+                              "commentStart": 0,
                               "end": 0,
                               "name": {
-                                "commentStart": 1163,
+                                "commentStart": 0,
                                 "end": 0,
                                 "name": "edge1",
                                 "start": 0,
@@ -1842,10 +1842,10 @@ description: Result of parsing fillet-and-shell.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 1143,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 1143,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "getNextAdjacentEdge",
                               "start": 0,
@@ -1855,7 +1855,7 @@ description: Result of parsing fillet-and-shell.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 1143,
+                          "commentStart": 0,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -1865,10 +1865,10 @@ description: Result of parsing fillet-and-shell.kcl
                           "arguments": [
                             {
                               "abs_path": false,
-                              "commentStart": 1200,
+                              "commentStart": 0,
                               "end": 0,
                               "name": {
-                                "commentStart": 1200,
+                                "commentStart": 0,
                                 "end": 0,
                                 "name": "edge2",
                                 "start": 0,
@@ -1882,10 +1882,10 @@ description: Result of parsing fillet-and-shell.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 1180,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 1180,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "getNextAdjacentEdge",
                               "start": 0,
@@ -1895,7 +1895,7 @@ description: Result of parsing fillet-and-shell.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 1180,
+                          "commentStart": 0,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -1905,10 +1905,10 @@ description: Result of parsing fillet-and-shell.kcl
                           "arguments": [
                             {
                               "abs_path": false,
-                              "commentStart": 1237,
+                              "commentStart": 0,
                               "end": 0,
                               "name": {
-                                "commentStart": 1237,
+                                "commentStart": 0,
                                 "end": 0,
                                 "name": "edge3",
                                 "start": 0,
@@ -1922,10 +1922,10 @@ description: Result of parsing fillet-and-shell.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 1217,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 1217,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "getNextAdjacentEdge",
                               "start": 0,
@@ -1935,7 +1935,7 @@ description: Result of parsing fillet-and-shell.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 1217,
+                          "commentStart": 0,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -1945,10 +1945,10 @@ description: Result of parsing fillet-and-shell.kcl
                           "arguments": [
                             {
                               "abs_path": false,
-                              "commentStart": 1274,
+                              "commentStart": 0,
                               "end": 0,
                               "name": {
-                                "commentStart": 1274,
+                                "commentStart": 0,
                                 "end": 0,
                                 "name": "edge4",
                                 "start": 0,
@@ -1962,10 +1962,10 @@ description: Result of parsing fillet-and-shell.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 1254,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 1254,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "getNextAdjacentEdge",
                               "start": 0,
@@ -1975,7 +1975,7 @@ description: Result of parsing fillet-and-shell.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 1254,
+                          "commentStart": 0,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -1991,10 +1991,10 @@ description: Result of parsing fillet-and-shell.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1091,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1091,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "fillet",
                     "start": 0,
@@ -2004,7 +2004,7 @@ description: Result of parsing fillet-and-shell.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1091,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -2012,7 +2012,7 @@ description: Result of parsing fillet-and-shell.kcl
                 "unlabeled": null
               }
             ],
-            "commentStart": 804,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "PipeExpression",
@@ -2028,12 +2028,12 @@ description: Result of parsing fillet-and-shell.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 1297,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 1302,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 1302,
+            "commentStart": 0,
             "end": 0,
             "name": "m25Screw",
             "start": 0,
@@ -2043,12 +2043,12 @@ description: Result of parsing fillet-and-shell.kcl
             "body": {
               "body": [
                 {
-                  "commentStart": 1329,
+                  "commentStart": 0,
                   "declaration": {
-                    "commentStart": 1329,
+                    "commentStart": 0,
                     "end": 0,
                     "id": {
-                      "commentStart": 1329,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "screw",
                       "start": 0,
@@ -2059,7 +2059,7 @@ description: Result of parsing fillet-and-shell.kcl
                         {
                           "arguments": [
                             {
-                              "commentStart": 1351,
+                              "commentStart": 0,
                               "end": 0,
                               "raw": "\"XY\"",
                               "start": 0,
@@ -2070,10 +2070,10 @@ description: Result of parsing fillet-and-shell.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 1337,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 1337,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "startSketchOn",
                               "start": 0,
@@ -2083,7 +2083,7 @@ description: Result of parsing fillet-and-shell.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 1337,
+                          "commentStart": 0,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -2092,10 +2092,10 @@ description: Result of parsing fillet-and-shell.kcl
                         {
                           "arguments": [
                             {
-                              "commentStart": 1379,
+                              "commentStart": 0,
                               "elements": [
                                 {
-                                  "commentStart": 1380,
+                                  "commentStart": 0,
                                   "end": 0,
                                   "raw": "0",
                                   "start": 0,
@@ -2107,7 +2107,7 @@ description: Result of parsing fillet-and-shell.kcl
                                   }
                                 },
                                 {
-                                  "commentStart": 1383,
+                                  "commentStart": 0,
                                   "end": 0,
                                   "raw": "0",
                                   "start": 0,
@@ -2125,7 +2125,7 @@ description: Result of parsing fillet-and-shell.kcl
                               "type": "ArrayExpression"
                             },
                             {
-                              "commentStart": 1387,
+                              "commentStart": 0,
                               "end": 0,
                               "start": 0,
                               "type": "PipeSubstitution",
@@ -2134,10 +2134,10 @@ description: Result of parsing fillet-and-shell.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 1364,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 1364,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "startProfileAt",
                               "start": 0,
@@ -2147,7 +2147,7 @@ description: Result of parsing fillet-and-shell.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 1364,
+                          "commentStart": 0,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -2158,21 +2158,21 @@ description: Result of parsing fillet-and-shell.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "commentStart": 1404,
+                                "commentStart": 0,
                                 "end": 0,
                                 "name": "center",
                                 "start": 0,
                                 "type": "Identifier"
                               },
                               "arg": {
-                                "commentStart": 1413,
+                                "commentStart": 0,
                                 "elements": [
                                   {
                                     "abs_path": false,
-                                    "commentStart": 1414,
+                                    "commentStart": 0,
                                     "end": 0,
                                     "name": {
-                                      "commentStart": 1414,
+                                      "commentStart": 0,
                                       "end": 0,
                                       "name": "x",
                                       "start": 0,
@@ -2185,10 +2185,10 @@ description: Result of parsing fillet-and-shell.kcl
                                   },
                                   {
                                     "abs_path": false,
-                                    "commentStart": 1417,
+                                    "commentStart": 0,
                                     "end": 0,
                                     "name": {
-                                      "commentStart": 1417,
+                                      "commentStart": 0,
                                       "end": 0,
                                       "name": "y",
                                       "start": 0,
@@ -2209,14 +2209,14 @@ description: Result of parsing fillet-and-shell.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "commentStart": 1421,
+                                "commentStart": 0,
                                 "end": 0,
                                 "name": "radius",
                                 "start": 0,
                                 "type": "Identifier"
                               },
                               "arg": {
-                                "commentStart": 1430,
+                                "commentStart": 0,
                                 "end": 0,
                                 "raw": "2.5",
                                 "start": 0,
@@ -2231,10 +2231,10 @@ description: Result of parsing fillet-and-shell.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 1397,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 1397,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "circle",
                               "start": 0,
@@ -2244,7 +2244,7 @@ description: Result of parsing fillet-and-shell.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 1397,
+                          "commentStart": 0,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
@@ -2258,21 +2258,21 @@ description: Result of parsing fillet-and-shell.kcl
                                 {
                                   "type": "LabeledArg",
                                   "label": {
-                                    "commentStart": 1454,
+                                    "commentStart": 0,
                                     "end": 0,
                                     "name": "center",
                                     "start": 0,
                                     "type": "Identifier"
                                   },
                                   "arg": {
-                                    "commentStart": 1463,
+                                    "commentStart": 0,
                                     "elements": [
                                       {
                                         "abs_path": false,
-                                        "commentStart": 1464,
+                                        "commentStart": 0,
                                         "end": 0,
                                         "name": {
-                                          "commentStart": 1464,
+                                          "commentStart": 0,
                                           "end": 0,
                                           "name": "x",
                                           "start": 0,
@@ -2285,10 +2285,10 @@ description: Result of parsing fillet-and-shell.kcl
                                       },
                                       {
                                         "abs_path": false,
-                                        "commentStart": 1467,
+                                        "commentStart": 0,
                                         "end": 0,
                                         "name": {
-                                          "commentStart": 1467,
+                                          "commentStart": 0,
                                           "end": 0,
                                           "name": "y",
                                           "start": 0,
@@ -2309,14 +2309,14 @@ description: Result of parsing fillet-and-shell.kcl
                                 {
                                   "type": "LabeledArg",
                                   "label": {
-                                    "commentStart": 1471,
+                                    "commentStart": 0,
                                     "end": 0,
                                     "name": "radius",
                                     "start": 0,
                                     "type": "Identifier"
                                   },
                                   "arg": {
-                                    "commentStart": 1480,
+                                    "commentStart": 0,
                                     "end": 0,
                                     "raw": "1.25",
                                     "start": 0,
@@ -2331,10 +2331,10 @@ description: Result of parsing fillet-and-shell.kcl
                               ],
                               "callee": {
                                 "abs_path": false,
-                                "commentStart": 1447,
+                                "commentStart": 0,
                                 "end": 0,
                                 "name": {
-                                  "commentStart": 1447,
+                                  "commentStart": 0,
                                   "end": 0,
                                   "name": "circle",
                                   "start": 0,
@@ -2344,7 +2344,7 @@ description: Result of parsing fillet-and-shell.kcl
                                 "start": 0,
                                 "type": "Name"
                               },
-                              "commentStart": 1447,
+                              "commentStart": 0,
                               "end": 0,
                               "start": 0,
                               "type": "CallExpressionKw",
@@ -2352,7 +2352,7 @@ description: Result of parsing fillet-and-shell.kcl
                               "unlabeled": null
                             },
                             {
-                              "commentStart": 1487,
+                              "commentStart": 0,
                               "end": 0,
                               "start": 0,
                               "type": "PipeSubstitution",
@@ -2361,10 +2361,10 @@ description: Result of parsing fillet-and-shell.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 1442,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 1442,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "hole",
                               "start": 0,
@@ -2374,7 +2374,7 @@ description: Result of parsing fillet-and-shell.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 1442,
+                          "commentStart": 0,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -2385,7 +2385,7 @@ description: Result of parsing fillet-and-shell.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "commentStart": 1505,
+                                "commentStart": 0,
                                 "end": 0,
                                 "name": "length",
                                 "start": 0,
@@ -2393,10 +2393,10 @@ description: Result of parsing fillet-and-shell.kcl
                               },
                               "arg": {
                                 "abs_path": false,
-                                "commentStart": 1514,
+                                "commentStart": 0,
                                 "end": 0,
                                 "name": {
-                                  "commentStart": 1514,
+                                  "commentStart": 0,
                                   "end": 0,
                                   "name": "height",
                                   "start": 0,
@@ -2411,10 +2411,10 @@ description: Result of parsing fillet-and-shell.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 1497,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 1497,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "extrude",
                               "start": 0,
@@ -2424,7 +2424,7 @@ description: Result of parsing fillet-and-shell.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 1497,
+                          "commentStart": 0,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
@@ -2432,7 +2432,7 @@ description: Result of parsing fillet-and-shell.kcl
                           "unlabeled": null
                         }
                       ],
-                      "commentStart": 1337,
+                      "commentStart": 0,
                       "end": 0,
                       "start": 0,
                       "type": "PipeExpression",
@@ -2450,10 +2450,10 @@ description: Result of parsing fillet-and-shell.kcl
                 {
                   "argument": {
                     "abs_path": false,
-                    "commentStart": 1531,
+                    "commentStart": 0,
                     "end": 0,
                     "name": {
-                      "commentStart": 1531,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "screw",
                       "start": 0,
@@ -2464,24 +2464,24 @@ description: Result of parsing fillet-and-shell.kcl
                     "type": "Name",
                     "type": "Name"
                   },
-                  "commentStart": 1524,
+                  "commentStart": 0,
                   "end": 0,
                   "start": 0,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
                 }
               ],
-              "commentStart": 1325,
+              "commentStart": 0,
               "end": 0,
               "start": 0
             },
-            "commentStart": 1310,
+            "commentStart": 0,
             "end": 0,
             "params": [
               {
                 "type": "Parameter",
                 "identifier": {
-                  "commentStart": 1311,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "x",
                   "start": 0,
@@ -2491,7 +2491,7 @@ description: Result of parsing fillet-and-shell.kcl
               {
                 "type": "Parameter",
                 "identifier": {
-                  "commentStart": 1314,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "y",
                   "start": 0,
@@ -2501,7 +2501,7 @@ description: Result of parsing fillet-and-shell.kcl
               {
                 "type": "Parameter",
                 "identifier": {
-                  "commentStart": 1317,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "height",
                   "start": 0,
@@ -2523,22 +2523,22 @@ description: Result of parsing fillet-and-shell.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 1538,
+        "commentStart": 0,
         "end": 0,
         "expression": {
           "arguments": [
             {
-              "commentStart": 1549,
+              "commentStart": 0,
               "end": 0,
               "left": {
-                "commentStart": 1549,
+                "commentStart": 0,
                 "end": 0,
                 "left": {
                   "abs_path": false,
-                  "commentStart": 1549,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1549,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "border",
                     "start": 0,
@@ -2551,14 +2551,14 @@ description: Result of parsing fillet-and-shell.kcl
                 },
                 "operator": "+",
                 "right": {
-                  "commentStart": 1558,
+                  "commentStart": 0,
                   "end": 0,
                   "left": {
                     "abs_path": false,
-                    "commentStart": 1558,
+                    "commentStart": 0,
                     "end": 0,
                     "name": {
-                      "commentStart": 1558,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "rpizWidth",
                       "start": 0,
@@ -2571,7 +2571,7 @@ description: Result of parsing fillet-and-shell.kcl
                   },
                   "operator": "/",
                   "right": {
-                    "commentStart": 1570,
+                    "commentStart": 0,
                     "end": 0,
                     "raw": "2",
                     "start": 0,
@@ -2592,14 +2592,14 @@ description: Result of parsing fillet-and-shell.kcl
               },
               "operator": "-",
               "right": {
-                "commentStart": 1575,
+                "commentStart": 0,
                 "end": 0,
                 "left": {
                   "abs_path": false,
-                  "commentStart": 1575,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1575,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "widthBetweenScrews",
                     "start": 0,
@@ -2612,7 +2612,7 @@ description: Result of parsing fillet-and-shell.kcl
                 },
                 "operator": "/",
                 "right": {
-                  "commentStart": 1596,
+                  "commentStart": 0,
                   "end": 0,
                   "raw": "2",
                   "start": 0,
@@ -2632,16 +2632,16 @@ description: Result of parsing fillet-and-shell.kcl
               "type": "BinaryExpression"
             },
             {
-              "commentStart": 1600,
+              "commentStart": 0,
               "end": 0,
               "left": {
-                "commentStart": 1600,
+                "commentStart": 0,
                 "end": 0,
                 "left": {
-                  "commentStart": 1600,
+                  "commentStart": 0,
                   "end": 0,
                   "left": {
-                    "commentStart": 1600,
+                    "commentStart": 0,
                     "end": 0,
                     "raw": "0",
                     "start": 0,
@@ -2655,10 +2655,10 @@ description: Result of parsing fillet-and-shell.kcl
                   "operator": "+",
                   "right": {
                     "abs_path": false,
-                    "commentStart": 1604,
+                    "commentStart": 0,
                     "end": 0,
                     "name": {
-                      "commentStart": 1604,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "border",
                       "start": 0,
@@ -2675,14 +2675,14 @@ description: Result of parsing fillet-and-shell.kcl
                 },
                 "operator": "+",
                 "right": {
-                  "commentStart": 1613,
+                  "commentStart": 0,
                   "end": 0,
                   "left": {
                     "abs_path": false,
-                    "commentStart": 1613,
+                    "commentStart": 0,
                     "end": 0,
                     "name": {
-                      "commentStart": 1613,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "rpizLength",
                       "start": 0,
@@ -2695,7 +2695,7 @@ description: Result of parsing fillet-and-shell.kcl
                   },
                   "operator": "/",
                   "right": {
-                    "commentStart": 1626,
+                    "commentStart": 0,
                     "end": 0,
                     "raw": "2",
                     "start": 0,
@@ -2716,14 +2716,14 @@ description: Result of parsing fillet-and-shell.kcl
               },
               "operator": "-",
               "right": {
-                "commentStart": 1631,
+                "commentStart": 0,
                 "end": 0,
                 "left": {
                   "abs_path": false,
-                  "commentStart": 1631,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1631,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "lengthBetweenScrews",
                     "start": 0,
@@ -2736,7 +2736,7 @@ description: Result of parsing fillet-and-shell.kcl
                 },
                 "operator": "/",
                 "right": {
-                  "commentStart": 1653,
+                  "commentStart": 0,
                   "end": 0,
                   "raw": "2",
                   "start": 0,
@@ -2757,10 +2757,10 @@ description: Result of parsing fillet-and-shell.kcl
             },
             {
               "abs_path": false,
-              "commentStart": 1657,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 1657,
+                "commentStart": 0,
                 "end": 0,
                 "name": "screwHeight",
                 "start": 0,
@@ -2774,10 +2774,10 @@ description: Result of parsing fillet-and-shell.kcl
           ],
           "callee": {
             "abs_path": false,
-            "commentStart": 1540,
+            "commentStart": 0,
             "end": 0,
             "name": {
-              "commentStart": 1540,
+              "commentStart": 0,
               "end": 0,
               "name": "m25Screw",
               "start": 0,
@@ -2787,7 +2787,7 @@ description: Result of parsing fillet-and-shell.kcl
             "start": 0,
             "type": "Name"
           },
-          "commentStart": 1540,
+          "commentStart": 0,
           "end": 0,
           "start": 0,
           "type": "CallExpression",
@@ -2798,22 +2798,22 @@ description: Result of parsing fillet-and-shell.kcl
         "type": "ExpressionStatement"
       },
       {
-        "commentStart": 1669,
+        "commentStart": 0,
         "end": 0,
         "expression": {
           "arguments": [
             {
-              "commentStart": 1680,
+              "commentStart": 0,
               "end": 0,
               "left": {
-                "commentStart": 1680,
+                "commentStart": 0,
                 "end": 0,
                 "left": {
                   "abs_path": false,
-                  "commentStart": 1680,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1680,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "border",
                     "start": 0,
@@ -2826,14 +2826,14 @@ description: Result of parsing fillet-and-shell.kcl
                 },
                 "operator": "+",
                 "right": {
-                  "commentStart": 1689,
+                  "commentStart": 0,
                   "end": 0,
                   "left": {
                     "abs_path": false,
-                    "commentStart": 1689,
+                    "commentStart": 0,
                     "end": 0,
                     "name": {
-                      "commentStart": 1689,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "rpizWidth",
                       "start": 0,
@@ -2846,7 +2846,7 @@ description: Result of parsing fillet-and-shell.kcl
                   },
                   "operator": "/",
                   "right": {
-                    "commentStart": 1701,
+                    "commentStart": 0,
                     "end": 0,
                     "raw": "2",
                     "start": 0,
@@ -2867,14 +2867,14 @@ description: Result of parsing fillet-and-shell.kcl
               },
               "operator": "-",
               "right": {
-                "commentStart": 1706,
+                "commentStart": 0,
                 "end": 0,
                 "left": {
                   "abs_path": false,
-                  "commentStart": 1706,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1706,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "widthBetweenScrews",
                     "start": 0,
@@ -2887,7 +2887,7 @@ description: Result of parsing fillet-and-shell.kcl
                 },
                 "operator": "/",
                 "right": {
-                  "commentStart": 1727,
+                  "commentStart": 0,
                   "end": 0,
                   "raw": "2",
                   "start": 0,
@@ -2907,16 +2907,16 @@ description: Result of parsing fillet-and-shell.kcl
               "type": "BinaryExpression"
             },
             {
-              "commentStart": 1731,
+              "commentStart": 0,
               "end": 0,
               "left": {
-                "commentStart": 1731,
+                "commentStart": 0,
                 "end": 0,
                 "left": {
-                  "commentStart": 1731,
+                  "commentStart": 0,
                   "end": 0,
                   "left": {
-                    "commentStart": 1731,
+                    "commentStart": 0,
                     "end": 0,
                     "raw": "0",
                     "start": 0,
@@ -2930,10 +2930,10 @@ description: Result of parsing fillet-and-shell.kcl
                   "operator": "+",
                   "right": {
                     "abs_path": false,
-                    "commentStart": 1735,
+                    "commentStart": 0,
                     "end": 0,
                     "name": {
-                      "commentStart": 1735,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "border",
                       "start": 0,
@@ -2950,14 +2950,14 @@ description: Result of parsing fillet-and-shell.kcl
                 },
                 "operator": "+",
                 "right": {
-                  "commentStart": 1744,
+                  "commentStart": 0,
                   "end": 0,
                   "left": {
                     "abs_path": false,
-                    "commentStart": 1744,
+                    "commentStart": 0,
                     "end": 0,
                     "name": {
-                      "commentStart": 1744,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "rpizLength",
                       "start": 0,
@@ -2970,7 +2970,7 @@ description: Result of parsing fillet-and-shell.kcl
                   },
                   "operator": "/",
                   "right": {
-                    "commentStart": 1757,
+                    "commentStart": 0,
                     "end": 0,
                     "raw": "2",
                     "start": 0,
@@ -2991,14 +2991,14 @@ description: Result of parsing fillet-and-shell.kcl
               },
               "operator": "+",
               "right": {
-                "commentStart": 1761,
+                "commentStart": 0,
                 "end": 0,
                 "left": {
                   "abs_path": false,
-                  "commentStart": 1761,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1761,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "lengthBetweenScrews",
                     "start": 0,
@@ -3011,7 +3011,7 @@ description: Result of parsing fillet-and-shell.kcl
                 },
                 "operator": "/",
                 "right": {
-                  "commentStart": 1783,
+                  "commentStart": 0,
                   "end": 0,
                   "raw": "2",
                   "start": 0,
@@ -3032,10 +3032,10 @@ description: Result of parsing fillet-and-shell.kcl
             },
             {
               "abs_path": false,
-              "commentStart": 1786,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 1786,
+                "commentStart": 0,
                 "end": 0,
                 "name": "screwHeight",
                 "start": 0,
@@ -3049,10 +3049,10 @@ description: Result of parsing fillet-and-shell.kcl
           ],
           "callee": {
             "abs_path": false,
-            "commentStart": 1671,
+            "commentStart": 0,
             "end": 0,
             "name": {
-              "commentStart": 1671,
+              "commentStart": 0,
               "end": 0,
               "name": "m25Screw",
               "start": 0,
@@ -3062,7 +3062,7 @@ description: Result of parsing fillet-and-shell.kcl
             "start": 0,
             "type": "Name"
           },
-          "commentStart": 1671,
+          "commentStart": 0,
           "end": 0,
           "start": 0,
           "type": "CallExpression",
@@ -3073,22 +3073,22 @@ description: Result of parsing fillet-and-shell.kcl
         "type": "ExpressionStatement"
       },
       {
-        "commentStart": 1798,
+        "commentStart": 0,
         "end": 0,
         "expression": {
           "arguments": [
             {
-              "commentStart": 1809,
+              "commentStart": 0,
               "end": 0,
               "left": {
-                "commentStart": 1809,
+                "commentStart": 0,
                 "end": 0,
                 "left": {
                   "abs_path": false,
-                  "commentStart": 1809,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1809,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "border",
                     "start": 0,
@@ -3101,14 +3101,14 @@ description: Result of parsing fillet-and-shell.kcl
                 },
                 "operator": "+",
                 "right": {
-                  "commentStart": 1818,
+                  "commentStart": 0,
                   "end": 0,
                   "left": {
                     "abs_path": false,
-                    "commentStart": 1818,
+                    "commentStart": 0,
                     "end": 0,
                     "name": {
-                      "commentStart": 1818,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "rpizWidth",
                       "start": 0,
@@ -3121,7 +3121,7 @@ description: Result of parsing fillet-and-shell.kcl
                   },
                   "operator": "/",
                   "right": {
-                    "commentStart": 1830,
+                    "commentStart": 0,
                     "end": 0,
                     "raw": "2",
                     "start": 0,
@@ -3142,14 +3142,14 @@ description: Result of parsing fillet-and-shell.kcl
               },
               "operator": "+",
               "right": {
-                "commentStart": 1834,
+                "commentStart": 0,
                 "end": 0,
                 "left": {
                   "abs_path": false,
-                  "commentStart": 1834,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1834,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "widthBetweenScrews",
                     "start": 0,
@@ -3162,7 +3162,7 @@ description: Result of parsing fillet-and-shell.kcl
                 },
                 "operator": "/",
                 "right": {
-                  "commentStart": 1855,
+                  "commentStart": 0,
                   "end": 0,
                   "raw": "2",
                   "start": 0,
@@ -3182,16 +3182,16 @@ description: Result of parsing fillet-and-shell.kcl
               "type": "BinaryExpression"
             },
             {
-              "commentStart": 1858,
+              "commentStart": 0,
               "end": 0,
               "left": {
-                "commentStart": 1858,
+                "commentStart": 0,
                 "end": 0,
                 "left": {
-                  "commentStart": 1858,
+                  "commentStart": 0,
                   "end": 0,
                   "left": {
-                    "commentStart": 1858,
+                    "commentStart": 0,
                     "end": 0,
                     "raw": "0",
                     "start": 0,
@@ -3205,10 +3205,10 @@ description: Result of parsing fillet-and-shell.kcl
                   "operator": "+",
                   "right": {
                     "abs_path": false,
-                    "commentStart": 1862,
+                    "commentStart": 0,
                     "end": 0,
                     "name": {
-                      "commentStart": 1862,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "border",
                       "start": 0,
@@ -3225,14 +3225,14 @@ description: Result of parsing fillet-and-shell.kcl
                 },
                 "operator": "+",
                 "right": {
-                  "commentStart": 1871,
+                  "commentStart": 0,
                   "end": 0,
                   "left": {
                     "abs_path": false,
-                    "commentStart": 1871,
+                    "commentStart": 0,
                     "end": 0,
                     "name": {
-                      "commentStart": 1871,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "rpizLength",
                       "start": 0,
@@ -3245,7 +3245,7 @@ description: Result of parsing fillet-and-shell.kcl
                   },
                   "operator": "/",
                   "right": {
-                    "commentStart": 1884,
+                    "commentStart": 0,
                     "end": 0,
                     "raw": "2",
                     "start": 0,
@@ -3266,14 +3266,14 @@ description: Result of parsing fillet-and-shell.kcl
               },
               "operator": "+",
               "right": {
-                "commentStart": 1888,
+                "commentStart": 0,
                 "end": 0,
                 "left": {
                   "abs_path": false,
-                  "commentStart": 1888,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1888,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "lengthBetweenScrews",
                     "start": 0,
@@ -3286,7 +3286,7 @@ description: Result of parsing fillet-and-shell.kcl
                 },
                 "operator": "/",
                 "right": {
-                  "commentStart": 1910,
+                  "commentStart": 0,
                   "end": 0,
                   "raw": "2",
                   "start": 0,
@@ -3307,10 +3307,10 @@ description: Result of parsing fillet-and-shell.kcl
             },
             {
               "abs_path": false,
-              "commentStart": 1913,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 1913,
+                "commentStart": 0,
                 "end": 0,
                 "name": "screwHeight",
                 "start": 0,
@@ -3324,10 +3324,10 @@ description: Result of parsing fillet-and-shell.kcl
           ],
           "callee": {
             "abs_path": false,
-            "commentStart": 1800,
+            "commentStart": 0,
             "end": 0,
             "name": {
-              "commentStart": 1800,
+              "commentStart": 0,
               "end": 0,
               "name": "m25Screw",
               "start": 0,
@@ -3337,7 +3337,7 @@ description: Result of parsing fillet-and-shell.kcl
             "start": 0,
             "type": "Name"
           },
-          "commentStart": 1800,
+          "commentStart": 0,
           "end": 0,
           "start": 0,
           "type": "CallExpression",
@@ -3348,22 +3348,22 @@ description: Result of parsing fillet-and-shell.kcl
         "type": "ExpressionStatement"
       },
       {
-        "commentStart": 1925,
+        "commentStart": 0,
         "end": 0,
         "expression": {
           "arguments": [
             {
-              "commentStart": 1936,
+              "commentStart": 0,
               "end": 0,
               "left": {
-                "commentStart": 1936,
+                "commentStart": 0,
                 "end": 0,
                 "left": {
                   "abs_path": false,
-                  "commentStart": 1936,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1936,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "border",
                     "start": 0,
@@ -3376,14 +3376,14 @@ description: Result of parsing fillet-and-shell.kcl
                 },
                 "operator": "+",
                 "right": {
-                  "commentStart": 1945,
+                  "commentStart": 0,
                   "end": 0,
                   "left": {
                     "abs_path": false,
-                    "commentStart": 1945,
+                    "commentStart": 0,
                     "end": 0,
                     "name": {
-                      "commentStart": 1945,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "rpizWidth",
                       "start": 0,
@@ -3396,7 +3396,7 @@ description: Result of parsing fillet-and-shell.kcl
                   },
                   "operator": "/",
                   "right": {
-                    "commentStart": 1957,
+                    "commentStart": 0,
                     "end": 0,
                     "raw": "2",
                     "start": 0,
@@ -3417,14 +3417,14 @@ description: Result of parsing fillet-and-shell.kcl
               },
               "operator": "+",
               "right": {
-                "commentStart": 1961,
+                "commentStart": 0,
                 "end": 0,
                 "left": {
                   "abs_path": false,
-                  "commentStart": 1961,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1961,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "widthBetweenScrews",
                     "start": 0,
@@ -3437,7 +3437,7 @@ description: Result of parsing fillet-and-shell.kcl
                 },
                 "operator": "/",
                 "right": {
-                  "commentStart": 1982,
+                  "commentStart": 0,
                   "end": 0,
                   "raw": "2",
                   "start": 0,
@@ -3457,16 +3457,16 @@ description: Result of parsing fillet-and-shell.kcl
               "type": "BinaryExpression"
             },
             {
-              "commentStart": 1985,
+              "commentStart": 0,
               "end": 0,
               "left": {
-                "commentStart": 1985,
+                "commentStart": 0,
                 "end": 0,
                 "left": {
-                  "commentStart": 1985,
+                  "commentStart": 0,
                   "end": 0,
                   "left": {
-                    "commentStart": 1985,
+                    "commentStart": 0,
                     "end": 0,
                     "raw": "0",
                     "start": 0,
@@ -3480,10 +3480,10 @@ description: Result of parsing fillet-and-shell.kcl
                   "operator": "+",
                   "right": {
                     "abs_path": false,
-                    "commentStart": 1989,
+                    "commentStart": 0,
                     "end": 0,
                     "name": {
-                      "commentStart": 1989,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "border",
                       "start": 0,
@@ -3500,14 +3500,14 @@ description: Result of parsing fillet-and-shell.kcl
                 },
                 "operator": "+",
                 "right": {
-                  "commentStart": 1998,
+                  "commentStart": 0,
                   "end": 0,
                   "left": {
                     "abs_path": false,
-                    "commentStart": 1998,
+                    "commentStart": 0,
                     "end": 0,
                     "name": {
-                      "commentStart": 1998,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "rpizLength",
                       "start": 0,
@@ -3520,7 +3520,7 @@ description: Result of parsing fillet-and-shell.kcl
                   },
                   "operator": "/",
                   "right": {
-                    "commentStart": 2011,
+                    "commentStart": 0,
                     "end": 0,
                     "raw": "2",
                     "start": 0,
@@ -3541,14 +3541,14 @@ description: Result of parsing fillet-and-shell.kcl
               },
               "operator": "-",
               "right": {
-                "commentStart": 2016,
+                "commentStart": 0,
                 "end": 0,
                 "left": {
                   "abs_path": false,
-                  "commentStart": 2016,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 2016,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "lengthBetweenScrews",
                     "start": 0,
@@ -3561,7 +3561,7 @@ description: Result of parsing fillet-and-shell.kcl
                 },
                 "operator": "/",
                 "right": {
-                  "commentStart": 2038,
+                  "commentStart": 0,
                   "end": 0,
                   "raw": "2",
                   "start": 0,
@@ -3582,10 +3582,10 @@ description: Result of parsing fillet-and-shell.kcl
             },
             {
               "abs_path": false,
-              "commentStart": 2042,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 2042,
+                "commentStart": 0,
                 "end": 0,
                 "name": "screwHeight",
                 "start": 0,
@@ -3599,10 +3599,10 @@ description: Result of parsing fillet-and-shell.kcl
           ],
           "callee": {
             "abs_path": false,
-            "commentStart": 1927,
+            "commentStart": 0,
             "end": 0,
             "name": {
-              "commentStart": 1927,
+              "commentStart": 0,
               "end": 0,
               "name": "m25Screw",
               "start": 0,
@@ -3612,7 +3612,7 @@ description: Result of parsing fillet-and-shell.kcl
             "start": 0,
             "type": "Name"
           },
-          "commentStart": 1927,
+          "commentStart": 0,
           "end": 0,
           "start": 0,
           "type": "CallExpression",
@@ -3623,24 +3623,24 @@ description: Result of parsing fillet-and-shell.kcl
         "type": "ExpressionStatement"
       },
       {
-        "commentStart": 2054,
+        "commentStart": 0,
         "end": 0,
         "expression": {
           "arguments": [
             {
               "type": "LabeledArg",
               "label": {
-                "commentStart": 2068,
+                "commentStart": 0,
                 "end": 0,
                 "name": "faces",
                 "start": 0,
                 "type": "Identifier"
               },
               "arg": {
-                "commentStart": 2076,
+                "commentStart": 0,
                 "elements": [
                   {
-                    "commentStart": 2077,
+                    "commentStart": 0,
                     "end": 0,
                     "raw": "'end'",
                     "start": 0,
@@ -3658,7 +3658,7 @@ description: Result of parsing fillet-and-shell.kcl
             {
               "type": "LabeledArg",
               "label": {
-                "commentStart": 2085,
+                "commentStart": 0,
                 "end": 0,
                 "name": "thickness",
                 "start": 0,
@@ -3666,10 +3666,10 @@ description: Result of parsing fillet-and-shell.kcl
               },
               "arg": {
                 "abs_path": false,
-                "commentStart": 2097,
+                "commentStart": 0,
                 "end": 0,
                 "name": {
-                  "commentStart": 2097,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "caseThickness",
                   "start": 0,
@@ -3684,10 +3684,10 @@ description: Result of parsing fillet-and-shell.kcl
           ],
           "callee": {
             "abs_path": false,
-            "commentStart": 2056,
+            "commentStart": 0,
             "end": 0,
             "name": {
-              "commentStart": 2056,
+              "commentStart": 0,
               "end": 0,
               "name": "shell",
               "start": 0,
@@ -3697,17 +3697,17 @@ description: Result of parsing fillet-and-shell.kcl
             "start": 0,
             "type": "Name"
           },
-          "commentStart": 2056,
+          "commentStart": 0,
           "end": 0,
           "start": 0,
           "type": "CallExpressionKw",
           "type": "CallExpressionKw",
           "unlabeled": {
             "abs_path": false,
-            "commentStart": 2062,
+            "commentStart": 0,
             "end": 0,
             "name": {
-              "commentStart": 2062,
+              "commentStart": 0,
               "end": 0,
               "name": "case",
               "start": 0,
@@ -3730,7 +3730,7 @@ description: Result of parsing fillet-and-shell.kcl
       "nonCodeNodes": {
         "1": [
           {
-            "commentStart": 30,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -3741,7 +3741,7 @@ description: Result of parsing fillet-and-shell.kcl
         ],
         "2": [
           {
-            "commentStart": 49,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -3752,7 +3752,7 @@ description: Result of parsing fillet-and-shell.kcl
         ],
         "3": [
           {
-            "commentStart": 61,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -3763,7 +3763,7 @@ description: Result of parsing fillet-and-shell.kcl
         ],
         "4": [
           {
-            "commentStart": 78,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -3774,7 +3774,7 @@ description: Result of parsing fillet-and-shell.kcl
         ],
         "7": [
           {
-            "commentStart": 166,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -3785,7 +3785,7 @@ description: Result of parsing fillet-and-shell.kcl
         ],
         "9": [
           {
-            "commentStart": 220,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -3796,7 +3796,7 @@ description: Result of parsing fillet-and-shell.kcl
         ],
         "12": [
           {
-            "commentStart": 293,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -3807,7 +3807,7 @@ description: Result of parsing fillet-and-shell.kcl
         ],
         "15": [
           {
-            "commentStart": 356,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -3818,7 +3818,7 @@ description: Result of parsing fillet-and-shell.kcl
         ],
         "16": [
           {
-            "commentStart": 795,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -3829,7 +3829,7 @@ description: Result of parsing fillet-and-shell.kcl
         ],
         "17": [
           {
-            "commentStart": 1297,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -3840,7 +3840,7 @@ description: Result of parsing fillet-and-shell.kcl
         ],
         "18": [
           {
-            "commentStart": 1538,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -3851,7 +3851,7 @@ description: Result of parsing fillet-and-shell.kcl
         ],
         "19": [
           {
-            "commentStart": 1669,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -3862,7 +3862,7 @@ description: Result of parsing fillet-and-shell.kcl
         ],
         "20": [
           {
-            "commentStart": 1798,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -3873,7 +3873,7 @@ description: Result of parsing fillet-and-shell.kcl
         ],
         "21": [
           {
-            "commentStart": 1925,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -3884,7 +3884,7 @@ description: Result of parsing fillet-and-shell.kcl
         ],
         "22": [
           {
-            "commentStart": 2054,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",

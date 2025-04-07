@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 use crate::{
     errors::KclError,
     execution::{ExecState, KclValue},
-    std::args::{Args, TyF64},
+    std::args::Args,
 };
 
 /// Data for polar coordinates.
@@ -19,7 +19,7 @@ pub struct PolarCoordsData {
     /// The angle of the line (in degrees).
     pub angle: f64,
     /// The length of the line.
-    pub length: TyF64,
+    pub length: f64,
 }
 
 /// Convert from polar/sphere coordinates to cartesian coordinates.
@@ -27,7 +27,7 @@ pub async fn polar(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
     let data: PolarCoordsData = args.get_data()?;
     let result = inner_polar(&data)?;
 
-    args.make_user_val_from_f64_array(result.to_vec(), &data.length.ty)
+    args.make_user_val_from_f64_array(result.to_vec(), &crate::execution::types::NumericType::Unknown)
 }
 
 /// Convert polar/sphere (azimuth, elevation, distance) coordinates to
@@ -49,7 +49,7 @@ pub async fn polar(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 }]
 fn inner_polar(data: &PolarCoordsData) -> Result<[f64; 2], KclError> {
     let angle = data.angle.to_radians();
-    let x = data.length.n * angle.cos();
-    let y = data.length.n * angle.sin();
+    let x = data.length * angle.cos();
+    let y = data.length * angle.sin();
     Ok([x, y])
 }

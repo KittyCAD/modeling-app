@@ -6,22 +6,22 @@ description: Result of parsing i-beam.kcl
   "Ok": {
     "body": [
       {
-        "commentStart": 160,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 183,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 183,
+            "commentStart": 0,
             "end": 0,
             "name": "beamLength",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 196,
+            "commentStart": 0,
             "end": 0,
             "left": {
-              "commentStart": 196,
+              "commentStart": 0,
               "end": 0,
               "raw": "6",
               "start": 0,
@@ -37,10 +37,10 @@ description: Result of parsing i-beam.kcl
               "arguments": [],
               "callee": {
                 "abs_path": false,
-                "commentStart": 200,
+                "commentStart": 0,
                 "end": 0,
                 "name": {
-                  "commentStart": 200,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "ft",
                   "start": 0,
@@ -50,7 +50,7 @@ description: Result of parsing i-beam.kcl
                 "start": 0,
                 "type": "Name"
               },
-              "commentStart": 200,
+              "commentStart": 0,
               "end": 0,
               "start": 0,
               "type": "CallExpression",
@@ -73,19 +73,19 @@ description: Result of parsing i-beam.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 205,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 205,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 205,
+            "commentStart": 0,
             "end": 0,
             "name": "beamHeight",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 218,
+            "commentStart": 0,
             "end": 0,
             "raw": "4",
             "start": 0,
@@ -106,19 +106,19 @@ description: Result of parsing i-beam.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 220,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 220,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 220,
+            "commentStart": 0,
             "end": 0,
             "name": "flangeWidth",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 234,
+            "commentStart": 0,
             "end": 0,
             "raw": "2.663",
             "start": 0,
@@ -139,19 +139,19 @@ description: Result of parsing i-beam.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 240,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 240,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 240,
+            "commentStart": 0,
             "end": 0,
             "name": "flangeThickness",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 258,
+            "commentStart": 0,
             "end": 0,
             "raw": "0.293",
             "start": 0,
@@ -172,19 +172,19 @@ description: Result of parsing i-beam.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 264,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 264,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 264,
+            "commentStart": 0,
             "end": 0,
             "name": "webThickness",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 279,
+            "commentStart": 0,
             "end": 0,
             "raw": "0.193",
             "start": 0,
@@ -205,19 +205,19 @@ description: Result of parsing i-beam.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 285,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 285,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 285,
+            "commentStart": 0,
             "end": 0,
             "name": "rootRadius",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 298,
+            "commentStart": 0,
             "end": 0,
             "raw": "0.457",
             "start": 0,
@@ -238,12 +238,12 @@ description: Result of parsing i-beam.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 303,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 430,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 430,
+            "commentStart": 0,
             "end": 0,
             "name": "iBeam",
             "start": 0,
@@ -256,10 +256,10 @@ description: Result of parsing i-beam.kcl
                   {
                     "argument": {
                       "abs_path": false,
-                      "commentStart": 453,
+                      "commentStart": 0,
                       "end": 0,
                       "name": {
-                        "commentStart": 453,
+                        "commentStart": 0,
                         "end": 0,
                         "name": "XZ",
                         "start": 0,
@@ -270,7 +270,7 @@ description: Result of parsing i-beam.kcl
                       "type": "Name",
                       "type": "Name"
                     },
-                    "commentStart": 452,
+                    "commentStart": 0,
                     "end": 0,
                     "operator": "-",
                     "start": 0,
@@ -280,10 +280,10 @@ description: Result of parsing i-beam.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 438,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 438,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "startSketchOn",
                     "start": 0,
@@ -293,7 +293,7 @@ description: Result of parsing i-beam.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 438,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -302,10 +302,10 @@ description: Result of parsing i-beam.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 477,
+                    "commentStart": 0,
                     "elements": [
                       {
-                        "commentStart": 478,
+                        "commentStart": 0,
                         "end": 0,
                         "raw": "0",
                         "start": 0,
@@ -317,14 +317,14 @@ description: Result of parsing i-beam.kcl
                         }
                       },
                       {
-                        "commentStart": 481,
+                        "commentStart": 0,
                         "end": 0,
                         "left": {
                           "abs_path": false,
-                          "commentStart": 481,
+                          "commentStart": 0,
                           "end": 0,
                           "name": {
-                            "commentStart": 481,
+                            "commentStart": 0,
                             "end": 0,
                             "name": "beamHeight",
                             "start": 0,
@@ -337,7 +337,7 @@ description: Result of parsing i-beam.kcl
                         },
                         "operator": "/",
                         "right": {
-                          "commentStart": 494,
+                          "commentStart": 0,
                           "end": 0,
                           "raw": "2",
                           "start": 0,
@@ -359,7 +359,7 @@ description: Result of parsing i-beam.kcl
                     "type": "ArrayExpression"
                   },
                   {
-                    "commentStart": 498,
+                    "commentStart": 0,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -368,10 +368,10 @@ description: Result of parsing i-beam.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 462,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 462,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "startProfileAt",
                     "start": 0,
@@ -381,7 +381,7 @@ description: Result of parsing i-beam.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 462,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -392,21 +392,21 @@ description: Result of parsing i-beam.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 512,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 521,
+                      "commentStart": 0,
                       "end": 0,
                       "left": {
                         "abs_path": false,
-                        "commentStart": 521,
+                        "commentStart": 0,
                         "end": 0,
                         "name": {
-                          "commentStart": 521,
+                          "commentStart": 0,
                           "end": 0,
                           "name": "flangeWidth",
                           "start": 0,
@@ -419,7 +419,7 @@ description: Result of parsing i-beam.kcl
                       },
                       "operator": "/",
                       "right": {
-                        "commentStart": 535,
+                        "commentStart": 0,
                         "end": 0,
                         "raw": "2",
                         "start": 0,
@@ -438,10 +438,10 @@ description: Result of parsing i-beam.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 506,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 506,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "xLine",
                     "start": 0,
@@ -451,7 +451,7 @@ description: Result of parsing i-beam.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 506,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -463,7 +463,7 @@ description: Result of parsing i-beam.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 549,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "length",
                       "start": 0,
@@ -472,10 +472,10 @@ description: Result of parsing i-beam.kcl
                     "arg": {
                       "argument": {
                         "abs_path": false,
-                        "commentStart": 559,
+                        "commentStart": 0,
                         "end": 0,
                         "name": {
-                          "commentStart": 559,
+                          "commentStart": 0,
                           "end": 0,
                           "name": "flangeThickness",
                           "start": 0,
@@ -486,7 +486,7 @@ description: Result of parsing i-beam.kcl
                         "type": "Name",
                         "type": "Name"
                       },
-                      "commentStart": 558,
+                      "commentStart": 0,
                       "end": 0,
                       "operator": "-",
                       "start": 0,
@@ -497,10 +497,10 @@ description: Result of parsing i-beam.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 543,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 543,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "yLine",
                     "start": 0,
@@ -510,7 +510,7 @@ description: Result of parsing i-beam.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 543,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -522,24 +522,24 @@ description: Result of parsing i-beam.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 587,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "endAbsolute",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 601,
+                      "commentStart": 0,
                       "end": 0,
                       "left": {
-                        "commentStart": 601,
+                        "commentStart": 0,
                         "end": 0,
                         "left": {
                           "abs_path": false,
-                          "commentStart": 601,
+                          "commentStart": 0,
                           "end": 0,
                           "name": {
-                            "commentStart": 601,
+                            "commentStart": 0,
                             "end": 0,
                             "name": "webThickness",
                             "start": 0,
@@ -552,7 +552,7 @@ description: Result of parsing i-beam.kcl
                         },
                         "operator": "/",
                         "right": {
-                          "commentStart": 616,
+                          "commentStart": 0,
                           "end": 0,
                           "raw": "2",
                           "start": 0,
@@ -570,10 +570,10 @@ description: Result of parsing i-beam.kcl
                       "operator": "+",
                       "right": {
                         "abs_path": false,
-                        "commentStart": 620,
+                        "commentStart": 0,
                         "end": 0,
                         "name": {
-                          "commentStart": 620,
+                          "commentStart": 0,
                           "end": 0,
                           "name": "rootRadius",
                           "start": 0,
@@ -592,10 +592,10 @@ description: Result of parsing i-beam.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 581,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 581,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "xLine",
                     "start": 0,
@@ -605,7 +605,7 @@ description: Result of parsing i-beam.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 581,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -615,14 +615,14 @@ description: Result of parsing i-beam.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 651,
+                    "commentStart": 0,
                     "end": 0,
                     "properties": [
                       {
-                        "commentStart": 653,
+                        "commentStart": 0,
                         "end": 0,
                         "key": {
-                          "commentStart": 653,
+                          "commentStart": 0,
                           "end": 0,
                           "name": "radius",
                           "start": 0,
@@ -632,10 +632,10 @@ description: Result of parsing i-beam.kcl
                         "type": "ObjectProperty",
                         "value": {
                           "abs_path": false,
-                          "commentStart": 662,
+                          "commentStart": 0,
                           "end": 0,
                           "name": {
-                            "commentStart": 662,
+                            "commentStart": 0,
                             "end": 0,
                             "name": "rootRadius",
                             "start": 0,
@@ -648,10 +648,10 @@ description: Result of parsing i-beam.kcl
                         }
                       },
                       {
-                        "commentStart": 674,
+                        "commentStart": 0,
                         "end": 0,
                         "key": {
-                          "commentStart": 674,
+                          "commentStart": 0,
                           "end": 0,
                           "name": "offset",
                           "start": 0,
@@ -660,7 +660,7 @@ description: Result of parsing i-beam.kcl
                         "start": 0,
                         "type": "ObjectProperty",
                         "value": {
-                          "commentStart": 683,
+                          "commentStart": 0,
                           "end": 0,
                           "raw": "90",
                           "start": 0,
@@ -678,7 +678,7 @@ description: Result of parsing i-beam.kcl
                     "type": "ObjectExpression"
                   },
                   {
-                    "commentStart": 689,
+                    "commentStart": 0,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -687,10 +687,10 @@ description: Result of parsing i-beam.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 637,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 637,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "tangentialArc",
                     "start": 0,
@@ -700,7 +700,7 @@ description: Result of parsing i-beam.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 637,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -711,14 +711,14 @@ description: Result of parsing i-beam.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 703,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "endAbsolute",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 717,
+                      "commentStart": 0,
                       "end": 0,
                       "raw": "0",
                       "start": 0,
@@ -733,10 +733,10 @@ description: Result of parsing i-beam.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 697,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 697,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "yLine",
                     "start": 0,
@@ -746,7 +746,7 @@ description: Result of parsing i-beam.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 697,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -758,7 +758,7 @@ description: Result of parsing i-beam.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 734,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "axis",
                       "start": 0,
@@ -766,10 +766,10 @@ description: Result of parsing i-beam.kcl
                     },
                     "arg": {
                       "abs_path": false,
-                      "commentStart": 741,
+                      "commentStart": 0,
                       "end": 0,
                       "name": {
-                        "commentStart": 741,
+                        "commentStart": 0,
                         "end": 0,
                         "name": "X",
                         "start": 0,
@@ -784,10 +784,10 @@ description: Result of parsing i-beam.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 725,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 725,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "mirror2d",
                     "start": 0,
@@ -797,7 +797,7 @@ description: Result of parsing i-beam.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 725,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -809,7 +809,7 @@ description: Result of parsing i-beam.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 758,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "axis",
                       "start": 0,
@@ -817,10 +817,10 @@ description: Result of parsing i-beam.kcl
                     },
                     "arg": {
                       "abs_path": false,
-                      "commentStart": 765,
+                      "commentStart": 0,
                       "end": 0,
                       "name": {
-                        "commentStart": 765,
+                        "commentStart": 0,
                         "end": 0,
                         "name": "Y",
                         "start": 0,
@@ -835,10 +835,10 @@ description: Result of parsing i-beam.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 749,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 749,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "mirror2d",
                     "start": 0,
@@ -848,7 +848,7 @@ description: Result of parsing i-beam.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 749,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -860,7 +860,7 @@ description: Result of parsing i-beam.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 781,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "length",
                       "start": 0,
@@ -868,10 +868,10 @@ description: Result of parsing i-beam.kcl
                     },
                     "arg": {
                       "abs_path": false,
-                      "commentStart": 790,
+                      "commentStart": 0,
                       "end": 0,
                       "name": {
-                        "commentStart": 790,
+                        "commentStart": 0,
                         "end": 0,
                         "name": "beamLength",
                         "start": 0,
@@ -886,10 +886,10 @@ description: Result of parsing i-beam.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 773,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 773,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "extrude",
                     "start": 0,
@@ -899,7 +899,7 @@ description: Result of parsing i-beam.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 773,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -907,7 +907,7 @@ description: Result of parsing i-beam.kcl
                 "unlabeled": null
               }
             ],
-            "commentStart": 438,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "PipeExpression",
@@ -935,7 +935,7 @@ description: Result of parsing i-beam.kcl
         "commentStart": 0,
         "end": 0,
         "name": {
-          "commentStart": 128,
+          "commentStart": 0,
           "end": 0,
           "name": "settings",
           "start": 0,
@@ -950,10 +950,10 @@ description: Result of parsing i-beam.kcl
         ],
         "properties": [
           {
-            "commentStart": 137,
+            "commentStart": 0,
             "end": 0,
             "key": {
-              "commentStart": 137,
+              "commentStart": 0,
               "end": 0,
               "name": "defaultLengthUnit",
               "start": 0,
@@ -963,10 +963,10 @@ description: Result of parsing i-beam.kcl
             "type": "ObjectProperty",
             "value": {
               "abs_path": false,
-              "commentStart": 157,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 157,
+                "commentStart": 0,
                 "end": 0,
                 "name": "in",
                 "start": 0,
@@ -987,7 +987,7 @@ description: Result of parsing i-beam.kcl
       "nonCodeNodes": {},
       "startNodes": [
         {
-          "commentStart": 160,
+          "commentStart": 0,
           "end": 0,
           "start": 0,
           "type": "NonCodeNode",
