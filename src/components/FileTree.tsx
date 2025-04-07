@@ -28,10 +28,10 @@ import { codeManager, kclManager } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
 import type { IndexLoaderData } from '@src/lib/types'
 
+import { ToastInsert } from '@src/components/ToastInsert'
 import { commandBarActor } from '@src/machines/commandBarMachine'
 import toast from 'react-hot-toast'
 import styles from './FileTree.module.css'
-import { ToastInsert } from '@src/components/ToastInsert'
 
 function getIndentationCSS(level: number) {
   return `calc(1rem * ${level + 1})`
