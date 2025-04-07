@@ -55,7 +55,7 @@ profile001 = startProfileAt([0.07, 0], sketch001)
     const program = `sketch001 = startSketchOn(XZ)
 profile001 = startProfileAt([0.07, 0], sketch001)
   |> angledLine(angle = 0, length = 11, tag = $a)
-profile002 = angledLine([segAng(a) + 90, 11.17], profile001, $b)
+profile002 = angledLine(profile001, angle = segAng(a) + 90, length = 11.17, tag = $b)
   |> angledLine(angle = segAng(a), length = -segLen(a), tag = $c)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()`

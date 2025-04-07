@@ -639,7 +639,8 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
           .getByRole('button', { name: 'Add constraining value' })
           .click()
 
-        const changedCode = `|> angledLine([${value}], %)`
+        const [ang, len] = value.split(', ')
+        const changedCode = `|> angledLine(angle = ${ang}, length = ${len})`
         await expect(page.locator('.cm-content')).toContainText(changedCode)
         // checking active assures the cursor is where it should be
         await expect(page.locator('.cm-activeLine')).toHaveText(changedCode)
@@ -733,7 +734,8 @@ part002 = startSketchOn(XZ)
         await expect(cmdBarKclInput).toHaveText('78.33')
         await cmdBarSubmitButton.click()
 
-        const changedCode = `|> angledLine([${value}], %)`
+        const [ang, len] = value.split(', ')
+        const changedCode = `|> angledLine(angle = ${ang}, length = ${len})`
         await expect(page.locator('.cm-content')).toContainText(changedCode)
         // checking active assures the cursor is where it should be
         await expect(page.locator('.cm-activeLine')).toHaveText(changedCode)
