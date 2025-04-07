@@ -48,7 +48,7 @@ test.describe('Point-and-click assemblies tests', () => {
         })
         await page.setBodyDimensions({ width: 1000, height: 500 })
         await homePage.openProject(projectName)
-        await scene.waitForExecutionDone()
+        await scene.settled(cmdBar)
         await scene.expectPixelColor(initialColor, testPoint, tolerance)
       })
 
