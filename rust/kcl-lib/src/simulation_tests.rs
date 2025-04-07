@@ -84,7 +84,7 @@ fn parse_test(test: &Test) {
         insta::assert_json_snapshot!("ast", parse_res, {
             ".**.start" => 0,
             ".**.end" => 0,
-            ".**.comment_start" => 0,
+            ".**.commentStart" => 0,
         });
     });
 }

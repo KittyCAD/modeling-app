@@ -8,10 +8,10 @@ description: Result of parsing argument_error.kcl
       {
         "commentStart": 0,
         "declaration": {
-          "commentStart": 3,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 3,
+            "commentStart": 0,
             "end": 0,
             "name": "f",
             "start": 0,
@@ -22,7 +22,7 @@ description: Result of parsing argument_error.kcl
               "body": [
                 {
                   "argument": {
-                    "commentStart": 19,
+                    "commentStart": 0,
                     "end": 0,
                     "raw": "5",
                     "start": 0,
@@ -33,24 +33,24 @@ description: Result of parsing argument_error.kcl
                       "suffix": "None"
                     }
                   },
-                  "commentStart": 12,
+                  "commentStart": 0,
                   "end": 0,
                   "start": 0,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
                 }
               ],
-              "commentStart": 8,
+              "commentStart": 0,
               "end": 0,
               "start": 0
             },
-            "commentStart": 4,
+            "commentStart": 0,
             "end": 0,
             "params": [
               {
                 "type": "Parameter",
                 "identifier": {
-                  "commentStart": 5,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "i",
                   "start": 0,
@@ -72,16 +72,16 @@ description: Result of parsing argument_error.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 22,
+        "commentStart": 0,
         "end": 0,
         "expression": {
           "arguments": [
             {
               "abs_path": false,
-              "commentStart": 28,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 28,
+                "commentStart": 0,
                 "end": 0,
                 "name": "f",
                 "start": 0,
@@ -93,10 +93,10 @@ description: Result of parsing argument_error.kcl
               "type": "Name"
             },
             {
-              "commentStart": 31,
+              "commentStart": 0,
               "elements": [
                 {
-                  "commentStart": 32,
+                  "commentStart": 0,
                   "end": 0,
                   "raw": "0",
                   "start": 0,
@@ -108,7 +108,7 @@ description: Result of parsing argument_error.kcl
                   }
                 },
                 {
-                  "commentStart": 35,
+                  "commentStart": 0,
                   "end": 0,
                   "raw": "1",
                   "start": 0,
@@ -128,10 +128,10 @@ description: Result of parsing argument_error.kcl
           ],
           "callee": {
             "abs_path": false,
-            "commentStart": 24,
+            "commentStart": 0,
             "end": 0,
             "name": {
-              "commentStart": 24,
+              "commentStart": 0,
               "end": 0,
               "name": "map",
               "start": 0,
@@ -141,7 +141,7 @@ description: Result of parsing argument_error.kcl
             "start": 0,
             "type": "Name"
           },
-          "commentStart": 24,
+          "commentStart": 0,
           "end": 0,
           "start": 0,
           "type": "CallExpression",
@@ -158,7 +158,7 @@ description: Result of parsing argument_error.kcl
       "nonCodeNodes": {
         "0": [
           {
-            "commentStart": 22,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
