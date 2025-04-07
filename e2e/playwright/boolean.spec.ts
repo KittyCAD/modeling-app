@@ -38,7 +38,7 @@ test.describe('Point and click for boolean workflows', () => {
         path.resolve(
           __dirname,
           '../../',
-          './rust/kcl-lib/e2e/executor/inputs/boolean-setup-with.kcl'
+          './rust/kcl-lib/e2e/executor/inputs/boolean-setup-with-sketch-on-faces.kcl'
         ),
         'utf-8'
       )
