@@ -273,7 +273,10 @@ export function assertParse(code: string): Node<Program> {
   if (err(result)) throw result
   if (!resultIsOk(result)) {
     // eslint-disable-next-line suggest-no-throw/suggest-no-throw
-    throw new Error('parse result contains errors', { cause: result })
+    throw new Error(
+      `parse result contains errors: ${result.errors.map((err) => err.message).join('\n')}`,
+      { cause: result }
+    )
   }
   return result.program
 }
