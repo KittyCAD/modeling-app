@@ -2,4 +2,20 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Operations executed tangent_to_3_point_arc.kcl
 ---
-[]
+[
+  {
+    "labeledArgs": {
+      "data": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  }
+]
