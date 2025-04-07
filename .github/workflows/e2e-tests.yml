@@ -339,22 +339,12 @@ jobs:
         if: needs.conditions.outputs.should-run == 'true'
         run: yarn tronb:vite:dev
 
-      - name: Install vector
-        if: ${{ needs.conditions.outputs.should-run == 'true' && contains(matrix.os, 'ubuntu') }}
-        shell: bash
-        run: |
-          curl --proto '=https' --tlsv1.2 -sSfL https://sh.vector.dev > /tmp/vector.sh
-          chmod +x /tmp/vector.sh
-          /tmp/vector.sh -y -no-modify-path
-          mkdir -p /tmp/vector
-          cp .github/workflows/vector.toml /tmp/vector.toml
-          sed -i "s#GITHUB_WORKFLOW#${GITHUB_WORKFLOW}#g" /tmp/vector.toml
-          sed -i "s#GITHUB_REPOSITORY#${GITHUB_REPOSITORY}#g" /tmp/vector.toml
-          sed -i "s#GITHUB_SHA#${GITHUB_SHA}#g" /tmp/vector.toml
-          sed -i "s#GITHUB_REF_NAME#${GITHUB_REF_NAME}#g" /tmp/vector.toml
-          sed -i "s#GH_ACTIONS_AXIOM_TOKEN#${{secrets.GH_ACTIONS_AXIOM_TOKEN}}#g" /tmp/vector.toml
-          cat /tmp/vector.toml
-          ${HOME}/.vector/bin/vector --config /tmp/vector.toml &
+      - name: Start Vector
+        if: ${{ needs.conditions.outputs.should-run == 'true' && !contains(matrix.os, 'windows') }}
+        run: .github/ci-cd-scripts/start-vector-${{ env.OS_NAME }}.sh
+        env:
+          GH_ACTIONS_AXIOM_TOKEN: ${{ secrets.GH_ACTIONS_AXIOM_TOKEN }}
+          OS_NAME: ${{ env.OS_NAME }}
 
       - uses: actions/download-artifact@v4
         if: ${{ needs.conditions.outputs.should-run == 'true' && !cancelled() && (success() || failure()) }}
