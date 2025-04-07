@@ -5,13 +5,16 @@ import { createSettings } from '@src/lib/settings/initialSettings'
 import { authMachine } from '@src/machines/authMachine'
 import { ACTOR_IDS } from '@src/machines/machineConstants'
 import { settingsMachine } from '@src/machines/settingsMachine'
-import { systemIOMachine, SystemIOMachineEvents } from "@src/machines/systemIOMachine"
+import { SystemIOMachineEvents } from "@src/machines/systemIO/utils"
+import { systemIOMachineWeb} from "@src/machines/systemIO/systemIOMachineWeb"
+import { systemIOMachineDesktop} from "@src/machines/systemIO/systemIOMachineDesktop"
+import { systemIOMachine} from "@src/machines/systemIO/systemIOMachine"
 
 const { AUTH, SETTINGS, SYSTEM_IO } = ACTOR_IDS
 const appMachineActors = {
   [AUTH]: authMachine,
   [SETTINGS]: settingsMachine,
-  [SYSTEM_IO]: systemIOMachine
+  [SYSTEM_IO]: systemIOMachineDesktop
 } as const
 
 const appMachine = setup({

@@ -1,46 +1,7 @@
 import { setup, fromPromise, assign, assertEvent} from 'xstate'
 import { DEFAULT_PROJECT_NAME } from "@src/lib/constants"
-import { mkdirOrNOOP, getProjectInfo } from "@src/lib/desktop"
 import type { Project } from '@src/lib/project'
-
-export enum SystemIOMachineActors {
-  readFoldersFromProjectDirectory = "read folders from project directory",
-  setProjectDirectoryPath = "set project directory path"
-}
-
-export enum SystemIOMachineStates {
-  idle = "idle",
-  readingFolders = "readingFolders",
-  settingProjectDirectoryPath = "settingProjectDirectoryPath"
-}
-
-const donePrefix = 'xstate.done.actor.'
-
-export enum SystemIOMachineEvents {
-  readFoldersFromProjectDirectory = "read folders from project directory",
-  done_readFoldersFromProjectDirectory = donePrefix + "read folders from project directory",
-  setProjectDirectoryPath = "set project directory path",
-}
-
-export enum SystemIOMachineActions {
-  setFolders = "set folders",
-  setProjectDirectoryPath = "set project directory path"
-}
-
-const NO_PROJECT_DIRECTORY = ''
-
-export type SystemIOContext = {
-  // Only store folders under the projectDirectory, do not maintain folders outside this directory
-  folders: Project[],
-  // For this machines runtime, this is the default string when creating a project
-  // A project is defined by creating a folder at the one level below the working project directory
-  defaultProjectFolderName:string,
-  // working project directory that stores all the project folders
-  projectDirectoryPath: string,
-  // has the application gone through the initialiation of systemIOMachine at least once.
-  // this is required to prevent chokidar from spamming invalid events during initialization.
-  hasListedProjects: boolean
-}
+import {SystemIOMachineEvents, SystemIOMachineActions, SystemIOMachineActors, SystemIOMachineStates, NO_PROJECT_DIRECTORY, SystemIOContext} from "@src/machines/systemIO/utils"
 
 /**
  * Handles any system level I/O for folders and files
@@ -72,41 +33,7 @@ export const systemIOMachine = setup({
   },
   actors: {
     [SystemIOMachineActors.readFoldersFromProjectDirectory]: fromPromise(async ({input:context}:{input:SystemIOContext}) => {
-      const projects = []
-      const projectDirectoryPath = context.projectDirectoryPath
-      if (projectDirectoryPath === NO_PROJECT_DIRECTORY) {
-        // TODO
-        return []
-      }
-      await mkdirOrNOOP(projectDirectoryPath)
-      // Gotcha: readdir will list all folders at this project directory even if you do not have readwrite access on the directory path
-      const entries = await window.electron.readdir(projectDirectoryPath)
-      const { value: canReadWriteProjectDirectory } = await window.electron.canReadWriteDirectory(projectDirectoryPath)
-
-      for (let entry of entries) {
-        // Skip directories that start with a dot
-        if (entry.startsWith('.')) {
-          continue
-        }
-        const projectPath = window.electron.path.join(projectDirectoryPath, entry)
-
-        // if it's not a directory ignore.
-        // Gotcha: statIsDirectory will work even if you do not have read write permissions on the project path
-        const isDirectory = await window.electron.statIsDirectory(projectPath)
-        if (!isDirectory) {
-          continue
-        }
-        const project : Project = await getProjectInfo(projectPath)
-        if (
-          project.kcl_file_count === 0 &&
-          project.readWriteAccess &&
-          canReadWriteProjectDirectory
-        ) {
-          continue
-        }
-        projects.push(project)
-      }
-      return projects
+      return []
     }),
   }
 }).createMachine({
