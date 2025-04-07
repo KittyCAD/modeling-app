@@ -286,9 +286,11 @@ pub fn calculate_circle_from_3_points(points: [Point2d; 3]) -> CircleParams {
 #[cfg(test)]
 mod tests {
     // Here you can bring your functions into scope
+    use approx::assert_relative_eq;
     use pretty_assertions::assert_eq;
+    use std::f64::consts::PI;
 
-    use super::{get_x_component, get_y_component, Angle};
+    use super::{calculate_circle_center, get_x_component, get_y_component, Angle};
     use crate::SourceRange;
 
     static EACH_QUAD: [(i32, [i32; 2]); 12] = [
@@ -452,6 +454,75 @@ mod tests {
         }
         assert_eq!(angle_start.to_degrees().round(), 0.0);
         assert_eq!(angle_end.to_degrees().round(), 180.0);
+    }
+
+    #[test]
+    fn test_calculate_circle_center() {
+        const EPS: f64 = 1e-4;
+
+        // Test: circle center = (4.1, 1.9)
+        let p1 = [1.0, 2.0];
+        let p2 = [4.0, 5.0];
+        let p3 = [7.0, 3.0];
+        let center = calculate_circle_center(p1, p2, p3);
+        assert_relative_eq!(center[0], 4.1, epsilon = EPS);
+        assert_relative_eq!(center[1], 1.9, epsilon = EPS);
+
+        // Tests: Generate a few circles and test its points
+        let center = [3.2, 0.7];
+        let radius_array = [0.001, 0.01, 0.6, 1.0, 5.0, 60.0, 500.0, 2000.0, 400_000.0];
+        let points_array = [[0.0, 0.33, 0.66], [0.0, 0.1, 0.2], [0.0, -0.1, 0.1], [0.0, 0.5, 0.7]];
+
+        let get_point = |radius: f64, t: f64| {
+            let angle = t * 2.0 * PI;
+            [center[0] + radius * angle.cos(), center[1] + radius * angle.sin()]
+        };
+
+        for radius in radius_array {
+            for point in points_array {
+                let p1 = get_point(radius, point[0]);
+                let p2 = get_point(radius, point[1]);
+                let p3 = get_point(radius, point[2]);
+                let c = calculate_circle_center(p1, p2, p3);
+                assert_relative_eq!(c[0], center[0], epsilon = EPS);
+                assert_relative_eq!(c[1], center[1], epsilon = EPS);
+            }
+        }
+
+        // Test: Equilateral triangle
+        let p1 = [0.0, 0.0];
+        let p2 = [1.0, 0.0];
+        let p3 = [0.5, 3.0_f64.sqrt() / 2.0];
+        let center = calculate_circle_center(p1, p2, p3);
+        assert_relative_eq!(center[0], 0.5, epsilon = EPS);
+        assert_relative_eq!(center[1], 1.0 / (2.0 * 3.0_f64.sqrt()), epsilon = EPS);
+
+        // Test: Collinear points (should return the average of the points)
+        let p1 = [0.0, 0.0];
+        let p2 = [1.0, 0.0];
+        let p3 = [2.0, 0.0];
+        let center = calculate_circle_center(p1, p2, p3);
+        assert_relative_eq!(center[0], 1.0, epsilon = EPS);
+        assert_relative_eq!(center[1], 0.0, epsilon = EPS);
+
+        // Test: Points forming a circle with radius = 1
+        let p1 = [0.0, 0.0];
+        let p2 = [0.0, 2.0];
+        let p3 = [2.0, 0.0];
+        let center = calculate_circle_center(p1, p2, p3);
+        assert_relative_eq!(center[0], 1.0, epsilon = EPS);
+        assert_relative_eq!(center[1], 1.0, epsilon = EPS);
+
+        // Test: Integer coordinates
+        let p1 = [0.0, 0.0];
+        let p2 = [0.0, 6.0];
+        let p3 = [6.0, 0.0];
+        let center = calculate_circle_center(p1, p2, p3);
+        assert_relative_eq!(center[0], 3.0, epsilon = EPS);
+        assert_relative_eq!(center[1], 3.0, epsilon = EPS);
+        // Verify radius (should be 3 * sqrt(2))
+        let radius = ((center[0] - p1[0]).powi(2) + (center[1] - p1[1]).powi(2)).sqrt();
+        assert_relative_eq!(radius, 3.0 * 2.0_f64.sqrt(), epsilon = EPS);
     }
 }
 
