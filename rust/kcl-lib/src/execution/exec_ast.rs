@@ -120,7 +120,6 @@ impl ExecutorContext {
             .exec_block(program, exec_state, crate::execution::BodyType::Root)
             .await;
 
-        let new_units = exec_state.length_unit();
         let env_ref = if preserve_mem {
             exec_state.mut_stack().pop_and_preserve_env()
         } else {
