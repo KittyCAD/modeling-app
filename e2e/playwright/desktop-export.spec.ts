@@ -11,7 +11,7 @@ import { expect, test } from '@e2e/playwright/zoo-test'
 test(
   'export works on the first try',
   { tag: ['@electron', '@skipLocalEngine'] },
-  async ({ page, context, scene, tronApp }, testInfo) => {
+  async ({ page, context, scene, tronApp, cmdBar }, testInfo) => {
     if (!tronApp) {
       fail()
     }
@@ -37,8 +37,7 @@ test(
       const projectName = page.getByText(`bracket`)
       await expect(projectName).toBeVisible()
       await projectName.click()
-      await scene.waitForExecutionDone()
-      await page.waitForTimeout(1_000) // wait for panel buttons to be available
+      await scene.settled(cmdBar)
 
       // Expect zero errors in gutter
       await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
@@ -47,10 +46,9 @@ test(
       const exportButton = page.getByTestId('export-pane-button')
       await expect(exportButton).toBeVisible()
       await exportButton.click()
-      await page.waitForTimeout(1_000) // wait for export options to be available
 
       // Select the first format option
-      const gltfOption = page.getByText('glTF')
+      const gltfOption = cmdBar.selectOption({ name: 'glTF' })
       const exportFileName = `main.gltf` // source file is named `main.kcl`
       await expect(gltfOption).toBeVisible()
       await page.keyboard.press('Enter')
@@ -58,7 +56,6 @@ test(
       // Click the checkbox
       const submitButton = page.getByText('Confirm Export')
       await expect(submitButton).toBeVisible()
-      await page.waitForTimeout(500)
       await page.keyboard.press('Enter')
 
       // Look out for the toast message
@@ -110,8 +107,7 @@ test(
 
       // Close the file pane
       await u.closeFilePanel()
-      await scene.waitForExecutionDone()
-      await page.waitForTimeout(1_000) // wait for panel buttons to be available
+      await scene.settled(cmdBar)
 
       // Expect zero errors in gutter
       await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
@@ -120,10 +116,9 @@ test(
       const exportButton = page.getByTestId('export-pane-button')
       await expect(exportButton).toBeVisible()
       await exportButton.click()
-      await page.waitForTimeout(1_000) // wait for export options to be available
 
       // Select the first format option
-      const gltfOption = page.getByText('glTF')
+      const gltfOption = cmdBar.selectOption({ name: 'glTF' })
       const exportFileName = `other.gltf` // source file is named `other.kcl`
       await expect(gltfOption).toBeVisible()
       await page.keyboard.press('Enter')
@@ -131,7 +126,6 @@ test(
       // Click the checkbox
       const submitButton = page.getByText('Confirm Export')
       await expect(submitButton).toBeVisible()
-      await page.waitForTimeout(500)
       await page.keyboard.press('Enter')
 
       // Look out for the toast message

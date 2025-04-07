@@ -20,8 +20,7 @@ import {
 import { reportRejection } from '@src/lib/trap'
 import { binaryToUuid, uuidv4 } from '@src/lib/utils'
 
-// TODO(paultag): This ought to be tweakable.
-const pingIntervalMs = 5_000
+const pingIntervalMs = 1_000
 
 function isHighlightSetEntity_type(
   data: any
@@ -191,8 +190,6 @@ export type EngineConnectionState =
   | State<EngineConnectionStateType.Disconnecting, DisconnectingValue>
   | State<EngineConnectionStateType.Disconnected, void>
 
-export type PingPongState = 'OK' | 'TIMEOUT'
-
 export enum EngineConnectionEvents {
   // Fires for each ping-pong success or failure.
   PingPongChanged = 'ping-pong-changed', // (state: PingPongState) => void
@@ -301,12 +298,17 @@ class EngineConnection extends EventTarget {
   public webrtcStatsCollector?: () => Promise<ClientMetrics>
   private engineCommandManager: EngineCommandManager
 
-  private pingPongSpan: { ping?: Date; pong?: Date }
+  private pingPongSpan: { ping?: number; pong?: number }
   private pingIntervalId: ReturnType<typeof setInterval> = setInterval(
     () => {},
     60_000
   )
   isUsingConnectionLite: boolean = false
+
+  timeoutToForceConnectId: ReturnType<typeof setTimeout> = setTimeout(
+    () => {},
+    3000
+  )
 
   constructor({
     engineCommandManager,
@@ -333,74 +335,26 @@ class EngineConnection extends EventTarget {
       return
     }
 
-    // Without an interval ping, our connection will timeout.
-    // If this.idleMode is true we skip this logic so only reconnect
-    // happens on mouse move
     this.pingIntervalId = setInterval(() => {
-      if (this.idleMode) return
+      // Only start a new ping when the other is fulfilled.
+      if (this.pingPongSpan.ping) {
+        return
+      }
 
-      switch (this.state.type as EngineConnectionStateType) {
-        case EngineConnectionStateType.ConnectionEstablished:
-          // If there was no reply to the last ping, report a timeout and
-          // teardown the connection.
-          if (this.pingPongSpan.ping && !this.pingPongSpan.pong) {
-            this.dispatchEvent(
-              new CustomEvent(EngineConnectionEvents.PingPongChanged, {
-                detail: 'TIMEOUT',
-              })
-            )
-            this.state = {
-              type: EngineConnectionStateType.Disconnecting,
-              value: {
-                type: DisconnectingType.Timeout,
-              },
-            }
-            this.disconnectAll()
+      // Don't start pinging until we're connected.
+      if (this.state.type !== EngineConnectionStateType.ConnectionEstablished) {
+        return
+      }
 
-            // Otherwise check the time between was >= pingIntervalMs,
-            // and if it was, then it's bad network health.
-          } else if (this.pingPongSpan.ping && this.pingPongSpan.pong) {
-            if (
-              Math.abs(
-                this.pingPongSpan.pong.valueOf() -
-                  this.pingPongSpan.ping.valueOf()
-              ) >= pingIntervalMs
-            ) {
-              this.dispatchEvent(
-                new CustomEvent(EngineConnectionEvents.PingPongChanged, {
-                  detail: 'TIMEOUT',
-                })
-              )
-            } else {
-              this.dispatchEvent(
-                new CustomEvent(EngineConnectionEvents.PingPongChanged, {
-                  detail: 'OK',
-                })
-              )
-            }
-          }
-
-          this.send({ type: 'ping' })
-          this.pingPongSpan.ping = new Date()
-          this.pingPongSpan.pong = undefined
-          break
-        case EngineConnectionStateType.Disconnecting:
-        case EngineConnectionStateType.Disconnected:
-          // We will do reconnection elsewhere, because we basically need
-          // to destroy this EngineConnection, and this setInterval loop
-          // lives inside it. (lee) I might change this in the future so it's
-          // outside this class.
-          break
-        default:
-          if (this.isConnecting()) break
-          // Means we never could do an initial connection. Reconnect everything.
-          if (!this.pingPongSpan.ping) this.connect().catch(reportRejection)
-          break
+      this.send({ type: 'ping' })
+      this.pingPongSpan = {
+        ping: Date.now(),
+        pong: undefined,
       }
     }, pingIntervalMs)
 
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    this.connect()
+    this.connect({ reconnect: false })
   }
 
   // SHOULD ONLY BE USED FOR VITESTS
@@ -511,7 +465,9 @@ class EngineConnection extends EventTarget {
     this.idleMode = opts?.idleMode ?? false
     clearInterval(this.pingIntervalId)
 
-    if (opts?.idleMode) {
+    this.disconnectAll()
+
+    if (this.idleMode) {
       this.state = {
         type: EngineConnectionStateType.Disconnecting,
         value: {
@@ -530,8 +486,6 @@ class EngineConnection extends EventTarget {
         type: DisconnectingType.Quit,
       },
     }
-
-    this.disconnectAll()
   }
 
   initiateConnectionExclusive(): boolean {
@@ -585,8 +539,8 @@ class EngineConnection extends EventTarget {
    * This will attempt the full handshake, and retry if the connection
    * did not establish.
    */
-  connect(reconnecting?: boolean): Promise<void> {
-    // eslint-disable-next-line @typescript-eslint/no-this-alias
+  connect(args: { reconnect: boolean }): Promise<void> {
+    // eslint-disable-next-line
     const that = this
     return new Promise((resolve) => {
       if (this.isConnecting() || this.isReady()) {
@@ -647,7 +601,7 @@ class EngineConnection extends EventTarget {
 
           // Sometimes the remote end doesn't report the end of candidates.
           // They have 3 seconds to.
-          setTimeout(() => {
+          this.timeoutToForceConnectId = setTimeout(() => {
             if (that.initiateConnectionExclusive()) {
               console.warn('connected after 3 second delay')
             }
@@ -958,7 +912,7 @@ class EngineConnection extends EventTarget {
 
           // Send an initial ping
           this.send({ type: 'ping' })
-          this.pingPongSpan.ping = new Date()
+          this.pingPongSpan.ping = Date.now()
         }
         this.websocket.addEventListener('open', this.onWebSocketOpen)
 
@@ -1053,7 +1007,20 @@ class EngineConnection extends EventTarget {
 
           switch (resp.type) {
             case 'pong':
-              this.pingPongSpan.pong = new Date()
+              this.pingPongSpan.pong = Date.now()
+              this.dispatchEvent(
+                new CustomEvent(EngineConnectionEvents.PingPongChanged, {
+                  detail: Math.min(
+                    999,
+                    Math.floor(
+                      this.pingPongSpan.pong - (this.pingPongSpan.ping ?? 0)
+                    )
+                  ),
+                })
+              )
+              // Clear the initial ping so our interval ping loop can fire again
+              // But only after using it above!
+              this.pingPongSpan.ping = undefined
               break
 
             case 'modeling_session_data':
@@ -1197,7 +1164,7 @@ class EngineConnection extends EventTarget {
         this.websocket.addEventListener('message', this.onWebSocketMessage)
       }
 
-      if (reconnecting) {
+      if (args.reconnect) {
         createWebSocketConnection()
       } else {
         this.onNetworkStatusReady = () => {
@@ -1210,9 +1177,12 @@ class EngineConnection extends EventTarget {
       }
     })
   }
+
   // Do not change this back to an object or any, we should only be sending the
   // WebSocketRequest type!
   unreliableSend(message: Models['WebSocketRequest_type']) {
+    if (this.unreliableDataChannel?.readyState !== 'open') return
+
     // TODO(paultag): Add in logic to determine the connection state and
     // take actions if needed?
     this.unreliableDataChannel?.send(
@@ -1223,7 +1193,7 @@ class EngineConnection extends EventTarget {
   // WebSocketRequest type!
   send(message: Models['WebSocketRequest_type']) {
     // Not connected, don't send anything
-    if (this.websocket?.readyState === 3) return
+    if (this.websocket?.readyState !== 1) return
 
     // TODO(paultag): Add in logic to determine the connection state and
     // take actions if needed?
@@ -1232,6 +1202,8 @@ class EngineConnection extends EventTarget {
     )
   }
   disconnectAll() {
+    clearTimeout(this.timeoutToForceConnectId)
+
     if (this.websocket?.readyState === 1) {
       this.websocket?.close()
     }
@@ -1261,8 +1233,17 @@ class EngineConnection extends EventTarget {
       this.websocket?.readyState === 3
 
     if (closedPc && closedUDC && closedWS) {
-      // Do not notify the rest of the program that we have cut off anything.
-      this.state = { type: EngineConnectionStateType.Disconnected }
+      if (!this.idleMode) {
+        // Do not notify the rest of the program that we have cut off anything.
+        this.state = { type: EngineConnectionStateType.Disconnected }
+      } else {
+        this.state = {
+          type: EngineConnectionStateType.Disconnecting,
+          value: {
+            type: DisconnectingType.Pause,
+          },
+        }
+      }
       this.triggeredStart = false
     }
   }
@@ -1288,23 +1269,32 @@ export interface Subscription<T extends ModelTypes> {
   ) => void
 }
 
+export enum CommandLogType {
+  SendModeling = 'send-modeling',
+  SendScene = 'send-scene',
+  ReceiveReliable = 'receive-reliable',
+  ExecutionDone = 'execution-done',
+  ExportDone = 'export-done',
+  SetDefaultSystemProperties = 'set_default_system_properties',
+}
+
 export type CommandLog =
   | {
-      type: 'send-modeling'
+      type: CommandLogType.SendModeling
       data: EngineCommand
     }
   | {
-      type: 'send-scene'
+      type: CommandLogType.SendScene
       data: EngineCommand
     }
   | {
-      type: 'receive-reliable'
+      type: CommandLogType.ReceiveReliable
       data: OkWebSocketResponseData
       id: string
       cmd_type?: string
     }
   | {
-      type: 'execution-done'
+      type: CommandLogType.ExecutionDone
       data: null
     }
 
@@ -1370,8 +1360,6 @@ export class EngineCommandManager extends EventTarget {
     width: 1337,
     height: 1337,
   }
-
-  elVideo: HTMLVideoElement | null = null
 
   _commandLogCallBack: (command: CommandLog[]) => void = () => {}
 
@@ -1525,6 +1513,7 @@ export class EngineCommandManager extends EventTarget {
       })
 
       this._camControlsCameraChange()
+
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       this.sendSceneCommand({
         // CameraControls subscribes to default_camera_get_settings response events
@@ -1535,6 +1524,7 @@ export class EngineCommandManager extends EventTarget {
           type: 'default_camera_get_settings',
         },
       })
+
       setIsStreamReady(true)
 
       // Other parts of the application should use this to react on scene ready.
@@ -1646,7 +1636,7 @@ export class EngineCommandManager extends EventTarget {
           message.request_id
         ) {
           this.addCommandLog({
-            type: 'receive-reliable',
+            type: CommandLogType.ReceiveReliable,
             data: message.resp,
             id: message?.request_id || '',
             cmd_type: pending?.command?.cmd?.type,
@@ -1680,7 +1670,7 @@ export class EngineCommandManager extends EventTarget {
               if (!command) return
               if (command.type === 'modeling_cmd_req')
                 this.addCommandLog({
-                  type: 'receive-reliable',
+                  type: CommandLogType.ReceiveReliable,
                   data: {
                     type: 'modeling',
                     data: {
@@ -1722,7 +1712,7 @@ export class EngineCommandManager extends EventTarget {
       )
 
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      this.engineConnection?.connect()
+      this.engineConnection?.connect({ reconnect: false })
     }
     this.engineConnection.addEventListener(
       EngineConnectionEvents.ConnectionStarted,
@@ -1748,7 +1738,7 @@ export class EngineCommandManager extends EventTarget {
       cmd: {
         type: 'reconfigure_stream',
         ...this.streamDimensions,
-        fps: 60,
+        fps: 60, // This is required but it does next to nothing
       },
     }
     this.engineConnection?.send(resizeCmd)
@@ -1789,7 +1779,10 @@ export class EngineCommandManager extends EventTarget {
     } else if (this.engineCommandManager?.engineConnection) {
       // @ts-ignore
       this.engineCommandManager?.engineConnection?.tearDown(opts)
+      // @ts-ignore
+      this.engineCommandManager.engineConnection = null
     }
+    this.engineConnection = undefined
   }
   async startNewSession() {
     this.responseMap = {}
@@ -1864,7 +1857,7 @@ export class EngineCommandManager extends EventTarget {
     ) {
       // highlight_set_entity, mouse_move and camera_drag_move are sent over the unreliable channel and are too noisy
       this.addCommandLog({
-        type: 'send-scene',
+        type: CommandLogType.SendScene,
         data: command,
       })
     }

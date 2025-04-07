@@ -6,7 +6,7 @@ description: Result of parsing import_whole.kcl
   "Ok": {
     "body": [
       {
-        "commentStart": 33,
+        "commentStart": 0,
         "end": 0,
         "path": {
           "type": "Kcl",
@@ -15,7 +15,7 @@ description: Result of parsing import_whole.kcl
         "selector": {
           "type": "None",
           "alias": {
-            "commentStart": 64,
+            "commentStart": 0,
             "end": 0,
             "name": "foo",
             "start": 0,
@@ -27,12 +27,12 @@ description: Result of parsing import_whole.kcl
         "type": "ImportStatement"
       },
       {
-        "commentStart": 67,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 69,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 69,
+            "commentStart": 0,
             "end": 0,
             "name": "bar",
             "start": 0,
@@ -42,10 +42,10 @@ description: Result of parsing import_whole.kcl
             "body": [
               {
                 "abs_path": false,
-                "commentStart": 75,
+                "commentStart": 0,
                 "end": 0,
                 "name": {
-                  "commentStart": 75,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "foo",
                   "start": 0,
@@ -61,17 +61,17 @@ description: Result of parsing import_whole.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 90,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "faces",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 98,
+                      "commentStart": 0,
                       "elements": [
                         {
-                          "commentStart": 99,
+                          "commentStart": 0,
                           "end": 0,
                           "raw": "'end'",
                           "start": 0,
@@ -89,7 +89,7 @@ description: Result of parsing import_whole.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 107,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "thickness",
                       "start": 0,
@@ -97,10 +97,10 @@ description: Result of parsing import_whole.kcl
                     },
                     "arg": {
                       "abs_path": false,
-                      "commentStart": 119,
+                      "commentStart": 0,
                       "end": 0,
                       "name": {
-                        "commentStart": 124,
+                        "commentStart": 0,
                         "end": 0,
                         "name": "thickness",
                         "start": 0,
@@ -108,7 +108,7 @@ description: Result of parsing import_whole.kcl
                       },
                       "path": [
                         {
-                          "commentStart": 119,
+                          "commentStart": 0,
                           "end": 0,
                           "name": "foo",
                           "start": 0,
@@ -123,10 +123,10 @@ description: Result of parsing import_whole.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 84,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 84,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "shell",
                     "start": 0,
@@ -136,7 +136,7 @@ description: Result of parsing import_whole.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 84,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -144,7 +144,7 @@ description: Result of parsing import_whole.kcl
                 "unlabeled": null
               }
             ],
-            "commentStart": 75,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "PipeExpression",
@@ -167,7 +167,7 @@ description: Result of parsing import_whole.kcl
         "commentStart": 0,
         "end": 0,
         "name": {
-          "commentStart": 1,
+          "commentStart": 0,
           "end": 0,
           "name": "settings",
           "start": 0,
@@ -175,10 +175,10 @@ description: Result of parsing import_whole.kcl
         },
         "properties": [
           {
-            "commentStart": 10,
+            "commentStart": 0,
             "end": 0,
             "key": {
-              "commentStart": 10,
+              "commentStart": 0,
               "end": 0,
               "name": "defaultLengthUnit",
               "start": 0,
@@ -188,10 +188,10 @@ description: Result of parsing import_whole.kcl
             "type": "ObjectProperty",
             "value": {
               "abs_path": false,
-              "commentStart": 30,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 30,
+                "commentStart": 0,
                 "end": 0,
                 "name": "mm",
                 "start": 0,
@@ -212,7 +212,7 @@ description: Result of parsing import_whole.kcl
       "nonCodeNodes": {
         "0": [
           {
-            "commentStart": 67,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -224,7 +224,7 @@ description: Result of parsing import_whole.kcl
       },
       "startNodes": [
         {
-          "commentStart": 33,
+          "commentStart": 0,
           "end": 0,
           "start": 0,
           "type": "NonCodeNode",

@@ -101,7 +101,6 @@ layout: manual
   * [`patternLinear3d`](kcl/patternLinear3d)
   * [`patternTransform`](kcl/patternTransform)
   * [`patternTransform2d`](kcl/patternTransform2d)
-  * [`polar`](kcl/polar)
   * [`polygon`](kcl/polygon)
   * [`pop`](kcl/pop)
   * [`pow`](kcl/pow)
@@ -143,6 +142,7 @@ layout: manual
   * [`PI`](kcl/consts/std-math-PI)
   * [`TAU`](kcl/consts/std-math-TAU)
   * [`cos`](kcl/std-math-cos)
+  * [`polar`](kcl/std-math-polar)
   * [`sin`](kcl/std-math-sin)
   * [`tan`](kcl/std-math-tan)
 * **std::sketch**

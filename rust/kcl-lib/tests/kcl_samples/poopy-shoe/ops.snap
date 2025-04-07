@@ -201,7 +201,8 @@ description: Operations executed poopy-shoe.kcl
                       "type": "Number",
                       "value": -1.4375,
                       "ty": {
-                        "type": "Unknown"
+                        "type": "Known",
+                        "type": "Count"
                       }
                     },
                     "z": {
@@ -467,7 +468,13 @@ description: Operations executed poopy-shoe.kcl
                       "type": "Number",
                       "value": -3.875,
                       "ty": {
-                        "type": "Unknown"
+                        "type": "Default",
+                        "len": {
+                          "type": "Inches"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
                       }
                     },
                     "y": {
@@ -762,7 +769,13 @@ description: Operations executed poopy-shoe.kcl
           "type": "Number",
           "value": 2.75,
           "ty": {
-            "type": "Unknown"
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -797,7 +810,13 @@ description: Operations executed poopy-shoe.kcl
                       "type": "Number",
                       "value": -3.875,
                       "ty": {
-                        "type": "Unknown"
+                        "type": "Default",
+                        "len": {
+                          "type": "Inches"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
                       }
                     },
                     "y": {

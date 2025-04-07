@@ -19,17 +19,17 @@
   "types": "dist/index.d.ts",
   "dependencies": {
     "@codemirror/language": "^6.10.3",
-    "@codemirror/state": "^6.4.1",
+    "@codemirror/state": "^6.5.2",
     "@lezer/highlight": "^1.2.1",
     "typescript": "^5.7.2"
   },
   "devDependencies": {
-    "@lezer/generator": "^1.7.2",
+    "@lezer/generator": "^1.7.3",
     "@rollup/plugin-typescript": "^12.1.2",
     "rollup": "^4.29.1",
     "rollup-plugin-dts": "^6.1.1",
-    "vite-tsconfig-paths": "^4.3.2",
-    "vitest": "^2.1.9"
+    "vite-tsconfig-paths": "^5.1.4",
+    "vitest": "^3.1.1"
   },
   "files": [
     "dist/"

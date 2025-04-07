@@ -78,12 +78,14 @@ sketch001 = startSketchOn(XY)
 
     // Ensure we execute the first time.
     await u.openDebugPanel()
-    await expect(
-      page.locator('[data-receive-command-type="scene_clear_all"]')
-    ).toHaveCount(1)
-    await expect(
-      page.locator('[data-message-type="execution-done"]')
-    ).toHaveCount(2)
+    await expect
+      .poll(() =>
+        page.locator('[data-receive-command-type="scene_clear_all"]').count()
+      )
+      .toBe(1)
+    await expect
+      .poll(() => page.locator('[data-message-type="execution-done"]').count())
+      .toBe(2)
 
     // Add whitespace to the end of the code.
     await u.codeLocator.click()
@@ -110,12 +112,14 @@ sketch001 = startSketchOn(XY)
   test('ensure we use the cache, and do not clear on append', async ({
     homePage,
     page,
+    scene,
+    cmdBar,
   }) => {
     const u = await getUtils(page)
     await page.setBodyDimensions({ width: 1000, height: 500 })
 
     await homePage.goToModelingScene()
-    await u.waitForPageLoad()
+    await scene.settled(cmdBar)
 
     await u.codeLocator.click()
     await page.keyboard.type(`sketch001 = startSketchOn(XY)
@@ -499,7 +503,7 @@ sketch_001 = startSketchOn(XY)
     await page.keyboard.press('ArrowLeft')
     await page.keyboard.press('ArrowRight')
 
-    await scene.waitForExecutionDone()
+    await scene.connectionEstablished()
 
     // error in guter
     await expect(page.locator('.cm-lint-marker-info').first()).toBeVisible()

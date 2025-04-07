@@ -67,22 +67,24 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
     /// Get the batch of commands to be sent to the engine.
     fn batch(&self) -> Arc<RwLock<Vec<(WebSocketRequest, SourceRange)>>>;
 
-    async fn take_batch(&self) -> Vec<(WebSocketRequest, SourceRange)> {
-        std::mem::take(&mut *self.batch().write().await)
-    }
-
     /// Get the batch of end commands to be sent to the engine.
     fn batch_end(&self) -> Arc<RwLock<IndexMap<uuid::Uuid, (WebSocketRequest, SourceRange)>>>;
-
-    async fn take_batch_end(&self) -> IndexMap<uuid::Uuid, (WebSocketRequest, SourceRange)> {
-        std::mem::take(&mut *self.batch_end().write().await)
-    }
 
     /// Get the command responses from the engine.
     fn responses(&self) -> Arc<RwLock<IndexMap<Uuid, WebSocketResponse>>>;
 
     /// Get the artifact commands that have accumulated so far.
     fn artifact_commands(&self) -> Arc<RwLock<Vec<ArtifactCommand>>>;
+
+    /// Take the batch of commands that have accumulated so far and clear them.
+    async fn take_batch(&self) -> Vec<(WebSocketRequest, SourceRange)> {
+        std::mem::take(&mut *self.batch().write().await)
+    }
+
+    /// Take the batch of end commands that have accumulated so far and clear them.
+    async fn take_batch_end(&self) -> IndexMap<Uuid, (WebSocketRequest, SourceRange)> {
+        std::mem::take(&mut *self.batch_end().write().await)
+    }
 
     /// Clear all artifact commands that have accumulated so far.
     async fn clear_artifact_commands(&self) {
@@ -411,7 +413,6 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
             }
         }
 
-        // Throw away the old batch queue.
         self.stats().batches_sent.fetch_add(1, Ordering::Relaxed);
 
         // We pop off the responses to cleanup our mappings.

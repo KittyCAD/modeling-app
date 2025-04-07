@@ -49,14 +49,16 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
     "type": "Number",
     "value": 0.5,
     "ty": {
-      "type": "Unknown"
+      "type": "Known",
+      "type": "Count"
     }
   },
   "boltHexFlatLength": {
     "type": "Number",
     "value": 0.2887,
     "ty": {
-      "type": "Unknown"
+      "type": "Known",
+      "type": "Count"
     }
   },
   "boltLength": {
@@ -234,28 +236,32 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
     "type": "Number",
     "value": 0.625,
     "ty": {
-      "type": "Unknown"
+      "type": "Known",
+      "type": "Count"
     }
   },
   "hexNutFlatLength": {
     "type": "Number",
     "value": 0.5413,
     "ty": {
-      "type": "Unknown"
+      "type": "Known",
+      "type": "Count"
     }
   },
   "hexNutFlatToFlat": {
     "type": "Number",
     "value": 0.9375,
     "ty": {
-      "type": "Unknown"
+      "type": "Known",
+      "type": "Count"
     }
   },
   "hexNutThickness": {
     "type": "Number",
     "value": 0.5469,
     "ty": {
-      "type": "Unknown"
+      "type": "Known",
+      "type": "Count"
     }
   },
   "mountingHoleDiameter": {

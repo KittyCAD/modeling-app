@@ -11,6 +11,7 @@ import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
 import { useKclContext } from '@src/lang/KclProvider'
 import { isCursorInFunctionDefinition } from '@src/lang/queryAst'
+import { EngineConnectionStateType } from '@src/lang/std/engineConnection'
 import { isCursorInSketchCommandRange } from '@src/lang/util'
 import { isDesktop } from '@src/lib/isDesktop'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
@@ -52,7 +53,7 @@ export function Toolbar({
   }, [kclManager.artifactGraph, context.selectionRanges])
 
   const toolbarButtonsRef = useRef<HTMLUListElement>(null)
-  const { overallState } = useNetworkContext()
+  const { overallState, immediateState } = useNetworkContext()
   const { isExecuting } = useKclContext()
   const { isStreamReady } = useAppState()
   const [showRichContent, setShowRichContent] = useState(false)
@@ -61,6 +62,7 @@ export function Toolbar({
     (overallState !== NetworkHealthState.Ok &&
       overallState !== NetworkHealthState.Weak) ||
     isExecuting ||
+    immediateState.type !== EngineConnectionStateType.ConnectionEstablished ||
     !isStreamReady
 
   const currentMode =

@@ -5,7 +5,7 @@ use kcl_derive_docs::stdlib;
 use kcmc::{each_cmd as mcmd, length_unit::LengthUnit, ModelingCmd};
 use kittycad_modeling_cmds::{self as kcmc};
 use schemars::JsonSchema;
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
 use super::DEFAULT_TOLERANCE;
 use crate::{
@@ -16,7 +16,7 @@ use crate::{
 };
 
 /// A path to sweep along.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(untagged)]
 pub enum SweepPath {

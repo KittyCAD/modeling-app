@@ -6,19 +6,19 @@ description: Result of parsing socket-head-cap-screw.kcl
   "Ok": {
     "body": [
       {
-        "commentStart": 404,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 427,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 427,
+            "commentStart": 0,
             "end": 0,
             "name": "boltDiameter",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 442,
+            "commentStart": 0,
             "end": 0,
             "raw": "0.190",
             "start": 0,
@@ -42,19 +42,19 @@ description: Result of parsing socket-head-cap-screw.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 448,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 448,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 448,
+            "commentStart": 0,
             "end": 0,
             "name": "boltLength",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 461,
+            "commentStart": 0,
             "end": 0,
             "raw": "1.0",
             "start": 0,
@@ -75,12 +75,12 @@ description: Result of parsing socket-head-cap-screw.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 465,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 465,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 465,
+            "commentStart": 0,
             "end": 0,
             "name": "boltHeadLength",
             "start": 0,
@@ -88,10 +88,10 @@ description: Result of parsing socket-head-cap-screw.kcl
           },
           "init": {
             "abs_path": false,
-            "commentStart": 482,
+            "commentStart": 0,
             "end": 0,
             "name": {
-              "commentStart": 482,
+              "commentStart": 0,
               "end": 0,
               "name": "boltDiameter",
               "start": 0,
@@ -112,19 +112,19 @@ description: Result of parsing socket-head-cap-screw.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 495,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 495,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 495,
+            "commentStart": 0,
             "end": 0,
             "name": "boltHeadDiameter",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 514,
+            "commentStart": 0,
             "end": 0,
             "raw": "0.313",
             "start": 0,
@@ -145,22 +145,22 @@ description: Result of parsing socket-head-cap-screw.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 520,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 520,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 520,
+            "commentStart": 0,
             "end": 0,
             "name": "boltHexDrive",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 535,
+            "commentStart": 0,
             "end": 0,
             "left": {
-              "commentStart": 535,
+              "commentStart": 0,
               "end": 0,
               "raw": "5",
               "start": 0,
@@ -173,7 +173,7 @@ description: Result of parsing socket-head-cap-screw.kcl
             },
             "operator": "/",
             "right": {
-              "commentStart": 539,
+              "commentStart": 0,
               "end": 0,
               "raw": "32",
               "start": 0,
@@ -198,26 +198,26 @@ description: Result of parsing socket-head-cap-screw.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 542,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 542,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 542,
+            "commentStart": 0,
             "end": 0,
             "name": "boltHexFlatLength",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 562,
+            "commentStart": 0,
             "end": 0,
             "left": {
               "abs_path": false,
-              "commentStart": 562,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 562,
+                "commentStart": 0,
                 "end": 0,
                 "name": "boltHexDrive",
                 "start": 0,
@@ -230,10 +230,10 @@ description: Result of parsing socket-head-cap-screw.kcl
             },
             "operator": "/",
             "right": {
-              "commentStart": 578,
+              "commentStart": 0,
               "end": 0,
               "left": {
-                "commentStart": 578,
+                "commentStart": 0,
                 "end": 0,
                 "raw": "2",
                 "start": 0,
@@ -250,7 +250,7 @@ description: Result of parsing socket-head-cap-screw.kcl
                   {
                     "arguments": [
                       {
-                        "commentStart": 596,
+                        "commentStart": 0,
                         "end": 0,
                         "raw": "30",
                         "start": 0,
@@ -264,10 +264,10 @@ description: Result of parsing socket-head-cap-screw.kcl
                     ],
                     "callee": {
                       "abs_path": false,
-                      "commentStart": 586,
+                      "commentStart": 0,
                       "end": 0,
                       "name": {
-                        "commentStart": 586,
+                        "commentStart": 0,
                         "end": 0,
                         "name": "toRadians",
                         "start": 0,
@@ -277,7 +277,7 @@ description: Result of parsing socket-head-cap-screw.kcl
                       "start": 0,
                       "type": "Name"
                     },
-                    "commentStart": 586,
+                    "commentStart": 0,
                     "end": 0,
                     "start": 0,
                     "type": "CallExpression",
@@ -286,10 +286,10 @@ description: Result of parsing socket-head-cap-screw.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 582,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 582,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "cos",
                     "start": 0,
@@ -299,7 +299,7 @@ description: Result of parsing socket-head-cap-screw.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 582,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -323,12 +323,12 @@ description: Result of parsing socket-head-cap-screw.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 601,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 639,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 639,
+            "commentStart": 0,
             "end": 0,
             "name": "boltHead",
             "start": 0,
@@ -340,10 +340,10 @@ description: Result of parsing socket-head-cap-screw.kcl
                 "arguments": [
                   {
                     "abs_path": false,
-                    "commentStart": 664,
+                    "commentStart": 0,
                     "end": 0,
                     "name": {
-                      "commentStart": 664,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "XZ",
                       "start": 0,
@@ -357,10 +357,10 @@ description: Result of parsing socket-head-cap-screw.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 650,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 650,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "startSketchOn",
                     "start": 0,
@@ -370,7 +370,7 @@ description: Result of parsing socket-head-cap-screw.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 650,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -381,17 +381,17 @@ description: Result of parsing socket-head-cap-screw.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 680,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "center",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 689,
+                      "commentStart": 0,
                       "elements": [
                         {
-                          "commentStart": 690,
+                          "commentStart": 0,
                           "end": 0,
                           "raw": "0",
                           "start": 0,
@@ -403,7 +403,7 @@ description: Result of parsing socket-head-cap-screw.kcl
                           }
                         },
                         {
-                          "commentStart": 693,
+                          "commentStart": 0,
                           "end": 0,
                           "raw": "0",
                           "start": 0,
@@ -424,21 +424,21 @@ description: Result of parsing socket-head-cap-screw.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 697,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "radius",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 706,
+                      "commentStart": 0,
                       "end": 0,
                       "left": {
                         "abs_path": false,
-                        "commentStart": 706,
+                        "commentStart": 0,
                         "end": 0,
                         "name": {
-                          "commentStart": 706,
+                          "commentStart": 0,
                           "end": 0,
                           "name": "boltHeadDiameter",
                           "start": 0,
@@ -451,7 +451,7 @@ description: Result of parsing socket-head-cap-screw.kcl
                       },
                       "operator": "/",
                       "right": {
-                        "commentStart": 725,
+                        "commentStart": 0,
                         "end": 0,
                         "raw": "2",
                         "start": 0,
@@ -470,14 +470,14 @@ description: Result of parsing socket-head-cap-screw.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 728,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 734,
+                      "commentStart": 0,
                       "end": 0,
                       "start": 0,
                       "type": "TagDeclarator",
@@ -488,10 +488,10 @@ description: Result of parsing socket-head-cap-screw.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 673,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 673,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "circle",
                     "start": 0,
@@ -501,7 +501,7 @@ description: Result of parsing socket-head-cap-screw.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 673,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -513,7 +513,7 @@ description: Result of parsing socket-head-cap-screw.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 757,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "length",
                       "start": 0,
@@ -522,10 +522,10 @@ description: Result of parsing socket-head-cap-screw.kcl
                     "arg": {
                       "argument": {
                         "abs_path": false,
-                        "commentStart": 767,
+                        "commentStart": 0,
                         "end": 0,
                         "name": {
-                          "commentStart": 767,
+                          "commentStart": 0,
                           "end": 0,
                           "name": "boltHeadLength",
                           "start": 0,
@@ -536,7 +536,7 @@ description: Result of parsing socket-head-cap-screw.kcl
                         "type": "Name",
                         "type": "Name"
                       },
-                      "commentStart": 766,
+                      "commentStart": 0,
                       "end": 0,
                       "operator": "-",
                       "start": 0,
@@ -547,10 +547,10 @@ description: Result of parsing socket-head-cap-screw.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 749,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 749,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "extrude",
                     "start": 0,
@@ -560,7 +560,7 @@ description: Result of parsing socket-head-cap-screw.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 749,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -572,14 +572,14 @@ description: Result of parsing socket-head-cap-screw.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 795,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "radius",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 804,
+                      "commentStart": 0,
                       "end": 0,
                       "raw": "0.020",
                       "start": 0,
@@ -594,21 +594,21 @@ description: Result of parsing socket-head-cap-screw.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 811,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "tags",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 818,
+                      "commentStart": 0,
                       "elements": [
                         {
                           "abs_path": false,
-                          "commentStart": 819,
+                          "commentStart": 0,
                           "end": 0,
                           "name": {
-                            "commentStart": 819,
+                            "commentStart": 0,
                             "end": 0,
                             "name": "topEdge",
                             "start": 0,
@@ -623,10 +623,10 @@ description: Result of parsing socket-head-cap-screw.kcl
                           "arguments": [
                             {
                               "abs_path": false,
-                              "commentStart": 844,
+                              "commentStart": 0,
                               "end": 0,
                               "name": {
-                                "commentStart": 844,
+                                "commentStart": 0,
                                 "end": 0,
                                 "name": "topEdge",
                                 "start": 0,
@@ -640,10 +640,10 @@ description: Result of parsing socket-head-cap-screw.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 828,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 828,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "getOppositeEdge",
                               "start": 0,
@@ -653,7 +653,7 @@ description: Result of parsing socket-head-cap-screw.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 828,
+                          "commentStart": 0,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -669,10 +669,10 @@ description: Result of parsing socket-head-cap-screw.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 788,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 788,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "fillet",
                     "start": 0,
@@ -682,7 +682,7 @@ description: Result of parsing socket-head-cap-screw.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 788,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -690,13 +690,13 @@ description: Result of parsing socket-head-cap-screw.kcl
                 "unlabeled": null
               }
             ],
-            "commentStart": 650,
+            "commentStart": 0,
             "end": 0,
             "nonCodeMeta": {
               "nonCodeNodes": {
                 "3": [
                   {
-                    "commentStart": 854,
+                    "commentStart": 0,
                     "end": 0,
                     "start": 0,
                     "type": "NonCodeNode",
@@ -729,12 +729,12 @@ description: Result of parsing socket-head-cap-screw.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 914,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 914,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 914,
+            "commentStart": 0,
             "end": 0,
             "name": "hexPatternSketch",
             "start": 0,
@@ -746,10 +746,10 @@ description: Result of parsing socket-head-cap-screw.kcl
                 "arguments": [
                   {
                     "abs_path": false,
-                    "commentStart": 947,
+                    "commentStart": 0,
                     "end": 0,
                     "name": {
-                      "commentStart": 947,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "boltHead",
                       "start": 0,
@@ -761,7 +761,7 @@ description: Result of parsing socket-head-cap-screw.kcl
                     "type": "Name"
                   },
                   {
-                    "commentStart": 957,
+                    "commentStart": 0,
                     "end": 0,
                     "raw": "'start'",
                     "start": 0,
@@ -772,10 +772,10 @@ description: Result of parsing socket-head-cap-screw.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 933,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 933,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "startSketchOn",
                     "start": 0,
@@ -785,7 +785,7 @@ description: Result of parsing socket-head-cap-screw.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 933,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -794,17 +794,17 @@ description: Result of parsing socket-head-cap-screw.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 986,
+                    "commentStart": 0,
                     "elements": [
                       {
-                        "commentStart": 995,
+                        "commentStart": 0,
                         "end": 0,
                         "left": {
                           "abs_path": false,
-                          "commentStart": 995,
+                          "commentStart": 0,
                           "end": 0,
                           "name": {
-                            "commentStart": 995,
+                            "commentStart": 0,
                             "end": 0,
                             "name": "boltHexDrive",
                             "start": 0,
@@ -817,7 +817,7 @@ description: Result of parsing socket-head-cap-screw.kcl
                         },
                         "operator": "/",
                         "right": {
-                          "commentStart": 1010,
+                          "commentStart": 0,
                           "end": 0,
                           "raw": "2",
                           "start": 0,
@@ -833,14 +833,14 @@ description: Result of parsing socket-head-cap-screw.kcl
                         "type": "BinaryExpression"
                       },
                       {
-                        "commentStart": 1020,
+                        "commentStart": 0,
                         "end": 0,
                         "left": {
                           "abs_path": false,
-                          "commentStart": 1020,
+                          "commentStart": 0,
                           "end": 0,
                           "name": {
-                            "commentStart": 1020,
+                            "commentStart": 0,
                             "end": 0,
                             "name": "boltHexFlatLength",
                             "start": 0,
@@ -853,7 +853,7 @@ description: Result of parsing socket-head-cap-screw.kcl
                         },
                         "operator": "/",
                         "right": {
-                          "commentStart": 1040,
+                          "commentStart": 0,
                           "end": 0,
                           "raw": "2",
                           "start": 0,
@@ -875,7 +875,7 @@ description: Result of parsing socket-head-cap-screw.kcl
                     "type": "ArrayExpression"
                   },
                   {
-                    "commentStart": 1050,
+                    "commentStart": 0,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -884,10 +884,10 @@ description: Result of parsing socket-head-cap-screw.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 971,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 971,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "startProfileAt",
                     "start": 0,
@@ -897,7 +897,7 @@ description: Result of parsing socket-head-cap-screw.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 971,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -906,14 +906,14 @@ description: Result of parsing socket-head-cap-screw.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 1069,
+                    "commentStart": 0,
                     "end": 0,
                     "properties": [
                       {
-                        "commentStart": 1078,
+                        "commentStart": 0,
                         "end": 0,
                         "key": {
-                          "commentStart": 1078,
+                          "commentStart": 0,
                           "end": 0,
                           "name": "angle",
                           "start": 0,
@@ -922,7 +922,7 @@ description: Result of parsing socket-head-cap-screw.kcl
                         "start": 0,
                         "type": "ObjectProperty",
                         "value": {
-                          "commentStart": 1086,
+                          "commentStart": 0,
                           "end": 0,
                           "raw": "270",
                           "start": 0,
@@ -935,10 +935,10 @@ description: Result of parsing socket-head-cap-screw.kcl
                         }
                       },
                       {
-                        "commentStart": 1098,
+                        "commentStart": 0,
                         "end": 0,
                         "key": {
-                          "commentStart": 1098,
+                          "commentStart": 0,
                           "end": 0,
                           "name": "length",
                           "start": 0,
@@ -948,10 +948,10 @@ description: Result of parsing socket-head-cap-screw.kcl
                         "type": "ObjectProperty",
                         "value": {
                           "abs_path": false,
-                          "commentStart": 1107,
+                          "commentStart": 0,
                           "end": 0,
                           "name": {
-                            "commentStart": 1107,
+                            "commentStart": 0,
                             "end": 0,
                             "name": "boltHexFlatLength",
                             "start": 0,
@@ -969,7 +969,7 @@ description: Result of parsing socket-head-cap-screw.kcl
                     "type": "ObjectExpression"
                   },
                   {
-                    "commentStart": 1133,
+                    "commentStart": 0,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -978,10 +978,10 @@ description: Result of parsing socket-head-cap-screw.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1058,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1058,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "angledLine",
                     "start": 0,
@@ -991,7 +991,7 @@ description: Result of parsing socket-head-cap-screw.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1058,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -1000,14 +1000,14 @@ description: Result of parsing socket-head-cap-screw.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 1152,
+                    "commentStart": 0,
                     "end": 0,
                     "properties": [
                       {
-                        "commentStart": 1161,
+                        "commentStart": 0,
                         "end": 0,
                         "key": {
-                          "commentStart": 1161,
+                          "commentStart": 0,
                           "end": 0,
                           "name": "angle",
                           "start": 0,
@@ -1016,7 +1016,7 @@ description: Result of parsing socket-head-cap-screw.kcl
                         "start": 0,
                         "type": "ObjectProperty",
                         "value": {
-                          "commentStart": 1169,
+                          "commentStart": 0,
                           "end": 0,
                           "raw": "210",
                           "start": 0,
@@ -1029,10 +1029,10 @@ description: Result of parsing socket-head-cap-screw.kcl
                         }
                       },
                       {
-                        "commentStart": 1181,
+                        "commentStart": 0,
                         "end": 0,
                         "key": {
-                          "commentStart": 1181,
+                          "commentStart": 0,
                           "end": 0,
                           "name": "length",
                           "start": 0,
@@ -1042,10 +1042,10 @@ description: Result of parsing socket-head-cap-screw.kcl
                         "type": "ObjectProperty",
                         "value": {
                           "abs_path": false,
-                          "commentStart": 1190,
+                          "commentStart": 0,
                           "end": 0,
                           "name": {
-                            "commentStart": 1190,
+                            "commentStart": 0,
                             "end": 0,
                             "name": "boltHexFlatLength",
                             "start": 0,
@@ -1063,7 +1063,7 @@ description: Result of parsing socket-head-cap-screw.kcl
                     "type": "ObjectExpression"
                   },
                   {
-                    "commentStart": 1216,
+                    "commentStart": 0,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -1072,10 +1072,10 @@ description: Result of parsing socket-head-cap-screw.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1141,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1141,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "angledLine",
                     "start": 0,
@@ -1085,7 +1085,7 @@ description: Result of parsing socket-head-cap-screw.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1141,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -1094,14 +1094,14 @@ description: Result of parsing socket-head-cap-screw.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 1235,
+                    "commentStart": 0,
                     "end": 0,
                     "properties": [
                       {
-                        "commentStart": 1244,
+                        "commentStart": 0,
                         "end": 0,
                         "key": {
-                          "commentStart": 1244,
+                          "commentStart": 0,
                           "end": 0,
                           "name": "angle",
                           "start": 0,
@@ -1110,7 +1110,7 @@ description: Result of parsing socket-head-cap-screw.kcl
                         "start": 0,
                         "type": "ObjectProperty",
                         "value": {
-                          "commentStart": 1252,
+                          "commentStart": 0,
                           "end": 0,
                           "raw": "150",
                           "start": 0,
@@ -1123,10 +1123,10 @@ description: Result of parsing socket-head-cap-screw.kcl
                         }
                       },
                       {
-                        "commentStart": 1264,
+                        "commentStart": 0,
                         "end": 0,
                         "key": {
-                          "commentStart": 1264,
+                          "commentStart": 0,
                           "end": 0,
                           "name": "length",
                           "start": 0,
@@ -1136,10 +1136,10 @@ description: Result of parsing socket-head-cap-screw.kcl
                         "type": "ObjectProperty",
                         "value": {
                           "abs_path": false,
-                          "commentStart": 1273,
+                          "commentStart": 0,
                           "end": 0,
                           "name": {
-                            "commentStart": 1273,
+                            "commentStart": 0,
                             "end": 0,
                             "name": "boltHexFlatLength",
                             "start": 0,
@@ -1157,7 +1157,7 @@ description: Result of parsing socket-head-cap-screw.kcl
                     "type": "ObjectExpression"
                   },
                   {
-                    "commentStart": 1299,
+                    "commentStart": 0,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -1166,10 +1166,10 @@ description: Result of parsing socket-head-cap-screw.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1224,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1224,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "angledLine",
                     "start": 0,
@@ -1179,7 +1179,7 @@ description: Result of parsing socket-head-cap-screw.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1224,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -1188,14 +1188,14 @@ description: Result of parsing socket-head-cap-screw.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 1318,
+                    "commentStart": 0,
                     "end": 0,
                     "properties": [
                       {
-                        "commentStart": 1327,
+                        "commentStart": 0,
                         "end": 0,
                         "key": {
-                          "commentStart": 1327,
+                          "commentStart": 0,
                           "end": 0,
                           "name": "angle",
                           "start": 0,
@@ -1204,7 +1204,7 @@ description: Result of parsing socket-head-cap-screw.kcl
                         "start": 0,
                         "type": "ObjectProperty",
                         "value": {
-                          "commentStart": 1335,
+                          "commentStart": 0,
                           "end": 0,
                           "raw": "90",
                           "start": 0,
@@ -1217,10 +1217,10 @@ description: Result of parsing socket-head-cap-screw.kcl
                         }
                       },
                       {
-                        "commentStart": 1346,
+                        "commentStart": 0,
                         "end": 0,
                         "key": {
-                          "commentStart": 1346,
+                          "commentStart": 0,
                           "end": 0,
                           "name": "length",
                           "start": 0,
@@ -1230,10 +1230,10 @@ description: Result of parsing socket-head-cap-screw.kcl
                         "type": "ObjectProperty",
                         "value": {
                           "abs_path": false,
-                          "commentStart": 1355,
+                          "commentStart": 0,
                           "end": 0,
                           "name": {
-                            "commentStart": 1355,
+                            "commentStart": 0,
                             "end": 0,
                             "name": "boltHexFlatLength",
                             "start": 0,
@@ -1251,7 +1251,7 @@ description: Result of parsing socket-head-cap-screw.kcl
                     "type": "ObjectExpression"
                   },
                   {
-                    "commentStart": 1381,
+                    "commentStart": 0,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -1260,10 +1260,10 @@ description: Result of parsing socket-head-cap-screw.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1307,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1307,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "angledLine",
                     "start": 0,
@@ -1273,7 +1273,7 @@ description: Result of parsing socket-head-cap-screw.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1307,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -1282,14 +1282,14 @@ description: Result of parsing socket-head-cap-screw.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 1400,
+                    "commentStart": 0,
                     "end": 0,
                     "properties": [
                       {
-                        "commentStart": 1409,
+                        "commentStart": 0,
                         "end": 0,
                         "key": {
-                          "commentStart": 1409,
+                          "commentStart": 0,
                           "end": 0,
                           "name": "angle",
                           "start": 0,
@@ -1298,7 +1298,7 @@ description: Result of parsing socket-head-cap-screw.kcl
                         "start": 0,
                         "type": "ObjectProperty",
                         "value": {
-                          "commentStart": 1417,
+                          "commentStart": 0,
                           "end": 0,
                           "raw": "30",
                           "start": 0,
@@ -1311,10 +1311,10 @@ description: Result of parsing socket-head-cap-screw.kcl
                         }
                       },
                       {
-                        "commentStart": 1428,
+                        "commentStart": 0,
                         "end": 0,
                         "key": {
-                          "commentStart": 1428,
+                          "commentStart": 0,
                           "end": 0,
                           "name": "length",
                           "start": 0,
@@ -1324,10 +1324,10 @@ description: Result of parsing socket-head-cap-screw.kcl
                         "type": "ObjectProperty",
                         "value": {
                           "abs_path": false,
-                          "commentStart": 1437,
+                          "commentStart": 0,
                           "end": 0,
                           "name": {
-                            "commentStart": 1437,
+                            "commentStart": 0,
                             "end": 0,
                             "name": "boltHexFlatLength",
                             "start": 0,
@@ -1345,7 +1345,7 @@ description: Result of parsing socket-head-cap-screw.kcl
                     "type": "ObjectExpression"
                   },
                   {
-                    "commentStart": 1463,
+                    "commentStart": 0,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -1354,10 +1354,10 @@ description: Result of parsing socket-head-cap-screw.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1389,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1389,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "angledLine",
                     "start": 0,
@@ -1367,7 +1367,7 @@ description: Result of parsing socket-head-cap-screw.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1389,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -1377,10 +1377,10 @@ description: Result of parsing socket-head-cap-screw.kcl
                 "arguments": [],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1471,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1471,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "close",
                     "start": 0,
@@ -1390,7 +1390,7 @@ description: Result of parsing socket-head-cap-screw.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1471,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -1401,22 +1401,22 @@ description: Result of parsing socket-head-cap-screw.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1492,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1501,
+                      "commentStart": 0,
                       "end": 0,
                       "left": {
                         "argument": {
                           "abs_path": false,
-                          "commentStart": 1502,
+                          "commentStart": 0,
                           "end": 0,
                           "name": {
-                            "commentStart": 1502,
+                            "commentStart": 0,
                             "end": 0,
                             "name": "boltHeadLength",
                             "start": 0,
@@ -1427,7 +1427,7 @@ description: Result of parsing socket-head-cap-screw.kcl
                           "type": "Name",
                           "type": "Name"
                         },
-                        "commentStart": 1501,
+                        "commentStart": 0,
                         "end": 0,
                         "operator": "-",
                         "start": 0,
@@ -1436,7 +1436,7 @@ description: Result of parsing socket-head-cap-screw.kcl
                       },
                       "operator": "*",
                       "right": {
-                        "commentStart": 1519,
+                        "commentStart": 0,
                         "end": 0,
                         "raw": "0.75",
                         "start": 0,
@@ -1455,10 +1455,10 @@ description: Result of parsing socket-head-cap-screw.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1484,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1484,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "extrude",
                     "start": 0,
@@ -1468,7 +1468,7 @@ description: Result of parsing socket-head-cap-screw.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1484,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1476,7 +1476,7 @@ description: Result of parsing socket-head-cap-screw.kcl
                 "unlabeled": null
               }
             ],
-            "commentStart": 933,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "PipeExpression",
@@ -1492,12 +1492,12 @@ description: Result of parsing socket-head-cap-screw.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 1525,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 1525,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 1525,
+            "commentStart": 0,
             "end": 0,
             "name": "boltBody",
             "start": 0,
@@ -1509,10 +1509,10 @@ description: Result of parsing socket-head-cap-screw.kcl
                 "arguments": [
                   {
                     "abs_path": false,
-                    "commentStart": 1550,
+                    "commentStart": 0,
                     "end": 0,
                     "name": {
-                      "commentStart": 1550,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "boltHead",
                       "start": 0,
@@ -1524,7 +1524,7 @@ description: Result of parsing socket-head-cap-screw.kcl
                     "type": "Name"
                   },
                   {
-                    "commentStart": 1560,
+                    "commentStart": 0,
                     "end": 0,
                     "raw": "'end'",
                     "start": 0,
@@ -1535,10 +1535,10 @@ description: Result of parsing socket-head-cap-screw.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1536,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1536,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "startSketchOn",
                     "start": 0,
@@ -1548,7 +1548,7 @@ description: Result of parsing socket-head-cap-screw.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1536,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -1559,17 +1559,17 @@ description: Result of parsing socket-head-cap-screw.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1579,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "center",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1588,
+                      "commentStart": 0,
                       "elements": [
                         {
-                          "commentStart": 1589,
+                          "commentStart": 0,
                           "end": 0,
                           "raw": "0",
                           "start": 0,
@@ -1581,7 +1581,7 @@ description: Result of parsing socket-head-cap-screw.kcl
                           }
                         },
                         {
-                          "commentStart": 1592,
+                          "commentStart": 0,
                           "end": 0,
                           "raw": "0",
                           "start": 0,
@@ -1602,21 +1602,21 @@ description: Result of parsing socket-head-cap-screw.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1596,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "radius",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1605,
+                      "commentStart": 0,
                       "end": 0,
                       "left": {
                         "abs_path": false,
-                        "commentStart": 1605,
+                        "commentStart": 0,
                         "end": 0,
                         "name": {
-                          "commentStart": 1605,
+                          "commentStart": 0,
                           "end": 0,
                           "name": "boltDiameter",
                           "start": 0,
@@ -1629,7 +1629,7 @@ description: Result of parsing socket-head-cap-screw.kcl
                       },
                       "operator": "/",
                       "right": {
-                        "commentStart": 1620,
+                        "commentStart": 0,
                         "end": 0,
                         "raw": "2",
                         "start": 0,
@@ -1648,14 +1648,14 @@ description: Result of parsing socket-head-cap-screw.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1623,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1629,
+                      "commentStart": 0,
                       "end": 0,
                       "start": 0,
                       "type": "TagDeclarator",
@@ -1666,10 +1666,10 @@ description: Result of parsing socket-head-cap-screw.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1572,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1572,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "circle",
                     "start": 0,
@@ -1679,7 +1679,7 @@ description: Result of parsing socket-head-cap-screw.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1572,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1691,7 +1691,7 @@ description: Result of parsing socket-head-cap-screw.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1655,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "length",
                       "start": 0,
@@ -1699,10 +1699,10 @@ description: Result of parsing socket-head-cap-screw.kcl
                     },
                     "arg": {
                       "abs_path": false,
-                      "commentStart": 1664,
+                      "commentStart": 0,
                       "end": 0,
                       "name": {
-                        "commentStart": 1664,
+                        "commentStart": 0,
                         "end": 0,
                         "name": "boltLength",
                         "start": 0,
@@ -1717,10 +1717,10 @@ description: Result of parsing socket-head-cap-screw.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1647,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1647,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "extrude",
                     "start": 0,
@@ -1730,7 +1730,7 @@ description: Result of parsing socket-head-cap-screw.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1647,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1742,14 +1742,14 @@ description: Result of parsing socket-head-cap-screw.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1688,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "radius",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1697,
+                      "commentStart": 0,
                       "end": 0,
                       "raw": ".020",
                       "start": 0,
@@ -1764,23 +1764,23 @@ description: Result of parsing socket-head-cap-screw.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1703,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "tags",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1710,
+                      "commentStart": 0,
                       "elements": [
                         {
                           "arguments": [
                             {
                               "abs_path": false,
-                              "commentStart": 1727,
+                              "commentStart": 0,
                               "end": 0,
                               "name": {
-                                "commentStart": 1727,
+                                "commentStart": 0,
                                 "end": 0,
                                 "name": "filletEdge",
                                 "start": 0,
@@ -1794,10 +1794,10 @@ description: Result of parsing socket-head-cap-screw.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 1711,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 1711,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "getOppositeEdge",
                               "start": 0,
@@ -1807,7 +1807,7 @@ description: Result of parsing socket-head-cap-screw.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 1711,
+                          "commentStart": 0,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -1823,10 +1823,10 @@ description: Result of parsing socket-head-cap-screw.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1681,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1681,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "fillet",
                     "start": 0,
@@ -1836,7 +1836,7 @@ description: Result of parsing socket-head-cap-screw.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1681,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1848,14 +1848,14 @@ description: Result of parsing socket-head-cap-screw.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1757,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "color",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1765,
+                      "commentStart": 0,
                       "end": 0,
                       "raw": "\"#4dd043\"",
                       "start": 0,
@@ -1867,14 +1867,14 @@ description: Result of parsing socket-head-cap-screw.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1776,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "metalness",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1788,
+                      "commentStart": 0,
                       "end": 0,
                       "raw": "90",
                       "start": 0,
@@ -1889,14 +1889,14 @@ description: Result of parsing socket-head-cap-screw.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1792,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "roughness",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1804,
+                      "commentStart": 0,
                       "end": 0,
                       "raw": "90",
                       "start": 0,
@@ -1911,10 +1911,10 @@ description: Result of parsing socket-head-cap-screw.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1746,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1746,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "appearance",
                     "start": 0,
@@ -1924,7 +1924,7 @@ description: Result of parsing socket-head-cap-screw.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1746,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1932,7 +1932,7 @@ description: Result of parsing socket-head-cap-screw.kcl
                 "unlabeled": null
               }
             ],
-            "commentStart": 1536,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "PipeExpression",
@@ -1955,7 +1955,7 @@ description: Result of parsing socket-head-cap-screw.kcl
         "commentStart": 0,
         "end": 0,
         "name": {
-          "commentStart": 372,
+          "commentStart": 0,
           "end": 0,
           "name": "settings",
           "start": 0,
@@ -1970,10 +1970,10 @@ description: Result of parsing socket-head-cap-screw.kcl
         ],
         "properties": [
           {
-            "commentStart": 381,
+            "commentStart": 0,
             "end": 0,
             "key": {
-              "commentStart": 381,
+              "commentStart": 0,
               "end": 0,
               "name": "defaultLengthUnit",
               "start": 0,
@@ -1983,10 +1983,10 @@ description: Result of parsing socket-head-cap-screw.kcl
             "type": "ObjectProperty",
             "value": {
               "abs_path": false,
-              "commentStart": 401,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 401,
+                "commentStart": 0,
                 "end": 0,
                 "name": "in",
                 "start": 0,
@@ -2007,7 +2007,7 @@ description: Result of parsing socket-head-cap-screw.kcl
       "nonCodeNodes": {},
       "startNodes": [
         {
-          "commentStart": 404,
+          "commentStart": 0,
           "end": 0,
           "start": 0,
           "type": "NonCodeNode",

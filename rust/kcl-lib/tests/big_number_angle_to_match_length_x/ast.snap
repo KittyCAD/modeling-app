@@ -22,7 +22,7 @@ description: Result of parsing big_number_angle_to_match_length_x.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 24,
+                    "commentStart": 0,
                     "end": 0,
                     "raw": "'XY'",
                     "start": 0,
@@ -33,10 +33,10 @@ description: Result of parsing big_number_angle_to_match_length_x.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 10,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 10,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "startSketchOn",
                     "start": 0,
@@ -46,7 +46,7 @@ description: Result of parsing big_number_angle_to_match_length_x.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 10,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -55,10 +55,10 @@ description: Result of parsing big_number_angle_to_match_length_x.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 50,
+                    "commentStart": 0,
                     "elements": [
                       {
-                        "commentStart": 51,
+                        "commentStart": 0,
                         "end": 0,
                         "raw": "0",
                         "start": 0,
@@ -70,7 +70,7 @@ description: Result of parsing big_number_angle_to_match_length_x.kcl
                         }
                       },
                       {
-                        "commentStart": 54,
+                        "commentStart": 0,
                         "end": 0,
                         "raw": "0",
                         "start": 0,
@@ -88,7 +88,7 @@ description: Result of parsing big_number_angle_to_match_length_x.kcl
                     "type": "ArrayExpression"
                   },
                   {
-                    "commentStart": 58,
+                    "commentStart": 0,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -97,10 +97,10 @@ description: Result of parsing big_number_angle_to_match_length_x.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 35,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 35,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "startProfileAt",
                     "start": 0,
@@ -110,7 +110,7 @@ description: Result of parsing big_number_angle_to_match_length_x.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 35,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -121,17 +121,17 @@ description: Result of parsing big_number_angle_to_match_length_x.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 71,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 77,
+                      "commentStart": 0,
                       "elements": [
                         {
-                          "commentStart": 78,
+                          "commentStart": 0,
                           "end": 0,
                           "raw": "1",
                           "start": 0,
@@ -143,7 +143,7 @@ description: Result of parsing big_number_angle_to_match_length_x.kcl
                           }
                         },
                         {
-                          "commentStart": 81,
+                          "commentStart": 0,
                           "end": 0,
                           "raw": "3.82",
                           "start": 0,
@@ -164,14 +164,14 @@ description: Result of parsing big_number_angle_to_match_length_x.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 88,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 94,
+                      "commentStart": 0,
                       "end": 0,
                       "start": 0,
                       "type": "TagDeclarator",
@@ -182,10 +182,10 @@ description: Result of parsing big_number_angle_to_match_length_x.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 66,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 66,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "line",
                     "start": 0,
@@ -195,7 +195,7 @@ description: Result of parsing big_number_angle_to_match_length_x.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 66,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -205,17 +205,17 @@ description: Result of parsing big_number_angle_to_match_length_x.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 121,
+                    "commentStart": 0,
                     "elements": [
                       {
                         "argument": {
                           "arguments": [
                             {
                               "abs_path": false,
-                              "commentStart": 143,
+                              "commentStart": 0,
                               "end": 0,
                               "name": {
-                                "commentStart": 143,
+                                "commentStart": 0,
                                 "end": 0,
                                 "name": "seg01",
                                 "start": 0,
@@ -227,7 +227,7 @@ description: Result of parsing big_number_angle_to_match_length_x.kcl
                               "type": "Name"
                             },
                             {
-                              "commentStart": 150,
+                              "commentStart": 0,
                               "end": 0,
                               "raw": "3",
                               "start": 0,
@@ -239,7 +239,7 @@ description: Result of parsing big_number_angle_to_match_length_x.kcl
                               }
                             },
                             {
-                              "commentStart": 153,
+                              "commentStart": 0,
                               "end": 0,
                               "start": 0,
                               "type": "PipeSubstitution",
@@ -248,10 +248,10 @@ description: Result of parsing big_number_angle_to_match_length_x.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 123,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 123,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "angleToMatchLengthX",
                               "start": 0,
@@ -261,13 +261,13 @@ description: Result of parsing big_number_angle_to_match_length_x.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 123,
+                          "commentStart": 0,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
-                        "commentStart": 122,
+                        "commentStart": 0,
                         "end": 0,
                         "operator": "-",
                         "start": 0,
@@ -275,7 +275,7 @@ description: Result of parsing big_number_angle_to_match_length_x.kcl
                         "type": "UnaryExpression"
                       },
                       {
-                        "commentStart": 157,
+                        "commentStart": 0,
                         "end": 0,
                         "raw": "3",
                         "start": 0,
@@ -293,7 +293,7 @@ description: Result of parsing big_number_angle_to_match_length_x.kcl
                     "type": "ArrayExpression"
                   },
                   {
-                    "commentStart": 161,
+                    "commentStart": 0,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -302,10 +302,10 @@ description: Result of parsing big_number_angle_to_match_length_x.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 107,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 107,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "angledLineToX",
                     "start": 0,
@@ -315,7 +315,7 @@ description: Result of parsing big_number_angle_to_match_length_x.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 107,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -324,7 +324,7 @@ description: Result of parsing big_number_angle_to_match_length_x.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 175,
+                    "commentStart": 0,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -333,10 +333,10 @@ description: Result of parsing big_number_angle_to_match_length_x.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 169,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 169,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "close",
                     "start": 0,
@@ -346,7 +346,7 @@ description: Result of parsing big_number_angle_to_match_length_x.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 169,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -357,14 +357,14 @@ description: Result of parsing big_number_angle_to_match_length_x.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 191,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 200,
+                      "commentStart": 0,
                       "end": 0,
                       "raw": "10",
                       "start": 0,
@@ -379,10 +379,10 @@ description: Result of parsing big_number_angle_to_match_length_x.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 183,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 183,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "extrude",
                     "start": 0,
@@ -392,7 +392,7 @@ description: Result of parsing big_number_angle_to_match_length_x.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 183,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -400,7 +400,7 @@ description: Result of parsing big_number_angle_to_match_length_x.kcl
                 "unlabeled": null
               }
             ],
-            "commentStart": 10,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "PipeExpression",

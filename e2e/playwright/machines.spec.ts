@@ -7,7 +7,7 @@ import { expect, test } from '@e2e/playwright/zoo-test'
 test(
   'When machine-api server not found butt is disabled and shows the reason',
   { tag: '@electron' },
-  async ({ context, page }, testInfo) => {
+  async ({ context, page, scene, cmdBar }, testInfo) => {
     await context.folderSetupFn(async (dir) => {
       const bracketDir = join(dir, 'bracket')
       await fsp.mkdir(bracketDir, { recursive: true })
@@ -23,10 +23,7 @@ test(
 
     await page.getByText('bracket').click()
 
-    await expect(page.getByTestId('loading')).toBeAttached()
-    await expect(page.getByTestId('loading')).not.toBeAttached({
-      timeout: 20_000,
-    })
+    await scene.settled(cmdBar)
 
     const notFoundText = 'Machine API server was not discovered'
     await expect(page.getByText(notFoundText).first()).not.toBeVisible()
@@ -47,7 +44,7 @@ test(
 test(
   'When machine-api server not found home screen & project status shows the reason',
   { tag: '@electron' },
-  async ({ context, page }, testInfo) => {
+  async ({ context, page, scene, cmdBar }, testInfo) => {
     await context.folderSetupFn(async (dir) => {
       const bracketDir = join(dir, 'bracket')
       await fsp.mkdir(bracketDir, { recursive: true })
@@ -71,10 +68,7 @@ test(
 
     await page.getByText('bracket').click()
 
-    await expect(page.getByTestId('loading')).toBeAttached()
-    await expect(page.getByTestId('loading')).not.toBeAttached({
-      timeout: 20_000,
-    })
+    await scene.settled(cmdBar)
 
     await expect(page.getByText(notFoundText).nth(1)).not.toBeVisible()
 

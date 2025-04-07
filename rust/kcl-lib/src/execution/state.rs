@@ -22,6 +22,8 @@ use crate::{
     CompilationError,
 };
 
+use super::types::NumericType;
+
 /// State for executing a program.
 #[derive(Debug, Clone)]
 pub struct ExecState {
@@ -230,6 +232,13 @@ impl ExecState {
 
     pub fn get_module(&mut self, id: ModuleId) -> Option<&ModuleInfo> {
         self.global.module_infos.get(&id)
+    }
+
+    pub fn current_default_units(&self) -> NumericType {
+        NumericType::Default {
+            len: self.length_unit(),
+            angle: self.angle_unit(),
+        }
     }
 
     pub fn length_unit(&self) -> UnitLen {

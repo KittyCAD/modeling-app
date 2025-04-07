@@ -3969,7 +3969,8 @@ description: Variables in memory after executing kitt.kcl
     "type": "Number",
     "value": 9.0,
     "ty": {
-      "type": "Unknown"
+      "type": "Known",
+      "type": "Count"
     }
   },
   "kitBellyButtonWidth": {
@@ -4028,7 +4029,13 @@ description: Variables in memory after executing kitt.kcl
     "type": "Number",
     "value": 24.0,
     "ty": {
-      "type": "Unknown"
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
     }
   },
   "kitBody": {
@@ -7160,7 +7167,13 @@ description: Variables in memory after executing kitt.kcl
     "type": "Number",
     "value": 20.0,
     "ty": {
-      "type": "Unknown"
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
     }
   },
   "kitFloppy1": {
@@ -9033,7 +9046,8 @@ description: Variables in memory after executing kitt.kcl
     "type": "Number",
     "value": 11.0,
     "ty": {
-      "type": "Unknown"
+      "type": "Known",
+      "type": "Count"
     }
   },
   "kitFloppyWidth": {
@@ -9525,7 +9539,13 @@ description: Variables in memory after executing kitt.kcl
     "type": "Number",
     "value": 24.0,
     "ty": {
-      "type": "Unknown"
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
     }
   },
   "kitLeftEar": {

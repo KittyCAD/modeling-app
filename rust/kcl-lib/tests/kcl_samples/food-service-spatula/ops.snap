@@ -345,7 +345,8 @@ description: Operations executed food-service-spatula.kcl
           "type": "Number",
           "value": -7.5,
           "ty": {
-            "type": "Unknown"
+            "type": "Known",
+            "type": "Count"
           }
         },
         "sourceRange": []

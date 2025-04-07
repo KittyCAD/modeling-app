@@ -25,7 +25,13 @@ description: Operations executed i-beam.kcl
           "type": "Number",
           "value": 72.00000000000001,
           "ty": {
-            "type": "Unknown"
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []

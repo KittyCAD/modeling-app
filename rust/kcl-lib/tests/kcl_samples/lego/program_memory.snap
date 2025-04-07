@@ -237,7 +237,8 @@ description: Variables in memory after executing lego.kcl
     "type": "Number",
     "value": 7.9333,
     "ty": {
-      "type": "Unknown"
+      "type": "Known",
+      "type": "Count"
     }
   },
   "lbumps": {
@@ -1931,7 +1932,8 @@ description: Variables in memory after executing lego.kcl
     "type": "Number",
     "value": 6.5,
     "ty": {
-      "type": "Unknown"
+      "type": "Known",
+      "type": "Count"
     }
   },
   "shellExtrude": {
@@ -2286,21 +2288,34 @@ description: Variables in memory after executing lego.kcl
     "type": "Number",
     "value": 1.5,
     "ty": {
-      "type": "Unknown"
+      "type": "Known",
+      "type": "Count"
     }
   },
   "totalLength": {
     "type": "Number",
     "value": 23.8,
     "ty": {
-      "type": "Unknown"
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
     }
   },
   "totalWidth": {
     "type": "Number",
     "value": 15.8,
     "ty": {
-      "type": "Unknown"
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
     }
   },
   "tubePattern": {
@@ -3204,7 +3219,8 @@ description: Variables in memory after executing lego.kcl
     "type": "Number",
     "value": 7.9,
     "ty": {
-      "type": "Unknown"
+      "type": "Known",
+      "type": "Count"
     }
   },
   "wbumps": {
