@@ -1,6 +1,8 @@
 import { useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
 
+import { useNetworkContext } from '@src/hooks/useNetworkContext'
+import { EngineConnectionStateType } from '@src/lang/std/engineConnection'
 import { base64ToString } from '@src/lib/base64'
 import type { ProjectsCommandSchema } from '@src/lib/commandBarConfigs/projectsCommandConfig'
 import { CREATE_FILE_URL_PARAM, DEFAULT_FILE_NAME } from '@src/lib/constants'
@@ -26,13 +28,17 @@ export type CreateFileSchemaMethodOptional = Omit<
 export function useCreateFileLinkQuery(
   callback: (args: CreateFileSchemaMethodOptional) => void
 ) {
+  const { immediateState } = useNetworkContext()
   const [searchParams] = useSearchParams()
   const settings = useSettings()
 
   useEffect(() => {
     const createFileParam = searchParams.has(CREATE_FILE_URL_PARAM)
 
-    if (createFileParam) {
+    if (
+      createFileParam &&
+      immediateState.type === EngineConnectionStateType.ConnectionEstablished
+    ) {
       const params: FileLinkParams = {
         code: base64ToString(
           decodeURIComponent(searchParams.get('code') ?? '')
@@ -54,5 +60,5 @@ export function useCreateFileLinkQuery(
 
       callback(argDefaultValues)
     }
-  }, [searchParams])
+  }, [searchParams, immediateState])
 }
