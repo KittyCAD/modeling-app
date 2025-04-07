@@ -3,7 +3,11 @@ use std::collections::HashMap;
 use async_recursion::async_recursion;
 use indexmap::IndexMap;
 
-use super::{cad_op::Group, kcl_value::TypeDef, types::PrimitiveType};
+use super::{
+    cad_op::Group,
+    kcl_value::TypeDef,
+    types::{PrimitiveType, CHECK_NUMERIC_TYPES},
+};
 use crate::{
     engine::ExecutionKind,
     errors::{KclError, KclErrorDetails},
@@ -26,7 +30,7 @@ use crate::{
     },
     source_range::SourceRange,
     std::{
-        args::{Arg, KwArgs},
+        args::{Arg, KwArgs, TyF64},
         FunctionKind,
     },
     CompilationError,
@@ -705,14 +709,14 @@ impl ExecutorContext {
                 let result = self
                     .execute_expr(&expr.expr, exec_state, metadata, &[], statement_kind)
                     .await?;
-                coerce(&result, &expr.ty, exec_state, expr.into())?
+                apply_ascription(&result, &expr.ty, exec_state, expr.into())?
             }
         };
         Ok(item)
     }
 }
 
-fn coerce(
+fn apply_ascription(
     value: &KclValue,
     ty: &Node<Type>,
     exec_state: &mut ExecState,
@@ -721,7 +725,24 @@ fn coerce(
     let ty = RuntimeType::from_parsed(ty.inner.clone(), exec_state, value.into())
         .map_err(|e| KclError::Semantic(e.into()))?;
 
-    value.coerce(&ty, exec_state).ok_or_else(|| {
+    if let KclValue::Number {
+        ty: NumericType::Unknown,
+        value,
+        meta,
+    } = value
+    {
+        // If the number has unknown units but the user is explicitly specifying them, treat the value as having had it's units erased,
+        // rather than forcing the user to explicitly erase them.
+        KclValue::Number {
+            ty: NumericType::Any,
+            value: *value,
+            meta: meta.clone(),
+        }
+        .coerce(&ty, exec_state)
+    } else {
+        value.coerce(&ty, exec_state)
+    }
+    .map_err(|_| {
         KclError::Semantic(KclErrorDetails {
             message: format!("could not coerce {} value to type {}", value.human_friendly_type(), ty),
             source_ranges: vec![source_range],
@@ -977,68 +998,84 @@ impl Node<BinaryExpression> {
             return Ok(KclValue::Bool { value: raw_value, meta });
         }
 
-        let (left, lty) = parse_number_as_f64(&left_value, self.left.clone().into())?;
-        let (right, rty) = parse_number_as_f64(&right_value, self.right.clone().into())?;
+        let left = number_as_f64(&left_value, self.left.clone().into())?;
+        let right = number_as_f64(&right_value, self.right.clone().into())?;
 
         let value = match self.operator {
-            BinaryOperator::Add => KclValue::Number {
-                value: left + right,
-                meta,
-                ty: NumericType::combine_add(lty, rty),
-            },
-            BinaryOperator::Sub => KclValue::Number {
-                value: left - right,
-                meta,
-                ty: NumericType::combine_add(lty, rty),
-            },
-            BinaryOperator::Mul => KclValue::Number {
-                value: left * right,
-                meta,
-                ty: NumericType::combine_mul(lty, rty),
-            },
-            BinaryOperator::Div => KclValue::Number {
-                value: left / right,
-                meta,
-                ty: NumericType::combine_div(lty, rty),
-            },
-            BinaryOperator::Mod => KclValue::Number {
-                value: left % right,
-                meta,
-                ty: NumericType::combine_div(lty, rty),
-            },
+            BinaryOperator::Add => {
+                let (l, r, ty) = NumericType::combine_eq(left, right);
+                self.warn_on_unknown(&ty, "Adding", exec_state);
+                KclValue::Number { value: l + r, meta, ty }
+            }
+            BinaryOperator::Sub => {
+                let (l, r, ty) = NumericType::combine_eq(left, right);
+                self.warn_on_unknown(&ty, "Subtracting", exec_state);
+                KclValue::Number { value: l - r, meta, ty }
+            }
+            BinaryOperator::Mul => {
+                let (l, r, ty) = NumericType::combine_mul(left, right);
+                self.warn_on_unknown(&ty, "Multiplying", exec_state);
+                KclValue::Number { value: l * r, meta, ty }
+            }
+            BinaryOperator::Div => {
+                let (l, r, ty) = NumericType::combine_div(left, right);
+                self.warn_on_unknown(&ty, "Dividing", exec_state);
+                KclValue::Number { value: l / r, meta, ty }
+            }
+            BinaryOperator::Mod => {
+                let (l, r, ty) = NumericType::combine_div(left, right);
+                self.warn_on_unknown(&ty, "Modulo of", exec_state);
+                KclValue::Number { value: l % r, meta, ty }
+            }
             BinaryOperator::Pow => KclValue::Number {
-                value: left.powf(right),
+                value: left.n.powf(right.n),
                 meta,
                 ty: NumericType::Unknown,
             },
-            BinaryOperator::Neq => KclValue::Bool {
-                value: left != right,
-                meta,
-            },
-            BinaryOperator::Gt => KclValue::Bool {
-                value: left > right,
-                meta,
-            },
-            BinaryOperator::Gte => KclValue::Bool {
-                value: left >= right,
-                meta,
-            },
-            BinaryOperator::Lt => KclValue::Bool {
-                value: left < right,
-                meta,
-            },
-            BinaryOperator::Lte => KclValue::Bool {
-                value: left <= right,
-                meta,
-            },
-            BinaryOperator::Eq => KclValue::Bool {
-                value: left == right,
-                meta,
-            },
+            BinaryOperator::Neq => {
+                let (l, r, ty) = NumericType::combine_eq(left, right);
+                self.warn_on_unknown(&ty, "Comparing", exec_state);
+                KclValue::Bool { value: l != r, meta }
+            }
+            BinaryOperator::Gt => {
+                let (l, r, ty) = NumericType::combine_eq(left, right);
+                self.warn_on_unknown(&ty, "Comparing", exec_state);
+                KclValue::Bool { value: l > r, meta }
+            }
+            BinaryOperator::Gte => {
+                let (l, r, ty) = NumericType::combine_eq(left, right);
+                self.warn_on_unknown(&ty, "Comparing", exec_state);
+                KclValue::Bool { value: l >= r, meta }
+            }
+            BinaryOperator::Lt => {
+                let (l, r, ty) = NumericType::combine_eq(left, right);
+                self.warn_on_unknown(&ty, "Comparing", exec_state);
+                KclValue::Bool { value: l < r, meta }
+            }
+            BinaryOperator::Lte => {
+                let (l, r, ty) = NumericType::combine_eq(left, right);
+                self.warn_on_unknown(&ty, "Comparing", exec_state);
+                KclValue::Bool { value: l <= r, meta }
+            }
+            BinaryOperator::Eq => {
+                let (l, r, ty) = NumericType::combine_eq(left, right);
+                self.warn_on_unknown(&ty, "Comparing", exec_state);
+                KclValue::Bool { value: l == r, meta }
+            }
             BinaryOperator::And | BinaryOperator::Or => unreachable!(),
         };
 
         Ok(value)
+    }
+
+    fn warn_on_unknown(&self, ty: &NumericType, verb: &str, exec_state: &mut ExecState) {
+        if *CHECK_NUMERIC_TYPES && ty == &NumericType::Unknown {
+            // TODO suggest how to fix this
+            exec_state.warn(CompilationError::err(
+                self.as_source_range(),
+                format!("{} numbers which have unknown or incompatible units.", verb),
+            ));
+        }
     }
 }
 
@@ -1759,21 +1796,15 @@ fn article_for(s: &str) -> &'static str {
     }
 }
 
-pub fn parse_number_as_f64(v: &KclValue, source_range: SourceRange) -> Result<(f64, NumericType), KclError> {
-    if let KclValue::Number { value: n, ty, .. } = &v {
-        Ok((*n, ty.clone()))
-    } else {
+fn number_as_f64(v: &KclValue, source_range: SourceRange) -> Result<TyF64, KclError> {
+    v.as_ty_f64().ok_or_else(|| {
         let actual_type = v.human_friendly_type();
-        let article = if actual_type.starts_with(['a', 'e', 'i', 'o', 'u']) {
-            "an"
-        } else {
-            "a"
-        };
-        Err(KclError::Semantic(KclErrorDetails {
+        let article = article_for(actual_type);
+        KclError::Semantic(KclErrorDetails {
             source_ranges: vec![source_range],
             message: format!("Expected a number, but found {article} {actual_type}",),
-        }))
-    }
+        })
+    })
 }
 
 impl Node<IfExpression> {
@@ -2196,13 +2227,18 @@ impl FunctionSource {
                                             .unwrap(),
                                         exec_state,
                                     )
-                                    .ok_or_else(|| {
+                                    .map_err(|e| {
+                                        let mut message = format!(
+                                            "{label} requires a value with type `{}`, but found {}",
+                                            ty.inner,
+                                            arg.value.human_friendly_type(),
+                                        );
+                                        if let Some(ty) = e.explicit_coercion {
+                                            // TODO if we have access to the AST for the argument we could choose which example to suggest.
+                                            message = format!("{message}\n\nYou may need to add information about the type of the argument, for example:\n  using a numeric suffix: `42{ty}`\n  or using type ascription: `foo(): number({ty})`");
+                                        }
                                         KclError::Semantic(KclErrorDetails {
-                                            message: format!(
-                                                "{label} requires a value with type `{}`, but found {}",
-                                                ty.inner,
-                                                arg.value.human_friendly_type()
-                                            ),
+                                            message,
                                             source_ranges: vec![callsite],
                                         })
                                     })?;
@@ -2226,13 +2262,13 @@ impl FunctionSource {
                                     &RuntimeType::from_parsed(ty.inner.clone(), exec_state, arg.source_range).unwrap(),
                                     exec_state,
                                 )
-                                .ok_or_else(|| {
+                                .map_err(|_| {
                                     KclError::Semantic(KclErrorDetails {
                                         message: format!(
                                             "The input argument of {} requires a value with type `{}`, but found {}",
                                             props.name,
                                             ty.inner,
-                                            arg.value.human_friendly_type()
+                                            arg.value.human_friendly_type(),
                                         ),
                                         source_ranges: vec![callsite],
                                     })

@@ -302,7 +302,13 @@ description: Variables in memory after executing car-wheel-assembly.kcl
     "type": "Number",
     "value": 0.5,
     "ty": {
-      "type": "Unknown"
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
     }
   },
   "spacerPatternDiameter": {

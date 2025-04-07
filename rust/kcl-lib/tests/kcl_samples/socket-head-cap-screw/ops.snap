@@ -148,7 +148,13 @@ description: Operations executed socket-head-cap-screw.kcl
           "type": "Number",
           "value": -0.14250000000000002,
           "ty": {
-            "type": "Unknown"
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []

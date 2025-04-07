@@ -1788,7 +1788,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
     "type": "Number",
     "value": 0.1875,
     "ty": {
-      "type": "Unknown"
+      "type": "Known",
+      "type": "Count"
     }
   },
   "componentBoltPatternX": {
@@ -1834,14 +1835,21 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
     "type": "Number",
     "value": 5.5,
     "ty": {
-      "type": "Unknown"
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
     }
   },
   "flangeLength": {
     "type": "Number",
     "value": 1.5,
     "ty": {
-      "type": "Unknown"
+      "type": "Known",
+      "type": "Count"
     }
   },
   "hatHeight": {
@@ -3745,7 +3753,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
     "type": "Number",
     "value": 0.25,
     "ty": {
-      "type": "Unknown"
+      "type": "Known",
+      "type": "Count"
     }
   },
   "mountingBoltPatternX": {
@@ -3778,7 +3787,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
     "type": "Number",
     "value": 0.75,
     "ty": {
-      "type": "Unknown"
+      "type": "Known",
+      "type": "Count"
     }
   },
   "rightFlangeBoltPattern": {

@@ -1924,7 +1924,8 @@ description: Variables in memory after executing router-template-slate.kcl
     "type": "Number",
     "value": 10.75,
     "ty": {
-      "type": "Unknown"
+      "type": "Known",
+      "type": "Count"
     }
   },
   "length002": {
@@ -3712,7 +3713,8 @@ description: Variables in memory after executing router-template-slate.kcl
     "type": "Number",
     "value": 20.75,
     "ty": {
-      "type": "Unknown"
+      "type": "Known",
+      "type": "Count"
     }
   },
   "templateDiameter": {

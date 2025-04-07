@@ -7930,7 +7930,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
     "type": "Number",
     "value": 20.75,
     "ty": {
-      "type": "Unknown"
+      "type": "Known",
+      "type": "Count"
     }
   },
   "templateDiameter": {

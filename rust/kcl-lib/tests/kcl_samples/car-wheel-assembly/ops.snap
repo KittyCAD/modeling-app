@@ -231,7 +231,13 @@ description: Operations executed car-wheel-assembly.kcl
           "type": "Number",
           "value": 0.5,
           "ty": {
-            "type": "Unknown"
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -422,7 +428,13 @@ description: Operations executed car-wheel-assembly.kcl
           "type": "Number",
           "value": 0.5,
           "ty": {
-            "type": "Unknown"
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -567,7 +579,8 @@ description: Operations executed car-wheel-assembly.kcl
           "type": "Number",
           "value": -0.125,
           "ty": {
-            "type": "Unknown"
+            "type": "Known",
+            "type": "Count"
           }
         },
         "sourceRange": []
@@ -646,7 +659,8 @@ description: Operations executed car-wheel-assembly.kcl
           "type": "Number",
           "value": -0.125,
           "ty": {
-            "type": "Unknown"
+            "type": "Known",
+            "type": "Count"
           }
         },
         "sourceRange": []
@@ -754,7 +768,8 @@ description: Operations executed car-wheel-assembly.kcl
           "type": "Number",
           "value": 0.475,
           "ty": {
-            "type": "Unknown"
+            "type": "Known",
+            "type": "Count"
           }
         },
         "sourceRange": []
@@ -830,7 +845,8 @@ description: Operations executed car-wheel-assembly.kcl
           "type": "Number",
           "value": 0.95,
           "ty": {
-            "type": "Unknown"
+            "type": "Known",
+            "type": "Count"
           }
         },
         "sourceRange": []
@@ -880,7 +896,8 @@ description: Operations executed car-wheel-assembly.kcl
           "type": "Number",
           "value": -0.95,
           "ty": {
-            "type": "Unknown"
+            "type": "Known",
+            "type": "Count"
           }
         },
         "sourceRange": []
@@ -959,7 +976,8 @@ description: Operations executed car-wheel-assembly.kcl
           "type": "Number",
           "value": -0.475,
           "ty": {
-            "type": "Unknown"
+            "type": "Known",
+            "type": "Count"
           }
         },
         "sourceRange": []
@@ -1266,7 +1284,8 @@ description: Operations executed car-wheel-assembly.kcl
                       "type": "Number",
                       "value": 0.1,
                       "ty": {
-                        "type": "Unknown"
+                        "type": "Known",
+                        "type": "Count"
                       }
                     }
                   ]
@@ -1656,7 +1675,8 @@ description: Operations executed car-wheel-assembly.kcl
                       "type": "Number",
                       "value": -0.1,
                       "ty": {
-                        "type": "Unknown"
+                        "type": "Known",
+                        "type": "Count"
                       }
                     }
                   ]

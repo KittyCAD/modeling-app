@@ -59,14 +59,16 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
     "type": "Number",
     "value": 564.5,
     "ty": {
-      "type": "Unknown"
+      "type": "Known",
+      "type": "Count"
     }
   },
   "blockWidth": {
     "type": "Number",
     "value": 1129.0,
     "ty": {
-      "type": "Unknown"
+      "type": "Known",
+      "type": "Count"
     }
   },
   "doorBody": {
@@ -1115,7 +1117,13 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
     "type": "Number",
     "value": 6.0,
     "ty": {
-      "type": "Unknown"
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
     }
   },
   "doorGap": {
@@ -1205,7 +1213,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
     "type": "Number",
     "value": 547.5,
     "ty": {
-      "type": "Unknown"
+      "type": "Known",
+      "type": "Count"
     }
   },
   "floorPlane": {
@@ -1936,14 +1945,21 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
     "type": "Number",
     "value": 80.0,
     "ty": {
-      "type": "Unknown"
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
     }
   },
   "handleOffset": {
     "type": "Number",
     "value": 228.75,
     "ty": {
-      "type": "Unknown"
+      "type": "Known",
+      "type": "Count"
     }
   },
   "handlePlane": {
@@ -5106,7 +5122,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
     "type": "Number",
     "value": 1116.0,
     "ty": {
-      "type": "Unknown"
+      "type": "Known",
+      "type": "Count"
     }
   },
   "lowerBeltLengthY": {
@@ -5540,7 +5557,13 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
     "type": "Number",
     "value": 7.0,
     "ty": {
-      "type": "Unknown"
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
     }
   },
   "panelSpacing": {
@@ -5560,7 +5583,13 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
     "type": "Number",
     "value": 370.0,
     "ty": {
-      "type": "Unknown"
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
     }
   },
   "pillarBody": {
@@ -8738,7 +8767,13 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
     "type": "Number",
     "value": 1700.0,
     "ty": {
-      "type": "Unknown"
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
     }
   },
   "sinkWidth": {

@@ -70,7 +70,13 @@ description: Operations executed exhaust-manifold.kcl
                       "type": "Number",
                       "value": 0.0,
                       "ty": {
-                        "type": "Unknown"
+                        "type": "Default",
+                        "len": {
+                          "type": "Inches"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
                       }
                     },
                     {
@@ -371,7 +377,13 @@ description: Operations executed exhaust-manifold.kcl
                       "type": "Number",
                       "value": 2.0,
                       "ty": {
-                        "type": "Unknown"
+                        "type": "Default",
+                        "len": {
+                          "type": "Inches"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
                       }
                     },
                     {
@@ -672,7 +684,13 @@ description: Operations executed exhaust-manifold.kcl
                       "type": "Number",
                       "value": 4.0,
                       "ty": {
-                        "type": "Unknown"
+                        "type": "Default",
+                        "len": {
+                          "type": "Inches"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
                       }
                     },
                     {
@@ -973,7 +991,13 @@ description: Operations executed exhaust-manifold.kcl
                       "type": "Number",
                       "value": 6.0,
                       "ty": {
-                        "type": "Unknown"
+                        "type": "Default",
+                        "len": {
+                          "type": "Inches"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
                       }
                     },
                     {
