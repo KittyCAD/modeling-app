@@ -7,6 +7,7 @@ brew tap vectordotdev/brew && brew install vector
 # Configure vector
 mkdir -p /tmp/vector
 cp .github/workflows/vector.toml /tmp/vector.toml
+sed -i '' "s#OS_NAME#${OS_NAME}#g" /tmp/vector.toml
 sed -i '' "s#GITHUB_WORKFLOW#${GITHUB_WORKFLOW}#g" /tmp/vector.toml
 sed -i '' "s#GITHUB_REPOSITORY#${GITHUB_REPOSITORY}#g" /tmp/vector.toml
 sed -i '' "s#GITHUB_SHA#${GITHUB_SHA}#g" /tmp/vector.toml

@@ -38,6 +38,7 @@ jobs:
         run: .github/ci-cd-scripts/start-vector-ubuntu.sh
         env:
           GH_ACTIONS_AXIOM_TOKEN: ${{ secrets.GH_ACTIONS_AXIOM_TOKEN }}
+          OS_NAME: ${{ env.OS_NAME }}
       - uses: taiki-e/install-action@cargo-llvm-cov
       - uses: taiki-e/install-action@nextest
       - name: Install just

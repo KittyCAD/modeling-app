@@ -344,6 +344,7 @@ jobs:
         run: .github/ci-cd-scripts/start-vector-${{ env.OS_NAME }}.sh
         env:
           GH_ACTIONS_AXIOM_TOKEN: ${{ secrets.GH_ACTIONS_AXIOM_TOKEN }}
+          OS_NAME: ${{ env.OS_NAME }}
 
       - uses: actions/download-artifact@v4
         if: ${{ needs.conditions.outputs.should-run == 'true' && !cancelled() && (success() || failure()) }}
