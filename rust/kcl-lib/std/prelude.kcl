@@ -605,8 +605,8 @@ export fn helix(
 ///     |> line(end = [20, 0])
 ///
 /// sketch001 = startSketchOn('XY')
-///     |> circle(center = [-10, 10], radius = 4, angle = 90, bidirectional = 180)
-///     |> revolve(angle = 90, axis = revolveAxis, symmetric = true)
+///     |> circle(center = [-10, 10], radius = 4)
+///     |> revolve(angle = 90, axis = revolveAxis, bidirectional_angle = 50)
 /// ```
 @(impl = std_rust)
 export fn revolve(

@@ -31,18 +31,18 @@ use crate::{
 pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let sketches = args.get_unlabeled_kw_arg_typed("sketches", &RuntimeType::sketches(), exec_state)?;
     let length = args.get_kw_arg("length")?;
+    let symmetric = args.get_kw_arg_opt("symmetric")?;
+    let bidirectional_length = args.get_kw_arg_opt("bidirectional_length")?;
     let tag_start = args.get_kw_arg_opt("tagStart")?;
     let tag_end = args.get_kw_arg_opt("tagEnd")?;
-    let symmetric = args.get_kw_arg_opt("symmetric")?;
-    let bidirectional_distance = args.get_kw_arg_opt("bidirectional")?;
 
     let result = inner_extrude(
         sketches,
         length,
+        symmetric,
+        bidirectional_length,
         tag_start,
         tag_end,
-        symmetric,
-        bidirectional_distance,
         exec_state,
         args,
     )
@@ -142,7 +142,7 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 ///   |> line(end = [-5, -2])
 ///   |> close()
 ///
-/// example = extrude(exampleSketch, length = 10, bidirectional = 50)
+/// example = extrude(exampleSketch, length = 10, bidirectional_length = 50)
 /// ```
 #[stdlib {
     name = "extrude",
@@ -152,28 +152,28 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     args = {
         sketches = { docs = "Which sketch or sketches should be extruded"},
         length = { docs = "How far to extrude the given sketches"},
-        tag_start = { docs = "A named tag for the face at the start of the extrusion, i.e. the original sketch" },
-        tag_end = { docs = "A named tag for the face at the end of the extrusion, i.e. the new face created by extruding the original sketch" },
         symmetric = { docs = "If true, the extrusion will happen symmetrically around the sketch. Otherwise, the
             extrusion will happen on only one side of the sketch." },
-        bidirectional_distance = { docs = "If specified, will also extrude in the opposite direction to 'distance' to the specified distance. If 'symmetric' is true, this value is ignored."},
+        bidirectional_length = { docs = "If specified, will also extrude in the opposite direction to 'distance' to the specified distance. If 'symmetric' is true, this value is ignored."},
+        tag_start = { docs = "A named tag for the face at the start of the extrusion, i.e. the original sketch" },
+        tag_end = { docs = "A named tag for the face at the end of the extrusion, i.e. the new face created by extruding the original sketch" },
     }
 }]
 #[allow(clippy::too_many_arguments)]
 async fn inner_extrude(
     sketches: Vec<Sketch>,
     length: f64,
+    symmetric: Option<bool>,
+    bidirectional_length: Option<f64>,
     tag_start: Option<TagNode>,
     tag_end: Option<TagNode>,
-    symmetric: Option<bool>,
-    bidirectional_distance: Option<f64>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Vec<Solid>, KclError> {
     // Extrude the element(s).
     let mut solids = Vec::new();
 
-    if symmetric.is_some() && symmetric.unwrap() && bidirectional_distance.is_some() {
+    if symmetric.is_some() && symmetric.unwrap() && bidirectional_length.is_some() {
         return Err(KclError::Semantic(KclErrorDetails {
             source_ranges: vec![args.source_range],
             message: "You cannot give both `symmetric` and `bidirectional` params, you have to choose one or the other"
@@ -181,7 +181,7 @@ async fn inner_extrude(
         }));
     }
 
-    let bidirection = bidirectional_distance.map(LengthUnit);
+    let bidirection = bidirectional_length.map(LengthUnit);
 
     let opposite = match (symmetric, bidirection) {
         (Some(true), _) => Opposite::Symmetric,
