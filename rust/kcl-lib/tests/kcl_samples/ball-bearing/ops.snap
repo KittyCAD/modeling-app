@@ -10,7 +10,8 @@ description: Operations executed ball-bearing.kcl
           "type": "Number",
           "value": -0.1565,
           "ty": {
-            "type": "Unknown"
+            "type": "Known",
+            "type": "Count"
           }
         },
         "sourceRange": []
@@ -666,7 +667,8 @@ description: Operations executed ball-bearing.kcl
           "type": "Number",
           "value": 36.0,
           "ty": {
-            "type": "Unknown"
+            "type": "Known",
+            "type": "Count"
           }
         },
         "sourceRange": []
@@ -900,7 +902,8 @@ description: Operations executed ball-bearing.kcl
           "type": "Number",
           "value": -0.1565,
           "ty": {
-            "type": "Unknown"
+            "type": "Known",
+            "type": "Count"
           }
         },
         "sourceRange": []

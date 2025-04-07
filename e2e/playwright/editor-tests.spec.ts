@@ -78,12 +78,14 @@ sketch001 = startSketchOn(XY)
 
     // Ensure we execute the first time.
     await u.openDebugPanel()
-    await expect(
-      page.locator('[data-receive-command-type="scene_clear_all"]')
-    ).toHaveCount(1)
-    await expect(
-      page.locator('[data-message-type="execution-done"]')
-    ).toHaveCount(2)
+    await expect
+      .poll(() =>
+        page.locator('[data-receive-command-type="scene_clear_all"]').count()
+      )
+      .toBe(1)
+    await expect
+      .poll(() => page.locator('[data-message-type="execution-done"]').count())
+      .toBe(2)
 
     // Add whitespace to the end of the code.
     await u.codeLocator.click()
@@ -110,12 +112,14 @@ sketch001 = startSketchOn(XY)
   test('ensure we use the cache, and do not clear on append', async ({
     homePage,
     page,
+    scene,
+    cmdBar,
   }) => {
     const u = await getUtils(page)
     await page.setBodyDimensions({ width: 1000, height: 500 })
 
     await homePage.goToModelingScene()
-    await u.waitForPageLoad()
+    await scene.settled(cmdBar)
 
     await u.codeLocator.click()
     await page.keyboard.type(`sketch001 = startSketchOn(XY)
@@ -499,7 +503,7 @@ sketch_001 = startSketchOn(XY)
     await page.keyboard.press('ArrowLeft')
     await page.keyboard.press('ArrowRight')
 
-    await scene.waitForExecutionDone()
+    await scene.connectionEstablished()
 
     // error in guter
     await expect(page.locator('.cm-lint-marker-info').first()).toBeVisible()
@@ -1314,5 +1318,39 @@ sketch001 = startSketchOn(XZ)
     // Verify segment is selected (you can check for visual indicators or state)
     const element = page.locator('[data-overlay-index="1"]')
     await expect(element).toHaveAttribute('data-overlay-visible', 'true')
+  })
+
+  test(`Only show axis planes when there are no errors`, async ({
+    page,
+    homePage,
+    scene,
+    cmdBar,
+  }) => {
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `sketch001 = startSketchOn(XZ)
+    profile001 = circle(sketch001, center = [-100.0, -100.0], radius = 50.0)
+
+    sketch002 = startSketchOn(XZ)
+    profile002 = circle(sketch002, center = [-100.0, 100.0], radius = 50.0)
+    extrude001 = extrude(profile002, length = 0)` // length = 0 is causing the error
+      )
+    })
+
+    const viewportSize = { width: 1200, height: 800 }
+    await page.setBodyDimensions(viewportSize)
+
+    await homePage.goToModelingScene()
+
+    await scene.connectionEstablished()
+    await scene.settled(cmdBar)
+
+    await scene.expectPixelColor(
+      TEST_COLORS.DARK_MODE_BKGD,
+      // This is a position where the blue part of the axis plane is visible if its rendered
+      { x: viewportSize.width * 0.75, y: viewportSize.height * 0.2 },
+      15
+    )
   })
 })

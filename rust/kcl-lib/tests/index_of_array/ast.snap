@@ -8,20 +8,20 @@ description: Result of parsing index_of_array.kcl
       {
         "commentStart": 0,
         "declaration": {
-          "commentStart": 35,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 35,
+            "commentStart": 0,
             "end": 0,
             "name": "arr",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 41,
+            "commentStart": 0,
             "elements": [
               {
-                "commentStart": 42,
+                "commentStart": 0,
                 "end": 0,
                 "raw": "90",
                 "start": 0,
@@ -33,7 +33,7 @@ description: Result of parsing index_of_array.kcl
                 }
               },
               {
-                "commentStart": 46,
+                "commentStart": 0,
                 "end": 0,
                 "raw": "91",
                 "start": 0,
@@ -45,7 +45,7 @@ description: Result of parsing index_of_array.kcl
                 }
               },
               {
-                "commentStart": 50,
+                "commentStart": 0,
                 "end": 0,
                 "raw": "92",
                 "start": 0,
@@ -72,23 +72,23 @@ description: Result of parsing index_of_array.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 53,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 81,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 81,
+            "commentStart": 0,
             "end": 0,
             "name": "result0",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 91,
+            "commentStart": 0,
             "computed": false,
             "end": 0,
             "object": {
-              "commentStart": 91,
+              "commentStart": 0,
               "end": 0,
               "name": "arr",
               "start": 0,
@@ -96,7 +96,7 @@ description: Result of parsing index_of_array.kcl
               "type": "Identifier"
             },
             "property": {
-              "commentStart": 95,
+              "commentStart": 0,
               "end": 0,
               "raw": "1",
               "start": 0,
@@ -121,16 +121,16 @@ description: Result of parsing index_of_array.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 97,
+        "commentStart": 0,
         "end": 0,
         "expression": {
           "arguments": [
             {
               "abs_path": false,
-              "commentStart": 118,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 118,
+                "commentStart": 0,
                 "end": 0,
                 "name": "result0",
                 "start": 0,
@@ -142,7 +142,7 @@ description: Result of parsing index_of_array.kcl
               "type": "Name"
             },
             {
-              "commentStart": 127,
+              "commentStart": 0,
               "end": 0,
               "raw": "91",
               "start": 0,
@@ -154,7 +154,7 @@ description: Result of parsing index_of_array.kcl
               }
             },
             {
-              "commentStart": 131,
+              "commentStart": 0,
               "end": 0,
               "raw": "\"Literal property lookup\"",
               "start": 0,
@@ -165,10 +165,10 @@ description: Result of parsing index_of_array.kcl
           ],
           "callee": {
             "abs_path": false,
-            "commentStart": 99,
+            "commentStart": 0,
             "end": 0,
             "name": {
-              "commentStart": 99,
+              "commentStart": 0,
               "end": 0,
               "name": "assertLessThanOrEq",
               "start": 0,
@@ -178,7 +178,7 @@ description: Result of parsing index_of_array.kcl
             "start": 0,
             "type": "Name"
           },
-          "commentStart": 99,
+          "commentStart": 0,
           "end": 0,
           "start": 0,
           "type": "CallExpression",
@@ -189,16 +189,16 @@ description: Result of parsing index_of_array.kcl
         "type": "ExpressionStatement"
       },
       {
-        "commentStart": 158,
+        "commentStart": 0,
         "end": 0,
         "expression": {
           "arguments": [
             {
               "abs_path": false,
-              "commentStart": 180,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 180,
+                "commentStart": 0,
                 "end": 0,
                 "name": "result0",
                 "start": 0,
@@ -210,7 +210,7 @@ description: Result of parsing index_of_array.kcl
               "type": "Name"
             },
             {
-              "commentStart": 189,
+              "commentStart": 0,
               "end": 0,
               "raw": "91",
               "start": 0,
@@ -222,7 +222,7 @@ description: Result of parsing index_of_array.kcl
               }
             },
             {
-              "commentStart": 193,
+              "commentStart": 0,
               "end": 0,
               "raw": "\"Literal property lookup\"",
               "start": 0,
@@ -233,10 +233,10 @@ description: Result of parsing index_of_array.kcl
           ],
           "callee": {
             "abs_path": false,
-            "commentStart": 158,
+            "commentStart": 0,
             "end": 0,
             "name": {
-              "commentStart": 158,
+              "commentStart": 0,
               "end": 0,
               "name": "assertGreaterThanOrEq",
               "start": 0,
@@ -246,7 +246,7 @@ description: Result of parsing index_of_array.kcl
             "start": 0,
             "type": "Name"
           },
-          "commentStart": 158,
+          "commentStart": 0,
           "end": 0,
           "start": 0,
           "type": "CallExpression",
@@ -257,12 +257,12 @@ description: Result of parsing index_of_array.kcl
         "type": "ExpressionStatement"
       },
       {
-        "commentStart": 219,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 248,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 248,
+            "commentStart": 0,
             "end": 0,
             "name": "i",
             "start": 0,
@@ -271,10 +271,10 @@ description: Result of parsing index_of_array.kcl
           "init": {
             "arguments": [
               {
-                "commentStart": 256,
+                "commentStart": 0,
                 "end": 0,
                 "left": {
-                  "commentStart": 256,
+                  "commentStart": 0,
                   "end": 0,
                   "raw": "1",
                   "start": 0,
@@ -287,7 +287,7 @@ description: Result of parsing index_of_array.kcl
                 },
                 "operator": "+",
                 "right": {
-                  "commentStart": 260,
+                  "commentStart": 0,
                   "end": 0,
                   "raw": "0",
                   "start": 0,
@@ -305,10 +305,10 @@ description: Result of parsing index_of_array.kcl
             ],
             "callee": {
               "abs_path": false,
-              "commentStart": 252,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 252,
+                "commentStart": 0,
                 "end": 0,
                 "name": "int",
                 "start": 0,
@@ -318,7 +318,7 @@ description: Result of parsing index_of_array.kcl
               "start": 0,
               "type": "Name"
             },
-            "commentStart": 252,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "CallExpression",
@@ -334,23 +334,23 @@ description: Result of parsing index_of_array.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 263,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 263,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 263,
+            "commentStart": 0,
             "end": 0,
             "name": "result1",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 273,
+            "commentStart": 0,
             "computed": true,
             "end": 0,
             "object": {
-              "commentStart": 273,
+              "commentStart": 0,
               "end": 0,
               "name": "arr",
               "start": 0,
@@ -358,7 +358,7 @@ description: Result of parsing index_of_array.kcl
               "type": "Identifier"
             },
             "property": {
-              "commentStart": 277,
+              "commentStart": 0,
               "end": 0,
               "name": "i",
               "start": 0,
@@ -379,16 +379,16 @@ description: Result of parsing index_of_array.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 279,
+        "commentStart": 0,
         "end": 0,
         "expression": {
           "arguments": [
             {
               "abs_path": false,
-              "commentStart": 300,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 300,
+                "commentStart": 0,
                 "end": 0,
                 "name": "result1",
                 "start": 0,
@@ -400,7 +400,7 @@ description: Result of parsing index_of_array.kcl
               "type": "Name"
             },
             {
-              "commentStart": 309,
+              "commentStart": 0,
               "end": 0,
               "raw": "91",
               "start": 0,
@@ -412,7 +412,7 @@ description: Result of parsing index_of_array.kcl
               }
             },
             {
-              "commentStart": 313,
+              "commentStart": 0,
               "end": 0,
               "raw": "\"Computed property lookup\"",
               "start": 0,
@@ -423,10 +423,10 @@ description: Result of parsing index_of_array.kcl
           ],
           "callee": {
             "abs_path": false,
-            "commentStart": 281,
+            "commentStart": 0,
             "end": 0,
             "name": {
-              "commentStart": 281,
+              "commentStart": 0,
               "end": 0,
               "name": "assertLessThanOrEq",
               "start": 0,
@@ -436,7 +436,7 @@ description: Result of parsing index_of_array.kcl
             "start": 0,
             "type": "Name"
           },
-          "commentStart": 281,
+          "commentStart": 0,
           "end": 0,
           "start": 0,
           "type": "CallExpression",
@@ -447,16 +447,16 @@ description: Result of parsing index_of_array.kcl
         "type": "ExpressionStatement"
       },
       {
-        "commentStart": 341,
+        "commentStart": 0,
         "end": 0,
         "expression": {
           "arguments": [
             {
               "abs_path": false,
-              "commentStart": 363,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 363,
+                "commentStart": 0,
                 "end": 0,
                 "name": "result1",
                 "start": 0,
@@ -468,7 +468,7 @@ description: Result of parsing index_of_array.kcl
               "type": "Name"
             },
             {
-              "commentStart": 372,
+              "commentStart": 0,
               "end": 0,
               "raw": "91",
               "start": 0,
@@ -480,7 +480,7 @@ description: Result of parsing index_of_array.kcl
               }
             },
             {
-              "commentStart": 376,
+              "commentStart": 0,
               "end": 0,
               "raw": "\"Computed property lookup\"",
               "start": 0,
@@ -491,10 +491,10 @@ description: Result of parsing index_of_array.kcl
           ],
           "callee": {
             "abs_path": false,
-            "commentStart": 341,
+            "commentStart": 0,
             "end": 0,
             "name": {
-              "commentStart": 341,
+              "commentStart": 0,
               "end": 0,
               "name": "assertGreaterThanOrEq",
               "start": 0,
@@ -504,7 +504,7 @@ description: Result of parsing index_of_array.kcl
             "start": 0,
             "type": "Name"
           },
-          "commentStart": 341,
+          "commentStart": 0,
           "end": 0,
           "start": 0,
           "type": "CallExpression",
@@ -521,7 +521,7 @@ description: Result of parsing index_of_array.kcl
       "nonCodeNodes": {
         "0": [
           {
-            "commentStart": 53,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -532,7 +532,7 @@ description: Result of parsing index_of_array.kcl
             }
           },
           {
-            "commentStart": 78,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -543,7 +543,7 @@ description: Result of parsing index_of_array.kcl
         ],
         "1": [
           {
-            "commentStart": 97,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -554,7 +554,7 @@ description: Result of parsing index_of_array.kcl
         ],
         "3": [
           {
-            "commentStart": 219,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -565,7 +565,7 @@ description: Result of parsing index_of_array.kcl
             }
           },
           {
-            "commentStart": 245,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -576,7 +576,7 @@ description: Result of parsing index_of_array.kcl
         ],
         "5": [
           {
-            "commentStart": 279,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -599,7 +599,7 @@ description: Result of parsing index_of_array.kcl
           }
         },
         {
-          "commentStart": 32,
+          "commentStart": 0,
           "end": 0,
           "start": 0,
           "type": "NonCodeNode",

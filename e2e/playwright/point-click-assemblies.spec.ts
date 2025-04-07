@@ -25,28 +25,32 @@ test.describe('Point-and-click assemblies tests', () => {
 
       // One dumb hardcoded screen pixel value
       const testPoint = { x: 575, y: 200 }
+      const initialColor: [number, number, number] = [50, 50, 50]
       const partColor: [number, number, number] = [150, 150, 150]
       const tolerance = 50
 
-      await page.setBodyDimensions({ width: 1000, height: 500 })
-      const projectName = 'assembly'
-      await context.folderSetupFn(async (dir) => {
-        const bracketDir = path.join(dir, projectName)
-        await fsp.mkdir(bracketDir, { recursive: true })
-        await Promise.all([
-          fsp.copyFile(
-            executorInputPath('cylinder-inches.kcl'),
-            path.join(bracketDir, 'cylinder.kcl')
-          ),
-          fsp.copyFile(
-            executorInputPath('e2e-can-sketch-on-chamfer.kcl'),
-            path.join(bracketDir, 'bracket.kcl')
-          ),
-          fsp.writeFile(path.join(bracketDir, 'main.kcl'), ''),
-        ])
+      await test.step('Setup parts and expect empty assembly scene', async () => {
+        const projectName = 'assembly'
+        await context.folderSetupFn(async (dir) => {
+          const bracketDir = path.join(dir, projectName)
+          await fsp.mkdir(bracketDir, { recursive: true })
+          await Promise.all([
+            fsp.copyFile(
+              executorInputPath('cylinder-inches.kcl'),
+              path.join(bracketDir, 'cylinder.kcl')
+            ),
+            fsp.copyFile(
+              executorInputPath('e2e-can-sketch-on-chamfer.kcl'),
+              path.join(bracketDir, 'bracket.kcl')
+            ),
+            fsp.writeFile(path.join(bracketDir, 'main.kcl'), ''),
+          ])
+        })
+        await page.setBodyDimensions({ width: 1000, height: 500 })
+        await homePage.openProject(projectName)
+        await scene.settled(cmdBar)
+        await scene.expectPixelColor(initialColor, testPoint, tolerance)
       })
-      await homePage.openProject(projectName)
-      await scene.waitForExecutionDone()
 
       await test.step('Insert first part into the assembly', async () => {
         await toolbar.insertButton.click()
@@ -151,7 +155,7 @@ bracket
         ])
       })
       await homePage.openProject(projectName)
-      await scene.waitForExecutionDone()
+      await scene.settled(cmdBar)
 
       await test.step('Set transform on the first part', async () => {
         await toolbar.closePane('code')

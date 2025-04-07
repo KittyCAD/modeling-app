@@ -22,7 +22,7 @@ description: Result of parsing revolve_about_edge.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 26,
+                    "commentStart": 0,
                     "end": 0,
                     "raw": "'XY'",
                     "start": 0,
@@ -33,10 +33,10 @@ description: Result of parsing revolve_about_edge.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 12,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 12,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "startSketchOn",
                     "start": 0,
@@ -46,7 +46,7 @@ description: Result of parsing revolve_about_edge.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 12,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -55,11 +55,11 @@ description: Result of parsing revolve_about_edge.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 52,
+                    "commentStart": 0,
                     "elements": [
                       {
                         "argument": {
-                          "commentStart": 54,
+                          "commentStart": 0,
                           "end": 0,
                           "raw": "25",
                           "start": 0,
@@ -70,7 +70,7 @@ description: Result of parsing revolve_about_edge.kcl
                             "suffix": "None"
                           }
                         },
-                        "commentStart": 53,
+                        "commentStart": 0,
                         "end": 0,
                         "operator": "-",
                         "start": 0,
@@ -78,7 +78,7 @@ description: Result of parsing revolve_about_edge.kcl
                         "type": "UnaryExpression"
                       },
                       {
-                        "commentStart": 58,
+                        "commentStart": 0,
                         "end": 0,
                         "raw": "25",
                         "start": 0,
@@ -96,7 +96,7 @@ description: Result of parsing revolve_about_edge.kcl
                     "type": "ArrayExpression"
                   },
                   {
-                    "commentStart": 63,
+                    "commentStart": 0,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -105,10 +105,10 @@ description: Result of parsing revolve_about_edge.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 37,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 37,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "startProfileAt",
                     "start": 0,
@@ -118,7 +118,7 @@ description: Result of parsing revolve_about_edge.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 37,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -129,7 +129,7 @@ description: Result of parsing revolve_about_edge.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 77,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "length",
                       "start": 0,
@@ -137,7 +137,7 @@ description: Result of parsing revolve_about_edge.kcl
                     },
                     "arg": {
                       "argument": {
-                        "commentStart": 87,
+                        "commentStart": 0,
                         "end": 0,
                         "raw": "50",
                         "start": 0,
@@ -148,7 +148,7 @@ description: Result of parsing revolve_about_edge.kcl
                           "suffix": "None"
                         }
                       },
-                      "commentStart": 86,
+                      "commentStart": 0,
                       "end": 0,
                       "operator": "-",
                       "start": 0,
@@ -159,14 +159,14 @@ description: Result of parsing revolve_about_edge.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 91,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 97,
+                      "commentStart": 0,
                       "end": 0,
                       "start": 0,
                       "type": "TagDeclarator",
@@ -177,10 +177,10 @@ description: Result of parsing revolve_about_edge.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 71,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 71,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "yLine",
                     "start": 0,
@@ -190,7 +190,7 @@ description: Result of parsing revolve_about_edge.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 71,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -198,7 +198,7 @@ description: Result of parsing revolve_about_edge.kcl
                 "unlabeled": null
               }
             ],
-            "commentStart": 12,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "PipeExpression",
@@ -214,12 +214,12 @@ description: Result of parsing revolve_about_edge.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 120,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 120,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 120,
+            "commentStart": 0,
             "end": 0,
             "name": "sketch002",
             "start": 0,
@@ -230,7 +230,7 @@ description: Result of parsing revolve_about_edge.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 146,
+                    "commentStart": 0,
                     "end": 0,
                     "raw": "'XY'",
                     "start": 0,
@@ -241,10 +241,10 @@ description: Result of parsing revolve_about_edge.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 132,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 132,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "startSketchOn",
                     "start": 0,
@@ -254,7 +254,7 @@ description: Result of parsing revolve_about_edge.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 132,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -265,18 +265,18 @@ description: Result of parsing revolve_about_edge.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 164,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "center",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 173,
+                      "commentStart": 0,
                       "elements": [
                         {
                           "argument": {
-                            "commentStart": 175,
+                            "commentStart": 0,
                             "end": 0,
                             "raw": "50",
                             "start": 0,
@@ -287,7 +287,7 @@ description: Result of parsing revolve_about_edge.kcl
                               "suffix": "None"
                             }
                           },
-                          "commentStart": 174,
+                          "commentStart": 0,
                           "end": 0,
                           "operator": "-",
                           "start": 0,
@@ -295,7 +295,7 @@ description: Result of parsing revolve_about_edge.kcl
                           "type": "UnaryExpression"
                         },
                         {
-                          "commentStart": 179,
+                          "commentStart": 0,
                           "end": 0,
                           "raw": "0",
                           "start": 0,
@@ -316,14 +316,14 @@ description: Result of parsing revolve_about_edge.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 183,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "radius",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 192,
+                      "commentStart": 0,
                       "end": 0,
                       "raw": "10",
                       "start": 0,
@@ -338,10 +338,10 @@ description: Result of parsing revolve_about_edge.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 157,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 157,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "circle",
                     "start": 0,
@@ -351,7 +351,7 @@ description: Result of parsing revolve_about_edge.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 157,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -363,14 +363,14 @@ description: Result of parsing revolve_about_edge.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 209,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "angle",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 217,
+                      "commentStart": 0,
                       "end": 0,
                       "raw": "90",
                       "start": 0,
@@ -385,7 +385,7 @@ description: Result of parsing revolve_about_edge.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 221,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "axis",
                       "start": 0,
@@ -393,10 +393,10 @@ description: Result of parsing revolve_about_edge.kcl
                     },
                     "arg": {
                       "abs_path": false,
-                      "commentStart": 228,
+                      "commentStart": 0,
                       "end": 0,
                       "name": {
-                        "commentStart": 228,
+                        "commentStart": 0,
                         "end": 0,
                         "name": "rectangleSegmentB001",
                         "start": 0,
@@ -411,10 +411,10 @@ description: Result of parsing revolve_about_edge.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 201,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 201,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "revolve",
                     "start": 0,
@@ -424,7 +424,7 @@ description: Result of parsing revolve_about_edge.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 201,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -432,7 +432,7 @@ description: Result of parsing revolve_about_edge.kcl
                 "unlabeled": null
               }
             ],
-            "commentStart": 132,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "PipeExpression",

@@ -25,7 +25,7 @@ export const NetworkContext = createContext<NetworkStatus>({
   error: undefined,
   setHasCopied: (b: boolean) => {},
   hasCopied: false,
-  pingPongHealth: undefined,
+  ping: undefined,
 } as NetworkStatus)
 export const useNetworkContext = () => {
   return useContext(NetworkContext)

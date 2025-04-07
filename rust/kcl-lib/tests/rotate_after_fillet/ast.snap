@@ -8,17 +8,17 @@ description: Result of parsing rotate_after_fillet.kcl
       {
         "commentStart": 0,
         "declaration": {
-          "commentStart": 7,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 7,
+            "commentStart": 0,
             "end": 0,
             "name": "boltDiameter",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 22,
+            "commentStart": 0,
             "end": 0,
             "raw": "0.625",
             "start": 0,
@@ -40,19 +40,19 @@ description: Result of parsing rotate_after_fillet.kcl
         "visibility": "export"
       },
       {
-        "commentStart": 28,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 35,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 35,
+            "commentStart": 0,
             "end": 0,
             "name": "boltLength",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 48,
+            "commentStart": 0,
             "end": 0,
             "raw": "2.500",
             "start": 0,
@@ -74,12 +74,12 @@ description: Result of parsing rotate_after_fillet.kcl
         "visibility": "export"
       },
       {
-        "commentStart": 54,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 61,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 61,
+            "commentStart": 0,
             "end": 0,
             "name": "boltHeadLength",
             "start": 0,
@@ -87,10 +87,10 @@ description: Result of parsing rotate_after_fillet.kcl
           },
           "init": {
             "abs_path": false,
-            "commentStart": 78,
+            "commentStart": 0,
             "end": 0,
             "name": {
-              "commentStart": 78,
+              "commentStart": 0,
               "end": 0,
               "name": "boltDiameter",
               "start": 0,
@@ -112,19 +112,19 @@ description: Result of parsing rotate_after_fillet.kcl
         "visibility": "export"
       },
       {
-        "commentStart": 91,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 98,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 98,
+            "commentStart": 0,
             "end": 0,
             "name": "boltHeadDiameter",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 117,
+            "commentStart": 0,
             "end": 0,
             "raw": "0.938",
             "start": 0,
@@ -146,22 +146,22 @@ description: Result of parsing rotate_after_fillet.kcl
         "visibility": "export"
       },
       {
-        "commentStart": 123,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 130,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 130,
+            "commentStart": 0,
             "end": 0,
             "name": "boltHexDrive",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 145,
+            "commentStart": 0,
             "end": 0,
             "left": {
-              "commentStart": 145,
+              "commentStart": 0,
               "end": 0,
               "raw": "1",
               "start": 0,
@@ -174,7 +174,7 @@ description: Result of parsing rotate_after_fillet.kcl
             },
             "operator": "/",
             "right": {
-              "commentStart": 149,
+              "commentStart": 0,
               "end": 0,
               "raw": "2",
               "start": 0,
@@ -200,26 +200,26 @@ description: Result of parsing rotate_after_fillet.kcl
         "visibility": "export"
       },
       {
-        "commentStart": 151,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 158,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 158,
+            "commentStart": 0,
             "end": 0,
             "name": "boltHexFlatLength",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 178,
+            "commentStart": 0,
             "end": 0,
             "left": {
               "abs_path": false,
-              "commentStart": 178,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 178,
+                "commentStart": 0,
                 "end": 0,
                 "name": "boltHexDrive",
                 "start": 0,
@@ -232,10 +232,10 @@ description: Result of parsing rotate_after_fillet.kcl
             },
             "operator": "/",
             "right": {
-              "commentStart": 194,
+              "commentStart": 0,
               "end": 0,
               "left": {
-                "commentStart": 194,
+                "commentStart": 0,
                 "end": 0,
                 "raw": "2",
                 "start": 0,
@@ -252,7 +252,7 @@ description: Result of parsing rotate_after_fillet.kcl
                   {
                     "arguments": [
                       {
-                        "commentStart": 212,
+                        "commentStart": 0,
                         "end": 0,
                         "raw": "30",
                         "start": 0,
@@ -266,10 +266,10 @@ description: Result of parsing rotate_after_fillet.kcl
                     ],
                     "callee": {
                       "abs_path": false,
-                      "commentStart": 202,
+                      "commentStart": 0,
                       "end": 0,
                       "name": {
-                        "commentStart": 202,
+                        "commentStart": 0,
                         "end": 0,
                         "name": "toRadians",
                         "start": 0,
@@ -279,7 +279,7 @@ description: Result of parsing rotate_after_fillet.kcl
                       "start": 0,
                       "type": "Name"
                     },
-                    "commentStart": 202,
+                    "commentStart": 0,
                     "end": 0,
                     "start": 0,
                     "type": "CallExpression",
@@ -288,10 +288,10 @@ description: Result of parsing rotate_after_fillet.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 198,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 198,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "cos",
                     "start": 0,
@@ -301,7 +301,7 @@ description: Result of parsing rotate_after_fillet.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 198,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -326,19 +326,19 @@ description: Result of parsing rotate_after_fillet.kcl
         "visibility": "export"
       },
       {
-        "commentStart": 218,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 225,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 225,
+            "commentStart": 0,
             "end": 0,
             "name": "boltThreadLength",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 244,
+            "commentStart": 0,
             "end": 0,
             "raw": "1.75",
             "start": 0,
@@ -360,12 +360,12 @@ description: Result of parsing rotate_after_fillet.kcl
         "visibility": "export"
       },
       {
-        "commentStart": 248,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 260,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 260,
+            "commentStart": 0,
             "end": 0,
             "name": "bolt",
             "start": 0,
@@ -375,12 +375,12 @@ description: Result of parsing rotate_after_fillet.kcl
             "body": {
               "body": [
                 {
-                  "commentStart": 268,
+                  "commentStart": 0,
                   "declaration": {
-                    "commentStart": 309,
+                    "commentStart": 0,
                     "end": 0,
                     "id": {
-                      "commentStart": 309,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "boltHead",
                       "start": 0,
@@ -391,7 +391,7 @@ description: Result of parsing rotate_after_fillet.kcl
                         {
                           "arguments": [
                             {
-                              "commentStart": 334,
+                              "commentStart": 0,
                               "end": 0,
                               "raw": "'XZ'",
                               "start": 0,
@@ -402,10 +402,10 @@ description: Result of parsing rotate_after_fillet.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 320,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 320,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "startSketchOn",
                               "start": 0,
@@ -415,7 +415,7 @@ description: Result of parsing rotate_after_fillet.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 320,
+                          "commentStart": 0,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -426,17 +426,17 @@ description: Result of parsing rotate_after_fillet.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "commentStart": 354,
+                                "commentStart": 0,
                                 "end": 0,
                                 "name": "center",
                                 "start": 0,
                                 "type": "Identifier"
                               },
                               "arg": {
-                                "commentStart": 363,
+                                "commentStart": 0,
                                 "elements": [
                                   {
-                                    "commentStart": 364,
+                                    "commentStart": 0,
                                     "end": 0,
                                     "raw": "0",
                                     "start": 0,
@@ -448,7 +448,7 @@ description: Result of parsing rotate_after_fillet.kcl
                                     }
                                   },
                                   {
-                                    "commentStart": 367,
+                                    "commentStart": 0,
                                     "end": 0,
                                     "raw": "0",
                                     "start": 0,
@@ -469,21 +469,21 @@ description: Result of parsing rotate_after_fillet.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "commentStart": 371,
+                                "commentStart": 0,
                                 "end": 0,
                                 "name": "radius",
                                 "start": 0,
                                 "type": "Identifier"
                               },
                               "arg": {
-                                "commentStart": 380,
+                                "commentStart": 0,
                                 "end": 0,
                                 "left": {
                                   "abs_path": false,
-                                  "commentStart": 380,
+                                  "commentStart": 0,
                                   "end": 0,
                                   "name": {
-                                    "commentStart": 380,
+                                    "commentStart": 0,
                                     "end": 0,
                                     "name": "boltHeadDiameter",
                                     "start": 0,
@@ -496,7 +496,7 @@ description: Result of parsing rotate_after_fillet.kcl
                                 },
                                 "operator": "/",
                                 "right": {
-                                  "commentStart": 399,
+                                  "commentStart": 0,
                                   "end": 0,
                                   "raw": "2",
                                   "start": 0,
@@ -515,14 +515,14 @@ description: Result of parsing rotate_after_fillet.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "commentStart": 402,
+                                "commentStart": 0,
                                 "end": 0,
                                 "name": "tag",
                                 "start": 0,
                                 "type": "Identifier"
                               },
                               "arg": {
-                                "commentStart": 408,
+                                "commentStart": 0,
                                 "end": 0,
                                 "start": 0,
                                 "type": "TagDeclarator",
@@ -533,10 +533,10 @@ description: Result of parsing rotate_after_fillet.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 347,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 347,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "circle",
                               "start": 0,
@@ -546,7 +546,7 @@ description: Result of parsing rotate_after_fillet.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 347,
+                          "commentStart": 0,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
@@ -558,7 +558,7 @@ description: Result of parsing rotate_after_fillet.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "commentStart": 433,
+                                "commentStart": 0,
                                 "end": 0,
                                 "name": "length",
                                 "start": 0,
@@ -567,10 +567,10 @@ description: Result of parsing rotate_after_fillet.kcl
                               "arg": {
                                 "argument": {
                                   "abs_path": false,
-                                  "commentStart": 443,
+                                  "commentStart": 0,
                                   "end": 0,
                                   "name": {
-                                    "commentStart": 443,
+                                    "commentStart": 0,
                                     "end": 0,
                                     "name": "boltHeadLength",
                                     "start": 0,
@@ -581,7 +581,7 @@ description: Result of parsing rotate_after_fillet.kcl
                                   "type": "Name",
                                   "type": "Name"
                                 },
-                                "commentStart": 442,
+                                "commentStart": 0,
                                 "end": 0,
                                 "operator": "-",
                                 "start": 0,
@@ -592,10 +592,10 @@ description: Result of parsing rotate_after_fillet.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 425,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 425,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "extrude",
                               "start": 0,
@@ -605,7 +605,7 @@ description: Result of parsing rotate_after_fillet.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 425,
+                          "commentStart": 0,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
@@ -617,14 +617,14 @@ description: Result of parsing rotate_after_fillet.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "commentStart": 473,
+                                "commentStart": 0,
                                 "end": 0,
                                 "name": "radius",
                                 "start": 0,
                                 "type": "Identifier"
                               },
                               "arg": {
-                                "commentStart": 482,
+                                "commentStart": 0,
                                 "end": 0,
                                 "raw": "0.020",
                                 "start": 0,
@@ -639,21 +639,21 @@ description: Result of parsing rotate_after_fillet.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "commentStart": 489,
+                                "commentStart": 0,
                                 "end": 0,
                                 "name": "tags",
                                 "start": 0,
                                 "type": "Identifier"
                               },
                               "arg": {
-                                "commentStart": 496,
+                                "commentStart": 0,
                                 "elements": [
                                   {
                                     "abs_path": false,
-                                    "commentStart": 497,
+                                    "commentStart": 0,
                                     "end": 0,
                                     "name": {
-                                      "commentStart": 497,
+                                      "commentStart": 0,
                                       "end": 0,
                                       "name": "topEdge",
                                       "start": 0,
@@ -668,10 +668,10 @@ description: Result of parsing rotate_after_fillet.kcl
                                     "arguments": [
                                       {
                                         "abs_path": false,
-                                        "commentStart": 522,
+                                        "commentStart": 0,
                                         "end": 0,
                                         "name": {
-                                          "commentStart": 522,
+                                          "commentStart": 0,
                                           "end": 0,
                                           "name": "topEdge",
                                           "start": 0,
@@ -685,10 +685,10 @@ description: Result of parsing rotate_after_fillet.kcl
                                     ],
                                     "callee": {
                                       "abs_path": false,
-                                      "commentStart": 506,
+                                      "commentStart": 0,
                                       "end": 0,
                                       "name": {
-                                        "commentStart": 506,
+                                        "commentStart": 0,
                                         "end": 0,
                                         "name": "getOppositeEdge",
                                         "start": 0,
@@ -698,7 +698,7 @@ description: Result of parsing rotate_after_fillet.kcl
                                       "start": 0,
                                       "type": "Name"
                                     },
-                                    "commentStart": 506,
+                                    "commentStart": 0,
                                     "end": 0,
                                     "start": 0,
                                     "type": "CallExpression",
@@ -714,10 +714,10 @@ description: Result of parsing rotate_after_fillet.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 466,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 466,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "fillet",
                               "start": 0,
@@ -727,7 +727,7 @@ description: Result of parsing rotate_after_fillet.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 466,
+                          "commentStart": 0,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
@@ -735,13 +735,13 @@ description: Result of parsing rotate_after_fillet.kcl
                           "unlabeled": null
                         }
                       ],
-                      "commentStart": 320,
+                      "commentStart": 0,
                       "end": 0,
                       "nonCodeMeta": {
                         "nonCodeNodes": {
                           "3": [
                             {
-                              "commentStart": 534,
+                              "commentStart": 0,
                               "end": 0,
                               "start": 0,
                               "type": "NonCodeNode",
@@ -772,12 +772,12 @@ description: Result of parsing rotate_after_fillet.kcl
                   "type": "VariableDeclaration"
                 },
                 {
-                  "commentStart": 596,
+                  "commentStart": 0,
                   "declaration": {
-                    "commentStart": 596,
+                    "commentStart": 0,
                     "end": 0,
                     "id": {
-                      "commentStart": 596,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "hexPatternSketch",
                       "start": 0,
@@ -789,10 +789,10 @@ description: Result of parsing rotate_after_fillet.kcl
                           "arguments": [
                             {
                               "abs_path": false,
-                              "commentStart": 629,
+                              "commentStart": 0,
                               "end": 0,
                               "name": {
-                                "commentStart": 629,
+                                "commentStart": 0,
                                 "end": 0,
                                 "name": "boltHead",
                                 "start": 0,
@@ -804,7 +804,7 @@ description: Result of parsing rotate_after_fillet.kcl
                               "type": "Name"
                             },
                             {
-                              "commentStart": 639,
+                              "commentStart": 0,
                               "end": 0,
                               "raw": "'start'",
                               "start": 0,
@@ -815,10 +815,10 @@ description: Result of parsing rotate_after_fillet.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 615,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 615,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "startSketchOn",
                               "start": 0,
@@ -828,7 +828,7 @@ description: Result of parsing rotate_after_fillet.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 615,
+                          "commentStart": 0,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -837,17 +837,17 @@ description: Result of parsing rotate_after_fillet.kcl
                         {
                           "arguments": [
                             {
-                              "commentStart": 670,
+                              "commentStart": 0,
                               "elements": [
                                 {
-                                  "commentStart": 681,
+                                  "commentStart": 0,
                                   "end": 0,
                                   "left": {
                                     "abs_path": false,
-                                    "commentStart": 681,
+                                    "commentStart": 0,
                                     "end": 0,
                                     "name": {
-                                      "commentStart": 681,
+                                      "commentStart": 0,
                                       "end": 0,
                                       "name": "boltHexDrive",
                                       "start": 0,
@@ -860,7 +860,7 @@ description: Result of parsing rotate_after_fillet.kcl
                                   },
                                   "operator": "/",
                                   "right": {
-                                    "commentStart": 696,
+                                    "commentStart": 0,
                                     "end": 0,
                                     "raw": "2",
                                     "start": 0,
@@ -876,14 +876,14 @@ description: Result of parsing rotate_after_fillet.kcl
                                   "type": "BinaryExpression"
                                 },
                                 {
-                                  "commentStart": 708,
+                                  "commentStart": 0,
                                   "end": 0,
                                   "left": {
                                     "abs_path": false,
-                                    "commentStart": 708,
+                                    "commentStart": 0,
                                     "end": 0,
                                     "name": {
-                                      "commentStart": 708,
+                                      "commentStart": 0,
                                       "end": 0,
                                       "name": "boltHexFlatLength",
                                       "start": 0,
@@ -896,7 +896,7 @@ description: Result of parsing rotate_after_fillet.kcl
                                   },
                                   "operator": "/",
                                   "right": {
-                                    "commentStart": 728,
+                                    "commentStart": 0,
                                     "end": 0,
                                     "raw": "2",
                                     "start": 0,
@@ -918,7 +918,7 @@ description: Result of parsing rotate_after_fillet.kcl
                               "type": "ArrayExpression"
                             },
                             {
-                              "commentStart": 740,
+                              "commentStart": 0,
                               "end": 0,
                               "start": 0,
                               "type": "PipeSubstitution",
@@ -927,10 +927,10 @@ description: Result of parsing rotate_after_fillet.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 655,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 655,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "startProfileAt",
                               "start": 0,
@@ -940,7 +940,7 @@ description: Result of parsing rotate_after_fillet.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 655,
+                          "commentStart": 0,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -949,14 +949,14 @@ description: Result of parsing rotate_after_fillet.kcl
                         {
                           "arguments": [
                             {
-                              "commentStart": 761,
+                              "commentStart": 0,
                               "end": 0,
                               "properties": [
                                 {
-                                  "commentStart": 772,
+                                  "commentStart": 0,
                                   "end": 0,
                                   "key": {
-                                    "commentStart": 772,
+                                    "commentStart": 0,
                                     "end": 0,
                                     "name": "angle",
                                     "start": 0,
@@ -965,7 +965,7 @@ description: Result of parsing rotate_after_fillet.kcl
                                   "start": 0,
                                   "type": "ObjectProperty",
                                   "value": {
-                                    "commentStart": 780,
+                                    "commentStart": 0,
                                     "end": 0,
                                     "raw": "270",
                                     "start": 0,
@@ -978,10 +978,10 @@ description: Result of parsing rotate_after_fillet.kcl
                                   }
                                 },
                                 {
-                                  "commentStart": 794,
+                                  "commentStart": 0,
                                   "end": 0,
                                   "key": {
-                                    "commentStart": 794,
+                                    "commentStart": 0,
                                     "end": 0,
                                     "name": "length",
                                     "start": 0,
@@ -991,10 +991,10 @@ description: Result of parsing rotate_after_fillet.kcl
                                   "type": "ObjectProperty",
                                   "value": {
                                     "abs_path": false,
-                                    "commentStart": 803,
+                                    "commentStart": 0,
                                     "end": 0,
                                     "name": {
-                                      "commentStart": 803,
+                                      "commentStart": 0,
                                       "end": 0,
                                       "name": "boltHexFlatLength",
                                       "start": 0,
@@ -1012,7 +1012,7 @@ description: Result of parsing rotate_after_fillet.kcl
                               "type": "ObjectExpression"
                             },
                             {
-                              "commentStart": 831,
+                              "commentStart": 0,
                               "end": 0,
                               "start": 0,
                               "type": "PipeSubstitution",
@@ -1021,10 +1021,10 @@ description: Result of parsing rotate_after_fillet.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 750,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 750,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "angledLine",
                               "start": 0,
@@ -1034,7 +1034,7 @@ description: Result of parsing rotate_after_fillet.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 750,
+                          "commentStart": 0,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -1043,14 +1043,14 @@ description: Result of parsing rotate_after_fillet.kcl
                         {
                           "arguments": [
                             {
-                              "commentStart": 852,
+                              "commentStart": 0,
                               "end": 0,
                               "properties": [
                                 {
-                                  "commentStart": 863,
+                                  "commentStart": 0,
                                   "end": 0,
                                   "key": {
-                                    "commentStart": 863,
+                                    "commentStart": 0,
                                     "end": 0,
                                     "name": "angle",
                                     "start": 0,
@@ -1059,7 +1059,7 @@ description: Result of parsing rotate_after_fillet.kcl
                                   "start": 0,
                                   "type": "ObjectProperty",
                                   "value": {
-                                    "commentStart": 871,
+                                    "commentStart": 0,
                                     "end": 0,
                                     "raw": "210",
                                     "start": 0,
@@ -1072,10 +1072,10 @@ description: Result of parsing rotate_after_fillet.kcl
                                   }
                                 },
                                 {
-                                  "commentStart": 885,
+                                  "commentStart": 0,
                                   "end": 0,
                                   "key": {
-                                    "commentStart": 885,
+                                    "commentStart": 0,
                                     "end": 0,
                                     "name": "length",
                                     "start": 0,
@@ -1085,10 +1085,10 @@ description: Result of parsing rotate_after_fillet.kcl
                                   "type": "ObjectProperty",
                                   "value": {
                                     "abs_path": false,
-                                    "commentStart": 894,
+                                    "commentStart": 0,
                                     "end": 0,
                                     "name": {
-                                      "commentStart": 894,
+                                      "commentStart": 0,
                                       "end": 0,
                                       "name": "boltHexFlatLength",
                                       "start": 0,
@@ -1106,7 +1106,7 @@ description: Result of parsing rotate_after_fillet.kcl
                               "type": "ObjectExpression"
                             },
                             {
-                              "commentStart": 922,
+                              "commentStart": 0,
                               "end": 0,
                               "start": 0,
                               "type": "PipeSubstitution",
@@ -1115,10 +1115,10 @@ description: Result of parsing rotate_after_fillet.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 841,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 841,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "angledLine",
                               "start": 0,
@@ -1128,7 +1128,7 @@ description: Result of parsing rotate_after_fillet.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 841,
+                          "commentStart": 0,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -1137,14 +1137,14 @@ description: Result of parsing rotate_after_fillet.kcl
                         {
                           "arguments": [
                             {
-                              "commentStart": 943,
+                              "commentStart": 0,
                               "end": 0,
                               "properties": [
                                 {
-                                  "commentStart": 954,
+                                  "commentStart": 0,
                                   "end": 0,
                                   "key": {
-                                    "commentStart": 954,
+                                    "commentStart": 0,
                                     "end": 0,
                                     "name": "angle",
                                     "start": 0,
@@ -1153,7 +1153,7 @@ description: Result of parsing rotate_after_fillet.kcl
                                   "start": 0,
                                   "type": "ObjectProperty",
                                   "value": {
-                                    "commentStart": 962,
+                                    "commentStart": 0,
                                     "end": 0,
                                     "raw": "150",
                                     "start": 0,
@@ -1166,10 +1166,10 @@ description: Result of parsing rotate_after_fillet.kcl
                                   }
                                 },
                                 {
-                                  "commentStart": 976,
+                                  "commentStart": 0,
                                   "end": 0,
                                   "key": {
-                                    "commentStart": 976,
+                                    "commentStart": 0,
                                     "end": 0,
                                     "name": "length",
                                     "start": 0,
@@ -1179,10 +1179,10 @@ description: Result of parsing rotate_after_fillet.kcl
                                   "type": "ObjectProperty",
                                   "value": {
                                     "abs_path": false,
-                                    "commentStart": 985,
+                                    "commentStart": 0,
                                     "end": 0,
                                     "name": {
-                                      "commentStart": 985,
+                                      "commentStart": 0,
                                       "end": 0,
                                       "name": "boltHexFlatLength",
                                       "start": 0,
@@ -1200,7 +1200,7 @@ description: Result of parsing rotate_after_fillet.kcl
                               "type": "ObjectExpression"
                             },
                             {
-                              "commentStart": 1013,
+                              "commentStart": 0,
                               "end": 0,
                               "start": 0,
                               "type": "PipeSubstitution",
@@ -1209,10 +1209,10 @@ description: Result of parsing rotate_after_fillet.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 932,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 932,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "angledLine",
                               "start": 0,
@@ -1222,7 +1222,7 @@ description: Result of parsing rotate_after_fillet.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 932,
+                          "commentStart": 0,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -1231,14 +1231,14 @@ description: Result of parsing rotate_after_fillet.kcl
                         {
                           "arguments": [
                             {
-                              "commentStart": 1034,
+                              "commentStart": 0,
                               "end": 0,
                               "properties": [
                                 {
-                                  "commentStart": 1045,
+                                  "commentStart": 0,
                                   "end": 0,
                                   "key": {
-                                    "commentStart": 1045,
+                                    "commentStart": 0,
                                     "end": 0,
                                     "name": "angle",
                                     "start": 0,
@@ -1247,7 +1247,7 @@ description: Result of parsing rotate_after_fillet.kcl
                                   "start": 0,
                                   "type": "ObjectProperty",
                                   "value": {
-                                    "commentStart": 1053,
+                                    "commentStart": 0,
                                     "end": 0,
                                     "raw": "90",
                                     "start": 0,
@@ -1260,10 +1260,10 @@ description: Result of parsing rotate_after_fillet.kcl
                                   }
                                 },
                                 {
-                                  "commentStart": 1066,
+                                  "commentStart": 0,
                                   "end": 0,
                                   "key": {
-                                    "commentStart": 1066,
+                                    "commentStart": 0,
                                     "end": 0,
                                     "name": "length",
                                     "start": 0,
@@ -1273,10 +1273,10 @@ description: Result of parsing rotate_after_fillet.kcl
                                   "type": "ObjectProperty",
                                   "value": {
                                     "abs_path": false,
-                                    "commentStart": 1075,
+                                    "commentStart": 0,
                                     "end": 0,
                                     "name": {
-                                      "commentStart": 1075,
+                                      "commentStart": 0,
                                       "end": 0,
                                       "name": "boltHexFlatLength",
                                       "start": 0,
@@ -1294,7 +1294,7 @@ description: Result of parsing rotate_after_fillet.kcl
                               "type": "ObjectExpression"
                             },
                             {
-                              "commentStart": 1103,
+                              "commentStart": 0,
                               "end": 0,
                               "start": 0,
                               "type": "PipeSubstitution",
@@ -1303,10 +1303,10 @@ description: Result of parsing rotate_after_fillet.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 1023,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 1023,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "angledLine",
                               "start": 0,
@@ -1316,7 +1316,7 @@ description: Result of parsing rotate_after_fillet.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 1023,
+                          "commentStart": 0,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -1325,14 +1325,14 @@ description: Result of parsing rotate_after_fillet.kcl
                         {
                           "arguments": [
                             {
-                              "commentStart": 1124,
+                              "commentStart": 0,
                               "end": 0,
                               "properties": [
                                 {
-                                  "commentStart": 1135,
+                                  "commentStart": 0,
                                   "end": 0,
                                   "key": {
-                                    "commentStart": 1135,
+                                    "commentStart": 0,
                                     "end": 0,
                                     "name": "angle",
                                     "start": 0,
@@ -1341,7 +1341,7 @@ description: Result of parsing rotate_after_fillet.kcl
                                   "start": 0,
                                   "type": "ObjectProperty",
                                   "value": {
-                                    "commentStart": 1143,
+                                    "commentStart": 0,
                                     "end": 0,
                                     "raw": "30",
                                     "start": 0,
@@ -1354,10 +1354,10 @@ description: Result of parsing rotate_after_fillet.kcl
                                   }
                                 },
                                 {
-                                  "commentStart": 1156,
+                                  "commentStart": 0,
                                   "end": 0,
                                   "key": {
-                                    "commentStart": 1156,
+                                    "commentStart": 0,
                                     "end": 0,
                                     "name": "length",
                                     "start": 0,
@@ -1367,10 +1367,10 @@ description: Result of parsing rotate_after_fillet.kcl
                                   "type": "ObjectProperty",
                                   "value": {
                                     "abs_path": false,
-                                    "commentStart": 1165,
+                                    "commentStart": 0,
                                     "end": 0,
                                     "name": {
-                                      "commentStart": 1165,
+                                      "commentStart": 0,
                                       "end": 0,
                                       "name": "boltHexFlatLength",
                                       "start": 0,
@@ -1388,7 +1388,7 @@ description: Result of parsing rotate_after_fillet.kcl
                               "type": "ObjectExpression"
                             },
                             {
-                              "commentStart": 1193,
+                              "commentStart": 0,
                               "end": 0,
                               "start": 0,
                               "type": "PipeSubstitution",
@@ -1397,10 +1397,10 @@ description: Result of parsing rotate_after_fillet.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 1113,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 1113,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "angledLine",
                               "start": 0,
@@ -1410,7 +1410,7 @@ description: Result of parsing rotate_after_fillet.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 1113,
+                          "commentStart": 0,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -1420,10 +1420,10 @@ description: Result of parsing rotate_after_fillet.kcl
                           "arguments": [],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 1203,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 1203,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "close",
                               "start": 0,
@@ -1433,7 +1433,7 @@ description: Result of parsing rotate_after_fillet.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 1203,
+                          "commentStart": 0,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -1444,22 +1444,22 @@ description: Result of parsing rotate_after_fillet.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "commentStart": 1226,
+                                "commentStart": 0,
                                 "end": 0,
                                 "name": "length",
                                 "start": 0,
                                 "type": "Identifier"
                               },
                               "arg": {
-                                "commentStart": 1235,
+                                "commentStart": 0,
                                 "end": 0,
                                 "left": {
                                   "argument": {
                                     "abs_path": false,
-                                    "commentStart": 1236,
+                                    "commentStart": 0,
                                     "end": 0,
                                     "name": {
-                                      "commentStart": 1236,
+                                      "commentStart": 0,
                                       "end": 0,
                                       "name": "boltHeadLength",
                                       "start": 0,
@@ -1470,7 +1470,7 @@ description: Result of parsing rotate_after_fillet.kcl
                                     "type": "Name",
                                     "type": "Name"
                                   },
-                                  "commentStart": 1235,
+                                  "commentStart": 0,
                                   "end": 0,
                                   "operator": "-",
                                   "start": 0,
@@ -1479,7 +1479,7 @@ description: Result of parsing rotate_after_fillet.kcl
                                 },
                                 "operator": "*",
                                 "right": {
-                                  "commentStart": 1253,
+                                  "commentStart": 0,
                                   "end": 0,
                                   "raw": "0.75",
                                   "start": 0,
@@ -1498,10 +1498,10 @@ description: Result of parsing rotate_after_fillet.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 1218,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 1218,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "extrude",
                               "start": 0,
@@ -1511,7 +1511,7 @@ description: Result of parsing rotate_after_fillet.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 1218,
+                          "commentStart": 0,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
@@ -1519,7 +1519,7 @@ description: Result of parsing rotate_after_fillet.kcl
                           "unlabeled": null
                         }
                       ],
-                      "commentStart": 615,
+                      "commentStart": 0,
                       "end": 0,
                       "start": 0,
                       "type": "PipeExpression",
@@ -1535,12 +1535,12 @@ description: Result of parsing rotate_after_fillet.kcl
                   "type": "VariableDeclaration"
                 },
                 {
-                  "commentStart": 1258,
+                  "commentStart": 0,
                   "declaration": {
-                    "commentStart": 1262,
+                    "commentStart": 0,
                     "end": 0,
                     "id": {
-                      "commentStart": 1262,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "boltBody",
                       "start": 0,
@@ -1552,10 +1552,10 @@ description: Result of parsing rotate_after_fillet.kcl
                           "arguments": [
                             {
                               "abs_path": false,
-                              "commentStart": 1287,
+                              "commentStart": 0,
                               "end": 0,
                               "name": {
-                                "commentStart": 1287,
+                                "commentStart": 0,
                                 "end": 0,
                                 "name": "boltHead",
                                 "start": 0,
@@ -1567,7 +1567,7 @@ description: Result of parsing rotate_after_fillet.kcl
                               "type": "Name"
                             },
                             {
-                              "commentStart": 1297,
+                              "commentStart": 0,
                               "end": 0,
                               "raw": "'end'",
                               "start": 0,
@@ -1578,10 +1578,10 @@ description: Result of parsing rotate_after_fillet.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 1273,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 1273,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "startSketchOn",
                               "start": 0,
@@ -1591,7 +1591,7 @@ description: Result of parsing rotate_after_fillet.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 1273,
+                          "commentStart": 0,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -1602,17 +1602,17 @@ description: Result of parsing rotate_after_fillet.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "commentStart": 1318,
+                                "commentStart": 0,
                                 "end": 0,
                                 "name": "center",
                                 "start": 0,
                                 "type": "Identifier"
                               },
                               "arg": {
-                                "commentStart": 1327,
+                                "commentStart": 0,
                                 "elements": [
                                   {
-                                    "commentStart": 1328,
+                                    "commentStart": 0,
                                     "end": 0,
                                     "raw": "0",
                                     "start": 0,
@@ -1624,7 +1624,7 @@ description: Result of parsing rotate_after_fillet.kcl
                                     }
                                   },
                                   {
-                                    "commentStart": 1331,
+                                    "commentStart": 0,
                                     "end": 0,
                                     "raw": "0",
                                     "start": 0,
@@ -1645,21 +1645,21 @@ description: Result of parsing rotate_after_fillet.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "commentStart": 1335,
+                                "commentStart": 0,
                                 "end": 0,
                                 "name": "radius",
                                 "start": 0,
                                 "type": "Identifier"
                               },
                               "arg": {
-                                "commentStart": 1344,
+                                "commentStart": 0,
                                 "end": 0,
                                 "left": {
                                   "abs_path": false,
-                                  "commentStart": 1344,
+                                  "commentStart": 0,
                                   "end": 0,
                                   "name": {
-                                    "commentStart": 1344,
+                                    "commentStart": 0,
                                     "end": 0,
                                     "name": "boltDiameter",
                                     "start": 0,
@@ -1672,7 +1672,7 @@ description: Result of parsing rotate_after_fillet.kcl
                                 },
                                 "operator": "/",
                                 "right": {
-                                  "commentStart": 1359,
+                                  "commentStart": 0,
                                   "end": 0,
                                   "raw": "2",
                                   "start": 0,
@@ -1691,14 +1691,14 @@ description: Result of parsing rotate_after_fillet.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "commentStart": 1362,
+                                "commentStart": 0,
                                 "end": 0,
                                 "name": "tag",
                                 "start": 0,
                                 "type": "Identifier"
                               },
                               "arg": {
-                                "commentStart": 1368,
+                                "commentStart": 0,
                                 "end": 0,
                                 "start": 0,
                                 "type": "TagDeclarator",
@@ -1709,10 +1709,10 @@ description: Result of parsing rotate_after_fillet.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 1311,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 1311,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "circle",
                               "start": 0,
@@ -1722,7 +1722,7 @@ description: Result of parsing rotate_after_fillet.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 1311,
+                          "commentStart": 0,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
@@ -1734,7 +1734,7 @@ description: Result of parsing rotate_after_fillet.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "commentStart": 1396,
+                                "commentStart": 0,
                                 "end": 0,
                                 "name": "length",
                                 "start": 0,
@@ -1742,10 +1742,10 @@ description: Result of parsing rotate_after_fillet.kcl
                               },
                               "arg": {
                                 "abs_path": false,
-                                "commentStart": 1405,
+                                "commentStart": 0,
                                 "end": 0,
                                 "name": {
-                                  "commentStart": 1405,
+                                  "commentStart": 0,
                                   "end": 0,
                                   "name": "boltLength",
                                   "start": 0,
@@ -1760,10 +1760,10 @@ description: Result of parsing rotate_after_fillet.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 1388,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 1388,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "extrude",
                               "start": 0,
@@ -1773,7 +1773,7 @@ description: Result of parsing rotate_after_fillet.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 1388,
+                          "commentStart": 0,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
@@ -1785,14 +1785,14 @@ description: Result of parsing rotate_after_fillet.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "commentStart": 1431,
+                                "commentStart": 0,
                                 "end": 0,
                                 "name": "radius",
                                 "start": 0,
                                 "type": "Identifier"
                               },
                               "arg": {
-                                "commentStart": 1440,
+                                "commentStart": 0,
                                 "end": 0,
                                 "raw": ".020",
                                 "start": 0,
@@ -1807,23 +1807,23 @@ description: Result of parsing rotate_after_fillet.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "commentStart": 1446,
+                                "commentStart": 0,
                                 "end": 0,
                                 "name": "tags",
                                 "start": 0,
                                 "type": "Identifier"
                               },
                               "arg": {
-                                "commentStart": 1453,
+                                "commentStart": 0,
                                 "elements": [
                                   {
                                     "arguments": [
                                       {
                                         "abs_path": false,
-                                        "commentStart": 1470,
+                                        "commentStart": 0,
                                         "end": 0,
                                         "name": {
-                                          "commentStart": 1470,
+                                          "commentStart": 0,
                                           "end": 0,
                                           "name": "filletEdge",
                                           "start": 0,
@@ -1837,10 +1837,10 @@ description: Result of parsing rotate_after_fillet.kcl
                                     ],
                                     "callee": {
                                       "abs_path": false,
-                                      "commentStart": 1454,
+                                      "commentStart": 0,
                                       "end": 0,
                                       "name": {
-                                        "commentStart": 1454,
+                                        "commentStart": 0,
                                         "end": 0,
                                         "name": "getOppositeEdge",
                                         "start": 0,
@@ -1850,7 +1850,7 @@ description: Result of parsing rotate_after_fillet.kcl
                                       "start": 0,
                                       "type": "Name"
                                     },
-                                    "commentStart": 1454,
+                                    "commentStart": 0,
                                     "end": 0,
                                     "start": 0,
                                     "type": "CallExpression",
@@ -1866,10 +1866,10 @@ description: Result of parsing rotate_after_fillet.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 1424,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 1424,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "fillet",
                               "start": 0,
@@ -1879,7 +1879,7 @@ description: Result of parsing rotate_after_fillet.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 1424,
+                          "commentStart": 0,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
@@ -1891,14 +1891,14 @@ description: Result of parsing rotate_after_fillet.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "commentStart": 1502,
+                                "commentStart": 0,
                                 "end": 0,
                                 "name": "color",
                                 "start": 0,
                                 "type": "Identifier"
                               },
                               "arg": {
-                                "commentStart": 1510,
+                                "commentStart": 0,
                                 "end": 0,
                                 "raw": "\"#4dd043\"",
                                 "start": 0,
@@ -1910,14 +1910,14 @@ description: Result of parsing rotate_after_fillet.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "commentStart": 1521,
+                                "commentStart": 0,
                                 "end": 0,
                                 "name": "metalness",
                                 "start": 0,
                                 "type": "Identifier"
                               },
                               "arg": {
-                                "commentStart": 1533,
+                                "commentStart": 0,
                                 "end": 0,
                                 "raw": "90",
                                 "start": 0,
@@ -1932,14 +1932,14 @@ description: Result of parsing rotate_after_fillet.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "commentStart": 1537,
+                                "commentStart": 0,
                                 "end": 0,
                                 "name": "roughness",
                                 "start": 0,
                                 "type": "Identifier"
                               },
                               "arg": {
-                                "commentStart": 1549,
+                                "commentStart": 0,
                                 "end": 0,
                                 "raw": "90",
                                 "start": 0,
@@ -1954,10 +1954,10 @@ description: Result of parsing rotate_after_fillet.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 1491,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 1491,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "appearance",
                               "start": 0,
@@ -1967,7 +1967,7 @@ description: Result of parsing rotate_after_fillet.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 1491,
+                          "commentStart": 0,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
@@ -1975,7 +1975,7 @@ description: Result of parsing rotate_after_fillet.kcl
                           "unlabeled": null
                         }
                       ],
-                      "commentStart": 1273,
+                      "commentStart": 0,
                       "end": 0,
                       "start": 0,
                       "type": "PipeExpression",
@@ -1993,10 +1993,10 @@ description: Result of parsing rotate_after_fillet.kcl
                 {
                   "argument": {
                     "abs_path": false,
-                    "commentStart": 1563,
+                    "commentStart": 0,
                     "end": 0,
                     "name": {
-                      "commentStart": 1563,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "boltBody",
                       "start": 0,
@@ -2007,20 +2007,20 @@ description: Result of parsing rotate_after_fillet.kcl
                     "type": "Name",
                     "type": "Name"
                   },
-                  "commentStart": 1552,
+                  "commentStart": 0,
                   "end": 0,
                   "start": 0,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
                 }
               ],
-              "commentStart": 268,
+              "commentStart": 0,
               "end": 0,
               "nonCodeMeta": {
                 "nonCodeNodes": {
                   "1": [
                     {
-                      "commentStart": 1258,
+                      "commentStart": 0,
                       "end": 0,
                       "start": 0,
                       "type": "NonCodeNode",
@@ -2031,7 +2031,7 @@ description: Result of parsing rotate_after_fillet.kcl
                   ],
                   "2": [
                     {
-                      "commentStart": 1552,
+                      "commentStart": 0,
                       "end": 0,
                       "start": 0,
                       "type": "NonCodeNode",
@@ -2045,7 +2045,7 @@ description: Result of parsing rotate_after_fillet.kcl
               },
               "start": 0
             },
-            "commentStart": 264,
+            "commentStart": 0,
             "end": 0,
             "params": [],
             "start": 0,
@@ -2063,7 +2063,7 @@ description: Result of parsing rotate_after_fillet.kcl
         "visibility": "export"
       },
       {
-        "commentStart": 1573,
+        "commentStart": 0,
         "end": 0,
         "expression": {
           "body": [
@@ -2071,10 +2071,10 @@ description: Result of parsing rotate_after_fillet.kcl
               "arguments": [],
               "callee": {
                 "abs_path": false,
-                "commentStart": 1575,
+                "commentStart": 0,
                 "end": 0,
                 "name": {
-                  "commentStart": 1575,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "bolt",
                   "start": 0,
@@ -2084,7 +2084,7 @@ description: Result of parsing rotate_after_fillet.kcl
                 "start": 0,
                 "type": "Name"
               },
-              "commentStart": 1575,
+              "commentStart": 0,
               "end": 0,
               "start": 0,
               "type": "CallExpression",
@@ -2095,14 +2095,14 @@ description: Result of parsing rotate_after_fillet.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "commentStart": 1594,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "roll",
                     "start": 0,
                     "type": "Identifier"
                   },
                   "arg": {
-                    "commentStart": 1601,
+                    "commentStart": 0,
                     "end": 0,
                     "raw": "3.14",
                     "start": 0,
@@ -2117,14 +2117,14 @@ description: Result of parsing rotate_after_fillet.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "commentStart": 1607,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "pitch",
                     "start": 0,
                     "type": "Identifier"
                   },
                   "arg": {
-                    "commentStart": 1615,
+                    "commentStart": 0,
                     "end": 0,
                     "raw": "3.14",
                     "start": 0,
@@ -2139,14 +2139,14 @@ description: Result of parsing rotate_after_fillet.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "commentStart": 1621,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "yaw",
                     "start": 0,
                     "type": "Identifier"
                   },
                   "arg": {
-                    "commentStart": 1627,
+                    "commentStart": 0,
                     "end": 0,
                     "raw": "3.14",
                     "start": 0,
@@ -2161,10 +2161,10 @@ description: Result of parsing rotate_after_fillet.kcl
               ],
               "callee": {
                 "abs_path": false,
-                "commentStart": 1587,
+                "commentStart": 0,
                 "end": 0,
                 "name": {
-                  "commentStart": 1587,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "rotate",
                   "start": 0,
@@ -2174,7 +2174,7 @@ description: Result of parsing rotate_after_fillet.kcl
                 "start": 0,
                 "type": "Name"
               },
-              "commentStart": 1587,
+              "commentStart": 0,
               "end": 0,
               "start": 0,
               "type": "CallExpressionKw",
@@ -2182,13 +2182,13 @@ description: Result of parsing rotate_after_fillet.kcl
               "unlabeled": null
             }
           ],
-          "commentStart": 1575,
+          "commentStart": 0,
           "end": 0,
           "nonCodeMeta": {
             "nonCodeNodes": {
               "1": [
                 {
-                  "commentStart": 1632,
+                  "commentStart": 0,
                   "end": 0,
                   "start": 0,
                   "type": "NonCodeNode",
@@ -2217,7 +2217,7 @@ description: Result of parsing rotate_after_fillet.kcl
       "nonCodeNodes": {
         "6": [
           {
-            "commentStart": 248,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -2228,7 +2228,7 @@ description: Result of parsing rotate_after_fillet.kcl
         ],
         "7": [
           {
-            "commentStart": 1573,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",

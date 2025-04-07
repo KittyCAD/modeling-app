@@ -18,7 +18,6 @@ pub mod math;
 pub mod mirror;
 pub mod patterns;
 pub mod planes;
-pub mod polar;
 pub mod revolve;
 pub mod segment;
 pub mod shapes;
@@ -145,7 +144,6 @@ lazy_static! {
         Box::new(crate::std::units::M),
         Box::new(crate::std::units::Cm),
         Box::new(crate::std::units::Yd),
-        Box::new(crate::std::polar::Polar),
         Box::new(crate::std::assert::Assert),
         Box::new(crate::std::assert::AssertEqual),
         Box::new(crate::std::assert::AssertLessThan),
