@@ -15,15 +15,6 @@ import type { Selections } from '@src/lib/selections'
 import { isArray, isOverlap } from '@src/lib/utils'
 
 import type { SourceRange } from '@rust/kcl-lib/bindings/SourceRange'
-import {
-  ARG_ANGLE,
-  ARG_END_ABSOLUTE_X,
-  ARG_END_ABSOLUTE_Y,
-  ARG_LENGTH,
-  ARG_LENGTH_X,
-  ARG_LENGTH_Y,
-} from '@src/lang/constants'
-import { createArrayExpression } from '@src/lang/create'
 
 /**
  * Create a SourceRange for the top-level module.
@@ -135,27 +126,6 @@ export function isLiteral(e: any): e is Literal {
 
 export function isBinaryExpression(e: any): e is BinaryExpression {
   return e && e.type === 'BinaryExpression'
-}
-
-/**
-Find the angle and some sort of length parameter from an angledLine-ish call.
-E.g. finds the (angle, length) in angledLine or the (angle, endAbsoluteX) in angledLineToX
-*/
-export function findAngleLengthPair(call: CallExpressionKw): Expr | undefined {
-  const angle = findKwArg(ARG_ANGLE, call)
-  const lengthLike = findKwArgAny(
-    [
-      ARG_LENGTH,
-      ARG_LENGTH_X,
-      ARG_LENGTH_Y,
-      ARG_END_ABSOLUTE_X,
-      ARG_END_ABSOLUTE_Y,
-    ],
-    call
-  )
-  if (angle && lengthLike) {
-    return createArrayExpression([angle, lengthLike])
-  }
 }
 
 /**
