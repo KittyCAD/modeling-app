@@ -103,8 +103,6 @@ impl ExecutorContext {
     ) -> Result<(Option<KclValue>, EnvironmentRef, Vec<String>), KclError> {
         crate::log::log(format!("enter module {path} {}", exec_state.stack()));
 
-        let old_units = exec_state.length_unit();
-
         let mut local_state = ModuleState::new(path.std_path(), exec_state.stack().memory.clone(), Some(module_id));
         if !preserve_mem {
             std::mem::swap(&mut exec_state.mod_local, &mut local_state);
@@ -130,16 +128,6 @@ impl ExecutorContext {
         };
         if !preserve_mem {
             std::mem::swap(&mut exec_state.mod_local, &mut local_state);
-        }
-
-        // We only need to reset the units if we are not on the Main path.
-        // If we reset at the end of the main path, then we just add on an extra
-        // command and we'd need to flush the batch again.
-        // This avoids that.
-        if new_units != old_units && *path != ModulePath::Main {
-            self.engine
-                .set_units(old_units.into(), Default::default(), exec_state.id_generator())
-                .await?;
         }
 
         crate::log::log(format!("leave {path}"));

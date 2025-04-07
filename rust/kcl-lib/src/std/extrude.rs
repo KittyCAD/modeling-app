@@ -162,11 +162,11 @@ pub(crate) async fn do_post_extrude<'a>(
 ) -> Result<Solid, KclError> {
     // Bring the object to the front of the scene.
     // See: https://github.com/KittyCAD/modeling-app/issues/806
-    args.batch_modeling_cmd(
+    /*args.batch_modeling_cmd(
         exec_state.next_uuid(),
         ModelingCmd::from(mcmd::ObjectBringToFront { object_id: sketch.id }),
     )
-    .await?;
+    .await?;*/
 
     let any_edge_id = if let Some(edge_id) = sketch.mirror {
         edge_id
@@ -207,6 +207,8 @@ pub(crate) async fn do_post_extrude<'a>(
     } else {
         vec![]
     };
+
+    println!("face_infos: {:?}", face_infos);
 
     // Face filtering attempt in order to resolve https://github.com/KittyCAD/modeling-app/issues/5328
     // In case of a sectional sweep, empirically it looks that the first n faces that are yielded from the sweep
