@@ -1,4 +1,4 @@
-use std::{collections::HashSet, str::FromStr};
+use std::{collections::HashSet, fmt, str::FromStr};
 
 use regex::Regex;
 use tower_lsp::lsp_types::{
@@ -389,21 +389,23 @@ impl FnData {
     pub fn fn_signature(&self) -> String {
         let mut signature = String::new();
 
-        signature.push('(');
-        for (i, arg) in self.args.iter().enumerate() {
-            if i > 0 {
-                signature.push_str(", ");
+        if self.args.is_empty() {
+            signature.push_str("()");
+        } else if self.args.len() == 1 {
+            signature.push('(');
+            signature.push_str(&self.args[0].to_string());
+            signature.push(')');
+        } else {
+            signature.push('(');
+            for a in &self.args {
+                signature.push_str("\n  ");
+                signature.push_str(&a.to_string());
+                signature.push(',');
             }
-            match &arg.kind {
-                ArgKind::Special => signature.push_str(&format!("@{}", arg.name)),
-                ArgKind::Labelled(false) => signature.push_str(&arg.name),
-                ArgKind::Labelled(true) => signature.push_str(&format!("{}?", arg.name)),
-            }
-            if let Some(ty) = &arg.ty {
-                signature.push_str(&format!(": {ty}"));
-            }
+            signature.push('\n');
+            signature.push(')');
         }
-        signature.push(')');
+
         if let Some(ty) = &self.return_type {
             signature.push_str(&format!(": {ty}"));
         }
@@ -513,6 +515,20 @@ pub struct ArgData {
     /// This is helpful if the type is really basic, like "number" -- that won't tell the user much about
     /// how this argument is meant to be used.
     pub docs: Option<String>,
+}
+
+impl fmt::Display for ArgData {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match &self.kind {
+            ArgKind::Special => write!(f, "@{}", self.name)?,
+            ArgKind::Labelled(false) => f.write_str(&self.name)?,
+            ArgKind::Labelled(true) => write!(f, "{}?", self.name)?,
+        }
+        if let Some(ty) = &self.ty {
+            write!(f, ": {ty}")?;
+        }
+        Ok(())
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -766,8 +782,8 @@ trait ApplyMeta {
                     description = summary;
                     summary = None;
                     let d = description.as_mut().unwrap();
-                    d.push_str(l);
                     d.push('\n');
+                    d.push_str(l);
                 }
                 continue;
             }
