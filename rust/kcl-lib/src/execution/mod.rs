@@ -722,7 +722,7 @@ impl ExecutorContext {
         exec_state: &mut ExecState,
         preserve_mem: bool,
     ) -> Result<(EnvironmentRef, Option<ModelingSessionData>), KclErrorWithOutputs> {
-        self.prepare_mem(exec_state).await.unwrap();
+        self.prepare_mem(exec_state).await?;
 
         let mut universe = std::collections::HashMap::new();
 

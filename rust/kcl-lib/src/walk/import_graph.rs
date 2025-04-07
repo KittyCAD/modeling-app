@@ -179,13 +179,13 @@ pub(crate) async fn import_universe(
             let Some(module_info) = exec_state.get_module(module_id) else {
                 return Err(KclError::Internal(KclErrorDetails {
                     message: format!("Module {} not found", module_id),
-                    source_ranges: Default::default(),
+                    source_ranges: vec![import_stmt.into()],
                 }));
             };
             let ModuleRepr::Kcl(program, _) = &module_info.repr else {
                 return Err(KclError::Internal(KclErrorDetails {
                     message: format!("Module {} is not a KCL module", module_id),
-                    source_ranges: Default::default(),
+                    source_ranges: vec![import_stmt.into()],
                 }));
             };
             program.clone()
