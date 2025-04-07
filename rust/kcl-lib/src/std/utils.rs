@@ -234,40 +234,37 @@ pub fn is_on_circumference(center: Point2d, point: Point2d, radius: f64) -> bool
     (distance_squared - radius.powi(2)).abs() < 1e-9
 }
 
-// Calculate the center of 3 points
-// To calculate the center of the 3 point circle 2 perpendicular lines are created
-// These perpendicular lines will intersect at the center of the circle.
+// Calculate the center of 3 points using the equation:
+//   (x - cx)^2 + (y - cy)^2 = r^2
+// All 3 points will satisfy this equation, so we have 3 equations. Radius can be eliminated
+// by subtracting one of the equations from the other two.and the remaining 2 equations can
+// be solved for cx and cy.
+// Handles if 3 points lie on the same line (collinear) by returning the average of the points (could return None instead..)
 pub fn calculate_circle_center(p1: [f64; 2], p2: [f64; 2], p3: [f64; 2]) -> [f64; 2] {
-    // y2 - y1
-    let y_2_1 = p2[1] - p1[1];
-    // y3 - y2
-    let y_3_2 = p3[1] - p2[1];
-    // x2 - x1
-    let x_2_1 = p2[0] - p1[0];
-    // x3 - x2
-    let x_3_2 = p3[0] - p2[0];
+    let (x1, y1) = (p1[0], p1[1]);
+    let (x2, y2) = (p2[0], p2[1]);
+    let (x3, y3) = (p3[0], p3[1]);
 
-    // Slope of two perpendicular lines
-    let slope_a = y_2_1 / x_2_1;
-    let slope_b = y_3_2 / x_3_2;
+    // Compute the determinant d = 2 * (x1*(y2-y3) + x2*(y3-y1) + x3*(y1-y2))
+    // Visually d is twice the area of the triangle formed by the points,
+    // also the same as: cross(p2 - p1, p3 - p1)
+    let d = 2.0 * (x1 * (y2 - y3) + x2 * (y3 - y1) + x3 * (y1 - y2));
 
-    // Values for line intersection
-    // y1 - y3
-    let y_1_3 = p1[1] - p3[1];
-    // x1 + x2
-    let x_1_2 = p1[0] + p2[0];
-    // x2 + x3
-    let x_2_3 = p2[0] + p3[0];
-    // y1 + y2
-    let y_1_2 = p1[1] + p2[1];
+    // If d is nearly zero, the points are collinear, and a unique circle cannot be defined.
+    if d.abs() < std::f64::EPSILON {
+        return [(x1 + x2 + x3) / 3.0, (y1 + y2 + y3) / 3.0];
+    }
 
-    // Solve for the intersection of these two lines
-    let numerator = (slope_a * slope_b * y_1_3) + (slope_b * x_1_2) - (slope_a * x_2_3);
-    let x = numerator / (2.0 * (slope_b - slope_a));
+    // squared lengths
+    let p1_sq = x1 * x1 + y1 * y1;
+    let p2_sq = x2 * x2 + y2 * y2;
+    let p3_sq = x3 * x3 + y3 * y3;
 
-    let y = ((-1.0 / slope_a) * (x - (x_1_2 / 2.0))) + (y_1_2 / 2.0);
-
-    [x, y]
+    // Calculate the center
+    [
+        (p1_sq * (y2 - y3) + p2_sq * (y3 - y1) + p3_sq * (y1 - y2)) / d,
+        (p1_sq * (x3 - x2) + p2_sq * (x1 - x3) + p3_sq * (x2 - x1)) / d,
+    ]
 }
 
 pub struct CircleParams {
