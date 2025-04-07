@@ -32,7 +32,7 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     let sketches = args.get_unlabeled_kw_arg_typed("sketches", &RuntimeType::sketches(), exec_state)?;
     let length = args.get_kw_arg("length")?;
     let symmetric = args.get_kw_arg_opt("symmetric")?;
-    let bidirectional_length = args.get_kw_arg_opt("bidirectional_length")?;
+    let bidirectional_length = args.get_kw_arg_opt("bidirectionalLength")?;
     let tag_start = args.get_kw_arg_opt("tagStart")?;
     let tag_end = args.get_kw_arg_opt("tagEnd")?;
 
@@ -142,7 +142,7 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 ///   |> line(end = [-5, -2])
 ///   |> close()
 ///
-/// example = extrude(exampleSketch, length = 10, bidirectional_length = 50)
+/// example = extrude(exampleSketch, length = 10, bidirectionalLength = 50)
 /// ```
 #[stdlib {
     name = "extrude",

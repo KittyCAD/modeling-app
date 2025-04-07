@@ -31,7 +31,7 @@ pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     let tag_start = args.get_kw_arg_opt("tagStart")?;
     let tag_end = args.get_kw_arg_opt("tagEnd")?;
     let symmetric = args.get_kw_arg_opt("symmetric")?;
-    let bidirectional_angle = args.get_kw_arg_opt("bidirectional")?;
+    let bidirectional_angle = args.get_kw_arg_opt("bidirectionalAngle")?;
 
     let value = inner_revolve(
         sketches,

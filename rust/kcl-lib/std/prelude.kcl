@@ -606,7 +606,7 @@ export fn helix(
 ///
 /// sketch001 = startSketchOn('XY')
 ///     |> circle(center = [-10, 10], radius = 4)
-///     |> revolve(angle = 90, axis = revolveAxis, bidirectional_angle = 50)
+///     |> revolve(angle = 90, axis = revolveAxis, bidirectionalAngle = 50)
 /// ```
 @(impl = std_rust)
 export fn revolve(
@@ -621,7 +621,7 @@ export fn revolve(
   /// If true, the extrusion will happen symmetrically around the sketch. Otherwise, the extrusion will happen on only one side of the sketch.
   symmetric?: bool,
   /// If specified, will also revolve in the opposite direction to 'angle' to the specified angle. If 'symmetric' is true, this value is ignored.
-  bidirectional_angle?: number(deg),
+  bidirectionalAngle?: number(deg),
   /// A named tag for the face at the start of the revolve, i.e. the original sketch.
   tagStart?: tag,
   /// A named tag for the face at the end of the revolve.
