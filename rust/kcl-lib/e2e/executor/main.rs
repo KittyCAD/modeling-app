@@ -842,10 +842,10 @@ holeIndex = 6
 
 // Create the mounting plate extrusion, holes, and fillets
 part = rectShape([0, 0], 20, 20)
-  |> hole(circle('XY', [-holeIndex, holeIndex], holeRadius), %)
-  |> hole(circle('XY', [holeIndex, holeIndex], holeRadius), %)
-  |> hole(circle('XY', [-holeIndex, -holeIndex], holeRadius), %)
-  |> hole(circle('XY', [holeIndex, -holeIndex], holeRadius), %)
+  |> hole(circle('XY', center = [-holeIndex, holeIndex], radius = holeRadius))
+  |> hole(circle('XY', center = [holeIndex, holeIndex], radius = holeRadius))
+  |> hole(circle('XY', center = [-holeIndex, -holeIndex], radius = holeRadius))
+  |> hole(circle('XY', center = [holeIndex, -holeIndex], radius = holeRadius))
   |> extrude(length = 2)
   |> fillet(
        radius = 4,
@@ -865,7 +865,7 @@ part = rectShape([0, 0], 20, 20)
     };
     assert_eq!(
         err.error.message(),
-        "This function expected the input argument to be of type SketchOrSurface but it's actually of type string (text)"
+        "The input argument of std::sketch::circle requires a value with type `Sketch | Plane | Face`, but found string (text)"
     );
 }
 
@@ -1038,7 +1038,6 @@ sketch001 = startSketchOn(box, "end")
   |> line(end = [0, 10])
   |> close()
   |> revolve(axis = getOppositeEdge(revolveAxis), angle = 90)
-
 
 "#;
 
@@ -1356,7 +1355,7 @@ secondSketch = startSketchOn(part001, '')
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([297, 299, 0])], message: "Argument at index 1 was supposed to be type Option<kcl_lib::std::sketch::FaceTag> but found string (text)" }"#
+        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([297, 299, 0])], message: "Argument at index 1 was supposed to be type Option<FaceTag> but found string (text)" }"#
     );
 }
 
@@ -1387,7 +1386,7 @@ extrusion = startSketchOn(XY)
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([68, 358, 0]), SourceRange([449, 482, 0])], message: "Expected 2 arguments, got 3" }"#
+        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([68, 358, 0]), SourceRange([445, 478, 0])], message: "Expected 2 arguments, got 3" }"#
     );
 }
 
@@ -1789,7 +1788,7 @@ async fn kcl_test_arc_error_same_start_end() {
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"type: KclErrorDetails { source_ranges: [SourceRange([57, 138, 0])], message: "Arc start and end angles must be different" }"#
+        r#"type: KclErrorDetails { source_ranges: [SourceRange([55, 136, 0])], message: "Arc start and end angles must be different" }"#
     );
 }
 
@@ -1809,7 +1808,7 @@ example = extrude(exampleSketch, length = 10)
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"type: KclErrorDetails { source_ranges: [SourceRange([72, 113, 0])], message: "Cannot have an x constrained angle of 90 degrees" }"#
+        r#"type: KclErrorDetails { source_ranges: [SourceRange([70, 111, 0])], message: "Cannot have an x constrained angle of 90 degrees" }"#
     );
 }
 
@@ -1829,7 +1828,7 @@ example = extrude(exampleSketch, length = 10)
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"type: KclErrorDetails { source_ranges: [SourceRange([72, 114, 0])], message: "Cannot have an x constrained angle of 270 degrees" }"#
+        r#"type: KclErrorDetails { source_ranges: [SourceRange([70, 112, 0])], message: "Cannot have an x constrained angle of 270 degrees" }"#
     );
 }
 
@@ -1975,7 +1974,7 @@ example = extrude(exampleSketch, length = 10)
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"type: KclErrorDetails { source_ranges: [SourceRange([97, 135, 0])], message: "Cannot have a y constrained angle of 180 degrees" }"#
+        r#"type: KclErrorDetails { source_ranges: [SourceRange([95, 133, 0])], message: "Cannot have a y constrained angle of 180 degrees" }"#
     );
 }
 
@@ -1992,7 +1991,7 @@ someFunction('INVALID')
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([51, 60, 0]), SourceRange([65, 88, 0])], message: "Argument at index 0 was supposed to be type kcl_lib::std::sketch::SketchData but found string (text)" }"#
+        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([51, 60, 0]), SourceRange([65, 88, 0])], message: "Argument at index 0 was supposed to be type SketchData but found string (text)" }"#
     );
 }
 
@@ -2013,7 +2012,7 @@ someFunction('INVALID')
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([103, 113, 0]), SourceRange([126, 155, 0]), SourceRange([159, 182, 0])], message: "Argument at index 0 was supposed to be type kcl_lib::std::sketch::SketchData but found string (text)" }"#
+        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([103, 113, 0]), SourceRange([126, 155, 0]), SourceRange([159, 182, 0])], message: "Argument at index 0 was supposed to be type SketchData but found string (text)" }"#
     );
 }
 
@@ -2053,7 +2052,7 @@ innerDiameter = 0.364
 outerDiameter = 35 / 64
 length = 1 + 1 / 2
 
-// create a sketch on the 'XY' plane
+// create a sketch on the XY plane
 sketch000 = startSketchOn(XY)
     |> startProfileAt([0, 0], %)
     |> line(end = [0, innerDiameter / 2])
