@@ -722,16 +722,52 @@ impl ExecutorContext {
         exec_state: &mut ExecState,
         preserve_mem: bool,
     ) -> Result<(EnvironmentRef, Option<ModelingSessionData>), KclErrorWithOutputs> {
+        exec_state.add_root_module_contents(program);
         self.prepare_mem(exec_state).await?;
 
         let mut universe = std::collections::HashMap::new();
 
+        let default_planes = self.engine.get_default_planes().read().await.clone();
         crate::walk::import_universe(self, &program.ast, &mut universe, exec_state)
             .await
-            .map_err(KclErrorWithOutputs::no_outputs)?;
+            .map_err(|err| {
+                let module_id_to_module_path: IndexMap<ModuleId, ModulePath> = exec_state
+                    .global
+                    .path_to_source_id
+                    .iter()
+                    .map(|(k, v)| ((*v), k.clone()))
+                    .collect();
+
+                KclErrorWithOutputs::new(
+                    err,
+                    exec_state.global.operations.clone(),
+                    exec_state.global.artifact_commands.clone(),
+                    exec_state.global.artifact_graph.clone(),
+                    module_id_to_module_path,
+                    exec_state.global.id_to_source.clone(),
+                    default_planes.clone(),
+                )
+            })?;
 
         for modules in crate::walk::import_graph(&universe, self)
-            .map_err(KclErrorWithOutputs::no_outputs)?
+            .map_err(|err| {
+                let module_id_to_module_path: IndexMap<ModuleId, ModulePath> = exec_state
+                    .global
+                    .path_to_source_id
+                    .iter()
+                    .map(|(k, v)| ((*v), k.clone()))
+                    .collect();
+
+                KclErrorWithOutputs::new(
+                    err,
+                    exec_state.global.operations.clone(),
+                    exec_state.global.artifact_commands.clone(),
+                    exec_state.global.artifact_graph.clone(),
+                    module_id_to_module_path,
+                    exec_state.global.id_to_source.clone(),
+                    default_planes.clone(),
+                )
+            })?
             .into_iter()
         {
             #[cfg(not(target_arch = "wasm32"))]
@@ -818,7 +854,6 @@ impl ExecutorContext {
                             .iter()
                             .map(|(k, v)| ((*v), k.clone()))
                             .collect();
-                        let default_planes = self.engine.get_default_planes().read().await.clone();
 
                         return Err(KclErrorWithOutputs::new(
                             e,
@@ -845,8 +880,6 @@ impl ExecutorContext {
         exec_state: &mut ExecState,
         preserve_mem: bool,
     ) -> Result<(EnvironmentRef, Option<ModelingSessionData>), KclErrorWithOutputs> {
-        exec_state.add_root_module_contents(program);
-
         let _stats = crate::log::LogPerfStats::new("Interpretation");
 
         // Re-apply the settings, in case the cache was busted.
