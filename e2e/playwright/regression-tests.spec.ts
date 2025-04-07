@@ -69,14 +69,8 @@ test.describe('Regression tests', { tag: ['@skipWin'] }, () => {
         `sketch001 = startSketchOn(XY)
   |> startProfileAt([82.33, 238.21], %)
   |> angledLine(angle = 0, length = 288.63, tag = $rectangleSegmentA001)
-  |> angledLine([
-       segAng(rectangleSegmentA001) - 90,
-       197.97
-     ], %, $rectangleSegmentB001)
-  |> angledLine([
-       segAng(rectangleSegmentA001),
-       -segLen(rectangleSegmentA001)
-     ], %, $rectangleSegmentC001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 197.97, tag = $rectangleSegmentB001)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $rectangleSegmentC001)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 extrude001 = extrude(sketch001, length = 50)

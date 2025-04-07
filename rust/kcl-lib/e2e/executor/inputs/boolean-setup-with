@@ -10,10 +10,7 @@ profile002 = startProfileAt([72.24, -52.05], sketch002)
        segAng(rectangleSegmentA001) - 90,
        21.54
      ], %)
-  |> angledLine([
-       segAng(rectangleSegmentA001),
-       -segLen(rectangleSegmentA001)
-     ], %, $mySeg)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $mySeg)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 extrude002 = extrude(profile002, length = 150)
@@ -31,10 +28,7 @@ profile003 = startProfileAt([207.36, 126.19], sketch003)
        segAng(rectangleSegmentA002) - 90,
        99.11
      ], %)
-  |> angledLine([
-       segAng(rectangleSegmentA002),
-       -segLen(rectangleSegmentA002)
-     ], %, $seg01)
+  |> angledLine(angle = segAng(rectangleSegmentA002), length = -segLen(rectangleSegmentA002), tag = $seg01)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 extrude003 = extrude(profile003, length = -20)

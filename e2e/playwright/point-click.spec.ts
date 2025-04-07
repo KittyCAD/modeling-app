@@ -234,10 +234,7 @@ test.describe('Point-and-click tests', () => {
         clickCoords: { x: 690, y: 250 },
         cameraPos: { x: 16020, y: -2000, z: 10500 },
         cameraTarget: { x: -150, y: -4500, z: -80 },
-        beforeChamferSnippet: `angledLine([
-         segAng(rectangleSegmentA001) - 90,
-         217.26
-       ], %, $seg01)chamfer(
+        beforeChamferSnippet: `angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 217.26, tag = $seg01)chamfer(
          length = 30,
          tags = [
            seg01,
@@ -303,14 +300,8 @@ test.describe('Point-and-click tests', () => {
 sketch001 = startSketchOn(XZ)
   |> startProfileAt([75.8, 317.2], %) // [$startCapTag, $EndCapTag]
   |> angledLine(angle = 0, length = 268.43, tag = $rectangleSegmentA001)
-  |> angledLine([
-       segAng(rectangleSegmentA001) - 90,
-       217.26
-     ], %, $seg01)
-  |> angledLine([
-       segAng(rectangleSegmentA001),
-       -segLen(rectangleSegmentA001)
-     ], %, $yo)
+  |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 217.26, tag = $seg01)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $yo)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg02)
   |> close()
 extrude001 = extrude(sketch001, length = 100)
@@ -424,14 +415,8 @@ profile001 = startProfileAt([205.96, 254.59], sketch002)
 sketch001 = startSketchOn(XZ)
   |> startProfileAt([75.8, 317.2], %)
   |> angledLine(angle = 0, length = 268.43, tag = $rectangleSegmentA001)
-  |> angledLine([
-       segAng(rectangleSegmentA001) - 90,
-       217.26
-     ], %, $seg01)
-  |> angledLine([
-       segAng(rectangleSegmentA001),
-       -segLen(rectangleSegmentA001)
-     ], %, $yo)
+  |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 217.26, tag = $seg01)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $yo)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg02)
   |> close()
 extrude001 = extrude(sketch001, length = 100)
@@ -3667,10 +3652,7 @@ sketch002 = startSketchOn(extrude001, rectangleSegmentA001)
       |> startProfileAt([-0.48, 1.25], %)
       |> angledLine(angle = 0, length = 2.38, tag = $rectangleSegmentA001)
       |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 2.4, tag = $rectangleSegmentB001)
-      |> angledLine([
-        segAng(rectangleSegmentA001),
-          -segLen(rectangleSegmentA001)
-      ], %, $rectangleSegmentC001)
+      |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $rectangleSegmentC001)
       |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
       |> close()
     extrude001 = extrude(sketch001, length = 5)

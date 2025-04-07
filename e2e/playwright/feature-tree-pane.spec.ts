@@ -39,14 +39,8 @@ extrude001 = extrude(sketch002, length = 10)
 const FEATURE_TREE_SKETCH_CODE = `sketch001 = startSketchOn(XZ)
   |> startProfileAt([0, 0], %)
   |> angledLine(angle = 0, length = 4, tag = $rectangleSegmentA001)
-  |> angledLine([
-       segAng(rectangleSegmentA001) - 90,
-       2
-     ], %, $rectangleSegmentB001)
-  |> angledLine([
-       segAng(rectangleSegmentA001),
-       -segLen(rectangleSegmentA001)
-     ], %, $rectangleSegmentC001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 2, tag = $rectangleSegmentB001)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $rectangleSegmentC001)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close(%)
 extrude001 = extrude(sketch001, length = 10)

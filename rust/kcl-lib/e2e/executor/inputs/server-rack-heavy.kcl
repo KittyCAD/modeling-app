@@ -648,14 +648,8 @@ const planeYZfl = {
 const sketch001fl = startSketchOn(planeXZfl)
   |> startProfileAt([bendRad + thickness, 0], %)
   |> angledLine(angle = 0, length = 2 - bendRad - thickness, tag = $rectangleSegmentA001fl)
-  |> angledLine([
-       segAng(rectangleSegmentA001fl) + 90,
-       railHeight * 1.75
-     ], %, $rectangleSegmentB001fl)
-  |> angledLine([
-       segAng(rectangleSegmentA001fl),
-       -segLen(rectangleSegmentA001fl)
-     ], %, $rectangleSegmentC001fl)
+  |> angledLine(angle = segAng(rectangleSegmentA001fl) + 90, length = railHeight * 1.75, tag = $rectangleSegmentB001fl)
+  |> angledLine(angle = segAng(rectangleSegmentA001fl), length = -segLen(rectangleSegmentA001fl), tag = $rectangleSegmentC001fl)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 const extrude001fl = extrude(sketch001fl, length = thickness)
@@ -664,14 +658,8 @@ const extrude001fl = extrude(sketch001fl, length = thickness)
 const sketch002fl = startSketchOn(planeYZfl)
   |> startProfileAt([-bendRad - thickness, 0], %)
   |> angledLine(angle = 180, length = 0.89 - bendRad - thickness, tag = $rectangleSegmentA002fl)
-  |> angledLine([
-       segAng(rectangleSegmentA002fl) - 90,
-       railHeight * 1.75
-     ], %, $rectangleSegmentB002fl)
-  |> angledLine([
-       segAng(rectangleSegmentA002fl),
-       -segLen(rectangleSegmentA002fl)
-     ], %, $rectangleSegmentC002fl)
+  |> angledLine(angle = segAng(rectangleSegmentA002fl) - 90, length = railHeight * 1.75, tag = $rectangleSegmentB002fl)
+  |> angledLine(angle = segAng(rectangleSegmentA002fl), length = -segLen(rectangleSegmentA002fl), tag = $rectangleSegmentC002fl)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 
@@ -700,14 +688,8 @@ const extrude003fl = extrude(sketch003fl, length = railHeight * 1.75)
 const sketch004fl = startSketchOn(extrude002fl, 'START')
   |> startProfileAt([0.72 + originStart[1], originStart[2] + 0.15], %)
   |> angledLine(angle = 0, length = -0.375, tag = $rectangleSegmentA003fl)
-  |> angledLine([
-       segAng(rectangleSegmentA003fl) - 90,
-       0.375
-     ], %, $rectangleSegmentB003fl)
-  |> angledLine([
-       segAng(rectangleSegmentA003fl),
-       -segLen(rectangleSegmentA003fl)
-     ], %, $rectangleSegmentC003fl)
+  |> angledLine(angle = segAng(rectangleSegmentA003fl) - 90, length = 0.375, tag = $rectangleSegmentB003fl)
+  |> angledLine(angle = segAng(rectangleSegmentA003fl), length = -segLen(rectangleSegmentA003fl), tag = $rectangleSegmentC003fl)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
   |> patternLinear2d(
@@ -721,14 +703,8 @@ const extrude004fl = extrude(sketch004fl, length = -thickness)
 const sketch005fl = startSketchOn(extrude002fl, 'START')
   |> startProfileAt([0.72 + originStart[1],originStart[2] +  0.15 + .62], %)
   |> angledLine(angle = 0, length = -0.375, tag = $rectangleSegmentA004fl)
-  |> angledLine([
-       segAng(rectangleSegmentA004fl) - 90,
-       0.375
-     ], %, $rectangleSegmentB004fl)
-  |> angledLine([
-       segAng(rectangleSegmentA004fl),
-       -segLen(rectangleSegmentA004fl)
-     ], %, $rectangleSegmentC004fl)
+  |> angledLine(angle = segAng(rectangleSegmentA004fl) - 90, length = 0.375, tag = $rectangleSegmentB004fl)
+  |> angledLine(angle = segAng(rectangleSegmentA004fl), length = -segLen(rectangleSegmentA004fl), tag = $rectangleSegmentC004fl)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
   |> patternLinear2d(
@@ -745,14 +721,8 @@ const sketch006fl = startSketchOn(extrude002fl, 'START')
       originStart[2] + 0.15 + 0.62 + 0.50
      ], %)
   |> angledLine(angle = 0, length = -0.375, tag = $rectangleSegmentA005fl)
-  |> angledLine([
-       segAng(rectangleSegmentA005fl) - 90,
-       0.375
-     ], %, $rectangleSegmentB005fl)
-  |> angledLine([
-       segAng(rectangleSegmentA005fl),
-       -segLen(rectangleSegmentA005fl)
-     ], %, $rectangleSegmentC005fl)
+  |> angledLine(angle = segAng(rectangleSegmentA005fl) - 90, length = 0.375, tag = $rectangleSegmentB005fl)
+  |> angledLine(angle = segAng(rectangleSegmentA005fl), length = -segLen(rectangleSegmentA005fl), tag = $rectangleSegmentC005fl)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
   |> patternLinear2d(
@@ -766,14 +736,8 @@ const extrude006fl = extrude(sketch006fl, length = -thickness)
 const sketch007fl = startSketchOn(extrude001fl, 'START')
   |> startProfileAt([-1.45 - originStart[0], originStart[2] + 0.15], %)
   |> angledLine(angle = 0, length = -0.375, tag = $rectangleSegmentA006fl)
-  |> angledLine([
-       segAng(rectangleSegmentA006fl) - 90,
-       0.375
-     ], %, $rectangleSegmentB006fl)
-  |> angledLine([
-       segAng(rectangleSegmentA006fl),
-       -segLen(rectangleSegmentA006fl)
-     ], %, $rectangleSegmentC006fl)
+  |> angledLine(angle = segAng(rectangleSegmentA006fl) - 90, length = 0.375, tag = $rectangleSegmentB006fl)
+  |> angledLine(angle = segAng(rectangleSegmentA006fl), length = -segLen(rectangleSegmentA006fl), tag = $rectangleSegmentC006fl)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
   |> patternLinear2d(
@@ -787,14 +751,8 @@ const extrude007fl = extrude(sketch007fl, length = -thickness)
 const sketch008fl = startSketchOn(extrude001fl, 'START')
   |> startProfileAt([-1.45 - originStart[0],originStart[2] + 0.15 + 0.62], %)
   |> angledLine(angle = 0, length = -0.375, tag = $rectangleSegmentA007fl)
-  |> angledLine([
-       segAng(rectangleSegmentA007fl) - 90,
-       0.375
-     ], %, $rectangleSegmentB007fl)
-  |> angledLine([
-       segAng(rectangleSegmentA007fl),
-       -segLen(rectangleSegmentA007fl)
-     ], %, $rectangleSegmentC007fl)
+  |> angledLine(angle = segAng(rectangleSegmentA007fl) - 90, length = 0.375, tag = $rectangleSegmentB007fl)
+  |> angledLine(angle = segAng(rectangleSegmentA007fl), length = -segLen(rectangleSegmentA007fl), tag = $rectangleSegmentC007fl)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
   |> patternLinear2d(
@@ -811,14 +769,8 @@ const sketch009fl = startSketchOn(extrude001fl, 'START')
        originStart[2] + 0.15 + 0.62 + 0.5
      ], %)
   |> angledLine(angle = 0, length = -0.375, tag = $rectangleSegmentA008fl)
-  |> angledLine([
-       segAng(rectangleSegmentA008fl) - 90,
-       0.375
-     ], %, $rectangleSegmentB008fl)
-  |> angledLine([
-       segAng(rectangleSegmentA008fl),
-       -segLen(rectangleSegmentA008fl)
-     ], %, $rectangleSegmentC008fl)
+  |> angledLine(angle = segAng(rectangleSegmentA008fl) - 90, length = 0.375, tag = $rectangleSegmentB008fl)
+  |> angledLine(angle = segAng(rectangleSegmentA008fl), length = -segLen(rectangleSegmentA008fl), tag = $rectangleSegmentC008fl)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
   |> patternLinear2d(
@@ -925,14 +877,8 @@ const planeYZfr = {
 const sketch001fr = startSketchOn(planeXZfr)
   |> startProfileAt([bendRad + thickness, 0], %)
   |> angledLine(angle = 0, length = 2 - bendRad - thickness, tag = $rectangleSegmentA001fr)
-  |> angledLine([
-       segAng(rectangleSegmentA001fr) + 90,
-       railHeight * 1.75
-     ], %, $rectangleSegmentB001fr)
-  |> angledLine([
-       segAng(rectangleSegmentA001fr),
-       -segLen(rectangleSegmentA001fr)
-     ], %, $rectangleSegmentC001fr)
+  |> angledLine(angle = segAng(rectangleSegmentA001fr) + 90, length = railHeight * 1.75, tag = $rectangleSegmentB001fr)
+  |> angledLine(angle = segAng(rectangleSegmentA001fr), length = -segLen(rectangleSegmentA001fr), tag = $rectangleSegmentC001fr)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 const extrude001fr = extrude(sketch001fr, length = thickness)
@@ -941,14 +887,8 @@ const extrude001fr = extrude(sketch001fr, length = thickness)
 const sketch002fr = startSketchOn(planeYZfr)
   |> startProfileAt([0.89, 0], %)
   |> angledLine(angle = 180, length = 0.89 - bendRad - thickness, tag = $rectangleSegmentA002fr)
-  |> angledLine([
-       segAng(rectangleSegmentA002fr) - 90,
-       railHeight * 1.75
-     ], %, $rectangleSegmentB002fr)
-  |> angledLine([
-       segAng(rectangleSegmentA002fr),
-       -segLen(rectangleSegmentA002fr)
-     ], %, $rectangleSegmentC002fr)
+  |> angledLine(angle = segAng(rectangleSegmentA002fr) - 90, length = railHeight * 1.75, tag = $rectangleSegmentB002fr)
+  |> angledLine(angle = segAng(rectangleSegmentA002fr), length = -segLen(rectangleSegmentA002fr), tag = $rectangleSegmentC002fr)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 
@@ -982,14 +922,8 @@ const sketch004fr = startSketchOn(extrude002fr, 'START')
        originStart[2] + 0.15
      ], %)
   |> angledLine(angle = 0, length = -0.375, tag = $rectangleSegmentA003fr)
-  |> angledLine([
-       segAng(rectangleSegmentA003fr) - 90,
-       0.375
-     ], %, $rectangleSegmentB003fr)
-  |> angledLine([
-       segAng(rectangleSegmentA003fr),
-       -segLen(rectangleSegmentA003fr)
-     ], %, $rectangleSegmentC003fr)
+  |> angledLine(angle = segAng(rectangleSegmentA003fr) - 90, length = 0.375, tag = $rectangleSegmentB003fr)
+  |> angledLine(angle = segAng(rectangleSegmentA003fr), length = -segLen(rectangleSegmentA003fr), tag = $rectangleSegmentC003fr)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
   |> patternLinear2d(
@@ -1006,14 +940,8 @@ const sketch005fr = startSketchOn(extrude002fr, 'START')
        originStart[2] + 0.15 + .62
      ], %)
   |> angledLine(angle = 0, length = -0.375, tag = $rectangleSegmentA004fr)
-  |> angledLine([
-       segAng(rectangleSegmentA004fr) - 90,
-       0.375
-     ], %, $rectangleSegmentB004fr)
-  |> angledLine([
-       segAng(rectangleSegmentA004fr),
-       -segLen(rectangleSegmentA004fr)
-     ], %, $rectangleSegmentC004fr)
+  |> angledLine(angle = segAng(rectangleSegmentA004fr) - 90, length = 0.375, tag = $rectangleSegmentB004fr)
+  |> angledLine(angle = segAng(rectangleSegmentA004fr), length = -segLen(rectangleSegmentA004fr), tag = $rectangleSegmentC004fr)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
   |> patternLinear2d(
@@ -1030,14 +958,8 @@ const sketch006fr = startSketchOn(extrude002fr, 'START')
        originStart[2] + 0.15 + 0.62 + 0.50
      ], %)
   |> angledLine(angle = 0, length = -0.375, tag = $rectangleSegmentA005fr)
-  |> angledLine([
-       segAng(rectangleSegmentA005fr) - 90,
-       0.375
-     ], %, $rectangleSegmentB005fr)
-  |> angledLine([
-       segAng(rectangleSegmentA005fr),
-       -segLen(rectangleSegmentA005fr)
-     ], %, $rectangleSegmentC005fr)
+  |> angledLine(angle = segAng(rectangleSegmentA005fr) - 90, length = 0.375, tag = $rectangleSegmentB005fr)
+  |> angledLine(angle = segAng(rectangleSegmentA005fr), length = -segLen(rectangleSegmentA005fr), tag = $rectangleSegmentC005fr)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
   |> patternLinear2d(
@@ -1054,14 +976,8 @@ const sketch007fr = startSketchOn(extrude001fr, 'START')
        originStart[2] + 0.15
      ], %)
   |> angledLine(angle = 0, length = -0.375, tag = $rectangleSegmentA006fr)
-  |> angledLine([
-       segAng(rectangleSegmentA006fr) - 90,
-       0.375
-     ], %, $rectangleSegmentB006fr)
-  |> angledLine([
-       segAng(rectangleSegmentA006fr),
-       -segLen(rectangleSegmentA006fr)
-     ], %, $rectangleSegmentC006fr)
+  |> angledLine(angle = segAng(rectangleSegmentA006fr) - 90, length = 0.375, tag = $rectangleSegmentB006fr)
+  |> angledLine(angle = segAng(rectangleSegmentA006fr), length = -segLen(rectangleSegmentA006fr), tag = $rectangleSegmentC006fr)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
   |> patternLinear2d(
@@ -1078,14 +994,8 @@ const sketch008fr = startSketchOn(extrude001fr, 'START')
        originStart[2] + 0.15 + 0.62
      ], %)
   |> angledLine(angle = 0, length = -0.375, tag = $rectangleSegmentA007fr)
-  |> angledLine([
-       segAng(rectangleSegmentA007fr) - 90,
-       0.375
-     ], %, $rectangleSegmentB007fr)
-  |> angledLine([
-       segAng(rectangleSegmentA007fr),
-       -segLen(rectangleSegmentA007fr)
-     ], %, $rectangleSegmentC007fr)
+  |> angledLine(angle = segAng(rectangleSegmentA007fr) - 90, length = 0.375, tag = $rectangleSegmentB007fr)
+  |> angledLine(angle = segAng(rectangleSegmentA007fr), length = -segLen(rectangleSegmentA007fr), tag = $rectangleSegmentC007fr)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
   |> patternLinear2d(
@@ -1102,14 +1012,8 @@ const sketch009fr = startSketchOn(extrude001fr, 'START')
        originStart[2] + 0.15 + 0.62 + 0.5
      ], %)
   |> angledLine(angle = 0, length = -0.375, tag = $rectangleSegmentA008fr)
-  |> angledLine([
-       segAng(rectangleSegmentA008fr) - 90,
-       0.375
-     ], %, $rectangleSegmentB008fr)
-  |> angledLine([
-       segAng(rectangleSegmentA008fr),
-       -segLen(rectangleSegmentA008fr)
-     ], %, $rectangleSegmentC008fr)
+  |> angledLine(angle = segAng(rectangleSegmentA008fr) - 90, length = 0.375, tag = $rectangleSegmentB008fr)
+  |> angledLine(angle = segAng(rectangleSegmentA008fr), length = -segLen(rectangleSegmentA008fr), tag = $rectangleSegmentC008fr)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
   |> patternLinear2d(
@@ -1219,14 +1123,8 @@ const planeYZrr = {
 const sketch001rr = startSketchOn(planeXZrr)
   |> startProfileAt([bendRad + thickness, 0], %)
   |> angledLine(angle = 0, length = 2 - bendRad - thickness, tag = $rectangleSegmentA001rr)
-  |> angledLine([
-       segAng(rectangleSegmentA001rr) + 90,
-       railHeight * 1.75
-     ], %, $rectangleSegmentB001rr)
-  |> angledLine([
-       segAng(rectangleSegmentA001rr),
-       -segLen(rectangleSegmentA001rr)
-     ], %, $rectangleSegmentC001rr)
+  |> angledLine(angle = segAng(rectangleSegmentA001rr) + 90, length = railHeight * 1.75, tag = $rectangleSegmentB001rr)
+  |> angledLine(angle = segAng(rectangleSegmentA001rr), length = -segLen(rectangleSegmentA001rr), tag = $rectangleSegmentC001rr)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 const extrude001rr = extrude(sketch001rr, length = thickness)
@@ -1235,14 +1133,8 @@ const extrude001rr = extrude(sketch001rr, length = thickness)
 const sketch002rr = startSketchOn(planeYZrr)
   |> startProfileAt([0.89, 0], %)
   |> angledLine(angle = 180, length = 0.89 - bendRad - thickness, tag = $rectangleSegmentA002rr)
-  |> angledLine([
-       segAng(rectangleSegmentA002rr) - 90,
-       railHeight * 1.75
-     ], %, $rectangleSegmentB002rr)
-  |> angledLine([
-       segAng(rectangleSegmentA002rr),
-       -segLen(rectangleSegmentA002rr)
-     ], %, $rectangleSegmentC002rr)
+  |> angledLine(angle = segAng(rectangleSegmentA002rr) - 90, length = railHeight * 1.75, tag = $rectangleSegmentB002rr)
+  |> angledLine(angle = segAng(rectangleSegmentA002rr), length = -segLen(rectangleSegmentA002rr), tag = $rectangleSegmentC002rr)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 
@@ -1276,14 +1168,8 @@ const sketch004rr = startSketchOn(extrude002rr, 'START')
        originStart[2] + 0.15
      ], %)
   |> angledLine(angle = 0, length = -0.375, tag = $rectangleSegmentA003rr)
-  |> angledLine([
-       segAng(rectangleSegmentA003rr) - 90,
-       0.375
-     ], %, $rectangleSegmentB003rr)
-  |> angledLine([
-       segAng(rectangleSegmentA003rr),
-       -segLen(rectangleSegmentA003rr)
-     ], %, $rectangleSegmentC003rr)
+  |> angledLine(angle = segAng(rectangleSegmentA003rr) - 90, length = 0.375, tag = $rectangleSegmentB003rr)
+  |> angledLine(angle = segAng(rectangleSegmentA003rr), length = -segLen(rectangleSegmentA003rr), tag = $rectangleSegmentC003rr)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
   |> patternLinear2d(
@@ -1300,14 +1186,8 @@ const sketch005rr = startSketchOn(extrude002rr, 'START')
        originStart[2] + 0.15 + .62
      ], %)
   |> angledLine(angle = 0, length = -0.375, tag = $rectangleSegmentA004rr)
-  |> angledLine([
-       segAng(rectangleSegmentA004rr) - 90,
-       0.375
-     ], %, $rectangleSegmentB004rr)
-  |> angledLine([
-       segAng(rectangleSegmentA004rr),
-       -segLen(rectangleSegmentA004rr)
-     ], %, $rectangleSegmentC004rr)
+  |> angledLine(angle = segAng(rectangleSegmentA004rr) - 90, length = 0.375, tag = $rectangleSegmentB004rr)
+  |> angledLine(angle = segAng(rectangleSegmentA004rr), length = -segLen(rectangleSegmentA004rr), tag = $rectangleSegmentC004rr)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
   |> patternLinear2d(
@@ -1324,14 +1204,8 @@ const sketch006rr = startSketchOn(extrude002rr, 'START')
        originStart[2] + 0.15 + 0.62 + 0.50
      ], %)
   |> angledLine(angle = 0, length = -0.375, tag = $rectangleSegmentA005rr)
-  |> angledLine([
-       segAng(rectangleSegmentA005rr) - 90,
-       0.375
-     ], %, $rectangleSegmentB005rr)
-  |> angledLine([
-       segAng(rectangleSegmentA005rr),
-       -segLen(rectangleSegmentA005rr)
-     ], %, $rectangleSegmentC005rr)
+  |> angledLine(angle = segAng(rectangleSegmentA005rr) - 90, length = 0.375, tag = $rectangleSegmentB005rr)
+  |> angledLine(angle = segAng(rectangleSegmentA005rr), length = -segLen(rectangleSegmentA005rr), tag = $rectangleSegmentC005rr)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
   |> patternLinear2d(
@@ -1348,14 +1222,8 @@ const sketch007rr = startSketchOn(extrude001rr, 'START')
        originStart[2] + 0.15
      ], %)
   |> angledLine(angle = 0, length = -0.375, tag = $rectangleSegmentA006rr)
-  |> angledLine([
-       segAng(rectangleSegmentA006rr) - 90,
-       0.375
-     ], %, $rectangleSegmentB006rr)
-  |> angledLine([
-       segAng(rectangleSegmentA006rr),
-       -segLen(rectangleSegmentA006rr)
-     ], %, $rectangleSegmentC006rr)
+  |> angledLine(angle = segAng(rectangleSegmentA006rr) - 90, length = 0.375, tag = $rectangleSegmentB006rr)
+  |> angledLine(angle = segAng(rectangleSegmentA006rr), length = -segLen(rectangleSegmentA006rr), tag = $rectangleSegmentC006rr)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
   |> patternLinear2d(
@@ -1372,14 +1240,8 @@ const sketch008rr = startSketchOn(extrude001rr, 'START')
        originStart[2] + 0.15 + 0.62
      ], %)
   |> angledLine(angle = 0, length = -0.375, tag = $rectangleSegmentA007rr)
-  |> angledLine([
-       segAng(rectangleSegmentA007rr) - 90,
-       0.375
-     ], %, $rectangleSegmentB007rr)
-  |> angledLine([
-       segAng(rectangleSegmentA007rr),
-       -segLen(rectangleSegmentA007rr)
-     ], %, $rectangleSegmentC007rr)
+  |> angledLine(angle = segAng(rectangleSegmentA007rr) - 90, length = 0.375, tag = $rectangleSegmentB007rr)
+  |> angledLine(angle = segAng(rectangleSegmentA007rr), length = -segLen(rectangleSegmentA007rr), tag = $rectangleSegmentC007rr)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
   |> patternLinear2d(
@@ -1396,14 +1258,8 @@ const sketch009rr = startSketchOn(extrude001rr, 'START')
        originStart[2] + 0.15 + 0.62 + 0.5
      ], %)
   |> angledLine(angle = 0, length = -0.375, tag = $rectangleSegmentA008rr)
-  |> angledLine([
-       segAng(rectangleSegmentA008rr) - 90,
-       0.375
-     ], %, $rectangleSegmentB008rr)
-  |> angledLine([
-       segAng(rectangleSegmentA008rr),
-       -segLen(rectangleSegmentA008rr)
-     ], %, $rectangleSegmentC008rr)
+  |> angledLine(angle = segAng(rectangleSegmentA008rr) - 90, length = 0.375, tag = $rectangleSegmentB008rr)
+  |> angledLine(angle = segAng(rectangleSegmentA008rr), length = -segLen(rectangleSegmentA008rr), tag = $rectangleSegmentC008rr)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
   |> patternLinear2d(
@@ -1512,14 +1368,8 @@ const planeYZrl = {
 const sketch001rl = startSketchOn(planeXZrl)
   |> startProfileAt([bendRad + thickness, 0], %)
   |> angledLine(angle = 0, length = 2 - bendRad - thickness, tag = $rectangleSegmentA001rl)
-  |> angledLine([
-       segAng(rectangleSegmentA001rl) + 90,
-       railHeight * 1.75
-     ], %, $rectangleSegmentB001rl)
-  |> angledLine([
-       segAng(rectangleSegmentA001rl),
-       -segLen(rectangleSegmentA001rl)
-     ], %, $rectangleSegmentC001rl)
+  |> angledLine(angle = segAng(rectangleSegmentA001rl) + 90, length = railHeight * 1.75, tag = $rectangleSegmentB001rl)
+  |> angledLine(angle = segAng(rectangleSegmentA001rl), length = -segLen(rectangleSegmentA001rl), tag = $rectangleSegmentC001rl)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 const extrude001rl = extrude(sketch001rl, length = thickness)
@@ -1528,14 +1378,8 @@ const extrude001rl = extrude(sketch001rl, length = thickness)
 const sketch002rl = startSketchOn(planeYZrl)
   |> startProfileAt([-bendRad - thickness, 0], %)
   |> angledLine(angle = 180, length = 0.89 - bendRad - thickness, tag = $rectangleSegmentA002rl)
-  |> angledLine([
-       segAng(rectangleSegmentA002rl) - 90,
-       railHeight * 1.75
-     ], %, $rectangleSegmentB002rl)
-  |> angledLine([
-       segAng(rectangleSegmentA002rl),
-       -segLen(rectangleSegmentA002rl)
-     ], %, $rectangleSegmentC002rl)
+  |> angledLine(angle = segAng(rectangleSegmentA002rl) - 90, length = railHeight * 1.75, tag = $rectangleSegmentB002rl)
+  |> angledLine(angle = segAng(rectangleSegmentA002rl), length = -segLen(rectangleSegmentA002rl), tag = $rectangleSegmentC002rl)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 
@@ -1569,14 +1413,8 @@ const sketch004rl = startSketchOn(extrude002rl, 'START')
        originStart[2] + 0.15
      ], %)
   |> angledLine(angle = 0, length = -0.375, tag = $rectangleSegmentA003rl)
-  |> angledLine([
-       segAng(rectangleSegmentA003rl) - 90,
-       0.375
-     ], %, $rectangleSegmentB003rl)
-  |> angledLine([
-       segAng(rectangleSegmentA003rl),
-       -segLen(rectangleSegmentA003rl)
-     ], %, $rectangleSegmentC003rl)
+  |> angledLine(angle = segAng(rectangleSegmentA003rl) - 90, length = 0.375, tag = $rectangleSegmentB003rl)
+  |> angledLine(angle = segAng(rectangleSegmentA003rl), length = -segLen(rectangleSegmentA003rl), tag = $rectangleSegmentC003rl)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
   |> patternLinear2d(
@@ -1593,14 +1431,8 @@ const sketch005rl = startSketchOn(extrude002rl, 'START')
        originStart[2] + 0.15 + .62
      ], %)
   |> angledLine(angle = 0, length = -0.375, tag = $rectangleSegmentA004rl)
-  |> angledLine([
-       segAng(rectangleSegmentA004rl) - 90,
-       0.375
-     ], %, $rectangleSegmentB004rl)
-  |> angledLine([
-       segAng(rectangleSegmentA004rl),
-       -segLen(rectangleSegmentA004rl)
-     ], %, $rectangleSegmentC004rl)
+  |> angledLine(angle = segAng(rectangleSegmentA004rl) - 90, length = 0.375, tag = $rectangleSegmentB004rl)
+  |> angledLine(angle = segAng(rectangleSegmentA004rl), length = -segLen(rectangleSegmentA004rl), tag = $rectangleSegmentC004rl)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
   |> patternLinear2d(
@@ -1617,14 +1449,8 @@ const sketch006rl = startSketchOn(extrude002rl, 'START')
        originStart[2] + 0.15 + 0.62 + 0.50
      ], %)
   |> angledLine(angle = 0, length = -0.375, tag = $rectangleSegmentA005rl)
-  |> angledLine([
-       segAng(rectangleSegmentA005rl) - 90,
-       0.375
-     ], %, $rectangleSegmentB005rl)
-  |> angledLine([
-       segAng(rectangleSegmentA005rl),
-       -segLen(rectangleSegmentA005rl)
-     ], %, $rectangleSegmentC005rl)
+  |> angledLine(angle = segAng(rectangleSegmentA005rl) - 90, length = 0.375, tag = $rectangleSegmentB005rl)
+  |> angledLine(angle = segAng(rectangleSegmentA005rl), length = -segLen(rectangleSegmentA005rl), tag = $rectangleSegmentC005rl)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
   |> patternLinear2d(
@@ -1641,14 +1467,8 @@ const sketch007rl = startSketchOn(extrude001rl, 'START')
        originStart[2] + 0.15
      ], %)
   |> angledLine(angle = 0, length = -0.375, tag = $rectangleSegmentA006rl)
-  |> angledLine([
-       segAng(rectangleSegmentA006rl) - 90,
-       0.375
-     ], %, $rectangleSegmentB006rl)
-  |> angledLine([
-       segAng(rectangleSegmentA006rl),
-       -segLen(rectangleSegmentA006rl)
-     ], %, $rectangleSegmentC006rl)
+  |> angledLine(angle = segAng(rectangleSegmentA006rl) - 90, length = 0.375, tag = $rectangleSegmentB006rl)
+  |> angledLine(angle = segAng(rectangleSegmentA006rl), length = -segLen(rectangleSegmentA006rl), tag = $rectangleSegmentC006rl)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
   |> patternLinear2d(
@@ -1665,14 +1485,8 @@ const sketch008rl = startSketchOn(extrude001rl, 'START')
        originStart[2] + 0.15 + 0.62
      ], %)
   |> angledLine(angle = 0, length = -0.375, tag = $rectangleSegmentA007rl)
-  |> angledLine([
-       segAng(rectangleSegmentA007rl) - 90,
-       0.375
-     ], %, $rectangleSegmentB007rl)
-  |> angledLine([
-       segAng(rectangleSegmentA007rl),
-       -segLen(rectangleSegmentA007rl)
-     ], %, $rectangleSegmentC007rl)
+  |> angledLine(angle = segAng(rectangleSegmentA007rl) - 90, length = 0.375, tag = $rectangleSegmentB007rl)
+  |> angledLine(angle = segAng(rectangleSegmentA007rl), length = -segLen(rectangleSegmentA007rl), tag = $rectangleSegmentC007rl)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
   |> patternLinear2d(
@@ -1689,14 +1503,8 @@ const sketch009rl = startSketchOn(extrude001rl, 'START')
        originStart[2] + 0.15 + 0.62 + 0.5
      ], %)
   |> angledLine(angle = 0, length = -0.375, tag = $rectangleSegmentA008rl)
-  |> angledLine([
-       segAng(rectangleSegmentA008rl) - 90,
-       0.375
-     ], %, $rectangleSegmentB008rl)
-  |> angledLine([
-       segAng(rectangleSegmentA008rl),
-       -segLen(rectangleSegmentA008rl)
-     ], %, $rectangleSegmentC008rl)
+  |> angledLine(angle = segAng(rectangleSegmentA008rl) - 90, length = 0.375, tag = $rectangleSegmentB008rl)
+  |> angledLine(angle = segAng(rectangleSegmentA008rl), length = -segLen(rectangleSegmentA008rl), tag = $rectangleSegmentC008rl)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
   |> patternLinear2d(
@@ -1798,10 +1606,7 @@ fn streamServer = (serverPos) => {
     |> startProfileAt([1 + 1.2, 1], %)
     |> angledLine(angle = 0, length = 17.2, tag = $rectangleSegmentA001)
     |> angledLine(angle = segAng(rectangleSegmentA001) + 90, length = 29, tag = $rectangleSegmentB001)
-    |> angledLine([
-         segAng(rectangleSegmentA001),
-         -segLen(rectangleSegmentA001)
-       ], %, $rectangleSegmentC001)
+    |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $rectangleSegmentC001)
     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
     |> close()
   const extrude001s = extrude(sketch001s, length = 7)
