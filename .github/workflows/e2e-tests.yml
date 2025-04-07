@@ -281,7 +281,7 @@ jobs:
         os:
           - "runs-on=${{ github.run_id }}/family=i7ie.2xlarge/image=ubuntu22-full-x64"
           - namespace-profile-macos-8-cores
-          - windows-latest-8-cores
+          - windows-latest-16-cores
         shardIndex: [1, 2, 3, 4]
         shardTotal: [4]
         # Disable macos and windows tests on hourly e2e tests since we only care
@@ -292,7 +292,7 @@ jobs:
         exclude:
           - os: namespace-profile-macos-8-cores
             isScheduled: true
-          - os: windows-latest-8-cores
+          - os: windows-latest-16-cores
             isScheduled: true
         # TODO: add ref here for main and latest release tag
     runs-on: ${{ matrix.os }}
