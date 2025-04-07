@@ -248,12 +248,12 @@ sketch001 = startSketchOn(XY)
 ```js
 // Symmetrically revolve around a path.
 
-profile001 = startSketchOn('XY')
+profile001 = startSketchOn(XY)
     |> startProfileAt([0, 0], %)
     |> line(end = [0, 20], tag = $revolveAxis)
     |> line(end = [20, 0])
 
-sketch001 = startSketchOn('XY')
+sketch001 = startSketchOn(XY)
     |> circle(center = [-10, 10], radius = 4)
     |> revolve(angle = 90, axis = revolveAxis, symmetric = true)
 ```
@@ -263,12 +263,12 @@ sketch001 = startSketchOn('XY')
 ```js
 // Bidirectional revolve around a path.
 
-profile001 = startSketchOn('XY')
+profile001 = startSketchOn(XY)
     |> startProfileAt([0, 0], %)
     |> line(end = [0, 20], tag = $revolveAxis)
     |> line(end = [20, 0])
 
-sketch001 = startSketchOn('XY')
+sketch001 = startSketchOn(XY)
     |> circle(center = [-10, 10], radius = 4)
     |> revolve(angle = 90, axis = revolveAxis, bidirectionalAngle = 50)
 ```
