@@ -2,7 +2,7 @@ import * as fsp from 'fs/promises'
 import path from 'path'
 
 import { executorInputPath } from '@e2e/playwright/test-utils'
-import { expect, test } from '@e2e/playwright/zoo-test'
+import { test } from '@e2e/playwright/zoo-test'
 
 // test file is for testing point an click code gen functionality that's assemblies related
 test.describe('Point-and-click assemblies tests', () => {
@@ -63,22 +63,21 @@ test.describe('Point-and-click assemblies tests', () => {
           highlightedHeaderArg: 'localName',
           commandName: 'Insert',
         })
-        await expect(cmdBar.argumentInput).toHaveValue('part001')
+        await page.keyboard.insertText('cylinder')
         await cmdBar.progressCmdBar()
         await cmdBar.expectState({
           stage: 'review',
-          headerArguments: { Path: 'cylinder.kcl', LocalName: 'part001' },
+          headerArguments: { Path: 'cylinder.kcl', LocalName: 'cylinder' },
           commandName: 'Insert',
         })
         await cmdBar.progressCmdBar()
         await editor.expectEditor.toContain(
           `
-        import "cylinder.kcl" as part001
-        part001
+        import "cylinder.kcl" as cylinder
+        cylinder
       `,
           { shouldNormalise: true }
         )
-        await scene.settled(cmdBar)
         await scene.expectPixelColor(partColor, testPoint, tolerance)
       })
 
@@ -93,7 +92,6 @@ test.describe('Point-and-click assemblies tests', () => {
           highlightedHeaderArg: 'localName',
           commandName: 'Insert',
         })
-        await expect(cmdBar.argumentInput).toHaveValue('part002')
         await page.keyboard.insertText('bracket')
         await cmdBar.progressCmdBar()
         await cmdBar.expectState({
@@ -104,9 +102,9 @@ test.describe('Point-and-click assemblies tests', () => {
         await cmdBar.progressCmdBar()
         await editor.expectEditor.toContain(
           `
-        import "cylinder.kcl" as part001
+        import "cylinder.kcl" as cylinder
         import "bracket.kcl" as bracket
-        part001
+        cylinder
         bracket
       `,
           { shouldNormalise: true }

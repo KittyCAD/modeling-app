@@ -461,7 +461,6 @@ export const FileMachineProvider = ({
           })),
         },
         specialPropsForInsertCommand: {
-          defaultName: findUniqueName(kclManager.ast, 'part'),
           providedOptions: (isDesktop() && project?.children
             ? project.children
             : []
@@ -471,7 +470,7 @@ export const FileMachineProvider = ({
               project?.path + window.electron.sep,
               ''
             )
-            const isDirectory = !!v.children
+            const isDirectory = v.children
             const isCurrentFile = v.path === file?.path
             return isDirectory || isCurrentFile
               ? []
@@ -484,15 +483,7 @@ export const FileMachineProvider = ({
       }).filter(
         (command) => kclSamples.length || command.name !== 'open-kcl-example'
       ),
-    [
-      codeManager,
-      kclManager,
-      send,
-      kclSamples,
-      project,
-      file,
-      kclManager.ast.body,
-    ]
+    [codeManager, kclManager, send, kclSamples, project, file]
   )
 
   useEffect(() => {

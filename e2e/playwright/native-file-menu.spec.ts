@@ -582,7 +582,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
           return
         }
         await homePage.goToModelingScene()
-        await scene.waitForExecutionDone()
+        await scene.settled(cmdBar)
 
         // Run electron snippet to find the Menu!
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
