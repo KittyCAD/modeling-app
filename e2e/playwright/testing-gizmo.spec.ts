@@ -260,14 +260,8 @@ test.describe(`Testing gizmo, fixture-based`, () => {
         const sketch002 = startSketchOn(XZ)
           |> startProfileAt([-108.83, -57.48], %)
           |> angledLine(angle = 0, length = 105.13, tag = $rectangleSegmentA001)
-          |> angledLine([
-               segAng(rectangleSegmentA001) - 90,
-               77.9
-             ], %)
-          |> angledLine([
-               segAng(rectangleSegmentA001),
-               -segLen(rectangleSegmentA001)
-             ], %)
+          |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 77.9)
+          |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
           |> close()
         const sketch001 = startSketchOn(XZ)
           |> circle(center = [818.33, 168.1], radius = 182.8)

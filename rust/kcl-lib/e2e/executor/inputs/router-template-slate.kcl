@@ -50,14 +50,8 @@ const sketch003 = startSketchOn(extrude001, 'START')
        -templateGap * 2 - (templateDiameter / 2)
      ], %)
   |> xLine(length = 7, tag = $rectangleSegmentA002)
-  |> angledLine([
-       segAng(rectangleSegmentA002, %) - 90,
-       minClampingDistance
-     ], %)
-  |> angledLine([
-       segAng(rectangleSegmentA002, %),
-       -segLen(rectangleSegmentA002, %)
-     ], %)
+  |> angledLine(angle = segAng(rectangleSegmentA002, %) - 90, length = minClampingDistance)
+  |> angledLine(angle = segAng(rectangleSegmentA002, %), length = -segLen(rectangleSegmentA002, %))
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 const extrude003 = extrude(sketch003, length = 7.5)

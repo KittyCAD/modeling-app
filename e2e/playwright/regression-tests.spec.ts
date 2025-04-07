@@ -329,14 +329,8 @@ extrude001 = extrude(sketch001, length = 50)
 sketch002 = startSketchOn(XY)
 profile002 = startProfileAt([72.24, -52.05], sketch002)
   |> angledLine(angle = 0, length = 181.26, tag = $rectangleSegmentA001)
-  |> angledLine([
-       segAng(rectangleSegmentA001) - 90,
-       21.54
-     ], %)
-  |> angledLine([
-       segAng(rectangleSegmentA001),
-       -segLen(rectangleSegmentA001)
-     ], %)
+  |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 21.54)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 extrude002 = extrude(profile002, length = 150)
