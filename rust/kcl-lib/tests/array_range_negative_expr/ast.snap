@@ -18,10 +18,10 @@ description: Result of parsing array_range_negative_expr.kcl
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 5,
+            "commentStart": 0,
             "end": 0,
             "endElement": {
-              "commentStart": 17,
+              "commentStart": 0,
               "end": 0,
               "raw": "5",
               "start": 0,
@@ -38,7 +38,7 @@ description: Result of parsing array_range_negative_expr.kcl
               "arguments": [
                 {
                   "argument": {
-                    "commentStart": 11,
+                    "commentStart": 0,
                     "end": 0,
                     "raw": "5",
                     "start": 0,
@@ -49,7 +49,7 @@ description: Result of parsing array_range_negative_expr.kcl
                       "suffix": "None"
                     }
                   },
-                  "commentStart": 10,
+                  "commentStart": 0,
                   "end": 0,
                   "operator": "-",
                   "start": 0,
@@ -59,10 +59,10 @@ description: Result of parsing array_range_negative_expr.kcl
               ],
               "callee": {
                 "abs_path": false,
-                "commentStart": 6,
+                "commentStart": 0,
                 "end": 0,
                 "name": {
-                  "commentStart": 6,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "int",
                   "start": 0,
@@ -72,7 +72,7 @@ description: Result of parsing array_range_negative_expr.kcl
                 "start": 0,
                 "type": "Name"
               },
-              "commentStart": 6,
+              "commentStart": 0,
               "end": 0,
               "start": 0,
               "type": "CallExpression",
@@ -91,16 +91,16 @@ description: Result of parsing array_range_negative_expr.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 20,
+        "commentStart": 0,
         "end": 0,
         "expression": {
           "arguments": [
             {
-              "commentStart": 32,
+              "commentStart": 0,
               "computed": false,
               "end": 0,
               "object": {
-                "commentStart": 32,
+                "commentStart": 0,
                 "end": 0,
                 "name": "xs",
                 "start": 0,
@@ -108,7 +108,7 @@ description: Result of parsing array_range_negative_expr.kcl
                 "type": "Identifier"
               },
               "property": {
-                "commentStart": 35,
+                "commentStart": 0,
                 "end": 0,
                 "raw": "0",
                 "start": 0,
@@ -125,7 +125,7 @@ description: Result of parsing array_range_negative_expr.kcl
             },
             {
               "argument": {
-                "commentStart": 40,
+                "commentStart": 0,
                 "end": 0,
                 "raw": "5",
                 "start": 0,
@@ -136,7 +136,7 @@ description: Result of parsing array_range_negative_expr.kcl
                   "suffix": "None"
                 }
               },
-              "commentStart": 39,
+              "commentStart": 0,
               "end": 0,
               "operator": "-",
               "start": 0,
@@ -144,7 +144,7 @@ description: Result of parsing array_range_negative_expr.kcl
               "type": "UnaryExpression"
             },
             {
-              "commentStart": 43,
+              "commentStart": 0,
               "end": 0,
               "raw": "0.001",
               "start": 0,
@@ -156,7 +156,7 @@ description: Result of parsing array_range_negative_expr.kcl
               }
             },
             {
-              "commentStart": 50,
+              "commentStart": 0,
               "end": 0,
               "raw": "\"first element is -5\"",
               "start": 0,
@@ -167,10 +167,10 @@ description: Result of parsing array_range_negative_expr.kcl
           ],
           "callee": {
             "abs_path": false,
-            "commentStart": 20,
+            "commentStart": 0,
             "end": 0,
             "name": {
-              "commentStart": 20,
+              "commentStart": 0,
               "end": 0,
               "name": "assertEqual",
               "start": 0,
@@ -180,7 +180,7 @@ description: Result of parsing array_range_negative_expr.kcl
             "start": 0,
             "type": "Name"
           },
-          "commentStart": 20,
+          "commentStart": 0,
           "end": 0,
           "start": 0,
           "type": "CallExpression",

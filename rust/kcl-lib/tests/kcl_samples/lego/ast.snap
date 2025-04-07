@@ -6,19 +6,19 @@ description: Result of parsing lego.kcl
   "Ok": {
     "body": [
       {
-        "commentStart": 271,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 294,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 294,
+            "commentStart": 0,
             "end": 0,
             "name": "lbumps",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 303,
+            "commentStart": 0,
             "end": 0,
             "raw": "3",
             "start": 0,
@@ -42,19 +42,19 @@ description: Result of parsing lego.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 304,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 329,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 329,
+            "commentStart": 0,
             "end": 0,
             "name": "wbumps",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 338,
+            "commentStart": 0,
             "end": 0,
             "raw": "2",
             "start": 0,
@@ -75,19 +75,19 @@ description: Result of parsing lego.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 339,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 364,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 364,
+            "commentStart": 0,
             "end": 0,
             "name": "pitch",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 372,
+            "commentStart": 0,
             "end": 0,
             "raw": "8.0",
             "start": 0,
@@ -108,19 +108,19 @@ description: Result of parsing lego.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 376,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 376,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 376,
+            "commentStart": 0,
             "end": 0,
             "name": "clearance",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 388,
+            "commentStart": 0,
             "end": 0,
             "raw": "0.1",
             "start": 0,
@@ -141,19 +141,19 @@ description: Result of parsing lego.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 392,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 392,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 392,
+            "commentStart": 0,
             "end": 0,
             "name": "bumpDiam",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 403,
+            "commentStart": 0,
             "end": 0,
             "raw": "4.8",
             "start": 0,
@@ -174,19 +174,19 @@ description: Result of parsing lego.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 407,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 407,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 407,
+            "commentStart": 0,
             "end": 0,
             "name": "bumpHeight",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 420,
+            "commentStart": 0,
             "end": 0,
             "raw": "1.8",
             "start": 0,
@@ -207,19 +207,19 @@ description: Result of parsing lego.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 424,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 424,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 424,
+            "commentStart": 0,
             "end": 0,
             "name": "height",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 433,
+            "commentStart": 0,
             "end": 0,
             "raw": "3.2",
             "start": 0,
@@ -240,32 +240,32 @@ description: Result of parsing lego.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 437,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 437,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 437,
+            "commentStart": 0,
             "end": 0,
             "name": "t",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 442,
+            "commentStart": 0,
             "end": 0,
             "left": {
-              "commentStart": 442,
+              "commentStart": 0,
               "end": 0,
               "left": {
-                "commentStart": 442,
+                "commentStart": 0,
                 "end": 0,
                 "left": {
                   "abs_path": false,
-                  "commentStart": 442,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 442,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "pitch",
                     "start": 0,
@@ -278,10 +278,10 @@ description: Result of parsing lego.kcl
                 },
                 "operator": "-",
                 "right": {
-                  "commentStart": 451,
+                  "commentStart": 0,
                   "end": 0,
                   "left": {
-                    "commentStart": 451,
+                    "commentStart": 0,
                     "end": 0,
                     "raw": "2",
                     "start": 0,
@@ -295,10 +295,10 @@ description: Result of parsing lego.kcl
                   "operator": "*",
                   "right": {
                     "abs_path": false,
-                    "commentStart": 455,
+                    "commentStart": 0,
                     "end": 0,
                     "name": {
-                      "commentStart": 455,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "clearance",
                       "start": 0,
@@ -320,10 +320,10 @@ description: Result of parsing lego.kcl
               "operator": "-",
               "right": {
                 "abs_path": false,
-                "commentStart": 468,
+                "commentStart": 0,
                 "end": 0,
                 "name": {
-                  "commentStart": 468,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "bumpDiam",
                   "start": 0,
@@ -340,7 +340,7 @@ description: Result of parsing lego.kcl
             },
             "operator": "/",
             "right": {
-              "commentStart": 480,
+              "commentStart": 0,
               "end": 0,
               "raw": "2.0",
               "start": 0,
@@ -365,26 +365,26 @@ description: Result of parsing lego.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 484,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 484,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 484,
+            "commentStart": 0,
             "end": 0,
             "name": "postDiam",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 495,
+            "commentStart": 0,
             "end": 0,
             "left": {
               "abs_path": false,
-              "commentStart": 495,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 495,
+                "commentStart": 0,
                 "end": 0,
                 "name": "pitch",
                 "start": 0,
@@ -398,10 +398,10 @@ description: Result of parsing lego.kcl
             "operator": "-",
             "right": {
               "abs_path": false,
-              "commentStart": 503,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 503,
+                "commentStart": 0,
                 "end": 0,
                 "name": "t",
                 "start": 0,
@@ -426,29 +426,29 @@ description: Result of parsing lego.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 504,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 525,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 525,
+            "commentStart": 0,
             "end": 0,
             "name": "totalLength",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 539,
+            "commentStart": 0,
             "end": 0,
             "left": {
-              "commentStart": 539,
+              "commentStart": 0,
               "end": 0,
               "left": {
                 "abs_path": false,
-                "commentStart": 539,
+                "commentStart": 0,
                 "end": 0,
                 "name": {
-                  "commentStart": 539,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "lbumps",
                   "start": 0,
@@ -462,10 +462,10 @@ description: Result of parsing lego.kcl
               "operator": "*",
               "right": {
                 "abs_path": false,
-                "commentStart": 548,
+                "commentStart": 0,
                 "end": 0,
                 "name": {
-                  "commentStart": 548,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "pitch",
                   "start": 0,
@@ -482,10 +482,10 @@ description: Result of parsing lego.kcl
             },
             "operator": "-",
             "right": {
-              "commentStart": 557,
+              "commentStart": 0,
               "end": 0,
               "left": {
-                "commentStart": 557,
+                "commentStart": 0,
                 "end": 0,
                 "raw": "2.0",
                 "start": 0,
@@ -499,10 +499,10 @@ description: Result of parsing lego.kcl
               "operator": "*",
               "right": {
                 "abs_path": false,
-                "commentStart": 563,
+                "commentStart": 0,
                 "end": 0,
                 "name": {
-                  "commentStart": 563,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "clearance",
                   "start": 0,
@@ -531,29 +531,29 @@ description: Result of parsing lego.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 574,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 574,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 574,
+            "commentStart": 0,
             "end": 0,
             "name": "totalWidth",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 587,
+            "commentStart": 0,
             "end": 0,
             "left": {
-              "commentStart": 587,
+              "commentStart": 0,
               "end": 0,
               "left": {
                 "abs_path": false,
-                "commentStart": 587,
+                "commentStart": 0,
                 "end": 0,
                 "name": {
-                  "commentStart": 587,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "wbumps",
                   "start": 0,
@@ -567,10 +567,10 @@ description: Result of parsing lego.kcl
               "operator": "*",
               "right": {
                 "abs_path": false,
-                "commentStart": 596,
+                "commentStart": 0,
                 "end": 0,
                 "name": {
-                  "commentStart": 596,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "pitch",
                   "start": 0,
@@ -587,10 +587,10 @@ description: Result of parsing lego.kcl
             },
             "operator": "-",
             "right": {
-              "commentStart": 605,
+              "commentStart": 0,
               "end": 0,
               "left": {
-                "commentStart": 605,
+                "commentStart": 0,
                 "end": 0,
                 "raw": "2.0",
                 "start": 0,
@@ -604,10 +604,10 @@ description: Result of parsing lego.kcl
               "operator": "*",
               "right": {
                 "abs_path": false,
-                "commentStart": 611,
+                "commentStart": 0,
                 "end": 0,
                 "name": {
-                  "commentStart": 611,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "clearance",
                   "start": 0,
@@ -636,26 +636,26 @@ description: Result of parsing lego.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 621,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 683,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 683,
+            "commentStart": 0,
             "end": 0,
             "name": "lSegments",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 695,
+            "commentStart": 0,
             "end": 0,
             "left": {
               "abs_path": false,
-              "commentStart": 695,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 695,
+                "commentStart": 0,
                 "end": 0,
                 "name": "totalLength",
                 "start": 0,
@@ -669,10 +669,10 @@ description: Result of parsing lego.kcl
             "operator": "/",
             "right": {
               "abs_path": false,
-              "commentStart": 709,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 709,
+                "commentStart": 0,
                 "end": 0,
                 "name": "lbumps",
                 "start": 0,
@@ -702,26 +702,26 @@ description: Result of parsing lego.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 716,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 716,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 716,
+            "commentStart": 0,
             "end": 0,
             "name": "wSegments",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 728,
+            "commentStart": 0,
             "end": 0,
             "left": {
               "abs_path": false,
-              "commentStart": 728,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 728,
+                "commentStart": 0,
                 "end": 0,
                 "name": "totalWidth",
                 "start": 0,
@@ -735,10 +735,10 @@ description: Result of parsing lego.kcl
             "operator": "/",
             "right": {
               "abs_path": false,
-              "commentStart": 741,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 741,
+                "commentStart": 0,
                 "end": 0,
                 "name": "wbumps",
                 "start": 0,
@@ -763,16 +763,16 @@ description: Result of parsing lego.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 747,
+        "commentStart": 0,
         "end": 0,
         "expression": {
           "arguments": [
             {
               "abs_path": false,
-              "commentStart": 839,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 839,
+                "commentStart": 0,
                 "end": 0,
                 "name": "lbumps",
                 "start": 0,
@@ -784,7 +784,7 @@ description: Result of parsing lego.kcl
               "type": "Name"
             },
             {
-              "commentStart": 847,
+              "commentStart": 0,
               "end": 0,
               "raw": "1",
               "start": 0,
@@ -796,7 +796,7 @@ description: Result of parsing lego.kcl
               }
             },
             {
-              "commentStart": 850,
+              "commentStart": 0,
               "end": 0,
               "raw": "\"lbumps must be greater than 1\"",
               "start": 0,
@@ -807,10 +807,10 @@ description: Result of parsing lego.kcl
           ],
           "callee": {
             "abs_path": false,
-            "commentStart": 821,
+            "commentStart": 0,
             "end": 0,
             "name": {
-              "commentStart": 821,
+              "commentStart": 0,
               "end": 0,
               "name": "assertGreaterThan",
               "start": 0,
@@ -820,7 +820,7 @@ description: Result of parsing lego.kcl
             "start": 0,
             "type": "Name"
           },
-          "commentStart": 821,
+          "commentStart": 0,
           "end": 0,
           "start": 0,
           "type": "CallExpression",
@@ -836,16 +836,16 @@ description: Result of parsing lego.kcl
         "type": "ExpressionStatement"
       },
       {
-        "commentStart": 883,
+        "commentStart": 0,
         "end": 0,
         "expression": {
           "arguments": [
             {
               "abs_path": false,
-              "commentStart": 901,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 901,
+                "commentStart": 0,
                 "end": 0,
                 "name": "wbumps",
                 "start": 0,
@@ -857,7 +857,7 @@ description: Result of parsing lego.kcl
               "type": "Name"
             },
             {
-              "commentStart": 909,
+              "commentStart": 0,
               "end": 0,
               "raw": "1",
               "start": 0,
@@ -869,7 +869,7 @@ description: Result of parsing lego.kcl
               }
             },
             {
-              "commentStart": 912,
+              "commentStart": 0,
               "end": 0,
               "raw": "\"wbumps must be greater than 1\"",
               "start": 0,
@@ -880,10 +880,10 @@ description: Result of parsing lego.kcl
           ],
           "callee": {
             "abs_path": false,
-            "commentStart": 883,
+            "commentStart": 0,
             "end": 0,
             "name": {
-              "commentStart": 883,
+              "commentStart": 0,
               "end": 0,
               "name": "assertGreaterThan",
               "start": 0,
@@ -893,7 +893,7 @@ description: Result of parsing lego.kcl
             "start": 0,
             "type": "Name"
           },
-          "commentStart": 883,
+          "commentStart": 0,
           "end": 0,
           "start": 0,
           "type": "CallExpression",
@@ -904,12 +904,12 @@ description: Result of parsing lego.kcl
         "type": "ExpressionStatement"
       },
       {
-        "commentStart": 944,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 963,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 963,
+            "commentStart": 0,
             "end": 0,
             "name": "base",
             "start": 0,
@@ -921,10 +921,10 @@ description: Result of parsing lego.kcl
                 "arguments": [
                   {
                     "abs_path": false,
-                    "commentStart": 984,
+                    "commentStart": 0,
                     "end": 0,
                     "name": {
-                      "commentStart": 984,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "XY",
                       "start": 0,
@@ -938,10 +938,10 @@ description: Result of parsing lego.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 970,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 970,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "startSketchOn",
                     "start": 0,
@@ -951,7 +951,7 @@ description: Result of parsing lego.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 970,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -960,18 +960,18 @@ description: Result of parsing lego.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 1008,
+                    "commentStart": 0,
                     "elements": [
                       {
-                        "commentStart": 1009,
+                        "commentStart": 0,
                         "end": 0,
                         "left": {
                           "argument": {
                             "abs_path": false,
-                            "commentStart": 1010,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 1010,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "totalWidth",
                               "start": 0,
@@ -982,7 +982,7 @@ description: Result of parsing lego.kcl
                             "type": "Name",
                             "type": "Name"
                           },
-                          "commentStart": 1009,
+                          "commentStart": 0,
                           "end": 0,
                           "operator": "-",
                           "start": 0,
@@ -991,7 +991,7 @@ description: Result of parsing lego.kcl
                         },
                         "operator": "/",
                         "right": {
-                          "commentStart": 1023,
+                          "commentStart": 0,
                           "end": 0,
                           "raw": "2",
                           "start": 0,
@@ -1007,15 +1007,15 @@ description: Result of parsing lego.kcl
                         "type": "BinaryExpression"
                       },
                       {
-                        "commentStart": 1026,
+                        "commentStart": 0,
                         "end": 0,
                         "left": {
                           "argument": {
                             "abs_path": false,
-                            "commentStart": 1027,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 1027,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "totalLength",
                               "start": 0,
@@ -1026,7 +1026,7 @@ description: Result of parsing lego.kcl
                             "type": "Name",
                             "type": "Name"
                           },
-                          "commentStart": 1026,
+                          "commentStart": 0,
                           "end": 0,
                           "operator": "-",
                           "start": 0,
@@ -1035,7 +1035,7 @@ description: Result of parsing lego.kcl
                         },
                         "operator": "/",
                         "right": {
-                          "commentStart": 1041,
+                          "commentStart": 0,
                           "end": 0,
                           "raw": "2",
                           "start": 0,
@@ -1057,7 +1057,7 @@ description: Result of parsing lego.kcl
                     "type": "ArrayExpression"
                   },
                   {
-                    "commentStart": 1045,
+                    "commentStart": 0,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -1066,10 +1066,10 @@ description: Result of parsing lego.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 993,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 993,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "startProfileAt",
                     "start": 0,
@@ -1079,7 +1079,7 @@ description: Result of parsing lego.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 993,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -1090,21 +1090,21 @@ description: Result of parsing lego.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1058,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1064,
+                      "commentStart": 0,
                       "elements": [
                         {
                           "abs_path": false,
-                          "commentStart": 1065,
+                          "commentStart": 0,
                           "end": 0,
                           "name": {
-                            "commentStart": 1065,
+                            "commentStart": 0,
                             "end": 0,
                             "name": "totalWidth",
                             "start": 0,
@@ -1116,7 +1116,7 @@ description: Result of parsing lego.kcl
                           "type": "Name"
                         },
                         {
-                          "commentStart": 1077,
+                          "commentStart": 0,
                           "end": 0,
                           "raw": "0",
                           "start": 0,
@@ -1137,10 +1137,10 @@ description: Result of parsing lego.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1053,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1053,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "line",
                     "start": 0,
@@ -1150,7 +1150,7 @@ description: Result of parsing lego.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1053,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1162,17 +1162,17 @@ description: Result of parsing lego.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1091,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1097,
+                      "commentStart": 0,
                       "elements": [
                         {
-                          "commentStart": 1098,
+                          "commentStart": 0,
                           "end": 0,
                           "raw": "0",
                           "start": 0,
@@ -1185,10 +1185,10 @@ description: Result of parsing lego.kcl
                         },
                         {
                           "abs_path": false,
-                          "commentStart": 1101,
+                          "commentStart": 0,
                           "end": 0,
                           "name": {
-                            "commentStart": 1101,
+                            "commentStart": 0,
                             "end": 0,
                             "name": "totalLength",
                             "start": 0,
@@ -1209,10 +1209,10 @@ description: Result of parsing lego.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1086,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1086,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "line",
                     "start": 0,
@@ -1222,7 +1222,7 @@ description: Result of parsing lego.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1086,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1234,22 +1234,22 @@ description: Result of parsing lego.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1125,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1131,
+                      "commentStart": 0,
                       "elements": [
                         {
                           "argument": {
                             "abs_path": false,
-                            "commentStart": 1133,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 1133,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "totalWidth",
                               "start": 0,
@@ -1260,7 +1260,7 @@ description: Result of parsing lego.kcl
                             "type": "Name",
                             "type": "Name"
                           },
-                          "commentStart": 1132,
+                          "commentStart": 0,
                           "end": 0,
                           "operator": "-",
                           "start": 0,
@@ -1268,7 +1268,7 @@ description: Result of parsing lego.kcl
                           "type": "UnaryExpression"
                         },
                         {
-                          "commentStart": 1145,
+                          "commentStart": 0,
                           "end": 0,
                           "raw": "0",
                           "start": 0,
@@ -1289,10 +1289,10 @@ description: Result of parsing lego.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1120,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1120,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "line",
                     "start": 0,
@@ -1302,7 +1302,7 @@ description: Result of parsing lego.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1120,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1313,10 +1313,10 @@ description: Result of parsing lego.kcl
                 "arguments": [],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1154,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1154,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "close",
                     "start": 0,
@@ -1326,7 +1326,7 @@ description: Result of parsing lego.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1154,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -1337,7 +1337,7 @@ description: Result of parsing lego.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1175,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "length",
                       "start": 0,
@@ -1345,10 +1345,10 @@ description: Result of parsing lego.kcl
                     },
                     "arg": {
                       "abs_path": false,
-                      "commentStart": 1184,
+                      "commentStart": 0,
                       "end": 0,
                       "name": {
-                        "commentStart": 1184,
+                        "commentStart": 0,
                         "end": 0,
                         "name": "height",
                         "start": 0,
@@ -1363,10 +1363,10 @@ description: Result of parsing lego.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1167,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1167,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "extrude",
                     "start": 0,
@@ -1376,7 +1376,7 @@ description: Result of parsing lego.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1167,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1384,13 +1384,13 @@ description: Result of parsing lego.kcl
                 "unlabeled": null
               }
             ],
-            "commentStart": 970,
+            "commentStart": 0,
             "end": 0,
             "nonCodeMeta": {
               "nonCodeNodes": {
                 "6": [
                   {
-                    "commentStart": 1191,
+                    "commentStart": 0,
                     "end": 0,
                     "start": 0,
                     "type": "NonCodeNode",
@@ -1423,12 +1423,12 @@ description: Result of parsing lego.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 1354,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 1354,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 1354,
+            "commentStart": 0,
             "end": 0,
             "name": "shellExtrude",
             "start": 0,
@@ -1440,10 +1440,10 @@ description: Result of parsing lego.kcl
                 "arguments": [
                   {
                     "abs_path": false,
-                    "commentStart": 1383,
+                    "commentStart": 0,
                     "end": 0,
                     "name": {
-                      "commentStart": 1383,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "base",
                       "start": 0,
@@ -1455,7 +1455,7 @@ description: Result of parsing lego.kcl
                     "type": "Name"
                   },
                   {
-                    "commentStart": 1389,
+                    "commentStart": 0,
                     "end": 0,
                     "raw": "\"start\"",
                     "start": 0,
@@ -1466,10 +1466,10 @@ description: Result of parsing lego.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1369,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1369,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "startSketchOn",
                     "start": 0,
@@ -1479,7 +1479,7 @@ description: Result of parsing lego.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1369,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -1488,21 +1488,21 @@ description: Result of parsing lego.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 1418,
+                    "commentStart": 0,
                     "elements": [
                       {
                         "argument": {
-                          "commentStart": 1429,
+                          "commentStart": 0,
                           "end": 0,
                           "left": {
-                            "commentStart": 1429,
+                            "commentStart": 0,
                             "end": 0,
                             "left": {
                               "abs_path": false,
-                              "commentStart": 1429,
+                              "commentStart": 0,
                               "end": 0,
                               "name": {
-                                "commentStart": 1429,
+                                "commentStart": 0,
                                 "end": 0,
                                 "name": "totalWidth",
                                 "start": 0,
@@ -1515,7 +1515,7 @@ description: Result of parsing lego.kcl
                             },
                             "operator": "/",
                             "right": {
-                              "commentStart": 1442,
+                              "commentStart": 0,
                               "end": 0,
                               "raw": "2",
                               "start": 0,
@@ -1533,10 +1533,10 @@ description: Result of parsing lego.kcl
                           "operator": "-",
                           "right": {
                             "abs_path": false,
-                            "commentStart": 1446,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 1446,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "t",
                               "start": 0,
@@ -1551,7 +1551,7 @@ description: Result of parsing lego.kcl
                           "type": "BinaryExpression",
                           "type": "BinaryExpression"
                         },
-                        "commentStart": 1427,
+                        "commentStart": 0,
                         "end": 0,
                         "operator": "-",
                         "start": 0,
@@ -1560,17 +1560,17 @@ description: Result of parsing lego.kcl
                       },
                       {
                         "argument": {
-                          "commentStart": 1459,
+                          "commentStart": 0,
                           "end": 0,
                           "left": {
-                            "commentStart": 1459,
+                            "commentStart": 0,
                             "end": 0,
                             "left": {
                               "abs_path": false,
-                              "commentStart": 1459,
+                              "commentStart": 0,
                               "end": 0,
                               "name": {
-                                "commentStart": 1459,
+                                "commentStart": 0,
                                 "end": 0,
                                 "name": "totalLength",
                                 "start": 0,
@@ -1583,7 +1583,7 @@ description: Result of parsing lego.kcl
                             },
                             "operator": "/",
                             "right": {
-                              "commentStart": 1473,
+                              "commentStart": 0,
                               "end": 0,
                               "raw": "2",
                               "start": 0,
@@ -1601,10 +1601,10 @@ description: Result of parsing lego.kcl
                           "operator": "-",
                           "right": {
                             "abs_path": false,
-                            "commentStart": 1477,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 1477,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "t",
                               "start": 0,
@@ -1619,7 +1619,7 @@ description: Result of parsing lego.kcl
                           "type": "BinaryExpression",
                           "type": "BinaryExpression"
                         },
-                        "commentStart": 1457,
+                        "commentStart": 0,
                         "end": 0,
                         "operator": "-",
                         "start": 0,
@@ -1633,7 +1633,7 @@ description: Result of parsing lego.kcl
                     "type": "ArrayExpression"
                   },
                   {
-                    "commentStart": 1488,
+                    "commentStart": 0,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -1642,10 +1642,10 @@ description: Result of parsing lego.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1403,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1403,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "startProfileAt",
                     "start": 0,
@@ -1655,7 +1655,7 @@ description: Result of parsing lego.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1403,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -1666,24 +1666,24 @@ description: Result of parsing lego.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1501,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1507,
+                      "commentStart": 0,
                       "elements": [
                         {
-                          "commentStart": 1508,
+                          "commentStart": 0,
                           "end": 0,
                           "left": {
                             "abs_path": false,
-                            "commentStart": 1508,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 1508,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "totalWidth",
                               "start": 0,
@@ -1696,10 +1696,10 @@ description: Result of parsing lego.kcl
                           },
                           "operator": "-",
                           "right": {
-                            "commentStart": 1522,
+                            "commentStart": 0,
                             "end": 0,
                             "left": {
-                              "commentStart": 1522,
+                              "commentStart": 0,
                               "end": 0,
                               "raw": "2",
                               "start": 0,
@@ -1713,10 +1713,10 @@ description: Result of parsing lego.kcl
                             "operator": "*",
                             "right": {
                               "abs_path": false,
-                              "commentStart": 1526,
+                              "commentStart": 0,
                               "end": 0,
                               "name": {
-                                "commentStart": 1526,
+                                "commentStart": 0,
                                 "end": 0,
                                 "name": "t",
                                 "start": 0,
@@ -1736,7 +1736,7 @@ description: Result of parsing lego.kcl
                           "type": "BinaryExpression"
                         },
                         {
-                          "commentStart": 1530,
+                          "commentStart": 0,
                           "end": 0,
                           "raw": "0",
                           "start": 0,
@@ -1757,10 +1757,10 @@ description: Result of parsing lego.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1496,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1496,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "line",
                     "start": 0,
@@ -1770,7 +1770,7 @@ description: Result of parsing lego.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1496,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1782,17 +1782,17 @@ description: Result of parsing lego.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1544,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1550,
+                      "commentStart": 0,
                       "elements": [
                         {
-                          "commentStart": 1551,
+                          "commentStart": 0,
                           "end": 0,
                           "raw": "0",
                           "start": 0,
@@ -1804,14 +1804,14 @@ description: Result of parsing lego.kcl
                           }
                         },
                         {
-                          "commentStart": 1554,
+                          "commentStart": 0,
                           "end": 0,
                           "left": {
                             "abs_path": false,
-                            "commentStart": 1554,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 1554,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "totalLength",
                               "start": 0,
@@ -1824,10 +1824,10 @@ description: Result of parsing lego.kcl
                           },
                           "operator": "-",
                           "right": {
-                            "commentStart": 1569,
+                            "commentStart": 0,
                             "end": 0,
                             "left": {
-                              "commentStart": 1569,
+                              "commentStart": 0,
                               "end": 0,
                               "raw": "2",
                               "start": 0,
@@ -1841,10 +1841,10 @@ description: Result of parsing lego.kcl
                             "operator": "*",
                             "right": {
                               "abs_path": false,
-                              "commentStart": 1573,
+                              "commentStart": 0,
                               "end": 0,
                               "name": {
-                                "commentStart": 1573,
+                                "commentStart": 0,
                                 "end": 0,
                                 "name": "t",
                                 "start": 0,
@@ -1873,10 +1873,10 @@ description: Result of parsing lego.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1539,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1539,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "line",
                     "start": 0,
@@ -1886,7 +1886,7 @@ description: Result of parsing lego.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1539,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1898,25 +1898,25 @@ description: Result of parsing lego.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1588,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1594,
+                      "commentStart": 0,
                       "elements": [
                         {
                           "argument": {
-                            "commentStart": 1597,
+                            "commentStart": 0,
                             "end": 0,
                             "left": {
                               "abs_path": false,
-                              "commentStart": 1597,
+                              "commentStart": 0,
                               "end": 0,
                               "name": {
-                                "commentStart": 1597,
+                                "commentStart": 0,
                                 "end": 0,
                                 "name": "totalWidth",
                                 "start": 0,
@@ -1929,10 +1929,10 @@ description: Result of parsing lego.kcl
                             },
                             "operator": "-",
                             "right": {
-                              "commentStart": 1611,
+                              "commentStart": 0,
                               "end": 0,
                               "left": {
-                                "commentStart": 1611,
+                                "commentStart": 0,
                                 "end": 0,
                                 "raw": "2",
                                 "start": 0,
@@ -1946,10 +1946,10 @@ description: Result of parsing lego.kcl
                               "operator": "*",
                               "right": {
                                 "abs_path": false,
-                                "commentStart": 1615,
+                                "commentStart": 0,
                                 "end": 0,
                                 "name": {
-                                  "commentStart": 1615,
+                                  "commentStart": 0,
                                   "end": 0,
                                   "name": "t",
                                   "start": 0,
@@ -1968,7 +1968,7 @@ description: Result of parsing lego.kcl
                             "type": "BinaryExpression",
                             "type": "BinaryExpression"
                           },
-                          "commentStart": 1595,
+                          "commentStart": 0,
                           "end": 0,
                           "operator": "-",
                           "start": 0,
@@ -1976,7 +1976,7 @@ description: Result of parsing lego.kcl
                           "type": "UnaryExpression"
                         },
                         {
-                          "commentStart": 1620,
+                          "commentStart": 0,
                           "end": 0,
                           "raw": "0",
                           "start": 0,
@@ -1997,10 +1997,10 @@ description: Result of parsing lego.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1583,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1583,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "line",
                     "start": 0,
@@ -2010,7 +2010,7 @@ description: Result of parsing lego.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1583,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -2021,10 +2021,10 @@ description: Result of parsing lego.kcl
                 "arguments": [],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1629,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1629,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "close",
                     "start": 0,
@@ -2034,7 +2034,7 @@ description: Result of parsing lego.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1629,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -2045,7 +2045,7 @@ description: Result of parsing lego.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1650,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "length",
                       "start": 0,
@@ -2053,14 +2053,14 @@ description: Result of parsing lego.kcl
                     },
                     "arg": {
                       "argument": {
-                        "commentStart": 1661,
+                        "commentStart": 0,
                         "end": 0,
                         "left": {
                           "abs_path": false,
-                          "commentStart": 1661,
+                          "commentStart": 0,
                           "end": 0,
                           "name": {
-                            "commentStart": 1661,
+                            "commentStart": 0,
                             "end": 0,
                             "name": "height",
                             "start": 0,
@@ -2074,10 +2074,10 @@ description: Result of parsing lego.kcl
                         "operator": "-",
                         "right": {
                           "abs_path": false,
-                          "commentStart": 1670,
+                          "commentStart": 0,
                           "end": 0,
                           "name": {
-                            "commentStart": 1670,
+                            "commentStart": 0,
                             "end": 0,
                             "name": "t",
                             "start": 0,
@@ -2092,7 +2092,7 @@ description: Result of parsing lego.kcl
                         "type": "BinaryExpression",
                         "type": "BinaryExpression"
                       },
-                      "commentStart": 1659,
+                      "commentStart": 0,
                       "end": 0,
                       "operator": "-",
                       "start": 0,
@@ -2103,10 +2103,10 @@ description: Result of parsing lego.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1642,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1642,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "extrude",
                     "start": 0,
@@ -2116,7 +2116,7 @@ description: Result of parsing lego.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1642,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -2124,13 +2124,13 @@ description: Result of parsing lego.kcl
                 "unlabeled": null
               }
             ],
-            "commentStart": 1369,
+            "commentStart": 0,
             "end": 0,
             "nonCodeMeta": {
               "nonCodeNodes": {
                 "6": [
                   {
-                    "commentStart": 1673,
+                    "commentStart": 0,
                     "end": 0,
                     "start": 0,
                     "type": "NonCodeNode",
@@ -2158,12 +2158,12 @@ description: Result of parsing lego.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 1717,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 1717,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 1717,
+            "commentStart": 0,
             "end": 0,
             "name": "peg",
             "start": 0,
@@ -2175,10 +2175,10 @@ description: Result of parsing lego.kcl
                 "arguments": [
                   {
                     "abs_path": false,
-                    "commentStart": 1737,
+                    "commentStart": 0,
                     "end": 0,
                     "name": {
-                      "commentStart": 1737,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "base",
                       "start": 0,
@@ -2190,7 +2190,7 @@ description: Result of parsing lego.kcl
                     "type": "Name"
                   },
                   {
-                    "commentStart": 1743,
+                    "commentStart": 0,
                     "end": 0,
                     "raw": "'end'",
                     "start": 0,
@@ -2201,10 +2201,10 @@ description: Result of parsing lego.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1723,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1723,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "startSketchOn",
                     "start": 0,
@@ -2214,7 +2214,7 @@ description: Result of parsing lego.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1723,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -2225,28 +2225,28 @@ description: Result of parsing lego.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1770,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "center",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1779,
+                      "commentStart": 0,
                       "elements": [
                         {
                           "argument": {
-                            "commentStart": 1792,
+                            "commentStart": 0,
                             "end": 0,
                             "left": {
-                              "commentStart": 1792,
+                              "commentStart": 0,
                               "end": 0,
                               "left": {
                                 "abs_path": false,
-                                "commentStart": 1792,
+                                "commentStart": 0,
                                 "end": 0,
                                 "name": {
-                                  "commentStart": 1792,
+                                  "commentStart": 0,
                                   "end": 0,
                                   "name": "pitch",
                                   "start": 0,
@@ -2259,14 +2259,14 @@ description: Result of parsing lego.kcl
                               },
                               "operator": "*",
                               "right": {
-                                "commentStart": 1801,
+                                "commentStart": 0,
                                 "end": 0,
                                 "left": {
                                   "abs_path": false,
-                                  "commentStart": 1801,
+                                  "commentStart": 0,
                                   "end": 0,
                                   "name": {
-                                    "commentStart": 1801,
+                                    "commentStart": 0,
                                     "end": 0,
                                     "name": "wbumps",
                                     "start": 0,
@@ -2279,7 +2279,7 @@ description: Result of parsing lego.kcl
                                 },
                                 "operator": "-",
                                 "right": {
-                                  "commentStart": 1810,
+                                  "commentStart": 0,
                                   "end": 0,
                                   "raw": "1",
                                   "start": 0,
@@ -2300,7 +2300,7 @@ description: Result of parsing lego.kcl
                             },
                             "operator": "/",
                             "right": {
-                              "commentStart": 1815,
+                              "commentStart": 0,
                               "end": 0,
                               "raw": "2",
                               "start": 0,
@@ -2315,7 +2315,7 @@ description: Result of parsing lego.kcl
                             "type": "BinaryExpression",
                             "type": "BinaryExpression"
                           },
-                          "commentStart": 1790,
+                          "commentStart": 0,
                           "end": 0,
                           "operator": "-",
                           "start": 0,
@@ -2324,17 +2324,17 @@ description: Result of parsing lego.kcl
                         },
                         {
                           "argument": {
-                            "commentStart": 1830,
+                            "commentStart": 0,
                             "end": 0,
                             "left": {
-                              "commentStart": 1830,
+                              "commentStart": 0,
                               "end": 0,
                               "left": {
                                 "abs_path": false,
-                                "commentStart": 1830,
+                                "commentStart": 0,
                                 "end": 0,
                                 "name": {
-                                  "commentStart": 1830,
+                                  "commentStart": 0,
                                   "end": 0,
                                   "name": "pitch",
                                   "start": 0,
@@ -2347,14 +2347,14 @@ description: Result of parsing lego.kcl
                               },
                               "operator": "*",
                               "right": {
-                                "commentStart": 1839,
+                                "commentStart": 0,
                                 "end": 0,
                                 "left": {
                                   "abs_path": false,
-                                  "commentStart": 1839,
+                                  "commentStart": 0,
                                   "end": 0,
                                   "name": {
-                                    "commentStart": 1839,
+                                    "commentStart": 0,
                                     "end": 0,
                                     "name": "lbumps",
                                     "start": 0,
@@ -2367,7 +2367,7 @@ description: Result of parsing lego.kcl
                                 },
                                 "operator": "-",
                                 "right": {
-                                  "commentStart": 1848,
+                                  "commentStart": 0,
                                   "end": 0,
                                   "raw": "1",
                                   "start": 0,
@@ -2388,7 +2388,7 @@ description: Result of parsing lego.kcl
                             },
                             "operator": "/",
                             "right": {
-                              "commentStart": 1853,
+                              "commentStart": 0,
                               "end": 0,
                               "raw": "2",
                               "start": 0,
@@ -2403,7 +2403,7 @@ description: Result of parsing lego.kcl
                             "type": "BinaryExpression",
                             "type": "BinaryExpression"
                           },
-                          "commentStart": 1828,
+                          "commentStart": 0,
                           "end": 0,
                           "operator": "-",
                           "start": 0,
@@ -2420,21 +2420,21 @@ description: Result of parsing lego.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1873,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "radius",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1882,
+                      "commentStart": 0,
                       "end": 0,
                       "left": {
                         "abs_path": false,
-                        "commentStart": 1882,
+                        "commentStart": 0,
                         "end": 0,
                         "name": {
-                          "commentStart": 1882,
+                          "commentStart": 0,
                           "end": 0,
                           "name": "bumpDiam",
                           "start": 0,
@@ -2447,7 +2447,7 @@ description: Result of parsing lego.kcl
                       },
                       "operator": "/",
                       "right": {
-                        "commentStart": 1893,
+                        "commentStart": 0,
                         "end": 0,
                         "raw": "2",
                         "start": 0,
@@ -2466,10 +2466,10 @@ description: Result of parsing lego.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1755,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1755,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "circle",
                     "start": 0,
@@ -2479,7 +2479,7 @@ description: Result of parsing lego.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1755,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -2491,17 +2491,17 @@ description: Result of parsing lego.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1924,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "axis",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1931,
+                      "commentStart": 0,
                       "elements": [
                         {
-                          "commentStart": 1932,
+                          "commentStart": 0,
                           "end": 0,
                           "raw": "1",
                           "start": 0,
@@ -2513,7 +2513,7 @@ description: Result of parsing lego.kcl
                           }
                         },
                         {
-                          "commentStart": 1935,
+                          "commentStart": 0,
                           "end": 0,
                           "raw": "0",
                           "start": 0,
@@ -2534,7 +2534,7 @@ description: Result of parsing lego.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1939,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "instances",
                       "start": 0,
@@ -2542,10 +2542,10 @@ description: Result of parsing lego.kcl
                     },
                     "arg": {
                       "abs_path": false,
-                      "commentStart": 1951,
+                      "commentStart": 0,
                       "end": 0,
                       "name": {
-                        "commentStart": 1951,
+                        "commentStart": 0,
                         "end": 0,
                         "name": "wbumps",
                         "start": 0,
@@ -2560,7 +2560,7 @@ description: Result of parsing lego.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1959,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "distance",
                       "start": 0,
@@ -2568,10 +2568,10 @@ description: Result of parsing lego.kcl
                     },
                     "arg": {
                       "abs_path": false,
-                      "commentStart": 1970,
+                      "commentStart": 0,
                       "end": 0,
                       "name": {
-                        "commentStart": 1970,
+                        "commentStart": 0,
                         "end": 0,
                         "name": "pitch",
                         "start": 0,
@@ -2586,10 +2586,10 @@ description: Result of parsing lego.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1908,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1908,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "patternLinear2d",
                     "start": 0,
@@ -2599,7 +2599,7 @@ description: Result of parsing lego.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1908,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -2611,17 +2611,17 @@ description: Result of parsing lego.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1998,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "axis",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 2005,
+                      "commentStart": 0,
                       "elements": [
                         {
-                          "commentStart": 2006,
+                          "commentStart": 0,
                           "end": 0,
                           "raw": "0",
                           "start": 0,
@@ -2633,7 +2633,7 @@ description: Result of parsing lego.kcl
                           }
                         },
                         {
-                          "commentStart": 2009,
+                          "commentStart": 0,
                           "end": 0,
                           "raw": "1",
                           "start": 0,
@@ -2654,7 +2654,7 @@ description: Result of parsing lego.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 2013,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "instances",
                       "start": 0,
@@ -2662,10 +2662,10 @@ description: Result of parsing lego.kcl
                     },
                     "arg": {
                       "abs_path": false,
-                      "commentStart": 2025,
+                      "commentStart": 0,
                       "end": 0,
                       "name": {
-                        "commentStart": 2025,
+                        "commentStart": 0,
                         "end": 0,
                         "name": "lbumps",
                         "start": 0,
@@ -2680,7 +2680,7 @@ description: Result of parsing lego.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 2033,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "distance",
                       "start": 0,
@@ -2688,10 +2688,10 @@ description: Result of parsing lego.kcl
                     },
                     "arg": {
                       "abs_path": false,
-                      "commentStart": 2044,
+                      "commentStart": 0,
                       "end": 0,
                       "name": {
-                        "commentStart": 2044,
+                        "commentStart": 0,
                         "end": 0,
                         "name": "pitch",
                         "start": 0,
@@ -2706,10 +2706,10 @@ description: Result of parsing lego.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1982,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1982,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "patternLinear2d",
                     "start": 0,
@@ -2719,7 +2719,7 @@ description: Result of parsing lego.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1982,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -2731,7 +2731,7 @@ description: Result of parsing lego.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 2064,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "length",
                       "start": 0,
@@ -2739,10 +2739,10 @@ description: Result of parsing lego.kcl
                     },
                     "arg": {
                       "abs_path": false,
-                      "commentStart": 2073,
+                      "commentStart": 0,
                       "end": 0,
                       "name": {
-                        "commentStart": 2073,
+                        "commentStart": 0,
                         "end": 0,
                         "name": "bumpHeight",
                         "start": 0,
@@ -2757,10 +2757,10 @@ description: Result of parsing lego.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 2056,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 2056,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "extrude",
                     "start": 0,
@@ -2770,7 +2770,7 @@ description: Result of parsing lego.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 2056,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -2778,13 +2778,13 @@ description: Result of parsing lego.kcl
                 "unlabeled": null
               }
             ],
-            "commentStart": 1723,
+            "commentStart": 0,
             "end": 0,
             "nonCodeMeta": {
               "nonCodeNodes": {
                 "4": [
                   {
-                    "commentStart": 2084,
+                    "commentStart": 0,
                     "end": 0,
                     "start": 0,
                     "type": "NonCodeNode",
@@ -2812,12 +2812,12 @@ description: Result of parsing lego.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 2131,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 2131,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 2131,
+            "commentStart": 0,
             "end": 0,
             "name": "tubePattern",
             "start": 0,
@@ -2829,10 +2829,10 @@ description: Result of parsing lego.kcl
                 "arguments": [
                   {
                     "abs_path": false,
-                    "commentStart": 2159,
+                    "commentStart": 0,
                     "end": 0,
                     "name": {
-                      "commentStart": 2159,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "shellExtrude",
                       "start": 0,
@@ -2844,7 +2844,7 @@ description: Result of parsing lego.kcl
                     "type": "Name"
                   },
                   {
-                    "commentStart": 2173,
+                    "commentStart": 0,
                     "end": 0,
                     "raw": "'start'",
                     "start": 0,
@@ -2855,10 +2855,10 @@ description: Result of parsing lego.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 2145,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 2145,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "startSketchOn",
                     "start": 0,
@@ -2868,7 +2868,7 @@ description: Result of parsing lego.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 2145,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -2879,31 +2879,31 @@ description: Result of parsing lego.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 2202,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "center",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 2211,
+                      "commentStart": 0,
                       "elements": [
                         {
                           "argument": {
-                            "commentStart": 2224,
+                            "commentStart": 0,
                             "end": 0,
                             "left": {
-                              "commentStart": 2224,
+                              "commentStart": 0,
                               "end": 0,
                               "left": {
-                                "commentStart": 2224,
+                                "commentStart": 0,
                                 "end": 0,
                                 "left": {
                                   "abs_path": false,
-                                  "commentStart": 2224,
+                                  "commentStart": 0,
                                   "end": 0,
                                   "name": {
-                                    "commentStart": 2224,
+                                    "commentStart": 0,
                                     "end": 0,
                                     "name": "pitch",
                                     "start": 0,
@@ -2916,14 +2916,14 @@ description: Result of parsing lego.kcl
                                 },
                                 "operator": "*",
                                 "right": {
-                                  "commentStart": 2233,
+                                  "commentStart": 0,
                                   "end": 0,
                                   "left": {
                                     "abs_path": false,
-                                    "commentStart": 2233,
+                                    "commentStart": 0,
                                     "end": 0,
                                     "name": {
-                                      "commentStart": 2233,
+                                      "commentStart": 0,
                                       "end": 0,
                                       "name": "wbumps",
                                       "start": 0,
@@ -2936,7 +2936,7 @@ description: Result of parsing lego.kcl
                                   },
                                   "operator": "-",
                                   "right": {
-                                    "commentStart": 2242,
+                                    "commentStart": 0,
                                     "end": 0,
                                     "raw": "1",
                                     "start": 0,
@@ -2957,7 +2957,7 @@ description: Result of parsing lego.kcl
                               },
                               "operator": "/",
                               "right": {
-                                "commentStart": 2247,
+                                "commentStart": 0,
                                 "end": 0,
                                 "raw": "2",
                                 "start": 0,
@@ -2974,14 +2974,14 @@ description: Result of parsing lego.kcl
                             },
                             "operator": "-",
                             "right": {
-                              "commentStart": 2252,
+                              "commentStart": 0,
                               "end": 0,
                               "left": {
                                 "abs_path": false,
-                                "commentStart": 2252,
+                                "commentStart": 0,
                                 "end": 0,
                                 "name": {
-                                  "commentStart": 2252,
+                                  "commentStart": 0,
                                   "end": 0,
                                   "name": "pitch",
                                   "start": 0,
@@ -2994,7 +2994,7 @@ description: Result of parsing lego.kcl
                               },
                               "operator": "/",
                               "right": {
-                                "commentStart": 2260,
+                                "commentStart": 0,
                                 "end": 0,
                                 "raw": "2",
                                 "start": 0,
@@ -3013,7 +3013,7 @@ description: Result of parsing lego.kcl
                             "type": "BinaryExpression",
                             "type": "BinaryExpression"
                           },
-                          "commentStart": 2222,
+                          "commentStart": 0,
                           "end": 0,
                           "operator": "-",
                           "start": 0,
@@ -3022,20 +3022,20 @@ description: Result of parsing lego.kcl
                         },
                         {
                           "argument": {
-                            "commentStart": 2276,
+                            "commentStart": 0,
                             "end": 0,
                             "left": {
-                              "commentStart": 2276,
+                              "commentStart": 0,
                               "end": 0,
                               "left": {
-                                "commentStart": 2276,
+                                "commentStart": 0,
                                 "end": 0,
                                 "left": {
                                   "abs_path": false,
-                                  "commentStart": 2276,
+                                  "commentStart": 0,
                                   "end": 0,
                                   "name": {
-                                    "commentStart": 2276,
+                                    "commentStart": 0,
                                     "end": 0,
                                     "name": "pitch",
                                     "start": 0,
@@ -3048,14 +3048,14 @@ description: Result of parsing lego.kcl
                                 },
                                 "operator": "*",
                                 "right": {
-                                  "commentStart": 2285,
+                                  "commentStart": 0,
                                   "end": 0,
                                   "left": {
                                     "abs_path": false,
-                                    "commentStart": 2285,
+                                    "commentStart": 0,
                                     "end": 0,
                                     "name": {
-                                      "commentStart": 2285,
+                                      "commentStart": 0,
                                       "end": 0,
                                       "name": "lbumps",
                                       "start": 0,
@@ -3068,7 +3068,7 @@ description: Result of parsing lego.kcl
                                   },
                                   "operator": "-",
                                   "right": {
-                                    "commentStart": 2294,
+                                    "commentStart": 0,
                                     "end": 0,
                                     "raw": "1",
                                     "start": 0,
@@ -3089,7 +3089,7 @@ description: Result of parsing lego.kcl
                               },
                               "operator": "/",
                               "right": {
-                                "commentStart": 2299,
+                                "commentStart": 0,
                                 "end": 0,
                                 "raw": "2",
                                 "start": 0,
@@ -3106,14 +3106,14 @@ description: Result of parsing lego.kcl
                             },
                             "operator": "-",
                             "right": {
-                              "commentStart": 2304,
+                              "commentStart": 0,
                               "end": 0,
                               "left": {
                                 "abs_path": false,
-                                "commentStart": 2304,
+                                "commentStart": 0,
                                 "end": 0,
                                 "name": {
-                                  "commentStart": 2304,
+                                  "commentStart": 0,
                                   "end": 0,
                                   "name": "pitch",
                                   "start": 0,
@@ -3126,7 +3126,7 @@ description: Result of parsing lego.kcl
                               },
                               "operator": "/",
                               "right": {
-                                "commentStart": 2312,
+                                "commentStart": 0,
                                 "end": 0,
                                 "raw": "2",
                                 "start": 0,
@@ -3145,7 +3145,7 @@ description: Result of parsing lego.kcl
                             "type": "BinaryExpression",
                             "type": "BinaryExpression"
                           },
-                          "commentStart": 2274,
+                          "commentStart": 0,
                           "end": 0,
                           "operator": "-",
                           "start": 0,
@@ -3162,21 +3162,21 @@ description: Result of parsing lego.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 2333,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "radius",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 2342,
+                      "commentStart": 0,
                       "end": 0,
                       "left": {
                         "abs_path": false,
-                        "commentStart": 2342,
+                        "commentStart": 0,
                         "end": 0,
                         "name": {
-                          "commentStart": 2342,
+                          "commentStart": 0,
                           "end": 0,
                           "name": "bumpDiam",
                           "start": 0,
@@ -3189,7 +3189,7 @@ description: Result of parsing lego.kcl
                       },
                       "operator": "/",
                       "right": {
-                        "commentStart": 2353,
+                        "commentStart": 0,
                         "end": 0,
                         "raw": "2",
                         "start": 0,
@@ -3208,10 +3208,10 @@ description: Result of parsing lego.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 2187,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 2187,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "circle",
                     "start": 0,
@@ -3221,7 +3221,7 @@ description: Result of parsing lego.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 2187,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -3233,17 +3233,17 @@ description: Result of parsing lego.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 2384,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "axis",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 2391,
+                      "commentStart": 0,
                       "elements": [
                         {
-                          "commentStart": 2392,
+                          "commentStart": 0,
                           "end": 0,
                           "raw": "1",
                           "start": 0,
@@ -3255,7 +3255,7 @@ description: Result of parsing lego.kcl
                           }
                         },
                         {
-                          "commentStart": 2395,
+                          "commentStart": 0,
                           "end": 0,
                           "raw": "0",
                           "start": 0,
@@ -3276,21 +3276,21 @@ description: Result of parsing lego.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 2399,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "instances",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 2411,
+                      "commentStart": 0,
                       "end": 0,
                       "left": {
                         "abs_path": false,
-                        "commentStart": 2411,
+                        "commentStart": 0,
                         "end": 0,
                         "name": {
-                          "commentStart": 2411,
+                          "commentStart": 0,
                           "end": 0,
                           "name": "wbumps",
                           "start": 0,
@@ -3303,7 +3303,7 @@ description: Result of parsing lego.kcl
                       },
                       "operator": "-",
                       "right": {
-                        "commentStart": 2420,
+                        "commentStart": 0,
                         "end": 0,
                         "raw": "1",
                         "start": 0,
@@ -3322,7 +3322,7 @@ description: Result of parsing lego.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 2423,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "distance",
                       "start": 0,
@@ -3330,10 +3330,10 @@ description: Result of parsing lego.kcl
                     },
                     "arg": {
                       "abs_path": false,
-                      "commentStart": 2434,
+                      "commentStart": 0,
                       "end": 0,
                       "name": {
-                        "commentStart": 2434,
+                        "commentStart": 0,
                         "end": 0,
                         "name": "pitch",
                         "start": 0,
@@ -3348,10 +3348,10 @@ description: Result of parsing lego.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 2368,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 2368,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "patternLinear2d",
                     "start": 0,
@@ -3361,7 +3361,7 @@ description: Result of parsing lego.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 2368,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -3373,17 +3373,17 @@ description: Result of parsing lego.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 2462,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "axis",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 2469,
+                      "commentStart": 0,
                       "elements": [
                         {
-                          "commentStart": 2470,
+                          "commentStart": 0,
                           "end": 0,
                           "raw": "0",
                           "start": 0,
@@ -3395,7 +3395,7 @@ description: Result of parsing lego.kcl
                           }
                         },
                         {
-                          "commentStart": 2473,
+                          "commentStart": 0,
                           "end": 0,
                           "raw": "1",
                           "start": 0,
@@ -3416,21 +3416,21 @@ description: Result of parsing lego.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 2477,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "instances",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 2489,
+                      "commentStart": 0,
                       "end": 0,
                       "left": {
                         "abs_path": false,
-                        "commentStart": 2489,
+                        "commentStart": 0,
                         "end": 0,
                         "name": {
-                          "commentStart": 2489,
+                          "commentStart": 0,
                           "end": 0,
                           "name": "lbumps",
                           "start": 0,
@@ -3443,7 +3443,7 @@ description: Result of parsing lego.kcl
                       },
                       "operator": "-",
                       "right": {
-                        "commentStart": 2498,
+                        "commentStart": 0,
                         "end": 0,
                         "raw": "1",
                         "start": 0,
@@ -3462,7 +3462,7 @@ description: Result of parsing lego.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 2501,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "distance",
                       "start": 0,
@@ -3470,10 +3470,10 @@ description: Result of parsing lego.kcl
                     },
                     "arg": {
                       "abs_path": false,
-                      "commentStart": 2512,
+                      "commentStart": 0,
                       "end": 0,
                       "name": {
-                        "commentStart": 2512,
+                        "commentStart": 0,
                         "end": 0,
                         "name": "pitch",
                         "start": 0,
@@ -3488,10 +3488,10 @@ description: Result of parsing lego.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 2446,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 2446,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "patternLinear2d",
                     "start": 0,
@@ -3501,7 +3501,7 @@ description: Result of parsing lego.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 2446,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -3513,7 +3513,7 @@ description: Result of parsing lego.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 2532,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "length",
                       "start": 0,
@@ -3521,10 +3521,10 @@ description: Result of parsing lego.kcl
                     },
                     "arg": {
                       "abs_path": false,
-                      "commentStart": 2541,
+                      "commentStart": 0,
                       "end": 0,
                       "name": {
-                        "commentStart": 2541,
+                        "commentStart": 0,
                         "end": 0,
                         "name": "bumpHeight",
                         "start": 0,
@@ -3539,10 +3539,10 @@ description: Result of parsing lego.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 2524,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 2524,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "extrude",
                     "start": 0,
@@ -3552,7 +3552,7 @@ description: Result of parsing lego.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 2524,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -3560,7 +3560,7 @@ description: Result of parsing lego.kcl
                 "unlabeled": null
               }
             ],
-            "commentStart": 2145,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "PipeExpression",
@@ -3583,7 +3583,7 @@ description: Result of parsing lego.kcl
         "commentStart": 0,
         "end": 0,
         "name": {
-          "commentStart": 239,
+          "commentStart": 0,
           "end": 0,
           "name": "settings",
           "start": 0,
@@ -3598,10 +3598,10 @@ description: Result of parsing lego.kcl
         ],
         "properties": [
           {
-            "commentStart": 248,
+            "commentStart": 0,
             "end": 0,
             "key": {
-              "commentStart": 248,
+              "commentStart": 0,
               "end": 0,
               "name": "defaultLengthUnit",
               "start": 0,
@@ -3611,10 +3611,10 @@ description: Result of parsing lego.kcl
             "type": "ObjectProperty",
             "value": {
               "abs_path": false,
-              "commentStart": 268,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 268,
+                "commentStart": 0,
                 "end": 0,
                 "name": "in",
                 "start": 0,
@@ -3635,7 +3635,7 @@ description: Result of parsing lego.kcl
       "nonCodeNodes": {
         "0": [
           {
-            "commentStart": 304,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -3648,7 +3648,7 @@ description: Result of parsing lego.kcl
         ],
         "1": [
           {
-            "commentStart": 339,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -3661,7 +3661,7 @@ description: Result of parsing lego.kcl
         ],
         "8": [
           {
-            "commentStart": 504,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -3675,7 +3675,7 @@ description: Result of parsing lego.kcl
       },
       "startNodes": [
         {
-          "commentStart": 271,
+          "commentStart": 0,
           "end": 0,
           "start": 0,
           "type": "NonCodeNode",
