@@ -66,6 +66,7 @@
     "vscode-languageserver-protocol": "^3.17.5",
     "vscode-uri": "^3.1.0",
     "web-vitals": "^3.5.2",
+    "win-ca": "^3.5.1",
     "xstate": "^5.19.2",
     "yargs": "^17.7.2"
   },
@@ -233,7 +234,7 @@
     "ts-node": "^10.0.0",
     "typescript": "^5.8.2",
     "typescript-eslint": "^8.26.1",
-    "vite": "^5.4.16",
+    "vite": "^5.4.17",
     "vite-plugin-package-version": "^1.1.0",
     "vite-plugin-top-level-await": "^1.5.0",
     "vite-tsconfig-paths": "^4.3.2",

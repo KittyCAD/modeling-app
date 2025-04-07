@@ -10,7 +10,8 @@ description: Operations executed color-cube.kcl
           "type": "Number",
           "value": 50.0,
           "ty": {
-            "type": "Unknown"
+            "type": "Known",
+            "type": "Count"
           }
         },
         "sourceRange": []
@@ -34,7 +35,8 @@ description: Operations executed color-cube.kcl
           "type": "Number",
           "value": -50.0,
           "ty": {
-            "type": "Unknown"
+            "type": "Known",
+            "type": "Count"
           }
         },
         "sourceRange": []
@@ -58,7 +60,8 @@ description: Operations executed color-cube.kcl
           "type": "Number",
           "value": -50.0,
           "ty": {
-            "type": "Unknown"
+            "type": "Known",
+            "type": "Count"
           }
         },
         "sourceRange": []
@@ -82,7 +85,8 @@ description: Operations executed color-cube.kcl
           "type": "Number",
           "value": -50.0,
           "ty": {
-            "type": "Unknown"
+            "type": "Known",
+            "type": "Count"
           }
         },
         "sourceRange": []
@@ -106,7 +110,8 @@ description: Operations executed color-cube.kcl
           "type": "Number",
           "value": 49.0,
           "ty": {
-            "type": "Unknown"
+            "type": "Known",
+            "type": "Count"
           }
         },
         "sourceRange": []
@@ -130,7 +135,8 @@ description: Operations executed color-cube.kcl
           "type": "Number",
           "value": -50.0,
           "ty": {
-            "type": "Unknown"
+            "type": "Known",
+            "type": "Count"
           }
         },
         "sourceRange": []
@@ -153,8 +159,8 @@ description: Operations executed color-cube.kcl
       "type": "FunctionCall",
       "name": "sketchRectangle",
       "functionSourceRange": [
-        726,
-        1326,
+        730,
+        1330,
         0
       ],
       "unlabeledArg": null,
@@ -203,8 +209,8 @@ description: Operations executed color-cube.kcl
       "type": "FunctionCall",
       "name": "sketchRectangle",
       "functionSourceRange": [
-        726,
-        1326,
+        730,
+        1330,
         0
       ],
       "unlabeledArg": null,
@@ -253,8 +259,8 @@ description: Operations executed color-cube.kcl
       "type": "FunctionCall",
       "name": "sketchRectangle",
       "functionSourceRange": [
-        726,
-        1326,
+        730,
+        1330,
         0
       ],
       "unlabeledArg": null,
@@ -303,8 +309,8 @@ description: Operations executed color-cube.kcl
       "type": "FunctionCall",
       "name": "sketchRectangle",
       "functionSourceRange": [
-        726,
-        1326,
+        730,
+        1330,
         0
       ],
       "unlabeledArg": null,
@@ -353,8 +359,8 @@ description: Operations executed color-cube.kcl
       "type": "FunctionCall",
       "name": "sketchRectangle",
       "functionSourceRange": [
-        726,
-        1326,
+        730,
+        1330,
         0
       ],
       "unlabeledArg": null,
@@ -403,8 +409,8 @@ description: Operations executed color-cube.kcl
       "type": "FunctionCall",
       "name": "sketchRectangle",
       "functionSourceRange": [
-        726,
-        1326,
+        730,
+        1330,
         0
       ],
       "unlabeledArg": null,

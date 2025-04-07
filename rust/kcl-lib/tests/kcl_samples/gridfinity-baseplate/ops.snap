@@ -39,8 +39,8 @@ description: Operations executed gridfinity-baseplate.kcl
       "type": "FunctionCall",
       "name": "face",
       "functionSourceRange": [
-        745,
-        1059,
+        746,
+        1060,
         0
       ],
       "unlabeledArg": null,
@@ -73,7 +73,13 @@ description: Operations executed gridfinity-baseplate.kcl
           "type": "Number",
           "value": 34.0,
           "ty": {
-            "type": "Unknown"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -165,14 +171,16 @@ description: Operations executed gridfinity-baseplate.kcl
               "type": "Number",
               "value": 21.0,
               "ty": {
-                "type": "Unknown"
+                "type": "Known",
+                "type": "Count"
               }
             },
             {
               "type": "Number",
               "value": 21.0,
               "ty": {
-                "type": "Unknown"
+                "type": "Known",
+                "type": "Count"
               }
             },
             {
@@ -265,8 +273,8 @@ description: Operations executed gridfinity-baseplate.kcl
       "type": "FunctionCall",
       "name": "face",
       "functionSourceRange": [
-        745,
-        1059,
+        746,
+        1060,
         0
       ],
       "unlabeledArg": null,
@@ -472,14 +480,16 @@ description: Operations executed gridfinity-baseplate.kcl
               "type": "Number",
               "value": 21.0,
               "ty": {
-                "type": "Unknown"
+                "type": "Known",
+                "type": "Count"
               }
             },
             {
               "type": "Number",
               "value": 21.0,
               "ty": {
-                "type": "Unknown"
+                "type": "Known",
+                "type": "Count"
               }
             },
             {

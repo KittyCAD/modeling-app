@@ -46,8 +46,6 @@ test.describe('Point and click for boolean workflows', () => {
         localStorage.setItem('persistCode', file)
       }, file)
       await homePage.goToModelingScene()
-      await scene.waitForExecutionDone()
-
       await scene.settled(cmdBar)
 
       // Test coordinates for selection - these might need adjustment based on actual scene layout
@@ -77,6 +75,7 @@ test.describe('Point and click for boolean workflows', () => {
 
         // Select first object in the scene, expect there to be a pixel diff from the selection color change
         await clickFirstObject({ pixelDiff: 50 })
+        await page.waitForTimeout(1000)
 
         // For subtract, we need to proceed to the next step before selecting the second object
         if (operationName !== 'subtract') {
@@ -86,6 +85,8 @@ test.describe('Point and click for boolean workflows', () => {
 
         // Select second object
         await clickSecondObject({ pixelDiff: 50 })
+
+        await page.waitForTimeout(1000)
 
         // Confirm the operation in the command bar
         await cmdBar.progressCmdBar()

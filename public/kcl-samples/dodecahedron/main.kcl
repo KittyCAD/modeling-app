@@ -9,19 +9,19 @@
 circR = 25
 
 // Calculated parameters
-// thickness of the dodecahedron
+// Thickness of the dodecahedron
 wallThickness = circR * 0.2
 
-// angle between faces in radians
+// Angle between faces in radians
 dihedral = acos(-(sqrt(5) / 5))
 
-// inscribed radius
+// Inscribed radius
 inscR = circR / 15 * sqrt(75 + 30 * sqrt(5))
 
-// pentagon edge length
+// Pentagon edge length
 edgeL = 4 * circR / (sqrt(3) * (1 + sqrt(5)))
 
-// pentagon radius
+// Pentagon radius
 pentR = edgeL / 2 / sin(toRadians(36))
 
 // Define a plane for the bottom angled face
@@ -69,7 +69,7 @@ bottomBowl = patternCircular3d(
   rotateDuplicates = true,
 )
 
-// pattern the bottom to create the top face
+// Pattern the bottom to create the top face
 patternCircular3d(
   bottom,
   instances = 2,
@@ -79,7 +79,7 @@ patternCircular3d(
   rotateDuplicates = true,
 )
 
-// pattern the bottom angled faces to create the top
+// Pattern the bottom angled faces to create the top
 patternCircular3d(
   bottomBowl,
   instances = 2,

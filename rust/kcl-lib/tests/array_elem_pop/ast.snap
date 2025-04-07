@@ -18,10 +18,10 @@ description: Result of parsing array_elem_pop.kcl
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 6,
+            "commentStart": 0,
             "elements": [
               {
-                "commentStart": 7,
+                "commentStart": 0,
                 "end": 0,
                 "raw": "1",
                 "start": 0,
@@ -33,7 +33,7 @@ description: Result of parsing array_elem_pop.kcl
                 }
               },
               {
-                "commentStart": 10,
+                "commentStart": 0,
                 "end": 0,
                 "raw": "2",
                 "start": 0,
@@ -45,7 +45,7 @@ description: Result of parsing array_elem_pop.kcl
                 }
               },
               {
-                "commentStart": 13,
+                "commentStart": 0,
                 "end": 0,
                 "raw": "3",
                 "start": 0,
@@ -72,12 +72,12 @@ description: Result of parsing array_elem_pop.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 16,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 16,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 16,
+            "commentStart": 0,
             "end": 0,
             "name": "new_arr1",
             "start": 0,
@@ -87,10 +87,10 @@ description: Result of parsing array_elem_pop.kcl
             "arguments": [
               {
                 "abs_path": false,
-                "commentStart": 31,
+                "commentStart": 0,
                 "end": 0,
                 "name": {
-                  "commentStart": 31,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "arr",
                   "start": 0,
@@ -104,10 +104,10 @@ description: Result of parsing array_elem_pop.kcl
             ],
             "callee": {
               "abs_path": false,
-              "commentStart": 27,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 27,
+                "commentStart": 0,
                 "end": 0,
                 "name": "pop",
                 "start": 0,
@@ -117,7 +117,7 @@ description: Result of parsing array_elem_pop.kcl
               "start": 0,
               "type": "Name"
             },
-            "commentStart": 27,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "CallExpression",
@@ -133,12 +133,12 @@ description: Result of parsing array_elem_pop.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 36,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 36,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 36,
+            "commentStart": 0,
             "end": 0,
             "name": "new_arr2",
             "start": 0,
@@ -148,10 +148,10 @@ description: Result of parsing array_elem_pop.kcl
             "arguments": [
               {
                 "abs_path": false,
-                "commentStart": 51,
+                "commentStart": 0,
                 "end": 0,
                 "name": {
-                  "commentStart": 51,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "new_arr1",
                   "start": 0,
@@ -165,10 +165,10 @@ description: Result of parsing array_elem_pop.kcl
             ],
             "callee": {
               "abs_path": false,
-              "commentStart": 47,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 47,
+                "commentStart": 0,
                 "end": 0,
                 "name": "pop",
                 "start": 0,
@@ -178,7 +178,7 @@ description: Result of parsing array_elem_pop.kcl
               "start": 0,
               "type": "Name"
             },
-            "commentStart": 47,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "CallExpression",
@@ -194,12 +194,12 @@ description: Result of parsing array_elem_pop.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 61,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 61,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 61,
+            "commentStart": 0,
             "end": 0,
             "name": "new_arr3",
             "start": 0,
@@ -209,10 +209,10 @@ description: Result of parsing array_elem_pop.kcl
             "arguments": [
               {
                 "abs_path": false,
-                "commentStart": 76,
+                "commentStart": 0,
                 "end": 0,
                 "name": {
-                  "commentStart": 76,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "new_arr2",
                   "start": 0,
@@ -226,10 +226,10 @@ description: Result of parsing array_elem_pop.kcl
             ],
             "callee": {
               "abs_path": false,
-              "commentStart": 72,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 72,
+                "commentStart": 0,
                 "end": 0,
                 "name": "pop",
                 "start": 0,
@@ -239,7 +239,7 @@ description: Result of parsing array_elem_pop.kcl
               "start": 0,
               "type": "Name"
             },
-            "commentStart": 72,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "CallExpression",
@@ -255,16 +255,16 @@ description: Result of parsing array_elem_pop.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 86,
+        "commentStart": 0,
         "end": 0,
         "expression": {
           "arguments": [
             {
-              "commentStart": 98,
+              "commentStart": 0,
               "computed": false,
               "end": 0,
               "object": {
-                "commentStart": 98,
+                "commentStart": 0,
                 "end": 0,
                 "name": "new_arr1",
                 "start": 0,
@@ -272,7 +272,7 @@ description: Result of parsing array_elem_pop.kcl
                 "type": "Identifier"
               },
               "property": {
-                "commentStart": 107,
+                "commentStart": 0,
                 "end": 0,
                 "raw": "0",
                 "start": 0,
@@ -288,7 +288,7 @@ description: Result of parsing array_elem_pop.kcl
               "type": "MemberExpression"
             },
             {
-              "commentStart": 111,
+              "commentStart": 0,
               "end": 0,
               "raw": "1",
               "start": 0,
@@ -300,7 +300,7 @@ description: Result of parsing array_elem_pop.kcl
               }
             },
             {
-              "commentStart": 114,
+              "commentStart": 0,
               "end": 0,
               "raw": "0.00001",
               "start": 0,
@@ -312,7 +312,7 @@ description: Result of parsing array_elem_pop.kcl
               }
             },
             {
-              "commentStart": 123,
+              "commentStart": 0,
               "end": 0,
               "raw": "\"element 0 should not have changed\"",
               "start": 0,
@@ -323,10 +323,10 @@ description: Result of parsing array_elem_pop.kcl
           ],
           "callee": {
             "abs_path": false,
-            "commentStart": 86,
+            "commentStart": 0,
             "end": 0,
             "name": {
-              "commentStart": 86,
+              "commentStart": 0,
               "end": 0,
               "name": "assertEqual",
               "start": 0,
@@ -336,7 +336,7 @@ description: Result of parsing array_elem_pop.kcl
             "start": 0,
             "type": "Name"
           },
-          "commentStart": 86,
+          "commentStart": 0,
           "end": 0,
           "start": 0,
           "type": "CallExpression",
@@ -347,16 +347,16 @@ description: Result of parsing array_elem_pop.kcl
         "type": "ExpressionStatement"
       },
       {
-        "commentStart": 160,
+        "commentStart": 0,
         "end": 0,
         "expression": {
           "arguments": [
             {
-              "commentStart": 172,
+              "commentStart": 0,
               "computed": false,
               "end": 0,
               "object": {
-                "commentStart": 172,
+                "commentStart": 0,
                 "end": 0,
                 "name": "new_arr1",
                 "start": 0,
@@ -364,7 +364,7 @@ description: Result of parsing array_elem_pop.kcl
                 "type": "Identifier"
               },
               "property": {
-                "commentStart": 181,
+                "commentStart": 0,
                 "end": 0,
                 "raw": "1",
                 "start": 0,
@@ -380,7 +380,7 @@ description: Result of parsing array_elem_pop.kcl
               "type": "MemberExpression"
             },
             {
-              "commentStart": 185,
+              "commentStart": 0,
               "end": 0,
               "raw": "2",
               "start": 0,
@@ -392,7 +392,7 @@ description: Result of parsing array_elem_pop.kcl
               }
             },
             {
-              "commentStart": 188,
+              "commentStart": 0,
               "end": 0,
               "raw": "0.00001",
               "start": 0,
@@ -404,7 +404,7 @@ description: Result of parsing array_elem_pop.kcl
               }
             },
             {
-              "commentStart": 197,
+              "commentStart": 0,
               "end": 0,
               "raw": "\"element 1 should not have changed\"",
               "start": 0,
@@ -415,10 +415,10 @@ description: Result of parsing array_elem_pop.kcl
           ],
           "callee": {
             "abs_path": false,
-            "commentStart": 160,
+            "commentStart": 0,
             "end": 0,
             "name": {
-              "commentStart": 160,
+              "commentStart": 0,
               "end": 0,
               "name": "assertEqual",
               "start": 0,
@@ -428,7 +428,7 @@ description: Result of parsing array_elem_pop.kcl
             "start": 0,
             "type": "Name"
           },
-          "commentStart": 160,
+          "commentStart": 0,
           "end": 0,
           "start": 0,
           "type": "CallExpression",
@@ -439,16 +439,16 @@ description: Result of parsing array_elem_pop.kcl
         "type": "ExpressionStatement"
       },
       {
-        "commentStart": 234,
+        "commentStart": 0,
         "end": 0,
         "expression": {
           "arguments": [
             {
-              "commentStart": 246,
+              "commentStart": 0,
               "computed": false,
               "end": 0,
               "object": {
-                "commentStart": 246,
+                "commentStart": 0,
                 "end": 0,
                 "name": "new_arr2",
                 "start": 0,
@@ -456,7 +456,7 @@ description: Result of parsing array_elem_pop.kcl
                 "type": "Identifier"
               },
               "property": {
-                "commentStart": 255,
+                "commentStart": 0,
                 "end": 0,
                 "raw": "0",
                 "start": 0,
@@ -472,7 +472,7 @@ description: Result of parsing array_elem_pop.kcl
               "type": "MemberExpression"
             },
             {
-              "commentStart": 259,
+              "commentStart": 0,
               "end": 0,
               "raw": "1",
               "start": 0,
@@ -484,7 +484,7 @@ description: Result of parsing array_elem_pop.kcl
               }
             },
             {
-              "commentStart": 262,
+              "commentStart": 0,
               "end": 0,
               "raw": "0.00001",
               "start": 0,
@@ -496,7 +496,7 @@ description: Result of parsing array_elem_pop.kcl
               }
             },
             {
-              "commentStart": 271,
+              "commentStart": 0,
               "end": 0,
               "raw": "\"element 0 should not have changed\"",
               "start": 0,
@@ -507,10 +507,10 @@ description: Result of parsing array_elem_pop.kcl
           ],
           "callee": {
             "abs_path": false,
-            "commentStart": 234,
+            "commentStart": 0,
             "end": 0,
             "name": {
-              "commentStart": 234,
+              "commentStart": 0,
               "end": 0,
               "name": "assertEqual",
               "start": 0,
@@ -520,7 +520,7 @@ description: Result of parsing array_elem_pop.kcl
             "start": 0,
             "type": "Name"
           },
-          "commentStart": 234,
+          "commentStart": 0,
           "end": 0,
           "start": 0,
           "type": "CallExpression",

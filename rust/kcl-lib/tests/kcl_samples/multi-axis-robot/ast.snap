@@ -6,16 +6,19 @@ description: Result of parsing multi-axis-robot.kcl
   "Ok": {
     "body": [
       {
-        "commentStart": 212,
+        "commentStart": 0,
         "end": 0,
         "path": {
           "type": "Kcl",
           "filename": "robot-arm-base.kcl"
         },
+        "preComments": [
+          "// Import parts"
+        ],
         "selector": {
           "type": "None",
           "alias": {
-            "commentStart": 245,
+            "commentStart": 0,
             "end": 0,
             "name": "robotArmBase",
             "start": 0,
@@ -27,7 +30,7 @@ description: Result of parsing multi-axis-robot.kcl
         "type": "ImportStatement"
       },
       {
-        "commentStart": 258,
+        "commentStart": 0,
         "end": 0,
         "path": {
           "type": "Kcl",
@@ -36,7 +39,7 @@ description: Result of parsing multi-axis-robot.kcl
         "selector": {
           "type": "None",
           "alias": {
-            "commentStart": 294,
+            "commentStart": 0,
             "end": 0,
             "name": "rotatingBase",
             "start": 0,
@@ -48,7 +51,7 @@ description: Result of parsing multi-axis-robot.kcl
         "type": "ImportStatement"
       },
       {
-        "commentStart": 307,
+        "commentStart": 0,
         "end": 0,
         "path": {
           "type": "Kcl",
@@ -57,7 +60,7 @@ description: Result of parsing multi-axis-robot.kcl
         "selector": {
           "type": "None",
           "alias": {
-            "commentStart": 336,
+            "commentStart": 0,
             "end": 0,
             "name": "j2RobotArm",
             "start": 0,
@@ -69,7 +72,7 @@ description: Result of parsing multi-axis-robot.kcl
         "type": "ImportStatement"
       },
       {
-        "commentStart": 347,
+        "commentStart": 0,
         "end": 0,
         "path": {
           "type": "Kcl",
@@ -78,7 +81,7 @@ description: Result of parsing multi-axis-robot.kcl
         "selector": {
           "type": "None",
           "alias": {
-            "commentStart": 376,
+            "commentStart": 0,
             "end": 0,
             "name": "j3RobotArm",
             "start": 0,
@@ -90,14 +93,14 @@ description: Result of parsing multi-axis-robot.kcl
         "type": "ImportStatement"
       },
       {
-        "commentStart": 386,
+        "commentStart": 0,
         "end": 0,
         "expression": {
           "abs_path": false,
-          "commentStart": 388,
+          "commentStart": 0,
           "end": 0,
           "name": {
-            "commentStart": 388,
+            "commentStart": 0,
             "end": 0,
             "name": "robotArmBase",
             "start": 0,
@@ -113,14 +116,14 @@ description: Result of parsing multi-axis-robot.kcl
         "type": "ExpressionStatement"
       },
       {
-        "commentStart": 401,
+        "commentStart": 0,
         "end": 0,
         "expression": {
           "abs_path": false,
-          "commentStart": 401,
+          "commentStart": 0,
           "end": 0,
           "name": {
-            "commentStart": 401,
+            "commentStart": 0,
             "end": 0,
             "name": "rotatingBase",
             "start": 0,
@@ -136,14 +139,14 @@ description: Result of parsing multi-axis-robot.kcl
         "type": "ExpressionStatement"
       },
       {
-        "commentStart": 414,
+        "commentStart": 0,
         "end": 0,
         "expression": {
           "abs_path": false,
-          "commentStart": 414,
+          "commentStart": 0,
           "end": 0,
           "name": {
-            "commentStart": 414,
+            "commentStart": 0,
             "end": 0,
             "name": "j2RobotArm",
             "start": 0,
@@ -159,14 +162,14 @@ description: Result of parsing multi-axis-robot.kcl
         "type": "ExpressionStatement"
       },
       {
-        "commentStart": 425,
+        "commentStart": 0,
         "end": 0,
         "expression": {
           "abs_path": false,
-          "commentStart": 425,
+          "commentStart": 0,
           "end": 0,
           "name": {
-            "commentStart": 425,
+            "commentStart": 0,
             "end": 0,
             "name": "j3RobotArm",
             "start": 0,
@@ -189,7 +192,7 @@ description: Result of parsing multi-axis-robot.kcl
         "commentStart": 0,
         "end": 0,
         "name": {
-          "commentStart": 180,
+          "commentStart": 0,
           "end": 0,
           "name": "settings",
           "start": 0,
@@ -204,10 +207,10 @@ description: Result of parsing multi-axis-robot.kcl
         ],
         "properties": [
           {
-            "commentStart": 189,
+            "commentStart": 0,
             "end": 0,
             "key": {
-              "commentStart": 189,
+              "commentStart": 0,
               "end": 0,
               "name": "defaultLengthUnit",
               "start": 0,
@@ -217,10 +220,10 @@ description: Result of parsing multi-axis-robot.kcl
             "type": "ObjectProperty",
             "value": {
               "abs_path": false,
-              "commentStart": 209,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 209,
+                "commentStart": 0,
                 "end": 0,
                 "name": "in",
                 "start": 0,
@@ -241,7 +244,7 @@ description: Result of parsing multi-axis-robot.kcl
       "nonCodeNodes": {
         "3": [
           {
-            "commentStart": 386,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -253,7 +256,7 @@ description: Result of parsing multi-axis-robot.kcl
       },
       "startNodes": [
         {
-          "commentStart": 212,
+          "commentStart": 0,
           "end": 0,
           "start": 0,
           "type": "NonCodeNode",

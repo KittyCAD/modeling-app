@@ -58,7 +58,13 @@ description: Operations executed pipe_as_arg.kcl
           "type": "Number",
           "value": 400.0,
           "ty": {
-            "type": "Unknown"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []

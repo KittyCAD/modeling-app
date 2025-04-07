@@ -1,35 +1,31 @@
 // Walkie talkie talk button
 
-// set units
+// Set units
 @settings(defaultLengthUnit = in)
 
-// import constants
-import width, thickness, talkButtonSideLength, talkButtonHeight from "globals.kcl"
+// Import parameters
+import width, thickness, talkButtonSideLength, talkButtonHeight from "parameters.kcl"
 
-export fn talkButton() {
-  // create the talk button sketch
-  talkButtonSketch = startSketchOn(YZ)
-    |> startProfileAt([
-         -talkButtonSideLength / 2,
-         talkButtonSideLength / 2
-       ], %)
-    |> xLine(length = talkButtonSideLength, tag = $tag1)
-    |> yLine(length = -talkButtonSideLength, tag = $tag2)
-    |> xLine(length = -talkButtonSideLength, tag = $tag3)
-    |> close(tag = $tag4)
+// Create the talk button sketch
+talkButtonSketch = startSketchOn(YZ)
+  |> startProfileAt([
+       -talkButtonSideLength / 2,
+       talkButtonSideLength / 2
+     ], %)
+  |> xLine(length = talkButtonSideLength, tag = $tag1)
+  |> yLine(length = -talkButtonSideLength, tag = $tag2)
+  |> xLine(length = -talkButtonSideLength, tag = $tag3)
+  |> close(tag = $tag4)
 
-  // create the talk button and apply fillets
-  talkButton = extrude(talkButtonSketch, length = talkButtonHeight)
-    |> fillet(
-         radius = 0.050,
-         tags = [
-           getNextAdjacentEdge(tag1),
-           getNextAdjacentEdge(tag2),
-           getNextAdjacentEdge(tag3),
-           getNextAdjacentEdge(tag4)
-         ],
-       )
-    |> appearance(color = '#D0FF01', metalness = 90, roughness = 90)
-
-  return talkButton
-}
+// create the talk button and apply fillets
+extrude(talkButtonSketch, length = talkButtonHeight)
+  |> fillet(
+       radius = 0.050,
+       tags = [
+         getNextAdjacentEdge(tag1),
+         getNextAdjacentEdge(tag2),
+         getNextAdjacentEdge(tag3),
+         getNextAdjacentEdge(tag4)
+       ],
+     )
+  |> appearance(color = '#D0FF01', metalness = 90, roughness = 90)

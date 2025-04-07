@@ -22,14 +22,14 @@ description: Result of parsing artifact_graph_example_code_offset_planes.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "commentStart": 35,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "offset",
                   "start": 0,
                   "type": "Identifier"
                 },
                 "arg": {
-                  "commentStart": 44,
+                  "commentStart": 0,
                   "end": 0,
                   "raw": "20",
                   "start": 0,
@@ -44,10 +44,10 @@ description: Result of parsing artifact_graph_example_code_offset_planes.kcl
             ],
             "callee": {
               "abs_path": false,
-              "commentStart": 17,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 17,
+                "commentStart": 0,
                 "end": 0,
                 "name": "offsetPlane",
                 "start": 0,
@@ -57,13 +57,13 @@ description: Result of parsing artifact_graph_example_code_offset_planes.kcl
               "start": 0,
               "type": "Name"
             },
-            "commentStart": 17,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
-              "commentStart": 29,
+              "commentStart": 0,
               "end": 0,
               "raw": "\"XY\"",
               "start": 0,
@@ -82,12 +82,12 @@ description: Result of parsing artifact_graph_example_code_offset_planes.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 48,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 48,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 48,
+            "commentStart": 0,
             "end": 0,
             "name": "offsetPlane002",
             "start": 0,
@@ -98,7 +98,7 @@ description: Result of parsing artifact_graph_example_code_offset_planes.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "commentStart": 83,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "offset",
                   "start": 0,
@@ -106,7 +106,7 @@ description: Result of parsing artifact_graph_example_code_offset_planes.kcl
                 },
                 "arg": {
                   "argument": {
-                    "commentStart": 93,
+                    "commentStart": 0,
                     "end": 0,
                     "raw": "50",
                     "start": 0,
@@ -117,7 +117,7 @@ description: Result of parsing artifact_graph_example_code_offset_planes.kcl
                       "suffix": "None"
                     }
                   },
-                  "commentStart": 92,
+                  "commentStart": 0,
                   "end": 0,
                   "operator": "-",
                   "start": 0,
@@ -128,10 +128,10 @@ description: Result of parsing artifact_graph_example_code_offset_planes.kcl
             ],
             "callee": {
               "abs_path": false,
-              "commentStart": 65,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 65,
+                "commentStart": 0,
                 "end": 0,
                 "name": "offsetPlane",
                 "start": 0,
@@ -141,13 +141,13 @@ description: Result of parsing artifact_graph_example_code_offset_planes.kcl
               "start": 0,
               "type": "Name"
             },
-            "commentStart": 65,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
-              "commentStart": 77,
+              "commentStart": 0,
               "end": 0,
               "raw": "\"XZ\"",
               "start": 0,
@@ -166,12 +166,12 @@ description: Result of parsing artifact_graph_example_code_offset_planes.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 97,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 97,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 97,
+            "commentStart": 0,
             "end": 0,
             "name": "offsetPlane003",
             "start": 0,
@@ -182,14 +182,14 @@ description: Result of parsing artifact_graph_example_code_offset_planes.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "commentStart": 132,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "offset",
                   "start": 0,
                   "type": "Identifier"
                 },
                 "arg": {
-                  "commentStart": 141,
+                  "commentStart": 0,
                   "end": 0,
                   "raw": "10",
                   "start": 0,
@@ -204,10 +204,10 @@ description: Result of parsing artifact_graph_example_code_offset_planes.kcl
             ],
             "callee": {
               "abs_path": false,
-              "commentStart": 114,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 114,
+                "commentStart": 0,
                 "end": 0,
                 "name": "offsetPlane",
                 "start": 0,
@@ -217,13 +217,13 @@ description: Result of parsing artifact_graph_example_code_offset_planes.kcl
               "start": 0,
               "type": "Name"
             },
-            "commentStart": 114,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
-              "commentStart": 126,
+              "commentStart": 0,
               "end": 0,
               "raw": "\"YZ\"",
               "start": 0,
@@ -242,12 +242,12 @@ description: Result of parsing artifact_graph_example_code_offset_planes.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 144,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 146,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 146,
+            "commentStart": 0,
             "end": 0,
             "name": "sketch002",
             "start": 0,
@@ -259,10 +259,10 @@ description: Result of parsing artifact_graph_example_code_offset_planes.kcl
                 "arguments": [
                   {
                     "abs_path": false,
-                    "commentStart": 172,
+                    "commentStart": 0,
                     "end": 0,
                     "name": {
-                      "commentStart": 172,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "offsetPlane001",
                       "start": 0,
@@ -276,10 +276,10 @@ description: Result of parsing artifact_graph_example_code_offset_planes.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 158,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 158,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "startSketchOn",
                     "start": 0,
@@ -289,7 +289,7 @@ description: Result of parsing artifact_graph_example_code_offset_planes.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 158,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -298,10 +298,10 @@ description: Result of parsing artifact_graph_example_code_offset_planes.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 208,
+                    "commentStart": 0,
                     "elements": [
                       {
-                        "commentStart": 209,
+                        "commentStart": 0,
                         "end": 0,
                         "raw": "0",
                         "start": 0,
@@ -313,7 +313,7 @@ description: Result of parsing artifact_graph_example_code_offset_planes.kcl
                         }
                       },
                       {
-                        "commentStart": 212,
+                        "commentStart": 0,
                         "end": 0,
                         "raw": "0",
                         "start": 0,
@@ -331,7 +331,7 @@ description: Result of parsing artifact_graph_example_code_offset_planes.kcl
                     "type": "ArrayExpression"
                   },
                   {
-                    "commentStart": 216,
+                    "commentStart": 0,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -340,10 +340,10 @@ description: Result of parsing artifact_graph_example_code_offset_planes.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 193,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 193,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "startProfileAt",
                     "start": 0,
@@ -353,7 +353,7 @@ description: Result of parsing artifact_graph_example_code_offset_planes.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 193,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -364,17 +364,17 @@ description: Result of parsing artifact_graph_example_code_offset_planes.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 229,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 235,
+                      "commentStart": 0,
                       "elements": [
                         {
-                          "commentStart": 236,
+                          "commentStart": 0,
                           "end": 0,
                           "raw": "6.78",
                           "start": 0,
@@ -386,7 +386,7 @@ description: Result of parsing artifact_graph_example_code_offset_planes.kcl
                           }
                         },
                         {
-                          "commentStart": 242,
+                          "commentStart": 0,
                           "end": 0,
                           "raw": "15.01",
                           "start": 0,
@@ -407,10 +407,10 @@ description: Result of parsing artifact_graph_example_code_offset_planes.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 224,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 224,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "line",
                     "start": 0,
@@ -420,7 +420,7 @@ description: Result of parsing artifact_graph_example_code_offset_planes.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 224,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -428,7 +428,7 @@ description: Result of parsing artifact_graph_example_code_offset_planes.kcl
                 "unlabeled": null
               }
             ],
-            "commentStart": 158,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "PipeExpression",
@@ -450,7 +450,7 @@ description: Result of parsing artifact_graph_example_code_offset_planes.kcl
       "nonCodeNodes": {
         "2": [
           {
-            "commentStart": 144,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",

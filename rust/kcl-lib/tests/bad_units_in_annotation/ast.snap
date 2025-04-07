@@ -6,19 +6,19 @@ description: Result of parsing bad_units_in_annotation.kcl
   "Ok": {
     "body": [
       {
-        "commentStart": 33,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 123,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 123,
+            "commentStart": 0,
             "end": 0,
             "name": "oxygenRadius",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 138,
+            "commentStart": 0,
             "end": 0,
             "raw": "0.066",
             "start": 0,
@@ -45,19 +45,19 @@ description: Result of parsing bad_units_in_annotation.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 143,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 184,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 184,
+            "commentStart": 0,
             "end": 0,
             "name": "hydrogenRadius",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 201,
+            "commentStart": 0,
             "end": 0,
             "raw": "0.053",
             "start": 0,
@@ -78,19 +78,19 @@ description: Result of parsing bad_units_in_annotation.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 206,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 248,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 248,
+            "commentStart": 0,
             "end": 0,
             "name": "oxygenHydrogenDistance",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 273,
+            "commentStart": 0,
             "end": 0,
             "raw": "0.096",
             "start": 0,
@@ -111,19 +111,19 @@ description: Result of parsing bad_units_in_annotation.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 278,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 337,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 337,
+            "commentStart": 0,
             "end": 0,
             "name": "bondAngle",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 349,
+            "commentStart": 0,
             "end": 0,
             "raw": "104.5",
             "start": 0,
@@ -144,12 +144,12 @@ description: Result of parsing bad_units_in_annotation.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 354,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 437,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 437,
+            "commentStart": 0,
             "end": 0,
             "name": "createAtom",
             "start": 0,
@@ -164,7 +164,7 @@ description: Result of parsing bad_units_in_annotation.kcl
                       {
                         "arguments": [
                           {
-                            "commentStart": 489,
+                            "commentStart": 0,
                             "end": 0,
                             "raw": "'XY'",
                             "start": 0,
@@ -175,10 +175,10 @@ description: Result of parsing bad_units_in_annotation.kcl
                         ],
                         "callee": {
                           "abs_path": false,
-                          "commentStart": 475,
+                          "commentStart": 0,
                           "end": 0,
                           "name": {
-                            "commentStart": 475,
+                            "commentStart": 0,
                             "end": 0,
                             "name": "startSketchOn",
                             "start": 0,
@@ -188,7 +188,7 @@ description: Result of parsing bad_units_in_annotation.kcl
                           "start": 0,
                           "type": "Name"
                         },
-                        "commentStart": 475,
+                        "commentStart": 0,
                         "end": 0,
                         "start": 0,
                         "type": "CallExpression",
@@ -199,7 +199,7 @@ description: Result of parsing bad_units_in_annotation.kcl
                           {
                             "type": "LabeledArg",
                             "label": {
-                              "commentStart": 509,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "center",
                               "start": 0,
@@ -207,10 +207,10 @@ description: Result of parsing bad_units_in_annotation.kcl
                             },
                             "arg": {
                               "abs_path": false,
-                              "commentStart": 518,
+                              "commentStart": 0,
                               "end": 0,
                               "name": {
-                                "commentStart": 518,
+                                "commentStart": 0,
                                 "end": 0,
                                 "name": "center",
                                 "start": 0,
@@ -225,7 +225,7 @@ description: Result of parsing bad_units_in_annotation.kcl
                           {
                             "type": "LabeledArg",
                             "label": {
-                              "commentStart": 526,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "radius",
                               "start": 0,
@@ -233,10 +233,10 @@ description: Result of parsing bad_units_in_annotation.kcl
                             },
                             "arg": {
                               "abs_path": false,
-                              "commentStart": 535,
+                              "commentStart": 0,
                               "end": 0,
                               "name": {
-                                "commentStart": 535,
+                                "commentStart": 0,
                                 "end": 0,
                                 "name": "radius",
                                 "start": 0,
@@ -251,10 +251,10 @@ description: Result of parsing bad_units_in_annotation.kcl
                         ],
                         "callee": {
                           "abs_path": false,
-                          "commentStart": 502,
+                          "commentStart": 0,
                           "end": 0,
                           "name": {
-                            "commentStart": 502,
+                            "commentStart": 0,
                             "end": 0,
                             "name": "circle",
                             "start": 0,
@@ -264,7 +264,7 @@ description: Result of parsing bad_units_in_annotation.kcl
                           "start": 0,
                           "type": "Name"
                         },
-                        "commentStart": 502,
+                        "commentStart": 0,
                         "end": 0,
                         "start": 0,
                         "type": "CallExpressionKw",
@@ -276,21 +276,21 @@ description: Result of parsing bad_units_in_annotation.kcl
                           {
                             "type": "LabeledArg",
                             "label": {
-                              "commentStart": 558,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "length",
                               "start": 0,
                               "type": "Identifier"
                             },
                             "arg": {
-                              "commentStart": 567,
+                              "commentStart": 0,
                               "end": 0,
                               "left": {
                                 "abs_path": false,
-                                "commentStart": 567,
+                                "commentStart": 0,
                                 "end": 0,
                                 "name": {
-                                  "commentStart": 567,
+                                  "commentStart": 0,
                                   "end": 0,
                                   "name": "radius",
                                   "start": 0,
@@ -303,7 +303,7 @@ description: Result of parsing bad_units_in_annotation.kcl
                               },
                               "operator": "*",
                               "right": {
-                                "commentStart": 576,
+                                "commentStart": 0,
                                 "end": 0,
                                 "raw": "2",
                                 "start": 0,
@@ -322,10 +322,10 @@ description: Result of parsing bad_units_in_annotation.kcl
                         ],
                         "callee": {
                           "abs_path": false,
-                          "commentStart": 550,
+                          "commentStart": 0,
                           "end": 0,
                           "name": {
-                            "commentStart": 550,
+                            "commentStart": 0,
                             "end": 0,
                             "name": "extrude",
                             "start": 0,
@@ -335,7 +335,7 @@ description: Result of parsing bad_units_in_annotation.kcl
                           "start": 0,
                           "type": "Name"
                         },
-                        "commentStart": 550,
+                        "commentStart": 0,
                         "end": 0,
                         "start": 0,
                         "type": "CallExpressionKw",
@@ -343,30 +343,30 @@ description: Result of parsing bad_units_in_annotation.kcl
                         "unlabeled": null
                       }
                     ],
-                    "commentStart": 475,
+                    "commentStart": 0,
                     "end": 0,
                     "start": 0,
                     "type": "PipeExpression",
                     "type": "PipeExpression"
                   },
-                  "commentStart": 468,
+                  "commentStart": 0,
                   "end": 0,
                   "start": 0,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
                 }
               ],
-              "commentStart": 464,
+              "commentStart": 0,
               "end": 0,
               "start": 0
             },
-            "commentStart": 447,
+            "commentStart": 0,
             "end": 0,
             "params": [
               {
                 "type": "Parameter",
                 "identifier": {
-                  "commentStart": 448,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "center",
                   "start": 0,
@@ -376,7 +376,7 @@ description: Result of parsing bad_units_in_annotation.kcl
               {
                 "type": "Parameter",
                 "identifier": {
-                  "commentStart": 456,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "radius",
                   "start": 0,
@@ -401,12 +401,12 @@ description: Result of parsing bad_units_in_annotation.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 580,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 622,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 622,
+            "commentStart": 0,
             "end": 0,
             "name": "oxygenAtom",
             "start": 0,
@@ -415,10 +415,10 @@ description: Result of parsing bad_units_in_annotation.kcl
           "init": {
             "arguments": [
               {
-                "commentStart": 646,
+                "commentStart": 0,
                 "elements": [
                   {
-                    "commentStart": 647,
+                    "commentStart": 0,
                     "end": 0,
                     "raw": "0",
                     "start": 0,
@@ -430,7 +430,7 @@ description: Result of parsing bad_units_in_annotation.kcl
                     }
                   },
                   {
-                    "commentStart": 650,
+                    "commentStart": 0,
                     "end": 0,
                     "raw": "0",
                     "start": 0,
@@ -449,10 +449,10 @@ description: Result of parsing bad_units_in_annotation.kcl
               },
               {
                 "abs_path": false,
-                "commentStart": 654,
+                "commentStart": 0,
                 "end": 0,
                 "name": {
-                  "commentStart": 654,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "oxygenRadius",
                   "start": 0,
@@ -466,10 +466,10 @@ description: Result of parsing bad_units_in_annotation.kcl
             ],
             "callee": {
               "abs_path": false,
-              "commentStart": 635,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 635,
+                "commentStart": 0,
                 "end": 0,
                 "name": "createAtom",
                 "start": 0,
@@ -479,7 +479,7 @@ description: Result of parsing bad_units_in_annotation.kcl
               "start": 0,
               "type": "Name"
             },
-            "commentStart": 635,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "CallExpression",
@@ -500,26 +500,26 @@ description: Result of parsing bad_units_in_annotation.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 667,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 718,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 718,
+            "commentStart": 0,
             "end": 0,
             "name": "hydrogenOffsetX",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 736,
+            "commentStart": 0,
             "end": 0,
             "left": {
               "abs_path": false,
-              "commentStart": 736,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 736,
+                "commentStart": 0,
                 "end": 0,
                 "name": "oxygenHydrogenDistance",
                 "start": 0,
@@ -536,14 +536,14 @@ description: Result of parsing bad_units_in_annotation.kcl
                 {
                   "arguments": [
                     {
-                      "commentStart": 775,
+                      "commentStart": 0,
                       "end": 0,
                       "left": {
                         "abs_path": false,
-                        "commentStart": 775,
+                        "commentStart": 0,
                         "end": 0,
                         "name": {
-                          "commentStart": 775,
+                          "commentStart": 0,
                           "end": 0,
                           "name": "bondAngle",
                           "start": 0,
@@ -556,7 +556,7 @@ description: Result of parsing bad_units_in_annotation.kcl
                       },
                       "operator": "/",
                       "right": {
-                        "commentStart": 787,
+                        "commentStart": 0,
                         "end": 0,
                         "raw": "2",
                         "start": 0,
@@ -574,10 +574,10 @@ description: Result of parsing bad_units_in_annotation.kcl
                   ],
                   "callee": {
                     "abs_path": false,
-                    "commentStart": 765,
+                    "commentStart": 0,
                     "end": 0,
                     "name": {
-                      "commentStart": 765,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "toRadians",
                       "start": 0,
@@ -587,7 +587,7 @@ description: Result of parsing bad_units_in_annotation.kcl
                     "start": 0,
                     "type": "Name"
                   },
-                  "commentStart": 765,
+                  "commentStart": 0,
                   "end": 0,
                   "start": 0,
                   "type": "CallExpression",
@@ -596,10 +596,10 @@ description: Result of parsing bad_units_in_annotation.kcl
               ],
               "callee": {
                 "abs_path": false,
-                "commentStart": 761,
+                "commentStart": 0,
                 "end": 0,
                 "name": {
-                  "commentStart": 761,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "cos",
                   "start": 0,
@@ -609,7 +609,7 @@ description: Result of parsing bad_units_in_annotation.kcl
                 "start": 0,
                 "type": "Name"
               },
-              "commentStart": 761,
+              "commentStart": 0,
               "end": 0,
               "start": 0,
               "type": "CallExpression",
@@ -634,26 +634,26 @@ description: Result of parsing bad_units_in_annotation.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 791,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 791,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 791,
+            "commentStart": 0,
             "end": 0,
             "name": "hydrogenOffsetY",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 809,
+            "commentStart": 0,
             "end": 0,
             "left": {
               "abs_path": false,
-              "commentStart": 809,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 809,
+                "commentStart": 0,
                 "end": 0,
                 "name": "oxygenHydrogenDistance",
                 "start": 0,
@@ -670,14 +670,14 @@ description: Result of parsing bad_units_in_annotation.kcl
                 {
                   "arguments": [
                     {
-                      "commentStart": 848,
+                      "commentStart": 0,
                       "end": 0,
                       "left": {
                         "abs_path": false,
-                        "commentStart": 848,
+                        "commentStart": 0,
                         "end": 0,
                         "name": {
-                          "commentStart": 848,
+                          "commentStart": 0,
                           "end": 0,
                           "name": "bondAngle",
                           "start": 0,
@@ -690,7 +690,7 @@ description: Result of parsing bad_units_in_annotation.kcl
                       },
                       "operator": "/",
                       "right": {
-                        "commentStart": 860,
+                        "commentStart": 0,
                         "end": 0,
                         "raw": "2",
                         "start": 0,
@@ -708,10 +708,10 @@ description: Result of parsing bad_units_in_annotation.kcl
                   ],
                   "callee": {
                     "abs_path": false,
-                    "commentStart": 838,
+                    "commentStart": 0,
                     "end": 0,
                     "name": {
-                      "commentStart": 838,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "toRadians",
                       "start": 0,
@@ -721,7 +721,7 @@ description: Result of parsing bad_units_in_annotation.kcl
                     "start": 0,
                     "type": "Name"
                   },
-                  "commentStart": 838,
+                  "commentStart": 0,
                   "end": 0,
                   "start": 0,
                   "type": "CallExpression",
@@ -730,10 +730,10 @@ description: Result of parsing bad_units_in_annotation.kcl
               ],
               "callee": {
                 "abs_path": false,
-                "commentStart": 834,
+                "commentStart": 0,
                 "end": 0,
                 "name": {
-                  "commentStart": 834,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "sin",
                   "start": 0,
@@ -743,7 +743,7 @@ description: Result of parsing bad_units_in_annotation.kcl
                 "start": 0,
                 "type": "Name"
               },
-              "commentStart": 834,
+              "commentStart": 0,
               "end": 0,
               "start": 0,
               "type": "CallExpression",
@@ -763,12 +763,12 @@ description: Result of parsing bad_units_in_annotation.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 863,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 894,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 894,
+            "commentStart": 0,
             "end": 0,
             "name": "hydrogenAtom1",
             "start": 0,
@@ -777,14 +777,14 @@ description: Result of parsing bad_units_in_annotation.kcl
           "init": {
             "arguments": [
               {
-                "commentStart": 921,
+                "commentStart": 0,
                 "elements": [
                   {
                     "abs_path": false,
-                    "commentStart": 922,
+                    "commentStart": 0,
                     "end": 0,
                     "name": {
-                      "commentStart": 922,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "hydrogenOffsetX",
                       "start": 0,
@@ -797,10 +797,10 @@ description: Result of parsing bad_units_in_annotation.kcl
                   },
                   {
                     "abs_path": false,
-                    "commentStart": 939,
+                    "commentStart": 0,
                     "end": 0,
                     "name": {
-                      "commentStart": 939,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "hydrogenOffsetY",
                       "start": 0,
@@ -819,10 +819,10 @@ description: Result of parsing bad_units_in_annotation.kcl
               },
               {
                 "abs_path": false,
-                "commentStart": 957,
+                "commentStart": 0,
                 "end": 0,
                 "name": {
-                  "commentStart": 957,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "hydrogenRadius",
                   "start": 0,
@@ -836,10 +836,10 @@ description: Result of parsing bad_units_in_annotation.kcl
             ],
             "callee": {
               "abs_path": false,
-              "commentStart": 910,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 910,
+                "commentStart": 0,
                 "end": 0,
                 "name": "createAtom",
                 "start": 0,
@@ -849,7 +849,7 @@ description: Result of parsing bad_units_in_annotation.kcl
               "start": 0,
               "type": "Name"
             },
-            "commentStart": 910,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "CallExpression",
@@ -870,12 +870,12 @@ description: Result of parsing bad_units_in_annotation.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 973,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 973,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 973,
+            "commentStart": 0,
             "end": 0,
             "name": "hydrogenAtom2",
             "start": 0,
@@ -884,15 +884,15 @@ description: Result of parsing bad_units_in_annotation.kcl
           "init": {
             "arguments": [
               {
-                "commentStart": 1000,
+                "commentStart": 0,
                 "elements": [
                   {
                     "argument": {
                       "abs_path": false,
-                      "commentStart": 1002,
+                      "commentStart": 0,
                       "end": 0,
                       "name": {
-                        "commentStart": 1002,
+                        "commentStart": 0,
                         "end": 0,
                         "name": "hydrogenOffsetX",
                         "start": 0,
@@ -903,7 +903,7 @@ description: Result of parsing bad_units_in_annotation.kcl
                       "type": "Name",
                       "type": "Name"
                     },
-                    "commentStart": 1001,
+                    "commentStart": 0,
                     "end": 0,
                     "operator": "-",
                     "start": 0,
@@ -912,10 +912,10 @@ description: Result of parsing bad_units_in_annotation.kcl
                   },
                   {
                     "abs_path": false,
-                    "commentStart": 1019,
+                    "commentStart": 0,
                     "end": 0,
                     "name": {
-                      "commentStart": 1019,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "hydrogenOffsetY",
                       "start": 0,
@@ -934,10 +934,10 @@ description: Result of parsing bad_units_in_annotation.kcl
               },
               {
                 "abs_path": false,
-                "commentStart": 1037,
+                "commentStart": 0,
                 "end": 0,
                 "name": {
-                  "commentStart": 1037,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "hydrogenRadius",
                   "start": 0,
@@ -951,10 +951,10 @@ description: Result of parsing bad_units_in_annotation.kcl
             ],
             "callee": {
               "abs_path": false,
-              "commentStart": 989,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 989,
+                "commentStart": 0,
                 "end": 0,
                 "name": "createAtom",
                 "start": 0,
@@ -964,7 +964,7 @@ description: Result of parsing bad_units_in_annotation.kcl
               "start": 0,
               "type": "Name"
             },
-            "commentStart": 989,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "CallExpression",
@@ -987,7 +987,7 @@ description: Result of parsing bad_units_in_annotation.kcl
         "commentStart": 0,
         "end": 0,
         "name": {
-          "commentStart": 1,
+          "commentStart": 0,
           "end": 0,
           "name": "settings",
           "start": 0,
@@ -995,10 +995,10 @@ description: Result of parsing bad_units_in_annotation.kcl
         },
         "properties": [
           {
-            "commentStart": 10,
+            "commentStart": 0,
             "end": 0,
             "key": {
-              "commentStart": 10,
+              "commentStart": 0,
               "end": 0,
               "name": "defaultLengthUnit",
               "start": 0,
@@ -1008,10 +1008,10 @@ description: Result of parsing bad_units_in_annotation.kcl
             "type": "ObjectProperty",
             "value": {
               "abs_path": false,
-              "commentStart": 30,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 30,
+                "commentStart": 0,
                 "end": 0,
                 "name": "nm",
                 "start": 0,
@@ -1032,7 +1032,7 @@ description: Result of parsing bad_units_in_annotation.kcl
       "nonCodeNodes": {
         "0": [
           {
-            "commentStart": 143,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -1045,7 +1045,7 @@ description: Result of parsing bad_units_in_annotation.kcl
         ],
         "1": [
           {
-            "commentStart": 206,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -1058,7 +1058,7 @@ description: Result of parsing bad_units_in_annotation.kcl
         ],
         "2": [
           {
-            "commentStart": 278,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -1071,7 +1071,7 @@ description: Result of parsing bad_units_in_annotation.kcl
         ],
         "3": [
           {
-            "commentStart": 354,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -1082,7 +1082,7 @@ description: Result of parsing bad_units_in_annotation.kcl
             }
           },
           {
-            "commentStart": 379,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -1094,7 +1094,7 @@ description: Result of parsing bad_units_in_annotation.kcl
       },
       "startNodes": [
         {
-          "commentStart": 33,
+          "commentStart": 0,
           "end": 0,
           "start": 0,
           "type": "NonCodeNode",
