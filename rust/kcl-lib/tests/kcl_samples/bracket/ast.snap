@@ -8,17 +8,17 @@ description: Result of parsing bracket.kcl
       {
         "commentStart": 0,
         "declaration": {
-          "commentStart": 423,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 423,
+            "commentStart": 0,
             "end": 0,
             "name": "sigmaAllow",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 436,
+            "commentStart": 0,
             "end": 0,
             "raw": "35000",
             "start": 0,
@@ -46,19 +46,19 @@ description: Result of parsing bracket.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 441,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 468,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 468,
+            "commentStart": 0,
             "end": 0,
             "name": "width",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 476,
+            "commentStart": 0,
             "end": 0,
             "raw": "6",
             "start": 0,
@@ -79,19 +79,19 @@ description: Result of parsing bracket.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 477,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 486,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 486,
+            "commentStart": 0,
             "end": 0,
             "name": "p",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 490,
+            "commentStart": 0,
             "end": 0,
             "raw": "300",
             "start": 0,
@@ -112,19 +112,19 @@ description: Result of parsing bracket.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 493,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 518,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 518,
+            "commentStart": 0,
             "end": 0,
             "name": "factorOfSafety",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 535,
+            "commentStart": 0,
             "end": 0,
             "raw": "1.2",
             "start": 0,
@@ -145,19 +145,19 @@ description: Result of parsing bracket.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 538,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 553,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 553,
+            "commentStart": 0,
             "end": 0,
             "name": "shelfMountL",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 567,
+            "commentStart": 0,
             "end": 0,
             "raw": "5",
             "start": 0,
@@ -178,19 +178,19 @@ description: Result of parsing bracket.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 568,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 579,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 579,
+            "commentStart": 0,
             "end": 0,
             "name": "wallMountL",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 592,
+            "commentStart": 0,
             "end": 0,
             "raw": "2",
             "start": 0,
@@ -211,19 +211,19 @@ description: Result of parsing bracket.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 593,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 604,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 604,
+            "commentStart": 0,
             "end": 0,
             "name": "shelfDepth",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 617,
+            "commentStart": 0,
             "end": 0,
             "raw": "12",
             "start": 0,
@@ -244,26 +244,26 @@ description: Result of parsing bracket.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 619,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 665,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 665,
+            "commentStart": 0,
             "end": 0,
             "name": "moment",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 674,
+            "commentStart": 0,
             "end": 0,
             "left": {
               "abs_path": false,
-              "commentStart": 674,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 674,
+                "commentStart": 0,
                 "end": 0,
                 "name": "shelfDepth",
                 "start": 0,
@@ -277,10 +277,10 @@ description: Result of parsing bracket.kcl
             "operator": "*",
             "right": {
               "abs_path": false,
-              "commentStart": 687,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 687,
+                "commentStart": 0,
                 "end": 0,
                 "name": "p",
                 "start": 0,
@@ -305,12 +305,12 @@ description: Result of parsing bracket.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 688,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 816,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 816,
+            "commentStart": 0,
             "end": 0,
             "name": "thickness",
             "start": 0,
@@ -319,20 +319,20 @@ description: Result of parsing bracket.kcl
           "init": {
             "arguments": [
               {
-                "commentStart": 833,
+                "commentStart": 0,
                 "end": 0,
                 "left": {
-                  "commentStart": 833,
+                  "commentStart": 0,
                   "end": 0,
                   "left": {
-                    "commentStart": 833,
+                    "commentStart": 0,
                     "end": 0,
                     "left": {
                       "abs_path": false,
-                      "commentStart": 833,
+                      "commentStart": 0,
                       "end": 0,
                       "name": {
-                        "commentStart": 833,
+                        "commentStart": 0,
                         "end": 0,
                         "name": "moment",
                         "start": 0,
@@ -346,10 +346,10 @@ description: Result of parsing bracket.kcl
                     "operator": "*",
                     "right": {
                       "abs_path": false,
-                      "commentStart": 842,
+                      "commentStart": 0,
                       "end": 0,
                       "name": {
-                        "commentStart": 842,
+                        "commentStart": 0,
                         "end": 0,
                         "name": "factorOfSafety",
                         "start": 0,
@@ -366,7 +366,7 @@ description: Result of parsing bracket.kcl
                   },
                   "operator": "*",
                   "right": {
-                    "commentStart": 859,
+                    "commentStart": 0,
                     "end": 0,
                     "raw": "6",
                     "start": 0,
@@ -383,14 +383,14 @@ description: Result of parsing bracket.kcl
                 },
                 "operator": "/",
                 "right": {
-                  "commentStart": 864,
+                  "commentStart": 0,
                   "end": 0,
                   "left": {
                     "abs_path": false,
-                    "commentStart": 864,
+                    "commentStart": 0,
                     "end": 0,
                     "name": {
-                      "commentStart": 864,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "sigmaAllow",
                       "start": 0,
@@ -404,10 +404,10 @@ description: Result of parsing bracket.kcl
                   "operator": "*",
                   "right": {
                     "abs_path": false,
-                    "commentStart": 877,
+                    "commentStart": 0,
                     "end": 0,
                     "name": {
-                      "commentStart": 877,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "width",
                       "start": 0,
@@ -429,10 +429,10 @@ description: Result of parsing bracket.kcl
             ],
             "callee": {
               "abs_path": false,
-              "commentStart": 828,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 828,
+                "commentStart": 0,
                 "end": 0,
                 "name": "sqrt",
                 "start": 0,
@@ -442,7 +442,7 @@ description: Result of parsing bracket.kcl
               "start": 0,
               "type": "Name"
             },
-            "commentStart": 828,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "CallExpression",
@@ -461,19 +461,19 @@ description: Result of parsing bracket.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 884,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 960,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 960,
+            "commentStart": 0,
             "end": 0,
             "name": "filletRadius",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 975,
+            "commentStart": 0,
             "end": 0,
             "raw": ".25",
             "start": 0,
@@ -494,26 +494,26 @@ description: Result of parsing bracket.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 979,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 979,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 979,
+            "commentStart": 0,
             "end": 0,
             "name": "extFilletRadius",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 997,
+            "commentStart": 0,
             "end": 0,
             "left": {
               "abs_path": false,
-              "commentStart": 997,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 997,
+                "commentStart": 0,
                 "end": 0,
                 "name": "filletRadius",
                 "start": 0,
@@ -527,10 +527,10 @@ description: Result of parsing bracket.kcl
             "operator": "+",
             "right": {
               "abs_path": false,
-              "commentStart": 1012,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 1012,
+                "commentStart": 0,
                 "end": 0,
                 "name": "thickness",
                 "start": 0,
@@ -555,19 +555,19 @@ description: Result of parsing bracket.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 1022,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 1022,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 1022,
+            "commentStart": 0,
             "end": 0,
             "name": "mountingHoleDiameter",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 1045,
+            "commentStart": 0,
             "end": 0,
             "raw": "0.5",
             "start": 0,
@@ -588,12 +588,12 @@ description: Result of parsing bracket.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 1048,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 1050,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 1050,
+            "commentStart": 0,
             "end": 0,
             "name": "sketch001",
             "start": 0,
@@ -605,10 +605,10 @@ description: Result of parsing bracket.kcl
                 "arguments": [
                   {
                     "abs_path": false,
-                    "commentStart": 1076,
+                    "commentStart": 0,
                     "end": 0,
                     "name": {
-                      "commentStart": 1076,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "XZ",
                       "start": 0,
@@ -622,10 +622,10 @@ description: Result of parsing bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1062,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1062,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "startSketchOn",
                     "start": 0,
@@ -635,7 +635,7 @@ description: Result of parsing bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1062,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -644,10 +644,10 @@ description: Result of parsing bracket.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 1100,
+                    "commentStart": 0,
                     "elements": [
                       {
-                        "commentStart": 1101,
+                        "commentStart": 0,
                         "end": 0,
                         "raw": "0",
                         "start": 0,
@@ -659,7 +659,7 @@ description: Result of parsing bracket.kcl
                         }
                       },
                       {
-                        "commentStart": 1104,
+                        "commentStart": 0,
                         "end": 0,
                         "raw": "0",
                         "start": 0,
@@ -677,7 +677,7 @@ description: Result of parsing bracket.kcl
                     "type": "ArrayExpression"
                   },
                   {
-                    "commentStart": 1108,
+                    "commentStart": 0,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -686,10 +686,10 @@ description: Result of parsing bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1085,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1085,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "startProfileAt",
                     "start": 0,
@@ -699,7 +699,7 @@ description: Result of parsing bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1085,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -710,21 +710,21 @@ description: Result of parsing bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1122,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1131,
+                      "commentStart": 0,
                       "end": 0,
                       "left": {
                         "abs_path": false,
-                        "commentStart": 1131,
+                        "commentStart": 0,
                         "end": 0,
                         "name": {
-                          "commentStart": 1131,
+                          "commentStart": 0,
                           "end": 0,
                           "name": "shelfMountL",
                           "start": 0,
@@ -738,10 +738,10 @@ description: Result of parsing bracket.kcl
                       "operator": "-",
                       "right": {
                         "abs_path": false,
-                        "commentStart": 1145,
+                        "commentStart": 0,
                         "end": 0,
                         "name": {
-                          "commentStart": 1145,
+                          "commentStart": 0,
                           "end": 0,
                           "name": "thickness",
                           "start": 0,
@@ -760,14 +760,14 @@ description: Result of parsing bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1156,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1162,
+                      "commentStart": 0,
                       "end": 0,
                       "start": 0,
                       "type": "TagDeclarator",
@@ -778,10 +778,10 @@ description: Result of parsing bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1116,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1116,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "xLine",
                     "start": 0,
@@ -791,7 +791,7 @@ description: Result of parsing bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1116,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -803,7 +803,7 @@ description: Result of parsing bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1181,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "length",
                       "start": 0,
@@ -811,10 +811,10 @@ description: Result of parsing bracket.kcl
                     },
                     "arg": {
                       "abs_path": false,
-                      "commentStart": 1190,
+                      "commentStart": 0,
                       "end": 0,
                       "name": {
-                        "commentStart": 1190,
+                        "commentStart": 0,
                         "end": 0,
                         "name": "thickness",
                         "start": 0,
@@ -829,14 +829,14 @@ description: Result of parsing bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1201,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1207,
+                      "commentStart": 0,
                       "end": 0,
                       "start": 0,
                       "type": "TagDeclarator",
@@ -847,10 +847,10 @@ description: Result of parsing bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1175,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1175,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "yLine",
                     "start": 0,
@@ -860,7 +860,7 @@ description: Result of parsing bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1175,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -872,7 +872,7 @@ description: Result of parsing bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1226,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "length",
                       "start": 0,
@@ -881,10 +881,10 @@ description: Result of parsing bracket.kcl
                     "arg": {
                       "argument": {
                         "abs_path": false,
-                        "commentStart": 1236,
+                        "commentStart": 0,
                         "end": 0,
                         "name": {
-                          "commentStart": 1236,
+                          "commentStart": 0,
                           "end": 0,
                           "name": "shelfMountL",
                           "start": 0,
@@ -895,7 +895,7 @@ description: Result of parsing bracket.kcl
                         "type": "Name",
                         "type": "Name"
                       },
-                      "commentStart": 1235,
+                      "commentStart": 0,
                       "end": 0,
                       "operator": "-",
                       "start": 0,
@@ -906,14 +906,14 @@ description: Result of parsing bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1249,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1255,
+                      "commentStart": 0,
                       "end": 0,
                       "start": 0,
                       "type": "TagDeclarator",
@@ -924,10 +924,10 @@ description: Result of parsing bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1220,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1220,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "xLine",
                     "start": 0,
@@ -937,7 +937,7 @@ description: Result of parsing bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1220,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -949,7 +949,7 @@ description: Result of parsing bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1274,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "length",
                       "start": 0,
@@ -958,10 +958,10 @@ description: Result of parsing bracket.kcl
                     "arg": {
                       "argument": {
                         "abs_path": false,
-                        "commentStart": 1284,
+                        "commentStart": 0,
                         "end": 0,
                         "name": {
-                          "commentStart": 1284,
+                          "commentStart": 0,
                           "end": 0,
                           "name": "wallMountL",
                           "start": 0,
@@ -972,7 +972,7 @@ description: Result of parsing bracket.kcl
                         "type": "Name",
                         "type": "Name"
                       },
-                      "commentStart": 1283,
+                      "commentStart": 0,
                       "end": 0,
                       "operator": "-",
                       "start": 0,
@@ -983,14 +983,14 @@ description: Result of parsing bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1296,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1302,
+                      "commentStart": 0,
                       "end": 0,
                       "start": 0,
                       "type": "TagDeclarator",
@@ -1001,10 +1001,10 @@ description: Result of parsing bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1268,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1268,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "yLine",
                     "start": 0,
@@ -1014,7 +1014,7 @@ description: Result of parsing bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1268,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1026,7 +1026,7 @@ description: Result of parsing bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1321,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "length",
                       "start": 0,
@@ -1034,10 +1034,10 @@ description: Result of parsing bracket.kcl
                     },
                     "arg": {
                       "abs_path": false,
-                      "commentStart": 1330,
+                      "commentStart": 0,
                       "end": 0,
                       "name": {
-                        "commentStart": 1330,
+                        "commentStart": 0,
                         "end": 0,
                         "name": "thickness",
                         "start": 0,
@@ -1052,14 +1052,14 @@ description: Result of parsing bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1341,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1347,
+                      "commentStart": 0,
                       "end": 0,
                       "start": 0,
                       "type": "TagDeclarator",
@@ -1070,10 +1070,10 @@ description: Result of parsing bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1315,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1315,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "xLine",
                     "start": 0,
@@ -1083,7 +1083,7 @@ description: Result of parsing bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1315,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1095,19 +1095,19 @@ description: Result of parsing bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1365,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "endAbsolute",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1379,
+                      "commentStart": 0,
                       "elements": [
                         {
                           "arguments": [
                             {
-                              "commentStart": 1394,
+                              "commentStart": 0,
                               "end": 0,
                               "start": 0,
                               "type": "PipeSubstitution",
@@ -1116,10 +1116,10 @@ description: Result of parsing bracket.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 1380,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 1380,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "profileStartX",
                               "start": 0,
@@ -1129,7 +1129,7 @@ description: Result of parsing bracket.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 1380,
+                          "commentStart": 0,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -1138,7 +1138,7 @@ description: Result of parsing bracket.kcl
                         {
                           "arguments": [
                             {
-                              "commentStart": 1412,
+                              "commentStart": 0,
                               "end": 0,
                               "start": 0,
                               "type": "PipeSubstitution",
@@ -1147,10 +1147,10 @@ description: Result of parsing bracket.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 1398,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 1398,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "profileStartY",
                               "start": 0,
@@ -1160,7 +1160,7 @@ description: Result of parsing bracket.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 1398,
+                          "commentStart": 0,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -1176,14 +1176,14 @@ description: Result of parsing bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1417,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1423,
+                      "commentStart": 0,
                       "end": 0,
                       "start": 0,
                       "type": "TagDeclarator",
@@ -1194,10 +1194,10 @@ description: Result of parsing bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1360,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1360,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "line",
                     "start": 0,
@@ -1207,7 +1207,7 @@ description: Result of parsing bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1360,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1218,10 +1218,10 @@ description: Result of parsing bracket.kcl
                 "arguments": [],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1436,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1436,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "close",
                     "start": 0,
@@ -1231,7 +1231,7 @@ description: Result of parsing bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1436,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -1242,7 +1242,7 @@ description: Result of parsing bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1460,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "length",
                       "start": 0,
@@ -1250,10 +1250,10 @@ description: Result of parsing bracket.kcl
                     },
                     "arg": {
                       "abs_path": false,
-                      "commentStart": 1469,
+                      "commentStart": 0,
                       "end": 0,
                       "name": {
-                        "commentStart": 1469,
+                        "commentStart": 0,
                         "end": 0,
                         "name": "width",
                         "start": 0,
@@ -1268,10 +1268,10 @@ description: Result of parsing bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1449,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1449,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "extrude",
                     "start": 0,
@@ -1281,13 +1281,13 @@ description: Result of parsing bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1449,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": {
-                  "commentStart": 1457,
+                  "commentStart": 0,
                   "end": 0,
                   "start": 0,
                   "type": "PipeSubstitution",
@@ -1299,7 +1299,7 @@ description: Result of parsing bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1488,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "radius",
                       "start": 0,
@@ -1307,10 +1307,10 @@ description: Result of parsing bracket.kcl
                     },
                     "arg": {
                       "abs_path": false,
-                      "commentStart": 1497,
+                      "commentStart": 0,
                       "end": 0,
                       "name": {
-                        "commentStart": 1497,
+                        "commentStart": 0,
                         "end": 0,
                         "name": "extFilletRadius",
                         "start": 0,
@@ -1325,23 +1325,23 @@ description: Result of parsing bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1514,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "tags",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1521,
+                      "commentStart": 0,
                       "elements": [
                         {
                           "arguments": [
                             {
                               "abs_path": false,
-                              "commentStart": 1542,
+                              "commentStart": 0,
                               "end": 0,
                               "name": {
-                                "commentStart": 1542,
+                                "commentStart": 0,
                                 "end": 0,
                                 "name": "seg03",
                                 "start": 0,
@@ -1355,10 +1355,10 @@ description: Result of parsing bracket.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 1522,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 1522,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "getNextAdjacentEdge",
                               "start": 0,
@@ -1368,7 +1368,7 @@ description: Result of parsing bracket.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 1522,
+                          "commentStart": 0,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -1384,10 +1384,10 @@ description: Result of parsing bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1481,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1481,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "fillet",
                     "start": 0,
@@ -1397,7 +1397,7 @@ description: Result of parsing bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1481,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1409,7 +1409,7 @@ description: Result of parsing bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1563,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "radius",
                       "start": 0,
@@ -1417,10 +1417,10 @@ description: Result of parsing bracket.kcl
                     },
                     "arg": {
                       "abs_path": false,
-                      "commentStart": 1572,
+                      "commentStart": 0,
                       "end": 0,
                       "name": {
-                        "commentStart": 1572,
+                        "commentStart": 0,
                         "end": 0,
                         "name": "filletRadius",
                         "start": 0,
@@ -1435,23 +1435,23 @@ description: Result of parsing bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1586,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "tags",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1593,
+                      "commentStart": 0,
                       "elements": [
                         {
                           "arguments": [
                             {
                               "abs_path": false,
-                              "commentStart": 1614,
+                              "commentStart": 0,
                               "end": 0,
                               "name": {
-                                "commentStart": 1614,
+                                "commentStart": 0,
                                 "end": 0,
                                 "name": "seg06",
                                 "start": 0,
@@ -1465,10 +1465,10 @@ description: Result of parsing bracket.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 1594,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 1594,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "getNextAdjacentEdge",
                               "start": 0,
@@ -1478,7 +1478,7 @@ description: Result of parsing bracket.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 1594,
+                          "commentStart": 0,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -1494,10 +1494,10 @@ description: Result of parsing bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1556,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1556,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "fillet",
                     "start": 0,
@@ -1507,7 +1507,7 @@ description: Result of parsing bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1556,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1519,7 +1519,7 @@ description: Result of parsing bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1635,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "radius",
                       "start": 0,
@@ -1527,10 +1527,10 @@ description: Result of parsing bracket.kcl
                     },
                     "arg": {
                       "abs_path": false,
-                      "commentStart": 1644,
+                      "commentStart": 0,
                       "end": 0,
                       "name": {
-                        "commentStart": 1644,
+                        "commentStart": 0,
                         "end": 0,
                         "name": "filletRadius",
                         "start": 0,
@@ -1545,21 +1545,21 @@ description: Result of parsing bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1658,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "tags",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1665,
+                      "commentStart": 0,
                       "elements": [
                         {
                           "abs_path": false,
-                          "commentStart": 1666,
+                          "commentStart": 0,
                           "end": 0,
                           "name": {
-                            "commentStart": 1666,
+                            "commentStart": 0,
                             "end": 0,
                             "name": "seg02",
                             "start": 0,
@@ -1574,10 +1574,10 @@ description: Result of parsing bracket.kcl
                           "arguments": [
                             {
                               "abs_path": false,
-                              "commentStart": 1689,
+                              "commentStart": 0,
                               "end": 0,
                               "name": {
-                                "commentStart": 1689,
+                                "commentStart": 0,
                                 "end": 0,
                                 "name": "seg02",
                                 "start": 0,
@@ -1591,10 +1591,10 @@ description: Result of parsing bracket.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 1673,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 1673,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "getOppositeEdge",
                               "start": 0,
@@ -1604,7 +1604,7 @@ description: Result of parsing bracket.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 1673,
+                          "commentStart": 0,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -1620,10 +1620,10 @@ description: Result of parsing bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1628,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1628,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "fillet",
                     "start": 0,
@@ -1633,7 +1633,7 @@ description: Result of parsing bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1628,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1645,7 +1645,7 @@ description: Result of parsing bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1710,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "radius",
                       "start": 0,
@@ -1653,10 +1653,10 @@ description: Result of parsing bracket.kcl
                     },
                     "arg": {
                       "abs_path": false,
-                      "commentStart": 1719,
+                      "commentStart": 0,
                       "end": 0,
                       "name": {
-                        "commentStart": 1719,
+                        "commentStart": 0,
                         "end": 0,
                         "name": "filletRadius",
                         "start": 0,
@@ -1671,21 +1671,21 @@ description: Result of parsing bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1733,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "tags",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1740,
+                      "commentStart": 0,
                       "elements": [
                         {
                           "abs_path": false,
-                          "commentStart": 1741,
+                          "commentStart": 0,
                           "end": 0,
                           "name": {
-                            "commentStart": 1741,
+                            "commentStart": 0,
                             "end": 0,
                             "name": "seg05",
                             "start": 0,
@@ -1700,10 +1700,10 @@ description: Result of parsing bracket.kcl
                           "arguments": [
                             {
                               "abs_path": false,
-                              "commentStart": 1764,
+                              "commentStart": 0,
                               "end": 0,
                               "name": {
-                                "commentStart": 1764,
+                                "commentStart": 0,
                                 "end": 0,
                                 "name": "seg05",
                                 "start": 0,
@@ -1717,10 +1717,10 @@ description: Result of parsing bracket.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 1748,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 1748,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "getOppositeEdge",
                               "start": 0,
@@ -1730,7 +1730,7 @@ description: Result of parsing bracket.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 1748,
+                          "commentStart": 0,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -1746,10 +1746,10 @@ description: Result of parsing bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1703,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1703,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "fillet",
                     "start": 0,
@@ -1759,7 +1759,7 @@ description: Result of parsing bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1703,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1767,7 +1767,7 @@ description: Result of parsing bracket.kcl
                 "unlabeled": null
               }
             ],
-            "commentStart": 1062,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "PipeExpression",
@@ -1783,12 +1783,12 @@ description: Result of parsing bracket.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 1772,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 1774,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 1774,
+            "commentStart": 0,
             "end": 0,
             "name": "sketch002",
             "start": 0,
@@ -1800,10 +1800,10 @@ description: Result of parsing bracket.kcl
                 "arguments": [
                   {
                     "abs_path": false,
-                    "commentStart": 1800,
+                    "commentStart": 0,
                     "end": 0,
                     "name": {
-                      "commentStart": 1800,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "sketch001",
                       "start": 0,
@@ -1816,10 +1816,10 @@ description: Result of parsing bracket.kcl
                   },
                   {
                     "abs_path": false,
-                    "commentStart": 1811,
+                    "commentStart": 0,
                     "end": 0,
                     "name": {
-                      "commentStart": 1811,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "seg03",
                       "start": 0,
@@ -1833,10 +1833,10 @@ description: Result of parsing bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1786,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1786,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "startSketchOn",
                     "start": 0,
@@ -1846,7 +1846,7 @@ description: Result of parsing bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1786,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -1857,18 +1857,18 @@ description: Result of parsing bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1830,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "center",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1839,
+                      "commentStart": 0,
                       "elements": [
                         {
                           "argument": {
-                            "commentStart": 1841,
+                            "commentStart": 0,
                             "end": 0,
                             "raw": "1.25",
                             "start": 0,
@@ -1879,7 +1879,7 @@ description: Result of parsing bracket.kcl
                               "suffix": "None"
                             }
                           },
-                          "commentStart": 1840,
+                          "commentStart": 0,
                           "end": 0,
                           "operator": "-",
                           "start": 0,
@@ -1887,7 +1887,7 @@ description: Result of parsing bracket.kcl
                           "type": "UnaryExpression"
                         },
                         {
-                          "commentStart": 1847,
+                          "commentStart": 0,
                           "end": 0,
                           "raw": "1",
                           "start": 0,
@@ -1908,21 +1908,21 @@ description: Result of parsing bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1851,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "radius",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1860,
+                      "commentStart": 0,
                       "end": 0,
                       "left": {
                         "abs_path": false,
-                        "commentStart": 1860,
+                        "commentStart": 0,
                         "end": 0,
                         "name": {
-                          "commentStart": 1860,
+                          "commentStart": 0,
                           "end": 0,
                           "name": "mountingHoleDiameter",
                           "start": 0,
@@ -1935,7 +1935,7 @@ description: Result of parsing bracket.kcl
                       },
                       "operator": "/",
                       "right": {
-                        "commentStart": 1883,
+                        "commentStart": 0,
                         "end": 0,
                         "raw": "2",
                         "start": 0,
@@ -1954,10 +1954,10 @@ description: Result of parsing bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1823,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1823,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "circle",
                     "start": 0,
@@ -1967,7 +1967,7 @@ description: Result of parsing bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1823,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1979,14 +1979,14 @@ description: Result of parsing bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1907,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "instances",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1919,
+                      "commentStart": 0,
                       "end": 0,
                       "raw": "2",
                       "start": 0,
@@ -2001,14 +2001,14 @@ description: Result of parsing bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1922,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "distance",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1933,
+                      "commentStart": 0,
                       "end": 0,
                       "raw": "2.5",
                       "start": 0,
@@ -2023,18 +2023,18 @@ description: Result of parsing bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1938,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "axis",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1945,
+                      "commentStart": 0,
                       "elements": [
                         {
                           "argument": {
-                            "commentStart": 1947,
+                            "commentStart": 0,
                             "end": 0,
                             "raw": "1",
                             "start": 0,
@@ -2045,7 +2045,7 @@ description: Result of parsing bracket.kcl
                               "suffix": "None"
                             }
                           },
-                          "commentStart": 1946,
+                          "commentStart": 0,
                           "end": 0,
                           "operator": "-",
                           "start": 0,
@@ -2053,7 +2053,7 @@ description: Result of parsing bracket.kcl
                           "type": "UnaryExpression"
                         },
                         {
-                          "commentStart": 1950,
+                          "commentStart": 0,
                           "end": 0,
                           "raw": "0",
                           "start": 0,
@@ -2074,10 +2074,10 @@ description: Result of parsing bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1891,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1891,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "patternLinear2d",
                     "start": 0,
@@ -2087,7 +2087,7 @@ description: Result of parsing bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1891,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -2099,14 +2099,14 @@ description: Result of parsing bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1975,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "instances",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1987,
+                      "commentStart": 0,
                       "end": 0,
                       "raw": "2",
                       "start": 0,
@@ -2121,14 +2121,14 @@ description: Result of parsing bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1990,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "distance",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 2001,
+                      "commentStart": 0,
                       "end": 0,
                       "raw": "4",
                       "start": 0,
@@ -2143,17 +2143,17 @@ description: Result of parsing bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 2004,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "axis",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 2011,
+                      "commentStart": 0,
                       "elements": [
                         {
-                          "commentStart": 2012,
+                          "commentStart": 0,
                           "end": 0,
                           "raw": "0",
                           "start": 0,
@@ -2165,7 +2165,7 @@ description: Result of parsing bracket.kcl
                           }
                         },
                         {
-                          "commentStart": 2015,
+                          "commentStart": 0,
                           "end": 0,
                           "raw": "1",
                           "start": 0,
@@ -2186,10 +2186,10 @@ description: Result of parsing bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1959,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1959,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "patternLinear2d",
                     "start": 0,
@@ -2199,7 +2199,7 @@ description: Result of parsing bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1959,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -2211,22 +2211,22 @@ description: Result of parsing bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 2035,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 2044,
+                      "commentStart": 0,
                       "end": 0,
                       "left": {
                         "argument": {
                           "abs_path": false,
-                          "commentStart": 2045,
+                          "commentStart": 0,
                           "end": 0,
                           "name": {
-                            "commentStart": 2045,
+                            "commentStart": 0,
                             "end": 0,
                             "name": "thickness",
                             "start": 0,
@@ -2237,7 +2237,7 @@ description: Result of parsing bracket.kcl
                           "type": "Name",
                           "type": "Name"
                         },
-                        "commentStart": 2044,
+                        "commentStart": 0,
                         "end": 0,
                         "operator": "-",
                         "start": 0,
@@ -2246,7 +2246,7 @@ description: Result of parsing bracket.kcl
                       },
                       "operator": "-",
                       "right": {
-                        "commentStart": 2057,
+                        "commentStart": 0,
                         "end": 0,
                         "raw": ".01",
                         "start": 0,
@@ -2265,10 +2265,10 @@ description: Result of parsing bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 2024,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 2024,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "extrude",
                     "start": 0,
@@ -2278,13 +2278,13 @@ description: Result of parsing bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 2024,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": {
-                  "commentStart": 2032,
+                  "commentStart": 0,
                   "end": 0,
                   "start": 0,
                   "type": "PipeSubstitution",
@@ -2292,7 +2292,7 @@ description: Result of parsing bracket.kcl
                 }
               }
             ],
-            "commentStart": 1786,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "PipeExpression",
@@ -2308,12 +2308,12 @@ description: Result of parsing bracket.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 2061,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 2063,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 2063,
+            "commentStart": 0,
             "end": 0,
             "name": "sketch003",
             "start": 0,
@@ -2325,10 +2325,10 @@ description: Result of parsing bracket.kcl
                 "arguments": [
                   {
                     "abs_path": false,
-                    "commentStart": 2089,
+                    "commentStart": 0,
                     "end": 0,
                     "name": {
-                      "commentStart": 2089,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "sketch001",
                       "start": 0,
@@ -2341,10 +2341,10 @@ description: Result of parsing bracket.kcl
                   },
                   {
                     "abs_path": false,
-                    "commentStart": 2100,
+                    "commentStart": 0,
                     "end": 0,
                     "name": {
-                      "commentStart": 2100,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "seg04",
                       "start": 0,
@@ -2358,10 +2358,10 @@ description: Result of parsing bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 2075,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 2075,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "startSketchOn",
                     "start": 0,
@@ -2371,7 +2371,7 @@ description: Result of parsing bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 2075,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -2382,17 +2382,17 @@ description: Result of parsing bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 2119,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "center",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 2128,
+                      "commentStart": 0,
                       "elements": [
                         {
-                          "commentStart": 2129,
+                          "commentStart": 0,
                           "end": 0,
                           "raw": "1",
                           "start": 0,
@@ -2405,7 +2405,7 @@ description: Result of parsing bracket.kcl
                         },
                         {
                           "argument": {
-                            "commentStart": 2133,
+                            "commentStart": 0,
                             "end": 0,
                             "raw": "1",
                             "start": 0,
@@ -2416,7 +2416,7 @@ description: Result of parsing bracket.kcl
                               "suffix": "None"
                             }
                           },
-                          "commentStart": 2132,
+                          "commentStart": 0,
                           "end": 0,
                           "operator": "-",
                           "start": 0,
@@ -2433,21 +2433,21 @@ description: Result of parsing bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 2137,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "radius",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 2146,
+                      "commentStart": 0,
                       "end": 0,
                       "left": {
                         "abs_path": false,
-                        "commentStart": 2146,
+                        "commentStart": 0,
                         "end": 0,
                         "name": {
-                          "commentStart": 2146,
+                          "commentStart": 0,
                           "end": 0,
                           "name": "mountingHoleDiameter",
                           "start": 0,
@@ -2460,7 +2460,7 @@ description: Result of parsing bracket.kcl
                       },
                       "operator": "/",
                       "right": {
-                        "commentStart": 2169,
+                        "commentStart": 0,
                         "end": 0,
                         "raw": "2",
                         "start": 0,
@@ -2479,10 +2479,10 @@ description: Result of parsing bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 2112,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 2112,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "circle",
                     "start": 0,
@@ -2492,7 +2492,7 @@ description: Result of parsing bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 2112,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -2504,14 +2504,14 @@ description: Result of parsing bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 2193,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "instances",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 2205,
+                      "commentStart": 0,
                       "end": 0,
                       "raw": "2",
                       "start": 0,
@@ -2526,14 +2526,14 @@ description: Result of parsing bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 2208,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "distance",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 2219,
+                      "commentStart": 0,
                       "end": 0,
                       "raw": "4",
                       "start": 0,
@@ -2548,17 +2548,17 @@ description: Result of parsing bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 2222,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "axis",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 2229,
+                      "commentStart": 0,
                       "elements": [
                         {
-                          "commentStart": 2230,
+                          "commentStart": 0,
                           "end": 0,
                           "raw": "1",
                           "start": 0,
@@ -2570,7 +2570,7 @@ description: Result of parsing bracket.kcl
                           }
                         },
                         {
-                          "commentStart": 2233,
+                          "commentStart": 0,
                           "end": 0,
                           "raw": "0",
                           "start": 0,
@@ -2591,10 +2591,10 @@ description: Result of parsing bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 2177,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 2177,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "patternLinear2d",
                     "start": 0,
@@ -2604,7 +2604,7 @@ description: Result of parsing bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 2177,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -2616,22 +2616,22 @@ description: Result of parsing bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 2253,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 2262,
+                      "commentStart": 0,
                       "end": 0,
                       "left": {
                         "argument": {
                           "abs_path": false,
-                          "commentStart": 2263,
+                          "commentStart": 0,
                           "end": 0,
                           "name": {
-                            "commentStart": 2263,
+                            "commentStart": 0,
                             "end": 0,
                             "name": "thickness",
                             "start": 0,
@@ -2642,7 +2642,7 @@ description: Result of parsing bracket.kcl
                           "type": "Name",
                           "type": "Name"
                         },
-                        "commentStart": 2262,
+                        "commentStart": 0,
                         "end": 0,
                         "operator": "-",
                         "start": 0,
@@ -2651,7 +2651,7 @@ description: Result of parsing bracket.kcl
                       },
                       "operator": "-",
                       "right": {
-                        "commentStart": 2275,
+                        "commentStart": 0,
                         "end": 0,
                         "raw": "0.1",
                         "start": 0,
@@ -2670,10 +2670,10 @@ description: Result of parsing bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 2242,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 2242,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "extrude",
                     "start": 0,
@@ -2683,13 +2683,13 @@ description: Result of parsing bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 2242,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": {
-                  "commentStart": 2250,
+                  "commentStart": 0,
                   "end": 0,
                   "start": 0,
                   "type": "PipeSubstitution",
@@ -2697,7 +2697,7 @@ description: Result of parsing bracket.kcl
                 }
               }
             ],
-            "commentStart": 2075,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "PipeExpression",
@@ -2719,7 +2719,7 @@ description: Result of parsing bracket.kcl
       "nonCodeNodes": {
         "0": [
           {
-            "commentStart": 441,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -2732,7 +2732,7 @@ description: Result of parsing bracket.kcl
         ],
         "1": [
           {
-            "commentStart": 477,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -2745,7 +2745,7 @@ description: Result of parsing bracket.kcl
         ],
         "2": [
           {
-            "commentStart": 493,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -2758,7 +2758,7 @@ description: Result of parsing bracket.kcl
         ],
         "3": [
           {
-            "commentStart": 538,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -2771,7 +2771,7 @@ description: Result of parsing bracket.kcl
         ],
         "4": [
           {
-            "commentStart": 568,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -2784,7 +2784,7 @@ description: Result of parsing bracket.kcl
         ],
         "5": [
           {
-            "commentStart": 593,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -2797,7 +2797,7 @@ description: Result of parsing bracket.kcl
         ],
         "6": [
           {
-            "commentStart": 619,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -2810,7 +2810,7 @@ description: Result of parsing bracket.kcl
         ],
         "7": [
           {
-            "commentStart": 688,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -2821,7 +2821,7 @@ description: Result of parsing bracket.kcl
             }
           },
           {
-            "commentStart": 770,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -2832,7 +2832,7 @@ description: Result of parsing bracket.kcl
         ],
         "8": [
           {
-            "commentStart": 884,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -2843,7 +2843,7 @@ description: Result of parsing bracket.kcl
             }
           },
           {
-            "commentStart": 957,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -2854,7 +2854,7 @@ description: Result of parsing bracket.kcl
         ],
         "11": [
           {
-            "commentStart": 1048,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -2865,7 +2865,7 @@ description: Result of parsing bracket.kcl
         ],
         "12": [
           {
-            "commentStart": 1772,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -2876,7 +2876,7 @@ description: Result of parsing bracket.kcl
         ],
         "13": [
           {
-            "commentStart": 2061,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",

@@ -8,8 +8,8 @@ import { expect, test } from '@e2e/playwright/zoo-test'
 
 test.describe('Testing in-app sample loading', () => {
   /**
-   * Note this test implicitly depends on the KCL sample "a-parametric-bearing-pillow-block",
-   * its title, and its units settings. https://github.com/KittyCAD/kcl-samples/blob/main/a-parametric-bearing-pillow-block/main.kcl
+   * Note this test implicitly depends on the KCL sample "parametric-bearing-pillow-block",
+   * its title, and its units settings. https://github.com/KittyCAD/kcl-samples/blob/main/parametric-bearing-pillow-block/main.kcl
    */
   test('Web: should overwrite current code, cannot create new file', async ({
     editor,
@@ -29,8 +29,8 @@ test.describe('Testing in-app sample loading', () => {
 
     // Locators and constants
     const newSample = {
-      file: 'a-parametric-bearing-pillow-block' + FILE_EXT,
-      title: 'A Parametric Bearing Pillow Block',
+      file: 'parametric-bearing-pillow-block' + FILE_EXT,
+      title: 'Parametric Bearing Pillow Block',
     }
     const commandBarButton = page.getByRole('button', { name: 'Commands' })
     const samplesCommandOption = page.getByRole('option', {
@@ -72,7 +72,7 @@ test.describe('Testing in-app sample loading', () => {
 
   /**
    * Note this test implicitly depends on the KCL samples:
-   * "a-parametric-bearing-pillow-block": https://github.com/KittyCAD/kcl-samples/blob/main/a-parametric-bearing-pillow-block/main.kcl
+   * "parametric-bearing-pillow-block": https://github.com/KittyCAD/kcl-samples/blob/main/parametric-bearing-pillow-block/main.kcl
    * "gear-rack": https://github.com/KittyCAD/kcl-samples/blob/main/gear-rack/main.kcl
    */
   test(
@@ -90,8 +90,8 @@ test.describe('Testing in-app sample loading', () => {
 
       // Locators and constants
       const sampleOne = {
-        file: 'a-parametric-bearing-pillow-block' + FILE_EXT,
-        title: 'A Parametric Bearing Pillow Block',
+        file: 'parametric-bearing-pillow-block' + FILE_EXT,
+        title: 'Parametric Bearing Pillow Block',
       }
       const sampleTwo = {
         file: 'gear-rack' + FILE_EXT,

@@ -18,10 +18,10 @@ description: Result of parsing invalid_index_fractional.kcl
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 6,
+            "commentStart": 0,
             "elements": [
               {
-                "commentStart": 7,
+                "commentStart": 0,
                 "end": 0,
                 "raw": "1",
                 "start": 0,
@@ -33,7 +33,7 @@ description: Result of parsing invalid_index_fractional.kcl
                 }
               },
               {
-                "commentStart": 10,
+                "commentStart": 0,
                 "end": 0,
                 "raw": "2",
                 "start": 0,
@@ -45,7 +45,7 @@ description: Result of parsing invalid_index_fractional.kcl
                 }
               },
               {
-                "commentStart": 13,
+                "commentStart": 0,
                 "end": 0,
                 "raw": "3",
                 "start": 0,
@@ -72,23 +72,23 @@ description: Result of parsing invalid_index_fractional.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 16,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 16,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 16,
+            "commentStart": 0,
             "end": 0,
             "name": "x",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 20,
+            "commentStart": 0,
             "computed": false,
             "end": 0,
             "object": {
-              "commentStart": 20,
+              "commentStart": 0,
               "end": 0,
               "name": "arr",
               "start": 0,
@@ -96,7 +96,7 @@ description: Result of parsing invalid_index_fractional.kcl
               "type": "Identifier"
             },
             "property": {
-              "commentStart": 24,
+              "commentStart": 0,
               "end": 0,
               "raw": "1.2",
               "start": 0,

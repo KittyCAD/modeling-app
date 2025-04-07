@@ -9,7 +9,6 @@ import hexNutDiameter, hexNutFlatToFlat, hexNutThickness, hexNutFlatLength from 
 
 // Create a function to make the hex nut. Must be a function since multiple hex nuts are used
 export fn hexNut() {
-
   // Create the base of the hex nut
   hexNutBase = startSketchOn(XY)
     |> startProfileAt([

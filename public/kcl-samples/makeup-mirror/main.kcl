@@ -21,7 +21,7 @@ archThickness = 1
 archRadius = mirrorRadius + archToMirrorGap
 
 // Geometry
-// Add a function to create the hinge 
+// Add a function to create the hinge
 fn hingeFn(x, y, z) {
   hingeBody = startSketchOn(offsetPlane(XY, offset = z))
     |> circle(center = [x, y], radius = hingeRadius)
