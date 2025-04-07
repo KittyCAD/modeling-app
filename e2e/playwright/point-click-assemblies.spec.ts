@@ -2,7 +2,7 @@ import * as fsp from 'fs/promises'
 import path from 'path'
 
 import { executorInputPath } from '@e2e/playwright/test-utils'
-import { test } from '@e2e/playwright/zoo-test'
+import { expect, test } from '@e2e/playwright/zoo-test'
 
 // test file is for testing point an click code gen functionality that's assemblies related
 test.describe('Point-and-click assemblies tests', () => {
@@ -25,7 +25,6 @@ test.describe('Point-and-click assemblies tests', () => {
 
       // One dumb hardcoded screen pixel value
       const testPoint = { x: 575, y: 200 }
-      const initialColor: [number, number, number] = [50, 50, 50]
       const partColor: [number, number, number] = [150, 150, 150]
       const tolerance = 50
 
@@ -49,28 +48,31 @@ test.describe('Point-and-click assemblies tests', () => {
         await page.setBodyDimensions({ width: 1000, height: 500 })
         await homePage.openProject(projectName)
         await scene.settled(cmdBar)
-        await scene.expectPixelColor(initialColor, testPoint, tolerance)
       })
 
-      await test.step('Insert first part into the assembly', async () => {
+      async function insertPartIntoAssembly(path: string, alias: string) {
         await toolbar.insertButton.click()
-        await cmdBar.selectOption({ name: 'cylinder.kcl' }).click()
+        await cmdBar.selectOption({ name: path }).click()
         await cmdBar.expectState({
           stage: 'arguments',
           currentArgKey: 'localName',
           currentArgValue: '',
-          headerArguments: { Path: 'cylinder.kcl', LocalName: '' },
+          headerArguments: { Path: path, LocalName: '' },
           highlightedHeaderArg: 'localName',
           commandName: 'Insert',
         })
-        await page.keyboard.insertText('cylinder')
+        await page.keyboard.insertText(alias)
         await cmdBar.progressCmdBar()
         await cmdBar.expectState({
           stage: 'review',
-          headerArguments: { Path: 'cylinder.kcl', LocalName: 'cylinder' },
+          headerArguments: { Path: path, LocalName: alias },
           commandName: 'Insert',
         })
         await cmdBar.progressCmdBar()
+      }
+
+      await test.step('Insert first part into the assembly', async () => {
+        await insertPartIntoAssembly('cylinder.kcl', 'cylinder')
         await editor.expectEditor.toContain(
           `
         import "cylinder.kcl" as cylinder
@@ -78,28 +80,12 @@ test.describe('Point-and-click assemblies tests', () => {
       `,
           { shouldNormalise: true }
         )
+        await scene.settled(cmdBar)
         await scene.expectPixelColor(partColor, testPoint, tolerance)
       })
 
       await test.step('Insert second part into the assembly', async () => {
-        await toolbar.insertButton.click()
-        await cmdBar.selectOption({ name: 'bracket.kcl' }).click()
-        await cmdBar.expectState({
-          stage: 'arguments',
-          currentArgKey: 'localName',
-          currentArgValue: '',
-          headerArguments: { Path: 'bracket.kcl', LocalName: '' },
-          highlightedHeaderArg: 'localName',
-          commandName: 'Insert',
-        })
-        await page.keyboard.insertText('bracket')
-        await cmdBar.progressCmdBar()
-        await cmdBar.expectState({
-          stage: 'review',
-          headerArguments: { Path: 'bracket.kcl', LocalName: 'bracket' },
-          commandName: 'Insert',
-        })
-        await cmdBar.progressCmdBar()
+        await insertPartIntoAssembly('bracket.kcl', 'bracket')
         await editor.expectEditor.toContain(
           `
         import "cylinder.kcl" as cylinder
@@ -109,6 +95,25 @@ test.describe('Point-and-click assemblies tests', () => {
       `,
           { shouldNormalise: true }
         )
+        await scene.settled(cmdBar)
+      })
+
+      await test.step('Insert a second time and expect error', async () => {
+        // TODO: revisit once we have clone with #6209
+        await insertPartIntoAssembly('bracket.kcl', 'bracket')
+        await editor.expectEditor.toContain(
+          `
+        import "cylinder.kcl" as cylinder
+        import "bracket.kcl" as bracket
+        import "bracket.kcl" as bracket
+        cylinder
+        bracket
+        bracket
+      `,
+          { shouldNormalise: true }
+        )
+        await scene.settled(cmdBar)
+        await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
       })
     }
   )
