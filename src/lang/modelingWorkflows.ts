@@ -66,7 +66,6 @@ export async function updateModelingState(
     // Step 1: Update AST without executing (prepare selections)
     updatedAst = await dependencies.kclManager.updateAst(
       ast,
-      // false == mock execution. Is this what we want?
       false, // Execution handled separately for error resilience
       options
     )
