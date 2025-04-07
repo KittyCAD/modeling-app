@@ -40,12 +40,14 @@ export const DEFAULT_FILE_NAME = 'Untitled'
  * the file explorer if found in a project directory */
 // TODO: make stp part of this enum as an alias to step
 // TODO: make glb part of this enum as it is in fact supported
-export const RELEVANT_FILE_TYPES: (
+export type NativeFileType = 'kcl'
+export type RelevantFileType =
   | FileImportFormat_type
+  | NativeFileType
   | 'stp'
   | 'glb'
-  | 'kcl'
-)[] = [
+export const NATIVE_FILE_TYPE: NativeFileType = 'kcl'
+export const RELEVANT_FILE_TYPES: RelevantFileType[] = [
   'kcl',
   'fbx',
   'gltf',

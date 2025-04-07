@@ -2,11 +2,16 @@ import type { Stats } from 'fs'
 import * as fs from 'fs/promises'
 import * as path from 'path'
 
-import { PROJECT_ENTRYPOINT, RELEVANT_FILE_TYPES } from '@src/lib/constants'
+import {
+  NATIVE_FILE_TYPE,
+  PROJECT_ENTRYPOINT,
+  RELEVANT_FILE_TYPES,
+  type RelevantFileType,
+} from '@src/lib/constants'
 
-const relevantExtensions = Object.fromEntries(
-  RELEVANT_FILE_TYPES.map((t) => [t, t])
-)
+const shouldWrapExtension = (extension: string) =>
+  RELEVANT_FILE_TYPES.includes(extension as RelevantFileType) &&
+  extension !== NATIVE_FILE_TYPE
 
 /// Get the current project file from the path.
 /// This is used for double-clicking on a file in the file explorer,
@@ -66,7 +71,10 @@ export default async function getCurrentProjectFile(
   // Check if the extension on what we are trying to open is a relevant file type.
   const extension = path.extname(sourcePath).slice(1)
 
-  if (!relevantExtensions[extension] && extension !== 'toml') {
+  if (
+    !RELEVANT_FILE_TYPES.includes(extension as RelevantFileType) &&
+    extension !== 'toml'
+  ) {
     return new Error(
       `File type (${extension}) cannot be opened with this app: '${sourcePath}', try opening one of the following file types: ${RELEVANT_FILE_TYPES.join(
         ', '
@@ -80,7 +88,9 @@ export default async function getCurrentProjectFile(
 
   // If we got an import model file, we need to check if we have a file in the project for
   // this import model.
-  if (relevantExtensions[extension]) {
+  // TODO: once we have some sort of a load file into project it would make sense to stop creating these wrapper files
+  // and let people save their own kcl file importing
+  if (shouldWrapExtension(extension)) {
     const importFileName = path.basename(sourcePath)
     // Check if we have a file in the project for this import model.
     const kclWrapperFilename = `${importFileName}.kcl`
