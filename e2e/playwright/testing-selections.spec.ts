@@ -797,14 +797,14 @@ part001 = startSketchOn(XZ)
     await checkCodeAtHoverPosition(
       'oppositeChamfer',
       oppositeChamfer,
-      `angledLine([segAng(rectangleSegmentA001)-90,217.26],%,$seg01)chamfer(length=30,tags=[seg01,getNextAdjacentEdge(yo),getNextAdjacentEdge(seg02),getOppositeEdge(seg01)],)`,
+      `angledLine(angle=segAng(rectangleSegmentA001)-90,length=217.26,tag=$seg01)chamfer(length=30,tags=[seg01,getNextAdjacentEdge(yo),getNextAdjacentEdge(seg02),getOppositeEdge(seg01)],)`,
       '   )'
     )
 
     await checkCodeAtHoverPosition(
       'baseChamfer',
       baseChamfer,
-      `angledLine([segAng(rectangleSegmentA001)-90,217.26],%,$seg01)chamfer(length=30,tags=[seg01,getNextAdjacentEdge(yo),getNextAdjacentEdge(seg02),getOppositeEdge(seg01)],)`,
+      `angledLine(angle=segAng(rectangleSegmentA001)-90,length=217.26,tag=$seg01)chamfer(length=30,tags=[seg01,getNextAdjacentEdge(yo),getNextAdjacentEdge(seg02),getOppositeEdge(seg01)],)`,
       '   )'
     )
 
@@ -842,7 +842,7 @@ part001 = startSketchOn(XZ)
     await checkCodeAtHoverPosition(
       'adjacentChamfer2',
       adjacentChamfer2,
-      `angledLine([segAng(rectangleSegmentA001),-segLen(rectangleSegmentA001)],%,$yo)chamfer(length=30,tags=[seg01,getNextAdjacentEdge(yo),getNextAdjacentEdge(seg02),getOppositeEdge(seg01)],)`,
+      `angledLine(angle=segAng(rectangleSegmentA001),length=-segLen(rectangleSegmentA001),tag=$yo)chamfer(length=30,tags=[seg01,getNextAdjacentEdge(yo),getNextAdjacentEdge(seg02),getOppositeEdge(seg01)],)`,
       '   )'
     )
   })
