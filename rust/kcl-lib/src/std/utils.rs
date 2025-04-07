@@ -234,11 +234,7 @@ pub fn is_on_circumference(center: Point2d, point: Point2d, radius: f64) -> bool
     (distance_squared - radius.powi(2)).abs() < 1e-9
 }
 
-// Calculate the center of 3 points using the equation:
-//   (x - cx)^2 + (y - cy)^2 = r^2
-// All 3 points will satisfy this equation, so we have 3 equations. Radius can be eliminated
-// by subtracting one of the equations from the other two.and the remaining 2 equations can
-// be solved for cx and cy.
+// Calculate the center of 3 points using an algebraic method
 // Handles if 3 points lie on the same line (collinear) by returning the average of the points (could return None instead..)
 pub fn calculate_circle_center(p1: [f64; 2], p2: [f64; 2], p3: [f64; 2]) -> [f64; 2] {
     let (x1, y1) = (p1[0], p1[1]);
@@ -260,7 +256,11 @@ pub fn calculate_circle_center(p1: [f64; 2], p2: [f64; 2], p3: [f64; 2]) -> [f64
     let p2_sq = x2 * x2 + y2 * y2;
     let p3_sq = x3 * x3 + y3 * y3;
 
-    // Calculate the center
+    // This formula is derived from the circle equations,
+    //   (x - cx)^2 + (y - cy)^2 = r^2
+    // All 3 points will satisfy this equation, so we have 3 equations. Radius can be eliminated
+    // by subtracting one of the equations from the other two.and the remaining 2 equations can
+    // be solved for cx and cy.
     [
         (p1_sq * (y2 - y3) + p2_sq * (y3 - y1) + p3_sq * (y1 - y2)) / d,
         (p1_sq * (x3 - x2) + p2_sq * (x1 - x3) + p3_sq * (x2 - x1)) / d,
