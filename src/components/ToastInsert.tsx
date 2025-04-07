@@ -16,7 +16,7 @@ export function ToastInsert({ onInsert }: { onInsert: () => void }) {
             iconStart={{
               icon: 'checkmark',
             }}
-            name="instert"
+            name="insert"
             onClick={onInsert}
           >
             Insert into my current file

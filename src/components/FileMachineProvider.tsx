@@ -13,7 +13,6 @@ import { fromPromise } from 'xstate'
 
 import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
 import { useMenuListener } from '@src/hooks/useMenu'
-import { findUniqueName } from '@src/lang/create'
 import { newKclFile } from '@src/lang/project'
 import { createNamedViewsCommand } from '@src/lib/commandBarConfigs/namedViewsConfig'
 import { createRouteCommands } from '@src/lib/commandBarConfigs/routeCommandConfig'

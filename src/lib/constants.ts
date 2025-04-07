@@ -1,5 +1,5 @@
 import type { Models } from '@kittycad/lib/dist/types/src'
-import { FileImportFormat_type } from '@kittycad/lib/dist/types/src/models'
+import type { FileImportFormat_type } from '@kittycad/lib/dist/types/src/models'
 
 import type { UnitAngle, UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
 
