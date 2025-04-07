@@ -158,6 +158,15 @@ export const modelingFileRole = (
       },
       { type: 'separator' },
       {
+        label: 'Insert from project file',
+        id: 'File.Insert from project file',
+        click: () => {
+          typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
+            menuLabel: 'File.Insert from project file',
+          })
+        },
+      },
+      {
         label: 'Export current part',
         id: 'File.Export current part',
         click: () => {
