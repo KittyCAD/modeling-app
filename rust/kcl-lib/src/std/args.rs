@@ -503,19 +503,19 @@ impl Args {
         Ok(())
     }
 
-    pub(crate) fn make_user_val_from_point(&self, p: [f64; 2]) -> Result<KclValue, KclError> {
+    pub(crate) fn make_user_val_from_point(&self, p: [TyF64; 2]) -> Result<KclValue, KclError> {
         let meta = Metadata {
             source_range: self.source_range,
         };
         let x = KclValue::Number {
-            value: p[0],
+            value: p[0].n,
             meta: vec![meta],
-            ty: NumericType::Unknown,
+            ty: p[0].ty.clone(),
         };
         let y = KclValue::Number {
-            value: p[1],
+            value: p[1].n,
             meta: vec![meta],
-            ty: NumericType::Unknown,
+            ty: p[1].ty.clone(),
         };
         Ok(KclValue::MixedArray {
             value: vec![x, y],
@@ -696,10 +696,9 @@ impl Args {
         FromArgs::from_args(self, 0)
     }
 
-    pub(crate) fn get_data_and_optional_tag<'a, T>(&'a self) -> Result<(T, Option<FaceTag>), KclError>
-    where
-        T: serde::de::DeserializeOwned + FromKclValue<'a> + Sized,
-    {
+    pub(crate) fn get_sketch_data_and_optional_tag(
+        &self,
+    ) -> Result<(super::sketch::SketchData, Option<FaceTag>), KclError> {
         FromArgs::from_args(self, 0)
     }
 

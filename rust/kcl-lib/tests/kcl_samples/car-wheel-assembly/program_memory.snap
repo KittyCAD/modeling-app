@@ -145,14 +145,26 @@ description: Variables in memory after executing car-wheel-assembly.kcl
     "type": "Number",
     "value": 0.9449,
     "ty": {
-      "type": "Unknown"
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
     }
   },
   "lugHeadLength": {
     "type": "Number",
     "value": 0.4724,
     "ty": {
-      "type": "Unknown"
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
     }
   },
   "lugHolePatternDia": {
@@ -172,7 +184,13 @@ description: Variables in memory after executing car-wheel-assembly.kcl
     "type": "Number",
     "value": 1.1811,
     "ty": {
-      "type": "Unknown"
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
     }
   },
   "lugNut": {
@@ -183,28 +201,52 @@ description: Variables in memory after executing car-wheel-assembly.kcl
     "type": "Number",
     "value": 4.5,
     "ty": {
-      "type": "Unknown"
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
     }
   },
   "lugThreadDepth": {
     "type": "Number",
     "value": 0.6811,
     "ty": {
-      "type": "Unknown"
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
     }
   },
   "lugThreadDiameter": {
     "type": "Number",
     "value": 0.4016,
     "ty": {
-      "type": "Unknown"
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
     }
   },
   "offset": {
     "type": "Number",
     "value": -1.378,
     "ty": {
-      "type": "Unknown"
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
     }
   },
   "rotorDiameter": {

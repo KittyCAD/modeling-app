@@ -371,12 +371,20 @@ impl Default for NumericType {
 }
 
 impl NumericType {
-    pub fn count() -> Self {
+    pub const fn count() -> Self {
         NumericType::Known(UnitType::Count)
     }
 
-    pub fn mm() -> Self {
+    pub const fn mm() -> Self {
         NumericType::Known(UnitType::Length(UnitLen::Mm))
+    }
+
+    pub const fn radians() -> Self {
+        NumericType::Known(UnitType::Angle(UnitAngle::Radians))
+    }
+
+    pub const fn degrees() -> Self {
+        NumericType::Known(UnitType::Angle(UnitAngle::Degrees))
     }
 
     /// Combine two types when we expect them to be equal.
