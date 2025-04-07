@@ -138,12 +138,12 @@
     "@typescript-eslint/eslint-plugin": "^8.27.0",
     "@typescript-eslint/parser": "^8.27.0",
     "@vscode/test-electron": "^2.4.1",
-    "@vscode/vsce": "^3.3.0",
+    "@vscode/vsce": "^3.3.2",
     "cross-env": "^7.0.3",
-    "esbuild": "^0.25.1",
+    "esbuild": "^0.25.2",
     "glob": "^11.0.1",
     "mocha": "^11.1.0",
-    "typescript": "^5.8.2"
+    "typescript": "^5.8.3"
   },
   "dependencies": {
     "vscode-languageclient": "^9.0.1"
