@@ -17,6 +17,7 @@ import {
   EXECUTION_TYPE_NONE,
   EXECUTION_TYPE_REAL,
 } from '@src/lib/constants'
+import type { Selections } from '@src/lib/selections'
 
 /**
  * Updates the complete modeling state:
@@ -52,15 +53,23 @@ export async function updateModelingState(
   },
   options?: {
     focusPath?: Array<PathToNode>
+    skipUpdateAst?: boolean
   }
 ): Promise<void> {
-  // Step 1: Update AST without executing (prepare selections)
-  const updatedAst = await dependencies.kclManager.updateAst(
-    ast,
-    // false == mock execution. Is this what we want?
-    false, // Execution handled separately for error resilience
-    options
-  )
+  let updatedAst: {
+    newAst: Node<Program>
+    selections?: Selections
+  } = { newAst: ast }
+  // TODO: understand why this skip flag is needed for insertAstMod.
+  // It's unclear why we double casts the AST
+  if (!options?.skipUpdateAst) {
+    // Step 1: Update AST without executing (prepare selections)
+    updatedAst = await dependencies.kclManager.updateAst(
+      ast,
+      false, // Execution handled separately for error resilience
+      options
+    )
+  }
 
   // Step 2: Update the code editor and save file
   await dependencies.codeManager.updateEditorWithAstAndWriteToFile(
