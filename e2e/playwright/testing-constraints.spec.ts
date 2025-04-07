@@ -1129,7 +1129,7 @@ test.describe('Electron constraint tests', () => {
             |> line(end = [15.1, 2.48])
             |> line(end = [3.15, -9.85], tag = $seg01)
             |> line(end = [-15.17, -4.1])
-            |> angledLine([segAng(seg01), 12.35], %)
+            |> angledLine(angle = segAng(seg01), length = 12.35)
             |> line(end = [-13.02, 10.03])
             |> close()
             |> extrude(length = 4)`,

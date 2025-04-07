@@ -41,27 +41,27 @@ profile006 = circle(sketch005,
 sketch004 = startSketchOn(extrude001, seg02)
 profile005 = startProfileAt([36.1, 174.49], sketch004)
   |> angledLine(angle = 0, length = 22.33, tag = $rectangleSegmentA003)
-  |> angledLine([
-       segAng(rectangleSegmentA003) - 90,
-       155.27
-     ], %)
-  |> angledLine([
-       segAng(rectangleSegmentA003),
-       -segLen(rectangleSegmentA003)
-     ], %)
+  |> angledLine(
+       angle = segAng(rectangleSegmentA003) - 90,
+       length = 155.27,
+     )
+  |> angledLine(
+       angle = segAng(rectangleSegmentA003),
+       length = -segLen(rectangleSegmentA003),
+     )
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 sketch003 = startSketchOn(extrude001, seg02)
 profile003 = startProfileAt([-115.59, 439.4], sketch003)
   |> angledLine(angle = 0, length = 130.08, tag = $rectangleSegmentA002)
-  |> angledLine([
-       segAng(rectangleSegmentA002) - 90,
-       123.84
-     ], %)
-  |> angledLine([
-       segAng(rectangleSegmentA002),
-       -segLen(rectangleSegmentA002)
-     ], %)
+  |> angledLine(
+       angle = segAng(rectangleSegmentA002) - 90,
+       length = 123.84,
+     )
+  |> angledLine(
+       angle = segAng(rectangleSegmentA002),
+       length = -segLen(rectangleSegmentA002),
+     )
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 profile004 = circle(sketch003,

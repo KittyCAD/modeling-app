@@ -755,8 +755,8 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
         |> yLine(length = 21.14 + 0)
         |> angledLine(angle = 181 + 0, lengthX = 23.14)
         |> angledLine(angle = -91, lengthY = 19 + 0)
-        |> angledLineToX({ angle = 3 + 0, to = 26 }, %)
-        |> angledLineToY({ angle = 89, to = 9.14 + 0 }, %)
+        |> angledLine(angle = 3 + 0, endAbsoluteX = 26)
+        |> angledLine(angle = 89, endAbsoluteY = 9.14 + 0)
         |> angledLineThatIntersects({
         angle = 4.14,
         intersectTag = a,
@@ -1076,7 +1076,7 @@ part001 = startSketchOn(XZ)
 part001 = startSketchOn(XZ)
   |>startProfileAt([0, 0], %)
   |> line(end = [0.5, -14 + 0])
-  |> angledLine({ angle = 3 + 0, length = 32 + 0 }, %)
+  |> angledLine(angle = 3 + 0, length = 32 + 0)
   |> line(endAbsolute = [33, 11.5 + 0])
   |> xLine(endAbsolute = 9 - 5)
   |> yLine(endAbsolute = -10.77, tag = $a)
@@ -1084,8 +1084,8 @@ part001 = startSketchOn(XZ)
   |> yLine(length = 21.14 + 0)
   |> angledLine(angle = 181 + 0, lengthX = 23.14)
   |> angledLine(angle = -91, lengthY = 19 + 0)
-  |> angledLineToX({ angle = 3 + 0, to = 26 }, %)
-  |> angledLineToY({ angle = 89, to = 9.14 + 0 }, %)
+  |> angledLine(angle = 3 + 0, endAbsoluteX = 26)
+  |> angledLine(angle = 89, endAbsoluteY = 9.14 + 0)
   |> angledLineThatIntersects({
        angle = 4.14,
        intersectTag = a,
@@ -1187,7 +1187,7 @@ part001 = startSketchOn(XZ)
       ang = await u.getAngle('[data-overlay-index="10"]')
       await deleteSegmentSequence({
         hoverPos: { x: segmentToDelete.x, y: segmentToDelete.y },
-        codeToBeDeleted: 'angledLineToY({ angle = 89, to = 9.14 + 0 }, %)',
+        codeToBeDeleted: 'angledLine(angle = 89, endAbsoluteY = 9.14 + 0)',
         stdLibFnName: 'angledLineToY',
         ang: ang + 180,
         locator: '[data-overlay-toolbar-index="10"]',
@@ -1197,7 +1197,7 @@ part001 = startSketchOn(XZ)
       ang = await u.getAngle('[data-overlay-index="9"]')
       await deleteSegmentSequence({
         hoverPos: { x: segmentToDelete.x, y: segmentToDelete.y },
-        codeToBeDeleted: 'angledLineToX({ angle = 3 + 0, to = 26 }, %)',
+        codeToBeDeleted: 'angledLine(angle = 3 + 0, endAbsoluteX = 26)',
         stdLibFnName: 'angledLineToX',
         ang: ang + 180,
         locator: '[data-overlay-toolbar-index="9"]',
@@ -1301,7 +1301,7 @@ part001 = startSketchOn(XZ)
       ang = await u.getAngle('[data-overlay-index="1"]')
       await deleteSegmentSequence({
         hoverPos: { x: segmentToDelete.x, y: segmentToDelete.y },
-        codeToBeDeleted: 'angledLine({ angle = 3 + 0, length = 32 + 0 }, %)',
+        codeToBeDeleted: 'angledLine(angle = 3 + 0, length = 32 + 0)',
         stdLibFnName: 'angledLine',
         ang: ang + 180,
         locator: '[data-overlay-toolbar-index="1"]',
@@ -1322,7 +1322,7 @@ part001 = startSketchOn(XZ)
   test.describe('Testing delete with dependent segments', () => {
     const cases = [
       'line(end = [22, 2], tag = $seg01)',
-      'angledLine([5, 23.03], %, $seg01)',
+      'angledLine(angle = 5, length = 23.03, tag = $seg01)',
       'xLine(length = 23, tag = $seg01)',
       'yLine(length = -8, tag = $seg01)',
       'xLine(endAbsolute = 30, tag = $seg01)',
@@ -1347,7 +1347,7 @@ part001 = startSketchOn(XZ)
           |> startProfileAt([5, 6], %)
           |> ${lineToBeDeleted}
           |> line(end = [-10, -15])
-          |> angledLine([-176, segLen(seg01)], %)
+          |> angledLine(angle = -176, length = segLen(seg01))
         ${extraLine ? 'myVar = segLen(seg01)' : ''}`
               )
             },

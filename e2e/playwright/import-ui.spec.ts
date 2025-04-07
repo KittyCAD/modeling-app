@@ -21,7 +21,7 @@ test.describe('Import UI tests', () => {
         path.join(projectDir, 'toBeImported.kcl'),
         `sketch001 = startSketchOn(XZ)
 profile001 = startProfileAt([281.54, 305.81], sketch001)
-  |> angledLine([0, 123.43], %, $rectangleSegmentA001)
+  |> angledLine(angle = 0, length = 123.43, tag = $rectangleSegmentA001)
   |> angledLine([
        segAng(rectangleSegmentA001) - 90,
        85.99
@@ -44,7 +44,7 @@ importedCube
 
 sketch001 = startSketchOn(XZ)
 profile001 = startProfileAt([-134.53, -56.17], sketch001)
-  |> angledLine([0, 79.05], %, $rectangleSegmentA001)
+  |> angledLine(angle = 0, length = 79.05, tag = $rectangleSegmentA001)
   |> angledLine([
        segAng(rectangleSegmentA001) - 90,
        76.28

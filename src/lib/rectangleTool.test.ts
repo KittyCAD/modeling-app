@@ -21,10 +21,7 @@ describe('library rectangleTool helper functions', () => {
 |> startProfileAt([120.37, 162.76], %)
 |> angledLine(angle = 0, length = 0, tag = $rectangleSegmentA001)
 |> angledLine(angle = segAng(rectangleSegmentA001) + 90, length = 0, tag = $rectangleSegmentB001)
-|> angledLine([
-segAng(rectangleSegmentA001),
--segLen(rectangleSegmentA001)
-], %, $rectangleSegmentC001)
+|> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), $rectangleSegmentC001)
 |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
 |> close()
 `
@@ -74,10 +71,11 @@ segAng(rectangleSegmentA001),
   |> startProfileAt([120.37, 80], %)
   |> angledLine(angle = 0, length = 0, tag = $rectangleSegmentA001)
   |> angledLine(angle = segAng(rectangleSegmentA001) + 90, length = 0, tag = $rectangleSegmentB001)
-  |> angledLine([
-       segAng(rectangleSegmentA001),
-       -segLen(rectangleSegmentA001)
-     ], %, $rectangleSegmentC001)
+  |> angledLine(
+       angle = segAng(rectangleSegmentA001),
+       length = -segLen(rectangleSegmentA001),
+       tag = $rectangleSegmentC001
+     )
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 `

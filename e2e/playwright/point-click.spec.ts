@@ -1671,7 +1671,7 @@ sketch002 = startSketchOn(XZ)
       initialCode: `@settings(defaultLengthUnit = in)
 sketch001 = startSketchOn(YZ)
 profile001 = startProfileAt([-400, -400], sketch001)
-  |> angledLine([0, 800], %, $rectangleSegmentA001)
+  |> angledLine(angle = 0, length = 800, tag = $rectangleSegmentA001)
   |> angledLine([
        segAng(rectangleSegmentA001) + 90,
        800
