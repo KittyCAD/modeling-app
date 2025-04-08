@@ -8,8 +8,6 @@ coverage
 *.hbs
 target
 e2e/playwright/export-snapshots
-e2e/playwright/snapshots/prompt-to-edit
-
 
 # XState generated files
 src/machines/**.typegen.ts
