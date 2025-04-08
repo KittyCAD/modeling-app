@@ -179,7 +179,8 @@ description: Artifact commands basic_fillet_cube_previous_adjacent.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 10.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
