@@ -1,4 +1,5 @@
 import type { Models } from '@kittycad/lib/dist/types/src'
+import type { FileImportFormat_type } from '@kittycad/lib/dist/types/src/models'
 
 import type { UnitAngle, UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
 
@@ -37,13 +38,24 @@ export const FILE_PERSIST_KEY = `${PROJECT_FOLDER}-last-opened` as const
 export const DEFAULT_FILE_NAME = 'Untitled'
 /** The file endings that will appear in
  * the file explorer if found in a project directory */
-export const RELEVANT_FILE_TYPES = [
+// TODO: make stp part of this enum as an alias to step
+// TODO: make glb part of this enum as it is in fact supported
+export type NativeFileType = 'kcl'
+export type RelevantFileType =
+  | FileImportFormat_type
+  | NativeFileType
+  | 'stp'
+  | 'glb'
+export const NATIVE_FILE_TYPE: NativeFileType = 'kcl'
+export const RELEVANT_FILE_TYPES: RelevantFileType[] = [
   'kcl',
   'fbx',
   'gltf',
   'glb',
   'obj',
   'ply',
+  'sldprt',
+  'stp',
   'step',
   'stl',
 ] as const
@@ -133,6 +145,9 @@ export const CREATE_FILE_URL_PARAM = 'create-file'
 
 /** Toast id for the app auto-updater toast */
 export const AUTO_UPDATER_TOAST_ID = 'auto-updater-toast'
+
+/** Toast id for the insert foreign part toast */
+export const INSERT_FOREIGN_TOAST_ID = 'insert-foreign-toast'
 
 /** Local sketch axis values in KCL for operations, it could either be 'X' or 'Y' */
 export const KCL_AXIS_X = 'X'
