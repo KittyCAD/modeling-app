@@ -8440,7 +8440,7 @@ description: Artifact commands car-wheel-assembly.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 0.47244094488188976,
+        "x": 0.4724409448818898,
         "y": 0.0,
         "z": 0.0
       }
@@ -8512,7 +8512,7 @@ description: Artifact commands car-wheel-assembly.kcl
       "path": "[uuid]",
       "segment": {
         "type": "tangential_arc",
-        "radius": 0.11811023622047244,
+        "radius": 0.11811023622047245,
         "offset": {
           "unit": "degrees",
           "value": 90.0

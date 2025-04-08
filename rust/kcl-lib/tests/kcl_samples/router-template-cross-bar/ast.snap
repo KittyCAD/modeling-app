@@ -54,67 +54,60 @@ description: Result of parsing router-template-cross-bar.kcl
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 0,
-            "end": 0,
-            "left": {
-              "commentStart": 0,
-              "end": 0,
-              "left": {
+            "arguments": [
+              {
                 "commentStart": 0,
                 "end": 0,
-                "raw": "11",
-                "start": 0,
-                "type": "Literal",
-                "type": "Literal",
-                "value": {
-                  "value": 11.0,
-                  "suffix": "None"
-                }
-              },
-              "operator": "/",
-              "right": {
-                "commentStart": 0,
-                "end": 0,
-                "raw": "16",
-                "start": 0,
-                "type": "Literal",
-                "type": "Literal",
-                "value": {
-                  "value": 16.0,
-                  "suffix": "None"
-                }
-              },
-              "start": 0,
-              "type": "BinaryExpression",
-              "type": "BinaryExpression"
-            },
-            "operator": "*",
-            "right": {
-              "arguments": [],
-              "callee": {
-                "abs_path": false,
-                "commentStart": 0,
-                "end": 0,
-                "name": {
+                "left": {
                   "commentStart": 0,
                   "end": 0,
-                  "name": "inch",
+                  "raw": "11",
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": {
+                    "value": 11.0,
+                    "suffix": "None"
+                  }
                 },
-                "path": [],
+                "operator": "/",
+                "right": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "raw": "16",
+                  "start": 0,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": {
+                    "value": 16.0,
+                    "suffix": "None"
+                  }
+                },
                 "start": 0,
-                "type": "Name"
-              },
+                "type": "BinaryExpression",
+                "type": "BinaryExpression"
+              }
+            ],
+            "callee": {
+              "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "name": {
+                "commentStart": 0,
+                "end": 0,
+                "name": "fromInches",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "CallExpression",
-              "type": "CallExpression"
+              "type": "Name"
             },
+            "commentStart": 0,
+            "end": 0,
             "start": 0,
-            "type": "BinaryExpression",
-            "type": "BinaryExpression"
+            "type": "CallExpression",
+            "type": "CallExpression"
           },
           "start": 0,
           "type": "VariableDeclarator"
