@@ -469,7 +469,7 @@ export const FileMachineProvider = ({
                 data: {
                   name: '',
                   makeDir: false,
-                  // TODO: pontentially use this
+                  // TODO: potentially use this
                   shouldSetToRename: false,
                   targetPathToClone: path,
                 },
