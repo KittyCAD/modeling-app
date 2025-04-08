@@ -1,15 +1,15 @@
 import * as fsp from 'fs/promises'
 import path from 'path'
 
-import { CmdBarFixture } from '@e2e/playwright/fixtures/cmdBarFixture'
-import { ToolbarFixture } from '@e2e/playwright/fixtures/toolbarFixture'
+import type { CmdBarFixture } from '@e2e/playwright/fixtures/cmdBarFixture'
+import type { ToolbarFixture } from '@e2e/playwright/fixtures/toolbarFixture'
 import {
   executorInputPath,
   getUtils,
   testsInputPath,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
-import { Page } from '@playwright/test'
+import type { Page } from '@playwright/test'
 
 async function insertPartIntoAssembly(
   path: string,
