@@ -1534,8 +1534,8 @@ let shape = layer() |> patternTransform(instances = 10, transform = transform)
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_unit_default() {
-        let ast = r#"const inMm = 25.4 * mm()
-const inInches = 1.0 * inch()"#;
+        let ast = r#"const inMm = fromMm(25.4)
+const inInches = fromInches(1)"#;
         let result = parse_execute(ast).await.unwrap();
         assert_eq!(
             25.4,
@@ -1554,8 +1554,8 @@ const inInches = 1.0 * inch()"#;
     #[tokio::test(flavor = "multi_thread")]
     async fn test_unit_overriden() {
         let ast = r#"@settings(defaultLengthUnit = inch)
-const inMm = 25.4 * mm()
-const inInches = 1.0 * inch()"#;
+const inMm = fromMm(25.4)
+const inInches = fromInches(1)"#;
         let result = parse_execute(ast).await.unwrap();
         assert_eq!(
             1.0,
@@ -1575,8 +1575,8 @@ const inInches = 1.0 * inch()"#;
     #[tokio::test(flavor = "multi_thread")]
     async fn test_unit_overriden_in() {
         let ast = r#"@settings(defaultLengthUnit = in)
-const inMm = 25.4 * mm()
-const inInches = 2.0 * inch()"#;
+const inMm = fromMm(25.4)
+const inInches = fromInches(2)"#;
         let result = parse_execute(ast).await.unwrap();
         assert_eq!(
             1.0,
