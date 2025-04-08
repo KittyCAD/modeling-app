@@ -1,3 +1,5 @@
+import type { MarkedOptions } from '@ts-stack/markdown'
+import { Marked, escape, unescape } from '@ts-stack/markdown'
 import { useEffect, useState } from 'react'
 
 import { CustomIcon } from '@src/components/CustomIcon'
@@ -11,11 +13,19 @@ import {
   EngineConnectionEvents,
   EngineConnectionStateType,
 } from '@src/lang/std/engineConnection'
+import { SafeRenderer } from '@src/lib/markdown'
 import { engineCommandManager } from '@src/lib/singletons'
-import { CustomIcon } from './CustomIcon'
 
 interface LoadingProps extends React.PropsWithChildren {
   className?: string
+}
+
+const markedOptions: MarkedOptions = {
+  gfm: true,
+  breaks: true,
+  sanitize: true,
+  unescape,
+  escape,
 }
 
 const Loading = ({ children, className }: LoadingProps) => {
@@ -110,14 +120,6 @@ const Loading = ({ children, className }: LoadingProps) => {
       )}
       <p className={`text-base mt-4`}>
         {isUnrecoverableError ? 'An error occurred' : children || 'Loading'}
-      </p>
-      <p
-        className={
-          'text-sm mt-4 text-opacity-70 transition-opacity duration-500' +
-          (error !== ConnectionError.Unset ? ' opacity-100' : ' opacity-0')
-        }
-      >
-        {CONNECTION_ERROR_TEXT[error]}
       </p>
       {CONNECTION_ERROR_TEXT[error.error] && (
         <div
