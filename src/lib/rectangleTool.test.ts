@@ -31,10 +31,9 @@ describe('library rectangleTool helper functions', () => {
 
       // Find some nodes and paths to reference
       const sketchSnippet = `startProfileAt([120.37, 162.76], %)`
-      const sketchRange = topLevelRange(
-        sourceCode.indexOf(sketchSnippet),
-        sourceCode.indexOf(sketchSnippet) + sketchSnippet.length
-      )
+      const start = sourceCode.indexOf(sketchSnippet)
+      expect(start).toBeGreaterThanOrEqual(0)
+      const sketchRange = topLevelRange(start, start + sketchSnippet.length)
       const sketchPathToNode = getNodePathFromSourceRange(ast, sketchRange)
       const _node = getNodeFromPath<VariableDeclaration>(
         ast,

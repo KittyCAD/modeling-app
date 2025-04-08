@@ -166,8 +166,9 @@ export function updateCenterRectangleSketch(
   {
     const edge0 = pipeExpression.body[1]
     if (!isCallExpressionKw(edge0)) {
+      console.error(pipeExpression.body.map((item) => item.callee?.name?.name))
       return new Error(
-        'rectangle edge was not a CallExpressionKw, it was a' + edge0.type
+        'rectangle edge 0 was not a CallExpressionKw, it was a ' + edge0.type
       )
     }
     mutateKwArg(ARG_LENGTH, edge0, createLiteral(Math.abs(twoX)))
@@ -177,7 +178,7 @@ export function updateCenterRectangleSketch(
     const edge1 = pipeExpression.body[2]
     if (!isCallExpressionKw(edge1)) {
       return new Error(
-        'rectangle edge was not a CallExpressionKw, it was a' + edge1.type
+        'rectangle edge 1 was not a CallExpressionKw, it was a ' + edge1.type
       )
     }
     // Calculate new angle. It's 90 offset from the previous line.
