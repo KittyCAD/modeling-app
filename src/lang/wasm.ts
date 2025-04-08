@@ -50,6 +50,7 @@ import {
   format_number,
   get_kcl_version,
   get_tangential_arc_to_info,
+  import_file_extensions,
   init,
   is_kcl_empty_or_only_settings,
   is_points_ccw,
@@ -59,6 +60,7 @@ import {
   parse_project_settings,
   parse_wasm,
   recast_wasm,
+  relevant_file_extensions,
   reloadModule,
   serialize_configuration,
   serialize_project_configuration,
@@ -706,4 +708,12 @@ export function serializeProjectConfiguration(
   } catch (e: any) {
     return new Error(`Error serializing project configuration: ${e}`)
   }
+}
+
+export function importFileExtensions(): string[] {
+  return import_file_extensions()
+}
+
+export function relevantFileExtensions(): string[] {
+  return relevant_file_extensions()
 }

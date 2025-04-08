@@ -1,17 +1,11 @@
+import { importFileExtensions, relevantFileExtensions } from '@src/lang/wasm'
 import type { Stats } from 'fs'
 import * as fs from 'fs/promises'
 import * as path from 'path'
 
 import {
-  NATIVE_FILE_TYPE,
   PROJECT_ENTRYPOINT,
-  RELEVANT_FILE_TYPES,
-  type RelevantFileType,
 } from '@src/lib/constants'
-
-const shouldWrapExtension = (extension: string) =>
-  RELEVANT_FILE_TYPES.includes(extension as RelevantFileType) &&
-  extension !== NATIVE_FILE_TYPE
 
 /// Get the current project file from the path.
 /// This is used for double-clicking on a file in the file explorer,
@@ -19,6 +13,10 @@ const shouldWrapExtension = (extension: string) =>
 export default async function getCurrentProjectFile(
   pathString: string
 ): Promise<string | Error> {
+  // Extract the values into an array
+  const allFileImportFormats: string[] = importFileExtensions()
+  const relevantExtensions: string[] = relevantFileExtensions()
+
   // Fix for "." path, which is the current directory.
   let sourcePath = pathString === '.' ? process.cwd() : pathString
 

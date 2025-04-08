@@ -9,6 +9,7 @@ import {
   initPromise,
   parseAppSettings,
   parseProjectSettings,
+  relevantFileExtensions,
 } from '@src/lang/wasm'
 import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
@@ -201,10 +202,9 @@ export async function listProjects(
   return projects
 }
 
-// TODO: we should be lowercasing the extension here to check. .sldprt or .SLDPRT should be supported
-// But the api doesn't allow it today, so revisit this and the tests once this is done
-export const isRelevantFile = (filename: string): boolean =>
-  RELEVANT_FILE_TYPES.some((ext) => filename.endsWith('.' + ext))
+  const RELEVANT_FILE_EXTENSIONS = relevantFileExtensions()
+export  const isRelevantFile = (filename: string): boolean =>
+    RELEVANT_FILE_EXTENSIONS.some((ext) => filename.endsWith('.' + ext))
 
 const collectAllFilesRecursiveFrom = async (
   path: string,

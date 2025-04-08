@@ -36,29 +36,6 @@ export const PROJECT_IMAGE_NAME = `thumbnail.png`
 export const FILE_PERSIST_KEY = `${PROJECT_FOLDER}-last-opened` as const
 /** The default name given to new kcl files in a project */
 export const DEFAULT_FILE_NAME = 'Untitled'
-/** The file endings that will appear in
- * the file explorer if found in a project directory */
-// TODO: make stp part of this enum as an alias to step
-// TODO: make glb part of this enum as it is in fact supported
-export type NativeFileType = 'kcl'
-export type RelevantFileType =
-  | FileImportFormat_type
-  | NativeFileType
-  | 'stp'
-  | 'glb'
-export const NATIVE_FILE_TYPE: NativeFileType = 'kcl'
-export const RELEVANT_FILE_TYPES: RelevantFileType[] = [
-  'kcl',
-  'fbx',
-  'gltf',
-  'glb',
-  'obj',
-  'ply',
-  'sldprt',
-  'stp',
-  'step',
-  'stl',
-] as const
 /** The default name for a tutorial project */
 export const ONBOARDING_PROJECT_NAME = 'Tutorial Project $nn'
 /**
