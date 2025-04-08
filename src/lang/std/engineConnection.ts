@@ -95,7 +95,8 @@ export const CONNECTION_ERROR_TEXT: Record<ConnectionError, string> = {
     'Your authorization token is missing; please login again.',
   [ConnectionError.BadAuthToken]:
     'Your authorization token is invalid; please login again.',
-  [ConnectionError.TooManyConnections]: 'There are too many connections.',
+  [ConnectionError.TooManyConnections]:
+    'There are too many open engine connections associated with your account.',
   [ConnectionError.Outage]:
     'We seem to be experiencing an outage. Please visit [status.zoo.dev](https://status.zoo.dev) for updates.',
   [ConnectionError.Unknown]:
