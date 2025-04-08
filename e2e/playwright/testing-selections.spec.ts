@@ -308,15 +308,9 @@ part009 = startSketchOn(XY)
   |> startProfileAt([pipeLargeDia - (thickness / 2), 38], %)
   |> line(end = [thickness, 0])
   |> line(end = [0, -1])
-  |> angledLineToX({
-       angle = 60,
-       to = pipeSmallDia + thickness
-     }, %)
+  |> angledLine(angle = 60, endAbsoluteX = pipeSmallDia + thickness)
   |> line(end = [0, -pipeLength])
-  |> angledLineToX({
-       angle = -60,
-       to = pipeLargeDia + thickness
-     }, %)
+  |> angledLine(angle = -60, endAbsoluteX = pipeLargeDia + thickness)
   |> line(end = [0, -1])
   |> line(end = [-thickness, 0])
   |> line(end = [0, 1])
@@ -724,13 +718,13 @@ part001 = startSketchOn(XZ)
     await checkCodeAtHoverPosition(
       'straightSegmentEdge',
       straightSegmentEdge,
-      `angledLineToY({angle=30,to=11.14},%)`,
+      `angledLine(angle=30,endAbsoluteY=11.14)`,
       'angledLine(angle = 30, endAbsoluteY =  11.14)'
     )
     await checkCodeAtHoverPosition(
       'straightSegmentOppositeEdge',
       straightSegmentOppositeEdge,
-      `angledLineToY({angle=30,to=11.14},%)`,
+      `angledLine(angle=30,endAbsoluteY=11.14)`,
       'angledLine(angle = 30, endAbsoluteY =  11.14)'
     )
     await checkCodeAtHoverPosition(

@@ -2234,14 +2234,8 @@ myAng2 = 134
 part001 = startSketchOn(XY)
   |> startProfileAt([0, 0], %)
   |> line([1, 3.82], %, $seg01) // ln-should-get-tag
-  |> angledLineToX([
-       -angleToMatchLengthX(seg01, myVar, %),
-       myVar
-     ], %) // ln-lineTo-xAbsolute should use angleToMatchLengthX helper
-  |> angledLineToY([
-       -angleToMatchLengthY(seg01, myVar, %),
-       myVar
-     ], %) // ln-lineTo-yAbsolute should use angleToMatchLengthY helper"#;
+  |> angledLine(angle = -angleToMatchLengthX(seg01, myVar, %), length = myVar) // ln-lineTo-xAbsolute should use angleToMatchLengthX helper
+  |> angledLine(angle = -angleToMatchLengthY(seg01, myVar, %), length = myVar) // ln-lineTo-yAbsolute should use angleToMatchLengthY helper"#;
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
 
         let recasted = program.recast(&Default::default(), 0);
@@ -2258,14 +2252,8 @@ myAng2 = 134
 part001 = startSketchOn(XY)
    |> startProfileAt([0, 0], %)
    |> line([1, 3.82], %, $seg01) // ln-should-get-tag
-   |> angledLineToX([
-         -angleToMatchLengthX(seg01, myVar, %),
-         myVar
-      ], %) // ln-lineTo-xAbsolute should use angleToMatchLengthX helper
-   |> angledLineToY([
-         -angleToMatchLengthY(seg01, myVar, %),
-         myVar
-      ], %) // ln-lineTo-yAbsolute should use angleToMatchLengthY helper
+   |> angledLine(angle = -angleToMatchLengthX(seg01, myVar, %), length = myVar) // ln-lineTo-xAbsolute should use angleToMatchLengthX helper
+   |> angledLine(angle = -angleToMatchLengthY(seg01, myVar, %), length = myVar) // ln-lineTo-yAbsolute should use angleToMatchLengthY helper
 "#;
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
 

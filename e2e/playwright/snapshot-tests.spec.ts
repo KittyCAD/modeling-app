@@ -70,10 +70,11 @@ part001 = startSketchOn(-XZ)
   |> startProfileAt([0, 0], %)
   |> yLine(length = baseHeight)
   |> xLine(length = baseLen)
-  |> angledLineToY({
+  |> angledLine(
         angle = topAng,
-        to = totalHeightHalf,
-      }, %, $seg04)
+        endAbsoluteY = totalHeightHalf,
+        tag = $seg04,
+     )
   |> xLine(endAbsolute = totalLen, tag = $seg03)
   |> yLine(length = -armThick, tag = $seg01)
   |> angledLineThatIntersects({
@@ -82,10 +83,11 @@ part001 = startSketchOn(-XZ)
         intersectTag = seg04
       }, %)
   |> angledLine(angle = segAng(seg04, %) + 180, endAbsoluteY = turns::ZERO)
-  |> angledLineToY({
+  |> angledLine(
         angle = -bottomAng,
-        to = -totalHeightHalf - armThick,
-      }, %, $seg02)
+        endAbsoluteY = -totalHeightHalf - armThick,
+        tag = $seg02,
+     )
   |> xLine(length = endAbsolute = segEndX(seg03) + 0)
   |> yLine(length = -segLen(seg01, %))
   |> angledLineThatIntersects({

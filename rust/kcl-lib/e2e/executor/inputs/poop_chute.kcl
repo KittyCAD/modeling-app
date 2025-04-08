@@ -16,10 +16,7 @@ sketch001 = startSketchOn('-YZ')
   |> yLine(endAbsolute = height)
   |> xLine(length = -wall_thickness)
   |> yLine(endAbsolute = segEndY(seg01))
-  |> angledLineToX({
-       angle: 45,
-       to: back_walls_width / 2 + wall_thickness / 2
-     }, %)
+  |> angledLine(angle = 45, endAbsoluteX = back_walls_width / 2 + wall_thickness / 2)
   |> xLine(length = -wall_thickness)
   |> angledLine(angle = 180 - 45, endAbsoluteX = wall_thickness)
   |> yLine(endAbsolute = height)
@@ -44,10 +41,7 @@ sketch002 = startSketchOn('-YZ')
   |> yLine(endAbsolute = height)
   |> xLine(length = -wall_thickness)
   |> yLine(endAbsolute = segEndY(seg01))
-  |> angledLineToX({
-       angle: 45,
-       to: back_walls_width / 2 + wall_thickness / 2
-     }, %)
+  |> angledLine(angle = 45, endAbsoluteX = back_walls_width / 2 + wall_thickness / 2)
   |> xLine(length = -wall_thickness)
   |> angledLine(angle = 180 - 45, endAbsoluteX = wall_thickness)
   |> yLine(endAbsolute = height)

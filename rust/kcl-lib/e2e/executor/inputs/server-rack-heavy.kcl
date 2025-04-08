@@ -120,10 +120,7 @@ const extrude001l = extrude(sketch001l, length = 1)
 const sketch002l = startSketchOn(plane001)
   |> startProfileAt([serverDepth + .8, 0], %)
   |> yLine(length = railHeight * 1.75 + 2)
-  |> angledLineToX({
-       angle: -135,
-       to: serverDepth - 1 + .8
-     }, %)
+  |> angledLine(angle = -135, endAbsoluteX = serverDepth - 1 + .8)
   |> yLine(length = -railHeight * 1.75)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
@@ -135,10 +132,7 @@ const sketch003l = startSketchOn(plane001)
        railHeight * 1.75 + 2
      ], %)
   |> xLine(length = -serverDepth - .8, tag = $seg02)
-  |> angledLineToY({
-       angle: -45,
-       to: railHeight * 1.75 - 1 + 2
-     }, %)
+  |> angledLine(angle = -45, endAbsoluteY = railHeight * 1.75 - 1 + 2)
   |> xLine(length = serverDepth - 2 + .8)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
@@ -147,10 +141,7 @@ const extrude003l = extrude(sketch003l, length = 1)
 const sketch004l = startSketchOn(plane001)
   |> startProfileAt([0, 0], %)
   |> yLine(length = railHeight * 1.75 + 2)
-  |> angledLineToY({
-       angle: 135,
-       to: railHeight * 1.75 + 2 - 1
-     }, %)
+  |> angledLine(angle = 135, endAbsoluteY = railHeight * 1.75 + 2 - 1)
   |> yLine(length = -railHeight * 1.75)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
@@ -189,10 +180,7 @@ const sketch007l = startSketchOn(plane001)
        offset: 0
      }, %)
   |> angledLine(angle = -70, length = 1.414 )
-  |> angledLineToY({
-       angle: 70 + 180,
-       to: railHeight * 1.75 + 1
-     }, %)
+  |> angledLine(angle = 70 + 180, endAbsoluteY = railHeight * 1.75 + 1)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 const extrude007l = extrude(sketch007l, length = 1)
@@ -232,10 +220,7 @@ const extrude002w = extrude(sketch002w, length = 1)
 const sketch003w = startSketchOn(plane002)
   |> startProfileAt([depth, railHeight * 1.75 + 2], %)
   |> xLine(length = -depth, tag = $seg02w)
-  |> angledLineToY({
-       angle: -45,
-       to: railHeight * 1.75 - 1 + 2
-     }, %)
+  |> angledLine(angle = -45, endAbsoluteY = railHeight * 1.75 - 1 + 2)
   |> xLine(length = depth - 2)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
@@ -244,10 +229,7 @@ const extrude003w = extrude(sketch003w, length = 1)
 const sketch004w = startSketchOn(plane002)
   |> startProfileAt([0, 0], %)
   |> yLine(length = railHeight * 1.75 + 2)
-  |> angledLineToY({
-       angle: 135,
-       to: railHeight * 1.75 + 2 - 1
-     }, %)
+  |> angledLine(angle = 135, endAbsoluteY = railHeight * 1.75 + 2 - 1)
   |> yLine(length = -railHeight * 1.75)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
@@ -470,10 +452,7 @@ const extrude021w = extrude(sketch021w, length = 1)
 
 const sketch022w = startSketchOn(plane002)
   |> startProfileAt([depth - 1, 74.1], %)
-  |> angledLineToY({
-       angle: 180 - 23,
-       to: railHeight * 1.75 + 1
-     }, %)
+  |> angledLine(angle = 180 - 23, endAbsoluteY = railHeight * 1.75 + 1)
   |> xLine(length = -2.56)
   |> angledLine(angle = -23, endAbsoluteX = depth - 1)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
@@ -482,10 +461,7 @@ const extrude022w = extrude(sketch022w, length = 1)
 
 const sketch023w = startSketchOn(plane002)
   |> startProfileAt([1, 69.53 + 1.75], %)
-  |> angledLineToY({
-       angle: 90 - 23,
-       to: railHeight * 1.75 + 1
-     }, %)
+  |> angledLine(angle = 90 - 23, endAbsoluteY = railHeight * 1.75 + 1)
   |> xLine(length = 1.086)
   |> angledLine(angle = 90 - 23, endAbsoluteX = 1)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
