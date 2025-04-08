@@ -183,7 +183,7 @@ export function updateCenterRectangleSketch(
     // Calculate new angle. It's 90 offset from the previous line.
     const oldAngle = findKwArg(ARG_ANGLE, edge1)
     if (oldAngle === undefined) {
-      return
+      return new Error('rectangle edge should have an angle, but did not')
     }
     let oldAngleOperator
     if (oldAngle.type !== 'BinaryExpression') {
