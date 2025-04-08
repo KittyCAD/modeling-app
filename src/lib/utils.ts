@@ -474,10 +474,14 @@ export function getModuleId(sourceRange: SourceRange) {
   return sourceRange[2]
 }
 
-export function getCamelCase(name: string) {
+export function getInVariableCase(name: string, prefixIfDigit = 'm') {
+  // As of 2025-04-08, standard case for KCL variables is camelCase
+  const startsWithANumber = !Number.isNaN(Number(name.charAt(0)))
+  const paddedName = startsWithANumber ? `${prefixIfDigit}${name}` : name
+
   // From https://www.30secondsofcode.org/js/s/string-case-conversion/#word-boundary-identification
   const r = /[A-Z]{2,}(?=[A-Z][a-z]+[0-9]*|\b)|[A-Z]?[a-z]+[0-9]*|[A-Z]|[0-9]+/g
-  const boundaryIdentification = name.match(r)
+  const boundaryIdentification = paddedName.match(r)
   if (!boundaryIdentification) {
     return undefined
   }

@@ -17,7 +17,7 @@ import {
   EXECUTION_TYPE_REAL,
   FILE_EXT,
 } from '@src/lib/constants'
-import { getCamelCaseFromFilePath } from '@src/lib/desktop'
+import { getPathFilenameInVariableCase } from '@src/lib/desktop'
 import { isDesktop } from '@src/lib/isDesktop'
 import { copyFileShareLink } from '@src/lib/links'
 import { baseUnitsUnion } from '@src/lib/settings/settingsTypes'
@@ -130,7 +130,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
             }
 
             const path = context.argumentsToSubmit['path'] as string
-            return getCamelCaseFromFilePath(path)
+            return getPathFilenameInVariableCase(path)
           },
         },
       },

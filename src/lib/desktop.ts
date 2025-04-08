@@ -25,7 +25,7 @@ import {
 import type { FileEntry, Project } from '@src/lib/project'
 import { err } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
-import { getCamelCase } from '@src/lib/utils'
+import { getInVariableCase } from '@src/lib/utils'
 
 export async function renameProjectDirectory(
   projectPath: string,
@@ -728,11 +728,11 @@ export const writeProjectThumbnailFile = async (
   return window.electron.writeFile(filePath, asArray)
 }
 
-export function getCamelCaseFromFilePath(path: string) {
+export function getPathFilenameInVariableCase(path: string) {
   // from https://nodejs.org/en/learn/manipulating-files/nodejs-file-paths#example
   const basenameNoExt = window.electron.path.basename(
     path,
     window.electron.path.extname(path)
   )
-  return getCamelCase(basenameNoExt)
+  return getInVariableCase(basenameNoExt)
 }

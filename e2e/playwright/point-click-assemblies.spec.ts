@@ -252,7 +252,7 @@ test.describe('Point-and-click assemblies tests', () => {
         // Go through the ToastInsert prompt
         await page.getByText('Insert into my current file').click()
 
-        // Check getCamelCaseFromFileName output
+        // Check getPathFilenameInVariableCase output
         const parsedValueFromFile =
           await cmdBar.currentArgumentInput.inputValue()
         expect(parsedValueFromFile).toEqual(camelCasedSolidworksFileName)
