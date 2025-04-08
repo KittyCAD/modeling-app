@@ -64,6 +64,7 @@ export enum DisconnectingType {
 export enum ConnectionError {
   Unset = 0,
   LongLoadingTime,
+  VeryLongLoadingTime,
 
   ICENegotiate,
   DataChannelError,
@@ -86,6 +87,8 @@ export const CONNECTION_ERROR_TEXT: Record<ConnectionError, string> = {
   [ConnectionError.Unset]: '',
   [ConnectionError.LongLoadingTime]:
     'Loading is taking longer than expected...',
+  [ConnectionError.VeryLongLoadingTime]:
+    'Loading seems stuck. Do you have a firewall turned on?',
   [ConnectionError.ICENegotiate]: 'ICE negotiation failed.',
   [ConnectionError.DataChannelError]: 'The data channel signaled an error.',
   [ConnectionError.WebSocketError]: 'The websocket signaled an error.',

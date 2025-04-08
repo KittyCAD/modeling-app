@@ -102,7 +102,10 @@ const Loading = ({ children, className }: LoadingProps) => {
       setError({ error: ConnectionError.VeryLongLoadingTime })
     }, 7000)
 
-    return () => clearTimeout(timer)
+    return () => {
+      clearTimeout(shorterTimer)
+      clearTimeout(longerTimer)
+    }
   }, [error, setError, isUnrecoverableError])
 
   return (
