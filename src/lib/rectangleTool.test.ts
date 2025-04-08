@@ -18,7 +18,7 @@ describe('library rectangleTool helper functions', () => {
     test('should update AST and source code', async () => {
       // Base source code that will be edited in place
       const sourceCode = `sketch001 = startSketchOn(XZ)
-|> startProfileAt([120.37, 162.76], %)
+profile001 = startProfileAt([120.37, 162.76], %)
 |> angledLine(angle = 0, length = 0, tag = $rectangleSegmentA001)
 |> angledLine(angle = segAng(rectangleSegmentA001) + 90, length = 0, tag = $rectangleSegmentB001)
 |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $rectangleSegmentC001)
@@ -68,9 +68,9 @@ describe('library rectangleTool helper functions', () => {
 
       // ast is edited in place from the updateCenterRectangleSketch
       const expectedSourceCode = `sketch001 = startSketchOn(XZ)
-  |> startProfileAt([120.37, 80], %)
-  |> angledLine(angle = 0, length = 0, tag = $rectangleSegmentA001)
-  |> angledLine(angle = segAng(rectangleSegmentA001) + 90, length = 0, tag = $rectangleSegmentB001)
+profile001 = startProfileAt([80, 120], %)
+  |> angledLine(angle = 0, length = 80, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) + 90, length = 120, tag = $rectangleSegmentB001)
   |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $rectangleSegmentC001)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()

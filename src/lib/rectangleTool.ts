@@ -17,7 +17,7 @@ import {
   createTagDeclarator,
   createUnaryExpression,
 } from '@src/lang/create'
-import { mutateKwArg } from '@src/lang/modifyAst'
+import { mutateKwArgOnly } from '@src/lang/modifyAst'
 import {
   findKwArg,
   isArrayExpression,
@@ -108,11 +108,11 @@ export function updateRectangleSketch(
   tag: string
 ) {
   const firstEdge = pipeExpression.body[1] as CallExpressionKw
-  mutateKwArg('angle', firstEdge, createLiteral(x >= 0 ? 0 : 180))
-  mutateKwArg('length', firstEdge, createLiteral(Math.abs(x)))
+  mutateKwArgOnly('angle', firstEdge, createLiteral(x >= 0 ? 0 : 180))
+  mutateKwArgOnly('length', firstEdge, createLiteral(Math.abs(x)))
   const secondEdge = pipeExpression.body[2] as CallExpressionKw
   // 90 offset from the previous line
-  mutateKwArg(
+  mutateKwArgOnly(
     'angle',
     secondEdge,
     createBinaryExpression([
@@ -122,7 +122,7 @@ export function updateRectangleSketch(
     ])
   )
   // This will be the height of the rectangle
-  mutateKwArg('length', secondEdge, createLiteral(Math.abs(y)))
+  mutateKwArgOnly('length', secondEdge, createLiteral(Math.abs(y)))
 }
 
 /**
@@ -144,41 +144,40 @@ export function updateCenterRectangleSketch(
   let startY = originY - Math.abs(deltaY)
 
   {
-    let startAtExpression = pipeExpression.body[0]
-    if (!isCallExpression(startAtExpression)) {
-      return new Error(
-        'rectangle start was not a CallExpression, it was a ' +
-          startAtExpression.type
-      )
+    let callExpression = pipeExpression.body[0]
+    if (!isCallExpression(callExpression)) {
+      return new Error(`Expected call expression, got ${callExpression.type}`)
     }
-    const arrayExpression = startAtExpression.arguments[0]
-    if (isArrayExpression(arrayExpression)) {
-      startAtExpression.arguments[0] = createArrayExpression([
-        createLiteral(roundOff(startX)),
-        createLiteral(roundOff(startY)),
-      ])
+    const arrayExpression = callExpression.arguments[0]
+    if (!isArrayExpression(arrayExpression)) {
+      return new Error(`Expected array expression, got ${arrayExpression.type}`)
     }
+    callExpression.arguments[0] = createArrayExpression([
+      createLiteral(roundOff(startX)),
+      createLiteral(roundOff(startY)),
+    ])
   }
 
   const twoX = deltaX * 2
   const twoY = deltaY * 2
 
   {
+    // Should be an angledLine
     const edge0 = pipeExpression.body[1]
     if (!isCallExpressionKw(edge0)) {
-      console.error(pipeExpression.body.map((item) => item.callee?.name?.name))
       return new Error(
-        'rectangle edge 0 was not a CallExpressionKw, it was a ' + edge0.type
+        `Expected rectangle edge 0 to be CallExpressionKw, but it was a ${edge0.type}`
       )
     }
-    mutateKwArg(ARG_LENGTH, edge0, createLiteral(Math.abs(twoX)))
+    mutateKwArgOnly(ARG_LENGTH, edge0, createLiteral(Math.abs(twoX)))
   }
 
   {
+    // Should be an angledLine
     const edge1 = pipeExpression.body[2]
     if (!isCallExpressionKw(edge1)) {
       return new Error(
-        'rectangle edge 1 was not a CallExpressionKw, it was a ' + edge1.type
+        `Expected rectangle edge 1 to be CallExpressionKw, but it was a ${edge1.type}`
       )
     }
     // Calculate new angle. It's 90 offset from the previous line.
@@ -199,9 +198,10 @@ export function updateCenterRectangleSketch(
 
     // Calculate new height.
     const newLength = createLiteral(Math.abs(twoY))
-    //
+
     // Update old rectangle.
-    mutateKwArg(ARG_ANGLE, edge1, newAngle)
-    mutateKwArg(ARG_LENGTH, edge1, newLength)
+    const foundOldAngle = mutateKwArgOnly(ARG_ANGLE, edge1, newAngle)
+    if (!foundOldAngle) console.error('ADAM: old angle not found')
+    mutateKwArgOnly(ARG_LENGTH, edge1, newLength)
   }
 }
