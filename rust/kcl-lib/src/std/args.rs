@@ -542,25 +542,6 @@ impl Args {
         )
     }
 
-    pub(super) fn make_user_val_from_f64_array(&self, f: Vec<f64>, ty: &NumericType) -> Result<KclValue, KclError> {
-        let array = f
-            .into_iter()
-            .map(|n| KclValue::Number {
-                value: n,
-                meta: vec![Metadata {
-                    source_range: self.source_range,
-                }],
-                ty: ty.clone(),
-            })
-            .collect::<Vec<_>>();
-        Ok(KclValue::MixedArray {
-            value: array,
-            meta: vec![Metadata {
-                source_range: self.source_range,
-            }],
-        })
-    }
-
     pub(crate) fn get_number(&self) -> Result<f64, KclError> {
         FromArgs::from_args(self, 0)
     }
@@ -1167,15 +1148,6 @@ impl<'a> FromKclValue<'a> for super::shapes::PolygonData {
             polygon_type,
             inscribed,
         })
-    }
-}
-
-impl<'a> FromKclValue<'a> for crate::std::polar::PolarCoordsData {
-    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        let obj = arg.as_object()?;
-        let_field_of!(obj, angle);
-        let_field_of!(obj, length);
-        Some(Self { angle, length })
     }
 }
 

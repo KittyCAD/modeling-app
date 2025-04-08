@@ -8,7 +8,7 @@ import React, {
 } from 'react'
 import toast from 'react-hot-toast'
 import { useHotkeys } from 'react-hotkeys-hook'
-import { useLoaderData, useNavigate, useSearchParams } from 'react-router-dom'
+import { useLoaderData, useNavigate } from 'react-router-dom'
 import type { Actor, ContextFrom, Prop, SnapshotFrom, StateFrom } from 'xstate'
 import { assign, fromPromise } from 'xstate'
 
@@ -45,7 +45,6 @@ import {
   useSketchModeMenuEnableDisable,
 } from '@src/hooks/useMenu'
 import { useNetworkContext } from '@src/hooks/useNetworkContext'
-import { useSetupEngineManager } from '@src/hooks/useSetupEngineManager'
 import useStateMachineCommands from '@src/hooks/useStateMachineCommands'
 import { useKclContext } from '@src/lang/KclProvider'
 import { updateModelingState } from '@src/lang/modelingWorkflows'
@@ -140,14 +139,7 @@ export const ModelingMachineProvider = ({
 }) => {
   const {
     app: { theme, allowOrbitInSketchMode },
-    modeling: {
-      defaultUnit,
-      cameraProjection,
-      highlightEdges,
-      showScaleGrid,
-      cameraOrbit,
-      enableSSAO,
-    },
+    modeling: { defaultUnit, cameraProjection, highlightEdges, cameraOrbit },
   } = useSettings()
   const navigate = useNavigate()
   const { context, send: fileMachineSend } = useFileContext()
@@ -156,13 +148,11 @@ export const ModelingMachineProvider = ({
   const streamRef = useRef<HTMLDivElement>(null)
   const persistedContext = useMemo(() => getPersistedContext(), [])
 
-  let [searchParams] = useSearchParams()
-  const pool = searchParams.get('pool')
-
   const isCommandBarClosed = useSelector(
     commandBarActor,
     commandBarIsClosedSelector
   )
+
   // Settings machine setup
   // const retrievedSettings = useRef(
   // localStorage?.getItem(MODELING_PERSIST_KEY) || '{}'
@@ -1912,22 +1902,6 @@ export const ModelingMachineProvider = ({
       }
     }
   }, [modelingActor])
-
-  useSetupEngineManager(
-    streamRef,
-    modelingSend,
-    modelingState.context,
-    {
-      pool: pool,
-      theme: theme.current,
-      highlightEdges: highlightEdges.current,
-      enableSSAO: enableSSAO.current,
-      showScaleGrid: showScaleGrid.current,
-      cameraProjection: cameraProjection.current,
-      cameraOrbit: cameraOrbit.current,
-    },
-    token
-  )
 
   useEffect(() => {
     kclManager.registerExecuteCallback(() => {

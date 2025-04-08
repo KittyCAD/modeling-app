@@ -459,12 +459,13 @@ export const getAppSettingsFilePath = async () => {
   const testSettingsPath = await window.electron.getAppTestProperty(
     'TEST_SETTINGS_FILE_KEY'
   )
-  if (isTestEnv && !testSettingsPath) return SETTINGS_FILE_NAME
 
   const appConfig = await window.electron.getPath('appData')
+
   const fullPath = isTestEnv
-    ? testSettingsPath
-    : window.electron.path.join(appConfig, getAppFolderName())
+    ? window.electron.path.resolve(testSettingsPath, '..')
+    : window.electron.path.resolve(appConfig, getAppFolderName())
+
   try {
     await window.electron.stat(fullPath)
   } catch (e) {
@@ -480,9 +481,10 @@ const getTokenFilePath = async () => {
   const testSettingsPath = await window.electron.getAppTestProperty(
     'TEST_SETTINGS_FILE_KEY'
   )
+
   const appConfig = await window.electron.getPath('appData')
   const fullPath = isTestEnv
-    ? testSettingsPath
+    ? window.electron.path.resolve(testSettingsPath, '..')
     : window.electron.path.join(appConfig, getAppFolderName())
   try {
     await window.electron.stat(fullPath)
@@ -496,8 +498,15 @@ const getTokenFilePath = async () => {
 }
 
 const getTelemetryFilePath = async () => {
+  const isTestEnv = window.electron.process.env.IS_PLAYWRIGHT === 'true'
+  const testSettingsPath = await window.electron.getAppTestProperty(
+    'TEST_SETTINGS_FILE_KEY'
+  )
+
   const appConfig = await window.electron.getPath('appData')
-  const fullPath = window.electron.path.join(appConfig, getAppFolderName())
+  const fullPath = isTestEnv
+    ? window.electron.path.resolve(testSettingsPath, '..')
+    : window.electron.path.join(appConfig, getAppFolderName())
   try {
     await window.electron.stat(fullPath)
   } catch (e) {
@@ -510,8 +519,15 @@ const getTelemetryFilePath = async () => {
 }
 
 const getRawTelemetryFilePath = async () => {
+  const isTestEnv = window.electron.process.env.IS_PLAYWRIGHT === 'true'
+  const testSettingsPath = await window.electron.getAppTestProperty(
+    'TEST_SETTINGS_FILE_KEY'
+  )
+
   const appConfig = await window.electron.getPath('appData')
-  const fullPath = window.electron.path.join(appConfig, getAppFolderName())
+  const fullPath = isTestEnv
+    ? window.electron.path.resolve(testSettingsPath, '..')
+    : window.electron.path.join(appConfig, getAppFolderName())
   try {
     await window.electron.stat(fullPath)
   } catch (e) {
@@ -535,8 +551,16 @@ const getProjectSettingsFilePath = async (projectPath: string) => {
 }
 
 export const getInitialDefaultDir = async () => {
+  const isTestEnv = window.electron.process.env.IS_PLAYWRIGHT === 'true'
+  const testSettingsPath = await window.electron.getAppTestProperty(
+    'TEST_SETTINGS_FILE_KEY'
+  )
+
   if (!window.electron) {
     return ''
+  }
+  if (isTestEnv) {
+    return testSettingsPath
   }
   const dir = await window.electron.getPath('documents')
   return window.electron.path.join(dir, PROJECT_FOLDER)
