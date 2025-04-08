@@ -92,12 +92,12 @@ export function modelingMenuCallbackMostActions(
       }).catch(reportRejection)
     } else if (data.menuLabel === 'File.Preferences.User default units') {
       navigate(filePath + PATHS.SETTINGS_USER + '#defaultUnit')
-    } else if (data.menuLabel === 'File.Insert from project file') {
+    } else if (data.menuLabel === 'File.Load external file') {
       commandBarActor.send({
         type: 'Find and select command',
         data: {
           groupId: 'code',
-          name: 'Insert',
+          name: 'load-external-file',
         },
       })
     } else if (data.menuLabel === 'File.Export current part') {
@@ -255,6 +255,14 @@ export function modelingMenuCallbackMostActions(
       commandBarActor.send({
         type: 'Find and select command',
         data: { name: 'Shell', groupId: 'modeling' },
+      })
+    } else if (data.menuLabel === 'Design.Insert from project file') {
+      commandBarActor.send({
+        type: 'Find and select command',
+        data: {
+          groupId: 'code',
+          name: 'Insert',
+        },
       })
     } else if (data.menuLabel === 'Design.Create with Zoo Text-To-CAD') {
       commandBarActor.send({

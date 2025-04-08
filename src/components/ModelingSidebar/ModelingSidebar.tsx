@@ -76,19 +76,6 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
         }),
     },
     {
-      id: 'insert',
-      title: 'Insert from project file',
-      sidebarName: 'Insert from project file',
-      icon: 'import',
-      keybinding: 'Ctrl + Shift + I',
-      hide: (a) => a.platform === 'web' || !(DEV || IS_NIGHTLY_OR_DEBUG),
-      action: () =>
-        commandBarActor.send({
-          type: 'Find and select command',
-          data: { name: 'Insert', groupId: 'code' },
-        }),
-    },
-    {
       id: 'export',
       title: 'Export part',
       sidebarName: 'Export part',
