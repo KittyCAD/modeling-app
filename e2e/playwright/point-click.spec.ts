@@ -3527,25 +3527,17 @@ tag=$rectangleSegmentC002,
       toolbar,
       cmdBar,
     }) => {
-      const initialCode = `
-sketch001 = startSketchOn(XZ)
-|> startProfileAt([-102.57, 101.72], %)
-|> angledLine(angle = 0, length = 202.6, tag = $rectangleSegmentA001)
-|> angledLine(
-angle=segAng(rectangleSegmentA001) - 90,
-length=202.6,
-tag=$rectangleSegmentB001,
-)
-|> angledLine(
-angle=segAng(rectangleSegmentA001),
-length=-segLen(rectangleSegmentA001),
-tag=$rectangleSegmentC001,
-)
-|> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-|> close()
+      const initialCode = `sketch001 = startSketchOn(XZ)
+  |> startProfileAt([-102.57, 101.72], %)
+  |> angledLine(angle = 0, length = 202.6, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 202.6, tag = $rectangleSegmentB001)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $rectangleSegmentC001)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
 extrude001 = extrude(sketch001, length = 50)
 sketch002 = startSketchOn(extrude001, rectangleSegmentA001)
   |> circle(center = [-11.34, 10.0], radius = 8.69)
+
 `
       await context.addInitScript((initialCode) => {
         localStorage.setItem('persistCode', initialCode)
