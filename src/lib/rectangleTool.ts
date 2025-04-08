@@ -19,11 +19,10 @@ import {
 } from '@src/lang/create'
 import { mutateKwArg } from '@src/lang/modifyAst'
 import {
+  findKwArg,
   isArrayExpression,
-  isBinaryExpression,
   isCallExpression,
-  isLiteral,
-  isLiteralValueNumber,
+  isCallExpressionKw,
 } from '@src/lang/util'
 import type { CallExpressionKw, Expr, PipeExpression } from '@src/lang/wasm'
 import { roundOff } from '@src/lib/utils'
@@ -141,14 +140,15 @@ export function updateCenterRectangleSketch(
   originX: number,
   originY: number
 ) {
+  // TODO: This should really return an error if it fails, instead of silently doing nothing.
   let startX = originX - Math.abs(deltaX)
   let startY = originY - Math.abs(deltaY)
 
-  let callExpression = pipeExpression.body[0]
-  if (isCallExpression(callExpression)) {
-    const arrayExpression = callExpression.arguments[0]
+  let startAtExpression = pipeExpression.body[0]
+  if (isCallExpression(startAtExpression)) {
+    const arrayExpression = startAtExpression.arguments[0]
     if (isArrayExpression(arrayExpression)) {
-      callExpression.arguments[0] = createArrayExpression([
+      startAtExpression.arguments[0] = createArrayExpression([
         createLiteral(roundOff(startX)),
         createLiteral(roundOff(startY)),
       ])
@@ -158,37 +158,35 @@ export function updateCenterRectangleSketch(
   const twoX = deltaX * 2
   const twoY = deltaY * 2
 
-  callExpression = pipeExpression.body[1]
-  if (isCallExpression(callExpression)) {
-    const arrayExpression = callExpression.arguments[0]
-    if (isArrayExpression(arrayExpression)) {
-      const literal = arrayExpression.elements[0]
-      if (isLiteral(literal)) {
-        if (isLiteralValueNumber(literal.value)) {
-          callExpression.arguments[0] = createArrayExpression([
-            createLiteral(literal.value),
-            createLiteral(Math.abs(twoX)),
-          ])
-        }
-      }
-    }
+  const edge0 = pipeExpression.body[1]
+  if (isCallExpressionKw(edge0)) {
+    mutateKwArg(ARG_LENGTH, edge0, createLiteral(Math.abs(twoX)))
   }
 
-  callExpression = pipeExpression.body[2]
-  if (isCallExpression(callExpression)) {
-    const arrayExpression = callExpression.arguments[0]
-    if (isArrayExpression(arrayExpression)) {
-      const binaryExpression = arrayExpression.elements[0]
-      if (isBinaryExpression(binaryExpression)) {
-        callExpression.arguments[0] = createArrayExpression([
-          createBinaryExpression([
-            createCallExpressionStdLib('segAng', [createLocalName(tag)]),
-            binaryExpression.operator,
-            createLiteral(90),
-          ]), // 90 offset from the previous line
-          createLiteral(Math.abs(twoY)), // This will be the height of the rectangle
-        ])
-      }
+  const edge1 = pipeExpression.body[2]
+  if (isCallExpressionKw(edge1)) {
+    // Calculate new angle. It's 90 offset from the previous line.
+    const oldAngle = findKwArg(ARG_ANGLE, edge1)
+    if (oldAngle === undefined) {
+      return
     }
+    let oldAngleOperator
+    if (oldAngle.type === 'BinaryExpression') {
+      oldAngleOperator = oldAngle.operator
+    } else {
+      return
+    }
+    const newAngle = createBinaryExpression([
+      createCallExpressionStdLib('segAng', [createLocalName(tag)]),
+      oldAngleOperator,
+      createLiteral(90),
+    ])
+
+    // Calculate new height.
+    const newLength = createLiteral(Math.abs(twoY))
+
+    // Update old rectangle.
+    mutateKwArg(ARG_ANGLE, edge1, newAngle)
+    mutateKwArg(ARG_LENGTH, edge1, newLength)
   }
 }
