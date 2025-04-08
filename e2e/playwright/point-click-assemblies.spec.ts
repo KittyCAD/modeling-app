@@ -202,6 +202,10 @@ test.describe('Point-and-click assemblies tests', () => {
               testsInputPath('cube.step'),
               path.join(bracketDir, 'cube.step')
             ),
+            fsp.copyFile(
+              testsInputPath('cube.sldprt'),
+              path.join(bracketDir, 'cube.sldprt')
+            ),
             fsp.writeFile(path.join(bracketDir, 'main.kcl'), ''),
           ])
         })
@@ -228,6 +232,45 @@ test.describe('Point-and-click assemblies tests', () => {
         await page.reload()
 
         await scene.settled(cmdBar)
+        await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
+        await toolbar.closePane('code')
+        await scene.expectPixelColor(partColor, partPoint, tolerance)
+      })
+
+      await test.step('Insert second step part by clicking', async () => {
+        await toolbar.openPane('files')
+        await toolbar.expectFileTreeState([
+          'cube.sldprt',
+          'cube.step',
+          'main.kcl',
+        ])
+        await toolbar.openFile('cube.sldprt')
+        await page.getByText('Insert into my current file').click()
+        await page.keyboard.insertText('cubeSw')
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          stage: 'review',
+          headerArguments: { Path: 'cube.sldprt', LocalName: 'cubeSw' },
+          commandName: 'Insert',
+        })
+        await cmdBar.progressCmdBar()
+        await toolbar.closePane('files')
+        await toolbar.openPane('code')
+        await editor.expectEditor.toContain(
+          `
+        import "cube.step" as cube
+        import "cube.sldprt" as cubeSw
+        cube
+        cubeSw
+      `,
+          { shouldNormalise: true }
+        )
+        await scene.settled(cmdBar)
+
+        // TODO: remove this once #5780 is fixed
+        await page.reload()
+        await scene.settled(cmdBar)
+
         await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
         await toolbar.closePane('code')
         await scene.expectPixelColor(partColor, partPoint, tolerance)
