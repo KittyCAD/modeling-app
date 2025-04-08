@@ -32,7 +32,7 @@ lugClearance = startSketchOn(lugExtrusion, 'END')
 
 // Create the circular pattern for the lug holes
 lugHoles = startSketchOn(lugBase, 'END')
-  |> circle(center = [lugSpacing / 2, 0], radius = 16 * mm() / 2)
+  |> circle(center = [lugSpacing / 2, 0], radius = fromMm(16) / 2)
   |> patternCircular2d(
        arcDegrees = 360,
        center = [0, 0],
