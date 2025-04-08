@@ -1,5 +1,5 @@
 import { useSelector } from '@xstate/react'
-import { createActor, setup, spawnChild } from 'xstate'
+import { createActor, InputFrom, setup, spawnChild } from 'xstate'
 
 import { createSettings } from '@src/lib/settings/initialSettings'
 import { authMachine } from '@src/machines/authMachine'
@@ -9,13 +9,15 @@ import {
   engineStreamMachine,
 } from '@src/machines/engineStreamMachine'
 import { ACTOR_IDS } from '@src/machines/machineConstants'
+import { routerMachine } from '@src/machines/routerMachine'
 import { settingsMachine } from '@src/machines/settingsMachine'
 
-const { AUTH, SETTINGS, ENGINE_STREAM } = ACTOR_IDS
+const { AUTH, SETTINGS, ENGINE_STREAM, ROUTER } = ACTOR_IDS
 const appMachineActors = {
   [AUTH]: authMachine,
   [SETTINGS]: settingsMachine,
   [ENGINE_STREAM]: engineStreamMachine,
+  [ROUTER]: routerMachine,
 } as const
 
 const appMachine = setup({
@@ -23,6 +25,12 @@ const appMachine = setup({
     children: {
       auth: typeof AUTH
       settings: typeof SETTINGS
+      engine_stream: typeof ENGINE_STREAM
+      router?: typeof ROUTER
+    }
+    events: {
+      type: 'event:router_set_up'
+      data: InputFrom<typeof routerMachine>
     }
   },
   actors: appMachineActors,
@@ -41,9 +49,30 @@ const appMachine = setup({
       input: engineStreamContextCreate(),
     }),
   ],
+  on: {
+    'event:router_set_up': {
+      actions: spawnChild(ROUTER, {
+        id: ROUTER,
+        systemId: ROUTER,
+        input: ({ event, context }) => {
+          if (event.type !== 'event:router_set_up')
+            return {
+              location: {} as InputFrom<typeof routerMachine>['location'],
+              navigation: {} as InputFrom<typeof routerMachine>['navigation'],
+              navigate: (() => {}) as InputFrom<
+                typeof routerMachine
+              >['navigate'],
+            }
+          return event.data
+        },
+      }),
+    },
+  },
 })
 
 export const appActor = createActor(appMachine)
+// REMOVE THIS BEFORE MERGING
+window.appActor = appActor
 /**
  * GOTCHA: the type coercion of this actor works because it is spawned for
  * the lifetime of {appActor}, but would not work if it were invoked

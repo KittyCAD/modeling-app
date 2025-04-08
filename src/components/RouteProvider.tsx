@@ -18,7 +18,7 @@ import { markOnce } from '@src/lib/performance'
 import { loadAndValidateSettings } from '@src/lib/settings/settingsUtils'
 import { trap } from '@src/lib/trap'
 import type { IndexLoaderData } from '@src/lib/types'
-import { settingsActor, useSettings } from '@src/machines/appMachine'
+import { appActor, settingsActor, useSettings } from '@src/machines/appMachine'
 
 export const RouteProviderContext = createContext({})
 
@@ -33,6 +33,38 @@ export function RouteProvider({ children }: { children: ReactNode }) {
   const navigate = useNavigate()
   const location = useLocation()
   const settings = useSettings()
+
+  /**
+   * Spawn a router machine that we can interact with outside of React,
+   * but providing the react-router-dom methods and information we need.
+   */
+  useEffect(() => {
+    appActor.send({
+      type: 'event:router_set_up',
+      data: {
+        location,
+        navigation,
+        navigate,
+      },
+    })
+  }, [])
+  /**
+   * "Subscribe" to the location and navigation from react-router-dom
+   * to keep the router actor up-to-date from here on out
+   */
+  useEffect(() => {
+    appActor.getSnapshot().children.router?.send({
+      type: 'event:set_location',
+      data: location,
+    })
+  }, [location])
+
+  useEffect(() => {
+    appActor.getSnapshot().children.router?.send({
+      type: 'event:set_navigation',
+      data: navigation,
+    })
+  }, [navigation])
 
   useEffect(() => {
     // On initialization, the react-router-dom does not send a 'loading' state event.
