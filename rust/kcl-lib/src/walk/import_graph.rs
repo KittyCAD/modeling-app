@@ -92,8 +92,10 @@ fn topsort(all_modules: &[&str], graph: Graph) -> Result<Vec<Vec<String>>, KclEr
         }
 
         if stage_modules.is_empty() {
-            return Err(KclError::Internal(KclErrorDetails {
-                message: "Circular import detected".to_string(),
+            waiting_modules.sort();
+
+            return Err(KclError::ImportCycle(KclErrorDetails {
+                message: format!("circular import of modules not allowed: {}", waiting_modules.join(", ")),
                 source_ranges: Default::default(),
             }));
         }
