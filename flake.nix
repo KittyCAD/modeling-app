@@ -19,8 +19,13 @@
         (self: super: {
           rustToolchain = super. rust-bin.stable.latest.default.override {
             targets = [ "wasm32-unknown-unknown" ];
-            extensions = [ "rustfmt" "llvm-tools-preview" ];
+            extensions = [ "rustfmt" "llvm-tools-preview" "rust-src" ];
           };
+        })
+        (self: super: {
+          cargo-llvm-cov = super.cargo-llvm-cov.overrideAttrs(oa: {
+            doCheck = false; doInstallCheck = false;
+          });
         })
       ];
 
@@ -34,7 +39,7 @@
 
       # Helper to provide system-specific attributes
       forAllSystems = f: nixpkgs.lib.genAttrs allSystems (system: f {
-        pkgs = import nixpkgs { inherit overlays system; };
+        pkgs = import nixpkgs { inherit overlays system; config.allowBroken = true; };
       });
 
     in
@@ -62,7 +67,7 @@
             electron
             playwright-driver.browsers
           ]) ++ pkgs.lib.optionals pkgs.stdenv.isDarwin (with pkgs; [
-            libiconv 
+            libiconv
             darwin.apple_sdk.frameworks.Security
           ]);
 
