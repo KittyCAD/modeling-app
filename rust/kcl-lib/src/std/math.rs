@@ -6,18 +6,31 @@ use kcl_derive_docs::stdlib;
 use super::args::FromArgs;
 use crate::{
     errors::{KclError, KclErrorDetails},
-    execution::{types::NumericType, ExecState, KclValue},
+    execution::{
+        types::{self, NumericType},
+        ExecState, KclValue,
+    },
     std::args::{Args, TyF64},
+    CompilationError,
 };
 
 /// Compute the remainder after dividing `num` by `div`.
 /// If `num` is negative, the result will be too.
-pub async fn rem(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let n = args.get_unlabeled_kw_arg("number to divide")?;
-    let d = args.get_kw_arg("divisor")?;
+pub async fn rem(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let n: TyF64 = args.get_unlabeled_kw_arg("number to divide")?;
+    let d: TyF64 = args.get_kw_arg("divisor")?;
+
+    let (n, d, ty) = NumericType::combine_div(n, d);
+    if *types::CHECK_NUMERIC_TYPES && ty == NumericType::Unknown {
+        // TODO suggest how to fix this
+        exec_state.warn(CompilationError::err(
+            args.source_range,
+            "Remainder of numbers which have unknown or incompatible units.",
+        ));
+    }
     let remainder = inner_rem(n, d);
 
-    Ok(args.make_user_val_from_f64(remainder))
+    Ok(args.make_user_val_from_f64_with_type(TyF64::new(remainder, ty)))
 }
 
 /// Compute the remainder after dividing `num` by `div`.
@@ -243,11 +256,19 @@ fn inner_ceil(num: f64) -> Result<f64, KclError> {
 }
 
 /// Compute the minimum of the given arguments.
-pub async fn min(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let nums = args.get_number_array()?;
+pub async fn min(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let nums = args.get_number_array_with_types()?;
+    let (nums, ty) = NumericType::combine_eq_array(&nums);
+    if *types::CHECK_NUMERIC_TYPES && ty == NumericType::Unknown {
+        // TODO suggest how to fix this
+        exec_state.warn(CompilationError::err(
+            args.source_range,
+            "Calling `min` on numbers which have unknown or incompatible units.",
+        ));
+    }
     let result = inner_min(nums);
 
-    Ok(args.make_user_val_from_f64(result))
+    Ok(args.make_user_val_from_f64_with_type(TyF64::new(result, ty)))
 }
 
 /// Compute the minimum of the given arguments.
@@ -280,11 +301,19 @@ fn inner_min(args: Vec<f64>) -> f64 {
 }
 
 /// Compute the maximum of the given arguments.
-pub async fn max(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let nums = args.get_number_array()?;
+pub async fn max(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let nums = args.get_number_array_with_types()?;
+    let (nums, ty) = NumericType::combine_eq_array(&nums);
+    if *types::CHECK_NUMERIC_TYPES && ty == NumericType::Unknown {
+        // TODO suggest how to fix this
+        exec_state.warn(CompilationError::err(
+            args.source_range,
+            "Calling `max` on numbers which have unknown or incompatible units.",
+        ));
+    }
     let result = inner_max(nums);
 
-    Ok(args.make_user_val_from_f64(result))
+    Ok(args.make_user_val_from_f64_with_type(TyF64::new(result, ty)))
 }
 
 /// Compute the maximum of the given arguments.
