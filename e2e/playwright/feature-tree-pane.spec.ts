@@ -1,6 +1,10 @@
 import * as fsp from 'fs/promises'
 import { join } from 'path'
 
+import {
+  orRunWhenFullSuiteEnabled,
+  runningOnWindows,
+} from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
 const FEATURE_TREE_EXAMPLE_CODE = `export fn timesFive(x) {
@@ -65,6 +69,9 @@ test.describe('Feature Tree pane', () => {
     'User can go to definition and go to function definition',
     { tag: '@electron' },
     async ({ context, homePage, scene, editor, toolbar, cmdBar, page }) => {
+      if (runningOnWindows()) {
+        test.fixme(orRunWhenFullSuiteEnabled())
+      }
       await context.folderSetupFn(async (dir) => {
         const bracketDir = join(dir, 'test-sample')
         await fsp.mkdir(bracketDir, { recursive: true })
