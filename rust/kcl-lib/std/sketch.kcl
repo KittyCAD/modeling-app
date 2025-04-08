@@ -29,7 +29,7 @@ export fn circle(
   /// The center of the circle.
   center: Point2d,
   /// The radius of the circle.
-  radius: number,
+  radius: number(Length),
   /// Create a new tag which refers to this circle.
   tag?: tag,
 ): Sketch {}
@@ -110,7 +110,7 @@ export fn circle(
 ///      |> mirror2d( axis = X )
 ///      |> extrude(length = 10)
 ///
-/// sketch002 = startSketchOn(sketch0011, END)
+/// sketch002 = startSketchOn(sketch0011, face = END)
 ///     |> circle( center = [-0.01, 1.58], radius = 1.2 )
 ///     |> extrude(length = 1.2)
 ///

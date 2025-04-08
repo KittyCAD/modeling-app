@@ -49,16 +49,26 @@ description: Variables in memory after executing translate_after_fillet.kcl
     "type": "Number",
     "value": 0.5,
     "ty": {
-      "type": "Known",
-      "type": "Count"
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
     }
   },
   "boltHexFlatLength": {
     "type": "Number",
     "value": 0.2887,
     "ty": {
-      "type": "Known",
-      "type": "Count"
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
     }
   },
   "boltLength": {

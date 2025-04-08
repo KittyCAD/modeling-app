@@ -20,7 +20,7 @@ description: Operations executed subtract_cylinder_from_cube.kcl
   },
   {
     "labeledArgs": {
-      "data": {
+      "planeOrSolid": {
         "value": {
           "type": "Plane",
           "artifact_id": "[uuid]"
@@ -70,7 +70,7 @@ description: Operations executed subtract_cylinder_from_cube.kcl
   },
   {
     "labeledArgs": {
-      "data": {
+      "planeOrSolid": {
         "value": {
           "type": "String",
           "value": "XY"
