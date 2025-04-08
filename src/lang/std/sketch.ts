@@ -3119,7 +3119,6 @@ export function fnNameToTooltip(
         [ARG_LENGTH]: 'angledLine',
       }
       for (const [arg, tooltip] of Object.entries(argmap)) {
-        console.warn(`ADAM: ${arg}, ${tooltip}`)
         const foundAt = argLabels.findIndex((label) => label === arg)
         if (foundAt >= 0) {
           return tooltip

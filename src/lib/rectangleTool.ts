@@ -1,4 +1,10 @@
-import { ARG_END_ABSOLUTE } from '@src/lang/constants'
+import type { Node } from '@rust/kcl-lib/bindings/Node'
+import {
+  ARG_ANGLE,
+  ARG_END_ABSOLUTE,
+  ARG_LENGTH,
+  ARG_TAG,
+} from '@src/lang/constants'
 import {
   createArrayExpression,
   createBinaryExpression,
@@ -11,6 +17,7 @@ import {
   createTagDeclarator,
   createUnaryExpression,
 } from '@src/lang/create'
+import { mutateKwArg } from '@src/lang/modifyAst'
 import {
   isArrayExpression,
   isBinaryExpression,
@@ -18,12 +25,23 @@ import {
   isLiteral,
   isLiteralValueNumber,
 } from '@src/lang/util'
-import type {
-  ArrayExpression,
-  CallExpression,
-  PipeExpression,
-} from '@src/lang/wasm'
+import type { CallExpressionKw, Expr, PipeExpression } from '@src/lang/wasm'
 import { roundOff } from '@src/lib/utils'
+
+function angledLine(
+  angle: Expr,
+  length: Expr,
+  tag?: string
+): Node<CallExpressionKw> {
+  const args = [
+    createLabeledArg(ARG_ANGLE, angle),
+    createLabeledArg(ARG_LENGTH, length),
+  ]
+  if (tag) {
+    args.push(createLabeledArg(ARG_TAG, createTagDeclarator(tag)))
+  }
+  return createCallExpressionStdLibKw('angledLine', null, args)
+}
 
 /**
  * It does not create the startSketchOn and it does not create the startProfileAt.
@@ -38,47 +56,44 @@ import { roundOff } from '@src/lib/utils'
 export const getRectangleCallExpressions = (
   rectangleOrigin: [number, number],
   tag: string
-) => [
-  createCallExpressionStdLib('angledLine', [
-    createArrayExpression([
+) => {
+  return [
+    angledLine(
       createLiteral(0), // 0 deg
       createLiteral(0), // This will be the width of the rectangle
-    ]),
-    createPipeSubstitution(),
-    createTagDeclarator(tag),
-  ]),
-  createCallExpressionStdLib('angledLine', [
-    createArrayExpression([
+      tag
+    ),
+    angledLine(
       createBinaryExpression([
         createCallExpressionStdLib('segAng', [createLocalName(tag)]),
         '+',
         createLiteral(90),
       ]), // 90 offset from the previous line
-      createLiteral(0), // This will be the height of the rectangle
-    ]),
-    createPipeSubstitution(),
-  ]),
-  createCallExpressionStdLib('angledLine', [
-    createArrayExpression([
+      createLiteral(0) // This will be the height of the rectangle
+    ),
+    angledLine(
       createCallExpressionStdLib('segAng', [createLocalName(tag)]), // same angle as the first line
       createUnaryExpression(
         createCallExpressionStdLib('segLen', [createLocalName(tag)]),
         '-'
-      ), // negative height
-    ]),
-    createPipeSubstitution(),
-  ]),
-  createCallExpressionStdLibKw('line', null, [
-    createLabeledArg(
-      ARG_END_ABSOLUTE,
-      createArrayExpression([
-        createCallExpressionStdLib('profileStartX', [createPipeSubstitution()]),
-        createCallExpressionStdLib('profileStartY', [createPipeSubstitution()]),
-      ])
+      ) // negative height
     ),
-  ]), // close the rectangle
-  createCallExpressionStdLibKw('close', null, []),
-]
+    createCallExpressionStdLibKw('line', null, [
+      createLabeledArg(
+        ARG_END_ABSOLUTE,
+        createArrayExpression([
+          createCallExpressionStdLib('profileStartX', [
+            createPipeSubstitution(),
+          ]),
+          createCallExpressionStdLib('profileStartY', [
+            createPipeSubstitution(),
+          ]),
+        ])
+      ),
+    ]), // close the rectangle
+    createCallExpressionStdLibKw('close', null, []),
+  ]
+}
 
 /**
  * Mutates the pipeExpression to update the rectangle sketch
@@ -93,20 +108,22 @@ export function updateRectangleSketch(
   y: number,
   tag: string
 ) {
-  ;((pipeExpression.body[1] as CallExpression)
-    .arguments[0] as ArrayExpression) = createArrayExpression([
-    createLiteral(x >= 0 ? 0 : 180),
-    createLiteral(Math.abs(x)),
-  ])
-  ;((pipeExpression.body[2] as CallExpression)
-    .arguments[0] as ArrayExpression) = createArrayExpression([
+  const firstEdge = pipeExpression.body[1] as CallExpressionKw
+  mutateKwArg('angle', firstEdge, createLiteral(x >= 0 ? 0 : 180))
+  mutateKwArg('length', firstEdge, createLiteral(Math.abs(x)))
+  const secondEdge = pipeExpression.body[2] as CallExpressionKw
+  // 90 offset from the previous line
+  mutateKwArg(
+    'angle',
+    secondEdge,
     createBinaryExpression([
       createCallExpressionStdLib('segAng', [createLocalName(tag)]),
       Math.sign(y) === Math.sign(x) ? '+' : '-',
       createLiteral(90),
-    ]), // 90 offset from the previous line
-    createLiteral(Math.abs(y)), // This will be the height of the rectangle
-  ])
+    ])
+  )
+  // This will be the height of the rectangle
+  mutateKwArg('length', secondEdge, createLiteral(Math.abs(y)))
 }
 
 /**
