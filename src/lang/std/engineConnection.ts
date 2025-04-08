@@ -75,6 +75,7 @@ export enum ConnectionError {
   MissingAuthToken,
   BadAuthToken,
   TooManyConnections,
+  Outage,
 
   // An unknown error is the most severe because it has not been classified
   // or encountered before.
@@ -95,6 +96,8 @@ export const CONNECTION_ERROR_TEXT: Record<ConnectionError, string> = {
   [ConnectionError.BadAuthToken]:
     'Your authorization token is invalid; please login again.',
   [ConnectionError.TooManyConnections]: 'There are too many connections.',
+  [ConnectionError.Outage]:
+    'No available engine servers at this time. Please visit status.zoo.dev for updates.',
   [ConnectionError.Unknown]:
     'An unexpected error occurred. Please report this to us.',
 }
@@ -989,6 +992,20 @@ class EngineConnection extends EventTarget {
                   type: DisconnectingType.Error,
                   value: {
                     error: ConnectionError.BadAuthToken,
+                    context: firstError.message,
+                  },
+                },
+              }
+              this.disconnectAll()
+            }
+
+            if (firstError.error_code === 'internal_api') {
+              this.state = {
+                type: EngineConnectionStateType.Disconnecting,
+                value: {
+                  type: DisconnectingType.Error,
+                  value: {
+                    error: ConnectionError.Outage,
                     context: firstError.message,
                   },
                 },
