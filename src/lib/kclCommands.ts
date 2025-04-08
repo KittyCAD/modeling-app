@@ -17,12 +17,14 @@ import {
   EXECUTION_TYPE_REAL,
   FILE_EXT,
 } from '@src/lib/constants'
+import { getPathFilenameInVariableCase } from '@src/lib/desktop'
 import { isDesktop } from '@src/lib/isDesktop'
 import { copyFileShareLink } from '@src/lib/links'
 import { baseUnitsUnion } from '@src/lib/settings/settingsTypes'
 import { codeManager, editorManager, kclManager } from '@src/lib/singletons'
 import { err, reportRejection } from '@src/lib/trap'
 import type { IndexLoaderData } from '@src/lib/types'
+import type { CommandBarContext } from '@src/machines/commandBarMachine'
 import { IS_NIGHTLY_OR_DEBUG } from '@src/routes/utils'
 
 interface OnSubmitProps {
@@ -125,6 +127,14 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
         localName: {
           inputType: 'string',
           required: true,
+          defaultValue: (context: CommandBarContext) => {
+            if (!context.argumentsToSubmit['path']) {
+              return
+            }
+
+            const path = context.argumentsToSubmit['path'] as string
+            return getPathFilenameInVariableCase(path)
+          },
         },
       },
       onSubmit: (data) => {
