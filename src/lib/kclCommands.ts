@@ -39,6 +39,9 @@ interface KclCommandConfig {
     onSubmit: (p: OnSubmitProps) => Promise<void>
     providedOptions: CommandArgumentOption<string>[]
   }
+  specialPropsForLoadCommand: {
+    onSubmit: (path: string) => Promise<void>
+  }
   specialPropsForInsertCommand: {
     providedOptions: CommandArgumentOption<string>[]
   }
@@ -157,6 +160,31 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
       icon: 'code',
       onSubmit: () => {
         kclManager.format().catch(reportRejection)
+      },
+    },
+    {
+      name: 'load-external-file',
+      displayName: 'Load external file',
+      description: 'Loads a file from your local disk into the curren project.',
+      needsReview: true,
+      icon: 'importFile',
+      groupId: 'code',
+      hide: DEV || IS_NIGHTLY_OR_DEBUG ? 'web' : 'both',
+      args: {
+        path: {
+          inputType: 'pathDialog',
+          required: true,
+        },
+      },
+      onSubmit(data) {
+        if (!data?.path) {
+          return
+        }
+
+        console.log('path', data.path)
+        commandProps.specialPropsForLoadCommand
+          .onSubmit(data.path)
+          .catch(reportError)
       },
     },
     {

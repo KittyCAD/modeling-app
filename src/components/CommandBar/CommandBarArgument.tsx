@@ -2,6 +2,7 @@ import CommandArgOptionInput from '@src/components/CommandBar/CommandArgOptionIn
 import CommandBarBasicInput from '@src/components/CommandBar/CommandBarBasicInput'
 import CommandBarHeader from '@src/components/CommandBar/CommandBarHeader'
 import CommandBarKclInput from '@src/components/CommandBar/CommandBarKclInput'
+import CommandBarPathDialogInput from '@src/components/CommandBar/CommandBarPathDialogInput'
 import CommandBarSelectionInput from '@src/components/CommandBar/CommandBarSelectionInput'
 import CommandBarSelectionMixedInput from '@src/components/CommandBar/CommandBarSelectionMixedInput'
 import CommandBarTextareaInput from '@src/components/CommandBar/CommandBarTextareaInput'
@@ -103,6 +104,14 @@ function ArgumentInput({
     case 'text':
       return (
         <CommandBarTextareaInput
+          arg={arg}
+          stepBack={stepBack}
+          onSubmit={onSubmit}
+        />
+      )
+    case 'pathDialog':
+      return (
+        <CommandBarPathDialogInput
           arg={arg}
           stepBack={stepBack}
           onSubmit={onSubmit}

@@ -345,6 +345,15 @@ export type CommandArgument<
           ) => OutputType)
     }
   | {
+      inputType: 'pathDialog'
+      defaultValue?:
+        | OutputType
+        | ((
+            commandBarContext: ContextFrom<typeof commandBarMachine>,
+            machineContext?: ContextFrom<T>
+          ) => OutputType)
+    }
+  | {
       inputType: 'text'
       defaultValue?:
         | OutputType
