@@ -1039,7 +1039,6 @@ const transformMap: TransformMap = {
       vertical: {
         tooltip: 'yLine',
         createNode: ({ inputs, tag, rawArgs: args }) => {
-          console.warn('ADAM: inputs', inputs)
           const expr = inputs[1].expr
           if (forceNum(args[0].expr) >= 0)
             return createCallWrapper('yLine', expr, tag)
@@ -1784,7 +1783,7 @@ function getTransformMapPathKw(
     return false
   }
   const tooltip = fnNameToTooltip(allLabels(sketchFnExp), name)
-  console.warn('ADAM: allLabels, tooltip', allLabels(sketchFnExp), tooltip)
+  // console.warn('ADAM: allLabels, tooltip', allLabels(sketchFnExp), tooltip)
   if (err(tooltip)) {
     return false
   }
@@ -1817,12 +1816,6 @@ function getTransformMapPathKw(
   // check what constraints the function has
   const isAbsolute = findKwArg(ARG_END_ABSOLUTE, sketchFnExp) !== undefined
   const lineInputType = getConstraintType(argForEnd.val, tooltip, isAbsolute)
-  console.warn(
-    'ADAM: tooltip, lineInputType, constraintType',
-    tooltip,
-    lineInputType,
-    constraintType
-  )
   if (lineInputType) {
     const info = transformMap?.[tooltip]?.[lineInputType]?.[constraintType]
     if (info) {
@@ -1870,7 +1863,6 @@ export function getConstraintType(
   // and for one val sketch functions that the arg is NOT locked down
   // these conditions should have been checked previously.
   // completely locked down or not locked down at all does not depend on the fnName so we can check that first
-  console.warn('ADAM: getConstraintType', val, fnName, isAbsolute)
   const isArr = isArray(val)
   if (!isArr) {
     if (fnName === 'xLine') return isAbsolute ? 'yAbsolute' : 'yRelative'
@@ -1911,7 +1903,6 @@ export function getTransformInfos(
 
   try {
     const theTransforms = nodes.map((nodeMeta) => {
-      // console.warn('ADAM: nodeMeta is', nodeMeta)
       if (err(nodeMeta)) {
         console.error(nodeMeta)
         return false
@@ -2070,8 +2061,6 @@ export function transformAstSketchLines({
   const pathToNodeMap: PathToNodeMap = {}
 
   const processSelection = (_pathToNode: PathToNode, index: number) => {
-    console.warn('ADAM: transformInfos is', transformInfos)
-    console.warn('ADAM: index is', index)
     const callBack = transformInfos?.[index].createNode
     const transformTo = transformInfos?.[index].tooltip
 

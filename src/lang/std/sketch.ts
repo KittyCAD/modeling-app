@@ -2319,7 +2319,6 @@ export const angledLine: SketchLineHelperKw = {
     const angleLit = createLiteral(angle)
     const lengthLit = createLiteral(lineLength)
 
-    removeDeterminingArgs(callExpression)
     mutateKwArg(ARG_ANGLE, callExpression, angleLit)
     mutateKwArg(ARG_LENGTH, callExpression, lengthLit)
 
