@@ -6,7 +6,7 @@ import type { NamedView } from '@rust/kcl-lib/bindings/NamedView'
 
 import {
   createProject,
-  perProjectsettingsToToml,
+  perProjectSettingsToToml,
   tomlToPerProjectSettings,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
@@ -57,7 +57,7 @@ function tomlStringOverWriteNamedViewUuids(toml: string): string {
       settings.settings.app.named_views = remappedNamedViews
     }
   }
-  return perProjectsettingsToToml(settings)
+  return perProjectSettingsToToml(settings)
 }
 
 test.describe('Named view tests', () => {
@@ -120,7 +120,7 @@ test.describe('Named view tests', () => {
 
       // Write the entire tomlString to a snapshot.
       // There are many key/value pairs to check this is a safer match.
-      expect(tomlString).toMatchSnapshot('verify-named-view-gets-created')
+      expect(tomlString).toMatchSnapshot('verify-named-view-gets-created.toml')
     }).toPass()
   })
   test('Verify named view gets deleted', async ({
@@ -164,7 +164,7 @@ test.describe('Named view tests', () => {
 
       // Write the entire tomlString to a snapshot.
       // There are many key/value pairs to check this is a safer match.
-      expect(tomlString).toMatchSnapshot('verify-named-view-gets-created')
+      expect(tomlString).toMatchSnapshot('verify-named-view-gets-created.toml')
     }).toPass()
 
     // Delete a named view
@@ -179,9 +179,9 @@ test.describe('Named view tests', () => {
       // Rewrite the uuids in the named views to match snapshot otherwise they will be randomly generated from rust and break
       tomlString = tomlStringOverWriteNamedViewUuids(tomlString)
 
-      // // Write the entire tomlString to a snapshot.
-      // // There are many key/value pairs to check this is a safer match.
-      expect(tomlString).toMatchSnapshot('verify-named-view-gets-deleted')
+      // Write the entire tomlString to a snapshot.
+      // There are many key/value pairs to check this is a safer match.
+      expect(tomlString).toMatchSnapshot('verify-named-view-gets-deleted.toml')
     }).toPass()
   })
   test('Verify named view gets loaded', async ({
@@ -224,7 +224,7 @@ test.describe('Named view tests', () => {
 
       // Write the entire tomlString to a snapshot.
       // There are many key/value pairs to check this is a safer match.
-      expect(tomlString).toMatchSnapshot('verify-named-view-gets-created')
+      expect(tomlString).toMatchSnapshot('verify-named-view-gets-created.toml')
     }).toPass()
 
     // Create a load a named view
@@ -300,7 +300,9 @@ test.describe('Named view tests', () => {
 
       // Write the entire tomlString to a snapshot.
       // There are many key/value pairs to check this is a safer match.
-      expect(tomlString).toMatchSnapshot('verify-two-named-view-gets-created')
+      expect(tomlString).toMatchSnapshot(
+        'verify-two-named-view-gets-created.toml'
+      )
     }).toPass()
   })
 })
