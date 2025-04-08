@@ -918,165 +918,193 @@ impl Node<MemberExpression> {
 impl Node<BinaryExpression> {
     #[async_recursion]
     pub async fn get_result(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
-        let left_value = self.left.get_result(exec_state, ctx).await?;
-        let right_value = self.right.get_result(exec_state, ctx).await?;
-        let mut meta = left_value.metadata();
-        meta.extend(right_value.metadata());
-
-        // First check if we are doing string concatenation.
-        if self.operator == BinaryOperator::Add {
-            if let (KclValue::String { value: left, meta: _ }, KclValue::String { value: right, meta: _ }) =
-                (&left_value, &right_value)
-            {
-                return Ok(KclValue::String {
-                    value: format!("{}{}", left, right),
-                    meta,
-                });
-            }
+        let mut partial = self.right.get_result(exec_state, ctx).await?;
+        let mut next = &self.left;
+        let source_range = self.into();
+        // Don't recurse through a big chain of binary operations, iterate instead.
+        while let BinaryPart::BinaryExpression(next_binary_expr) = next {
+            let metadata = partial.metadata();
+            partial = do_binary_op(
+                partial,
+                next_binary_expr.right.get_result(exec_state, ctx).await?,
+                next_binary_expr.operator,
+                metadata,
+                source_range,
+                exec_state,
+                ctx,
+            )
+            .await?;
+            next = &next_binary_expr.left;
         }
 
-        // Then check if we have solids.
-        if self.operator == BinaryOperator::Add || self.operator == BinaryOperator::Or {
-            if let (KclValue::Solid { value: left }, KclValue::Solid { value: right }) = (&left_value, &right_value) {
-                let args = crate::std::Args::new(Default::default(), self.into(), ctx.clone(), None);
-                let result =
-                    crate::std::csg::inner_union(vec![*left.clone(), *right.clone()], exec_state, args).await?;
-                return Ok(result.into());
-            }
-        } else if self.operator == BinaryOperator::Sub {
-            // Check if we have solids.
-            if let (KclValue::Solid { value: left }, KclValue::Solid { value: right }) = (&left_value, &right_value) {
-                let args = crate::std::Args::new(Default::default(), self.into(), ctx.clone(), None);
-                let result =
-                    crate::std::csg::inner_subtract(vec![*left.clone()], vec![*right.clone()], exec_state, args)
-                        .await?;
-                return Ok(result.into());
-            }
-        } else if self.operator == BinaryOperator::And {
-            // Check if we have solids.
-            if let (KclValue::Solid { value: left }, KclValue::Solid { value: right }) = (&left_value, &right_value) {
-                let args = crate::std::Args::new(Default::default(), self.into(), ctx.clone(), None);
-                let result =
-                    crate::std::csg::inner_intersect(vec![*left.clone(), *right.clone()], exec_state, args).await?;
-                return Ok(result.into());
-            }
-        }
+        let next_value = next.get_result(exec_state, ctx).await?;
+        let mut meta = partial.metadata();
+        meta.extend(next_value.metadata());
 
-        // Check if we are doing logical operations on booleans.
-        if self.operator == BinaryOperator::Or || self.operator == BinaryOperator::And {
-            let KclValue::Bool {
-                value: left_value,
-                meta: _,
-            } = left_value
-            else {
-                return Err(KclError::Semantic(KclErrorDetails {
-                    message: format!(
-                        "Cannot apply logical operator to non-boolean value: {}",
-                        left_value.human_friendly_type()
-                    ),
-                    source_ranges: vec![self.left.clone().into()],
-                }));
-            };
-            let KclValue::Bool {
-                value: right_value,
-                meta: _,
-            } = right_value
-            else {
-                return Err(KclError::Semantic(KclErrorDetails {
-                    message: format!(
-                        "Cannot apply logical operator to non-boolean value: {}",
-                        right_value.human_friendly_type()
-                    ),
-                    source_ranges: vec![self.right.clone().into()],
-                }));
-            };
-            let raw_value = match self.operator {
-                BinaryOperator::Or => left_value || right_value,
-                BinaryOperator::And => left_value && right_value,
-                _ => unreachable!(),
-            };
-            return Ok(KclValue::Bool { value: raw_value, meta });
-        }
-
-        let left = number_as_f64(&left_value, self.left.clone().into())?;
-        let right = number_as_f64(&right_value, self.right.clone().into())?;
-
-        let value = match self.operator {
-            BinaryOperator::Add => {
-                let (l, r, ty) = NumericType::combine_eq(left, right);
-                self.warn_on_unknown(&ty, "Adding", exec_state);
-                KclValue::Number { value: l + r, meta, ty }
-            }
-            BinaryOperator::Sub => {
-                let (l, r, ty) = NumericType::combine_eq(left, right);
-                self.warn_on_unknown(&ty, "Subtracting", exec_state);
-                KclValue::Number { value: l - r, meta, ty }
-            }
-            BinaryOperator::Mul => {
-                let (l, r, ty) = NumericType::combine_mul(left, right);
-                self.warn_on_unknown(&ty, "Multiplying", exec_state);
-                KclValue::Number { value: l * r, meta, ty }
-            }
-            BinaryOperator::Div => {
-                let (l, r, ty) = NumericType::combine_div(left, right);
-                self.warn_on_unknown(&ty, "Dividing", exec_state);
-                KclValue::Number { value: l / r, meta, ty }
-            }
-            BinaryOperator::Mod => {
-                let (l, r, ty) = NumericType::combine_div(left, right);
-                self.warn_on_unknown(&ty, "Modulo of", exec_state);
-                KclValue::Number { value: l % r, meta, ty }
-            }
-            BinaryOperator::Pow => KclValue::Number {
-                value: left.n.powf(right.n),
-                meta,
-                ty: NumericType::Unknown,
-            },
-            BinaryOperator::Neq => {
-                let (l, r, ty) = NumericType::combine_eq(left, right);
-                self.warn_on_unknown(&ty, "Comparing", exec_state);
-                KclValue::Bool { value: l != r, meta }
-            }
-            BinaryOperator::Gt => {
-                let (l, r, ty) = NumericType::combine_eq(left, right);
-                self.warn_on_unknown(&ty, "Comparing", exec_state);
-                KclValue::Bool { value: l > r, meta }
-            }
-            BinaryOperator::Gte => {
-                let (l, r, ty) = NumericType::combine_eq(left, right);
-                self.warn_on_unknown(&ty, "Comparing", exec_state);
-                KclValue::Bool { value: l >= r, meta }
-            }
-            BinaryOperator::Lt => {
-                let (l, r, ty) = NumericType::combine_eq(left, right);
-                self.warn_on_unknown(&ty, "Comparing", exec_state);
-                KclValue::Bool { value: l < r, meta }
-            }
-            BinaryOperator::Lte => {
-                let (l, r, ty) = NumericType::combine_eq(left, right);
-                self.warn_on_unknown(&ty, "Comparing", exec_state);
-                KclValue::Bool { value: l <= r, meta }
-            }
-            BinaryOperator::Eq => {
-                let (l, r, ty) = NumericType::combine_eq(left, right);
-                self.warn_on_unknown(&ty, "Comparing", exec_state);
-                KclValue::Bool { value: l == r, meta }
-            }
-            BinaryOperator::And | BinaryOperator::Or => unreachable!(),
-        };
-
+        let value = do_binary_op(partial, next_value, self.operator, meta, self.into(), exec_state, ctx).await?;
         Ok(value)
     }
+}
 
-    fn warn_on_unknown(&self, ty: &NumericType, verb: &str, exec_state: &mut ExecState) {
-        if *CHECK_NUMERIC_TYPES && ty == &NumericType::Unknown {
-            // TODO suggest how to fix this
-            exec_state.warn(CompilationError::err(
-                self.as_source_range(),
-                format!("{} numbers which have unknown or incompatible units.", verb),
-            ));
+fn warn_on_unknown(source_range: SourceRange, ty: &NumericType, verb: &str, exec_state: &mut ExecState) {
+    if *CHECK_NUMERIC_TYPES && ty == &NumericType::Unknown {
+        // TODO suggest how to fix this
+        exec_state.warn(CompilationError::err(
+            source_range,
+            format!("{} numbers which have unknown or incompatible units.", verb),
+        ));
+    }
+}
+
+async fn do_binary_op(
+    left_value: KclValue,
+    right_value: KclValue,
+    operator: BinaryOperator,
+    meta: Vec<Metadata>,
+    source_range: SourceRange,
+    exec_state: &mut ExecState,
+    ctx: &ExecutorContext,
+) -> Result<KclValue, KclError> {
+    // First check if we are doing string concatenation.
+    if operator == BinaryOperator::Add {
+        if let (KclValue::String { value: left, meta: _ }, KclValue::String { value: right, meta: _ }) =
+            (&left_value, &right_value)
+        {
+            return Ok(KclValue::String {
+                value: format!("{}{}", left, right),
+                meta,
+            });
         }
     }
+
+    // Then check if we have solids.
+    if operator == BinaryOperator::Add || operator == BinaryOperator::Or {
+        if let (KclValue::Solid { value: left }, KclValue::Solid { value: right }) = (&left_value, &right_value) {
+            let args = crate::std::Args::new(Default::default(), source_range, ctx.clone(), None);
+            let result = crate::std::csg::inner_union(vec![*left.clone(), *right.clone()], exec_state, args).await?;
+            return Ok(result.into());
+        }
+    } else if operator == BinaryOperator::Sub {
+        // Check if we have solids.
+        if let (KclValue::Solid { value: left }, KclValue::Solid { value: right }) = (&left_value, &right_value) {
+            let args = crate::std::Args::new(Default::default(), source_range, ctx.clone(), None);
+            let result =
+                crate::std::csg::inner_subtract(vec![*left.clone()], vec![*right.clone()], exec_state, args).await?;
+            return Ok(result.into());
+        }
+    } else if operator == BinaryOperator::And {
+        // Check if we have solids.
+        if let (KclValue::Solid { value: left }, KclValue::Solid { value: right }) = (&left_value, &right_value) {
+            let args = crate::std::Args::new(Default::default(), source_range, ctx.clone(), None);
+            let result =
+                crate::std::csg::inner_intersect(vec![*left.clone(), *right.clone()], exec_state, args).await?;
+            return Ok(result.into());
+        }
+    }
+
+    // Check if we are doing logical operations on booleans.
+    if operator == BinaryOperator::Or || operator == BinaryOperator::And {
+        let KclValue::Bool {
+            value: left_value,
+            meta: _,
+        } = left_value
+        else {
+            return Err(KclError::Semantic(KclErrorDetails {
+                message: format!(
+                    "Cannot apply logical operator to non-boolean value: {}",
+                    left_value.human_friendly_type()
+                ),
+                source_ranges: left_value.into(),
+            }));
+        };
+        let KclValue::Bool {
+            value: right_value,
+            meta: _,
+        } = right_value
+        else {
+            return Err(KclError::Semantic(KclErrorDetails {
+                message: format!(
+                    "Cannot apply logical operator to non-boolean value: {}",
+                    right_value.human_friendly_type()
+                ),
+                source_ranges: right_value.into(),
+            }));
+        };
+        let raw_value = match operator {
+            BinaryOperator::Or => left_value || right_value,
+            BinaryOperator::And => left_value && right_value,
+            _ => unreachable!(),
+        };
+        return Ok(KclValue::Bool { value: raw_value, meta });
+    }
+
+    let left = number_as_f64(&left_value, (&left_value).into())?;
+    let right = number_as_f64(&right_value, (&left_value).into())?;
+
+    let value = match operator {
+        BinaryOperator::Add => {
+            let (l, r, ty) = NumericType::combine_eq(left, right);
+            warn_on_unknown(source_range, &ty, "Adding", exec_state);
+            KclValue::Number { value: l + r, meta, ty }
+        }
+        BinaryOperator::Sub => {
+            let (l, r, ty) = NumericType::combine_eq(left, right);
+            warn_on_unknown(source_range, &ty, "Subtracting", exec_state);
+            KclValue::Number { value: l - r, meta, ty }
+        }
+        BinaryOperator::Mul => {
+            let (l, r, ty) = NumericType::combine_mul(left, right);
+            warn_on_unknown(source_range, &ty, "Multiplying", exec_state);
+            KclValue::Number { value: l * r, meta, ty }
+        }
+        BinaryOperator::Div => {
+            let (l, r, ty) = NumericType::combine_div(left, right);
+            warn_on_unknown(source_range, &ty, "Dividing", exec_state);
+            KclValue::Number { value: l / r, meta, ty }
+        }
+        BinaryOperator::Mod => {
+            let (l, r, ty) = NumericType::combine_div(left, right);
+            warn_on_unknown(source_range, &ty, "Modulo of", exec_state);
+            KclValue::Number { value: l % r, meta, ty }
+        }
+        BinaryOperator::Pow => KclValue::Number {
+            value: left.n.powf(right.n),
+            meta,
+            ty: NumericType::Unknown,
+        },
+        BinaryOperator::Neq => {
+            let (l, r, ty) = NumericType::combine_eq(left, right);
+            warn_on_unknown(source_range, &ty, "Comparing", exec_state);
+            KclValue::Bool { value: l != r, meta }
+        }
+        BinaryOperator::Gt => {
+            let (l, r, ty) = NumericType::combine_eq(left, right);
+            warn_on_unknown(source_range, &ty, "Comparing", exec_state);
+            KclValue::Bool { value: l > r, meta }
+        }
+        BinaryOperator::Gte => {
+            let (l, r, ty) = NumericType::combine_eq(left, right);
+            warn_on_unknown(source_range, &ty, "Comparing", exec_state);
+            KclValue::Bool { value: l >= r, meta }
+        }
+        BinaryOperator::Lt => {
+            let (l, r, ty) = NumericType::combine_eq(left, right);
+            warn_on_unknown(source_range, &ty, "Comparing", exec_state);
+            KclValue::Bool { value: l < r, meta }
+        }
+        BinaryOperator::Lte => {
+            let (l, r, ty) = NumericType::combine_eq(left, right);
+            warn_on_unknown(source_range, &ty, "Comparing", exec_state);
+            KclValue::Bool { value: l <= r, meta }
+        }
+        BinaryOperator::Eq => {
+            let (l, r, ty) = NumericType::combine_eq(left, right);
+            warn_on_unknown(source_range, &ty, "Comparing", exec_state);
+            KclValue::Bool { value: l == r, meta }
+        }
+        BinaryOperator::And | BinaryOperator::Or => unreachable!(),
+    };
+    Ok(value)
 }
 
 impl Node<UnaryExpression> {
