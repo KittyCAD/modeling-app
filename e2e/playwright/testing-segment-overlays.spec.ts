@@ -1491,7 +1491,7 @@ part001 = startSketchOn(XZ)
         after: `line(end = [25, 1.31], tag = $seg01)`,
       },
       {
-        before: `angledLine(angle = 3 + 0, endAbsoluteY = 7 + 0, $seg01)`,
+        before: `angledLine(angle = 3 + 0, endAbsoluteY = 7 + 0, tag = $seg01)`,
         after: `line(end = [19.08, 1], tag = $seg01)`,
       },
     ]
