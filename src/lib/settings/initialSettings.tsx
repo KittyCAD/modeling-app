@@ -215,7 +215,7 @@ export function createSettings() {
         hideOnLevel: 'project',
         description: 'Save bandwidth & battery',
         validate: (v) =>
-          v == 'undefined' ||
+          String(v) == 'undefined' ||
           (Number(v) >= 0 && Number(v) <= 60 * MS_IN_MINUTE),
         commandConfig: {
           inputType: 'options',
