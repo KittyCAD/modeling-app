@@ -49,16 +49,26 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
     "type": "Number",
     "value": 0.5,
     "ty": {
-      "type": "Known",
-      "type": "Count"
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
     }
   },
   "boltHexFlatLength": {
     "type": "Number",
     "value": 0.2887,
     "ty": {
-      "type": "Known",
-      "type": "Count"
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
     }
   },
   "boltLength": {
@@ -236,32 +246,52 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
     "type": "Number",
     "value": 0.625,
     "ty": {
-      "type": "Known",
-      "type": "Count"
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
     }
   },
   "hexNutFlatLength": {
     "type": "Number",
     "value": 0.5413,
     "ty": {
-      "type": "Known",
-      "type": "Count"
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
     }
   },
   "hexNutFlatToFlat": {
     "type": "Number",
     "value": 0.9375,
     "ty": {
-      "type": "Known",
-      "type": "Count"
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
     }
   },
   "hexNutThickness": {
     "type": "Number",
     "value": 0.5469,
     "ty": {
-      "type": "Known",
-      "type": "Count"
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
     }
   },
   "mountingHoleDiameter": {

@@ -9,8 +9,8 @@ flowchart LR
     7[Solid2d]
   end
   subgraph path23 [Path]
-    23["Path<br>[298, 350, 0]"]
-    24["Segment<br>[298, 350, 0]"]
+    23["Path<br>[305, 357, 0]"]
+    24["Segment<br>[305, 357, 0]"]
     25[Solid2d]
   end
   1["Plane<br>[29, 48, 0]"]
@@ -29,13 +29,13 @@ flowchart LR
   20["SweepEdge Adjacent"]
   21["SweepEdge Opposite"]
   22["SweepEdge Adjacent"]
-  26["Sweep Extrusion<br>[356, 375, 0]"]
+  26["Sweep Extrusion<br>[363, 382, 0]"]
   27[Wall]
   28["Cap Start"]
   29["Cap End"]
   30["SweepEdge Opposite"]
   31["SweepEdge Adjacent"]
-  32["StartSketchOnFace<br>[263, 292, 0]"]
+  32["StartSketchOnFace<br>[263, 299, 0]"]
   1 --- 2
   2 --- 3
   2 --- 4

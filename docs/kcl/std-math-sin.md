@@ -9,7 +9,7 @@ Compute the sine of a number (in radians).
 
 
 ```js
-sin(@num: number(rad)): number(_)
+sin(@num: number(Angle)): number(_)
 ```
 
 
@@ -17,7 +17,7 @@ sin(@num: number(rad)): number(_)
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `num` | `number(rad)` |  | Yes |
+| `num` | `number(Angle)` |  | Yes |
 
 ### Returns
 

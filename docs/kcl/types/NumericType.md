@@ -132,6 +132,21 @@ A unit of length.
 
 ----
 
+**Type:** `object`
+
+
+
+
+
+## Properties
+
+| Property | Type | Description | Required |
+|----------|------|-------------|----------|
+| `type` |enum: `Unknown`|  | No |
+
+
+----
+
 
 ## Properties
 
@@ -176,6 +191,21 @@ A unit of angle.
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
 | `type` |enum: `Radians`|  | No |
+
+
+----
+
+**Type:** `object`
+
+
+
+
+
+## Properties
+
+| Property | Type | Description | Required |
+|----------|------|-------------|----------|
+| `type` |enum: `Unknown`|  | No |
 
 
 ----

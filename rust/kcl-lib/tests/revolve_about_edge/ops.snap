@@ -5,7 +5,7 @@ description: Operations executed revolve_about_edge.kcl
 [
   {
     "labeledArgs": {
-      "data": {
+      "planeOrSolid": {
         "value": {
           "type": "String",
           "value": "XY"
@@ -20,7 +20,7 @@ description: Operations executed revolve_about_edge.kcl
   },
   {
     "labeledArgs": {
-      "data": {
+      "planeOrSolid": {
         "value": {
           "type": "String",
           "value": "XY"

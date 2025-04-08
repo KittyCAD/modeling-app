@@ -154,22 +154,34 @@ description: Variables in memory after executing dodecahedron.kcl
           "origin": {
             "x": 0.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
+            "z": 1.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "units": {
             "type": "Inches"
@@ -361,22 +373,34 @@ description: Variables in memory after executing dodecahedron.kcl
               "origin": {
                 "x": -17.76901418668612,
                 "y": 0.0,
-                "z": 10.981854713951094
+                "z": 10.981854713951094,
+                "units": {
+                  "type": "Inches"
+                }
               },
               "xAxis": {
                 "x": -0.4472135954999579,
                 "y": 0.0,
-                "z": 0.8944271909999159
+                "z": 0.8944271909999159,
+                "units": {
+                  "type": "Unknown"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Inches"
+                }
               },
               "zAxis": {
                 "x": 0.8944271909999159,
                 "y": 0.0,
-                "z": 0.4472135954999579
+                "z": 0.4472135954999579,
+                "units": {
+                  "type": "Unknown"
+                }
               },
               "units": {
                 "type": "Inches"
@@ -565,22 +589,34 @@ description: Variables in memory after executing dodecahedron.kcl
               "origin": {
                 "x": -17.76901418668612,
                 "y": 0.0,
-                "z": 10.981854713951094
+                "z": 10.981854713951094,
+                "units": {
+                  "type": "Inches"
+                }
               },
               "xAxis": {
                 "x": -0.4472135954999579,
                 "y": 0.0,
-                "z": 0.8944271909999159
+                "z": 0.8944271909999159,
+                "units": {
+                  "type": "Unknown"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Inches"
+                }
               },
               "zAxis": {
                 "x": 0.8944271909999159,
                 "y": 0.0,
-                "z": 0.4472135954999579
+                "z": 0.4472135954999579,
+                "units": {
+                  "type": "Unknown"
+                }
               },
               "units": {
                 "type": "Inches"
@@ -769,22 +805,34 @@ description: Variables in memory after executing dodecahedron.kcl
               "origin": {
                 "x": -17.76901418668612,
                 "y": 0.0,
-                "z": 10.981854713951094
+                "z": 10.981854713951094,
+                "units": {
+                  "type": "Inches"
+                }
               },
               "xAxis": {
                 "x": -0.4472135954999579,
                 "y": 0.0,
-                "z": 0.8944271909999159
+                "z": 0.8944271909999159,
+                "units": {
+                  "type": "Unknown"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Inches"
+                }
               },
               "zAxis": {
                 "x": 0.8944271909999159,
                 "y": 0.0,
-                "z": 0.4472135954999579
+                "z": 0.4472135954999579,
+                "units": {
+                  "type": "Unknown"
+                }
               },
               "units": {
                 "type": "Inches"
@@ -973,22 +1021,34 @@ description: Variables in memory after executing dodecahedron.kcl
               "origin": {
                 "x": -17.76901418668612,
                 "y": 0.0,
-                "z": 10.981854713951094
+                "z": 10.981854713951094,
+                "units": {
+                  "type": "Inches"
+                }
               },
               "xAxis": {
                 "x": -0.4472135954999579,
                 "y": 0.0,
-                "z": 0.8944271909999159
+                "z": 0.8944271909999159,
+                "units": {
+                  "type": "Unknown"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Inches"
+                }
               },
               "zAxis": {
                 "x": 0.8944271909999159,
                 "y": 0.0,
-                "z": 0.4472135954999579
+                "z": 0.4472135954999579,
+                "units": {
+                  "type": "Unknown"
+                }
               },
               "units": {
                 "type": "Inches"
@@ -1177,22 +1237,34 @@ description: Variables in memory after executing dodecahedron.kcl
               "origin": {
                 "x": -17.76901418668612,
                 "y": 0.0,
-                "z": 10.981854713951094
+                "z": 10.981854713951094,
+                "units": {
+                  "type": "Inches"
+                }
               },
               "xAxis": {
                 "x": -0.4472135954999579,
                 "y": 0.0,
-                "z": 0.8944271909999159
+                "z": 0.8944271909999159,
+                "units": {
+                  "type": "Unknown"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Inches"
+                }
               },
               "zAxis": {
                 "x": 0.8944271909999159,
                 "y": 0.0,
-                "z": 0.4472135954999579
+                "z": 0.4472135954999579,
+                "units": {
+                  "type": "Unknown"
+                }
               },
               "units": {
                 "type": "Inches"
@@ -1342,22 +1414,34 @@ description: Variables in memory after executing dodecahedron.kcl
         "origin": {
           "x": 0.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": {
+            "type": "Mm"
+          }
         },
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": {
+            "type": "Mm"
+          }
         },
         "yAxis": {
           "x": 0.0,
           "y": 1.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": {
+            "type": "Mm"
+          }
         },
         "zAxis": {
           "x": 0.0,
           "y": 0.0,
-          "z": 1.0
+          "z": 1.0,
+          "units": {
+            "type": "Mm"
+          }
         },
         "units": {
           "type": "Inches"
@@ -1539,22 +1623,34 @@ description: Variables in memory after executing dodecahedron.kcl
           "origin": {
             "x": -17.76901418668612,
             "y": 0.0,
-            "z": 10.981854713951094
+            "z": 10.981854713951094,
+            "units": {
+              "type": "Inches"
+            }
           },
           "xAxis": {
             "x": -0.4472135954999579,
             "y": 0.0,
-            "z": 0.8944271909999159
+            "z": 0.8944271909999159,
+            "units": {
+              "type": "Unknown"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Inches"
+            }
           },
           "zAxis": {
             "x": 0.8944271909999159,
             "y": 0.0,
-            "z": 0.4472135954999579
+            "z": 0.4472135954999579,
+            "units": {
+              "type": "Unknown"
+            }
           },
           "units": {
             "type": "Inches"
@@ -1702,22 +1798,34 @@ description: Variables in memory after executing dodecahedron.kcl
         "origin": {
           "x": -17.76901418668612,
           "y": 0.0,
-          "z": 10.981854713951094
+          "z": 10.981854713951094,
+          "units": {
+            "type": "Inches"
+          }
         },
         "xAxis": {
           "x": -0.4472135954999579,
           "y": 0.0,
-          "z": 0.8944271909999159
+          "z": 0.8944271909999159,
+          "units": {
+            "type": "Unknown"
+          }
         },
         "yAxis": {
           "x": 0.0,
           "y": 1.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": {
+            "type": "Inches"
+          }
         },
         "zAxis": {
           "x": 0.8944271909999159,
           "y": 0.0,
-          "z": 0.4472135954999579
+          "z": 0.4472135954999579,
+          "units": {
+            "type": "Unknown"
+          }
         },
         "units": {
           "type": "Inches"
@@ -1774,174 +1882,199 @@ description: Variables in memory after executing dodecahedron.kcl
     "type": "Number",
     "value": 17.8411,
     "ty": {
-      "type": "Unknown"
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
     }
   },
   "inscR": {
     "type": "Number",
     "value": 19.8664,
     "ty": {
-      "type": "Unknown"
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
     }
   },
   "pentR": {
     "type": "Number",
     "value": 15.1765,
     "ty": {
-      "type": "Unknown"
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
     }
   },
   "plane": {
     "type": "Object",
     "value": {
-      "plane": {
-        "type": "Object",
-        "value": {
-          "origin": {
-            "type": "MixedArray",
-            "value": [
-              {
-                "type": "Number",
-                "value": -17.769,
-                "ty": {
-                  "type": "Unknown"
-                }
+      "origin": {
+        "type": "MixedArray",
+        "value": [
+          {
+            "type": "Number",
+            "value": -17.769,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Inches"
               },
-              {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              },
-              {
-                "type": "Number",
-                "value": 10.9819,
-                "ty": {
-                  "type": "Unknown"
-                }
+              "angle": {
+                "type": "Degrees"
               }
-            ]
+            }
           },
-          "xAxis": {
-            "type": "MixedArray",
-            "value": [
-              {
-                "type": "Number",
-                "value": -0.4472,
-                "ty": {
-                  "type": "Known",
-                  "type": "Count"
-                }
+          {
+            "type": "Number",
+            "value": 0.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Inches"
               },
-              {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              },
-              {
-                "type": "Number",
-                "value": 0.8944,
-                "ty": {
-                  "type": "Known",
-                  "type": "Count"
-                }
+              "angle": {
+                "type": "Degrees"
               }
-            ]
+            }
           },
-          "yAxis": {
-            "type": "MixedArray",
-            "value": [
-              {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
+          {
+            "type": "Number",
+            "value": 10.9819,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Inches"
               },
-              {
-                "type": "Number",
-                "value": 1.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              },
-              {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
+              "angle": {
+                "type": "Degrees"
               }
-            ]
-          },
-          "zAxis": {
-            "type": "MixedArray",
-            "value": [
-              {
-                "type": "Number",
-                "value": 0.8944,
-                "ty": {
-                  "type": "Known",
-                  "type": "Count"
-                }
-              },
-              {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              },
-              {
-                "type": "Number",
-                "value": 0.4472,
-                "ty": {
-                  "type": "Known",
-                  "type": "Count"
-                }
-              }
-            ]
+            }
           }
-        }
+        ]
+      },
+      "xAxis": {
+        "type": "MixedArray",
+        "value": [
+          {
+            "type": "Number",
+            "value": -0.4472,
+            "ty": {
+              "type": "Known",
+              "type": "Count"
+            }
+          },
+          {
+            "type": "Number",
+            "value": 0.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Inches"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          {
+            "type": "Number",
+            "value": 0.8944,
+            "ty": {
+              "type": "Known",
+              "type": "Count"
+            }
+          }
+        ]
+      },
+      "yAxis": {
+        "type": "MixedArray",
+        "value": [
+          {
+            "type": "Number",
+            "value": 0.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Inches"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          {
+            "type": "Number",
+            "value": 1.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Inches"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          {
+            "type": "Number",
+            "value": 0.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Inches"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          }
+        ]
+      },
+      "zAxis": {
+        "type": "MixedArray",
+        "value": [
+          {
+            "type": "Number",
+            "value": 0.8944,
+            "ty": {
+              "type": "Known",
+              "type": "Count"
+            }
+          },
+          {
+            "type": "Number",
+            "value": 0.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Inches"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          {
+            "type": "Number",
+            "value": 0.4472,
+            "ty": {
+              "type": "Known",
+              "type": "Count"
+            }
+          }
+        ]
       }
     }
   },

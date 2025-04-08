@@ -256,22 +256,34 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Mm"
@@ -479,22 +491,34 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Mm"
@@ -702,22 +726,34 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Mm"
@@ -925,22 +961,34 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Mm"
@@ -1148,22 +1196,34 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Mm"
@@ -1371,22 +1431,34 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Mm"
@@ -1594,22 +1666,34 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Mm"
@@ -1817,22 +1901,34 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Mm"
@@ -2040,22 +2136,34 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Mm"
@@ -2263,22 +2371,34 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Mm"
@@ -2486,22 +2606,34 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Mm"
@@ -2709,22 +2841,34 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Mm"
@@ -2932,22 +3076,34 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Mm"
@@ -3155,22 +3311,34 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Mm"
@@ -3378,22 +3546,34 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Mm"
@@ -3601,22 +3781,34 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Mm"
@@ -3824,22 +4016,34 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Mm"
@@ -4047,22 +4251,34 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Mm"
@@ -4270,22 +4486,34 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Mm"
@@ -4493,22 +4721,34 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Mm"
@@ -4716,22 +4956,34 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Mm"
@@ -4939,22 +5191,34 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Mm"
@@ -5162,22 +5426,34 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Mm"
@@ -5385,22 +5661,34 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Mm"
@@ -5616,22 +5904,34 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Mm"
@@ -5686,28 +5986,72 @@ description: Variables in memory after executing gridfinity-bins.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": 0.8,
+              "radius": {
+                "n": 0.8,
+                "ty": {
+                  "type": "Default",
+                  "len": {
+                    "type": "Mm"
+                  },
+                  "angle": {
+                    "type": "Degrees"
+                  }
+                }
+              },
               "edgeId": "[uuid]",
               "tag": null
             },
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": 0.8,
+              "radius": {
+                "n": 0.8,
+                "ty": {
+                  "type": "Default",
+                  "len": {
+                    "type": "Mm"
+                  },
+                  "angle": {
+                    "type": "Degrees"
+                  }
+                }
+              },
               "edgeId": "[uuid]",
               "tag": null
             },
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": 0.8,
+              "radius": {
+                "n": 0.8,
+                "ty": {
+                  "type": "Default",
+                  "len": {
+                    "type": "Mm"
+                  },
+                  "angle": {
+                    "type": "Degrees"
+                  }
+                }
+              },
               "edgeId": "[uuid]",
               "tag": null
             },
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": 0.8,
+              "radius": {
+                "n": 0.8,
+                "ty": {
+                  "type": "Default",
+                  "len": {
+                    "type": "Mm"
+                  },
+                  "angle": {
+                    "type": "Degrees"
+                  }
+                }
+              },
               "edgeId": "[uuid]",
               "tag": null
             }
@@ -5890,22 +6234,34 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Mm"
@@ -5960,28 +6316,72 @@ description: Variables in memory after executing gridfinity-bins.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": 0.8,
+              "radius": {
+                "n": 0.8,
+                "ty": {
+                  "type": "Default",
+                  "len": {
+                    "type": "Mm"
+                  },
+                  "angle": {
+                    "type": "Degrees"
+                  }
+                }
+              },
               "edgeId": "[uuid]",
               "tag": null
             },
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": 0.8,
+              "radius": {
+                "n": 0.8,
+                "ty": {
+                  "type": "Default",
+                  "len": {
+                    "type": "Mm"
+                  },
+                  "angle": {
+                    "type": "Degrees"
+                  }
+                }
+              },
               "edgeId": "[uuid]",
               "tag": null
             },
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": 0.8,
+              "radius": {
+                "n": 0.8,
+                "ty": {
+                  "type": "Default",
+                  "len": {
+                    "type": "Mm"
+                  },
+                  "angle": {
+                    "type": "Degrees"
+                  }
+                }
+              },
               "edgeId": "[uuid]",
               "tag": null
             },
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": 0.8,
+              "radius": {
+                "n": 0.8,
+                "ty": {
+                  "type": "Default",
+                  "len": {
+                    "type": "Mm"
+                  },
+                  "angle": {
+                    "type": "Degrees"
+                  }
+                }
+              },
               "edgeId": "[uuid]",
               "tag": null
             }
@@ -6164,22 +6564,34 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Mm"
@@ -6234,28 +6646,72 @@ description: Variables in memory after executing gridfinity-bins.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": 0.8,
+              "radius": {
+                "n": 0.8,
+                "ty": {
+                  "type": "Default",
+                  "len": {
+                    "type": "Mm"
+                  },
+                  "angle": {
+                    "type": "Degrees"
+                  }
+                }
+              },
               "edgeId": "[uuid]",
               "tag": null
             },
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": 0.8,
+              "radius": {
+                "n": 0.8,
+                "ty": {
+                  "type": "Default",
+                  "len": {
+                    "type": "Mm"
+                  },
+                  "angle": {
+                    "type": "Degrees"
+                  }
+                }
+              },
               "edgeId": "[uuid]",
               "tag": null
             },
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": 0.8,
+              "radius": {
+                "n": 0.8,
+                "ty": {
+                  "type": "Default",
+                  "len": {
+                    "type": "Mm"
+                  },
+                  "angle": {
+                    "type": "Degrees"
+                  }
+                }
+              },
               "edgeId": "[uuid]",
               "tag": null
             },
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": 0.8,
+              "radius": {
+                "n": 0.8,
+                "ty": {
+                  "type": "Default",
+                  "len": {
+                    "type": "Mm"
+                  },
+                  "angle": {
+                    "type": "Degrees"
+                  }
+                }
+              },
               "edgeId": "[uuid]",
               "tag": null
             }
@@ -6438,22 +6894,34 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Mm"
@@ -6508,28 +6976,72 @@ description: Variables in memory after executing gridfinity-bins.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": 0.8,
+              "radius": {
+                "n": 0.8,
+                "ty": {
+                  "type": "Default",
+                  "len": {
+                    "type": "Mm"
+                  },
+                  "angle": {
+                    "type": "Degrees"
+                  }
+                }
+              },
               "edgeId": "[uuid]",
               "tag": null
             },
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": 0.8,
+              "radius": {
+                "n": 0.8,
+                "ty": {
+                  "type": "Default",
+                  "len": {
+                    "type": "Mm"
+                  },
+                  "angle": {
+                    "type": "Degrees"
+                  }
+                }
+              },
               "edgeId": "[uuid]",
               "tag": null
             },
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": 0.8,
+              "radius": {
+                "n": 0.8,
+                "ty": {
+                  "type": "Default",
+                  "len": {
+                    "type": "Mm"
+                  },
+                  "angle": {
+                    "type": "Degrees"
+                  }
+                }
+              },
               "edgeId": "[uuid]",
               "tag": null
             },
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": 0.8,
+              "radius": {
+                "n": 0.8,
+                "ty": {
+                  "type": "Default",
+                  "len": {
+                    "type": "Mm"
+                  },
+                  "angle": {
+                    "type": "Degrees"
+                  }
+                }
+              },
               "edgeId": "[uuid]",
               "tag": null
             }
@@ -6712,22 +7224,34 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Mm"
@@ -6782,28 +7306,72 @@ description: Variables in memory after executing gridfinity-bins.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": 0.8,
+              "radius": {
+                "n": 0.8,
+                "ty": {
+                  "type": "Default",
+                  "len": {
+                    "type": "Mm"
+                  },
+                  "angle": {
+                    "type": "Degrees"
+                  }
+                }
+              },
               "edgeId": "[uuid]",
               "tag": null
             },
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": 0.8,
+              "radius": {
+                "n": 0.8,
+                "ty": {
+                  "type": "Default",
+                  "len": {
+                    "type": "Mm"
+                  },
+                  "angle": {
+                    "type": "Degrees"
+                  }
+                }
+              },
               "edgeId": "[uuid]",
               "tag": null
             },
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": 0.8,
+              "radius": {
+                "n": 0.8,
+                "ty": {
+                  "type": "Default",
+                  "len": {
+                    "type": "Mm"
+                  },
+                  "angle": {
+                    "type": "Degrees"
+                  }
+                }
+              },
               "edgeId": "[uuid]",
               "tag": null
             },
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": 0.8,
+              "radius": {
+                "n": 0.8,
+                "ty": {
+                  "type": "Default",
+                  "len": {
+                    "type": "Mm"
+                  },
+                  "angle": {
+                    "type": "Degrees"
+                  }
+                }
+              },
               "edgeId": "[uuid]",
               "tag": null
             }
@@ -6986,22 +7554,34 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Mm"
@@ -7056,28 +7636,72 @@ description: Variables in memory after executing gridfinity-bins.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": 0.8,
+              "radius": {
+                "n": 0.8,
+                "ty": {
+                  "type": "Default",
+                  "len": {
+                    "type": "Mm"
+                  },
+                  "angle": {
+                    "type": "Degrees"
+                  }
+                }
+              },
               "edgeId": "[uuid]",
               "tag": null
             },
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": 0.8,
+              "radius": {
+                "n": 0.8,
+                "ty": {
+                  "type": "Default",
+                  "len": {
+                    "type": "Mm"
+                  },
+                  "angle": {
+                    "type": "Degrees"
+                  }
+                }
+              },
               "edgeId": "[uuid]",
               "tag": null
             },
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": 0.8,
+              "radius": {
+                "n": 0.8,
+                "ty": {
+                  "type": "Default",
+                  "len": {
+                    "type": "Mm"
+                  },
+                  "angle": {
+                    "type": "Degrees"
+                  }
+                }
+              },
               "edgeId": "[uuid]",
               "tag": null
             },
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": 0.8,
+              "radius": {
+                "n": 0.8,
+                "ty": {
+                  "type": "Default",
+                  "len": {
+                    "type": "Mm"
+                  },
+                  "angle": {
+                    "type": "Degrees"
+                  }
+                }
+              },
               "edgeId": "[uuid]",
               "tag": null
             }
@@ -7288,22 +7912,34 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Mm"
@@ -7511,22 +8147,34 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Mm"
@@ -7734,22 +8382,34 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Mm"
@@ -7957,22 +8617,34 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Mm"
@@ -8180,22 +8852,34 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Mm"
@@ -8403,22 +9087,34 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Mm"
@@ -8626,22 +9322,34 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Mm"
@@ -8849,22 +9557,34 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Mm"
@@ -9072,22 +9792,34 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Mm"
@@ -9295,22 +10027,34 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Mm"
@@ -9518,22 +10262,34 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Mm"
@@ -9741,22 +10497,34 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Mm"
@@ -9964,22 +10732,34 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Mm"
@@ -10187,22 +10967,34 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Mm"
@@ -10410,22 +11202,34 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Mm"
@@ -10633,22 +11437,34 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Mm"
@@ -10856,22 +11672,34 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Mm"
@@ -11079,22 +11907,34 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Mm"
@@ -11302,22 +12142,34 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Mm"
@@ -11525,22 +12377,34 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Mm"
@@ -11748,22 +12612,34 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Mm"
@@ -11971,22 +12847,34 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Mm"
@@ -12194,22 +13082,34 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Mm"
@@ -12417,22 +13317,34 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Mm"
@@ -12510,9 +13422,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4450,
-            "end": 4458,
-            "start": 4450,
+            "commentStart": 4457,
+            "end": 4465,
+            "start": 4457,
             "type": "TagDeclarator",
             "value": "line010"
           },
@@ -12523,9 +13435,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4529,
-            "end": 4537,
-            "start": 4529,
+            "commentStart": 4536,
+            "end": 4544,
+            "start": 4536,
             "type": "TagDeclarator",
             "value": "line011"
           },
@@ -12536,9 +13448,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4588,
-            "end": 4596,
-            "start": 4588,
+            "commentStart": 4595,
+            "end": 4603,
+            "start": 4595,
             "type": "TagDeclarator",
             "value": "line012"
           },
@@ -12549,9 +13461,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4615,
-            "end": 4623,
-            "start": 4615,
+            "commentStart": 4622,
+            "end": 4630,
+            "start": 4622,
             "type": "TagDeclarator",
             "value": "line013"
           },
@@ -12572,9 +13484,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 4450,
-              "end": 4458,
-              "start": 4450,
+              "commentStart": 4457,
+              "end": 4465,
+              "start": 4457,
               "type": "TagDeclarator",
               "value": "line010"
             },
@@ -12597,9 +13509,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 4529,
-              "end": 4537,
-              "start": 4529,
+              "commentStart": 4536,
+              "end": 4544,
+              "start": 4536,
               "type": "TagDeclarator",
               "value": "line011"
             },
@@ -12622,9 +13534,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
               126.0
             ],
             "tag": {
-              "commentStart": 4588,
-              "end": 4596,
-              "start": 4588,
+              "commentStart": 4595,
+              "end": 4603,
+              "start": 4595,
               "type": "TagDeclarator",
               "value": "line012"
             },
@@ -12647,9 +13559,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
               126.0
             ],
             "tag": {
-              "commentStart": 4615,
-              "end": 4623,
-              "start": 4615,
+              "commentStart": 4622,
+              "end": 4630,
+              "start": 4622,
               "type": "TagDeclarator",
               "value": "line013"
             },
@@ -12671,22 +13583,34 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "origin": {
             "x": 0.0,
             "y": 0.0,
-            "z": 4.75
+            "z": 4.75,
+            "units": {
+              "type": "Mm"
+            }
           },
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
+            "z": 1.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "units": {
             "type": "Mm"
@@ -12741,28 +13665,72 @@ description: Variables in memory after executing gridfinity-bins.kcl
         {
           "type": "fillet",
           "id": "[uuid]",
-          "radius": 3.75,
+          "radius": {
+            "n": 3.75,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
           "edgeId": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
           "id": "[uuid]",
-          "radius": 3.75,
+          "radius": {
+            "n": 3.75,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
           "edgeId": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
           "id": "[uuid]",
-          "radius": 3.75,
+          "radius": {
+            "n": 3.75,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
           "edgeId": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
           "id": "[uuid]",
-          "radius": 3.75,
+          "radius": {
+            "n": 3.75,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
           "edgeId": "[uuid]",
           "tag": null
         }
@@ -12958,22 +13926,34 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Mm"
@@ -13181,22 +14161,34 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Mm"
@@ -13404,22 +14396,34 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Mm"
@@ -13627,22 +14631,34 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Mm"
@@ -13846,17 +14862,26 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "solid": {
                 "type": "Solid",
@@ -14029,22 +15054,34 @@ description: Variables in memory after executing gridfinity-bins.kcl
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
-                      "z": 0.0
+                      "z": 0.0,
+                      "units": {
+                        "type": "Mm"
+                      }
                     },
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
-                      "z": 0.0
+                      "z": 0.0,
+                      "units": {
+                        "type": "Mm"
+                      }
                     },
                     "yAxis": {
                       "x": 0.0,
                       "y": 1.0,
-                      "z": 0.0
+                      "z": 0.0,
+                      "units": {
+                        "type": "Mm"
+                      }
                     },
                     "zAxis": {
                       "x": 0.0,
                       "y": 0.0,
-                      "z": 1.0
+                      "z": 1.0,
+                      "units": {
+                        "type": "Mm"
+                      }
                     },
                     "units": {
                       "type": "Mm"
@@ -14099,28 +15136,72 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   {
                     "type": "fillet",
                     "id": "[uuid]",
-                    "radius": 0.8,
+                    "radius": {
+                      "n": 0.8,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Mm"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
                     "edgeId": "[uuid]",
                     "tag": null
                   },
                   {
                     "type": "fillet",
                     "id": "[uuid]",
-                    "radius": 0.8,
+                    "radius": {
+                      "n": 0.8,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Mm"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
                     "edgeId": "[uuid]",
                     "tag": null
                   },
                   {
                     "type": "fillet",
                     "id": "[uuid]",
-                    "radius": 0.8,
+                    "radius": {
+                      "n": 0.8,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Mm"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
                     "edgeId": "[uuid]",
                     "tag": null
                   },
                   {
                     "type": "fillet",
                     "id": "[uuid]",
-                    "radius": 0.8,
+                    "radius": {
+                      "n": 0.8,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Mm"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
                     "edgeId": "[uuid]",
                     "tag": null
                   }
@@ -14218,17 +15299,26 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "solid": {
                 "type": "Solid",
@@ -14401,22 +15491,34 @@ description: Variables in memory after executing gridfinity-bins.kcl
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
-                      "z": 0.0
+                      "z": 0.0,
+                      "units": {
+                        "type": "Mm"
+                      }
                     },
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
-                      "z": 0.0
+                      "z": 0.0,
+                      "units": {
+                        "type": "Mm"
+                      }
                     },
                     "yAxis": {
                       "x": 0.0,
                       "y": 1.0,
-                      "z": 0.0
+                      "z": 0.0,
+                      "units": {
+                        "type": "Mm"
+                      }
                     },
                     "zAxis": {
                       "x": 0.0,
                       "y": 0.0,
-                      "z": 1.0
+                      "z": 1.0,
+                      "units": {
+                        "type": "Mm"
+                      }
                     },
                     "units": {
                       "type": "Mm"
@@ -14471,28 +15573,72 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   {
                     "type": "fillet",
                     "id": "[uuid]",
-                    "radius": 0.8,
+                    "radius": {
+                      "n": 0.8,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Mm"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
                     "edgeId": "[uuid]",
                     "tag": null
                   },
                   {
                     "type": "fillet",
                     "id": "[uuid]",
-                    "radius": 0.8,
+                    "radius": {
+                      "n": 0.8,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Mm"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
                     "edgeId": "[uuid]",
                     "tag": null
                   },
                   {
                     "type": "fillet",
                     "id": "[uuid]",
-                    "radius": 0.8,
+                    "radius": {
+                      "n": 0.8,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Mm"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
                     "edgeId": "[uuid]",
                     "tag": null
                   },
                   {
                     "type": "fillet",
                     "id": "[uuid]",
-                    "radius": 0.8,
+                    "radius": {
+                      "n": 0.8,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Mm"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
                     "edgeId": "[uuid]",
                     "tag": null
                   }
@@ -14590,17 +15736,26 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "solid": {
                 "type": "Solid",
@@ -14773,22 +15928,34 @@ description: Variables in memory after executing gridfinity-bins.kcl
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
-                      "z": 0.0
+                      "z": 0.0,
+                      "units": {
+                        "type": "Mm"
+                      }
                     },
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
-                      "z": 0.0
+                      "z": 0.0,
+                      "units": {
+                        "type": "Mm"
+                      }
                     },
                     "yAxis": {
                       "x": 0.0,
                       "y": 1.0,
-                      "z": 0.0
+                      "z": 0.0,
+                      "units": {
+                        "type": "Mm"
+                      }
                     },
                     "zAxis": {
                       "x": 0.0,
                       "y": 0.0,
-                      "z": 1.0
+                      "z": 1.0,
+                      "units": {
+                        "type": "Mm"
+                      }
                     },
                     "units": {
                       "type": "Mm"
@@ -14843,28 +16010,72 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   {
                     "type": "fillet",
                     "id": "[uuid]",
-                    "radius": 0.8,
+                    "radius": {
+                      "n": 0.8,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Mm"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
                     "edgeId": "[uuid]",
                     "tag": null
                   },
                   {
                     "type": "fillet",
                     "id": "[uuid]",
-                    "radius": 0.8,
+                    "radius": {
+                      "n": 0.8,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Mm"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
                     "edgeId": "[uuid]",
                     "tag": null
                   },
                   {
                     "type": "fillet",
                     "id": "[uuid]",
-                    "radius": 0.8,
+                    "radius": {
+                      "n": 0.8,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Mm"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
                     "edgeId": "[uuid]",
                     "tag": null
                   },
                   {
                     "type": "fillet",
                     "id": "[uuid]",
-                    "radius": 0.8,
+                    "radius": {
+                      "n": 0.8,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Mm"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
                     "edgeId": "[uuid]",
                     "tag": null
                   }
@@ -14962,17 +16173,26 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "solid": {
                 "type": "Solid",
@@ -15145,22 +16365,34 @@ description: Variables in memory after executing gridfinity-bins.kcl
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
-                      "z": 0.0
+                      "z": 0.0,
+                      "units": {
+                        "type": "Mm"
+                      }
                     },
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
-                      "z": 0.0
+                      "z": 0.0,
+                      "units": {
+                        "type": "Mm"
+                      }
                     },
                     "yAxis": {
                       "x": 0.0,
                       "y": 1.0,
-                      "z": 0.0
+                      "z": 0.0,
+                      "units": {
+                        "type": "Mm"
+                      }
                     },
                     "zAxis": {
                       "x": 0.0,
                       "y": 0.0,
-                      "z": 1.0
+                      "z": 1.0,
+                      "units": {
+                        "type": "Mm"
+                      }
                     },
                     "units": {
                       "type": "Mm"
@@ -15215,28 +16447,72 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   {
                     "type": "fillet",
                     "id": "[uuid]",
-                    "radius": 0.8,
+                    "radius": {
+                      "n": 0.8,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Mm"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
                     "edgeId": "[uuid]",
                     "tag": null
                   },
                   {
                     "type": "fillet",
                     "id": "[uuid]",
-                    "radius": 0.8,
+                    "radius": {
+                      "n": 0.8,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Mm"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
                     "edgeId": "[uuid]",
                     "tag": null
                   },
                   {
                     "type": "fillet",
                     "id": "[uuid]",
-                    "radius": 0.8,
+                    "radius": {
+                      "n": 0.8,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Mm"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
                     "edgeId": "[uuid]",
                     "tag": null
                   },
                   {
                     "type": "fillet",
                     "id": "[uuid]",
-                    "radius": 0.8,
+                    "radius": {
+                      "n": 0.8,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Mm"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
                     "edgeId": "[uuid]",
                     "tag": null
                   }
@@ -15508,22 +16784,34 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Mm"
@@ -15731,22 +17019,34 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Mm"
@@ -15954,22 +17254,34 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Mm"
@@ -16177,22 +17489,34 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Mm"
@@ -16405,22 +17729,34 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "origin": {
             "x": 0.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
+            "z": 1.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "units": {
             "type": "Mm"
@@ -16475,28 +17811,72 @@ description: Variables in memory after executing gridfinity-bins.kcl
         {
           "type": "fillet",
           "id": "[uuid]",
-          "radius": 0.8,
+          "radius": {
+            "n": 0.8,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
           "edgeId": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
           "id": "[uuid]",
-          "radius": 0.8,
+          "radius": {
+            "n": 0.8,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
           "edgeId": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
           "id": "[uuid]",
-          "radius": 0.8,
+          "radius": {
+            "n": 0.8,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
           "edgeId": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
           "id": "[uuid]",
-          "radius": 0.8,
+          "radius": {
+            "n": 0.8,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
           "edgeId": "[uuid]",
           "tag": null
         }
@@ -16676,22 +18056,34 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "origin": {
             "x": 4.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
+            "z": 1.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "zAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "units": {
             "type": "Mm"
@@ -16899,22 +18291,34 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "origin": {
             "x": 4.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
+            "z": 1.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "zAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "units": {
             "type": "Mm"

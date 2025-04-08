@@ -20,7 +20,7 @@ description: Operations executed function_sketch.kcl
   },
   {
     "labeledArgs": {
-      "data": {
+      "planeOrSolid": {
         "value": {
           "type": "String",
           "value": "XY"

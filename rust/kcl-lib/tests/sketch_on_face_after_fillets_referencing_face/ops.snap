@@ -5,10 +5,10 @@ description: Operations executed sketch_on_face_after_fillets_referencing_face.k
 [
   {
     "labeledArgs": {
-      "data": {
+      "planeOrSolid": {
         "value": {
-          "type": "String",
-          "value": "XY"
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       }
@@ -101,7 +101,13 @@ description: Operations executed sketch_on_face_after_fillets_referencing_face.k
           "type": "Number",
           "value": 0.5707134902949093,
           "ty": {
-            "type": "Unknown"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -134,16 +140,7 @@ description: Operations executed sketch_on_face_after_fillets_referencing_face.k
   },
   {
     "labeledArgs": {
-      "data": {
-        "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "tag": {
+      "face": {
         "value": {
           "type": "TagIdentifier",
           "value": "seg01",
@@ -155,7 +152,15 @@ description: Operations executed sketch_on_face_after_fillets_referencing_face.k
     "name": "startSketchOn",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
   },
   {
     "labeledArgs": {

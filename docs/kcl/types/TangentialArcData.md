@@ -16,7 +16,7 @@ Data to draw a tangential arc.
 
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
-| `radius` |[`number`](/docs/kcl/types/number)| Radius of the arc. Not to be confused with Raiders of the Lost Ark. | No |
-| `offset` |[`number`](/docs/kcl/types/number)| Offset of the arc, in degrees. | No |
+| `radius` |`TyF64`| Radius of the arc. Not to be confused with Raiders of the Lost Ark. | No |
+| `offset` |`TyF64`| Offset of the arc, in degrees. | No |
 
 

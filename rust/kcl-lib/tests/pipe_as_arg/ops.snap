@@ -38,7 +38,7 @@ description: Operations executed pipe_as_arg.kcl
   },
   {
     "labeledArgs": {
-      "data": {
+      "planeOrSolid": {
         "value": {
           "type": "Plane",
           "artifact_id": "[uuid]"

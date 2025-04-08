@@ -5,7 +5,7 @@ description: Operations executed basic_fillet_cube_close_opposite.kcl
 [
   {
     "labeledArgs": {
-      "data": {
+      "planeOrSolid": {
         "value": {
           "type": "String",
           "value": "XY"

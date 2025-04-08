@@ -41,7 +41,7 @@ description: Operations executed riddle_small.kcl
   },
   {
     "labeledArgs": {
-      "data": {
+      "planeOrSolid": {
         "value": {
           "type": "String",
           "value": "XZ"

@@ -7,7 +7,7 @@ use kittycad_modeling_cmds::{self as kcmc};
 use schemars::JsonSchema;
 use serde::Serialize;
 
-use super::DEFAULT_TOLERANCE;
+use super::{args::TyF64, DEFAULT_TOLERANCE};
 use crate::{
     errors::KclError,
     execution::{types::RuntimeType, ExecState, Helix, KclValue, Sketch, Solid},
@@ -29,12 +29,19 @@ pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     let sketches = args.get_unlabeled_kw_arg_typed("sketches", &RuntimeType::sketches(), exec_state)?;
     let path: SweepPath = args.get_kw_arg("path")?;
     let sectional = args.get_kw_arg_opt("sectional")?;
-    let tolerance = args.get_kw_arg_opt("tolerance")?;
+    let tolerance: Option<TyF64> = args.get_kw_arg_opt_typed("tolerance", &RuntimeType::count(), exec_state)?;
     let tag_start = args.get_kw_arg_opt("tagStart")?;
     let tag_end = args.get_kw_arg_opt("tagEnd")?;
 
     let value = inner_sweep(
-        sketches, path, sectional, tolerance, tag_start, tag_end, exec_state, args,
+        sketches,
+        path,
+        sectional,
+        tolerance.map(|t| t.n),
+        tag_start,
+        tag_end,
+        exec_state,
+        args,
     )
     .await?;
     Ok(value.into())
