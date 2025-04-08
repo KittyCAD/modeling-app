@@ -287,7 +287,7 @@ test.describe('Point-and-click tests', () => {
           'sketch005 = startSketchOn(extrude001, seg06)',
         afterRectangle1stClickSnippet:
           'startProfileAt([-23.43, 19.69], sketch005)',
-        afterRectangle2ndClickSnippet: `angledLine(angle=0,length=9.1,angle=$rectangleSegmentA005)
+        afterRectangle2ndClickSnippet: `angledLine(angle=0,length=9.1,tag=$rectangleSegmentA005)
         |>angledLine(angle=segAng(rectangleSegmentA005)-90,length=84.07)
         |>angledLine(angle=segAng(rectangleSegmentA005),length=-segLen(rectangleSegmentA005))
         |>line(endAbsolute=[profileStartX(%),profileStartY(%)])
