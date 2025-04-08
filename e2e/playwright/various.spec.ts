@@ -612,3 +612,12 @@ profile001 = startProfileAt([-12.34, 12.34], sketch002)
 const sketch002 = extrude(sketch002, length = ${[5, 5]} + 7)`
   await expect(page.locator('.cm-content')).toHaveText(result2.regExp)
 })
+
+test.fixme(
+  `Opening a share link in the web isn't blocked by the web warning banner`,
+  async () => {
+    // This test is not able to be run right now since we don't have a web-only setup for Playwright.
+    // @franknoirot can implement it when that testing infra is set up. It should be a test to cover the fix from
+    // modeling-app issue #6172.
+  }
+)
