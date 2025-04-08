@@ -723,7 +723,9 @@ impl ExecutorContext {
         preserve_mem: bool,
     ) -> Result<(EnvironmentRef, Option<ModelingSessionData>), KclErrorWithOutputs> {
         exec_state.add_root_module_contents(program);
-        self.prepare_mem(exec_state).await?;
+        self.eval_prelude(exec_state, SourceRange::synthetic())
+            .await
+            .map_err(KclErrorWithOutputs::no_outputs)?;
 
         let mut universe = std::collections::HashMap::new();
 
@@ -932,12 +934,11 @@ impl ExecutorContext {
             )
         })?;
 
-        // TODO: fix this
-        /* if !self.is_mock() {
+        if !self.is_mock() {
             let mut mem = exec_state.stack().deep_clone();
             mem.restore_env(env_ref);
             cache::write_old_memory((mem, exec_state.global.module_infos.clone())).await;
-        }*/
+        }
         let session_data = self.engine.get_session_data().await;
         Ok((env_ref, session_data))
     }
