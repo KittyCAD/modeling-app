@@ -143,37 +143,41 @@ export function updateCenterRectangleSketch(
   let startX = originX - Math.abs(deltaX)
   let startY = originY - Math.abs(deltaY)
 
-  let startAtExpression = pipeExpression.body[0]
-  if (!isCallExpression(startAtExpression)) {
-    return new Error(
-      'rectangle start was not a CallExpression, it was a ' +
-        startAtExpression.type
-    )
-  }
-  const arrayExpression = startAtExpression.arguments[0]
-  if (isArrayExpression(arrayExpression)) {
-    startAtExpression.arguments[0] = createArrayExpression([
-      createLiteral(roundOff(startX)),
-      createLiteral(roundOff(startY)),
-    ])
+  {
+    let startAtExpression = pipeExpression.body[0]
+    if (!isCallExpression(startAtExpression)) {
+      return new Error(
+        'rectangle start was not a CallExpression, it was a ' +
+          startAtExpression.type
+      )
+    }
+    const arrayExpression = startAtExpression.arguments[0]
+    if (isArrayExpression(arrayExpression)) {
+      startAtExpression.arguments[0] = createArrayExpression([
+        createLiteral(roundOff(startX)),
+        createLiteral(roundOff(startY)),
+      ])
+    }
   }
 
   const twoX = deltaX * 2
   const twoY = deltaY * 2
 
-  const edge0 = pipeExpression.body[1]
-  if (!isCallExpressionKw(edge0)) {
-    return new Error(
-      'rectangle edge was not a CallExpressionKw, it was a' + edge0.type
-    )
+  {
+    const edge0 = pipeExpression.body[1]
+    if (!isCallExpressionKw(edge0)) {
+      return new Error(
+        'rectangle edge was not a CallExpressionKw, it was a' + edge0.type
+      )
+    }
+    mutateKwArg(ARG_LENGTH, edge0, createLiteral(Math.abs(twoX)))
   }
-  mutateKwArg(ARG_LENGTH, edge0, createLiteral(Math.abs(twoX)))
 
   {
     const edge1 = pipeExpression.body[2]
     if (!isCallExpressionKw(edge1)) {
       return new Error(
-        'rectangle edge was not a CallExpressionKw, it was a' + edge0.type
+        'rectangle edge was not a CallExpressionKw, it was a' + edge1.type
       )
     }
     // Calculate new angle. It's 90 offset from the previous line.
