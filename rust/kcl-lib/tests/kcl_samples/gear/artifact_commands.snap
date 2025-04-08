@@ -3914,41 +3914,16 @@ description: Artifact commands gear.kcl
         "type": "arc",
         "center": {
           "x": 0.0,
-          "y": 0.0
+          "y": -0.0
         },
         "radius": 1.0,
         "start": {
           "unit": "degrees",
-          "value": 352.8192442185417
+          "value": -7.180755781458282
         },
         "end": {
           "unit": "degrees",
-          "value": 180.0
-        },
-        "relative": false
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extend_path",
-      "path": "[uuid]",
-      "segment": {
-        "type": "arc",
-        "center": {
-          "x": 0.0,
-          "y": 0.0
-        },
-        "radius": 1.0,
-        "start": {
-          "unit": "degrees",
-          "value": 180.0
-        },
-        "end": {
-          "unit": "degrees",
-          "value": 7.180755781458282
+          "value": -352.8192442185417
         },
         "relative": false
       }
