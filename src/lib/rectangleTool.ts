@@ -139,43 +139,53 @@ export function updateCenterRectangleSketch(
   tag: string,
   originX: number,
   originY: number
-) {
-  // TODO: This should really return an error if it fails, instead of silently doing nothing.
+): undefined | Error {
   let startX = originX - Math.abs(deltaX)
   let startY = originY - Math.abs(deltaY)
 
   let startAtExpression = pipeExpression.body[0]
-  if (isCallExpression(startAtExpression)) {
-    const arrayExpression = startAtExpression.arguments[0]
-    if (isArrayExpression(arrayExpression)) {
-      startAtExpression.arguments[0] = createArrayExpression([
-        createLiteral(roundOff(startX)),
-        createLiteral(roundOff(startY)),
-      ])
-    }
+  if (!isCallExpression(startAtExpression)) {
+    return new Error(
+      'rectangle start was not a CallExpression, it was a ' +
+        startAtExpression.type
+    )
+  }
+  const arrayExpression = startAtExpression.arguments[0]
+  if (isArrayExpression(arrayExpression)) {
+    startAtExpression.arguments[0] = createArrayExpression([
+      createLiteral(roundOff(startX)),
+      createLiteral(roundOff(startY)),
+    ])
   }
 
   const twoX = deltaX * 2
   const twoY = deltaY * 2
 
   const edge0 = pipeExpression.body[1]
-  if (isCallExpressionKw(edge0)) {
-    mutateKwArg(ARG_LENGTH, edge0, createLiteral(Math.abs(twoX)))
+  if (!isCallExpressionKw(edge0)) {
+    return new Error(
+      'rectangle edge was not a CallExpressionKw, it was a' + edge0.type
+    )
   }
+  mutateKwArg(ARG_LENGTH, edge0, createLiteral(Math.abs(twoX)))
 
-  const edge1 = pipeExpression.body[2]
-  if (isCallExpressionKw(edge1)) {
+  {
+    const edge1 = pipeExpression.body[2]
+    if (!isCallExpressionKw(edge1)) {
+      return new Error(
+        'rectangle edge was not a CallExpressionKw, it was a' + edge0.type
+      )
+    }
     // Calculate new angle. It's 90 offset from the previous line.
     const oldAngle = findKwArg(ARG_ANGLE, edge1)
     if (oldAngle === undefined) {
       return
     }
     let oldAngleOperator
-    if (oldAngle.type === 'BinaryExpression') {
-      oldAngleOperator = oldAngle.operator
-    } else {
-      return
+    if (oldAngle.type !== 'BinaryExpression') {
+      return new Error('rectangle edge should have an operator, but did not')
     }
+    oldAngleOperator = oldAngle.operator
     const newAngle = createBinaryExpression([
       createCallExpressionStdLib('segAng', [createLocalName(tag)]),
       oldAngleOperator,
@@ -184,7 +194,7 @@ export function updateCenterRectangleSketch(
 
     // Calculate new height.
     const newLength = createLiteral(Math.abs(twoY))
-
+    //
     // Update old rectangle.
     mutateKwArg(ARG_ANGLE, edge1, newAngle)
     mutateKwArg(ARG_LENGTH, edge1, newLength)

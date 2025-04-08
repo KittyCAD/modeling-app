@@ -56,7 +56,7 @@ describe('library rectangleTool helper functions', () => {
 
       // Update the ast
       if (sketchInit.type === 'PipeExpression') {
-        updateCenterRectangleSketch(
+        const maybeErr = updateCenterRectangleSketch(
           sketchInit,
           x,
           y,
@@ -64,6 +64,7 @@ describe('library rectangleTool helper functions', () => {
           rectangleOrigin[0],
           rectangleOrigin[1]
         )
+        expect(maybeErr).toEqual(undefined)
       }
 
       // ast is edited in place from the updateCenterRectangleSketch
