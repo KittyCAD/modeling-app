@@ -192,7 +192,7 @@ test.describe('Point-and-click assemblies tests', () => {
       const partColor: [number, number, number] = [150, 150, 150]
       const tolerance = 50
 
-      const complexPlmFileName = 'cube_Complex-PLM_Name_-001.SLDPRT'
+      const complexPlmFileName = 'cube_Complex-PLM_Name_-001.sldprt'
       const camelCasedSolidworksFileName = 'cubeComplexPLMName001'
 
       await test.step('Setup parts and expect empty assembly scene', async () => {

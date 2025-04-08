@@ -1314,7 +1314,7 @@ describe('testing getCamelCase', () => {
   it('properly parses cylinder into cylinder', () => {
     expect(getCamelCase('cylinder')).toBe('cylinder')
   })
-  it('properly parses my-ugly_Cased_Par-123 into myUglyCasedPart', () => {
+  it('properly parses my-ugly_Cased_Part123 into myUglyCasedPart', () => {
     expect(getCamelCase('my-ugly_Cased_Part123')).toBe('myUglyCasedPart123')
   })
   it('properly parses PascalCase into pascalCase', () => {
