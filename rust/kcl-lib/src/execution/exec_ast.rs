@@ -475,7 +475,7 @@ impl ExecutorContext {
             ModuleRepr::Root => Err(exec_state.circular_import_error(&path, source_range)),
             ModuleRepr::Kcl(_, Some((_, env_ref, items))) => Ok((*env_ref, items.clone())),
             ModuleRepr::Kcl(program, cache) => self
-                .exec_module_from_ast(program, module_id, &path, exec_state, source_range)
+                .exec_module_from_ast(program, module_id, &path, exec_state, source_range, false)
                 .await
                 .map(|(val, er, items)| {
                     *cache = Some((val, er, items.clone()));
@@ -516,7 +516,7 @@ impl ExecutorContext {
             ModuleRepr::Kcl(_, Some((val, _, _))) => Ok(val.clone()),
             ModuleRepr::Kcl(program, cached_items) => {
                 let result = self
-                    .exec_module_from_ast(program, module_id, &path, exec_state, source_range)
+                    .exec_module_from_ast(program, module_id, &path, exec_state, source_range, false)
                     .await;
                 match result {
                     Ok((val, env, items)) => {
@@ -546,9 +546,12 @@ impl ExecutorContext {
         path: &ModulePath,
         exec_state: &mut ExecState,
         source_range: SourceRange,
+        preserve_mem: bool,
     ) -> Result<(Option<KclValue>, EnvironmentRef, Vec<String>), KclError> {
         exec_state.global.mod_loader.enter_module(path);
-        let result = self.exec_module_body(program, exec_state, false, module_id, path).await;
+        let result = self
+            .exec_module_body(program, exec_state, preserve_mem, module_id, path)
+            .await;
         exec_state.global.mod_loader.leave_module(path);
 
         result.map_err(|err| {

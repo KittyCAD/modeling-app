@@ -806,7 +806,14 @@ impl ExecutorContext {
                         let exec_ctxt = exec_ctxt;
 
                         let result = exec_ctxt
-                            .exec_module_from_ast(&program, module_id, &module_path, &mut exec_state, source_range)
+                            .exec_module_from_ast(
+                                &program,
+                                module_id,
+                                &module_path,
+                                &mut exec_state,
+                                source_range,
+                                preserve_mem,
+                            )
                             .await;
 
                         results_tx
@@ -822,7 +829,14 @@ impl ExecutorContext {
                         let exec_ctxt = exec_ctxt;
 
                         let result = exec_ctxt
-                            .exec_module_from_ast(&program, module_id, &module_path, &mut exec_state, source_range)
+                            .exec_module_from_ast(
+                                &program,
+                                module_id,
+                                &module_path,
+                                &mut exec_state,
+                                source_range,
+                                preserve_mem,
+                            )
                             .await;
 
                         results_tx
@@ -843,7 +857,7 @@ impl ExecutorContext {
                         let ModuleRepr::Kcl(_, cache) = &mut repr else {
                             continue;
                         };
-                        *cache = Some((val, session_data, variables.clone()));
+                        *cache = Some((val, session_data, variables));
 
                         exec_state.global.module_infos[&module_id].restore_repr(repr);
                     }
