@@ -85,7 +85,7 @@ description: Artifact commands circle_three_point.kcl
       "path": "[uuid]",
       "to": {
         "x": 30.00594901040716,
-        "y": 19.749999999999996,
+        "y": 19.75,
         "z": 0.0
       }
     }
@@ -109,7 +109,7 @@ description: Artifact commands circle_three_point.kcl
           "x": 24.75,
           "y": 19.75
         },
-        "radius": 5.255949010407163,
+        "radius": 5.25594901040716,
         "start": {
           "unit": "degrees",
           "value": 0.0
