@@ -5,8 +5,8 @@
 
 // Car wheel
 export lugCount = 5
-export lugSpacing = 114.3 * mm()
-export offset = -35 * mm()
+export lugSpacing = fromMm(114.3)
+export offset = fromMm(-35)
 export backSpacing = 6.38
 export wheelWidth = 9.5
 export wheelDiameter = 19
@@ -16,11 +16,11 @@ export spokeAngle = 0.02
 export spokeThickness = 0.95
 
 // Lug Nut
-export lugDiameter = 24 * mm()
+export lugDiameter = fromMm(24)
 export lugHeadLength = lugDiameter * .5
 export lugThreadDiameter = lugDiameter / 2 * .85
-export lugLength = 30 * mm()
-export lugThreadDepth = lugLength - (12.7 * mm())
+export lugLength = fromMm(30)
+export lugThreadDepth = lugLength - fromMm(12.7)
 
 // Car rotor
 export rotorDiameter = 12
