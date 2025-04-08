@@ -120,7 +120,7 @@ test.describe('Named view tests', () => {
 
       // Write the entire tomlString to a snapshot.
       // There are many key/value pairs to check this is a safer match.
-      expect(tomlString).toMatchSnapshot('verify-named-view-gets-created.toml')
+      expect(tomlString).toMatchSnapshot('settings-with-named-view.toml')
     }).toPass()
   })
   test('Verify named view gets deleted', async ({
@@ -164,7 +164,9 @@ test.describe('Named view tests', () => {
 
       // Write the entire tomlString to a snapshot.
       // There are many key/value pairs to check this is a safer match.
-      expect(tomlString).toMatchSnapshot('verify-named-view-gets-created.toml')
+      expect(tomlString).toMatchSnapshot(
+        'settings-before-deleting-named-view.toml'
+      )
     }).toPass()
 
     // Delete a named view
@@ -181,7 +183,9 @@ test.describe('Named view tests', () => {
 
       // Write the entire tomlString to a snapshot.
       // There are many key/value pairs to check this is a safer match.
-      expect(tomlString).toMatchSnapshot('verify-named-view-gets-deleted.toml')
+      expect(tomlString).toMatchSnapshot(
+        'settings-after-deleting-named-view.toml'
+      )
     }).toPass()
   })
   test('Verify named view gets loaded', async ({
@@ -224,7 +228,9 @@ test.describe('Named view tests', () => {
 
       // Write the entire tomlString to a snapshot.
       // There are many key/value pairs to check this is a safer match.
-      expect(tomlString).toMatchSnapshot('verify-named-view-gets-created.toml')
+      expect(tomlString).toMatchSnapshot(
+        'settings-with-named-view-to-load.toml'
+      )
     }).toPass()
 
     // Create a load a named view
@@ -300,9 +306,7 @@ test.describe('Named view tests', () => {
 
       // Write the entire tomlString to a snapshot.
       // There are many key/value pairs to check this is a safer match.
-      expect(tomlString).toMatchSnapshot(
-        'verify-two-named-view-gets-created.toml'
-      )
+      expect(tomlString).toMatchSnapshot('settings-with-two-named-views.toml')
     }).toPass()
   })
 })
