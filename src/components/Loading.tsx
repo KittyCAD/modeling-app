@@ -12,6 +12,7 @@ import {
   EngineConnectionStateType,
 } from '@src/lang/std/engineConnection'
 import { engineCommandManager } from '@src/lib/singletons'
+import { CustomIcon } from './CustomIcon'
 
 interface LoadingProps extends React.PropsWithChildren {
   className?: string
@@ -82,7 +83,7 @@ const Loading = ({ children, className }: LoadingProps) => {
 
   useEffect(() => {
     // Don't set long loading time if there's a more severe error
-    if (error > ConnectionError.LongLoadingTime) return
+    if (isUnrecoverableError) return
 
     const shorterTimer = setTimeout(() => {
       setError({ error: ConnectionError.LongLoadingTime })
@@ -92,18 +93,27 @@ const Loading = ({ children, className }: LoadingProps) => {
     }, 7000)
 
     return () => clearTimeout(timer)
-  }, [error, setError])
+  }, [error, setError, isUnrecoverableError])
 
   return (
     <div
-      className={`body-bg flex flex-col items-center justify-center h-screen ${className}`}
+      className={`body-bg flex flex-col items-center justify-center h-screen ${colorClass} ${className}`}
       data-testid="loading"
     >
-      <Spinner />
-      <p className="text-base mt-4 text-primary">{children || 'Loading'}</p>
+      {isUnrecoverableError ? (
+        <CustomIcon
+          name="close"
+          className="w-8 h-8 !text-chalkboard-10 bg-destroy-60 rounded-full"
+        />
+      ) : (
+        <Spinner />
+      )}
+      <p className={`text-base mt-4`}>
+        {isUnrecoverableError ? 'An error occurred' : children || 'Loading'}
+      </p>
       <p
         className={
-          'text-sm mt-4 text-primary/60 transition-opacity duration-500' +
+          'text-sm mt-4 text-opacity-70 transition-opacity duration-500' +
           (error !== ConnectionError.Unset ? ' opacity-100' : ' opacity-0')
         }
       >
