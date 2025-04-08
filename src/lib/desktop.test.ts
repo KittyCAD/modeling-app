@@ -128,18 +128,18 @@ describe('desktop utilities', () => {
 
     // TODO: we should be lowercasing the extension here to check. .sldprt or .SLDPRT should be supported
     // But the api doesn't allow it today, so revisit this and the tests once this is done
-    // it('finds supported uppercase extension files relevant', () => {
-    //   expect(isRelevantFile('part.KCL')).toEqual(true)
-    //   expect(isRelevantFile('part.FBX')).toEqual(true)
-    //   expect(isRelevantFile('part.GLTF')).toEqual(true)
-    //   expect(isRelevantFile('part.GLB')).toEqual(true)
-    //   expect(isRelevantFile('part.OBJ')).toEqual(true)
-    //   expect(isRelevantFile('part.PLY')).toEqual(true)
-    //   expect(isRelevantFile('part.SLDPRT')).toEqual(true)
-    //   expect(isRelevantFile('part.STP')).toEqual(true)
-    //   expect(isRelevantFile('part.STEP')).toEqual(true)
-    //   expect(isRelevantFile('part.STL')).toEqual(true)
-    // })
+    it('finds (now) supported uppercase extension files *not* relevant', () => {
+      expect(isRelevantFile('part.KCL')).toEqual(false)
+      expect(isRelevantFile('part.FBX')).toEqual(false)
+      expect(isRelevantFile('part.GLTF')).toEqual(false)
+      expect(isRelevantFile('part.GLB')).toEqual(false)
+      expect(isRelevantFile('part.OBJ')).toEqual(false)
+      expect(isRelevantFile('part.PLY')).toEqual(false)
+      expect(isRelevantFile('part.SLDPRT')).toEqual(false)
+      expect(isRelevantFile('part.STP')).toEqual(false)
+      expect(isRelevantFile('part.STEP')).toEqual(false)
+      expect(isRelevantFile('part.STL')).toEqual(false)
+    })
 
     it("doesn't find .docx or .SLDASM relevant", () => {
       expect(isRelevantFile('paper.docx')).toEqual(false)
