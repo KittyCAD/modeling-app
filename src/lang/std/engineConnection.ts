@@ -1,5 +1,7 @@
 import type { Models } from '@kittycad/lib'
 import { VITE_KC_API_WS_MODELING_URL, VITE_KC_DEV_TOKEN } from '@src/env'
+import { jsAppSettings } from '@src/lib/settings/settingsUtils'
+import { codeManager, rustContext } from '@src/lib/singletons'
 import { BSON } from 'bson'
 
 import type { MachineManager } from '@src/components/MachineManagerProvider'
@@ -1398,6 +1400,7 @@ export class EngineCommandManager extends EventTarget {
 
   private onEngineConnectionOpened = () => {}
   private onEngineConnectionClosed = () => {}
+  private onVideoTrackMute = () => {}
   private onDarkThemeMediaQueryChange = (e: MediaQueryListEvent) => {
     this.setTheme(e.matches ? Themes.Dark : Themes.Light).catch(reportRejection)
   }
@@ -1480,6 +1483,11 @@ export class EngineCommandManager extends EventTarget {
 
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
     this.onEngineConnectionOpened = async () => {
+      await rustContext.clearSceneAndBustCache(
+        { settings: await jsAppSettings() },
+        codeManager.currentFilePath || undefined
+      )
+
       // Set the stream's camera projection type
       // We don't send a command to the engine if in perspective mode because
       // for now it's the engine's default.
@@ -1695,15 +1703,18 @@ export class EngineCommandManager extends EventTarget {
         delete this.pendingCommands[message.request_id || '']
       }) as EventListener)
 
+      this.onVideoTrackMute = () => {
+        console.error('video track mute: check webrtc internals -> inbound rtp')
+        this.tearDown()
+      }
+
       this.onEngineConnectionNewTrack = ({
         detail: { mediaStream },
       }: CustomEvent<NewTrackArgs>) => {
-        mediaStream.getVideoTracks()[0].addEventListener('mute', () => {
-          console.error(
-            'video track mute: check webrtc internals -> inbound rtp'
-          )
-        })
-
+        // Engine side had an oopsie (client sent trickle_ice, engine no happy)
+        mediaStream
+          .getVideoTracks()[0]
+          .addEventListener('mute', this.onVideoTrackMute)
         setMediaStream(mediaStream)
       }
       this.engineConnection?.addEventListener(

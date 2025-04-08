@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useRef } from 'react'
 
 import type { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
 import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
@@ -6,7 +6,6 @@ import type { NamedView } from '@rust/kcl-lib/bindings/NamedView'
 import type { OnboardingStatus } from '@rust/kcl-lib/bindings/OnboardingStatus'
 
 import { CustomIcon } from '@src/components/CustomIcon'
-import { Toggle } from '@src/components/Toggle/Toggle'
 import Tooltip from '@src/components/Tooltip'
 import type { CameraSystem } from '@src/lib/cameraControls'
 import { cameraMouseDragGuards, cameraSystems } from '@src/lib/cameraControls'
@@ -217,34 +216,37 @@ export function createSettings() {
         description: 'Save bandwidth & battery',
         validate: (v) =>
           v == 'undefined' ||
-          (Number(v) >= 0 &&
-            Number(v) <= 60 * MS_IN_MINUTE),
+          (Number(v) >= 0 && Number(v) <= 60 * MS_IN_MINUTE),
         commandConfig: {
           inputType: 'options',
           defaultValueFromContext: (context) =>
             context.app.streamIdleMode.current,
-          options: (cmdContext, settingsContext) => [
-            undefined,
-            5 * 1000,
-            30 * 1000,
-            1 * MS_IN_MINUTE,
-            2 * MS_IN_MINUTE,
-            5 * MS_IN_MINUTE,
-            15 * MS_IN_MINUTE,
-            30 * MS_IN_MINUTE,
-            60 * MS_IN_MINUTE,
-          ].map((v) => ({
-            name: v === undefined
-              ? "Off"
-              : v < MS_IN_MINUTE
-                ? `${Math.floor(v / 1000)} seconds`
-                : `${Math.floor(v / MS_IN_MINUTE)} minutes`,
-            value: v,
-            isCurrent: v === settingsContext.app.streamIdleMode[
-              cmdContext.argumentsToSubmit.level as SettingsLevel
-            ]
-          })),
-        }
+          options: (cmdContext, settingsContext) =>
+            [
+              undefined,
+              5 * 1000,
+              30 * 1000,
+              1 * MS_IN_MINUTE,
+              2 * MS_IN_MINUTE,
+              5 * MS_IN_MINUTE,
+              15 * MS_IN_MINUTE,
+              30 * MS_IN_MINUTE,
+              60 * MS_IN_MINUTE,
+            ].map((v) => ({
+              name:
+                v === undefined
+                  ? 'Off'
+                  : v < MS_IN_MINUTE
+                    ? `${Math.floor(v / 1000)} seconds`
+                    : `${Math.floor(v / MS_IN_MINUTE)} minutes`,
+              value: v,
+              isCurrent:
+                v ===
+                settingsContext.app.streamIdleMode[
+                  cmdContext.argumentsToSubmit.level as SettingsLevel
+                ],
+            })),
+        },
       }),
       allowOrbitInSketchMode: new Setting<boolean>({
         defaultValue: false,
