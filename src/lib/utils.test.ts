@@ -1,6 +1,7 @@
 import type { SourceRange } from '@rust/kcl-lib/bindings/SourceRange'
 import { topLevelRange } from '@src/lang/util'
 import {
+  getCamelCase,
   hasDigitsLeftOfDecimal,
   hasLeadingZero,
   isClockwise,
@@ -1306,5 +1307,20 @@ describe('testing isClockwise', () => {
       [10, 0],
     ]
     expect(isClockwise(counterClockwiseTriangle)).toBe(true)
+  })
+})
+
+describe('testing getCamelCase', () => {
+  it('properly parses cylinder into cylinder', () => {
+    expect(getCamelCase('cylinder')).toBe('cylinder')
+  })
+  it('properly parses my-ugly_Cased_Par-123 into myUglyCasedPart', () => {
+    expect(getCamelCase('my-ugly_Cased_Part123')).toBe('myUglyCasedPart123')
+  })
+  it('properly parses PascalCase into pascalCase', () => {
+    expect(getCamelCase('PascalCase')).toBe('pascalCase')
+  })
+  it('properly parses my/File/Path into myFilePath', () => {
+    expect(getCamelCase('my/File/Path')).toBe('myFilePath')
   })
 })

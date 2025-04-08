@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 
-import { listProjects } from '@src/lib/desktop'
+import { isRelevantFile, listProjects } from '@src/lib/desktop'
 import type { DeepPartial } from '@src/lib/types'
 
 // Mock the electron window global
@@ -110,6 +110,41 @@ describe('desktop utilities', () => {
     mockElectron.writeFile.mockResolvedValue(undefined)
     mockElectron.getPath.mockResolvedValue('/appData')
     mockElectron.kittycad.mockResolvedValue({})
+  })
+
+  describe('isRelevantFile', () => {
+    it('finds supported extension files relevant', () => {
+      expect(isRelevantFile('part.kcl')).toEqual(true)
+      expect(isRelevantFile('part.fbx')).toEqual(true)
+      expect(isRelevantFile('part.gltf')).toEqual(true)
+      expect(isRelevantFile('part.glb')).toEqual(true)
+      expect(isRelevantFile('part.obj')).toEqual(true)
+      expect(isRelevantFile('part.ply')).toEqual(true)
+      expect(isRelevantFile('part.sldprt')).toEqual(true)
+      expect(isRelevantFile('part.stp')).toEqual(true)
+      expect(isRelevantFile('part.step')).toEqual(true)
+      expect(isRelevantFile('part.stl')).toEqual(true)
+    })
+
+    // TODO: we should be lowercasing the extension here to check. .sldprt or .SLDPRT should be supported
+    // But the api doesn't allow it today, so revisit this and the tests once this is done
+    // it('finds supported uppercase extension files relevant', () => {
+    //   expect(isRelevantFile('part.KCL')).toEqual(true)
+    //   expect(isRelevantFile('part.FBX')).toEqual(true)
+    //   expect(isRelevantFile('part.GLTF')).toEqual(true)
+    //   expect(isRelevantFile('part.GLB')).toEqual(true)
+    //   expect(isRelevantFile('part.OBJ')).toEqual(true)
+    //   expect(isRelevantFile('part.PLY')).toEqual(true)
+    //   expect(isRelevantFile('part.SLDPRT')).toEqual(true)
+    //   expect(isRelevantFile('part.STP')).toEqual(true)
+    //   expect(isRelevantFile('part.STEP')).toEqual(true)
+    //   expect(isRelevantFile('part.STL')).toEqual(true)
+    // })
+
+    it("doesn't find .docx or .SLDASM relevant", () => {
+      expect(isRelevantFile('paper.docx')).toEqual(false)
+      expect(isRelevantFile('assembly.SLDASM')).toEqual(false)
+    })
   })
 
   describe('listProjects', () => {

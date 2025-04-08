@@ -192,6 +192,9 @@ test.describe('Point-and-click assemblies tests', () => {
       const partColor: [number, number, number] = [150, 150, 150]
       const tolerance = 50
 
+      const complexPlmFileName = 'cube_Complex-PLM_Name_-001.SLDPRT'
+      const camelCasedSolidworksFileName = 'cubeComplexPLMName001'
+
       await test.step('Setup parts and expect empty assembly scene', async () => {
         const projectName = 'assembly'
         await context.folderSetupFn(async (dir) => {
@@ -204,7 +207,7 @@ test.describe('Point-and-click assemblies tests', () => {
             ),
             fsp.copyFile(
               testsInputPath('cube.sldprt'),
-              path.join(bracketDir, 'cube.sldprt')
+              path.join(bracketDir, complexPlmFileName)
             ),
             fsp.writeFile(path.join(bracketDir, 'main.kcl'), ''),
           ])
@@ -240,17 +243,26 @@ test.describe('Point-and-click assemblies tests', () => {
       await test.step('Insert second step part by clicking', async () => {
         await toolbar.openPane('files')
         await toolbar.expectFileTreeState([
-          'cube.sldprt',
+          complexPlmFileName,
           'cube.step',
           'main.kcl',
         ])
-        await toolbar.openFile('cube.sldprt')
+        await toolbar.openFile(complexPlmFileName)
+
+        // Go through the ToastInsert prompt
         await page.getByText('Insert into my current file').click()
+
+        // Check getCamelCaseFromFileName output
+        const parsedValueFromFile =
+          await cmdBar.currentArgumentInput.inputValue()
+        expect(parsedValueFromFile).toEqual(camelCasedSolidworksFileName)
+
+        // Continue on with the flow
         await page.keyboard.insertText('cubeSw')
         await cmdBar.progressCmdBar()
         await cmdBar.expectState({
           stage: 'review',
-          headerArguments: { Path: 'cube.sldprt', LocalName: 'cubeSw' },
+          headerArguments: { Path: complexPlmFileName, LocalName: 'cubeSw' },
           commandName: 'Insert',
         })
         await cmdBar.progressCmdBar()
@@ -259,7 +271,7 @@ test.describe('Point-and-click assemblies tests', () => {
         await editor.expectEditor.toContain(
           `
         import "cube.step" as cube
-        import "cube.sldprt" as cubeSw
+        import "${complexPlmFileName}" as cubeSw
         cube
         cubeSw
       `,
