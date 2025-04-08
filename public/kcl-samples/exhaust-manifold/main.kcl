@@ -17,16 +17,14 @@ fn primaryTube(n, angle001, length001, length002, length003) {
 
   // Define a plane for each sweep path defined by an angle
   sweepPlane = {
-    plane = {
-      origin = [pos001, 0.0, 0],
-      xAxis = [
-        sin(toRadians(-angle001)),
-        cos(toRadians(-angle001)),
-        0.0
-      ],
-      yAxis = [0.0, 0.0, 1.0],
-      zAxis = [1.0, 0.0, 0.0]
-    }
+    origin = [pos001, 0.0, 0],
+    xAxis = [
+      sin(toRadians(-angle001)),
+      cos(toRadians(-angle001)),
+      0.0
+    ],
+    yAxis = [0.0, 0.0, 1.0],
+    zAxis = [1.0, 0.0, 0.0]
   }
 
   // Draw a path for each sweep

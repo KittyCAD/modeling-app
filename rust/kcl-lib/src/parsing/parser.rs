@@ -3882,6 +3882,23 @@ mySk1 = startSketchOn(XY)
     }
 
     #[test]
+    fn parse_numeric() {
+        let test_program = "fn foo(x: number(Length)) {}";
+        let tokens = crate::parsing::token::lex(test_program, ModuleId::default()).unwrap();
+        run_parser(tokens.as_slice()).unwrap();
+
+        let test_program = "42_mm";
+        let tokens = crate::parsing::token::lex(test_program, ModuleId::default()).unwrap();
+        assert_eq!(tokens.iter().count(), 1);
+        run_parser(tokens.as_slice()).unwrap();
+
+        let test_program = "42_Length";
+        let tokens = crate::parsing::token::lex(test_program, ModuleId::default()).unwrap();
+        assert_eq!(tokens.iter().count(), 2);
+        assert_eq!(run_parser(tokens.as_slice()).unwrap_errs().count(), 1);
+    }
+
+    #[test]
     fn test_parameter_list() {
         let tests = [
             ("", vec![]),

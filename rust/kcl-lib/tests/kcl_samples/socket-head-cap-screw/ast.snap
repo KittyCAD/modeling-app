@@ -745,29 +745,23 @@ description: Result of parsing socket-head-cap-screw.kcl
               {
                 "arguments": [
                   {
-                    "abs_path": false,
-                    "commentStart": 0,
-                    "end": 0,
-                    "name": {
+                    "type": "LabeledArg",
+                    "label": {
                       "commentStart": 0,
                       "end": 0,
-                      "name": "boltHead",
+                      "name": "face",
                       "start": 0,
                       "type": "Identifier"
                     },
-                    "path": [],
-                    "start": 0,
-                    "type": "Name",
-                    "type": "Name"
-                  },
-                  {
-                    "commentStart": 0,
-                    "end": 0,
-                    "raw": "'start'",
-                    "start": 0,
-                    "type": "Literal",
-                    "type": "Literal",
-                    "value": "start"
+                    "arg": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "raw": "'start'",
+                      "start": 0,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": "start"
+                    }
                   }
                 ],
                 "callee": {
@@ -788,8 +782,24 @@ description: Result of parsing socket-head-cap-screw.kcl
                 "commentStart": 0,
                 "end": 0,
                 "start": 0,
-                "type": "CallExpression",
-                "type": "CallExpression"
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": {
+                  "abs_path": false,
+                  "commentStart": 0,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "name": "boltHead",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name",
+                  "type": "Name"
+                }
               },
               {
                 "arguments": [
@@ -1403,29 +1413,23 @@ description: Result of parsing socket-head-cap-screw.kcl
               {
                 "arguments": [
                   {
-                    "abs_path": false,
-                    "commentStart": 0,
-                    "end": 0,
-                    "name": {
+                    "type": "LabeledArg",
+                    "label": {
                       "commentStart": 0,
                       "end": 0,
-                      "name": "boltHead",
+                      "name": "face",
                       "start": 0,
                       "type": "Identifier"
                     },
-                    "path": [],
-                    "start": 0,
-                    "type": "Name",
-                    "type": "Name"
-                  },
-                  {
-                    "commentStart": 0,
-                    "end": 0,
-                    "raw": "'end'",
-                    "start": 0,
-                    "type": "Literal",
-                    "type": "Literal",
-                    "value": "end"
+                    "arg": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "raw": "'end'",
+                      "start": 0,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": "end"
+                    }
                   }
                 ],
                 "callee": {
@@ -1446,8 +1450,24 @@ description: Result of parsing socket-head-cap-screw.kcl
                 "commentStart": 0,
                 "end": 0,
                 "start": 0,
-                "type": "CallExpression",
-                "type": "CallExpression"
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": {
+                  "abs_path": false,
+                  "commentStart": 0,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "name": "boltHead",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name",
+                  "type": "Name"
+                }
               },
               {
                 "arguments": [

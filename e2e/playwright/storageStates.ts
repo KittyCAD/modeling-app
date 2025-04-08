@@ -140,7 +140,7 @@ box = startSketchOn(XY)
   |> close()
   |> extrude(length = 10)
 
-sketch001 = startSketchOn(box, revolveAxis)
+sketch001 = startSketchOn(box, face = revolveAxis)
   |> startProfileAt([5, 10], %)
   |> line(end = [0, -10])
   |> line(end = [2, 0])

@@ -7,21 +7,25 @@ use kittycad_modeling_cmds::{self as kcmc, shared::Color};
 use regex::Regex;
 use rgba_simple::Hex;
 use schemars::JsonSchema;
-use serde::{Deserialize, Serialize};
-use validator::Validate;
+use serde::Serialize;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    execution::{types::RuntimeType, ExecState, KclValue, Solid},
+    execution::{
+        types::{NumericType, PrimitiveType, RuntimeType},
+        ExecState, KclValue, Solid,
+    },
     std::Args,
 };
+
+use super::args::TyF64;
 
 lazy_static::lazy_static! {
     static ref HEX_REGEX: Regex = Regex::new(r"^#[0-9a-fA-F]{6}$").unwrap();
 }
 
 /// Data for appearance.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Validate)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 struct AppearanceData {
@@ -30,10 +34,10 @@ struct AppearanceData {
     pub color: String,
     /// Metalness of the new material, a percentage like 95.7.
     #[validate(range(min = 0.0, max = 100.0))]
-    pub metalness: Option<f64>,
+    pub metalness: Option<TyF64>,
     /// Roughness of the new material, a percentage like 95.7.
     #[validate(range(min = 0.0, max = 100.0))]
-    pub roughness: Option<f64>,
+    pub roughness: Option<TyF64>,
     // TODO(jess): we can also ambient occlusion here I just don't know what it is.
 }
 
@@ -42,21 +46,14 @@ pub async fn appearance(exec_state: &mut ExecState, args: Args) -> Result<KclVal
     let solids = args.get_unlabeled_kw_arg_typed("solids", &RuntimeType::solids(), exec_state)?;
 
     let color: String = args.get_kw_arg("color")?;
-    let metalness: Option<f64> = args.get_kw_arg_opt("metalness")?;
-    let roughness: Option<f64> = args.get_kw_arg_opt("roughness")?;
+    let count_ty = RuntimeType::Primitive(PrimitiveType::Number(NumericType::count()));
+    let metalness: Option<TyF64> = args.get_kw_arg_opt_typed("metalness", &count_ty, exec_state)?;
+    let roughness: Option<TyF64> = args.get_kw_arg_opt_typed("roughness", &count_ty, exec_state)?;
     let data = AppearanceData {
         color,
         metalness,
         roughness,
     };
-
-    // Validate the data.
-    data.validate().map_err(|err| {
-        KclError::Semantic(KclErrorDetails {
-            message: format!("Invalid appearance data: {}", err),
-            source_ranges: vec![args.source_range],
-        })
-    })?;
 
     // Make sure the color if set is valid.
     if !HEX_REGEX.is_match(&data.color) {
@@ -66,7 +63,15 @@ pub async fn appearance(exec_state: &mut ExecState, args: Args) -> Result<KclVal
         }));
     }
 
-    let result = inner_appearance(solids, data.color, data.metalness, data.roughness, exec_state, args).await?;
+    let result = inner_appearance(
+        solids,
+        data.color,
+        data.metalness.map(|t| t.n),
+        data.roughness.map(|t| t.n),
+        exec_state,
+        args,
+    )
+    .await?;
     Ok(result.into())
 }
 

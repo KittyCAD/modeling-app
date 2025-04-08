@@ -5,7 +5,7 @@ description: Operations executed parametric_with_tan_arc.kcl
 [
   {
     "labeledArgs": {
-      "data": {
+      "planeOrSolid": {
         "value": {
           "type": "Plane",
           "artifact_id": "[uuid]"

@@ -28,9 +28,9 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1811,
-            "end": 1817,
-            "start": 1811,
+            "commentStart": 1775,
+            "end": 1781,
+            "start": 1775,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -62,9 +62,9 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2009,
-            "end": 2015,
-            "start": 2009,
+            "commentStart": 1973,
+            "end": 1979,
+            "start": 1973,
             "type": "TagDeclarator",
             "value": "seg03"
           },
@@ -75,9 +75,9 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2058,
-            "end": 2064,
-            "start": 2058,
+            "commentStart": 2022,
+            "end": 2028,
+            "start": 2022,
             "type": "TagDeclarator",
             "value": "seg04"
           },
@@ -88,9 +88,9 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2097,
-            "end": 2103,
-            "start": 2097,
+            "commentStart": 2061,
+            "end": 2067,
+            "start": 2061,
             "type": "TagDeclarator",
             "value": "seg05"
           },
@@ -122,9 +122,9 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2305,
-            "end": 2311,
-            "start": 2305,
+            "commentStart": 2269,
+            "end": 2275,
+            "start": 2269,
             "type": "TagDeclarator",
             "value": "seg07"
           },
@@ -135,9 +135,9 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2362,
-            "end": 2368,
-            "start": 2362,
+            "commentStart": 2326,
+            "end": 2332,
+            "start": 2326,
             "type": "TagDeclarator",
             "value": "seg08"
           },
@@ -148,9 +148,9 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2412,
-            "end": 2418,
-            "start": 2412,
+            "commentStart": 2376,
+            "end": 2382,
+            "start": 2376,
             "type": "TagDeclarator",
             "value": "seg09"
           },
@@ -192,9 +192,9 @@ description: Variables in memory after executing exhaust-manifold.kcl
               -1.25
             ],
             "tag": {
-              "commentStart": 1811,
-              "end": 1817,
-              "start": 1811,
+              "commentStart": 1775,
+              "end": 1781,
+              "start": 1775,
               "type": "TagDeclarator",
               "value": "seg01"
             },
@@ -289,9 +289,9 @@ description: Variables in memory after executing exhaust-manifold.kcl
               -1.25
             ],
             "tag": {
-              "commentStart": 2009,
-              "end": 2015,
-              "start": 2009,
+              "commentStart": 1973,
+              "end": 1979,
+              "start": 1973,
               "type": "TagDeclarator",
               "value": "seg03"
             },
@@ -314,9 +314,9 @@ description: Variables in memory after executing exhaust-manifold.kcl
               -1.25
             ],
             "tag": {
-              "commentStart": 2058,
-              "end": 2064,
-              "start": 2058,
+              "commentStart": 2022,
+              "end": 2028,
+              "start": 2022,
               "type": "TagDeclarator",
               "value": "seg04"
             },
@@ -339,9 +339,9 @@ description: Variables in memory after executing exhaust-manifold.kcl
               1.35
             ],
             "tag": {
-              "commentStart": 2097,
-              "end": 2103,
-              "start": 2097,
+              "commentStart": 2061,
+              "end": 2067,
+              "start": 2061,
               "type": "TagDeclarator",
               "value": "seg05"
             },
@@ -436,9 +436,9 @@ description: Variables in memory after executing exhaust-manifold.kcl
               1.35
             ],
             "tag": {
-              "commentStart": 2305,
-              "end": 2311,
-              "start": 2305,
+              "commentStart": 2269,
+              "end": 2275,
+              "start": 2269,
               "type": "TagDeclarator",
               "value": "seg07"
             },
@@ -461,9 +461,9 @@ description: Variables in memory after executing exhaust-manifold.kcl
               1.35
             ],
             "tag": {
-              "commentStart": 2362,
-              "end": 2368,
-              "start": 2362,
+              "commentStart": 2326,
+              "end": 2332,
+              "start": 2326,
               "type": "TagDeclarator",
               "value": "seg08"
             },
@@ -486,9 +486,9 @@ description: Variables in memory after executing exhaust-manifold.kcl
               -1.25
             ],
             "tag": {
-              "commentStart": 2412,
-              "end": 2418,
-              "start": 2412,
+              "commentStart": 2376,
+              "end": 2382,
+              "start": 2376,
               "type": "TagDeclarator",
               "value": "seg09"
             },
@@ -601,22 +601,34 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "origin": {
             "x": 0.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
+            "z": 1.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "units": {
             "type": "Inches"
@@ -683,28 +695,72 @@ description: Variables in memory after executing exhaust-manifold.kcl
         {
           "type": "fillet",
           "id": "[uuid]",
-          "radius": 1.5,
+          "radius": {
+            "n": 1.5,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Inches"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
           "edgeId": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
           "id": "[uuid]",
-          "radius": 1.5,
+          "radius": {
+            "n": 1.5,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Inches"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
           "edgeId": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
           "id": "[uuid]",
-          "radius": 0.25,
+          "radius": {
+            "n": 0.25,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Inches"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
           "edgeId": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
           "id": "[uuid]",
-          "radius": 0.25,
+          "radius": {
+            "n": 0.25,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Inches"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
           "edgeId": "[uuid]",
           "tag": null
         }

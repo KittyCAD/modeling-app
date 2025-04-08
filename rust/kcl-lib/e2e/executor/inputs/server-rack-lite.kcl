@@ -9,7 +9,6 @@ const width = 21.53
 // simple caster model at each corner
 fn caster = (originStart) => {
   const plane001c = {
-    plane: {
       origin: [
         -(3.543 - 2.756) / 2 + originStart[0],
         -(3.543 - 2.756) / 2 + originStart[1],
@@ -18,7 +17,6 @@ fn caster = (originStart) => {
       x_axis: [1.0, 0.0, 0.0],
       y_axis: [0.0, 1.0, 0.0],
       z_axis: [0.0, 0.0, 1.0]
-    }
   }
 
   const sketch001c = startSketchOn(plane001c)
@@ -46,7 +44,7 @@ fn caster = (originStart) => {
        ], radius= 8.8 / 2 / 25.4), %)
     |> extrude(length = -.25)
 
-  const sketch002c = startSketchOn(sketch001c, 'START')
+  const sketch002c = startSketchOn(sketch001c, face = 'START')
     |> startProfileAt([-originStart[0], 2.2 + originStart[1]], %)
     |> arc({
          angle_start: 30,
@@ -57,7 +55,6 @@ fn caster = (originStart) => {
     |> extrude(length = 3.1)
 
   const plane002c = {
-    plane: {
       origin: [
         0 + originStart[0],
         0.8 + originStart[1],
@@ -66,7 +63,6 @@ fn caster = (originStart) => {
       x_axis: [1, 0, 0],
       y_axis: [0, 0, 1],
       z_axis: [1, 0, 0]
-    }
   }
   const sketch003c = startSketchOn(plane002c)
     |> circle(center = [0, 1.2], radius = 2.48 / 2)
@@ -94,7 +90,6 @@ caster([
 
 // left wall
 const plane001 = {
-  plane: {
     origin: [
       originStart[0] - 4,
       originStart[1] + 2,
@@ -103,7 +98,6 @@ const plane001 = {
     x_axis: [0, 1, 0],
     y_axis: [0, 0, 1],
     z_axis: [1, 0, 0]
-  }
 }
 
 const sketch001l = startSketchOn(plane001)
@@ -185,7 +179,6 @@ const extrude007l = extrude(sketch007l, length = 1)
 
 // right wall
 const plane002 = {
-  plane: {
     origin: [
       originStart[0] - 4 + width - 1,
       originStart[1] - 1,
@@ -194,7 +187,6 @@ const plane002 = {
     x_axis: [0, 1, 0],
     y_axis: [0, 0, 1],
     z_axis: [1, 0, 0]
-  }
 }
 
 const sketch001w = startSketchOn(plane002)
@@ -486,12 +478,10 @@ const extrude025w = extrude(sketch025w, length = 1)
 
 // Base plane of rack
 const plane003 = {
-  plane: {
     origin: [0, 0, 4.114],
     x_axis: [1, 0, 0],
     y_axis: [0, 1, 0],
     z_axis: [0, 0, 1]
-  }
 }
 
 const sketch005 = startSketchOn(plane003)
@@ -539,12 +529,10 @@ const extrude008 = extrude(sketch008, length = 1)
 
 // Top Plane
 const plane004 = {
-  plane: {
     origin: [0, 0, 4.114 + railHeight * 1.75 + 2],
     x_axis: [1, 0, 0],
     y_axis: [0, 1, 0],
     z_axis: [0, 0, 1]
-  }
 }
 
 const sketch005t = startSketchOn(plane004)
@@ -592,16 +580,13 @@ const extrude009t = extrude(sketch009t, length = -1)
 // front left vertical rail
 // Define planes so the rail can be moved
 const planeXYfl = {
-  plane: {
     origin: [0, 0, originStart[2]],
     xAxis: [1.0, 0.0, 0.0],
     yAxis: [0.0, 1.0, 0.0],
     zAxis: [0.0, 0.0, 1.0]
-  }
 }
 
 const planeXZfl = {
-  plane: {
     origin: [
       originStart[1],
       originStart[0],
@@ -610,11 +595,9 @@ const planeXZfl = {
     xAxis: [0, 1, 0],
     yAxis: [0, 0, 1],
     zAxis: [1, 0, 0]
-  }
 }
 
 const planeYZfl = {
-  plane: {
     origin: [
       originStart[1],
       originStart[0],
@@ -623,7 +606,6 @@ const planeYZfl = {
     xAxis: [-1, 0, 0],
     yAxis: [0, 0, 1],
     zAxis: [1, 0, 0]
-  }
 }
 
 // Base flange
@@ -670,7 +652,7 @@ const sketch003fl = startSketchOn(planeXYfl)
 const extrude003fl = extrude(sketch003fl, length = railHeight * 1.75)
 
 // define slots
-const sketch010fl = startSketchOn(extrude001fl, 'START')
+const sketch010fl = startSketchOn(extrude001fl, face = 'START')
   |> startProfileAt([
        -1.12 + (.75 - .438) / 2 - originStart[0],
        originStart[2] + .81 - (.438 / 2)
@@ -691,7 +673,7 @@ const sketch010fl = startSketchOn(extrude001fl, 'START')
 const extrude010fl = extrude(sketch010fl, length = -thickness)
 
 // define slots
-const sketch011fl = startSketchOn(extrude001fl, 'START')
+const sketch011fl = startSketchOn(extrude001fl, face = 'START')
   |> startProfileAt([
        -1.12 + (.75 - .438) / 2 - originStart[0],
        originStart[2] + railHeight * 1.75 / 2 + .438 / 2
@@ -708,7 +690,7 @@ const sketch011fl = startSketchOn(extrude001fl, 'START')
 const extrude011fl = extrude(sketch011fl, length = -thickness)
 
 // define slots
-const sketch012fl = startSketchOn(extrude001fl, 'START')
+const sketch012fl = startSketchOn(extrude001fl, face = 'START')
   |> startProfileAt([
        -1.12 + (.75 - .438) / 2 - originStart[0],
        originStart[2] + railHeight * 1.75 - .81 + .438 / 2
@@ -731,16 +713,13 @@ const extrude012fl = extrude(sketch012fl, length = -thickness)
 // FRONT RIGHT VERTICAL RAIL
 // Define planes so the rail can be moved
 const planeXYfr = {
-  plane: {
     origin: [0, 0, originStart[2]],
     xAxis: [1.0, 0.0, 0.0],
     yAxis: [0.0, 1.0, 0.0],
     zAxis: [0.0, 0.0, 1.0]
-  }
 }
 
 const planeXZfr = {
-  plane: {
     origin: [
       originStart[1] + width - thickness - 2,
       originStart[0],
@@ -749,11 +728,9 @@ const planeXZfr = {
     xAxis: [0, 1, 0],
     yAxis: [0, 0, 1],
     zAxis: [1, 0, 0]
-  }
 }
 
 const planeYZfr = {
-  plane: {
     origin: [
       originStart[1] + width - 2,
       originStart[0],
@@ -762,7 +739,6 @@ const planeYZfr = {
     xAxis: [-1, 0, 0],
     yAxis: [0, 0, 1],
     zAxis: [1, 0, 0]
-  }
 }
 
 // Base flange
@@ -808,7 +784,7 @@ const sketch003fr = startSketchOn(planeXYfr)
 const extrude003fr = extrude(sketch003fr, length = railHeight * 1.75)
 
 // define slots
-const sketch010fr = startSketchOn(extrude001fr, 'START')
+const sketch010fr = startSketchOn(extrude001fr, face = 'START')
   |> startProfileAt([
        -1.12 + (.75 - .438) / 2 - originStart[0],
        originStart[2] + .81 - (.438 / 2)
@@ -829,7 +805,7 @@ const sketch010fr = startSketchOn(extrude001fr, 'START')
 const extrude010fr = extrude(sketch010fr, length = -thickness)
 
 // define slots
-const sketch011fr = startSketchOn(extrude001fr, 'START')
+const sketch011fr = startSketchOn(extrude001fr, face = 'START')
   |> startProfileAt([
        -1.12 + (.75 - .438) / 2 - originStart[0],
        originStart[2] + railHeight * 1.75 / 2 + .438 / 2
@@ -846,7 +822,7 @@ const sketch011fr = startSketchOn(extrude001fr, 'START')
 const extrude011fr = extrude(sketch011fr, length = -thickness)
 
 // define slots
-const sketch012fr = startSketchOn(extrude001fr, 'START')
+const sketch012fr = startSketchOn(extrude001fr, face = 'START')
   |> startProfileAt([
        -1.12 + (.75 - .438) / 2 - originStart[0],
        originStart[2] + railHeight * 1.75 - .81 + .438 / 2
@@ -869,16 +845,13 @@ const extrude012fr = extrude(sketch012fr, length = -thickness)
 // RIGHT REAR VERTICAL RAIL
 // Define planes so the rail can be moved
 const planeXYrr = {
-  plane: {
     origin: [0, serverDepth, originStart[2]],
     xAxis: [1.0, 0.0, 0.0],
     yAxis: [0.0, 1.0, 0.0],
     zAxis: [0.0, 0.0, 1.0]
-  }
 }
 
 const planeXZrr = {
-  plane: {
     origin: [
       originStart[1] + width - thickness - 2,
       originStart[0] + serverDepth - 2 - bendRad,
@@ -887,11 +860,9 @@ const planeXZrr = {
     xAxis: [0, 1, 0],
     yAxis: [0, 0, 1],
     zAxis: [1, 0, 0]
-  }
 }
 
 const planeYZrr = {
-  plane: {
     origin: [
       originStart[1] + width - 2,
       originStart[0] + serverDepth,
@@ -900,7 +871,6 @@ const planeYZrr = {
     xAxis: [-1, 0, 0],
     yAxis: [0, 0, 1],
     zAxis: [1, 0, 0]
-  }
 }
 
 // Base flange
@@ -946,7 +916,7 @@ const sketch003rr = startSketchOn(planeXYrr)
 const extrude003rr = extrude(sketch003rr, length = railHeight * 1.75)
 
 // define slots
-const sketch010rr = startSketchOn(extrude001rr, 'START')
+const sketch010rr = startSketchOn(extrude001rr, face = 'START')
   |> startProfileAt([
        -1.12 + (.75 - .438) / 2 - originStart[0] + 1.5 - serverDepth,
        originStart[2] + .81 - (.438 / 2)
@@ -967,7 +937,7 @@ const sketch010rr = startSketchOn(extrude001rr, 'START')
 const extrude010rr = extrude(sketch010rr, length = -thickness)
 
 // define slots
-const sketch011rr = startSketchOn(extrude001rr, 'START')
+const sketch011rr = startSketchOn(extrude001rr, face = 'START')
   |> startProfileAt([
        -1.12 + (.75 - .438) / 2 - originStart[0] + 1.5 - serverDepth,
        originStart[2] + railHeight * 1.75 / 2 + .438 / 2
@@ -984,7 +954,7 @@ const sketch011rr = startSketchOn(extrude001rr, 'START')
 const extrude011rr = extrude(sketch011rr, length = -thickness)
 
 // define slots
-const sketch012rr = startSketchOn(extrude001rr, 'START')
+const sketch012rr = startSketchOn(extrude001rr, face = 'START')
   |> startProfileAt([
        -1.12 + (.75 - .438) / 2 - originStart[0] + 1.5 - serverDepth,
        originStart[2] + railHeight * 1.75 - .81 + .438 / 2
@@ -1007,16 +977,13 @@ const extrude012rr = extrude(sketch012rr, length = -thickness)
 // REAR LEFT VETCIAL RAIL
 // Define planes so the rail can be moved
 const planeXYrl = {
-  plane: {
     origin: [0, serverDepth, originStart[2]],
     xAxis: [1.0, 0.0, 0.0],
     yAxis: [0.0, 1.0, 0.0],
     zAxis: [0.0, 0.0, 1.0]
-  }
 }
 
 const planeXZrl = {
-  plane: {
     origin: [
       originStart[1],
       originStart[0] + serverDepth - 2 - bendRad,
@@ -1025,11 +992,9 @@ const planeXZrl = {
     xAxis: [0, 1, 0],
     yAxis: [0, 0, 1],
     zAxis: [1, 0, 0]
-  }
 }
 
 const planeYZrl = {
-  plane: {
     origin: [
       originStart[1],
       originStart[0] + serverDepth,
@@ -1038,7 +1003,6 @@ const planeYZrl = {
     xAxis: [-1, 0, 0],
     yAxis: [0, 0, 1],
     zAxis: [1, 0, 0]
-  }
 }
 // Base flange
 const sketch001rl = startSketchOn(planeXZrl)
@@ -1083,7 +1047,7 @@ const sketch003rl = startSketchOn(planeXYrl)
 const extrude003rl = extrude(sketch003rl, length = railHeight * 1.75)
 
 // define slots
-const sketch010rl = startSketchOn(extrude001rl, 'START')
+const sketch010rl = startSketchOn(extrude001rl, face = 'START')
   |> startProfileAt([
        -1.12 + (.75 - .438) / 2 - originStart[0] - serverDepth + 1.5,
        originStart[2] + .81 - (.438 / 2)
@@ -1104,7 +1068,7 @@ const sketch010rl = startSketchOn(extrude001rl, 'START')
 const extrude010rl = extrude(sketch010rl, length = -thickness)
 
 // define slots
-const sketch011rl = startSketchOn(extrude001rl, 'START')
+const sketch011rl = startSketchOn(extrude001rl, face = 'START')
   |> startProfileAt([
        -1.12 + (.75 - .438) / 2 - originStart[0] - serverDepth + 1.5,
        originStart[2] + railHeight * 1.75 / 2 + .438 / 2
@@ -1121,7 +1085,7 @@ const sketch011rl = startSketchOn(extrude001rl, 'START')
 const extrude011rl = extrude(sketch011rl, length = -thickness)
 
 // define slots
-const sketch012rl = startSketchOn(extrude001rl, 'START')
+const sketch012rl = startSketchOn(extrude001rl, face = 'START')
   |> startProfileAt([
        -1.12 + (.75 - .438) / 2 - originStart[0] - serverDepth + 1.5,
        originStart[2] + railHeight * 1.75 - .81 + .438 / 2
@@ -1144,29 +1108,23 @@ const extrude012rl = extrude(sketch012rl, length = -thickness)
 // Define planes so the server can be moved
 fn streamServer = (serverPos) => {
   const planeXYs = {
-    plane: {
       origin: [0, 0 + 2, 4.114 + 1 + serverPos * 1.75],
       xAxis: [1.0, 0.0, 0.0],
       yAxis: [0.0, 1.0, 0.0],
       zAxis: [0.0, 0.0, 1.0]
-    }
   }
 
   const planeXZs = {
-    plane: {
       origin: [0 + 1.2 + .1, 0 + 2, 0],
       xAxis: [0, -1, 0],
       yAxis: [0, 0, 1],
       zAxis: [1, 0, 0]
-    }
   }
   const planeXZs2 = {
-    plane: {
       origin: [18 + 1.4, 0 + 2, 0],
       xAxis: [0, -1, 0],
       yAxis: [0, 0, 1],
       zAxis: [1, 0, 0]
-    }
   }
 
   const sketch001s = startSketchOn(planeXYs)

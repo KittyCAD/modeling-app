@@ -7,7 +7,13 @@ description: Variables in memory after executing bracket.kcl
     "type": "Number",
     "value": 0.6013,
     "ty": {
-      "type": "Unknown"
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
     }
   },
   "factorOfSafety": {
@@ -412,22 +418,34 @@ description: Variables in memory after executing bracket.kcl
           "origin": {
             "x": 0.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
+            "z": 1.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "units": {
             "type": "Mm"
@@ -490,42 +508,108 @@ description: Variables in memory after executing bracket.kcl
         {
           "type": "fillet",
           "id": "[uuid]",
-          "radius": 0.601324026261472,
+          "radius": {
+            "n": 0.601324026261472,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
           "edgeId": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
           "id": "[uuid]",
-          "radius": 0.25,
+          "radius": {
+            "n": 0.25,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
           "edgeId": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
           "id": "[uuid]",
-          "radius": 0.25,
+          "radius": {
+            "n": 0.25,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
           "edgeId": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
           "id": "[uuid]",
-          "radius": 0.25,
+          "radius": {
+            "n": 0.25,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
           "edgeId": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
           "id": "[uuid]",
-          "radius": 0.25,
+          "radius": {
+            "n": 0.25,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
           "edgeId": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
           "id": "[uuid]",
-          "radius": 0.25,
+          "radius": {
+            "n": 0.25,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
           "edgeId": "[uuid]",
           "tag": null
         }
@@ -591,17 +675,26 @@ description: Variables in memory after executing bracket.kcl
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "solid": {
                 "type": "Solid",
@@ -869,22 +962,34 @@ description: Variables in memory after executing bracket.kcl
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
-                      "z": 0.0
+                      "z": 0.0,
+                      "units": {
+                        "type": "Mm"
+                      }
                     },
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
-                      "z": 0.0
+                      "z": 0.0,
+                      "units": {
+                        "type": "Mm"
+                      }
                     },
                     "yAxis": {
                       "x": 0.0,
                       "y": 0.0,
-                      "z": 1.0
+                      "z": 1.0,
+                      "units": {
+                        "type": "Mm"
+                      }
                     },
                     "zAxis": {
                       "x": 0.0,
                       "y": -1.0,
-                      "z": 0.0
+                      "z": 0.0,
+                      "units": {
+                        "type": "Mm"
+                      }
                     },
                     "units": {
                       "type": "Mm"
@@ -947,42 +1052,108 @@ description: Variables in memory after executing bracket.kcl
                   {
                     "type": "fillet",
                     "id": "[uuid]",
-                    "radius": 0.601324026261472,
+                    "radius": {
+                      "n": 0.601324026261472,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Mm"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
                     "edgeId": "[uuid]",
                     "tag": null
                   },
                   {
                     "type": "fillet",
                     "id": "[uuid]",
-                    "radius": 0.25,
+                    "radius": {
+                      "n": 0.25,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Mm"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
                     "edgeId": "[uuid]",
                     "tag": null
                   },
                   {
                     "type": "fillet",
                     "id": "[uuid]",
-                    "radius": 0.25,
+                    "radius": {
+                      "n": 0.25,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Mm"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
                     "edgeId": "[uuid]",
                     "tag": null
                   },
                   {
                     "type": "fillet",
                     "id": "[uuid]",
-                    "radius": 0.25,
+                    "radius": {
+                      "n": 0.25,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Mm"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
                     "edgeId": "[uuid]",
                     "tag": null
                   },
                   {
                     "type": "fillet",
                     "id": "[uuid]",
-                    "radius": 0.25,
+                    "radius": {
+                      "n": 0.25,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Mm"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
                     "edgeId": "[uuid]",
                     "tag": null
                   },
                   {
                     "type": "fillet",
                     "id": "[uuid]",
-                    "radius": 0.25,
+                    "radius": {
+                      "n": 0.25,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Mm"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
                     "edgeId": "[uuid]",
                     "tag": null
                   }
@@ -1080,17 +1251,26 @@ description: Variables in memory after executing bracket.kcl
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "solid": {
                 "type": "Solid",
@@ -1358,22 +1538,34 @@ description: Variables in memory after executing bracket.kcl
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
-                      "z": 0.0
+                      "z": 0.0,
+                      "units": {
+                        "type": "Mm"
+                      }
                     },
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
-                      "z": 0.0
+                      "z": 0.0,
+                      "units": {
+                        "type": "Mm"
+                      }
                     },
                     "yAxis": {
                       "x": 0.0,
                       "y": 0.0,
-                      "z": 1.0
+                      "z": 1.0,
+                      "units": {
+                        "type": "Mm"
+                      }
                     },
                     "zAxis": {
                       "x": 0.0,
                       "y": -1.0,
-                      "z": 0.0
+                      "z": 0.0,
+                      "units": {
+                        "type": "Mm"
+                      }
                     },
                     "units": {
                       "type": "Mm"
@@ -1436,42 +1628,108 @@ description: Variables in memory after executing bracket.kcl
                   {
                     "type": "fillet",
                     "id": "[uuid]",
-                    "radius": 0.601324026261472,
+                    "radius": {
+                      "n": 0.601324026261472,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Mm"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
                     "edgeId": "[uuid]",
                     "tag": null
                   },
                   {
                     "type": "fillet",
                     "id": "[uuid]",
-                    "radius": 0.25,
+                    "radius": {
+                      "n": 0.25,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Mm"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
                     "edgeId": "[uuid]",
                     "tag": null
                   },
                   {
                     "type": "fillet",
                     "id": "[uuid]",
-                    "radius": 0.25,
+                    "radius": {
+                      "n": 0.25,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Mm"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
                     "edgeId": "[uuid]",
                     "tag": null
                   },
                   {
                     "type": "fillet",
                     "id": "[uuid]",
-                    "radius": 0.25,
+                    "radius": {
+                      "n": 0.25,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Mm"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
                     "edgeId": "[uuid]",
                     "tag": null
                   },
                   {
                     "type": "fillet",
                     "id": "[uuid]",
-                    "radius": 0.25,
+                    "radius": {
+                      "n": 0.25,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Mm"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
                     "edgeId": "[uuid]",
                     "tag": null
                   },
                   {
                     "type": "fillet",
                     "id": "[uuid]",
-                    "radius": 0.25,
+                    "radius": {
+                      "n": 0.25,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Mm"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
                     "edgeId": "[uuid]",
                     "tag": null
                   }
@@ -1569,17 +1827,26 @@ description: Variables in memory after executing bracket.kcl
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "solid": {
                 "type": "Solid",
@@ -1847,22 +2114,34 @@ description: Variables in memory after executing bracket.kcl
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
-                      "z": 0.0
+                      "z": 0.0,
+                      "units": {
+                        "type": "Mm"
+                      }
                     },
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
-                      "z": 0.0
+                      "z": 0.0,
+                      "units": {
+                        "type": "Mm"
+                      }
                     },
                     "yAxis": {
                       "x": 0.0,
                       "y": 0.0,
-                      "z": 1.0
+                      "z": 1.0,
+                      "units": {
+                        "type": "Mm"
+                      }
                     },
                     "zAxis": {
                       "x": 0.0,
                       "y": -1.0,
-                      "z": 0.0
+                      "z": 0.0,
+                      "units": {
+                        "type": "Mm"
+                      }
                     },
                     "units": {
                       "type": "Mm"
@@ -1925,42 +2204,108 @@ description: Variables in memory after executing bracket.kcl
                   {
                     "type": "fillet",
                     "id": "[uuid]",
-                    "radius": 0.601324026261472,
+                    "radius": {
+                      "n": 0.601324026261472,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Mm"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
                     "edgeId": "[uuid]",
                     "tag": null
                   },
                   {
                     "type": "fillet",
                     "id": "[uuid]",
-                    "radius": 0.25,
+                    "radius": {
+                      "n": 0.25,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Mm"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
                     "edgeId": "[uuid]",
                     "tag": null
                   },
                   {
                     "type": "fillet",
                     "id": "[uuid]",
-                    "radius": 0.25,
+                    "radius": {
+                      "n": 0.25,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Mm"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
                     "edgeId": "[uuid]",
                     "tag": null
                   },
                   {
                     "type": "fillet",
                     "id": "[uuid]",
-                    "radius": 0.25,
+                    "radius": {
+                      "n": 0.25,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Mm"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
                     "edgeId": "[uuid]",
                     "tag": null
                   },
                   {
                     "type": "fillet",
                     "id": "[uuid]",
-                    "radius": 0.25,
+                    "radius": {
+                      "n": 0.25,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Mm"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
                     "edgeId": "[uuid]",
                     "tag": null
                   },
                   {
                     "type": "fillet",
                     "id": "[uuid]",
-                    "radius": 0.25,
+                    "radius": {
+                      "n": 0.25,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Mm"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
                     "edgeId": "[uuid]",
                     "tag": null
                   }
@@ -2058,17 +2403,26 @@ description: Variables in memory after executing bracket.kcl
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "solid": {
                 "type": "Solid",
@@ -2336,22 +2690,34 @@ description: Variables in memory after executing bracket.kcl
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
-                      "z": 0.0
+                      "z": 0.0,
+                      "units": {
+                        "type": "Mm"
+                      }
                     },
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
-                      "z": 0.0
+                      "z": 0.0,
+                      "units": {
+                        "type": "Mm"
+                      }
                     },
                     "yAxis": {
                       "x": 0.0,
                       "y": 0.0,
-                      "z": 1.0
+                      "z": 1.0,
+                      "units": {
+                        "type": "Mm"
+                      }
                     },
                     "zAxis": {
                       "x": 0.0,
                       "y": -1.0,
-                      "z": 0.0
+                      "z": 0.0,
+                      "units": {
+                        "type": "Mm"
+                      }
                     },
                     "units": {
                       "type": "Mm"
@@ -2414,42 +2780,108 @@ description: Variables in memory after executing bracket.kcl
                   {
                     "type": "fillet",
                     "id": "[uuid]",
-                    "radius": 0.601324026261472,
+                    "radius": {
+                      "n": 0.601324026261472,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Mm"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
                     "edgeId": "[uuid]",
                     "tag": null
                   },
                   {
                     "type": "fillet",
                     "id": "[uuid]",
-                    "radius": 0.25,
+                    "radius": {
+                      "n": 0.25,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Mm"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
                     "edgeId": "[uuid]",
                     "tag": null
                   },
                   {
                     "type": "fillet",
                     "id": "[uuid]",
-                    "radius": 0.25,
+                    "radius": {
+                      "n": 0.25,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Mm"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
                     "edgeId": "[uuid]",
                     "tag": null
                   },
                   {
                     "type": "fillet",
                     "id": "[uuid]",
-                    "radius": 0.25,
+                    "radius": {
+                      "n": 0.25,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Mm"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
                     "edgeId": "[uuid]",
                     "tag": null
                   },
                   {
                     "type": "fillet",
                     "id": "[uuid]",
-                    "radius": 0.25,
+                    "radius": {
+                      "n": 0.25,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Mm"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
                     "edgeId": "[uuid]",
                     "tag": null
                   },
                   {
                     "type": "fillet",
                     "id": "[uuid]",
-                    "radius": 0.25,
+                    "radius": {
+                      "n": 0.25,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Mm"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
                     "edgeId": "[uuid]",
                     "tag": null
                   }
@@ -2552,17 +2984,26 @@ description: Variables in memory after executing bracket.kcl
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "solid": {
                 "type": "Solid",
@@ -2830,22 +3271,34 @@ description: Variables in memory after executing bracket.kcl
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
-                      "z": 0.0
+                      "z": 0.0,
+                      "units": {
+                        "type": "Mm"
+                      }
                     },
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
-                      "z": 0.0
+                      "z": 0.0,
+                      "units": {
+                        "type": "Mm"
+                      }
                     },
                     "yAxis": {
                       "x": 0.0,
                       "y": 0.0,
-                      "z": 1.0
+                      "z": 1.0,
+                      "units": {
+                        "type": "Mm"
+                      }
                     },
                     "zAxis": {
                       "x": 0.0,
                       "y": -1.0,
-                      "z": 0.0
+                      "z": 0.0,
+                      "units": {
+                        "type": "Mm"
+                      }
                     },
                     "units": {
                       "type": "Mm"
@@ -2908,42 +3361,108 @@ description: Variables in memory after executing bracket.kcl
                   {
                     "type": "fillet",
                     "id": "[uuid]",
-                    "radius": 0.601324026261472,
+                    "radius": {
+                      "n": 0.601324026261472,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Mm"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
                     "edgeId": "[uuid]",
                     "tag": null
                   },
                   {
                     "type": "fillet",
                     "id": "[uuid]",
-                    "radius": 0.25,
+                    "radius": {
+                      "n": 0.25,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Mm"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
                     "edgeId": "[uuid]",
                     "tag": null
                   },
                   {
                     "type": "fillet",
                     "id": "[uuid]",
-                    "radius": 0.25,
+                    "radius": {
+                      "n": 0.25,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Mm"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
                     "edgeId": "[uuid]",
                     "tag": null
                   },
                   {
                     "type": "fillet",
                     "id": "[uuid]",
-                    "radius": 0.25,
+                    "radius": {
+                      "n": 0.25,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Mm"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
                     "edgeId": "[uuid]",
                     "tag": null
                   },
                   {
                     "type": "fillet",
                     "id": "[uuid]",
-                    "radius": 0.25,
+                    "radius": {
+                      "n": 0.25,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Mm"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
                     "edgeId": "[uuid]",
                     "tag": null
                   },
                   {
                     "type": "fillet",
                     "id": "[uuid]",
-                    "radius": 0.25,
+                    "radius": {
+                      "n": 0.25,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Mm"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
                     "edgeId": "[uuid]",
                     "tag": null
                   }
@@ -3041,17 +3560,26 @@ description: Variables in memory after executing bracket.kcl
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "solid": {
                 "type": "Solid",
@@ -3319,22 +3847,34 @@ description: Variables in memory after executing bracket.kcl
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
-                      "z": 0.0
+                      "z": 0.0,
+                      "units": {
+                        "type": "Mm"
+                      }
                     },
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
-                      "z": 0.0
+                      "z": 0.0,
+                      "units": {
+                        "type": "Mm"
+                      }
                     },
                     "yAxis": {
                       "x": 0.0,
                       "y": 0.0,
-                      "z": 1.0
+                      "z": 1.0,
+                      "units": {
+                        "type": "Mm"
+                      }
                     },
                     "zAxis": {
                       "x": 0.0,
                       "y": -1.0,
-                      "z": 0.0
+                      "z": 0.0,
+                      "units": {
+                        "type": "Mm"
+                      }
                     },
                     "units": {
                       "type": "Mm"
@@ -3397,42 +3937,108 @@ description: Variables in memory after executing bracket.kcl
                   {
                     "type": "fillet",
                     "id": "[uuid]",
-                    "radius": 0.601324026261472,
+                    "radius": {
+                      "n": 0.601324026261472,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Mm"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
                     "edgeId": "[uuid]",
                     "tag": null
                   },
                   {
                     "type": "fillet",
                     "id": "[uuid]",
-                    "radius": 0.25,
+                    "radius": {
+                      "n": 0.25,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Mm"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
                     "edgeId": "[uuid]",
                     "tag": null
                   },
                   {
                     "type": "fillet",
                     "id": "[uuid]",
-                    "radius": 0.25,
+                    "radius": {
+                      "n": 0.25,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Mm"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
                     "edgeId": "[uuid]",
                     "tag": null
                   },
                   {
                     "type": "fillet",
                     "id": "[uuid]",
-                    "radius": 0.25,
+                    "radius": {
+                      "n": 0.25,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Mm"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
                     "edgeId": "[uuid]",
                     "tag": null
                   },
                   {
                     "type": "fillet",
                     "id": "[uuid]",
-                    "radius": 0.25,
+                    "radius": {
+                      "n": 0.25,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Mm"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
                     "edgeId": "[uuid]",
                     "tag": null
                   },
                   {
                     "type": "fillet",
                     "id": "[uuid]",
-                    "radius": 0.25,
+                    "radius": {
+                      "n": 0.25,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Mm"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
                     "edgeId": "[uuid]",
                     "tag": null
                   }
@@ -3483,7 +4089,13 @@ description: Variables in memory after executing bracket.kcl
     "type": "Number",
     "value": 0.3513,
     "ty": {
-      "type": "Unknown"
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
     }
   },
   "wallMountL": {

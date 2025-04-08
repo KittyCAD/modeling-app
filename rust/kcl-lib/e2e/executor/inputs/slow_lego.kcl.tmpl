@@ -13,21 +13,17 @@ const totalLength = lbumps * pitch - (2.0 * clearance)
 const totalWidth = wbumps * pitch - (2.0 * clearance)
 // Create the plane for the pegs. This is a hack so that the pegs can be patterned along the face of the lego base.
 const pegFace = {
-  plane: {
-    origin: { x: 0, y: 0, z: height },
-    xAxis: { x: 1, y: 0, z: 0 },
-    yAxis: { x: 0, y: 1, z: 0 },
-    zAxis: { x: 0, y: 0, z: 1 }
-  }
+  origin: { x: 0, y: 0, z: height },
+  xAxis: { x: 1, y: 0, z: 0 },
+  yAxis: { x: 0, y: 1, z: 0 },
+  zAxis: { x: 0, y: 0, z: 1 }
 }
 // Create the plane for the tubes underneath the lego. This is a hack so that the tubes can be patterned underneath the lego.
 const tubeFace = {
-    plane: {
-    origin: { x: 0, y: 0, z: height - t },
-    xAxis: { x: 1, y: 0, z: 0 },
-    yAxis: { x: 0, y: 1, z: 0 },
-    zAxis: { x: 0, y: 0, z: 1 }
-  }
+  origin: { x: 0, y: 0, z: height - t },
+  xAxis: { x: 1, y: 0, z: 0 },
+  yAxis: { x: 0, y: 1, z: 0 },
+  zAxis: { x: 0, y: 0, z: 1 }
 }
 // Make the base
 const s = startSketchOn('XY')
