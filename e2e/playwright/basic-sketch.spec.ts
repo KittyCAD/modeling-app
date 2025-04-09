@@ -137,7 +137,7 @@ async function doBasicSketch(
     await page.waitForTimeout(100)
   }
 
-  await page.getByRole('button', { name: 'Length: open menu' }).click()
+  await page.getByRole('button', { name: 'constraints: open menu' }).click()
   await page.getByRole('button', { name: 'Equal Length' }).click()
 
   // Open the code pane.

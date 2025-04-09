@@ -5,33 +5,40 @@ all: install build check
 # INSTALL
 
 ifeq ($(OS),Windows_NT)
-	CARGO ?= ~/.cargo/bin/cargo.exe
-	WASM_PACK ?= ~/.cargo/bin/wasm-pack.exe
-else
-	CARGO ?= ~/.cargo/bin/cargo
-	WASM_PACK ?= ~/.cargo/bin/wasm-pack
+export WINDOWS := true
+ifndef MSYSTEM
+export POWERSHELL := true
 endif
+endif
+
+ifdef WINDOWS
+CARGO ?= $(USERPROFILE)/.cargo/bin/cargo.exe
+WASM_PACK ?= $(USERPROFILE)/.cargo/bin/wasm-pack.exe
+else
+CARGO ?= ~/.cargo/bin/cargo
+WASM_PACK ?= ~/.cargo/bin/wasm-pack
+endif 
 
 .PHONY: install
 install: node_modules/.yarn-integrity $(CARGO) $(WASM_PACK) ## Install dependencies
 
 node_modules/.yarn-integrity: package.json yarn.lock
 	yarn install
-ifeq ($(OS),Windows_NT)
+ifdef POWERSHELL
 	@ type nul > $@
 else
 	@ touch $@
 endif
 
 $(CARGO):
-ifeq ($(OS),Windows_NT)
+ifdef WINDOWS
 	yarn install:rust:windows
 else
 	yarn install:rust
 endif
 
 $(WASM_PACK):
-ifeq ($(OS),Windows_NT)
+ifdef WINDOWS
 	yarn install:wasm-pack:cargo
 else
 	yarn install:wasm-pack:sh
@@ -57,7 +64,7 @@ build-web: install public/kcl_wasm_lib_bg.wasm build/index.html
 build-desktop: install public/kcl_wasm_lib_bg.wasm .vite/build/main.js
 
 public/kcl_wasm_lib_bg.wasm: $(CARGO_SOURCES) $(RUST_SOURCES)
-ifeq ($(OS),Windows_NT)
+ifdef WINDOWS
 	yarn build:wasm:dev:windows
 else
 	yarn build:wasm:dev
@@ -140,8 +147,8 @@ endif
 
 .PHONY: clean
 clean: ## Delete all artifacts
-ifeq ($(OS),Windows_NT)
-	git clean --force -d -X
+ifdef POWERSHELL
+	git clean --force -d -x --exclude=.env* --exclude=**/*.env
 else
 	rm -rf .vite/ build/
 	rm -rf trace.zip playwright-report/ test-results/
@@ -152,7 +159,7 @@ endif
 
 .PHONY: help
 help: install
-ifeq ($(OS),Windows_NT)
+ifdef POWERSHELL
 	@ powershell -Command "Get-Content $(MAKEFILE_LIST) | Select-String -Pattern '^[^\s]+:.*##\s.*$$' | ForEach-Object { $$line = $$_.Line -split ':.*?##\s+'; Write-Host -NoNewline $$line[0].PadRight(30) -ForegroundColor Cyan; Write-Host $$line[1] }"
 else
 	@ grep -E '^[^[:space:]]+:.*## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
