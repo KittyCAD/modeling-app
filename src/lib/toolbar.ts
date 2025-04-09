@@ -352,12 +352,30 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             icon: 'import',
             status: DEV || IS_NIGHTLY_OR_DEBUG ? 'available' : 'kcl-only',
             disabled: () => !isDesktop(),
-            title: 'Insert from project file',
+            title: 'Insert',
             description: 'Insert from a file in the current project directory',
             links: [
               {
                 label: 'API docs',
                 url: 'https://zoo.dev/docs/kcl/import',
+              },
+            ],
+          },
+          {
+            id: 'transform',
+            icon: 'angle',
+            status: 'kcl-only',
+            title: 'Transform',
+            description: 'Apply a translation and/or rotation to a module',
+            onClick: () => undefined,
+            links: [
+              {
+                label: 'API docs',
+                url: 'https://zoo.dev/docs/kcl/translate',
+              },
+              {
+                label: 'API docs',
+                url: 'https://zoo.dev/docs/kcl/rotate',
               },
             ],
           },
