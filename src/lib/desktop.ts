@@ -201,14 +201,13 @@ export async function listProjects(
   return projects
 }
 
-const RELEVANT_FILE_EXTENSIONS = relevantFileExtensions()
-export const isRelevantFile = (filename: string): boolean =>
-  RELEVANT_FILE_EXTENSIONS.some((ext) => filename.endsWith('.' + ext))
-
 const collectAllFilesRecursiveFrom = async (
   path: string,
   canReadWritePath: boolean
 ) => {
+  const RELEVANT_FILE_EXTENSIONS = relevantFileExtensions()
+  const isRelevantFile = (filename: string): boolean =>
+    RELEVANT_FILE_EXTENSIONS.some((ext) => filename.endsWith('.' + ext))
   // Make sure the filesystem object exists.
   try {
     await window.electron.stat(path)
