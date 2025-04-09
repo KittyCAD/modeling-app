@@ -6,10 +6,16 @@ layout: manual
 
 
 
-Construct a 2-dimensional circle, of the specified radius, centered atthe provided (x, y) origin point.
+Construct a 2-dimensional circle, of the specified radius, centered at
+the provided (x, y) origin point.
 
 ```js
-circle(@sketch_or_surface: Sketch | Plane | Face, center: Point2d, radius: number, tag?: tag): Sketch
+circle(
+  @sketch_or_surface: Sketch | Plane | Face,
+  center: Point2d,
+  radius: number,
+  tag?: tag,
+): Sketch
 ```
 
 

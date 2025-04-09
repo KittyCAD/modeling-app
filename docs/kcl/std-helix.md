@@ -9,7 +9,15 @@ Create a helix.
 
 
 ```js
-helix(revolutions: number(_), angleStart: number(deg), ccw?: bool, radius?: number(mm), axis?: Axis3d | Edge, length?: number(mm), cylinder?: Solid): Helix
+helix(
+  revolutions: number(_),
+  angleStart: number(deg),
+  ccw?: bool,
+  radius?: number(mm),
+  axis?: Axis3d | Edge,
+  length?: number(mm),
+  cylinder?: Solid,
+): Helix
 ```
 
 
