@@ -104,19 +104,14 @@ test.describe('Named view tests', () => {
       PROJECT_SETTINGS_FILE_NAME
     )
 
-    // Expect project.toml to be generated on disk since a named view was created
+    // Check project.toml contents
     await expect(async () => {
-      let exists = await fileExists(tempProjectSettingsFilePath)
-      expect(exists).toBe(true)
-    }).toPass()
-
-    await expect(async () => {
+      // Wait for the project.toml to get written to disk
+      await page.waitForTimeout(1_000)
       // Read project.toml into memory
       let tomlString = await fsp.readFile(tempProjectSettingsFilePath, 'utf-8')
-
       // Rewrite the uuids in the named views to match snapshot otherwise they will be randomly generated from rust and break
       tomlString = tomlStringOverWriteNamedViewUuids(tomlString)
-
       // Write the entire tomlString to a snapshot.
       // There are many key/value pairs to check this is a safer match.
       expect(tomlString).toMatchSnapshot('settings-with-named-view.toml')
@@ -149,23 +144,17 @@ test.describe('Named view tests', () => {
       PROJECT_SETTINGS_FILE_NAME
     )
 
-    // Except the project.toml to be written to disk since a named view was created
+    // Check project.toml contents
     await expect(async () => {
-      let exists = await fileExists(tempProjectSettingsFilePath)
-      expect(exists).toBe(true)
-    }).toPass()
-
-    await expect(async () => {
+      // Wait for the project.toml to get written to disk
+      await page.waitForTimeout(1_000)
       // Read project.toml into memory
       let tomlString = await fsp.readFile(tempProjectSettingsFilePath, 'utf-8')
       // Rewrite the uuids in the named views to match snapshot otherwise they will be randomly generated from rust and break
       tomlString = tomlStringOverWriteNamedViewUuids(tomlString)
-
       // Write the entire tomlString to a snapshot.
       // There are many key/value pairs to check this is a safer match.
-      expect(tomlString).toMatchSnapshot(
-        'settings-before-deleting-named-view.toml'
-      )
+      expect(tomlString).toMatchSnapshot('settings-with-named-view.toml')
     }).toPass()
 
     // Delete a named view
@@ -174,12 +163,14 @@ test.describe('Named view tests', () => {
     cmdBar.selectOption({ name: myNamedView2 })
     await cmdBar.progressCmdBar(false)
 
+    // Check project.toml contents
     await expect(async () => {
+      // Wait for the project.toml to get written to disk
+      await page.waitForTimeout(1_000)
       // Read project.toml into memory again since we deleted a named view
       let tomlString = await fsp.readFile(tempProjectSettingsFilePath, 'utf-8')
       // Rewrite the uuids in the named views to match snapshot otherwise they will be randomly generated from rust and break
       tomlString = tomlStringOverWriteNamedViewUuids(tomlString)
-
       // Write the entire tomlString to a snapshot.
       // There are many key/value pairs to check this is a safer match.
       expect(tomlString).toMatchSnapshot(
@@ -213,23 +204,17 @@ test.describe('Named view tests', () => {
       PROJECT_SETTINGS_FILE_NAME
     )
 
-    // Except the project.toml to be written to disk since a named view was created
+    // Check project.toml contents
     await expect(async () => {
-      let exists = await fileExists(tempProjectSettingsFilePath)
-      expect(exists).toBe(true)
-    }).toPass()
-
-    await expect(async () => {
+      // Wait for the project.toml to get written to disk
+      await page.waitForTimeout(1_000)
       // Read project.toml into memory
       let tomlString = await fsp.readFile(tempProjectSettingsFilePath, 'utf-8')
       // Rewrite the uuids in the named views to match snapshot otherwise they will be randomly generated from rust and break
       tomlString = tomlStringOverWriteNamedViewUuids(tomlString)
-
       // Write the entire tomlString to a snapshot.
       // There are many key/value pairs to check this is a safer match.
-      expect(tomlString).toMatchSnapshot(
-        'settings-with-named-view-to-load.toml'
-      )
+      expect(tomlString).toMatchSnapshot('settings-with-named-view.toml')
     }).toPass()
 
     // Create a load a named view
@@ -263,7 +248,7 @@ test.describe('Named view tests', () => {
     await cmdBar.argumentInput.fill(myNamedView1)
     await cmdBar.progressCmdBar(false)
 
-    await page.waitForTimeout(1000)
+    await page.waitForTimeout(1_000)
 
     const orbitMouseStart = { x: 800, y: 130 }
     const orbitMouseEnd = { x: 0, y: 130 }
@@ -274,15 +259,12 @@ test.describe('Named view tests', () => {
     })
     await page.mouse.up({ button: 'middle' })
 
-    await page.waitForTimeout(1000)
+    await page.waitForTimeout(1_000)
 
     await cmdBar.openCmdBar()
     await cmdBar.chooseCommand('create named view')
     await cmdBar.argumentInput.fill(myNamedView2)
     await cmdBar.progressCmdBar(false)
-
-    // Wait a moment for the project.toml to get written to disk with the new view point
-    await page.waitForTimeout(1000)
 
     // Generate paths for the project.toml
     const tempProjectSettingsFilePath = join(
@@ -291,18 +273,14 @@ test.describe('Named view tests', () => {
       PROJECT_SETTINGS_FILE_NAME
     )
 
-    // Expect project.toml to be generated on disk since a named view was created
+    // Check project.toml contents
     await expect(async () => {
-      let exists = await fileExists(tempProjectSettingsFilePath)
-      expect(exists).toBe(true)
-    }).toPass()
-
-    await expect(async () => {
+      // Wait for the project.toml to get written to disk
+      await page.waitForTimeout(1_000)
       // Read project.toml into memory
       let tomlString = await fsp.readFile(tempProjectSettingsFilePath, 'utf-8')
       // Rewrite the uuids in the named views to match snapshot otherwise they will be randomly generated from rust and break
       tomlString = tomlStringOverWriteNamedViewUuids(tomlString)
-
       // Write the entire tomlString to a snapshot.
       // There are many key/value pairs to check this is a safer match.
       expect(tomlString).toMatchSnapshot('settings-with-two-named-views.toml')
