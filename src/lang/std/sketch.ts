@@ -2219,7 +2219,8 @@ export const angledLine: SketchLineHelper = {
           // We cannot pass newAngleVal to expr because it is a Node<Literal>.
           // We couldn't change that type to be Node<Expr> because there is a lot of code assuming it to be Node<Literal>.
           // So we added a new optional overrideExpr which can be Node<Expr> and this is used if present in sketchcombos/createNode().
-          expr: createLiteral(''),
+          expr:
+            newAngleVal.type === 'Literal' ? newAngleVal : createLiteral(''),
           overrideExpr: newAngleVal,
         },
         {
