@@ -200,8 +200,7 @@ export function updateCenterRectangleSketch(
     const newLength = createLiteral(Math.abs(twoY))
 
     // Update old rectangle.
-    const foundOldAngle = mutateKwArgOnly(ARG_ANGLE, edge1, newAngle)
-    if (!foundOldAngle) console.error('ADAM: old angle not found')
+    mutateKwArgOnly(ARG_ANGLE, edge1, newAngle)
     mutateKwArgOnly(ARG_LENGTH, edge1, newLength)
   }
 }

@@ -653,7 +653,6 @@ ${!replace1 ? `  |> ${line}\n` : ''}  |> angledLine(angle = -65, length = ${
       const range = topLevelRange(start, start + lineOfInterest.length)
       const pathToNode = getNodePathFromSourceRange(ast, range)
       const dependentSegments = findUsesOfTagInPipe(ast, pathToNode)
-      console.warn('ADAM: dependentSegments', dependentSegments)
       const modifiedAst = deleteSegmentFromPipeExpression(
         dependentSegments,
         ast,
@@ -827,7 +826,6 @@ describe('Testing removeSingleConstraintInfo', () => {
       const start = code.indexOf(lineOfInterest)
       expect(start).toBeGreaterThanOrEqual(0)
       const range = topLevelRange(start + 1, start + lineOfInterest.length)
-      console.warn('ADAM: range', range)
       let argPosition: SimplifiedArgDetails
       if (key === 'arrayIndex' && typeof value === 'number') {
         argPosition = {

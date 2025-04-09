@@ -243,7 +243,9 @@ const commonConstraintInfoHelper = (
       }
     })()
   if (firstArg === undefined) {
-    console.error('ADAM: firstArg was undefined')
+    console.error(
+      `Could not parse constraints because call to ${callExp.callee.name.name} was missing important arguments`
+    )
     return []
   }
   const pipeExpressionIndex = pathToNode.findIndex(
@@ -359,7 +361,9 @@ const commonConstraintInfoHelper = (
   // (i.e. map of argument labels to argument values in a KW call)
   const multipleArgs = firstArg[1]
   if (multipleArgs === undefined) {
-    console.error('ADAM: multipleArgs was undefined')
+    console.error(
+      `Could not parse constraints because call to ${callExp.callee.name.name} had the wrong argument structure`
+    )
     return []
   }
   return Object.keys(multipleArgs).map((argLabel, i) => {
@@ -2264,17 +2268,14 @@ export const angledLine: SketchLineHelperKw = {
     if (err(_node1)) return _node1
     const { node: pipe } = _node1
 
-    console.warn('ADAM: from, to', from, to)
     const newAngleVal = createLiteral(roundOff(getAngle(from, to), 0))
     const newLengthVal = createLiteral(roundOff(getLength(from, to), 2))
-    console.warn('ADAM: newAngle, newLength', newAngleVal, newLengthVal)
     const newLine = createCallExpressionStdLibKw('angledLine', null, [
       createLabeledArg('angle', newAngleVal),
       createLabeledArg('length', newLengthVal),
     ])
 
     if (replaceExistingCallback) {
-      console.warn('ADAM: Probably needs to be adjusted for kw args')
       const { index: callIndex } = splitPathAtPipeExpression(pathToNode)
       const result = replaceExistingCallback([
         {
