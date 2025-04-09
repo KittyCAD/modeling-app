@@ -6,6 +6,15 @@ description: Operations executed axial-fan.kcl
   {
     "type": "GroupBegin",
     "group": {
+      "type": "ModuleInstance",
+      "name": "fanHousing",
+      "moduleId": 5
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
       "type": "FunctionCall",
       "name": "fanHousing",
       "functionSourceRange": [
@@ -773,6 +782,18 @@ description: Operations executed axial-fan.kcl
     "type": "GroupEnd"
   },
   {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "ModuleInstance",
+      "name": "motor",
+      "moduleId": 6
+    },
+    "sourceRange": []
+  },
+  {
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
@@ -780,7 +801,7 @@ description: Operations executed axial-fan.kcl
       "functionSourceRange": [
         202,
         670,
-        7
+        6
       ],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -994,6 +1015,18 @@ description: Operations executed axial-fan.kcl
     "type": "GroupEnd"
   },
   {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "ModuleInstance",
+      "name": "fan",
+      "moduleId": 7
+    },
+    "sourceRange": []
+  },
+  {
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
@@ -1001,7 +1034,7 @@ description: Operations executed axial-fan.kcl
       "functionSourceRange": [
         163,
         2944,
-        8
+        7
       ],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -1117,7 +1150,7 @@ description: Operations executed axial-fan.kcl
       "functionSourceRange": [
         1083,
         2456,
-        8
+        7
       ],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -1396,7 +1429,7 @@ description: Operations executed axial-fan.kcl
       "functionSourceRange": [
         1083,
         2456,
-        8
+        7
       ],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -1670,7 +1703,7 @@ description: Operations executed axial-fan.kcl
       "functionSourceRange": [
         1083,
         2456,
-        8
+        7
       ],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -2123,6 +2156,9 @@ description: Operations executed axial-fan.kcl
       },
       "sourceRange": []
     }
+  },
+  {
+    "type": "GroupEnd"
   },
   {
     "type": "GroupEnd"
