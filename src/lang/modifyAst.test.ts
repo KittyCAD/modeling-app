@@ -663,8 +663,6 @@ ${!replace1 ? `  |> ${line}\n` : ''}  |> angledLine(angle = -65, length = ${
       if (err(modifiedAst)) throw modifiedAst
       const newCode = recast(modifiedAst)
       const expected = makeCode(line, replace1, replace2)
-      // .replace('/*a*/ ', '')
-      // .replace('/*b*/ ', '')
       expect(newCode).toBe(expected)
     })
   })
@@ -832,11 +830,6 @@ describe('Testing removeSingleConstraintInfo', () => {
           type: 'arrayItem',
           index: value === 0 ? 0 : 1,
         }
-        // } else if (key === 'objectProperty' && typeof value === 'string') {
-        //   argPosition = {
-        //     type: 'objectProperty',
-        //     key: value,
-        //   }
       } else if (key === 'labeledArg') {
         argPosition = {
           type: 'labeledArg',
