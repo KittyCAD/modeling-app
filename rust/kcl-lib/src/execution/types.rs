@@ -695,7 +695,7 @@ pub enum UnitLen {
 
 impl UnitLen {
     fn adjust_to(self, value: f64, to: UnitLen) -> f64 {
-        if self == to {
+        if !*CHECK_NUMERIC_TYPES || self == to {
             return value;
         }
 
@@ -808,6 +808,11 @@ impl UnitAngle {
     fn adjust_to(self, value: f64, to: UnitAngle) -> f64 {
         use std::f64::consts::PI;
         use UnitAngle::*;
+
+        if !*CHECK_NUMERIC_TYPES {
+            return value;
+        }
+
         match (self, to) {
             (Degrees, Degrees) => value,
             (Degrees, Radians) => (value / 180.0) * PI,
@@ -1940,7 +1945,9 @@ u = min(3rad, 4in)
         assert_value_and_type("c", &result, 13.0, NumericType::mm());
         assert_value_and_type("d", &result, 13.0, NumericType::mm());
         assert_value_and_type("e", &result, 13.0, NumericType::mm());
-        assert_value_and_type("f", &result, 5.0, NumericType::mm());
+        if *CHECK_NUMERIC_TYPES {
+            assert_value_and_type("f", &result, 5.0, NumericType::mm());
+        }
 
         assert_value_and_type("g", &result, 20.0, NumericType::default());
         assert_value_and_type("h", &result, 20.0, NumericType::mm());
@@ -1950,7 +1957,9 @@ u = min(3rad, 4in)
 
         assert_value_and_type("l", &result, 0.0, NumericType::count());
         assert_value_and_type("m", &result, 2.0, NumericType::count());
-        assert_value_and_type("n", &result, 127.0, NumericType::count());
+        if *CHECK_NUMERIC_TYPES {
+            assert_value_and_type("n", &result, 127.0, NumericType::count());
+        }
         assert_value_and_type("o", &result, 1.0, NumericType::mm());
         assert_value_and_type("p", &result, 1.0, NumericType::count());
         assert_value_and_type("q", &result, 2.0, NumericType::Known(UnitType::Length(UnitLen::Inches)));
@@ -1959,5 +1968,19 @@ u = min(3rad, 4in)
         assert_value_and_type("s", &result, -42.0, NumericType::mm());
         assert_value_and_type("t", &result, 3.0, NumericType::Known(UnitType::Length(UnitLen::Inches)));
         assert_value_and_type("u", &result, 3.0, NumericType::Unknown);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn bad_typed_arithmetic() {
+        let program = r#"
+a = 1rad
+b = 180 / PI * a + 360
+"#;
+
+        let result = parse_execute(program).await.unwrap();
+
+        assert_value_and_type("a", &result, 1.0, NumericType::radians());
+        // TODO type is not ideal
+        assert_value_and_type("b", &result, 417.0, NumericType::radians());
     }
 }
