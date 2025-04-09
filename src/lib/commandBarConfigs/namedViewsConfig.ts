@@ -124,47 +124,50 @@ export function createNamedViewsCommand() {
             cmd: { type: 'default_camera_get_view' },
           })
 
-        if (!(cameraGetViewResponse && 'resp' in cameraGetViewResponse)) {
+        if (
+          !(
+            cameraGetViewResponse &&
+            cameraGetViewResponse.success &&
+            'resp' in cameraGetViewResponse
+          )
+        ) {
           return toast.error('Unable to create named view, websocket failure')
         }
 
         if ('modeling_response' in cameraGetViewResponse.resp.data) {
-          if (cameraGetViewResponse.success) {
-            if (
-              cameraGetViewResponse.resp.data.modeling_response.type ===
-              'default_camera_get_view'
-            ) {
-              const view =
-                cameraGetViewResponse.resp.data.modeling_response.data
-              const requestedView = cameraViewStateToNamedView(
-                data.name,
-                view.view
-              )
-              if (err(requestedView)) {
-                toast.error('Unable to create named view.')
-                return
-              }
-              // Retrieve application state for namedViews
-              const namedViews = {
-                ...settingsActor.getSnapshot().context.app.namedViews.current,
-              }
-
-              // Create and set namedViews application state
-              const uniqueUuidV4 = uuidv4()
-              const requestedNamedViews = {
-                ...namedViews,
-                [uniqueUuidV4]: requestedView,
-              }
-              settingsActor.send({
-                type: `set.app.namedViews`,
-                data: {
-                  level: 'project',
-                  value: requestedNamedViews,
-                },
-              })
-
-              toast.success(`Named view ${requestedView.name} created.`)
+          if (
+            cameraGetViewResponse.resp.data.modeling_response.type ===
+            'default_camera_get_view'
+          ) {
+            const view = cameraGetViewResponse.resp.data.modeling_response.data
+            const requestedView = cameraViewStateToNamedView(
+              data.name,
+              view.view
+            )
+            if (err(requestedView)) {
+              toast.error('Unable to create named view.')
+              return
             }
+            // Retrieve application state for namedViews
+            const namedViews = {
+              ...settingsActor.getSnapshot().context.app.namedViews.current,
+            }
+
+            // Create and set namedViews application state
+            const uniqueUuidV4 = uuidv4()
+            const requestedNamedViews = {
+              ...namedViews,
+              [uniqueUuidV4]: requestedView,
+            }
+            settingsActor.send({
+              type: `set.app.namedViews`,
+              data: {
+                level: 'project',
+                value: requestedNamedViews,
+              },
+            })
+
+            toast.success(`Named view ${requestedView.name} created.`)
           }
         }
       }
