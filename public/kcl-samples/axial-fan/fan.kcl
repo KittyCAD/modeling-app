@@ -1,8 +1,11 @@
+// Fan
+// Spinning axial fan that moves airflow
+
 // Set Units
 @settings(defaultLengthUnit = mm)
 
 // Import Parameters
-import * from "globals.kcl"
+import * from "parameters.kcl"
 
 export fn fan() {
   // Model the center of the fan
