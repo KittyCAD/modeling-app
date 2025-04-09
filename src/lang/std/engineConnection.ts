@@ -1707,7 +1707,6 @@ export class EngineCommandManager extends EventTarget {
 
       this.onVideoTrackMute = () => {
         console.error('video track mute: check webrtc internals -> inbound rtp')
-        this.tearDown()
       }
 
       this.onEngineConnectionNewTrack = ({
