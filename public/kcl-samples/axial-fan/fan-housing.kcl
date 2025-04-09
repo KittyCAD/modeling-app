@@ -1,11 +1,14 @@
+// Fan Housing
+// The plastic housing that contains the fan and the motor
+
 // Set Units
 @settings(defaultLengthUnit = mm)
 
 // Import Parameters
 import * from "globals.kcl"
 
+// Model the housing which holds the motor, the fan, and the mounting provisions
 export fn fanHousing() {
-  // Model the housing which holds the motor, the fan, and the mounting provisions
   // Bottom mounting face
   bottomFaceSketch = startSketchOn(XY)
     |> startProfileAt([-fanSize / 2, -fanSize / 2], %)
@@ -80,7 +83,7 @@ export fn fanHousing() {
        )
     |> extrude(length = -4)
 
-  // Scribe an octogon with 4 equal sides and 4 equal diagonals that scales with fan size. Calculate the start point to center it about the fan location. This will be the middle of the fan housing body
+  // Scribe an octagon with 4 equal sides and 4 equal diagonals that scales with fan size. Calculate the start point to center it about the fan location. This will be the middle of the fan housing body
   octLen = fanSize * 13 / 25
   octDiag = fanSize * 8 / 25
   bodyCenter = startSketchOn(bottomFaceSketch, 'END')
@@ -99,12 +102,12 @@ export fn fanHousing() {
     |> close()
     |> extrude(length = fanHeight - 4 - 4)
 
-  // Cut a hole in the body to accomidate the fan
+  // Cut a hole in the body to accommodate the fan
   bodyFanHole = startSketchOn(bodyCenter, 'END')
     |> circle(center = [0, 0], radius = fanSize * 23 / 50)
     |> extrude(length = -(fanHeight - 4 - 4))
 
-  // Top mounting face. Cut a hole in the face to accomidate the fan
+  // Top mounting face. Cut a hole in the face to accommodate the fan
   topFaceSketch = startSketchOn(bodyCenter, 'END')
   topHoles = startProfileAt([-fanSize / 2, -fanSize / 2], topFaceSketch)
     |> angledLine([0, fanSize], %, $rectangleSegmentA002)
