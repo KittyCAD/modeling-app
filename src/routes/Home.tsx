@@ -1,4 +1,4 @@
-import type { FormEvent } from 'react'
+import type { FormEvent, HTMLProps } from 'react'
 import { useEffect, useRef, useState } from 'react'
 import { toast } from 'react-hot-toast'
 import { useHotkeys } from 'react-hotkeys-hook'
@@ -31,17 +31,20 @@ import { authActor, useSettings } from '@src/machines/appMachine'
 import { commandBarActor } from '@src/machines/commandBarMachine'
 import type { WebContentSendPayload } from '@src/menu/channels'
 
+type ReadWriteProjectState = {
+  value: boolean
+  error: unknown
+}
+
 // This route only opens in the desktop context for now,
 // as defined in Router.tsx, so we can use the desktop APIs and types.
 const Home = () => {
   const { state, send } = useProjectsContext()
-  const [readWriteProjectDir, setReadWriteProjectDir] = useState<{
-    value: boolean
-    error: unknown
-  }>({
-    value: true,
-    error: undefined,
-  })
+  const [readWriteProjectDir, setReadWriteProjectDir] =
+    useState<ReadWriteProjectState>({
+      value: true,
+      error: undefined,
+    })
 
   // Only create the native file menus on desktop
   useEffect(() => {
@@ -162,8 +165,6 @@ const Home = () => {
   const { searchResults, query, setQuery } = useProjectSearch(projects)
   const sort = searchParams.get('sort_by') ?? 'modified:desc'
 
-  const isSortByModified = sort?.includes('modified') || !sort || sort === null
-
   // Update the default project name and directory in the home machine
   // when the settings change
   useEffect(() => {
@@ -190,6 +191,197 @@ const Home = () => {
     send,
   ])
 
+  return (
+    <div className="relative flex flex-col h-screen overflow-hidden" ref={ref}>
+      <AppHeader showToolbar={false} />
+      <div className="overflow-hidden home-layout max-w-4xl xl:max-w-6xl mb-12 px-4 mx-auto mt-24 lg:px-0">
+        <HomeHeader
+          setQuery={setQuery}
+          sort={sort}
+          setSearchParams={setSearchParams}
+          settings={settings}
+          readWriteProjectDir={readWriteProjectDir}
+          className="col-start-2 -col-end-1"
+        />
+        <aside className="row-start-2 -row-end-1 flex flex-col justify-between">
+          <div className="flex flex-col">
+            <ActionButton
+              Element="button"
+              onClick={() =>
+                commandBarActor.send({
+                  type: 'Find and select command',
+                  data: {
+                    groupId: 'projects',
+                    name: 'Create project',
+                    argDefaultValues: {
+                      name: settings.projects.defaultProjectName.current,
+                    },
+                  },
+                })
+              }
+              className="group !text-sm flex items-center !bg-primary !text-chalkboard-10 !border-primary hover:shadow-inner hover:hue-rotate-15"
+              iconStart={{
+                icon: 'plus',
+                size: 'lg',
+                bgClassName: '!bg-transparent rounded-sm',
+                iconClassName:
+                  '!text-chalkboard-10 transition-transform group-active:rotate-90',
+              }}
+              data-testid="home-new-file"
+            >
+              Create project
+            </ActionButton>
+          </div>
+          <div className="flex flex-col"></div>
+        </aside>
+        <ProjectGrid
+          state={state}
+          send={send}
+          searchResults={searchResults}
+          projects={projects}
+          query={query}
+          sort={sort}
+          className="flex-1 col-start-2 -col-end-1 overflow-y-auto pr-2 pb-24"
+        />
+        <LowerRightControls />
+      </div>
+    </div>
+  )
+}
+
+interface HomeHeaderProps extends HTMLProps<HTMLDivElement> {
+  setQuery: (query: string) => void
+  sort: string
+  setSearchParams: (params: Record<string, string>) => void
+  settings: ReturnType<typeof useSettings>
+  readWriteProjectDir: ReadWriteProjectState
+}
+
+function HomeHeader({
+  setQuery,
+  sort,
+  setSearchParams,
+  settings,
+  readWriteProjectDir,
+  ...rest
+}: HomeHeaderProps) {
+  const isSortByModified = sort?.includes('modified') || !sort || sort === null
+
+  /** Type narrowing function of unknown error to a string */
+  function errorMessage(error: unknown): string {
+    if (error != undefined && error instanceof Error) {
+      return error.message
+    } else if (error && typeof error === 'object') {
+      return JSON.stringify(error)
+    } else if (typeof error === 'string') {
+      return error
+    } else {
+      return 'Unknown error'
+    }
+  }
+
+  return (
+    <section {...rest}>
+      <div className="flex justify-between items-center select-none">
+        <div className="flex gap-8 items-center">
+          <h1 className="text-3xl font-bold">Projects</h1>
+        </div>
+        <div className="flex gap-2 items-center">
+          <ProjectSearchBar setQuery={setQuery} />
+          <small>Sort by</small>
+          <ActionButton
+            Element="button"
+            data-testid="home-sort-by-name"
+            className={
+              'text-xs border-primary/10 ' +
+              (!sort.includes('name')
+                ? 'text-chalkboard-80 dark:text-chalkboard-40'
+                : '')
+            }
+            onClick={() => setSearchParams(getNextSearchParams(sort, 'name'))}
+            iconStart={{
+              icon: getSortIcon(sort, 'name'),
+              bgClassName: 'bg-transparent',
+              iconClassName: !sort.includes('name')
+                ? '!text-chalkboard-90 dark:!text-chalkboard-30'
+                : '',
+            }}
+          >
+            Name
+          </ActionButton>
+          <ActionButton
+            Element="button"
+            data-testid="home-sort-by-modified"
+            className={
+              'text-xs border-primary/10 ' +
+              (!isSortByModified
+                ? 'text-chalkboard-80 dark:text-chalkboard-40'
+                : '')
+            }
+            onClick={() =>
+              setSearchParams(getNextSearchParams(sort, 'modified'))
+            }
+            iconStart={{
+              icon: sort ? getSortIcon(sort, 'modified') : 'arrowDown',
+              bgClassName: 'bg-transparent',
+              iconClassName: !isSortByModified
+                ? '!text-chalkboard-90 dark:!text-chalkboard-30'
+                : '',
+            }}
+          >
+            Last Modified
+          </ActionButton>
+        </div>
+      </div>
+      <p className="my-4 text-sm text-chalkboard-80 dark:text-chalkboard-30">
+        Loaded from{' '}
+        <Link
+          data-testid="project-directory-settings-link"
+          to={`${PATHS.HOME + PATHS.SETTINGS_USER}#projectDirectory`}
+          className="text-chalkboard-90 dark:text-chalkboard-20 underline underline-offset-2"
+        >
+          {settings.app.projectDirectory.current}
+        </Link>
+        .
+      </p>
+      {!readWriteProjectDir.value && (
+        <section>
+          <div className="flex items-center select-none">
+            <div className="flex gap-8 items-center justify-between grow bg-destroy-80 text-white py-1 px-4 my-2 rounded-sm">
+              <p className="">{errorMessage(readWriteProjectDir.error)}</p>
+              <Link
+                data-testid="project-directory-settings-link"
+                to={`${PATHS.HOME + PATHS.SETTINGS_USER}#projectDirectory`}
+                className="py-1 text-white underline underline-offset-2 text-sm"
+              >
+                Change Project Directory
+              </Link>
+            </div>
+          </div>
+        </section>
+      )}
+    </section>
+  )
+}
+
+interface ProjectGridProps extends HTMLProps<HTMLDivElement> {
+  state: ReturnType<typeof useProjectsContext>['state']
+  send: ReturnType<typeof useProjectsContext>['send']
+  searchResults: Project[]
+  projects: Project[]
+  query: string
+  sort: string
+}
+
+function ProjectGrid({
+  state,
+  send,
+  searchResults,
+  projects,
+  query,
+  sort,
+  ...rest
+}: ProjectGridProps) {
   async function handleRenameProject(
     e: FormEvent<HTMLFormElement>,
     project: Project
@@ -217,163 +409,35 @@ const Home = () => {
       data: { name: project.name || '' },
     })
   }
-  /** Type narrowing function of unknown error to a string */
-  function errorMessage(error: unknown): string {
-    if (error != undefined && error instanceof Error) {
-      return error.message
-    } else if (error && typeof error === 'object') {
-      return JSON.stringify(error)
-    } else if (typeof error === 'string') {
-      return error
-    } else {
-      return 'Unknown error'
-    }
-  }
 
   return (
-    <div className="relative flex flex-col h-screen overflow-hidden" ref={ref}>
-      <AppHeader showToolbar={false} />
-      <div className="w-full flex flex-col overflow-hidden max-w-5xl px-4 mx-auto mt-24 lg:px-2">
-        <section>
-          <div className="flex justify-between items-center select-none">
-            <div className="flex gap-8 items-center">
-              <h1 className="text-3xl font-bold">Your Projects</h1>
-              <ActionButton
-                Element="button"
-                onClick={() =>
-                  commandBarActor.send({
-                    type: 'Find and select command',
-                    data: {
-                      groupId: 'projects',
-                      name: 'Create project',
-                      argDefaultValues: {
-                        name: settings.projects.defaultProjectName.current,
-                      },
-                    },
-                  })
-                }
-                className="group !bg-primary !text-chalkboard-10 !border-primary hover:shadow-inner hover:hue-rotate-15"
-                iconStart={{
-                  icon: 'plus',
-                  bgClassName: '!bg-transparent rounded-sm',
-                  iconClassName:
-                    '!text-chalkboard-10 transition-transform group-active:rotate-90',
-                }}
-                data-testid="home-new-file"
-              >
-                Create project
-              </ActionButton>
-            </div>
-            <div className="flex gap-2 items-center">
-              <ProjectSearchBar setQuery={setQuery} />
-              <small>Sort by</small>
-              <ActionButton
-                Element="button"
-                data-testid="home-sort-by-name"
-                className={
-                  'text-xs border-primary/10 ' +
-                  (!sort.includes('name')
-                    ? 'text-chalkboard-80 dark:text-chalkboard-40'
-                    : '')
-                }
-                onClick={() =>
-                  setSearchParams(getNextSearchParams(sort, 'name'))
-                }
-                iconStart={{
-                  icon: getSortIcon(sort, 'name'),
-                  bgClassName: 'bg-transparent',
-                  iconClassName: !sort.includes('name')
-                    ? '!text-chalkboard-90 dark:!text-chalkboard-30'
-                    : '',
-                }}
-              >
-                Name
-              </ActionButton>
-              <ActionButton
-                Element="button"
-                data-testid="home-sort-by-modified"
-                className={
-                  'text-xs border-primary/10 ' +
-                  (!isSortByModified
-                    ? 'text-chalkboard-80 dark:text-chalkboard-40'
-                    : '')
-                }
-                onClick={() =>
-                  setSearchParams(getNextSearchParams(sort, 'modified'))
-                }
-                iconStart={{
-                  icon: sort ? getSortIcon(sort, 'modified') : 'arrowDown',
-                  bgClassName: 'bg-transparent',
-                  iconClassName: !isSortByModified
-                    ? '!text-chalkboard-90 dark:!text-chalkboard-30'
-                    : '',
-                }}
-              >
-                Last Modified
-              </ActionButton>
-            </div>
-          </div>
-          <p className="my-4 text-sm text-chalkboard-80 dark:text-chalkboard-30">
-            Loaded from{' '}
-            <Link
-              data-testid="project-directory-settings-link"
-              to={`${PATHS.HOME + PATHS.SETTINGS_USER}#projectDirectory`}
-              className="text-chalkboard-90 dark:text-chalkboard-20 underline underline-offset-2"
-            >
-              {settings.app.projectDirectory.current}
-            </Link>
-            .
-          </p>
-          {!readWriteProjectDir.value && (
-            <section>
-              <div className="flex items-center select-none">
-                <div className="flex gap-8 items-center justify-between grow bg-destroy-80 text-white py-1 px-4 my-2 rounded-sm grow">
-                  <p className="">{errorMessage(readWriteProjectDir.error)}</p>
-                  <Link
-                    data-testid="project-directory-settings-link"
-                    to={`${PATHS.HOME + PATHS.SETTINGS_USER}#projectDirectory`}
-                    className="py-1 text-white underline underline-offset-2 text-sm"
-                  >
-                    Change Project Directory
-                  </Link>
-                </div>
-              </div>
-            </section>
-          )}
-        </section>
-        <section
-          data-testid="home-section"
-          className="flex-1 overflow-y-auto pr-2 pb-24"
-        >
-          {state?.matches('Reading projects') ? (
-            <Loading>Loading your Projects...</Loading>
+    <section data-testid="home-section" {...rest}>
+      {state?.matches('Reading projects') ? (
+        <Loading>Loading your Projects...</Loading>
+      ) : (
+        <>
+          {searchResults.length > 0 ? (
+            <ul className="grid w-full md:grid-cols-2 xl:grid-cols-4 gap-4">
+              {searchResults.sort(getSortFunction(sort)).map((project) => (
+                <ProjectCard
+                  key={project.name}
+                  project={project}
+                  handleRenameProject={handleRenameProject}
+                  handleDeleteProject={handleDeleteProject}
+                />
+              ))}
+            </ul>
           ) : (
-            <>
-              {searchResults.length > 0 ? (
-                <ul className="grid w-full grid-cols-4 gap-4">
-                  {searchResults.sort(getSortFunction(sort)).map((project) => (
-                    <ProjectCard
-                      key={project.name}
-                      project={project}
-                      handleRenameProject={handleRenameProject}
-                      handleDeleteProject={handleDeleteProject}
-                    />
-                  ))}
-                </ul>
-              ) : (
-                <p className="p-4 my-8 border border-dashed rounded border-chalkboard-30 dark:border-chalkboard-70">
-                  No Projects found
-                  {projects.length === 0
-                    ? ', ready to make your first one?'
-                    : ` with the search term "${query}"`}
-                </p>
-              )}
-            </>
+            <p className="p-4 my-8 border border-dashed rounded border-chalkboard-30 dark:border-chalkboard-70">
+              No Projects found
+              {projects.length === 0
+                ? ', ready to make your first one?'
+                : ` with the search term "${query}"`}
+            </p>
           )}
-        </section>
-        <LowerRightControls />
-      </div>
-    </div>
+        </>
+      )}
+    </section>
   )
 }
 
