@@ -4,7 +4,7 @@
 // Set Units
 @settings(defaultLengthUnit = mm)
 
-// Input dimensions to define the bottle
+// Input parameters to define the bottle
 bottleWidth = 80
 bottleLength = 125
 bottleHeight = 220
