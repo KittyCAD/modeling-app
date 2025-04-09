@@ -1,11 +1,14 @@
 import { useEffect } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { useLocation, useSearchParams } from 'react-router-dom'
 
+import { useNetworkContext } from '@src/hooks/useNetworkContext'
+import { EngineConnectionStateType } from '@src/lang/std/engineConnection'
 import { base64ToString } from '@src/lib/base64'
 import type { ProjectsCommandSchema } from '@src/lib/commandBarConfigs/projectsCommandConfig'
 import { CREATE_FILE_URL_PARAM, DEFAULT_FILE_NAME } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 import type { FileLinkParams } from '@src/lib/links'
+import { PATHS } from '@src/lib/paths'
 import { useSettings } from '@src/machines/appMachine'
 
 // For initializing the command arguments, we actually want `method` to be undefined
@@ -26,13 +29,21 @@ export type CreateFileSchemaMethodOptional = Omit<
 export function useCreateFileLinkQuery(
   callback: (args: CreateFileSchemaMethodOptional) => void
 ) {
+  const { immediateState } = useNetworkContext()
+  const { pathname } = useLocation()
   const [searchParams] = useSearchParams()
   const settings = useSettings()
 
   useEffect(() => {
+    const isHome = pathname === PATHS.HOME
     const createFileParam = searchParams.has(CREATE_FILE_URL_PARAM)
 
-    if (createFileParam) {
+    if (
+      createFileParam &&
+      (immediateState.type ===
+        EngineConnectionStateType.ConnectionEstablished ||
+        isHome)
+    ) {
       const params: FileLinkParams = {
         code: base64ToString(
           decodeURIComponent(searchParams.get('code') ?? '')
@@ -54,5 +65,5 @@ export function useCreateFileLinkQuery(
 
       callback(argDefaultValues)
     }
-  }, [searchParams])
+  }, [searchParams, immediateState])
 }

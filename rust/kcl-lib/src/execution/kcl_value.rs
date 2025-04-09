@@ -360,15 +360,6 @@ impl KclValue {
         result
     }
 
-    /// Put the number into a KCL value.
-    pub const fn from_number(f: f64, meta: Vec<Metadata>) -> Self {
-        Self::Number {
-            value: f,
-            meta,
-            ty: NumericType::Unknown,
-        }
-    }
-
     pub const fn from_number_with_type(f: f64, ty: NumericType, meta: Vec<Metadata>) -> Self {
         Self::Number { value: f, meta, ty }
     }
