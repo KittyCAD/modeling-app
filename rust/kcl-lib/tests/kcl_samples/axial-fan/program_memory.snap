@@ -1,0 +1,15 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Variables in memory after executing axial-fan.kcl
+---
+{
+  "fan": {
+    "type": "Function"
+  },
+  "fanHousing": {
+    "type": "Function"
+  },
+  "motor": {
+    "type": "Function"
+  }
+}
