@@ -58,7 +58,7 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
       .click()
 
     await expect(page.locator('.cm-content')).toHaveText(
-      `length001 = 20sketch001 = startSketchOn(XY)  |> startProfileAt([-10, -10], %)  |> line(end = [20, 0])  |> angledLine([90, length001], %)  |> xLine(length = -20)`
+      `length001 = 20sketch001 = startSketchOn(XY)  |> startProfileAt([-10, -10], %)  |> line(end = [20, 0])  |> angledLine(angle = 90, length = length001)  |> xLine(length = -20)`
     )
 
     // Make sure we didn't pop out of sketch mode.
@@ -87,7 +87,7 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
     |> startProfileAt([-7.54, -26.74], %)
     |> line(end = [74.36, 130.4], tag = $seg01)
     |> line(end = [78.92, -120.11])
-    |> angledLine([segAng(seg01), yo], %)
+    |> angledLine(angle = segAng(seg01), length = yo)
     |> line(end = [41.19, 58.97 + 5])
   part002 = startSketchOn(XZ)
     |> startProfileAt([299.05, 120], %)
@@ -152,7 +152,7 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
         |> startProfileAt([-7.54, -26.74], %)
         |> line(end = [74.36, 130.4], tag = $seg01)
         |> line(end = [78.92, -120.11])
-        |> angledLine([segAng(seg01), 78.33], %)
+        |> angledLine(angle = segAng(seg01), length = 78.33)
         |> line(end = [51.19, 48.97])
       part002 = startSketchOn(XZ)
         |> startProfileAt([299.05, 231.45], %)
@@ -552,7 +552,7 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
         // checking activeLines assures the cursors are where they should be
         const codeAfter = [
           '|> line(end = [74.36, 130.4], tag = $seg01)',
-          `|> angledLine([${value}, 78.33], %)`,
+          `|> angledLine(angle = ${value}, length = 78.33)`,
         ]
         if (axisSelect) codeAfter.shift()
 
@@ -639,7 +639,8 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
           .getByRole('button', { name: 'Add constraining value' })
           .click()
 
-        const changedCode = `|> angledLine([${value}], %)`
+        const [ang, len] = value.split(', ')
+        const changedCode = `|> angledLine(angle = ${ang}, length = ${len})`
         await expect(page.locator('.cm-content')).toContainText(changedCode)
         // checking active assures the cursor is where it should be
         await expect(page.locator('.cm-activeLine')).toHaveText(changedCode)
@@ -733,7 +734,8 @@ part002 = startSketchOn(XZ)
         await expect(cmdBarKclInput).toHaveText('78.33')
         await cmdBarSubmitButton.click()
 
-        const changedCode = `|> angledLine([${value}], %)`
+        const [ang, len] = value.split(', ')
+        const changedCode = `|> angledLine(angle = ${ang}, length = ${len})`
         await expect(page.locator('.cm-content')).toContainText(changedCode)
         // checking active assures the cursor is where it should be
         await expect(page.locator('.cm-activeLine')).toHaveText(changedCode)
@@ -848,11 +850,11 @@ part002 = startSketchOn(XZ)
   test.describe('Two segment - no modal constraints', () => {
     const cases = [
       {
-        codeAfter: `|> angledLine([83, segLen(seg01)], %)`,
+        codeAfter: `|> angledLine(angle = 83, length = segLen(seg01))`,
         constraintName: 'Equal Length',
       },
       {
-        codeAfter: `|> angledLine([segAng(seg01), 78.33], %)`,
+        codeAfter: `|> angledLine(angle = segAng(seg01), length = 78.33)`,
         constraintName: 'Parallel',
       },
       {
@@ -1129,7 +1131,7 @@ test.describe('Electron constraint tests', () => {
             |> line(end = [15.1, 2.48])
             |> line(end = [3.15, -9.85], tag = $seg01)
             |> line(end = [-15.17, -4.1])
-            |> angledLine([segAng(seg01), 12.35], %)
+            |> angledLine(angle = segAng(seg01), length = 12.35)
             |> line(end = [-13.02, 10.03])
             |> close()
             |> extrude(length = 4)`,
@@ -1169,7 +1171,9 @@ test.describe('Electron constraint tests', () => {
         await clickOnFirstSegmentLabel()
         await cmdBar.progressCmdBar()
         await editor.expectEditor.toContain('length001 = 15.3')
-        await editor.expectEditor.toContain('|> angledLine([9, length001], %)')
+        await editor.expectEditor.toContain(
+          '|> angledLine(angle = 9, length = length001)'
+        )
       })
 
       await test.step('Double click again and expect failure', async () => {
