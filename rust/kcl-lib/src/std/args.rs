@@ -1077,35 +1077,6 @@ macro_rules! let_field_of {
     };
 }
 
-impl<'a> FromKclValue<'a> for crate::std::import::ImportFormat {
-    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        let obj = arg.as_object()?;
-        let_field_of!(obj, typ "format");
-        match typ {
-            "fbx" => Some(Self::Fbx {}),
-            "gltf" => Some(Self::Gltf {}),
-            "sldprt" => Some(Self::Sldprt {}),
-            "step" => Some(Self::Step {}),
-            "stl" => {
-                let_field_of!(obj, coords?);
-                let_field_of!(obj, units);
-                Some(Self::Stl { coords, units })
-            }
-            "obj" => {
-                let_field_of!(obj, coords?);
-                let_field_of!(obj, units);
-                Some(Self::Obj { coords, units })
-            }
-            "ply" => {
-                let_field_of!(obj, coords?);
-                let_field_of!(obj, units);
-                Some(Self::Ply { coords, units })
-            }
-            _ => None,
-        }
-    }
-}
-
 impl<'a> FromKclValue<'a> for super::shapes::PolygonData {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let obj = arg.as_object()?;
