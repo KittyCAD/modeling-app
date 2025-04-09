@@ -37,6 +37,9 @@ export const systemIOMachine = setup({
       | {
           type: SystemIOMachineEvents.openProject
           data: { requestedProjectName: string }
+      }
+      | {
+          type: SystemIOMachineEvents.clearRequestedProjectName
         },
   },
   actions: {
@@ -58,8 +61,13 @@ export const systemIOMachine = setup({
     [SystemIOMachineActions.setRequestedProjectName]: assign({
       requestedProjectName: ({ event }) => {
         assertEvent(event, SystemIOMachineEvents.openProject)
-        console.log('event', event.data.requestedProjectName)
         return event.data.requestedProjectName
+      },
+    }),
+    [SystemIOMachineActions.clearRequestedProjectName]: assign({
+      requestedProjectName: ({ event }) => {
+        assertEvent(event, SystemIOMachineEvents.clearRequestedProjectName)
+        return NO_PROJECT_DIRECTORY
       },
     }),
   },
@@ -115,6 +123,12 @@ export const systemIOMachine = setup({
       },
     },
     [SystemIOMachineStates.openingProject] : {
+      on: {
+        [SystemIOMachineEvents.clearRequestedProjectName]: {
+          target: SystemIOMachineStates.idle,
+          actions: [SystemIOMachineActions.clearRequestedProjectName],
+        },
+      }
     }
   },
 })

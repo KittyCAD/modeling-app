@@ -63,6 +63,7 @@ const router = createRouter([
               <KclContextProvider>
                 <AppStateProvider>
                   <MachineManagerProvider>
+                    <SystemIOMachineLogicListener />
                     <Outlet />
                   </MachineManagerProvider>
                 </AppStateProvider>
@@ -144,7 +145,6 @@ const router = createRouter([
         path: PATHS.HOME,
         element: (
           <Auth>
-            <SystemIOMachineLogicListener />
             <Outlet />
             <Home />
             <CommandBar />

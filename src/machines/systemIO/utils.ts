@@ -20,12 +20,14 @@ export enum SystemIOMachineEvents {
     'read folders from project directory',
   setProjectDirectoryPath = 'set project directory path',
   openProject = 'open project',
+  clearRequestedProjectName = 'clear requested project name',
 }
 
 export enum SystemIOMachineActions {
   setFolders = 'set folders',
   setProjectDirectoryPath = 'set project directory path',
   setRequestedProjectName = 'set requested project name',
+  clearRequestedProjectName = 'clear requested project name'
 }
 
 export const NO_PROJECT_DIRECTORY = ''
