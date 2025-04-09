@@ -116,6 +116,10 @@ export function isCallExpression(e: any): e is CallExpression {
   return e && e.type === 'CallExpression'
 }
 
+export function isCallExpressionKw(e: any): e is CallExpressionKw {
+  return e && e.type === 'CallExpressionKw'
+}
+
 export function isArrayExpression(e: any): e is ArrayExpression {
   return e && e.type === 'ArrayExpression'
 }

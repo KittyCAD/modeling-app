@@ -6,10 +6,10 @@ let angleStart = 110
 
 startSketchOn(XY)
   |> startProfileAt([startX, startY], %)
-  |> angledLine({
-    angle: angleStart,
-    length: .000001,
-  }, %)
+  |> angledLine(
+    angle = angleStart,
+    length = .000001,
+  )
   |> tangentialArc({
        offset: angleOffset,
        radius: r,

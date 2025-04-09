@@ -14,15 +14,9 @@ holeDia = 4
 // Model a box with base enclosure dimensions
 sketch001 = startSketchOn(XY)
   |> startProfileAt([0, 0], %)
-  |> angledLine([0, width], %, $rectangleSegmentA001)
-  |> angledLine([
-       segAng(rectangleSegmentA001) + 90,
-       length
-     ], %, $rectangleSegmentB001)
-  |> angledLine([
-       segAng(rectangleSegmentA001),
-       -segLen(rectangleSegmentA001)
-     ], %, $rectangleSegmentC001)
+  |> angledLine(angle = 0, length = width, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) + 90, length = length, tag = $rectangleSegmentB001)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $rectangleSegmentC001)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $rectangleSegmentD001)
   |> close()
 extrude001 = extrude(sketch001, length = height)
@@ -81,15 +75,9 @@ function001([
 // Define lid position and outer surface
 sketch003 = startSketchOn(XY)
   |> startProfileAt([width * 1.2, 0], %)
-  |> angledLine([0, width], %, $rectangleSegmentA002)
-  |> angledLine([
-       segAng(rectangleSegmentA001) + 90,
-       length
-     ], %, $rectangleSegmentB002)
-  |> angledLine([
-       segAng(rectangleSegmentA001),
-       -segLen(rectangleSegmentA001)
-     ], %, $rectangleSegmentC002)
+  |> angledLine(angle = 0, length = width, tag = $rectangleSegmentA002)
+  |> angledLine(angle = segAng(rectangleSegmentA001) + 90, length = length, tag = $rectangleSegmentB002)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $rectangleSegmentC002)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $rectangleSegmentD002)
   |> close()
   |> hole(circle(
@@ -137,15 +125,9 @@ sketch004 = startSketchOn(extrude003, 'END')
        width * 1.2 + wallThickness,
        wallThickness
      ], %)
-  |> angledLine([0, width - (2 * wallThickness)], %, $rectangleSegmentA003)
-  |> angledLine([
-       segAng(rectangleSegmentA003) + 90,
-       length - (2 * wallThickness)
-     ], %, $rectangleSegmentB003)
-  |> angledLine([
-       segAng(rectangleSegmentA003),
-       -segLen(rectangleSegmentA003)
-     ], %, $rectangleSegmentC003)
+  |> angledLine(angle = 0, length = width - (2 * wallThickness), tag = $rectangleSegmentA003)
+  |> angledLine(angle = segAng(rectangleSegmentA003) + 90, length = length - (2 * wallThickness), tag = $rectangleSegmentB003)
+  |> angledLine(angle = segAng(rectangleSegmentA003), length = -segLen(rectangleSegmentA003), tag = $rectangleSegmentC003)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $rectangleSegmentD003)
   |> close()
   |> hole(circle(

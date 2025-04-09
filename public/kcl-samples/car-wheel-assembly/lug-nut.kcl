@@ -23,7 +23,7 @@ customPlane = {
 fn lug(plane, length, diameter) {
   lugSketch = startSketchOn(customPlane)
     |> startProfileAt([0 + diameter / 2, 0], %)
-    |> angledLineOfYLength({ angle = 70, length = lugHeadLength }, %)
+    |> angledLine(angle = 70, lengthY = lugHeadLength)
     |> xLine(endAbsolute = lugDiameter / 2)
     |> yLine(endAbsolute = lugLength)
     |> tangentialArc({ offset = 90, radius = fromMm(3) }, %)
