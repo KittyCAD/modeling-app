@@ -1496,12 +1496,11 @@ export function removeSingleConstraint({
       if (inputToReplace.type === 'labeledArg') {
         if (callExp.node.type !== 'CallExpressionKw') {
           return new Error(
-            'ADAM: This code path only works with callExpressionKw but a positional call was somehow passed'
+            'This code path only works with callExpressionKw but a positional call was somehow passed'
           )
         }
         const toReplace = inputToReplace.key
         let argsPreFilter = inputs.map((arg) => {
-          // console.log('ADAM: arg is', arg)
           if (arg.type !== 'labeledArg') {
             return undefined
           }
@@ -1783,7 +1782,6 @@ function getTransformMapPathKw(
     return false
   }
   const tooltip = fnNameToTooltip(allLabels(sketchFnExp), name)
-  // console.warn('ADAM: allLabels, tooltip', allLabels(sketchFnExp), tooltip)
   if (err(tooltip)) {
     return false
   }
@@ -2125,7 +2123,6 @@ export function transformAstSketchLines({
       )
         return
 
-      console.error(JSON.stringify(a.pathToNode))
       const nodeMeta = getNodeFromPath<Expr>(ast, a.pathToNode)
       if (err(nodeMeta)) return
 
