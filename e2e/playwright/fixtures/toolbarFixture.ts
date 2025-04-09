@@ -169,7 +169,7 @@ export class ToolbarFixture {
   }
   selectCenterRectangle = async () => {
     await this.page
-      .getByRole('button', { name: 'caret down Corner rectangle:' })
+      .getByRole('button', { name: 'caret down rectangles:' })
       .click()
     await expect(
       this.page.getByTestId('dropdown-center-rectangle')
@@ -178,7 +178,7 @@ export class ToolbarFixture {
   }
   selectBoolean = async (operation: 'union' | 'subtract' | 'intersect') => {
     await this.page
-      .getByRole('button', { name: 'caret down Union: open menu' })
+      .getByRole('button', { name: 'caret down booleans: open menu' })
       .click()
     const operationTestId = `dropdown-boolean-${operation}`
     await expect(this.page.getByTestId(operationTestId)).toBeVisible()
@@ -186,25 +186,19 @@ export class ToolbarFixture {
   }
 
   selectCircleThreePoint = async () => {
-    await this.page
-      .getByRole('button', { name: 'caret down Center circle:' })
-      .click()
+    await this.page.getByRole('button', { name: 'caret down circles:' }).click()
     await expect(
       this.page.getByTestId('dropdown-circle-three-points')
     ).toBeVisible()
     await this.page.getByTestId('dropdown-circle-three-points').click()
   }
   selectArc = async () => {
-    await this.page
-      .getByRole('button', { name: 'caret down Tangential Arc:' })
-      .click()
+    await this.page.getByRole('button', { name: 'caret down arcs:' }).click()
     await expect(this.page.getByTestId('dropdown-arc')).toBeVisible()
     await this.page.getByTestId('dropdown-arc').click()
   }
   selectThreePointArc = async () => {
-    await this.page
-      .getByRole('button', { name: 'caret down Tangential Arc:' })
-      .click()
+    await this.page.getByRole('button', { name: 'caret down arcs:' }).click()
     await expect(
       this.page.getByTestId('dropdown-three-point-arc')
     ).toBeVisible()

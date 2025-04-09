@@ -473,3 +473,25 @@ export function binaryToUuid(
 export function getModuleId(sourceRange: SourceRange) {
   return sourceRange[2]
 }
+
+export function getInVariableCase(name: string, prefixIfDigit = 'm') {
+  // As of 2025-04-08, standard case for KCL variables is camelCase
+  const startsWithANumber = !Number.isNaN(Number(name.charAt(0)))
+  const paddedName = startsWithANumber ? `${prefixIfDigit}${name}` : name
+
+  // From https://www.30secondsofcode.org/js/s/string-case-conversion/#word-boundary-identification
+  const r = /[A-Z]{2,}(?=[A-Z][a-z]+[0-9]*|\b)|[A-Z]?[a-z]+[0-9]*|[A-Z]|[0-9]+/g
+  const boundaryIdentification = paddedName.match(r)
+  if (!boundaryIdentification) {
+    return undefined
+  }
+
+  const likelyPascalCase = boundaryIdentification
+    .map((x) => x.slice(0, 1).toUpperCase() + x.slice(1).toLowerCase())
+    .join('')
+  if (!likelyPascalCase) {
+    return undefined
+  }
+
+  return likelyPascalCase.slice(0, 1).toLowerCase() + likelyPascalCase.slice(1)
+}
