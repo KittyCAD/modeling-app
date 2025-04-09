@@ -2290,18 +2290,9 @@ export const angledLine: SketchLineHelperKw = {
           ])
       : createLiteral(roundOff(getAngle(from, to), 0))
     const newLengthVal = createLiteral(roundOff(getLength(from, to), 2))
-    // <<<<<<< HEAD
-    //     const newLine = createCallExpression('angledLine', [
-    //       createObjectExpression({
-    //         angle: newAngleVal,
-    //         length: newLengthVal,
-    //       }),
-    //       createPipeSubstitution(),
-    // =======
     const newLine = createCallExpressionStdLibKw('angledLine', null, [
       createLabeledArg(ARG_ANGLE, newAngleVal),
       createLabeledArg(ARG_LENGTH, newLengthVal),
-      //createPipeSubstitution(),
     ])
 
     if (replaceExistingCallback) {
