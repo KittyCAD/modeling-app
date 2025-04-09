@@ -1037,7 +1037,8 @@ export class SceneEntities {
           } = this.getSnappedDragPoint(
             intersection2d,
             args.intersects,
-            args.mouseEvent
+            args.mouseEvent,
+            Object.values(this.activeSegments).at(-1)
           )
 
           // Get the angle between the previous segment (or sketch start)'s end and this one's
@@ -2608,7 +2609,12 @@ export class SceneEntities {
   getSnappedDragPoint(
     pos: Vector2,
     intersects: Intersection<Object3D<Object3DEventMap>>[],
-    mouseEvent: MouseEvent
+    mouseEvent: MouseEvent,
+    // During draft segment mouse move:
+    //  - the  three.js object currently being dragged: the new draft segment or existing segment (may not be the last in activeSegments)
+    // When placing the draft segment::
+    // - the last segment in activeSegments
+    currentObject?: Object3D | Group
   ) {
     let snappedPoint: Coords2d = [pos.x, pos.y]
 
@@ -2627,9 +2633,16 @@ export class SceneEntities {
     const forceDirectionSnapping = mouseEvent.shiftKey
     if (!disableTangentSnapping) {
       const segments: SafeArray<Group> = Object.values(this.activeSegments) // Using the order in the object feels wrong
-      const current = segments[segments.length - 1]
-      if (current?.userData.type === STRAIGHT_SEGMENT) {
-        const prev = segments[segments.length - 2]
+      const currentIndex =
+        currentObject instanceof Group ? segments.indexOf(currentObject) : -1
+      const current = segments[currentIndex]
+      if (
+        current?.userData.type === STRAIGHT_SEGMENT &&
+        // This draft check is not strictly necessary currently, but we only want
+        // to snap when drawing a new segment, this makes that more robust.
+        current?.userData.draft
+      ) {
+        const prev = segments[currentIndex - 1]
         if (prev && ARC_SEGMENT_TYPES.includes(prev.userData.type)) {
           const snapDirection = findTangentDirection(prev)
           if (snapDirection) {
@@ -2818,7 +2831,8 @@ export class SceneEntities {
     const { snappedPoint: dragTo, snappedToTangent } = this.getSnappedDragPoint(
       intersection2d,
       intersects,
-      mouseEvent
+      mouseEvent,
+      object
     )
     let modifiedAst = draftInfo
       ? draftInfo.truncatedAst
