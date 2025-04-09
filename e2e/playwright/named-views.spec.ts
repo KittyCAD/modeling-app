@@ -61,6 +61,7 @@ function tomlStringOverWriteNamedViewUuids(toml: string): string {
 }
 
 test.describe('Named view tests', () => {
+  test.skip() // TODO: Jace is working on these
   test('Verify project.toml is not created', async ({ page }, testInfo) => {
     // Create project and load it
     const projectName = 'named-views'

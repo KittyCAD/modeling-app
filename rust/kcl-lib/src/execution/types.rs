@@ -19,7 +19,7 @@ use crate::{
 };
 
 lazy_static::lazy_static! {
-    pub(super) static ref CHECK_NUMERIC_TYPES: bool = {
+    pub(crate) static ref CHECK_NUMERIC_TYPES: bool = {
         let env_var = std::env::var("ZOO_NUM_TYS");
         let Ok(env_var) = env_var else {
             return false;
@@ -416,6 +416,80 @@ impl NumericType {
         }
     }
 
+    pub fn combine_eq_array(input: &[TyF64]) -> (Vec<f64>, NumericType) {
+        use NumericType::*;
+
+        let mut result = input.iter().map(|t| t.n).collect();
+
+        let mut ty = Any;
+        // Invariant mismatch is true => ty is Known
+        let mut mismatch = false;
+        for i in input {
+            if i.ty == Any || ty == i.ty {
+                continue;
+            }
+
+            match (&ty, &i.ty) {
+                (Any, t) => {
+                    ty = t.clone();
+                }
+                (_, Unknown) | (Default { .. }, Default { .. }) => return (result, Unknown),
+
+                // Known types and compatible, but needs adjustment.
+                (Known(UnitType::Length(_)), Known(UnitType::Length(_)))
+                | (Known(UnitType::Angle(_)), Known(UnitType::Angle(_))) => {
+                    mismatch = true;
+                }
+
+                // Known but incompatible.
+                (Known(_), Known(_)) => return (result, Unknown),
+
+                // Known and unknown, no adjustment for counting numbers.
+                (Known(UnitType::Count), Default { .. }) | (Default { .. }, Known(UnitType::Count)) => {
+                    ty = Known(UnitType::Count);
+                }
+
+                (Known(UnitType::Length(l1)), Default { len: l2, .. }) => {
+                    mismatch |= l1 != l2;
+                }
+                (Known(UnitType::Angle(a1)), Default { angle: a2, .. }) => {
+                    mismatch |= a1 != a2;
+                }
+
+                (Default { len: l1, .. }, Known(UnitType::Length(l2))) => {
+                    mismatch |= l1 != l2;
+                    ty = Known(UnitType::Length(*l2));
+                }
+                (Default { angle: a1, .. }, Known(UnitType::Angle(a2))) => {
+                    mismatch |= a1 != a2;
+                    ty = Known(UnitType::Angle(*a2));
+                }
+
+                (Unknown, _) | (_, Any) => unreachable!(),
+            }
+        }
+
+        if !mismatch {
+            return (result, ty);
+        }
+
+        result = result
+            .into_iter()
+            .zip(input)
+            .map(|(n, i)| match (&ty, &i.ty) {
+                (Known(UnitType::Length(l1)), Known(UnitType::Length(l2)) | Default { len: l2, .. }) => {
+                    l2.adjust_to(n, *l1)
+                }
+                (Known(UnitType::Angle(a1)), Known(UnitType::Angle(a2)) | Default { angle: a2, .. }) => {
+                    a2.adjust_to(n, *a1)
+                }
+                _ => unreachable!(),
+            })
+            .collect();
+
+        (result, ty)
+    }
+
     /// Combine two types for multiplication-like operations.
     pub fn combine_mul(a: TyF64, b: TyF64) -> (f64, f64, NumericType) {
         use NumericType::*;
@@ -621,7 +695,7 @@ pub enum UnitLen {
 
 impl UnitLen {
     fn adjust_to(self, value: f64, to: UnitLen) -> f64 {
-        if self == to {
+        if !*CHECK_NUMERIC_TYPES || self == to {
             return value;
         }
 
@@ -734,6 +808,11 @@ impl UnitAngle {
     fn adjust_to(self, value: f64, to: UnitAngle) -> f64 {
         use std::f64::consts::PI;
         use UnitAngle::*;
+
+        if !*CHECK_NUMERIC_TYPES {
+            return value;
+        }
+
         match (self, to) {
             (Degrees, Degrees) => value,
             (Degrees, Radians) => (value / 180.0) * PI,
@@ -1847,11 +1926,16 @@ n = 10inch / 2mm
 o = 3mm / 3
 p = 3_ / 4
 q = 4inch / 2_
+
+r = min(0, 3, 42)
+s = min(0, 3mm, -42)
+t = min(100, 3in, 142mm)
+u = min(3rad, 4in)
 "#;
 
         let result = parse_execute(program).await.unwrap();
         if *CHECK_NUMERIC_TYPES {
-            assert_eq!(result.exec_state.errors().len(), 2);
+            assert_eq!(result.exec_state.errors().len(), 3);
         } else {
             assert!(result.exec_state.errors().is_empty());
         }
@@ -1861,7 +1945,9 @@ q = 4inch / 2_
         assert_value_and_type("c", &result, 13.0, NumericType::mm());
         assert_value_and_type("d", &result, 13.0, NumericType::mm());
         assert_value_and_type("e", &result, 13.0, NumericType::mm());
-        assert_value_and_type("f", &result, 5.0, NumericType::mm());
+        if *CHECK_NUMERIC_TYPES {
+            assert_value_and_type("f", &result, 5.0, NumericType::mm());
+        }
 
         assert_value_and_type("g", &result, 20.0, NumericType::default());
         assert_value_and_type("h", &result, 20.0, NumericType::mm());
@@ -1871,9 +1957,30 @@ q = 4inch / 2_
 
         assert_value_and_type("l", &result, 0.0, NumericType::count());
         assert_value_and_type("m", &result, 2.0, NumericType::count());
-        assert_value_and_type("n", &result, 127.0, NumericType::count());
+        if *CHECK_NUMERIC_TYPES {
+            assert_value_and_type("n", &result, 127.0, NumericType::count());
+        }
         assert_value_and_type("o", &result, 1.0, NumericType::mm());
         assert_value_and_type("p", &result, 1.0, NumericType::count());
         assert_value_and_type("q", &result, 2.0, NumericType::Known(UnitType::Length(UnitLen::Inches)));
+
+        assert_value_and_type("r", &result, 0.0, NumericType::default());
+        assert_value_and_type("s", &result, -42.0, NumericType::mm());
+        assert_value_and_type("t", &result, 3.0, NumericType::Known(UnitType::Length(UnitLen::Inches)));
+        assert_value_and_type("u", &result, 3.0, NumericType::Unknown);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn bad_typed_arithmetic() {
+        let program = r#"
+a = 1rad
+b = 180 / PI * a + 360
+"#;
+
+        let result = parse_execute(program).await.unwrap();
+
+        assert_value_and_type("a", &result, 1.0, NumericType::radians());
+        // TODO type is not ideal
+        assert_value_and_type("b", &result, 417.0, NumericType::radians());
     }
 }
