@@ -69,7 +69,7 @@ export default async function getCurrentProjectFile(
   }
 
   // Check if the extension on what we are trying to open is a relevant file type.
-  const extension = path.extname(sourcePath).slice(1)
+  const extension = path.extname(sourcePath).slice(1).toLowerCase()
 
   if (
     !RELEVANT_FILE_TYPES.includes(extension as RelevantFileType) &&
