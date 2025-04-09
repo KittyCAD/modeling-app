@@ -1882,14 +1882,6 @@ description: Result of parsing food-service-spatula.kcl
                               "start": 0,
                               "type": "PipeSubstitution",
                               "type": "PipeSubstitution"
-                            },
-                            {
-                              "commentStart": 0,
-                              "end": 0,
-                              "start": 0,
-                              "type": "TagDeclarator",
-                              "type": "TagDeclarator",
-                              "value": "line000"
                             }
                           ],
                           "callee": {

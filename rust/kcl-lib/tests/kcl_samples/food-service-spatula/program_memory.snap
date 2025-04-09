@@ -27,9 +27,9 @@ description: Variables in memory after executing food-service-spatula.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1593,
-            "end": 1602,
-            "start": 1593,
+            "commentStart": 1583,
+            "end": 1592,
+            "start": 1583,
             "type": "TagDeclarator",
             "value": "backEdge"
           },
@@ -90,9 +90,9 @@ description: Variables in memory after executing food-service-spatula.kcl
               -30.0
             ],
             "tag": {
-              "commentStart": 1593,
-              "end": 1602,
-              "start": 1593,
+              "commentStart": 1583,
+              "end": 1592,
+              "start": 1583,
               "type": "TagDeclarator",
               "value": "backEdge"
             },
@@ -297,9 +297,9 @@ description: Variables in memory after executing food-service-spatula.kcl
             -30.0
           ],
           "tag": {
-            "commentStart": 1593,
-            "end": 1602,
-            "start": 1593,
+            "commentStart": 1583,
+            "end": 1592,
+            "start": 1583,
             "type": "TagDeclarator",
             "value": "backEdge"
           },
@@ -547,9 +547,9 @@ description: Variables in memory after executing food-service-spatula.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4343,
-            "end": 4355,
-            "start": 4343,
+            "commentStart": 4333,
+            "end": 4345,
+            "start": 4333,
             "type": "TagDeclarator",
             "value": "gripEdgeTop"
           },
@@ -709,9 +709,9 @@ description: Variables in memory after executing food-service-spatula.kcl
               7.0
             ],
             "tag": {
-              "commentStart": 4343,
-              "end": 4355,
-              "start": 4343,
+              "commentStart": 4333,
+              "end": 4345,
+              "start": 4333,
               "type": "TagDeclarator",
               "value": "gripEdgeTop"
             },
@@ -882,13 +882,7 @@ description: Variables in memory after executing food-service-spatula.kcl
             4.0,
             200.0
           ],
-          "tag": {
-            "commentStart": 1098,
-            "end": 1106,
-            "start": 1098,
-            "type": "TagDeclarator",
-            "value": "line000"
-          },
+          "tag": null,
           "to": [
             4.0,
             210.0
@@ -1057,9 +1051,9 @@ description: Variables in memory after executing food-service-spatula.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4343,
-                "end": 4355,
-                "start": 4343,
+                "commentStart": 4333,
+                "end": 4345,
+                "start": 4333,
                 "type": "TagDeclarator",
                 "value": "gripEdgeTop"
               },
@@ -1219,9 +1213,9 @@ description: Variables in memory after executing food-service-spatula.kcl
                   7.0
                 ],
                 "tag": {
-                  "commentStart": 4343,
-                  "end": 4355,
-                  "start": 4343,
+                  "commentStart": 4333,
+                  "end": 4345,
+                  "start": 4333,
                   "type": "TagDeclarator",
                   "value": "gripEdgeTop"
                 },
@@ -1365,12 +1359,6 @@ description: Variables in memory after executing food-service-spatula.kcl
         "__geoMeta": {
           "id": "[uuid]",
           "sourceRange": []
-        }
-      },
-      "tags": {
-        "line000": {
-          "type": "TagIdentifier",
-          "value": "line000"
         }
       },
       "artifactId": "[uuid]",
@@ -1541,9 +1529,9 @@ description: Variables in memory after executing food-service-spatula.kcl
             7.0
           ],
           "tag": {
-            "commentStart": 4343,
-            "end": 4355,
-            "start": 4343,
+            "commentStart": 4333,
+            "end": 4345,
+            "start": 4333,
             "type": "TagDeclarator",
             "value": "gripEdgeTop"
           },
@@ -1730,9 +1718,9 @@ description: Variables in memory after executing food-service-spatula.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2864,
-            "end": 2881,
-            "start": 2864,
+            "commentStart": 2854,
+            "end": 2871,
+            "start": 2854,
             "type": "TagDeclarator",
             "value": "handleBottomEdge"
           },
@@ -1757,9 +1745,9 @@ description: Variables in memory after executing food-service-spatula.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3012,
-            "end": 3026,
-            "start": 3012,
+            "commentStart": 3002,
+            "end": 3016,
+            "start": 3002,
             "type": "TagDeclarator",
             "value": "handleTopEdge"
           },
@@ -1801,9 +1789,9 @@ description: Variables in memory after executing food-service-spatula.kcl
               3.5
             ],
             "tag": {
-              "commentStart": 2864,
-              "end": 2881,
-              "start": 2864,
+              "commentStart": 2854,
+              "end": 2871,
+              "start": 2854,
               "type": "TagDeclarator",
               "value": "handleBottomEdge"
             },
@@ -1864,9 +1852,9 @@ description: Variables in memory after executing food-service-spatula.kcl
               91.3213
             ],
             "tag": {
-              "commentStart": 3012,
-              "end": 3026,
-              "start": 3012,
+              "commentStart": 3002,
+              "end": 3016,
+              "start": 3002,
               "type": "TagDeclarator",
               "value": "handleTopEdge"
             },
@@ -2215,9 +2203,9 @@ description: Variables in memory after executing food-service-spatula.kcl
             3.5
           ],
           "tag": {
-            "commentStart": 2864,
-            "end": 2881,
-            "start": 2864,
+            "commentStart": 2854,
+            "end": 2871,
+            "start": 2854,
             "type": "TagDeclarator",
             "value": "handleBottomEdge"
           },
@@ -2278,9 +2266,9 @@ description: Variables in memory after executing food-service-spatula.kcl
             91.3213
           ],
           "tag": {
-            "commentStart": 3012,
-            "end": 3026,
-            "start": 3012,
+            "commentStart": 3002,
+            "end": 3016,
+            "start": 3002,
             "type": "TagDeclarator",
             "value": "handleTopEdge"
           },
@@ -2537,9 +2525,9 @@ description: Variables in memory after executing food-service-spatula.kcl
             "id": "[uuid]",
             "sourceRange": [],
             "tag": {
-              "commentStart": 4343,
-              "end": 4355,
-              "start": 4343,
+              "commentStart": 4333,
+              "end": 4345,
+              "start": 4333,
               "type": "TagDeclarator",
               "value": "gripEdgeTop"
             },
@@ -2699,9 +2687,9 @@ description: Variables in memory after executing food-service-spatula.kcl
                 7.0
               ],
               "tag": {
-                "commentStart": 4343,
-                "end": 4355,
-                "start": 4343,
+                "commentStart": 4333,
+                "end": 4345,
+                "start": 4333,
                 "type": "TagDeclarator",
                 "value": "gripEdgeTop"
               },
@@ -2830,11 +2818,6 @@ description: Variables in memory after executing food-service-spatula.kcl
       }
     }
   },
-  "line000": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "line000"
-  },
   "slot": {
     "type": "Function"
   },
@@ -2853,13 +2836,7 @@ description: Variables in memory after executing food-service-spatula.kcl
             -25.0,
             5.0
           ],
-          "tag": {
-            "commentStart": 1098,
-            "end": 1106,
-            "start": 1098,
-            "type": "TagDeclarator",
-            "value": "line000"
-          },
+          "tag": null,
           "to": [
             -55.0,
             5.0
@@ -3003,12 +2980,6 @@ description: Variables in memory after executing food-service-spatula.kcl
           "sourceRange": []
         }
       },
-      "tags": {
-        "line000": {
-          "type": "TagIdentifier",
-          "value": "line000"
-        }
-      },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
       "units": {
@@ -3031,13 +3002,7 @@ description: Variables in memory after executing food-service-spatula.kcl
             -24.8334,
             22.9972
           ],
-          "tag": {
-            "commentStart": 1098,
-            "end": 1106,
-            "start": 1098,
-            "type": "TagDeclarator",
-            "value": "line000"
-          },
+          "tag": null,
           "to": [
             -54.8334,
             23.9972
@@ -3181,12 +3146,6 @@ description: Variables in memory after executing food-service-spatula.kcl
           "sourceRange": []
         }
       },
-      "tags": {
-        "line000": {
-          "type": "TagIdentifier",
-          "value": "line000"
-        }
-      },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
       "units": {
@@ -3209,13 +3168,7 @@ description: Variables in memory after executing food-service-spatula.kcl
             -25.1666,
             -13.0028
           ],
-          "tag": {
-            "commentStart": 1098,
-            "end": 1106,
-            "start": 1098,
-            "type": "TagDeclarator",
-            "value": "line000"
-          },
+          "tag": null,
           "to": [
             -55.1666,
             -14.0028
@@ -3359,12 +3312,6 @@ description: Variables in memory after executing food-service-spatula.kcl
           "sourceRange": []
         }
       },
-      "tags": {
-        "line000": {
-          "type": "TagIdentifier",
-          "value": "line000"
-        }
-      },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
       "units": {
@@ -3407,9 +3354,9 @@ description: Variables in memory after executing food-service-spatula.kcl
             -30.0
           ],
           "tag": {
-            "commentStart": 1593,
-            "end": 1602,
-            "start": 1593,
+            "commentStart": 1583,
+            "end": 1592,
+            "start": 1583,
             "type": "TagDeclarator",
             "value": "backEdge"
           },
