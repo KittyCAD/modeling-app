@@ -11,7 +11,10 @@ Only works on unclosed sketches for now.
 Mirror occurs around a local sketch axis rather than a global axis.
 
 ```js
-mirror2d(@sketches: [Sketch; 1+], axis: Axis2d | Edge): Sketch
+mirror2d(
+  @sketches: [Sketch; 1+],
+  axis: Axis2d | Edge,
+): Sketch
 ```
 
 
