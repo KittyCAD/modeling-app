@@ -123,8 +123,8 @@ description: Artifact commands big_number_angle_to_match_length_y.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 4.8626,
-          "y": 3.0,
+          "x": 3.0,
+          "y": 3.3954,
           "z": 0.0
         },
         "relative": false
