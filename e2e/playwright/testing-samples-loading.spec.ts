@@ -35,7 +35,7 @@ test.describe('Testing in-app sample loading', () => {
     }
     const commandBarButton = page.getByRole('button', { name: 'Commands' })
     const samplesCommandOption = page.getByRole('option', {
-      name: 'Load sample model',
+      name: 'Load external model',
     })
     const commandSampleOption = page.getByRole('option', {
       name: newSample.title,
@@ -79,7 +79,7 @@ test.describe('Testing in-app sample loading', () => {
   test(
     'Desktop: should create new file by default, optionally overwrite',
     { tag: '@electron' },
-    async ({ editor, context, page, scene, cmdBar }, testInfo) => {
+    async ({ editor, context, page, scene, cmdBar, toolbar }, testInfo) => {
       const { dir } = await context.folderSetupFn(async (dir) => {
         const bracketDir = join(dir, 'bracket')
         await fsp.mkdir(bracketDir, { recursive: true })
@@ -99,25 +99,14 @@ test.describe('Testing in-app sample loading', () => {
         title: '100mm Gear Rack',
       }
       const projectCard = page.getByRole('link', { name: 'bracket' })
-      const commandBarButton = page.getByRole('button', { name: 'Commands' })
-      const commandOption = page.getByRole('option', {
-        name: 'Load sample model',
-      })
-      const commandSampleOption = (name: string) =>
-        page.getByRole('option', {
-          name,
-          exact: true,
-        })
       const commandMethodArgButton = page.getByRole('button', {
         name: 'Method',
       })
       const commandMethodOption = page.getByRole('option', {
         name: 'Overwrite',
       })
-      const newFileWarning = page.getByText('Create a new file from sample?')
-      const overwriteWarning = page.getByText(
-        'Overwrite current file with sample?'
-      )
+      const newFileWarning = page.getByText('Create a new file from')
+      const overwriteWarning = page.getByText('Overwrite current file with')
       const confirmButton = page.getByRole('button', { name: 'Submit command' })
       const projectMenuButton = page.getByTestId('project-sidebar-toggle')
       const newlyCreatedFile = (name: string) =>
@@ -142,14 +131,12 @@ test.describe('Testing in-app sample loading', () => {
       })
 
       await test.step(`Load a KCL sample with the command palette`, async () => {
-        await commandBarButton.click()
-        await page.waitForTimeout(1000)
-        await commandOption.click()
-        await page.waitForTimeout(1000)
-        await commandSampleOption(sampleOne.title).click()
+        await toolbar.loadButton.click()
+        await cmdBar.progressCmdBar()
+        await cmdBar.selectOption({ name: sampleOne.title }).click()
         await expect(overwriteWarning).not.toBeVisible()
         await expect(newFileWarning).toBeVisible()
-        await confirmButton.click()
+        await cmdBar.progressCmdBar()
         await page.waitForTimeout(1000)
       })
 
@@ -160,21 +147,15 @@ test.describe('Testing in-app sample loading', () => {
       })
 
       await test.step(`Now overwrite the current file`, async () => {
-        await commandBarButton.click()
-        await page.waitForTimeout(1000)
-        await commandOption.click()
-        await page.waitForTimeout(1000)
-        await commandSampleOption(sampleTwo.title).click()
-        await page.waitForTimeout(1000)
+        await toolbar.loadButton.click()
+        await cmdBar.progressCmdBar()
+        await cmdBar.selectOption({ name: sampleTwo.title }).click()
         await commandMethodArgButton.click()
-        await page.waitForTimeout(1000)
         await commandMethodOption.click()
-        await page.waitForTimeout(1000)
         await expect(commandMethodArgButton).toContainText('overwrite')
         await expect(newFileWarning).not.toBeVisible()
         await expect(overwriteWarning).toBeVisible()
         await confirmButton.click()
-        await page.waitForTimeout(1000)
       })
 
       await test.step(`Ensure we overwrote the current file without navigating`, async () => {

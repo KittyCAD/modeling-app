@@ -568,43 +568,6 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         const actual = await cmdBar.cmdBarElement
           .getByTestId('command-name')
           .textContent()
-        const expected = 'Load sample model'
-        expect(actual).toBe(expected)
-      })
-      test('Modeling.File.Load external model', async ({
-        tronApp,
-        cmdBar,
-        page,
-        homePage,
-        scene,
-      }) => {
-        if (!tronApp) {
-          throwTronAppMissing()
-          return
-        }
-        await homePage.goToModelingScene()
-        await scene.settled(cmdBar)
-
-        // Run electron snippet to find the Menu!
-        await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
-        await tronApp.electron.evaluate(async ({ app }) => {
-          if (!app || !app.applicationMenu) {
-            throw new Error('app or app.applicationMenu is missing')
-          }
-          const openProject = app.applicationMenu.getMenuItemById(
-            'File.Load external model'
-          )
-          if (!openProject) {
-            throw new Error('File.Load external model')
-          }
-          openProject.click()
-        })
-        // Check that the command bar is opened
-        await expect(cmdBar.cmdBarElement).toBeVisible()
-        // Check the placeholder project name exists
-        const actual = await cmdBar.cmdBarElement
-          .getByTestId('command-name')
-          .textContent()
         const expected = 'Load external model'
         expect(actual).toBe(expected)
       })

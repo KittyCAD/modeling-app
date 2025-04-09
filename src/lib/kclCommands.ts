@@ -247,14 +247,14 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
             return [
               {
                 value: 'kcl-samples',
-                name: 'kcl-samples',
+                name: 'KCL Samples',
                 isCurrent: true,
               },
               ...(isDesktop()
                 ? [
                     {
                       value: 'local',
-                      name: 'Local disk',
+                      name: 'Local Drive',
                       isCurrent: false,
                     },
                   ]

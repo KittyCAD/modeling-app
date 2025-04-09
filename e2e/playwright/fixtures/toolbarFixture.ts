@@ -70,7 +70,7 @@ export class ToolbarFixture {
     this.fileTreeBtn = page.locator('[id="files-button-holder"]')
     this.createFileBtn = page.getByTestId('create-file-button')
     this.treeInputField = page.getByTestId('tree-input-field')
-    this.loadButton = page.getByTestId('load-pane-button')
+    this.loadButton = page.getByTestId('load-external-model-pane-button')
 
     this.filePane = page.locator('#files-pane')
     this.featureTreePane = page.locator('#feature-tree-pane')
