@@ -2004,14 +2004,6 @@ description: Result of parsing food-service-spatula.kcl
                               "start": 0,
                               "type": "PipeSubstitution",
                               "type": "PipeSubstitution"
-                            },
-                            {
-                              "commentStart": 0,
-                              "end": 0,
-                              "start": 0,
-                              "type": "TagDeclarator",
-                              "type": "TagDeclarator",
-                              "value": "arc000"
                             }
                           ],
                           "callee": {
@@ -2118,14 +2110,6 @@ description: Result of parsing food-service-spatula.kcl
                               "start": 0,
                               "type": "PipeSubstitution",
                               "type": "PipeSubstitution"
-                            },
-                            {
-                              "commentStart": 0,
-                              "end": 0,
-                              "start": 0,
-                              "type": "TagDeclarator",
-                              "type": "TagDeclarator",
-                              "value": "line001"
                             }
                           ],
                           "callee": {
@@ -2228,14 +2212,6 @@ description: Result of parsing food-service-spatula.kcl
                               "start": 0,
                               "type": "PipeSubstitution",
                               "type": "PipeSubstitution"
-                            },
-                            {
-                              "commentStart": 0,
-                              "end": 0,
-                              "start": 0,
-                              "type": "TagDeclarator",
-                              "type": "TagDeclarator",
-                              "value": "arc001"
                             }
                           ],
                           "callee": {
@@ -2396,7 +2372,7 @@ description: Result of parsing food-service-spatula.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
-            "name": "sketch000",
+            "name": "flipperSketch",
             "start": 0,
             "type": "Identifier"
           },
@@ -2448,7 +2424,7 @@ description: Result of parsing food-service-spatula.kcl
         "preComments": [
           "",
           "",
-          "// Create a sketch on the \"XY\" plane"
+          "// Create a sketch on the \"XY\" plane for the flipper"
         ],
         "start": 0,
         "type": "VariableDeclaration",
@@ -2530,7 +2506,7 @@ description: Result of parsing food-service-spatula.kcl
                     "name": {
                       "commentStart": 0,
                       "end": 0,
-                      "name": "sketch000",
+                      "name": "flipperSketch",
                       "start": 0,
                       "type": "Identifier"
                     },
@@ -2976,7 +2952,7 @@ description: Result of parsing food-service-spatula.kcl
                 "name": {
                   "commentStart": 0,
                   "end": 0,
-                  "name": "sketch000",
+                  "name": "flipperSketch",
                   "start": 0,
                   "type": "Identifier"
                 },
@@ -3135,7 +3111,7 @@ description: Result of parsing food-service-spatula.kcl
                 "name": {
                   "commentStart": 0,
                   "end": 0,
-                  "name": "sketch000",
+                  "name": "flipperSketch",
                   "start": 0,
                   "type": "Identifier"
                 },
@@ -3299,7 +3275,7 @@ description: Result of parsing food-service-spatula.kcl
                 "name": {
                   "commentStart": 0,
                   "end": 0,
-                  "name": "sketch000",
+                  "name": "flipperSketch",
                   "start": 0,
                   "type": "Identifier"
                 },
@@ -3940,7 +3916,7 @@ description: Result of parsing food-service-spatula.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
-            "name": "sketch001",
+            "name": "handleSketch",
             "start": 0,
             "type": "Identifier"
           },
@@ -4136,7 +4112,7 @@ description: Result of parsing food-service-spatula.kcl
                     "name": {
                       "commentStart": 0,
                       "end": 0,
-                      "name": "sketch001",
+                      "name": "handleSketch",
                       "start": 0,
                       "type": "Identifier"
                     },
@@ -5273,7 +5249,7 @@ description: Result of parsing food-service-spatula.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
-            "name": "sketch002",
+            "name": "gripSketch",
             "start": 0,
             "type": "Identifier"
           },
@@ -5403,7 +5379,7 @@ description: Result of parsing food-service-spatula.kcl
                     "name": {
                       "commentStart": 0,
                       "end": 0,
-                      "name": "sketch002",
+                      "name": "gripSketch",
                       "start": 0,
                       "type": "Identifier"
                     },
@@ -6497,7 +6473,7 @@ description: Result of parsing food-service-spatula.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
-            "name": "sketch003",
+            "name": "holeSketch",
             "start": 0,
             "type": "Identifier"
           },
@@ -6592,7 +6568,7 @@ description: Result of parsing food-service-spatula.kcl
                 "name": {
                   "commentStart": 0,
                   "end": 0,
-                  "name": "sketch003",
+                  "name": "holeSketch",
                   "start": 0,
                   "type": "Identifier"
                 },
