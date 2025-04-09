@@ -166,6 +166,7 @@ interface LabeledArg<T> {
   key: InputArgKeys
   argType: LineInputsType
   expr: T
+  overrideExpr?: Node<Expr>
 }
 
 type _InputArg<T> =

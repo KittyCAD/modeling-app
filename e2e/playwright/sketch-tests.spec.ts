@@ -1977,12 +1977,9 @@ profile003 = startProfileAt([206.63, -56.73], sketch001)
       )
       await crnRect1point2()
       await editor.expectEditor.toContain(
-        `|> angledLine([0, 2.37], %, $rectangleSegmentA001)
-  |> angledLine([segAng(rectangleSegmentA001) - 90, 7.8], %)
-  |> angledLine([
-       segAng(rectangleSegmentA001),
-       -segLen(rectangleSegmentA001)
-     ], %)
+        `|> angledLine(angle = 0, length = 2.37, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 7.8)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()`.replaceAll('\n', '')
       )
