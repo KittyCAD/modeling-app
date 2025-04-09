@@ -147,11 +147,11 @@ description: Artifact commands sheet-metal-bracket.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 0.6364,
+          "x": -1.9218,
           "y": 2.375,
           "z": 0.0
         },
-        "relative": true
+        "relative": false
       }
     }
   },
@@ -181,7 +181,7 @@ description: Artifact commands sheet-metal-bracket.kcl
         "type": "line",
         "end": {
           "x": 0.0,
-          "y": 2.6529,
+          "y": 2.4676,
           "z": 0.0
         },
         "relative": false
@@ -197,7 +197,7 @@ description: Artifact commands sheet-metal-bracket.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 1.7514,
+          "x": 1.801,
           "y": 0.0,
           "z": 0.0
         },
@@ -230,8 +230,8 @@ description: Artifact commands sheet-metal-bracket.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 0.6364,
-          "y": -2.375,
+          "x": 0.5867,
+          "y": -2.1897,
           "z": 0.0
         },
         "relative": true
@@ -330,8 +330,8 @@ description: Artifact commands sheet-metal-bracket.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -0.6364,
-          "y": 2.375,
+          "x": -0.5867,
+          "y": 2.1897,
           "z": 0.0
         },
         "relative": true
@@ -364,7 +364,7 @@ description: Artifact commands sheet-metal-bracket.kcl
         "type": "line",
         "end": {
           "x": 0.0,
-          "y": 2.7779,
+          "y": 2.5926,
           "z": 0.0
         },
         "relative": false
@@ -380,7 +380,7 @@ description: Artifact commands sheet-metal-bracket.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -1.7514,
+          "x": -1.801,
           "y": 0.0,
           "z": 0.0
         },
@@ -413,8 +413,8 @@ description: Artifact commands sheet-metal-bracket.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -0.6364,
-          "y": -2.375,
+          "x": -0.5867,
+          "y": -2.1897,
           "z": 0.0
         },
         "relative": true

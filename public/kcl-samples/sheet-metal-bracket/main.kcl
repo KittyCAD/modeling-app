@@ -41,7 +41,7 @@ bracketProfile = startSketchOn(XZ)
        radius = exteriorBendRadius,
        offset = bendAngle
      }, %)
-  |> angledLine(angle = bendAngle, lengthY = hatHeight - thickness, tag = $seg01)
+  |> angledLine(angle = bendAngle, endAbsoluteY = hatHeight - thickness, tag = $seg01)
   |> tangentialArc({
        radius = interiorBendRadius,
        offset = -bendAngle
