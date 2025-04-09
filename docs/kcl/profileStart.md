@@ -29,11 +29,8 @@ profileStart(sketch: Sketch): [number]
 ```js
 sketch001 = startSketchOn(XY)
   |> startProfileAt([5, 2], %)
-  |> angledLine({ angle = 120, length = 50 }, %, $seg01)
-  |> angledLine({
-       angle = segAng(seg01) + 120,
-       length = 50
-     }, %)
+  |> angledLine(angle = 120, length = 50, tag = $seg01)
+  |> angledLine(angle = segAng(seg01) + 120, length = 50)
   |> line(end = profileStart(%))
   |> close()
   |> extrude(length = 20)
