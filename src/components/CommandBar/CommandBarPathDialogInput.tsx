@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 
 import { ActionButton } from '@src/components/ActionButton'
@@ -30,13 +30,6 @@ function CommandBarPathDialogInput({
       | string
       | undefined) || (arg.defaultValue as string)
   )
-
-  useEffect(() => {
-    if (inputRef.current) {
-      inputRef.current.focus()
-      inputRef.current.select()
-    }
-  }, [arg, inputRef])
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()

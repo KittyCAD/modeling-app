@@ -92,12 +92,12 @@ export function modelingMenuCallbackMostActions(
       }).catch(reportRejection)
     } else if (data.menuLabel === 'File.Preferences.User default units') {
       navigate(filePath + PATHS.SETTINGS_USER + '#defaultUnit')
-    } else if (data.menuLabel === 'File.Load external file') {
+    } else if (data.menuLabel === 'File.Load external model') {
       commandBarActor.send({
         type: 'Find and select command',
         data: {
           groupId: 'code',
-          name: 'load-external-file',
+          name: 'load-external-model',
         },
       })
     } else if (data.menuLabel === 'File.Export current part') {
@@ -106,14 +106,6 @@ export function modelingMenuCallbackMostActions(
         data: {
           groupId: 'modeling',
           name: 'Export',
-        },
-      })
-    } else if (data.menuLabel === 'File.Load a sample model') {
-      commandBarActor.send({
-        type: 'Find and select command',
-        data: {
-          groupId: 'code',
-          name: 'open-kcl-example',
         },
       })
     } else if (data.menuLabel === 'File.Create new file') {

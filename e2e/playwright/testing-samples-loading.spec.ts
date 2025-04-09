@@ -35,7 +35,7 @@ test.describe('Testing in-app sample loading', () => {
     }
     const commandBarButton = page.getByRole('button', { name: 'Commands' })
     const samplesCommandOption = page.getByRole('option', {
-      name: 'Open Sample',
+      name: 'Load sample model',
     })
     const commandSampleOption = page.getByRole('option', {
       name: newSample.title,
@@ -100,7 +100,9 @@ test.describe('Testing in-app sample loading', () => {
       }
       const projectCard = page.getByRole('link', { name: 'bracket' })
       const commandBarButton = page.getByRole('button', { name: 'Commands' })
-      const commandOption = page.getByRole('option', { name: 'Open Sample' })
+      const commandOption = page.getByRole('option', {
+        name: 'Load sample model',
+      })
       const commandSampleOption = (name: string) =>
         page.getByRole('option', {
           name,

@@ -498,7 +498,7 @@ export const FileMachineProvider = ({
           }),
         },
       }).filter(
-        (command) => kclSamples.length || command.name !== 'open-kcl-example'
+        (command) => kclSamples.length || command.name !== 'load-external-model'
       ),
     [codeManager, kclManager, send, kclSamples, project, file]
   )

@@ -534,7 +534,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         const expected = 'Open project'
         expect(actual).toBe(expected)
       })
-      test('Modeling.File.Load a sample model', async ({
+      test('Modeling.File.Load external model', async ({
         tronApp,
         cmdBar,
         page,
@@ -555,10 +555,10 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
             throw new Error('app or app.applicationMenu is missing')
           }
           const openProject = app.applicationMenu.getMenuItemById(
-            'File.Load a sample model'
+            'File.Load external model'
           )
           if (!openProject) {
-            throw new Error('File.Load a sample model')
+            throw new Error('File.Load external model')
           }
           openProject.click()
         })
@@ -568,10 +568,10 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         const actual = await cmdBar.cmdBarElement
           .getByTestId('command-name')
           .textContent()
-        const expected = 'Open sample'
+        const expected = 'Load sample model'
         expect(actual).toBe(expected)
       })
-      test('Modeling.File.Load external file', async ({
+      test('Modeling.File.Load external model', async ({
         tronApp,
         cmdBar,
         page,
@@ -592,10 +592,10 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
             throw new Error('app or app.applicationMenu is missing')
           }
           const openProject = app.applicationMenu.getMenuItemById(
-            'File.Load external file'
+            'File.Load external model'
           )
           if (!openProject) {
-            throw new Error('File.Load external file')
+            throw new Error('File.Load external model')
           }
           openProject.click()
         })
@@ -605,7 +605,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         const actual = await cmdBar.cmdBarElement
           .getByTestId('command-name')
           .textContent()
-        const expected = 'Load external file'
+        const expected = 'Load external model'
         expect(actual).toBe(expected)
       })
       test('Modeling.File.Export current part', async ({

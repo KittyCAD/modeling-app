@@ -26,8 +26,7 @@ type FileRoleLabel =
   | 'Create new folder'
   | 'Share current part (via Zoo link)'
   | 'Project settings'
-  | 'Load external file'
-  | 'Load a sample model'
+  | 'Load external model'
   | 'User default units'
 
 type EditRoleLabel =

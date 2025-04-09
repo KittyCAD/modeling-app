@@ -173,44 +173,19 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
       },
     },
     {
-      name: 'load-external-file',
-      displayName: 'Load external file',
-      description:
-        'Loads a file from your local disk into the current project.',
+      name: 'load-external-model',
+      displayName: 'Load external model',
+      description: 'Loads an external from a source into the current project.',
       needsReview: true,
       icon: 'importFile',
-      groupId: 'code',
-      hide: DEV || IS_NIGHTLY_OR_DEBUG ? 'web' : 'both',
-      args: {
-        path: {
-          inputType: 'pathDialog',
-          required: true,
-        },
-      },
-      onSubmit(data) {
-        if (!data?.path) {
-          return
-        }
-
-        console.log('path', data.path)
-        commandProps.specialPropsForLoadCommand
-          .onSubmit(data.path)
-          .catch(reportError)
-      },
-    },
-    {
-      name: 'open-kcl-example',
-      displayName: 'Open sample',
-      description: 'Imports an example KCL program into the editor.',
-      needsReview: true,
-      icon: 'code',
       reviewMessage: ({ argumentsToSubmit }) =>
         CommandBarOverwriteWarning({
           heading:
+            'mode' in argumentsToSubmit &&
             'method' in argumentsToSubmit &&
             argumentsToSubmit.method === 'newFile'
-              ? 'Create a new file from sample?'
-              : 'Overwrite current file with sample?',
+              ? `Create a new file from ${argumentsToSubmit.mode}?`
+              : `Overwrite current file with ${argumentsToSubmit.mode}?`,
           message:
             'method' in argumentsToSubmit &&
             argumentsToSubmit.method === 'newFile'
@@ -219,49 +194,83 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
         }),
       groupId: 'code',
       onSubmit(data) {
-        if (!data?.sample) {
-          return
-        }
-        const pathParts = data.sample.split('/')
-        const projectPathPart = pathParts[0]
-        const primaryKclFile = pathParts[1]
-        // local only
-        const sampleCodeUrl =
-          (isDesktop() ? '.' : '') +
-          `/kcl-samples/${encodeURIComponent(
-            projectPathPart
-          )}/${encodeURIComponent(primaryKclFile)}`
+        console.log('data', data)
+        if (data?.mode === 'local' && data.path) {
+          commandProps.specialPropsForLoadCommand
+            .onSubmit(data.path)
+            .catch(reportError)
+        } else if (data?.mode === 'kcl-samples' && data?.sample) {
+          const pathParts = data.sample.split('/')
+          const projectPathPart = pathParts[0]
+          const primaryKclFile = pathParts[1]
+          // local only
+          const sampleCodeUrl =
+            (isDesktop() ? '.' : '') +
+            `/kcl-samples/${encodeURIComponent(
+              projectPathPart
+            )}/${encodeURIComponent(primaryKclFile)}`
 
-        fetch(sampleCodeUrl)
-          .then(async (codeResponse): Promise<OnSubmitProps> => {
-            if (!codeResponse.ok) {
-              console.error(
-                'Failed to fetch sample code:',
-                codeResponse.statusText
-              )
-              return Promise.reject(new Error('Failed to fetch sample code'))
-            }
-            const code = await codeResponse.text()
-            return {
-              sampleName: data.sample.split('/')[0] + FILE_EXT,
-              code,
-              method: data.method,
-            }
-          })
-          .then((props) => {
-            if (props?.code) {
-              commandProps.specialPropsForSampleCommand
-                .onSubmit(props)
-                .catch(reportError)
-            }
-          })
-          .catch(reportError)
+          fetch(sampleCodeUrl)
+            .then(async (codeResponse): Promise<OnSubmitProps> => {
+              if (!codeResponse.ok) {
+                console.error(
+                  'Failed to fetch sample code:',
+                  codeResponse.statusText
+                )
+                return Promise.reject(new Error('Failed to fetch sample code'))
+              }
+              const code = await codeResponse.text()
+              return {
+                sampleName: data.sample.split('/')[0] + FILE_EXT,
+                code,
+                method: data.method,
+              }
+            })
+            .then((props) => {
+              if (props?.code) {
+                commandProps.specialPropsForSampleCommand
+                  .onSubmit(props)
+                  .catch(reportError)
+              }
+            })
+            .catch(reportError)
+        }
       },
       args: {
-        method: {
+        mode: {
           inputType: 'options',
           required: true,
+          skip: false,
+          defaultValue: 'local',
+          hidden: !isDesktop(),
+          options() {
+            return [
+              {
+                value: 'kcl-samples',
+                name: 'kcl-samples',
+                isCurrent: true,
+              },
+              ...(isDesktop()
+                ? [
+                    {
+                      value: 'local',
+                      name: 'Local disk',
+                      isCurrent: false,
+                    },
+                  ]
+                : []),
+            ]
+          },
+        },
+        method: {
+          inputType: 'options',
           skip: true,
+          required: (commandContext) =>
+            !['local'].includes(
+              commandContext.argumentsToSubmit.mode as string
+            ),
+          hidden: (commandContext) =>
+            ['local'].includes(commandContext.argumentsToSubmit.mode as string),
           defaultValue: isDesktop() ? 'newFile' : 'overwrite',
           options() {
             return [
@@ -284,7 +293,12 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
         },
         sample: {
           inputType: 'options',
-          required: true,
+          required: (commandContext) =>
+            !['local'].includes(
+              commandContext.argumentsToSubmit.mode as string
+            ),
+          hidden: (commandContext) =>
+            ['local'].includes(commandContext.argumentsToSubmit.mode as string),
           valueSummary(value) {
             const MAX_LENGTH = 12
             if (typeof value === 'string') {
@@ -295,6 +309,15 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
             return value
           },
           options: commandProps.specialPropsForSampleCommand.providedOptions,
+        },
+        path: {
+          inputType: 'pathDialog',
+          required: (commandContext) =>
+            ['local'].includes(commandContext.argumentsToSubmit.mode as string),
+          hidden: (commandContext) =>
+            !['local'].includes(
+              commandContext.argumentsToSubmit.mode as string
+            ),
         },
       },
     },
