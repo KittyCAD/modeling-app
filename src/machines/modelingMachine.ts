@@ -2687,9 +2687,17 @@ export const modelingMachine = setup({
         if (!input) return new Error('No input provided')
         // Extract inputs
         const ast = kclManager.ast
-        const { tx, ty, tz, rr, rp, ry, nodeToEdit } = input
-        if (!(nodeToEdit && typeof nodeToEdit[1][0] === 'number')) {
-          return new Error('Transform is only an edit flow')
+        const { tx, ty, tz, rr, rp, ry, nodeToEdit, selection } = input
+        let pathToNode = nodeToEdit
+        if (!(pathToNode && typeof pathToNode[1][0] === 'number')) {
+          if (selection.graphSelections[0].codeRef.pathToNode) {
+            pathToNode = getNodePathFromSourceRange(
+              ast,
+              selection.graphSelections[0]?.codeRef.range
+            )
+          } else {
+            return new Error("Couldn't find corresponding path to node")
+          }
         }
 
         for (const v of [tx, ty, tz, rr, rp, ry]) {
@@ -2712,7 +2720,7 @@ export const modelingMachine = setup({
 
         const result = setTransform({
           ast,
-          nodeToEdit,
+          pathToNode,
           tx: valueOrVariable(tx),
           ty: valueOrVariable(ty),
           tz: valueOrVariable(tz),

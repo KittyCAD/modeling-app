@@ -1422,8 +1422,22 @@ export async function enterTransformFlow({
     }
   }
 
+  // Doesn't matter here, selection is really for point-and-click selection
+  const selection: Selections = {
+    graphSelections: [
+      {
+        codeRef: {
+          range: operation.sourceRange,
+          pathToNode: nodeToEdit,
+        },
+      },
+    ],
+    otherSelections: [],
+  }
+
   const argDefaultValues = {
     nodeToEdit,
+    selection,
     tx,
     ty,
     tz,

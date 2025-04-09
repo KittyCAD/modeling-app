@@ -363,11 +363,17 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           },
           {
             id: 'transform',
+            onClick: () =>
+              commandBarActor.send({
+                type: 'Find and select command',
+                data: { name: 'Transform', groupId: 'modeling' },
+              }),
+            hotkey: 'T',
             icon: 'angle',
-            status: 'kcl-only',
+            status: DEV || IS_NIGHTLY_OR_DEBUG ? 'available' : 'kcl-only',
+            disabled: () => !isDesktop(),
             title: 'Transform',
             description: 'Apply a translation and/or rotation to a module',
-            onClick: () => undefined,
             links: [
               {
                 label: 'API docs',

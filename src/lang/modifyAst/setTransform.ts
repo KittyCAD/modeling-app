@@ -17,7 +17,7 @@ import { err } from '@src/lib/trap'
 
 export function setTransform({
   ast,
-  nodeToEdit,
+  pathToNode,
   tx,
   ty,
   tz,
@@ -26,7 +26,7 @@ export function setTransform({
   ry,
 }: {
   ast: Node<Program>
-  nodeToEdit: PathToNode
+  pathToNode: PathToNode
   tx: Expr
   ty: Expr
   tz: Expr
@@ -38,10 +38,12 @@ export function setTransform({
 
   const call = getNodeFromPath<ExpressionStatement>(
     modifiedAst,
-    nodeToEdit,
+    pathToNode,
     'ExpressionStatement'
   )
-  if (err(call)) return call
+  if (err(call)) {
+    return call
+  }
 
   const declarator = call.node
   const translateCall = createCallExpressionStdLibKw(

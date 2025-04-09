@@ -169,6 +169,7 @@ export type ModelingCommandSchema = {
   }
   Transform: {
     nodeToEdit?: PathToNode
+    selection: Selections
     tx: KclCommandValue
     ty: KclCommandValue
     tz: KclCommandValue
@@ -1051,6 +1052,22 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'text',
         required: false,
         hidden: true,
+      },
+      selection: {
+        inputType: 'selectionMixed',
+        multiple: true,
+        required: true,
+        skip: true,
+        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+        warningMessage:
+          'This is still in development and only supports feature tree selection of whole-module imports',
+        selectionSource: {
+          allowSceneSelection: false,
+          allowCodeSelection: true,
+        },
+        selectionTypes: [
+          // TODO: figure out what we could support here beyond module. Likely sweeps and solid2d first
+        ],
       },
       tx: {
         inputType: 'kcl',
