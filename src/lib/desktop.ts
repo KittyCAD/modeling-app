@@ -16,6 +16,7 @@ import {
   PROJECT_FOLDER,
   PROJECT_IMAGE_NAME,
   PROJECT_SETTINGS_FILE_NAME,
+  RELEVANT_FILE_TYPES,
   SETTINGS_FILE_NAME,
   TELEMETRY_FILE_NAME,
   TELEMETRY_RAW_FILE_NAME,
@@ -24,6 +25,7 @@ import {
 import type { FileEntry, Project } from '@src/lib/project'
 import { err } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
+import { getInVariableCase } from '@src/lib/utils'
 
 export async function renameProjectDirectory(
   projectPath: string,
@@ -211,16 +213,10 @@ export async function listProjects(
   return projects
 }
 
-const IMPORT_FILE_EXTENSIONS = [
-  // TODO Use ImportFormat enum
-  'stp',
-  'glb',
-  'fbxb',
-  'kcl',
-]
-
-const isRelevantFile = (filename: string): boolean =>
-  IMPORT_FILE_EXTENSIONS.some((ext) => filename.endsWith('.' + ext))
+// TODO: we should be lowercasing the extension here to check. .sldprt or .SLDPRT should be supported
+// But the api doesn't allow it today, so revisit this and the tests once this is done
+export const isRelevantFile = (filename: string): boolean =>
+  RELEVANT_FILE_TYPES.some((ext) => filename.endsWith('.' + ext))
 
 const collectAllFilesRecursiveFrom = async (
   path: string,
@@ -471,12 +467,13 @@ export const getAppSettingsFilePath = async () => {
   const testSettingsPath = await window.electron.getAppTestProperty(
     'TEST_SETTINGS_FILE_KEY'
   )
-  if (isTestEnv && !testSettingsPath) return SETTINGS_FILE_NAME
 
   const appConfig = await window.electron.getPath('appData')
+
   const fullPath = isTestEnv
-    ? testSettingsPath
-    : window.electron.path.join(appConfig, getAppFolderName())
+    ? window.electron.path.resolve(testSettingsPath, '..')
+    : window.electron.path.resolve(appConfig, getAppFolderName())
+
   try {
     await window.electron.stat(fullPath)
   } catch (e) {
@@ -492,9 +489,10 @@ const getTokenFilePath = async () => {
   const testSettingsPath = await window.electron.getAppTestProperty(
     'TEST_SETTINGS_FILE_KEY'
   )
+
   const appConfig = await window.electron.getPath('appData')
   const fullPath = isTestEnv
-    ? testSettingsPath
+    ? window.electron.path.resolve(testSettingsPath, '..')
     : window.electron.path.join(appConfig, getAppFolderName())
   try {
     await window.electron.stat(fullPath)
@@ -508,8 +506,15 @@ const getTokenFilePath = async () => {
 }
 
 const getTelemetryFilePath = async () => {
+  const isTestEnv = window.electron.process.env.IS_PLAYWRIGHT === 'true'
+  const testSettingsPath = await window.electron.getAppTestProperty(
+    'TEST_SETTINGS_FILE_KEY'
+  )
+
   const appConfig = await window.electron.getPath('appData')
-  const fullPath = window.electron.path.join(appConfig, getAppFolderName())
+  const fullPath = isTestEnv
+    ? window.electron.path.resolve(testSettingsPath, '..')
+    : window.electron.path.join(appConfig, getAppFolderName())
   try {
     await window.electron.stat(fullPath)
   } catch (e) {
@@ -522,8 +527,15 @@ const getTelemetryFilePath = async () => {
 }
 
 const getRawTelemetryFilePath = async () => {
+  const isTestEnv = window.electron.process.env.IS_PLAYWRIGHT === 'true'
+  const testSettingsPath = await window.electron.getAppTestProperty(
+    'TEST_SETTINGS_FILE_KEY'
+  )
+
   const appConfig = await window.electron.getPath('appData')
-  const fullPath = window.electron.path.join(appConfig, getAppFolderName())
+  const fullPath = isTestEnv
+    ? window.electron.path.resolve(testSettingsPath, '..')
+    : window.electron.path.join(appConfig, getAppFolderName())
   try {
     await window.electron.stat(fullPath)
   } catch (e) {
@@ -547,8 +559,16 @@ const getProjectSettingsFilePath = async (projectPath: string) => {
 }
 
 export const getInitialDefaultDir = async () => {
+  const isTestEnv = window.electron.process.env.IS_PLAYWRIGHT === 'true'
+  const testSettingsPath = await window.electron.getAppTestProperty(
+    'TEST_SETTINGS_FILE_KEY'
+  )
+
   if (!window.electron) {
     return ''
+  }
+  if (isTestEnv) {
+    return testSettingsPath
   }
   const dir = await window.electron.getPath('documents')
   return window.electron.path.join(dir, PROJECT_FOLDER)
@@ -718,4 +738,13 @@ export const writeProjectThumbnailFile = async (
     asArray[i] = data.charCodeAt(i)
   }
   return window.electron.writeFile(filePath, asArray)
+}
+
+export function getPathFilenameInVariableCase(path: string) {
+  // from https://nodejs.org/en/learn/manipulating-files/nodejs-file-paths#example
+  const basenameNoExt = window.electron.path.basename(
+    path,
+    window.electron.path.extname(path)
+  )
+  return getInVariableCase(basenameNoExt)
 }

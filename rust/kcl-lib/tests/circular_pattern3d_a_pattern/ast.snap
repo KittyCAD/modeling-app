@@ -22,7 +22,7 @@ description: Result of parsing circular_pattern3d_a_pattern.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 30,
+                    "commentStart": 0,
                     "end": 0,
                     "raw": "'XZ'",
                     "start": 0,
@@ -33,10 +33,10 @@ description: Result of parsing circular_pattern3d_a_pattern.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 16,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 16,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "startSketchOn",
                     "start": 0,
@@ -46,7 +46,7 @@ description: Result of parsing circular_pattern3d_a_pattern.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 16,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -55,10 +55,10 @@ description: Result of parsing circular_pattern3d_a_pattern.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 56,
+                    "commentStart": 0,
                     "elements": [
                       {
-                        "commentStart": 57,
+                        "commentStart": 0,
                         "end": 0,
                         "raw": "0",
                         "start": 0,
@@ -70,7 +70,7 @@ description: Result of parsing circular_pattern3d_a_pattern.kcl
                         }
                       },
                       {
-                        "commentStart": 60,
+                        "commentStart": 0,
                         "end": 0,
                         "raw": "0",
                         "start": 0,
@@ -88,7 +88,7 @@ description: Result of parsing circular_pattern3d_a_pattern.kcl
                     "type": "ArrayExpression"
                   },
                   {
-                    "commentStart": 64,
+                    "commentStart": 0,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -97,10 +97,10 @@ description: Result of parsing circular_pattern3d_a_pattern.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 41,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 41,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "startProfileAt",
                     "start": 0,
@@ -110,7 +110,7 @@ description: Result of parsing circular_pattern3d_a_pattern.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 41,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -121,17 +121,17 @@ description: Result of parsing circular_pattern3d_a_pattern.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 77,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 83,
+                      "commentStart": 0,
                       "elements": [
                         {
-                          "commentStart": 84,
+                          "commentStart": 0,
                           "end": 0,
                           "raw": "0",
                           "start": 0,
@@ -143,7 +143,7 @@ description: Result of parsing circular_pattern3d_a_pattern.kcl
                           }
                         },
                         {
-                          "commentStart": 87,
+                          "commentStart": 0,
                           "end": 0,
                           "raw": "2",
                           "start": 0,
@@ -164,10 +164,10 @@ description: Result of parsing circular_pattern3d_a_pattern.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 72,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 72,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "line",
                     "start": 0,
@@ -177,7 +177,7 @@ description: Result of parsing circular_pattern3d_a_pattern.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 72,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -189,17 +189,17 @@ description: Result of parsing circular_pattern3d_a_pattern.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 101,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 107,
+                      "commentStart": 0,
                       "elements": [
                         {
-                          "commentStart": 108,
+                          "commentStart": 0,
                           "end": 0,
                           "raw": "3",
                           "start": 0,
@@ -211,7 +211,7 @@ description: Result of parsing circular_pattern3d_a_pattern.kcl
                           }
                         },
                         {
-                          "commentStart": 111,
+                          "commentStart": 0,
                           "end": 0,
                           "raw": "1",
                           "start": 0,
@@ -232,10 +232,10 @@ description: Result of parsing circular_pattern3d_a_pattern.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 96,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 96,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "line",
                     "start": 0,
@@ -245,7 +245,7 @@ description: Result of parsing circular_pattern3d_a_pattern.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 96,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -257,17 +257,17 @@ description: Result of parsing circular_pattern3d_a_pattern.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 125,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 131,
+                      "commentStart": 0,
                       "elements": [
                         {
-                          "commentStart": 132,
+                          "commentStart": 0,
                           "end": 0,
                           "raw": "0",
                           "start": 0,
@@ -280,7 +280,7 @@ description: Result of parsing circular_pattern3d_a_pattern.kcl
                         },
                         {
                           "argument": {
-                            "commentStart": 136,
+                            "commentStart": 0,
                             "end": 0,
                             "raw": "4",
                             "start": 0,
@@ -291,7 +291,7 @@ description: Result of parsing circular_pattern3d_a_pattern.kcl
                               "suffix": "None"
                             }
                           },
-                          "commentStart": 135,
+                          "commentStart": 0,
                           "end": 0,
                           "operator": "-",
                           "start": 0,
@@ -308,10 +308,10 @@ description: Result of parsing circular_pattern3d_a_pattern.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 120,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 120,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "line",
                     "start": 0,
@@ -321,7 +321,7 @@ description: Result of parsing circular_pattern3d_a_pattern.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 120,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -331,7 +331,7 @@ description: Result of parsing circular_pattern3d_a_pattern.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 151,
+                    "commentStart": 0,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -340,10 +340,10 @@ description: Result of parsing circular_pattern3d_a_pattern.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 145,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 145,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "close",
                     "start": 0,
@@ -353,7 +353,7 @@ description: Result of parsing circular_pattern3d_a_pattern.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 145,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -364,14 +364,14 @@ description: Result of parsing circular_pattern3d_a_pattern.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 167,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 176,
+                      "commentStart": 0,
                       "end": 0,
                       "raw": "1",
                       "start": 0,
@@ -386,10 +386,10 @@ description: Result of parsing circular_pattern3d_a_pattern.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 159,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 159,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "extrude",
                     "start": 0,
@@ -399,7 +399,7 @@ description: Result of parsing circular_pattern3d_a_pattern.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 159,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -407,7 +407,7 @@ description: Result of parsing circular_pattern3d_a_pattern.kcl
                 "unlabeled": null
               }
             ],
-            "commentStart": 16,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "PipeExpression",
@@ -423,12 +423,12 @@ description: Result of parsing circular_pattern3d_a_pattern.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 178,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 180,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 180,
+            "commentStart": 0,
             "end": 0,
             "name": "pattn1",
             "start": 0,
@@ -439,17 +439,17 @@ description: Result of parsing circular_pattern3d_a_pattern.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "commentStart": 225,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "axis",
                   "start": 0,
                   "type": "Identifier"
                 },
                 "arg": {
-                  "commentStart": 232,
+                  "commentStart": 0,
                   "elements": [
                     {
-                      "commentStart": 233,
+                      "commentStart": 0,
                       "end": 0,
                       "raw": "1",
                       "start": 0,
@@ -461,7 +461,7 @@ description: Result of parsing circular_pattern3d_a_pattern.kcl
                       }
                     },
                     {
-                      "commentStart": 236,
+                      "commentStart": 0,
                       "end": 0,
                       "raw": "0",
                       "start": 0,
@@ -473,7 +473,7 @@ description: Result of parsing circular_pattern3d_a_pattern.kcl
                       }
                     },
                     {
-                      "commentStart": 239,
+                      "commentStart": 0,
                       "end": 0,
                       "raw": "0",
                       "start": 0,
@@ -494,14 +494,14 @@ description: Result of parsing circular_pattern3d_a_pattern.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "commentStart": 245,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "instances",
                   "start": 0,
                   "type": "Identifier"
                 },
                 "arg": {
-                  "commentStart": 257,
+                  "commentStart": 0,
                   "end": 0,
                   "raw": "7",
                   "start": 0,
@@ -516,14 +516,14 @@ description: Result of parsing circular_pattern3d_a_pattern.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "commentStart": 262,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "distance",
                   "start": 0,
                   "type": "Identifier"
                 },
                 "arg": {
-                  "commentStart": 273,
+                  "commentStart": 0,
                   "end": 0,
                   "raw": "6",
                   "start": 0,
@@ -538,10 +538,10 @@ description: Result of parsing circular_pattern3d_a_pattern.kcl
             ],
             "callee": {
               "abs_path": false,
-              "commentStart": 189,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 189,
+                "commentStart": 0,
                 "end": 0,
                 "name": "patternLinear3d",
                 "start": 0,
@@ -551,17 +551,17 @@ description: Result of parsing circular_pattern3d_a_pattern.kcl
               "start": 0,
               "type": "Name"
             },
-            "commentStart": 189,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
               "abs_path": false,
-              "commentStart": 208,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 208,
+                "commentStart": 0,
                 "end": 0,
                 "name": "exampleSketch",
                 "start": 0,
@@ -583,12 +583,12 @@ description: Result of parsing circular_pattern3d_a_pattern.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 277,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 279,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 279,
+            "commentStart": 0,
             "end": 0,
             "name": "pattn2",
             "start": 0,
@@ -599,17 +599,17 @@ description: Result of parsing circular_pattern3d_a_pattern.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "commentStart": 319,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "axis",
                   "start": 0,
                   "type": "Identifier"
                 },
                 "arg": {
-                  "commentStart": 326,
+                  "commentStart": 0,
                   "elements": [
                     {
-                      "commentStart": 327,
+                      "commentStart": 0,
                       "end": 0,
                       "raw": "0",
                       "start": 0,
@@ -621,7 +621,7 @@ description: Result of parsing circular_pattern3d_a_pattern.kcl
                       }
                     },
                     {
-                      "commentStart": 330,
+                      "commentStart": 0,
                       "end": 0,
                       "raw": "0",
                       "start": 0,
@@ -633,7 +633,7 @@ description: Result of parsing circular_pattern3d_a_pattern.kcl
                       }
                     },
                     {
-                      "commentStart": 333,
+                      "commentStart": 0,
                       "end": 0,
                       "raw": "1",
                       "start": 0,
@@ -654,18 +654,18 @@ description: Result of parsing circular_pattern3d_a_pattern.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "commentStart": 339,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "center",
                   "start": 0,
                   "type": "Identifier"
                 },
                 "arg": {
-                  "commentStart": 348,
+                  "commentStart": 0,
                   "elements": [
                     {
                       "argument": {
-                        "commentStart": 350,
+                        "commentStart": 0,
                         "end": 0,
                         "raw": "20",
                         "start": 0,
@@ -676,7 +676,7 @@ description: Result of parsing circular_pattern3d_a_pattern.kcl
                           "suffix": "None"
                         }
                       },
-                      "commentStart": 349,
+                      "commentStart": 0,
                       "end": 0,
                       "operator": "-",
                       "start": 0,
@@ -685,7 +685,7 @@ description: Result of parsing circular_pattern3d_a_pattern.kcl
                     },
                     {
                       "argument": {
-                        "commentStart": 355,
+                        "commentStart": 0,
                         "end": 0,
                         "raw": "20",
                         "start": 0,
@@ -696,7 +696,7 @@ description: Result of parsing circular_pattern3d_a_pattern.kcl
                           "suffix": "None"
                         }
                       },
-                      "commentStart": 354,
+                      "commentStart": 0,
                       "end": 0,
                       "operator": "-",
                       "start": 0,
@@ -705,7 +705,7 @@ description: Result of parsing circular_pattern3d_a_pattern.kcl
                     },
                     {
                       "argument": {
-                        "commentStart": 360,
+                        "commentStart": 0,
                         "end": 0,
                         "raw": "20",
                         "start": 0,
@@ -716,7 +716,7 @@ description: Result of parsing circular_pattern3d_a_pattern.kcl
                           "suffix": "None"
                         }
                       },
-                      "commentStart": 359,
+                      "commentStart": 0,
                       "end": 0,
                       "operator": "-",
                       "start": 0,
@@ -733,14 +733,14 @@ description: Result of parsing circular_pattern3d_a_pattern.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "commentStart": 367,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "instances",
                   "start": 0,
                   "type": "Identifier"
                 },
                 "arg": {
-                  "commentStart": 379,
+                  "commentStart": 0,
                   "end": 0,
                   "raw": "41",
                   "start": 0,
@@ -755,14 +755,14 @@ description: Result of parsing circular_pattern3d_a_pattern.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "commentStart": 385,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "arcDegrees",
                   "start": 0,
                   "type": "Identifier"
                 },
                 "arg": {
-                  "commentStart": 398,
+                  "commentStart": 0,
                   "end": 0,
                   "raw": "360",
                   "start": 0,
@@ -777,14 +777,14 @@ description: Result of parsing circular_pattern3d_a_pattern.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "commentStart": 405,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "rotateDuplicates",
                   "start": 0,
                   "type": "Identifier"
                 },
                 "arg": {
-                  "commentStart": 424,
+                  "commentStart": 0,
                   "end": 0,
                   "raw": "false",
                   "start": 0,
@@ -796,10 +796,10 @@ description: Result of parsing circular_pattern3d_a_pattern.kcl
             ],
             "callee": {
               "abs_path": false,
-              "commentStart": 288,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 288,
+                "commentStart": 0,
                 "end": 0,
                 "name": "patternCircular3d",
                 "start": 0,
@@ -809,17 +809,17 @@ description: Result of parsing circular_pattern3d_a_pattern.kcl
               "start": 0,
               "type": "Name"
             },
-            "commentStart": 288,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
               "abs_path": false,
-              "commentStart": 309,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 309,
+                "commentStart": 0,
                 "end": 0,
                 "name": "pattn1",
                 "start": 0,
@@ -847,7 +847,7 @@ description: Result of parsing circular_pattern3d_a_pattern.kcl
       "nonCodeNodes": {
         "0": [
           {
-            "commentStart": 178,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -858,7 +858,7 @@ description: Result of parsing circular_pattern3d_a_pattern.kcl
         ],
         "1": [
           {
-            "commentStart": 277,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",

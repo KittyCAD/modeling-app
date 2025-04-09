@@ -8,10 +8,10 @@ description: Result of parsing intersect_cubes.kcl
       {
         "commentStart": 0,
         "declaration": {
-          "commentStart": 3,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 3,
+            "commentStart": 0,
             "end": 0,
             "name": "cube",
             "start": 0,
@@ -27,10 +27,10 @@ description: Result of parsing intersect_cubes.kcl
                         "arguments": [
                           {
                             "abs_path": false,
-                            "commentStart": 41,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 41,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "XY",
                               "start": 0,
@@ -44,10 +44,10 @@ description: Result of parsing intersect_cubes.kcl
                         ],
                         "callee": {
                           "abs_path": false,
-                          "commentStart": 27,
+                          "commentStart": 0,
                           "end": 0,
                           "name": {
-                            "commentStart": 27,
+                            "commentStart": 0,
                             "end": 0,
                             "name": "startSketchOn",
                             "start": 0,
@@ -57,7 +57,7 @@ description: Result of parsing intersect_cubes.kcl
                           "start": 0,
                           "type": "Name"
                         },
-                        "commentStart": 27,
+                        "commentStart": 0,
                         "end": 0,
                         "start": 0,
                         "type": "CallExpression",
@@ -66,17 +66,17 @@ description: Result of parsing intersect_cubes.kcl
                       {
                         "arguments": [
                           {
-                            "commentStart": 67,
+                            "commentStart": 0,
                             "elements": [
                               {
-                                "commentStart": 68,
+                                "commentStart": 0,
                                 "end": 0,
                                 "left": {
-                                  "commentStart": 68,
+                                  "commentStart": 0,
                                   "computed": false,
                                   "end": 0,
                                   "object": {
-                                    "commentStart": 68,
+                                    "commentStart": 0,
                                     "end": 0,
                                     "name": "center",
                                     "start": 0,
@@ -84,7 +84,7 @@ description: Result of parsing intersect_cubes.kcl
                                     "type": "Identifier"
                                   },
                                   "property": {
-                                    "commentStart": 75,
+                                    "commentStart": 0,
                                     "end": 0,
                                     "raw": "0",
                                     "start": 0,
@@ -101,7 +101,7 @@ description: Result of parsing intersect_cubes.kcl
                                 },
                                 "operator": "-",
                                 "right": {
-                                  "commentStart": 80,
+                                  "commentStart": 0,
                                   "end": 0,
                                   "raw": "10",
                                   "start": 0,
@@ -117,14 +117,14 @@ description: Result of parsing intersect_cubes.kcl
                                 "type": "BinaryExpression"
                               },
                               {
-                                "commentStart": 84,
+                                "commentStart": 0,
                                 "end": 0,
                                 "left": {
-                                  "commentStart": 84,
+                                  "commentStart": 0,
                                   "computed": false,
                                   "end": 0,
                                   "object": {
-                                    "commentStart": 84,
+                                    "commentStart": 0,
                                     "end": 0,
                                     "name": "center",
                                     "start": 0,
@@ -132,7 +132,7 @@ description: Result of parsing intersect_cubes.kcl
                                     "type": "Identifier"
                                   },
                                   "property": {
-                                    "commentStart": 91,
+                                    "commentStart": 0,
                                     "end": 0,
                                     "raw": "1",
                                     "start": 0,
@@ -149,7 +149,7 @@ description: Result of parsing intersect_cubes.kcl
                                 },
                                 "operator": "-",
                                 "right": {
-                                  "commentStart": 96,
+                                  "commentStart": 0,
                                   "end": 0,
                                   "raw": "10",
                                   "start": 0,
@@ -171,7 +171,7 @@ description: Result of parsing intersect_cubes.kcl
                             "type": "ArrayExpression"
                           },
                           {
-                            "commentStart": 101,
+                            "commentStart": 0,
                             "end": 0,
                             "start": 0,
                             "type": "PipeSubstitution",
@@ -180,10 +180,10 @@ description: Result of parsing intersect_cubes.kcl
                         ],
                         "callee": {
                           "abs_path": false,
-                          "commentStart": 52,
+                          "commentStart": 0,
                           "end": 0,
                           "name": {
-                            "commentStart": 52,
+                            "commentStart": 0,
                             "end": 0,
                             "name": "startProfileAt",
                             "start": 0,
@@ -193,7 +193,7 @@ description: Result of parsing intersect_cubes.kcl
                           "start": 0,
                           "type": "Name"
                         },
-                        "commentStart": 52,
+                        "commentStart": 0,
                         "end": 0,
                         "start": 0,
                         "type": "CallExpression",
@@ -204,24 +204,24 @@ description: Result of parsing intersect_cubes.kcl
                           {
                             "type": "LabeledArg",
                             "label": {
-                              "commentStart": 116,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "endAbsolute",
                               "start": 0,
                               "type": "Identifier"
                             },
                             "arg": {
-                              "commentStart": 130,
+                              "commentStart": 0,
                               "elements": [
                                 {
-                                  "commentStart": 131,
+                                  "commentStart": 0,
                                   "end": 0,
                                   "left": {
-                                    "commentStart": 131,
+                                    "commentStart": 0,
                                     "computed": false,
                                     "end": 0,
                                     "object": {
-                                      "commentStart": 131,
+                                      "commentStart": 0,
                                       "end": 0,
                                       "name": "center",
                                       "start": 0,
@@ -229,7 +229,7 @@ description: Result of parsing intersect_cubes.kcl
                                       "type": "Identifier"
                                     },
                                     "property": {
-                                      "commentStart": 138,
+                                      "commentStart": 0,
                                       "end": 0,
                                       "raw": "0",
                                       "start": 0,
@@ -246,7 +246,7 @@ description: Result of parsing intersect_cubes.kcl
                                   },
                                   "operator": "+",
                                   "right": {
-                                    "commentStart": 143,
+                                    "commentStart": 0,
                                     "end": 0,
                                     "raw": "10",
                                     "start": 0,
@@ -262,14 +262,14 @@ description: Result of parsing intersect_cubes.kcl
                                   "type": "BinaryExpression"
                                 },
                                 {
-                                  "commentStart": 147,
+                                  "commentStart": 0,
                                   "end": 0,
                                   "left": {
-                                    "commentStart": 147,
+                                    "commentStart": 0,
                                     "computed": false,
                                     "end": 0,
                                     "object": {
-                                      "commentStart": 147,
+                                      "commentStart": 0,
                                       "end": 0,
                                       "name": "center",
                                       "start": 0,
@@ -277,7 +277,7 @@ description: Result of parsing intersect_cubes.kcl
                                       "type": "Identifier"
                                     },
                                     "property": {
-                                      "commentStart": 154,
+                                      "commentStart": 0,
                                       "end": 0,
                                       "raw": "1",
                                       "start": 0,
@@ -294,7 +294,7 @@ description: Result of parsing intersect_cubes.kcl
                                   },
                                   "operator": "-",
                                   "right": {
-                                    "commentStart": 159,
+                                    "commentStart": 0,
                                     "end": 0,
                                     "raw": "10",
                                     "start": 0,
@@ -319,10 +319,10 @@ description: Result of parsing intersect_cubes.kcl
                         ],
                         "callee": {
                           "abs_path": false,
-                          "commentStart": 111,
+                          "commentStart": 0,
                           "end": 0,
                           "name": {
-                            "commentStart": 111,
+                            "commentStart": 0,
                             "end": 0,
                             "name": "line",
                             "start": 0,
@@ -332,7 +332,7 @@ description: Result of parsing intersect_cubes.kcl
                           "start": 0,
                           "type": "Name"
                         },
-                        "commentStart": 111,
+                        "commentStart": 0,
                         "end": 0,
                         "start": 0,
                         "type": "CallExpressionKw",
@@ -344,24 +344,24 @@ description: Result of parsing intersect_cubes.kcl
                           {
                             "type": "LabeledArg",
                             "label": {
-                              "commentStart": 176,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "endAbsolute",
                               "start": 0,
                               "type": "Identifier"
                             },
                             "arg": {
-                              "commentStart": 190,
+                              "commentStart": 0,
                               "elements": [
                                 {
-                                  "commentStart": 191,
+                                  "commentStart": 0,
                                   "end": 0,
                                   "left": {
-                                    "commentStart": 191,
+                                    "commentStart": 0,
                                     "computed": false,
                                     "end": 0,
                                     "object": {
-                                      "commentStart": 191,
+                                      "commentStart": 0,
                                       "end": 0,
                                       "name": "center",
                                       "start": 0,
@@ -369,7 +369,7 @@ description: Result of parsing intersect_cubes.kcl
                                       "type": "Identifier"
                                     },
                                     "property": {
-                                      "commentStart": 198,
+                                      "commentStart": 0,
                                       "end": 0,
                                       "raw": "0",
                                       "start": 0,
@@ -386,7 +386,7 @@ description: Result of parsing intersect_cubes.kcl
                                   },
                                   "operator": "+",
                                   "right": {
-                                    "commentStart": 203,
+                                    "commentStart": 0,
                                     "end": 0,
                                     "raw": "10",
                                     "start": 0,
@@ -402,14 +402,14 @@ description: Result of parsing intersect_cubes.kcl
                                   "type": "BinaryExpression"
                                 },
                                 {
-                                  "commentStart": 207,
+                                  "commentStart": 0,
                                   "end": 0,
                                   "left": {
-                                    "commentStart": 207,
+                                    "commentStart": 0,
                                     "computed": false,
                                     "end": 0,
                                     "object": {
-                                      "commentStart": 207,
+                                      "commentStart": 0,
                                       "end": 0,
                                       "name": "center",
                                       "start": 0,
@@ -417,7 +417,7 @@ description: Result of parsing intersect_cubes.kcl
                                       "type": "Identifier"
                                     },
                                     "property": {
-                                      "commentStart": 214,
+                                      "commentStart": 0,
                                       "end": 0,
                                       "raw": "1",
                                       "start": 0,
@@ -434,7 +434,7 @@ description: Result of parsing intersect_cubes.kcl
                                   },
                                   "operator": "+",
                                   "right": {
-                                    "commentStart": 219,
+                                    "commentStart": 0,
                                     "end": 0,
                                     "raw": "10",
                                     "start": 0,
@@ -459,10 +459,10 @@ description: Result of parsing intersect_cubes.kcl
                         ],
                         "callee": {
                           "abs_path": false,
-                          "commentStart": 171,
+                          "commentStart": 0,
                           "end": 0,
                           "name": {
-                            "commentStart": 171,
+                            "commentStart": 0,
                             "end": 0,
                             "name": "line",
                             "start": 0,
@@ -472,7 +472,7 @@ description: Result of parsing intersect_cubes.kcl
                           "start": 0,
                           "type": "Name"
                         },
-                        "commentStart": 171,
+                        "commentStart": 0,
                         "end": 0,
                         "start": 0,
                         "type": "CallExpressionKw",
@@ -484,24 +484,24 @@ description: Result of parsing intersect_cubes.kcl
                           {
                             "type": "LabeledArg",
                             "label": {
-                              "commentStart": 236,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "endAbsolute",
                               "start": 0,
                               "type": "Identifier"
                             },
                             "arg": {
-                              "commentStart": 250,
+                              "commentStart": 0,
                               "elements": [
                                 {
-                                  "commentStart": 251,
+                                  "commentStart": 0,
                                   "end": 0,
                                   "left": {
-                                    "commentStart": 251,
+                                    "commentStart": 0,
                                     "computed": false,
                                     "end": 0,
                                     "object": {
-                                      "commentStart": 251,
+                                      "commentStart": 0,
                                       "end": 0,
                                       "name": "center",
                                       "start": 0,
@@ -509,7 +509,7 @@ description: Result of parsing intersect_cubes.kcl
                                       "type": "Identifier"
                                     },
                                     "property": {
-                                      "commentStart": 258,
+                                      "commentStart": 0,
                                       "end": 0,
                                       "raw": "0",
                                       "start": 0,
@@ -526,7 +526,7 @@ description: Result of parsing intersect_cubes.kcl
                                   },
                                   "operator": "-",
                                   "right": {
-                                    "commentStart": 263,
+                                    "commentStart": 0,
                                     "end": 0,
                                     "raw": "10",
                                     "start": 0,
@@ -542,14 +542,14 @@ description: Result of parsing intersect_cubes.kcl
                                   "type": "BinaryExpression"
                                 },
                                 {
-                                  "commentStart": 267,
+                                  "commentStart": 0,
                                   "end": 0,
                                   "left": {
-                                    "commentStart": 267,
+                                    "commentStart": 0,
                                     "computed": false,
                                     "end": 0,
                                     "object": {
-                                      "commentStart": 267,
+                                      "commentStart": 0,
                                       "end": 0,
                                       "name": "center",
                                       "start": 0,
@@ -557,7 +557,7 @@ description: Result of parsing intersect_cubes.kcl
                                       "type": "Identifier"
                                     },
                                     "property": {
-                                      "commentStart": 274,
+                                      "commentStart": 0,
                                       "end": 0,
                                       "raw": "1",
                                       "start": 0,
@@ -574,7 +574,7 @@ description: Result of parsing intersect_cubes.kcl
                                   },
                                   "operator": "+",
                                   "right": {
-                                    "commentStart": 279,
+                                    "commentStart": 0,
                                     "end": 0,
                                     "raw": "10",
                                     "start": 0,
@@ -599,10 +599,10 @@ description: Result of parsing intersect_cubes.kcl
                         ],
                         "callee": {
                           "abs_path": false,
-                          "commentStart": 231,
+                          "commentStart": 0,
                           "end": 0,
                           "name": {
-                            "commentStart": 231,
+                            "commentStart": 0,
                             "end": 0,
                             "name": "line",
                             "start": 0,
@@ -612,7 +612,7 @@ description: Result of parsing intersect_cubes.kcl
                           "start": 0,
                           "type": "Name"
                         },
-                        "commentStart": 231,
+                        "commentStart": 0,
                         "end": 0,
                         "start": 0,
                         "type": "CallExpressionKw",
@@ -623,10 +623,10 @@ description: Result of parsing intersect_cubes.kcl
                         "arguments": [],
                         "callee": {
                           "abs_path": false,
-                          "commentStart": 291,
+                          "commentStart": 0,
                           "end": 0,
                           "name": {
-                            "commentStart": 291,
+                            "commentStart": 0,
                             "end": 0,
                             "name": "close",
                             "start": 0,
@@ -636,7 +636,7 @@ description: Result of parsing intersect_cubes.kcl
                           "start": 0,
                           "type": "Name"
                         },
-                        "commentStart": 291,
+                        "commentStart": 0,
                         "end": 0,
                         "start": 0,
                         "type": "CallExpression",
@@ -647,14 +647,14 @@ description: Result of parsing intersect_cubes.kcl
                           {
                             "type": "LabeledArg",
                             "label": {
-                              "commentStart": 314,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "length",
                               "start": 0,
                               "type": "Identifier"
                             },
                             "arg": {
-                              "commentStart": 323,
+                              "commentStart": 0,
                               "end": 0,
                               "raw": "10",
                               "start": 0,
@@ -669,10 +669,10 @@ description: Result of parsing intersect_cubes.kcl
                         ],
                         "callee": {
                           "abs_path": false,
-                          "commentStart": 306,
+                          "commentStart": 0,
                           "end": 0,
                           "name": {
-                            "commentStart": 306,
+                            "commentStart": 0,
                             "end": 0,
                             "name": "extrude",
                             "start": 0,
@@ -682,7 +682,7 @@ description: Result of parsing intersect_cubes.kcl
                           "start": 0,
                           "type": "Name"
                         },
-                        "commentStart": 306,
+                        "commentStart": 0,
                         "end": 0,
                         "start": 0,
                         "type": "CallExpressionKw",
@@ -690,30 +690,30 @@ description: Result of parsing intersect_cubes.kcl
                         "unlabeled": null
                       }
                     ],
-                    "commentStart": 27,
+                    "commentStart": 0,
                     "end": 0,
                     "start": 0,
                     "type": "PipeExpression",
                     "type": "PipeExpression"
                   },
-                  "commentStart": 20,
+                  "commentStart": 0,
                   "end": 0,
                   "start": 0,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
                 }
               ],
-              "commentStart": 16,
+              "commentStart": 0,
               "end": 0,
               "start": 0
             },
-            "commentStart": 7,
+            "commentStart": 0,
             "end": 0,
             "params": [
               {
                 "type": "Parameter",
                 "identifier": {
-                  "commentStart": 8,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "center",
                   "start": 0,
@@ -735,12 +735,12 @@ description: Result of parsing intersect_cubes.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 328,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 330,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 330,
+            "commentStart": 0,
             "end": 0,
             "name": "part001",
             "start": 0,
@@ -749,10 +749,10 @@ description: Result of parsing intersect_cubes.kcl
           "init": {
             "arguments": [
               {
-                "commentStart": 345,
+                "commentStart": 0,
                 "elements": [
                   {
-                    "commentStart": 346,
+                    "commentStart": 0,
                     "end": 0,
                     "raw": "0",
                     "start": 0,
@@ -764,7 +764,7 @@ description: Result of parsing intersect_cubes.kcl
                     }
                   },
                   {
-                    "commentStart": 349,
+                    "commentStart": 0,
                     "end": 0,
                     "raw": "0",
                     "start": 0,
@@ -784,10 +784,10 @@ description: Result of parsing intersect_cubes.kcl
             ],
             "callee": {
               "abs_path": false,
-              "commentStart": 340,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 340,
+                "commentStart": 0,
                 "end": 0,
                 "name": "cube",
                 "start": 0,
@@ -797,7 +797,7 @@ description: Result of parsing intersect_cubes.kcl
               "start": 0,
               "type": "Name"
             },
-            "commentStart": 340,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "CallExpression",
@@ -813,12 +813,12 @@ description: Result of parsing intersect_cubes.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 353,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 353,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 353,
+            "commentStart": 0,
             "end": 0,
             "name": "part002",
             "start": 0,
@@ -827,10 +827,10 @@ description: Result of parsing intersect_cubes.kcl
           "init": {
             "arguments": [
               {
-                "commentStart": 368,
+                "commentStart": 0,
                 "elements": [
                   {
-                    "commentStart": 369,
+                    "commentStart": 0,
                     "end": 0,
                     "raw": "8",
                     "start": 0,
@@ -842,7 +842,7 @@ description: Result of parsing intersect_cubes.kcl
                     }
                   },
                   {
-                    "commentStart": 372,
+                    "commentStart": 0,
                     "end": 0,
                     "raw": "8",
                     "start": 0,
@@ -862,10 +862,10 @@ description: Result of parsing intersect_cubes.kcl
             ],
             "callee": {
               "abs_path": false,
-              "commentStart": 363,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 363,
+                "commentStart": 0,
                 "end": 0,
                 "name": "cube",
                 "start": 0,
@@ -875,7 +875,7 @@ description: Result of parsing intersect_cubes.kcl
               "start": 0,
               "type": "Name"
             },
-            "commentStart": 363,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "CallExpression",
@@ -891,12 +891,12 @@ description: Result of parsing intersect_cubes.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 375,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 377,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 377,
+            "commentStart": 0,
             "end": 0,
             "name": "fullPart",
             "start": 0,
@@ -905,14 +905,14 @@ description: Result of parsing intersect_cubes.kcl
           "init": {
             "arguments": [
               {
-                "commentStart": 398,
+                "commentStart": 0,
                 "elements": [
                   {
                     "abs_path": false,
-                    "commentStart": 399,
+                    "commentStart": 0,
                     "end": 0,
                     "name": {
-                      "commentStart": 399,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "part001",
                       "start": 0,
@@ -925,10 +925,10 @@ description: Result of parsing intersect_cubes.kcl
                   },
                   {
                     "abs_path": false,
-                    "commentStart": 408,
+                    "commentStart": 0,
                     "end": 0,
                     "name": {
-                      "commentStart": 408,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "part002",
                       "start": 0,
@@ -948,10 +948,10 @@ description: Result of parsing intersect_cubes.kcl
             ],
             "callee": {
               "abs_path": false,
-              "commentStart": 388,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 388,
+                "commentStart": 0,
                 "end": 0,
                 "name": "intersect",
                 "start": 0,
@@ -961,7 +961,7 @@ description: Result of parsing intersect_cubes.kcl
               "start": 0,
               "type": "Name"
             },
-            "commentStart": 388,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "CallExpression",
@@ -983,7 +983,7 @@ description: Result of parsing intersect_cubes.kcl
       "nonCodeNodes": {
         "0": [
           {
-            "commentStart": 328,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -994,7 +994,7 @@ description: Result of parsing intersect_cubes.kcl
         ],
         "2": [
           {
-            "commentStart": 375,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",

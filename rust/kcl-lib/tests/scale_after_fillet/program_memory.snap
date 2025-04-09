@@ -49,14 +49,16 @@ description: Variables in memory after executing scale_after_fillet.kcl
     "type": "Number",
     "value": 0.5,
     "ty": {
-      "type": "Unknown"
+      "type": "Known",
+      "type": "Count"
     }
   },
   "boltHexFlatLength": {
     "type": "Number",
     "value": 0.2887,
     "ty": {
-      "type": "Unknown"
+      "type": "Known",
+      "type": "Count"
     }
   },
   "boltLength": {

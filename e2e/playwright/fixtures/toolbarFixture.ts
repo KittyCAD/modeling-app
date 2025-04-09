@@ -44,6 +44,7 @@ export class ToolbarFixture {
   featureTreePane!: Locator
   gizmo!: Locator
   gizmoDisabled!: Locator
+  insertButton!: Locator
 
   constructor(page: Page) {
     this.page = page
@@ -78,16 +79,12 @@ export class ToolbarFixture {
     // element or two different elements can represent these states.
     this.gizmo = page.getByTestId('gizmo')
     this.gizmoDisabled = page.getByTestId('gizmo-disabled')
+
+    this.insertButton = page.getByTestId('insert-pane-button')
   }
 
   get logoLink() {
     return this.page.getByTestId('app-logo')
-  }
-
-  get exeIndicator() {
-    return this.page
-      .getByTestId('model-state-indicator-receive-reliable')
-      .or(this.page.getByTestId('model-state-indicator-execution-done'))
   }
 
   startSketchPlaneSelection = async () =>
@@ -165,20 +162,14 @@ export class ToolbarFixture {
     }
   }
   /**
-   * Opens file by it's name and waits for execution to finish
+   * Opens file by it's name
    */
-  openFile = async (
-    fileName: string,
-    { wait }: { wait?: boolean } = { wait: true }
-  ) => {
+  openFile = async (fileName: string) => {
     await this.filePane.getByText(fileName).click()
-    if (wait) {
-      await expect(this.exeIndicator).toBeVisible({ timeout: 15_000 })
-    }
   }
   selectCenterRectangle = async () => {
     await this.page
-      .getByRole('button', { name: 'caret down Corner rectangle:' })
+      .getByRole('button', { name: 'caret down rectangles:' })
       .click()
     await expect(
       this.page.getByTestId('dropdown-center-rectangle')
@@ -187,7 +178,7 @@ export class ToolbarFixture {
   }
   selectBoolean = async (operation: 'union' | 'subtract' | 'intersect') => {
     await this.page
-      .getByRole('button', { name: 'caret down Union: open menu' })
+      .getByRole('button', { name: 'caret down booleans: open menu' })
       .click()
     const operationTestId = `dropdown-boolean-${operation}`
     await expect(this.page.getByTestId(operationTestId)).toBeVisible()
@@ -195,25 +186,19 @@ export class ToolbarFixture {
   }
 
   selectCircleThreePoint = async () => {
-    await this.page
-      .getByRole('button', { name: 'caret down Center circle:' })
-      .click()
+    await this.page.getByRole('button', { name: 'caret down circles:' }).click()
     await expect(
       this.page.getByTestId('dropdown-circle-three-points')
     ).toBeVisible()
     await this.page.getByTestId('dropdown-circle-three-points').click()
   }
   selectArc = async () => {
-    await this.page
-      .getByRole('button', { name: 'caret down Tangential Arc:' })
-      .click()
+    await this.page.getByRole('button', { name: 'caret down arcs:' }).click()
     await expect(this.page.getByTestId('dropdown-arc')).toBeVisible()
     await this.page.getByTestId('dropdown-arc').click()
   }
   selectThreePointArc = async () => {
-    await this.page
-      .getByRole('button', { name: 'caret down Tangential Arc:' })
-      .click()
+    await this.page.getByRole('button', { name: 'caret down arcs:' }).click()
     await expect(
       this.page.getByTestId('dropdown-three-point-arc')
     ).toBeVisible()

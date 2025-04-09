@@ -1,9 +1,9 @@
-// Globals
+// Parameters
 
-// set units
+// Set units
 @settings(defaultLengthUnit = in)
 
-// flange (68095K348)
+// Flange (68095K348)
 export pipeDiameter = 2.440
 export mountingHoleDiameter = 0.750
 export mountingHolePlacementDiameter = 4.750
@@ -17,12 +17,12 @@ export flangeBaseThickness = flangeTotalThickness - flangeBackHeight - flangeFro
 export flangeBackDiameter = 3.620
 export flangeFrontDiameter = 3.060
 
-// washer (98017A257)
+// Washer (98017A257)
 export washerInnerDia = 0.640
 export washerOuterDia = 1.188
 export washerThickness = 0.032
 
-// bolt (91251A404)
+// Bolt (91251A404)
 export boltDiameter = 0.625
 export boltLength = 2.500
 export boltHeadLength = boltDiameter
@@ -31,18 +31,18 @@ export boltHexDrive = 1 / 2
 export boltHexFlatLength = boltHexDrive / (2 * cos(toRadians(30)))
 export boltThreadLength = 1.750
 
-// hex nut (95479A127)
+// Hex nut (95479A127)
 export hexNutDiameter = 5 / 8
 export hexNutFlatToFlat = 15 / 16
 export hexNutThickness = 35 / 64
 export hexNutFlatLength = hexNutFlatToFlat / (2 * cos(toRadians(30)))
 
-// gasket (9472K188)
+// Gasket (9472K188)
 export gasketOutsideDiameter = 4.125
 export gasketInnerDiameter = 2.375
 export gasketThickness = 0.031
 
-// pipe (1120T74)
+// Pipe (1120T74)
 export pipeInnerDiameter = 2.0
 export pipeOuterDiameter = 2.375
 export pipeLength = 6

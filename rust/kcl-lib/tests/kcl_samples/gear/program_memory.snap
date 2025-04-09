@@ -23,714 +23,918 @@ description: Variables in memory after executing gear.kcl
         "type": "Number",
         "value": 0.0,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 3.2781,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 4.6327,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 5.67,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 6.5427,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 7.31,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 8.0023,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 8.6377,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 9.2278,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 9.781,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 10.3031,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 10.7987,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 11.2713,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 11.7237,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 12.1581,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 12.5764,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 12.9802,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 13.3708,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 13.7492,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 14.1166,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 14.4737,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 14.8213,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 15.16,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 15.4905,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 15.8132,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 16.1286,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 16.4372,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 16.7393,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 17.0353,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 17.3255,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 17.6101,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 17.8895,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 18.1639,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 18.4335,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 18.6985,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 18.9591,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 19.2156,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 19.468,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 19.7165,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 19.9613,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 20.2026,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 20.4404,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 20.6748,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 20.906,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 21.1341,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 21.3592,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 21.5814,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 21.8007,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 22.0174,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 22.2313,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 22.4427,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 22.6516,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 22.858,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 23.0621,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 23.2639,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 23.4635,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 23.6608,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 23.8561,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 24.0492,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 24.2404,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 24.4296,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 24.6168,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 24.8022,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 24.9858,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 25.1675,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 25.3475,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 25.5258,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 25.7024,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 25.8774,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 26.0508,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 26.2226,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 26.3928,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 26.5616,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 26.7289,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 26.8947,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 27.0591,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 27.2221,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 27.3837,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 27.544,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 27.703,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 27.8607,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 28.0171,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 28.1723,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 28.3263,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 28.479,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 28.6306,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 28.781,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 28.9302,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 29.0783,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 29.2254,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 29.3713,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 29.5162,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 29.66,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 29.8028,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 29.9445,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 30.0853,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 30.225,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 30.3638,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 30.5016,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 30.6385,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 30.7744,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       },
       {
         "type": "Number",
         "value": 30.9094,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Angle",
+          "type": "Degrees"
         }
       }
     ]
@@ -739,7 +943,8 @@ description: Variables in memory after executing gear.kcl
     "type": "Number",
     "value": 9.8668,
     "ty": {
-      "type": "Unknown"
+      "type": "Known",
+      "type": "Count"
     }
   },
   "body": {
@@ -865,7 +1070,13 @@ description: Variables in memory after executing gear.kcl
     "type": "Number",
     "value": 0.625,
     "ty": {
-      "type": "Unknown"
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
     }
   },
   "gearHeight": {
@@ -1956,7 +2167,8 @@ description: Variables in memory after executing gear.kcl
     "type": "Number",
     "value": 0.125,
     "ty": {
-      "type": "Unknown"
+      "type": "Known",
+      "type": "Count"
     }
   },
   "keywayWidth": {
@@ -2005,7 +2217,13 @@ description: Variables in memory after executing gear.kcl
     "type": "Number",
     "value": 10.5,
     "ty": {
-      "type": "Unknown"
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
     }
   },
   "pressureAngle": {
@@ -2031,714 +2249,816 @@ description: Variables in memory after executing gear.kcl
         "type": "Number",
         "value": 4.9334,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 4.9415,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 4.9496,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 4.9576,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 4.9657,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 4.9738,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 4.9819,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 4.99,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 4.9981,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.0062,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.0142,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.0223,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.0304,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.0385,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.0466,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.0547,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.0628,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.0708,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.0789,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.087,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.0951,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.1032,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.1113,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.1193,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.1274,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.1355,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.1436,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.1517,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.1598,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.1679,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.1759,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.184,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.1921,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.2002,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.2083,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.2164,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.2245,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.2325,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.2406,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.2487,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.2568,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.2649,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.273,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.2811,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.2891,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.2972,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.3053,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.3134,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.3215,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.3296,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.3377,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.3457,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.3538,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.3619,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.37,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.3781,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.3862,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.3942,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.4023,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.4104,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.4185,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.4266,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.4347,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.4428,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.4508,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.4589,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.467,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.4751,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.4832,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.4913,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.4994,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.5074,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.5155,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.5236,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.5317,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.5398,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.5479,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.556,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.564,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.5721,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.5802,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.5883,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.5964,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.6045,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.6126,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.6206,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.6287,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.6368,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.6449,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.653,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.6611,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.6691,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.6772,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.6853,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.6934,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.7015,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.7096,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.7177,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.7257,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.7338,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.7419,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.75,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       }
     ]
@@ -2807,7 +3127,9 @@ description: Variables in memory after executing gear.kcl
     "type": "Number",
     "value": 0.1253,
     "ty": {
-      "type": "Unknown"
+      "type": "Known",
+      "type": "Angle",
+      "type": "Radians"
     }
   },
   "teeth": {
@@ -85874,14 +86196,21 @@ description: Variables in memory after executing gear.kcl
     "type": "Number",
     "value": 11.5,
     "ty": {
-      "type": "Unknown"
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
     }
   },
   "toothAngle": {
     "type": "Number",
     "value": 11.4286,
     "ty": {
-      "type": "Unknown"
+      "type": "Known",
+      "type": "Count"
     }
   },
   "xs": {
@@ -85891,714 +86220,816 @@ description: Variables in memory after executing gear.kcl
         "type": "Number",
         "value": 4.9334,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 4.9415,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 4.9496,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 4.9576,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 4.9657,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 4.9738,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 4.9819,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 4.99,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 4.9981,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.0061,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.0142,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.0223,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.0304,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.0385,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.0466,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.0546,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.0627,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.0708,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.0789,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.0869,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.095,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.1031,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.1112,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.1192,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.1273,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.1354,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.1434,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.1515,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.1596,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.1676,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.1757,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.1837,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.1918,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.1999,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.2079,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.216,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.224,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.2321,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.2401,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.2481,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.2562,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.2642,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.2722,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.2803,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.2883,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.2963,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.3044,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.3124,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.3204,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.3284,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.3364,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.3444,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.3525,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.3605,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.3685,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.3765,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.3845,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.3924,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.4004,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.4084,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.4164,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.4244,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.4324,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.4403,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.4483,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.4563,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.4642,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.4722,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.4801,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.4881,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.496,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.504,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.5119,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.5198,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.5277,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.5357,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.5436,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.5515,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.5594,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.5673,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.5752,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.5831,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.591,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.5989,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.6068,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.6146,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.6225,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.6304,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.6382,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.6461,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.6539,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.6618,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.6696,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.6775,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.6853,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.6931,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.7009,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.7087,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.7165,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.7243,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.7321,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 5.7399,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       }
     ]
@@ -86610,714 +87041,816 @@ description: Variables in memory after executing gear.kcl
         "type": "Number",
         "value": 0.0,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.0003,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.0009,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.0016,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.0025,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.0035,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.0046,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.0058,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.007,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.0084,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.0098,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.0114,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.013,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.0146,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.0164,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.0182,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.02,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.022,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.0239,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.026,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.0281,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.0303,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.0325,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.0347,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.0371,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.0394,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.0419,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.0443,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.0469,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.0494,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.0521,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.0547,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.0575,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.0602,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.063,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.0659,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.0688,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.0717,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.0747,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.0778,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.0808,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.084,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.0871,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.0903,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.0936,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.0969,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.1002,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.1036,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.107,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.1104,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.1139,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.1174,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.121,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.1246,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.1283,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.132,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.1357,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.1395,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.1433,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.1471,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.151,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.1549,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.1588,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.1628,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.1669,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.1709,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.175,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.1792,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.1833,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.1875,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.1918,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.1961,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.2004,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.2047,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.2091,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.2135,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.218,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.2225,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.227,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.2316,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.2362,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.2408,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.2455,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.2502,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.2549,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.2597,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.2644,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.2693,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.2741,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.279,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.284,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.289,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.294,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.299,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.3041,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.3091,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.3143,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.3194,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.3246,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.3299,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.3351,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       {
         "type": "Number",
         "value": 0.3404,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       }
     ]

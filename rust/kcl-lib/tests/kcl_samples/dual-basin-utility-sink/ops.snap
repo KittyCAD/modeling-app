@@ -1000,7 +1000,8 @@ description: Operations executed dual-basin-utility-sink.kcl
           "type": "Number",
           "value": 564.5,
           "ty": {
-            "type": "Unknown"
+            "type": "Known",
+            "type": "Count"
           }
         },
         "sourceRange": []
@@ -1010,7 +1011,13 @@ description: Operations executed dual-basin-utility-sink.kcl
           "type": "Number",
           "value": 6.0,
           "ty": {
-            "type": "Unknown"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []

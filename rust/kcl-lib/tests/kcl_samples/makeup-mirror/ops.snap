@@ -9,8 +9,8 @@ description: Operations executed makeup-mirror.kcl
       "type": "FunctionCall",
       "name": "hingeFn",
       "functionSourceRange": [
-        444,
-        623,
+        507,
+        686,
         0
       ],
       "unlabeledArg": null,
@@ -70,7 +70,13 @@ description: Operations executed makeup-mirror.kcl
           "type": "Number",
           "value": 24.0,
           "ty": {
-            "type": "Unknown"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -98,8 +104,8 @@ description: Operations executed makeup-mirror.kcl
       "type": "FunctionCall",
       "name": "hingeFn",
       "functionSourceRange": [
-        444,
-        623,
+        507,
+        686,
         0
       ],
       "unlabeledArg": null,
@@ -114,7 +120,13 @@ description: Operations executed makeup-mirror.kcl
           "type": "Number",
           "value": 24.5,
           "ty": {
-            "type": "Unknown"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -153,7 +165,13 @@ description: Operations executed makeup-mirror.kcl
           "type": "Number",
           "value": 24.0,
           "ty": {
-            "type": "Unknown"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -181,8 +199,8 @@ description: Operations executed makeup-mirror.kcl
       "type": "FunctionCall",
       "name": "hingeFn",
       "functionSourceRange": [
-        444,
-        623,
+        507,
+        686,
         0
       ],
       "unlabeledArg": null,
@@ -197,7 +215,13 @@ description: Operations executed makeup-mirror.kcl
           "type": "Number",
           "value": 49.0,
           "ty": {
-            "type": "Unknown"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -236,7 +260,13 @@ description: Operations executed makeup-mirror.kcl
           "type": "Number",
           "value": 24.0,
           "ty": {
-            "type": "Unknown"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -264,8 +294,8 @@ description: Operations executed makeup-mirror.kcl
       "type": "FunctionCall",
       "name": "hingeFn",
       "functionSourceRange": [
-        444,
-        623,
+        507,
+        686,
         0
       ],
       "unlabeledArg": null,
@@ -280,7 +310,13 @@ description: Operations executed makeup-mirror.kcl
           "type": "Number",
           "value": 24.5,
           "ty": {
-            "type": "Unknown"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -319,7 +355,13 @@ description: Operations executed makeup-mirror.kcl
           "type": "Number",
           "value": 24.0,
           "ty": {
-            "type": "Unknown"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -347,8 +389,8 @@ description: Operations executed makeup-mirror.kcl
       "type": "FunctionCall",
       "name": "hingeFn",
       "functionSourceRange": [
-        444,
-        623,
+        507,
+        686,
         0
       ],
       "unlabeledArg": null,
@@ -363,7 +405,13 @@ description: Operations executed makeup-mirror.kcl
           "type": "Number",
           "value": 49.0,
           "ty": {
-            "type": "Unknown"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -402,7 +450,13 @@ description: Operations executed makeup-mirror.kcl
           "type": "Number",
           "value": 24.0,
           "ty": {
-            "type": "Unknown"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -430,8 +484,8 @@ description: Operations executed makeup-mirror.kcl
       "type": "FunctionCall",
       "name": "hingeFn",
       "functionSourceRange": [
-        444,
-        623,
+        507,
+        686,
         0
       ],
       "unlabeledArg": null,
@@ -446,7 +500,13 @@ description: Operations executed makeup-mirror.kcl
           "type": "Number",
           "value": 49.0,
           "ty": {
-            "type": "Unknown"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -485,7 +545,13 @@ description: Operations executed makeup-mirror.kcl
           "type": "Number",
           "value": 24.0,
           "ty": {
-            "type": "Unknown"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -513,8 +579,8 @@ description: Operations executed makeup-mirror.kcl
       "type": "FunctionCall",
       "name": "hingeFn",
       "functionSourceRange": [
-        444,
-        623,
+        507,
+        686,
         0
       ],
       "unlabeledArg": null,
@@ -529,7 +595,13 @@ description: Operations executed makeup-mirror.kcl
           "type": "Number",
           "value": 73.5,
           "ty": {
-            "type": "Unknown"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -568,7 +640,13 @@ description: Operations executed makeup-mirror.kcl
           "type": "Number",
           "value": 24.0,
           "ty": {
-            "type": "Unknown"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -596,8 +674,8 @@ description: Operations executed makeup-mirror.kcl
       "type": "FunctionCall",
       "name": "armFn",
       "functionSourceRange": [
-        1068,
-        1245,
+        1160,
+        1337,
         0
       ],
       "unlabeledArg": null,
@@ -661,8 +739,8 @@ description: Operations executed makeup-mirror.kcl
       "type": "FunctionCall",
       "name": "armFn",
       "functionSourceRange": [
-        1068,
-        1245,
+        1160,
+        1337,
         0
       ],
       "unlabeledArg": null,
@@ -726,8 +804,8 @@ description: Operations executed makeup-mirror.kcl
       "type": "FunctionCall",
       "name": "mirrorFn",
       "functionSourceRange": [
-        1389,
-        2151,
+        1510,
+        2272,
         0
       ],
       "unlabeledArg": null,
@@ -742,7 +820,8 @@ description: Operations executed makeup-mirror.kcl
           "type": "Number",
           "value": 165.0,
           "ty": {
-            "type": "Unknown"
+            "type": "Known",
+            "type": "Count"
           }
         },
         "sourceRange": []

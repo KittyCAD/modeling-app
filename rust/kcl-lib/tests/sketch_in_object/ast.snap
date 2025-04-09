@@ -8,10 +8,10 @@ description: Result of parsing sketch_in_object.kcl
       {
         "commentStart": 0,
         "declaration": {
-          "commentStart": 3,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 3,
+            "commentStart": 0,
             "end": 0,
             "name": "test",
             "start": 0,
@@ -26,7 +26,7 @@ description: Result of parsing sketch_in_object.kcl
                       {
                         "arguments": [
                           {
-                            "commentStart": 35,
+                            "commentStart": 0,
                             "end": 0,
                             "raw": "'XY'",
                             "start": 0,
@@ -37,10 +37,10 @@ description: Result of parsing sketch_in_object.kcl
                         ],
                         "callee": {
                           "abs_path": false,
-                          "commentStart": 21,
+                          "commentStart": 0,
                           "end": 0,
                           "name": {
-                            "commentStart": 21,
+                            "commentStart": 0,
                             "end": 0,
                             "name": "startSketchOn",
                             "start": 0,
@@ -50,7 +50,7 @@ description: Result of parsing sketch_in_object.kcl
                           "start": 0,
                           "type": "Name"
                         },
-                        "commentStart": 21,
+                        "commentStart": 0,
                         "end": 0,
                         "start": 0,
                         "type": "CallExpression",
@@ -59,10 +59,10 @@ description: Result of parsing sketch_in_object.kcl
                       {
                         "arguments": [
                           {
-                            "commentStart": 63,
+                            "commentStart": 0,
                             "elements": [
                               {
-                                "commentStart": 64,
+                                "commentStart": 0,
                                 "end": 0,
                                 "raw": "0",
                                 "start": 0,
@@ -74,7 +74,7 @@ description: Result of parsing sketch_in_object.kcl
                                 }
                               },
                               {
-                                "commentStart": 67,
+                                "commentStart": 0,
                                 "end": 0,
                                 "raw": "0",
                                 "start": 0,
@@ -92,7 +92,7 @@ description: Result of parsing sketch_in_object.kcl
                             "type": "ArrayExpression"
                           },
                           {
-                            "commentStart": 71,
+                            "commentStart": 0,
                             "end": 0,
                             "start": 0,
                             "type": "PipeSubstitution",
@@ -101,10 +101,10 @@ description: Result of parsing sketch_in_object.kcl
                         ],
                         "callee": {
                           "abs_path": false,
-                          "commentStart": 48,
+                          "commentStart": 0,
                           "end": 0,
                           "name": {
-                            "commentStart": 48,
+                            "commentStart": 0,
                             "end": 0,
                             "name": "startProfileAt",
                             "start": 0,
@@ -114,7 +114,7 @@ description: Result of parsing sketch_in_object.kcl
                           "start": 0,
                           "type": "Name"
                         },
-                        "commentStart": 48,
+                        "commentStart": 0,
                         "end": 0,
                         "start": 0,
                         "type": "CallExpression",
@@ -125,17 +125,17 @@ description: Result of parsing sketch_in_object.kcl
                           {
                             "type": "LabeledArg",
                             "label": {
-                              "commentStart": 86,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "end",
                               "start": 0,
                               "type": "Identifier"
                             },
                             "arg": {
-                              "commentStart": 92,
+                              "commentStart": 0,
                               "elements": [
                                 {
-                                  "commentStart": 93,
+                                  "commentStart": 0,
                                   "end": 0,
                                   "raw": "0",
                                   "start": 0,
@@ -147,7 +147,7 @@ description: Result of parsing sketch_in_object.kcl
                                   }
                                 },
                                 {
-                                  "commentStart": 96,
+                                  "commentStart": 0,
                                   "end": 0,
                                   "raw": "1",
                                   "start": 0,
@@ -168,10 +168,10 @@ description: Result of parsing sketch_in_object.kcl
                         ],
                         "callee": {
                           "abs_path": false,
-                          "commentStart": 81,
+                          "commentStart": 0,
                           "end": 0,
                           "name": {
-                            "commentStart": 81,
+                            "commentStart": 0,
                             "end": 0,
                             "name": "line",
                             "start": 0,
@@ -181,7 +181,7 @@ description: Result of parsing sketch_in_object.kcl
                           "start": 0,
                           "type": "Name"
                         },
-                        "commentStart": 81,
+                        "commentStart": 0,
                         "end": 0,
                         "start": 0,
                         "type": "CallExpressionKw",
@@ -193,17 +193,17 @@ description: Result of parsing sketch_in_object.kcl
                           {
                             "type": "LabeledArg",
                             "label": {
-                              "commentStart": 112,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "end",
                               "start": 0,
                               "type": "Identifier"
                             },
                             "arg": {
-                              "commentStart": 118,
+                              "commentStart": 0,
                               "elements": [
                                 {
-                                  "commentStart": 119,
+                                  "commentStart": 0,
                                   "end": 0,
                                   "raw": "1",
                                   "start": 0,
@@ -215,7 +215,7 @@ description: Result of parsing sketch_in_object.kcl
                                   }
                                 },
                                 {
-                                  "commentStart": 122,
+                                  "commentStart": 0,
                                   "end": 0,
                                   "raw": "0",
                                   "start": 0,
@@ -236,10 +236,10 @@ description: Result of parsing sketch_in_object.kcl
                         ],
                         "callee": {
                           "abs_path": false,
-                          "commentStart": 107,
+                          "commentStart": 0,
                           "end": 0,
                           "name": {
-                            "commentStart": 107,
+                            "commentStart": 0,
                             "end": 0,
                             "name": "line",
                             "start": 0,
@@ -249,7 +249,7 @@ description: Result of parsing sketch_in_object.kcl
                           "start": 0,
                           "type": "Name"
                         },
-                        "commentStart": 107,
+                        "commentStart": 0,
                         "end": 0,
                         "start": 0,
                         "type": "CallExpressionKw",
@@ -261,17 +261,17 @@ description: Result of parsing sketch_in_object.kcl
                           {
                             "type": "LabeledArg",
                             "label": {
-                              "commentStart": 138,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "end",
                               "start": 0,
                               "type": "Identifier"
                             },
                             "arg": {
-                              "commentStart": 144,
+                              "commentStart": 0,
                               "elements": [
                                 {
-                                  "commentStart": 145,
+                                  "commentStart": 0,
                                   "end": 0,
                                   "raw": "0",
                                   "start": 0,
@@ -284,7 +284,7 @@ description: Result of parsing sketch_in_object.kcl
                                 },
                                 {
                                   "argument": {
-                                    "commentStart": 149,
+                                    "commentStart": 0,
                                     "end": 0,
                                     "raw": "1",
                                     "start": 0,
@@ -295,7 +295,7 @@ description: Result of parsing sketch_in_object.kcl
                                       "suffix": "None"
                                     }
                                   },
-                                  "commentStart": 148,
+                                  "commentStart": 0,
                                   "end": 0,
                                   "operator": "-",
                                   "start": 0,
@@ -312,10 +312,10 @@ description: Result of parsing sketch_in_object.kcl
                         ],
                         "callee": {
                           "abs_path": false,
-                          "commentStart": 133,
+                          "commentStart": 0,
                           "end": 0,
                           "name": {
-                            "commentStart": 133,
+                            "commentStart": 0,
                             "end": 0,
                             "name": "line",
                             "start": 0,
@@ -325,7 +325,7 @@ description: Result of parsing sketch_in_object.kcl
                           "start": 0,
                           "type": "Name"
                         },
-                        "commentStart": 133,
+                        "commentStart": 0,
                         "end": 0,
                         "start": 0,
                         "type": "CallExpressionKw",
@@ -335,7 +335,7 @@ description: Result of parsing sketch_in_object.kcl
                       {
                         "arguments": [
                           {
-                            "commentStart": 166,
+                            "commentStart": 0,
                             "end": 0,
                             "start": 0,
                             "type": "PipeSubstitution",
@@ -344,10 +344,10 @@ description: Result of parsing sketch_in_object.kcl
                         ],
                         "callee": {
                           "abs_path": false,
-                          "commentStart": 160,
+                          "commentStart": 0,
                           "end": 0,
                           "name": {
-                            "commentStart": 160,
+                            "commentStart": 0,
                             "end": 0,
                             "name": "close",
                             "start": 0,
@@ -357,31 +357,31 @@ description: Result of parsing sketch_in_object.kcl
                           "start": 0,
                           "type": "Name"
                         },
-                        "commentStart": 160,
+                        "commentStart": 0,
                         "end": 0,
                         "start": 0,
                         "type": "CallExpression",
                         "type": "CallExpression"
                       }
                     ],
-                    "commentStart": 21,
+                    "commentStart": 0,
                     "end": 0,
                     "start": 0,
                     "type": "PipeExpression",
                     "type": "PipeExpression"
                   },
-                  "commentStart": 14,
+                  "commentStart": 0,
                   "end": 0,
                   "start": 0,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
                 }
               ],
-              "commentStart": 10,
+              "commentStart": 0,
               "end": 0,
               "start": 0
             },
-            "commentStart": 7,
+            "commentStart": 0,
             "end": 0,
             "params": [],
             "start": 0,
@@ -398,12 +398,12 @@ description: Result of parsing sketch_in_object.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 170,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 175,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 175,
+            "commentStart": 0,
             "end": 0,
             "name": "test2",
             "start": 0,
@@ -414,14 +414,14 @@ description: Result of parsing sketch_in_object.kcl
               "body": [
                 {
                   "argument": {
-                    "commentStart": 194,
+                    "commentStart": 0,
                     "end": 0,
                     "properties": [
                       {
-                        "commentStart": 200,
+                        "commentStart": 0,
                         "end": 0,
                         "key": {
-                          "commentStart": 200,
+                          "commentStart": 0,
                           "end": 0,
                           "name": "thing1",
                           "start": 0,
@@ -430,14 +430,14 @@ description: Result of parsing sketch_in_object.kcl
                         "start": 0,
                         "type": "ObjectProperty",
                         "value": {
-                          "commentStart": 209,
+                          "commentStart": 0,
                           "end": 0,
                           "properties": [
                             {
-                              "commentStart": 217,
+                              "commentStart": 0,
                               "end": 0,
                               "key": {
-                                "commentStart": 217,
+                                "commentStart": 0,
                                 "end": 0,
                                 "name": "thing2",
                                 "start": 0,
@@ -450,7 +450,7 @@ description: Result of parsing sketch_in_object.kcl
                                   {
                                     "arguments": [
                                       {
-                                        "commentStart": 240,
+                                        "commentStart": 0,
                                         "end": 0,
                                         "raw": "'XY'",
                                         "start": 0,
@@ -461,10 +461,10 @@ description: Result of parsing sketch_in_object.kcl
                                     ],
                                     "callee": {
                                       "abs_path": false,
-                                      "commentStart": 226,
+                                      "commentStart": 0,
                                       "end": 0,
                                       "name": {
-                                        "commentStart": 226,
+                                        "commentStart": 0,
                                         "end": 0,
                                         "name": "startSketchOn",
                                         "start": 0,
@@ -474,7 +474,7 @@ description: Result of parsing sketch_in_object.kcl
                                       "start": 0,
                                       "type": "Name"
                                     },
-                                    "commentStart": 226,
+                                    "commentStart": 0,
                                     "end": 0,
                                     "start": 0,
                                     "type": "CallExpression",
@@ -483,10 +483,10 @@ description: Result of parsing sketch_in_object.kcl
                                   {
                                     "arguments": [
                                       {
-                                        "commentStart": 272,
+                                        "commentStart": 0,
                                         "elements": [
                                           {
-                                            "commentStart": 273,
+                                            "commentStart": 0,
                                             "end": 0,
                                             "raw": "0",
                                             "start": 0,
@@ -498,7 +498,7 @@ description: Result of parsing sketch_in_object.kcl
                                             }
                                           },
                                           {
-                                            "commentStart": 276,
+                                            "commentStart": 0,
                                             "end": 0,
                                             "raw": "0",
                                             "start": 0,
@@ -516,7 +516,7 @@ description: Result of parsing sketch_in_object.kcl
                                         "type": "ArrayExpression"
                                       },
                                       {
-                                        "commentStart": 280,
+                                        "commentStart": 0,
                                         "end": 0,
                                         "start": 0,
                                         "type": "PipeSubstitution",
@@ -525,10 +525,10 @@ description: Result of parsing sketch_in_object.kcl
                                     ],
                                     "callee": {
                                       "abs_path": false,
-                                      "commentStart": 257,
+                                      "commentStart": 0,
                                       "end": 0,
                                       "name": {
-                                        "commentStart": 257,
+                                        "commentStart": 0,
                                         "end": 0,
                                         "name": "startProfileAt",
                                         "start": 0,
@@ -538,7 +538,7 @@ description: Result of parsing sketch_in_object.kcl
                                       "start": 0,
                                       "type": "Name"
                                     },
-                                    "commentStart": 257,
+                                    "commentStart": 0,
                                     "end": 0,
                                     "start": 0,
                                     "type": "CallExpression",
@@ -549,17 +549,17 @@ description: Result of parsing sketch_in_object.kcl
                                       {
                                         "type": "LabeledArg",
                                         "label": {
-                                          "commentStart": 299,
+                                          "commentStart": 0,
                                           "end": 0,
                                           "name": "end",
                                           "start": 0,
                                           "type": "Identifier"
                                         },
                                         "arg": {
-                                          "commentStart": 305,
+                                          "commentStart": 0,
                                           "elements": [
                                             {
-                                              "commentStart": 306,
+                                              "commentStart": 0,
                                               "end": 0,
                                               "raw": "0",
                                               "start": 0,
@@ -571,7 +571,7 @@ description: Result of parsing sketch_in_object.kcl
                                               }
                                             },
                                             {
-                                              "commentStart": 309,
+                                              "commentStart": 0,
                                               "end": 0,
                                               "raw": "1",
                                               "start": 0,
@@ -592,10 +592,10 @@ description: Result of parsing sketch_in_object.kcl
                                     ],
                                     "callee": {
                                       "abs_path": false,
-                                      "commentStart": 294,
+                                      "commentStart": 0,
                                       "end": 0,
                                       "name": {
-                                        "commentStart": 294,
+                                        "commentStart": 0,
                                         "end": 0,
                                         "name": "line",
                                         "start": 0,
@@ -605,7 +605,7 @@ description: Result of parsing sketch_in_object.kcl
                                       "start": 0,
                                       "type": "Name"
                                     },
-                                    "commentStart": 294,
+                                    "commentStart": 0,
                                     "end": 0,
                                     "start": 0,
                                     "type": "CallExpressionKw",
@@ -617,17 +617,17 @@ description: Result of parsing sketch_in_object.kcl
                                       {
                                         "type": "LabeledArg",
                                         "label": {
-                                          "commentStart": 329,
+                                          "commentStart": 0,
                                           "end": 0,
                                           "name": "end",
                                           "start": 0,
                                           "type": "Identifier"
                                         },
                                         "arg": {
-                                          "commentStart": 335,
+                                          "commentStart": 0,
                                           "elements": [
                                             {
-                                              "commentStart": 336,
+                                              "commentStart": 0,
                                               "end": 0,
                                               "raw": "1",
                                               "start": 0,
@@ -639,7 +639,7 @@ description: Result of parsing sketch_in_object.kcl
                                               }
                                             },
                                             {
-                                              "commentStart": 339,
+                                              "commentStart": 0,
                                               "end": 0,
                                               "raw": "0",
                                               "start": 0,
@@ -660,10 +660,10 @@ description: Result of parsing sketch_in_object.kcl
                                     ],
                                     "callee": {
                                       "abs_path": false,
-                                      "commentStart": 324,
+                                      "commentStart": 0,
                                       "end": 0,
                                       "name": {
-                                        "commentStart": 324,
+                                        "commentStart": 0,
                                         "end": 0,
                                         "name": "line",
                                         "start": 0,
@@ -673,7 +673,7 @@ description: Result of parsing sketch_in_object.kcl
                                       "start": 0,
                                       "type": "Name"
                                     },
-                                    "commentStart": 324,
+                                    "commentStart": 0,
                                     "end": 0,
                                     "start": 0,
                                     "type": "CallExpressionKw",
@@ -685,17 +685,17 @@ description: Result of parsing sketch_in_object.kcl
                                       {
                                         "type": "LabeledArg",
                                         "label": {
-                                          "commentStart": 359,
+                                          "commentStart": 0,
                                           "end": 0,
                                           "name": "end",
                                           "start": 0,
                                           "type": "Identifier"
                                         },
                                         "arg": {
-                                          "commentStart": 365,
+                                          "commentStart": 0,
                                           "elements": [
                                             {
-                                              "commentStart": 366,
+                                              "commentStart": 0,
                                               "end": 0,
                                               "raw": "0",
                                               "start": 0,
@@ -708,7 +708,7 @@ description: Result of parsing sketch_in_object.kcl
                                             },
                                             {
                                               "argument": {
-                                                "commentStart": 370,
+                                                "commentStart": 0,
                                                 "end": 0,
                                                 "raw": "1",
                                                 "start": 0,
@@ -719,7 +719,7 @@ description: Result of parsing sketch_in_object.kcl
                                                   "suffix": "None"
                                                 }
                                               },
-                                              "commentStart": 369,
+                                              "commentStart": 0,
                                               "end": 0,
                                               "operator": "-",
                                               "start": 0,
@@ -736,10 +736,10 @@ description: Result of parsing sketch_in_object.kcl
                                     ],
                                     "callee": {
                                       "abs_path": false,
-                                      "commentStart": 354,
+                                      "commentStart": 0,
                                       "end": 0,
                                       "name": {
-                                        "commentStart": 354,
+                                        "commentStart": 0,
                                         "end": 0,
                                         "name": "line",
                                         "start": 0,
@@ -749,7 +749,7 @@ description: Result of parsing sketch_in_object.kcl
                                       "start": 0,
                                       "type": "Name"
                                     },
-                                    "commentStart": 354,
+                                    "commentStart": 0,
                                     "end": 0,
                                     "start": 0,
                                     "type": "CallExpressionKw",
@@ -759,7 +759,7 @@ description: Result of parsing sketch_in_object.kcl
                                   {
                                     "arguments": [
                                       {
-                                        "commentStart": 391,
+                                        "commentStart": 0,
                                         "end": 0,
                                         "start": 0,
                                         "type": "PipeSubstitution",
@@ -768,10 +768,10 @@ description: Result of parsing sketch_in_object.kcl
                                     ],
                                     "callee": {
                                       "abs_path": false,
-                                      "commentStart": 385,
+                                      "commentStart": 0,
                                       "end": 0,
                                       "name": {
-                                        "commentStart": 385,
+                                        "commentStart": 0,
                                         "end": 0,
                                         "name": "close",
                                         "start": 0,
@@ -781,14 +781,14 @@ description: Result of parsing sketch_in_object.kcl
                                       "start": 0,
                                       "type": "Name"
                                     },
-                                    "commentStart": 385,
+                                    "commentStart": 0,
                                     "end": 0,
                                     "start": 0,
                                     "type": "CallExpression",
                                     "type": "CallExpression"
                                   }
                                 ],
-                                "commentStart": 226,
+                                "commentStart": 0,
                                 "end": 0,
                                 "start": 0,
                                 "type": "PipeExpression",
@@ -806,18 +806,18 @@ description: Result of parsing sketch_in_object.kcl
                     "type": "ObjectExpression",
                     "type": "ObjectExpression"
                   },
-                  "commentStart": 187,
+                  "commentStart": 0,
                   "end": 0,
                   "start": 0,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
                 }
               ],
-              "commentStart": 183,
+              "commentStart": 0,
               "end": 0,
               "start": 0
             },
-            "commentStart": 180,
+            "commentStart": 0,
             "end": 0,
             "params": [],
             "start": 0,
@@ -834,12 +834,12 @@ description: Result of parsing sketch_in_object.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 405,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 407,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 407,
+            "commentStart": 0,
             "end": 0,
             "name": "x",
             "start": 0,
@@ -849,10 +849,10 @@ description: Result of parsing sketch_in_object.kcl
             "arguments": [],
             "callee": {
               "abs_path": false,
-              "commentStart": 411,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 411,
+                "commentStart": 0,
                 "end": 0,
                 "name": "test",
                 "start": 0,
@@ -862,7 +862,7 @@ description: Result of parsing sketch_in_object.kcl
               "start": 0,
               "type": "Name"
             },
-            "commentStart": 411,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "CallExpression",
@@ -878,16 +878,16 @@ description: Result of parsing sketch_in_object.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 418,
+        "commentStart": 0,
         "end": 0,
         "expression": {
           "body": [
             {
               "abs_path": false,
-              "commentStart": 418,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 418,
+                "commentStart": 0,
                 "end": 0,
                 "name": "x",
                 "start": 0,
@@ -903,7 +903,7 @@ description: Result of parsing sketch_in_object.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "commentStart": 433,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "length",
                     "start": 0,
@@ -911,7 +911,7 @@ description: Result of parsing sketch_in_object.kcl
                   },
                   "arg": {
                     "argument": {
-                      "commentStart": 443,
+                      "commentStart": 0,
                       "end": 0,
                       "raw": "10",
                       "start": 0,
@@ -922,7 +922,7 @@ description: Result of parsing sketch_in_object.kcl
                         "suffix": "None"
                       }
                     },
-                    "commentStart": 442,
+                    "commentStart": 0,
                     "end": 0,
                     "operator": "-",
                     "start": 0,
@@ -933,10 +933,10 @@ description: Result of parsing sketch_in_object.kcl
               ],
               "callee": {
                 "abs_path": false,
-                "commentStart": 425,
+                "commentStart": 0,
                 "end": 0,
                 "name": {
-                  "commentStart": 425,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "extrude",
                   "start": 0,
@@ -946,7 +946,7 @@ description: Result of parsing sketch_in_object.kcl
                 "start": 0,
                 "type": "Name"
               },
-              "commentStart": 425,
+              "commentStart": 0,
               "end": 0,
               "start": 0,
               "type": "CallExpressionKw",
@@ -954,7 +954,7 @@ description: Result of parsing sketch_in_object.kcl
               "unlabeled": null
             }
           ],
-          "commentStart": 418,
+          "commentStart": 0,
           "end": 0,
           "start": 0,
           "type": "PipeExpression",
@@ -965,12 +965,12 @@ description: Result of parsing sketch_in_object.kcl
         "type": "ExpressionStatement"
       },
       {
-        "commentStart": 446,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 448,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 448,
+            "commentStart": 0,
             "end": 0,
             "name": "x2",
             "start": 0,
@@ -980,10 +980,10 @@ description: Result of parsing sketch_in_object.kcl
             "arguments": [],
             "callee": {
               "abs_path": false,
-              "commentStart": 453,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 453,
+                "commentStart": 0,
                 "end": 0,
                 "name": "test2",
                 "start": 0,
@@ -993,7 +993,7 @@ description: Result of parsing sketch_in_object.kcl
               "start": 0,
               "type": "Name"
             },
-            "commentStart": 453,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "CallExpression",
@@ -1009,20 +1009,20 @@ description: Result of parsing sketch_in_object.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 461,
+        "commentStart": 0,
         "end": 0,
         "expression": {
           "body": [
             {
-              "commentStart": 461,
+              "commentStart": 0,
               "computed": false,
               "end": 0,
               "object": {
-                "commentStart": 461,
+                "commentStart": 0,
                 "computed": false,
                 "end": 0,
                 "object": {
-                  "commentStart": 461,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "x2",
                   "start": 0,
@@ -1030,7 +1030,7 @@ description: Result of parsing sketch_in_object.kcl
                   "type": "Identifier"
                 },
                 "property": {
-                  "commentStart": 464,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "thing1",
                   "start": 0,
@@ -1042,7 +1042,7 @@ description: Result of parsing sketch_in_object.kcl
                 "type": "MemberExpression"
               },
               "property": {
-                "commentStart": 471,
+                "commentStart": 0,
                 "end": 0,
                 "name": "thing2",
                 "start": 0,
@@ -1058,14 +1058,14 @@ description: Result of parsing sketch_in_object.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "commentStart": 491,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "length",
                     "start": 0,
                     "type": "Identifier"
                   },
                   "arg": {
-                    "commentStart": 500,
+                    "commentStart": 0,
                     "end": 0,
                     "raw": "10",
                     "start": 0,
@@ -1080,10 +1080,10 @@ description: Result of parsing sketch_in_object.kcl
               ],
               "callee": {
                 "abs_path": false,
-                "commentStart": 483,
+                "commentStart": 0,
                 "end": 0,
                 "name": {
-                  "commentStart": 483,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "extrude",
                   "start": 0,
@@ -1093,7 +1093,7 @@ description: Result of parsing sketch_in_object.kcl
                 "start": 0,
                 "type": "Name"
               },
-              "commentStart": 483,
+              "commentStart": 0,
               "end": 0,
               "start": 0,
               "type": "CallExpressionKw",
@@ -1101,7 +1101,7 @@ description: Result of parsing sketch_in_object.kcl
               "unlabeled": null
             }
           ],
-          "commentStart": 461,
+          "commentStart": 0,
           "end": 0,
           "start": 0,
           "type": "PipeExpression",
@@ -1118,7 +1118,7 @@ description: Result of parsing sketch_in_object.kcl
       "nonCodeNodes": {
         "0": [
           {
-            "commentStart": 170,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -1129,7 +1129,7 @@ description: Result of parsing sketch_in_object.kcl
         ],
         "1": [
           {
-            "commentStart": 405,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -1140,7 +1140,7 @@ description: Result of parsing sketch_in_object.kcl
         ],
         "3": [
           {
-            "commentStart": 446,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",

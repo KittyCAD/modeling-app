@@ -1,4 +1,4 @@
-// Global constants for the walkie talkie
+// Global parameters for the walkie talkie
 
 // Set units
 @settings(defaultLengthUnit = in)

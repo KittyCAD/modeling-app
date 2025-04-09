@@ -51,7 +51,8 @@ description: Operations executed flush_batch_on_end.kcl
           "type": "Number",
           "value": 1.5,
           "ty": {
-            "type": "Unknown"
+            "type": "Known",
+            "type": "Count"
           }
         },
         "sourceRange": []

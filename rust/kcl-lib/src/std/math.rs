@@ -6,18 +6,31 @@ use kcl_derive_docs::stdlib;
 use super::args::FromArgs;
 use crate::{
     errors::{KclError, KclErrorDetails},
-    execution::{ExecState, KclValue},
+    execution::{
+        types::{self, NumericType},
+        ExecState, KclValue,
+    },
     std::args::{Args, TyF64},
+    CompilationError,
 };
 
 /// Compute the remainder after dividing `num` by `div`.
 /// If `num` is negative, the result will be too.
-pub async fn rem(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let n = args.get_unlabeled_kw_arg("number to divide")?;
-    let d = args.get_kw_arg("divisor")?;
+pub async fn rem(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let n: TyF64 = args.get_unlabeled_kw_arg("number to divide")?;
+    let d: TyF64 = args.get_kw_arg("divisor")?;
+
+    let (n, d, ty) = NumericType::combine_div(n, d);
+    if *types::CHECK_NUMERIC_TYPES && ty == NumericType::Unknown {
+        // TODO suggest how to fix this
+        exec_state.warn(CompilationError::err(
+            args.source_range,
+            "Remainder of numbers which have unknown or incompatible units.",
+        ));
+    }
     let remainder = inner_rem(n, d);
 
-    Ok(args.make_user_val_from_f64(remainder))
+    Ok(args.make_user_val_from_f64_with_type(TyF64::new(remainder, ty)))
 }
 
 /// Compute the remainder after dividing `num` by `div`.
@@ -67,7 +80,7 @@ pub async fn tan(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 pub async fn pi(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let result = inner_pi()?;
 
-    Ok(args.make_user_val_from_f64(result))
+    Ok(args.make_user_val_from_f64_with_type(TyF64::count(result)))
 }
 
 /// Return the value of `pi`. Archimedes’ constant (π).
@@ -96,7 +109,7 @@ pub async fn sqrt(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     let num = args.get_number()?;
     let result = inner_sqrt(num)?;
 
-    Ok(args.make_user_val_from_f64(result))
+    Ok(args.make_user_val_from_f64_with_type(TyF64::new(result, NumericType::Unknown)))
 }
 
 /// Compute the square root of a number.
@@ -123,10 +136,10 @@ fn inner_sqrt(num: f64) -> Result<f64, KclError> {
 
 /// Compute the absolute value of a number.
 pub async fn abs(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let num = args.get_number()?;
-    let result = inner_abs(num)?;
+    let num = args.get_number_with_type()?;
+    let result = inner_abs(num.n)?;
 
-    Ok(args.make_user_val_from_f64(result))
+    Ok(args.make_user_val_from_f64_with_type(num.map_value(result)))
 }
 
 /// Compute the absolute value of a number.
@@ -160,10 +173,10 @@ fn inner_abs(num: f64) -> Result<f64, KclError> {
 
 /// Round a number to the nearest integer.
 pub async fn round(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let num = args.get_number()?;
-    let result = inner_round(num)?;
+    let num = args.get_number_with_type()?;
+    let result = inner_round(num.n)?;
 
-    Ok(args.make_user_val_from_f64(result))
+    Ok(args.make_user_val_from_f64_with_type(num.map_value(result)))
 }
 
 /// Round a number to the nearest integer.
@@ -188,10 +201,10 @@ fn inner_round(num: f64) -> Result<f64, KclError> {
 
 /// Compute the largest integer less than or equal to a number.
 pub async fn floor(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let num = args.get_number()?;
-    let result = inner_floor(num)?;
+    let num = args.get_number_with_type()?;
+    let result = inner_floor(num.n)?;
 
-    Ok(args.make_user_val_from_f64(result))
+    Ok(args.make_user_val_from_f64_with_type(num.map_value(result)))
 }
 
 /// Compute the largest integer less than or equal to a number.
@@ -216,10 +229,10 @@ fn inner_floor(num: f64) -> Result<f64, KclError> {
 
 /// Compute the smallest integer greater than or equal to a number.
 pub async fn ceil(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let num = args.get_number()?;
-    let result = inner_ceil(num)?;
+    let num = args.get_number_with_type()?;
+    let result = inner_ceil(num.n)?;
 
-    Ok(args.make_user_val_from_f64(result))
+    Ok(args.make_user_val_from_f64_with_type(num.map_value(result)))
 }
 
 /// Compute the smallest integer greater than or equal to a number.
@@ -243,11 +256,19 @@ fn inner_ceil(num: f64) -> Result<f64, KclError> {
 }
 
 /// Compute the minimum of the given arguments.
-pub async fn min(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let nums = args.get_number_array()?;
+pub async fn min(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let nums = args.get_number_array_with_types()?;
+    let (nums, ty) = NumericType::combine_eq_array(&nums);
+    if *types::CHECK_NUMERIC_TYPES && ty == NumericType::Unknown {
+        // TODO suggest how to fix this
+        exec_state.warn(CompilationError::err(
+            args.source_range,
+            "Calling `min` on numbers which have unknown or incompatible units.",
+        ));
+    }
     let result = inner_min(nums);
 
-    Ok(args.make_user_val_from_f64(result))
+    Ok(args.make_user_val_from_f64_with_type(TyF64::new(result, ty)))
 }
 
 /// Compute the minimum of the given arguments.
@@ -280,11 +301,19 @@ fn inner_min(args: Vec<f64>) -> f64 {
 }
 
 /// Compute the maximum of the given arguments.
-pub async fn max(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let nums = args.get_number_array()?;
+pub async fn max(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let nums = args.get_number_array_with_types()?;
+    let (nums, ty) = NumericType::combine_eq_array(&nums);
+    if *types::CHECK_NUMERIC_TYPES && ty == NumericType::Unknown {
+        // TODO suggest how to fix this
+        exec_state.warn(CompilationError::err(
+            args.source_range,
+            "Calling `max` on numbers which have unknown or incompatible units.",
+        ));
+    }
     let result = inner_max(nums);
 
-    Ok(args.make_user_val_from_f64(result))
+    Ok(args.make_user_val_from_f64_with_type(TyF64::new(result, ty)))
 }
 
 /// Compute the maximum of the given arguments.
@@ -335,7 +364,7 @@ pub async fn pow(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 
     let result = inner_pow(nums[0], nums[1])?;
 
-    Ok(args.make_user_val_from_f64(result))
+    Ok(args.make_user_val_from_f64_with_type(TyF64::new(result, NumericType::Unknown)))
 }
 
 /// Compute the number to a power.
@@ -365,7 +394,7 @@ pub async fn acos(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     let num = args.get_number()?;
     let result = inner_acos(num)?;
 
-    Ok(args.make_user_val_from_f64(result))
+    Ok(args.make_user_val_from_f64_with_type(TyF64::new(result, NumericType::radians())))
 }
 
 /// Compute the arccosine of a number (in radians).
@@ -396,7 +425,7 @@ pub async fn asin(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     let num = args.get_number()?;
     let result = inner_asin(num)?;
 
-    Ok(args.make_user_val_from_f64(result))
+    Ok(args.make_user_val_from_f64_with_type(TyF64::new(result, NumericType::radians())))
 }
 
 /// Compute the arcsine of a number (in radians).
@@ -426,7 +455,7 @@ pub async fn atan(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     let num = args.get_number()?;
     let result = inner_atan(num)?;
 
-    Ok(args.make_user_val_from_f64(result))
+    Ok(args.make_user_val_from_f64_with_type(TyF64::new(result, NumericType::radians())))
 }
 
 /// Compute the arctangent of a number (in radians).
@@ -456,7 +485,7 @@ pub async fn atan2(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
     let (y, x) = FromArgs::from_args(&args, 0)?;
     let result = inner_atan2(y, x)?;
 
-    Ok(args.make_user_val_from_f64(result))
+    Ok(args.make_user_val_from_f64_with_type(TyF64::new(result, NumericType::radians())))
 }
 
 /// Compute the four quadrant arctangent of Y and X (in radians).
@@ -503,7 +532,7 @@ pub async fn log(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
     }
     let result = inner_log(nums[0], nums[1])?;
 
-    Ok(args.make_user_val_from_f64(result))
+    Ok(args.make_user_val_from_f64_with_type(TyF64::new(result, NumericType::Unknown)))
 }
 
 /// Compute the logarithm of the number with respect to an arbitrary base.
@@ -535,7 +564,7 @@ pub async fn log2(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     let num = args.get_number()?;
     let result = inner_log2(num)?;
 
-    Ok(args.make_user_val_from_f64(result))
+    Ok(args.make_user_val_from_f64_with_type(TyF64::new(result, NumericType::Unknown)))
 }
 
 /// Compute the base 2 logarithm of the number.
@@ -563,7 +592,7 @@ pub async fn log10(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
     let num = args.get_number()?;
     let result = inner_log10(num)?;
 
-    Ok(args.make_user_val_from_f64(result))
+    Ok(args.make_user_val_from_f64_with_type(TyF64::new(result, NumericType::Unknown)))
 }
 
 /// Compute the base 10 logarithm of the number.
@@ -591,7 +620,7 @@ pub async fn ln(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
     let num = args.get_number()?;
     let result = inner_ln(num)?;
 
-    Ok(args.make_user_val_from_f64(result))
+    Ok(args.make_user_val_from_f64_with_type(TyF64::new(result, NumericType::Unknown)))
 }
 
 /// Compute the natural logarithm of the number.
@@ -618,7 +647,7 @@ fn inner_ln(num: f64) -> Result<f64, KclError> {
 pub async fn e(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let result = inner_e()?;
 
-    Ok(args.make_user_val_from_f64(result))
+    Ok(args.make_user_val_from_f64_with_type(TyF64::new(result, NumericType::count())))
 }
 
 /// Return the value of Euler’s number `e`.
@@ -650,7 +679,7 @@ fn inner_e() -> Result<f64, KclError> {
 pub async fn tau(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let result = inner_tau()?;
 
-    Ok(args.make_user_val_from_f64(result))
+    Ok(args.make_user_val_from_f64_with_type(TyF64::new(result, NumericType::count())))
 }
 
 /// Return the value of `tau`. The full circle constant (τ). Equal to 2π.
@@ -683,7 +712,7 @@ pub async fn to_radians(_exec_state: &mut ExecState, args: Args) -> Result<KclVa
     let num = args.get_number()?;
     let result = inner_to_radians(num)?;
 
-    Ok(args.make_user_val_from_f64(result))
+    Ok(args.make_user_val_from_f64_with_type(TyF64::new(result, NumericType::radians())))
 }
 
 /// Converts a number from degrees to radians.
@@ -713,7 +742,7 @@ pub async fn to_degrees(_exec_state: &mut ExecState, args: Args) -> Result<KclVa
     let num = args.get_number()?;
     let result = inner_to_degrees(num)?;
 
-    Ok(args.make_user_val_from_f64(result))
+    Ok(args.make_user_val_from_f64_with_type(TyF64::new(result, NumericType::degrees())))
 }
 
 /// Converts a number from radians to degrees.

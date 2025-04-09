@@ -3,16 +3,22 @@ import { createActor, setup, spawnChild } from 'xstate'
 
 import { createSettings } from '@src/lib/settings/initialSettings'
 import { authMachine } from '@src/machines/authMachine'
+import type { EngineStreamActor } from '@src/machines/engineStreamMachine'
+import {
+  engineStreamContextCreate,
+  engineStreamMachine,
+} from '@src/machines/engineStreamMachine'
 import { ACTOR_IDS } from '@src/machines/machineConstants'
 import { settingsMachine } from '@src/machines/settingsMachine'
 import { systemIOMachineDesktop } from '@src/machines/systemIO/systemIOMachineDesktop'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 
-const { AUTH, SETTINGS, SYSTEM_IO } = ACTOR_IDS
+const { AUTH, SETTINGS, SYSTEM_IO, ENGINE_STREAM} = ACTOR_IDS
 const appMachineActors = {
   [AUTH]: authMachine,
   [SETTINGS]: settingsMachine,
   [SYSTEM_IO]: systemIOMachineDesktop,
+  [ENGINE_STREAM]: engineStreamMachine,
 } as const
 
 const appMachine = setup({
@@ -34,6 +40,11 @@ const appMachine = setup({
       input: createSettings(),
     }),
     spawnChild(SYSTEM_IO, { id: SYSTEM_IO, systemId: SYSTEM_IO }),
+    spawnChild(ENGINE_STREAM, {
+      id: ENGINE_STREAM,
+      systemId: ENGINE_STREAM,
+      input: engineStreamContextCreate(),
+    }),
   ],
 })
 
@@ -82,3 +93,6 @@ systemIOActor.send({
 })
 
 window.systemIOActor = systemIOActor
+export const engineStreamActor = appActor.system.get(
+  ENGINE_STREAM
+) as EngineStreamActor

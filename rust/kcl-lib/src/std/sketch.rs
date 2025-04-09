@@ -840,7 +840,7 @@ async fn inner_angled_line_that_intersects(
 
 /// Data for start sketch on.
 /// You can start a sketch on a plane or an solid.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "camelCase", untagged)]
 #[allow(clippy::large_enum_variant)]
@@ -892,7 +892,7 @@ pub enum PlaneData {
 
 /// Start a sketch on a specific plane or face.
 pub async fn start_sketch_on(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (data, tag): (SketchData, Option<FaceTag>) = args.get_data_and_optional_tag()?;
+    let (data, tag) = args.get_sketch_data_and_optional_tag()?;
 
     match inner_start_sketch_on(data, tag, exec_state, &args).await? {
         SketchSurface::Plane(value) => Ok(KclValue::Plane { value }),
@@ -1343,6 +1343,7 @@ pub(crate) async fn inner_start_profile_at(
         on: sketch_surface.clone(),
         paths: vec![],
         units: sketch_surface.units(),
+        mirror: Default::default(),
         meta: vec![args.source_range.into()],
         tags: if let Some(tag) = &tag {
             let mut tag_identifier: TagIdentifier = tag.into();

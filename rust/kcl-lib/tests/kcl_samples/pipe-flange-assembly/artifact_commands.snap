@@ -1842,6 +1842,14 @@ description: Artifact commands pipe-flange-assembly.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "set_scene_units",
+      "unit": "in"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "make_plane",
       "origin": {
         "x": 0.0,

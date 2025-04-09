@@ -18,7 +18,14 @@ You can provide more than one sketch to revolve, and they will all be
 revolved around the same axis.
 
 ```js
-revolve(@sketches: [Sketch; 1+], axis: Axis2d | Edge, angle?: number(deg), tolerance?: number(mm), tagStart?: tag, tagEnd?: tag): Solid
+revolve(
+  @sketches: [Sketch; 1+],
+  axis: Axis2d | Edge,
+  angle?: number(deg),
+  tolerance?: number(mm),
+  tagStart?: tag,
+  tagEnd?: tag,
+): Solid
 ```
 
 

@@ -1,58 +1,53 @@
 // Socket Head Cap Screw
 // This is for a #10-24 screw that is 1.00 inches long. A socket head cap screw is a type of fastener that is widely used in a variety of applications requiring a high strength fastening solution. It is characterized by its cylindrical head and internal hexagonal drive, which allows for tightening with an Allen wrench or hex key.
 
-// set units
-@settings(defaultLengthUnit = in, defaultAngleUnit = deg)
+// Set units
+@settings(defaultLengthUnit = in)
 
-export boltDiameter = 0.190
-export boltLength = 1.0
-export boltHeadLength = boltDiameter
-export boltHeadDiameter = 0.313
-export boltHexDrive = 5 / 32
-export boltHexFlatLength = boltHexDrive / (2 * cos(toRadians(30)))
+// Define parameters
+boltDiameter = 0.190
+boltLength = 1.0
+boltHeadLength = boltDiameter
+boltHeadDiameter = 0.313
+boltHexDrive = 5 / 32
+boltHexFlatLength = boltHexDrive / (2 * cos(toRadians(30)))
 
-export fn bolt() {
-  // Create the head of the cap screw
-  boltHead = startSketchOn(XZ)
-    |> circle(center = [0, 0], radius = boltHeadDiameter / 2, tag = $topEdge)
-    |> extrude(length = -boltHeadLength)
-    |> fillet(radius = 0.020, tags = [topEdge, getOppositeEdge(topEdge)])
+// Create the head of the cap screw
+boltHead = startSketchOn(XZ)
+  |> circle(center = [0, 0], radius = boltHeadDiameter / 2, tag = $topEdge)
+  |> extrude(length = -boltHeadLength)
+  |> fillet(radius = 0.020, tags = [topEdge, getOppositeEdge(topEdge)])
 
-  // Define the sketch of the hex pattern on the screw head
-  hexPatternSketch = startSketchOn(boltHead, 'start')
-    |> startProfileAt([
-         boltHexDrive / 2,
-         boltHexFlatLength / 2
-       ], %)
-    |> angledLine({
-         angle = 270,
-         length = boltHexFlatLength
-       }, %)
-    |> angledLine({
-         angle = 210,
-         length = boltHexFlatLength
-       }, %)
-    |> angledLine({
-         angle = 150,
-         length = boltHexFlatLength
-       }, %)
-    |> angledLine({
-         angle = 90,
-         length = boltHexFlatLength
-       }, %)
-    |> angledLine({
-         angle = 30,
-         length = boltHexFlatLength
-       }, %)
-    |> close()
-    |> extrude(length = -boltHeadLength * 0.75)
-  boltBody = startSketchOn(boltHead, 'end')
-    |> circle(center = [0, 0], radius = boltDiameter / 2, tag = $filletEdge)
-    |> extrude(length = boltLength)
-    |> fillet(radius = .020, tags = [getOppositeEdge(filletEdge)])
-    |> appearance(color = "#4dd043", metalness = 90, roughness = 90)
-
-  return boltBody
-}
-
-bolt()
+// Define the sketch of the hex pattern on the screw head
+hexPatternSketch = startSketchOn(boltHead, 'start')
+  |> startProfileAt([
+       boltHexDrive / 2,
+       boltHexFlatLength / 2
+     ], %)
+  |> angledLine({
+       angle = 270,
+       length = boltHexFlatLength
+     }, %)
+  |> angledLine({
+       angle = 210,
+       length = boltHexFlatLength
+     }, %)
+  |> angledLine({
+       angle = 150,
+       length = boltHexFlatLength
+     }, %)
+  |> angledLine({
+       angle = 90,
+       length = boltHexFlatLength
+     }, %)
+  |> angledLine({
+       angle = 30,
+       length = boltHexFlatLength
+     }, %)
+  |> close()
+  |> extrude(length = -boltHeadLength * 0.75)
+boltBody = startSketchOn(boltHead, 'end')
+  |> circle(center = [0, 0], radius = boltDiameter / 2, tag = $filletEdge)
+  |> extrude(length = boltLength)
+  |> fillet(radius = .020, tags = [getOppositeEdge(filletEdge)])
+  |> appearance(color = "#4dd043", metalness = 90, roughness = 90)

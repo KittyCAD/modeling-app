@@ -41,6 +41,14 @@ description: Artifact commands walkie-talkie.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "set_scene_units",
+      "unit": "in"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "make_plane",
       "origin": {
         "x": 0.0,
@@ -1240,6 +1248,14 @@ description: Artifact commands walkie-talkie.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "set_scene_units",
+      "unit": "in"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "make_plane",
       "origin": {
         "x": 0.0,
@@ -1637,6 +1653,15 @@ description: Artifact commands walkie-talkie.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "set_object_transform",
       "object_id": "[uuid]",
       "transforms": [
@@ -1655,6 +1680,14 @@ description: Artifact commands walkie-talkie.kcl
           "scale": null
         }
       ]
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "set_scene_units",
+      "unit": "in"
     }
   },
   {
@@ -22395,6 +22428,14 @@ description: Artifact commands walkie-talkie.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "set_scene_units",
+      "unit": "in"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "make_plane",
       "origin": {
         "x": 0.0,
@@ -22775,6 +22816,14 @@ description: Artifact commands walkie-talkie.kcl
           "scale": null
         }
       ]
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "set_scene_units",
+      "unit": "in"
     }
   },
   {
@@ -24525,15 +24574,6 @@ description: Artifact commands walkie-talkie.kcl
           "scale": null
         }
       ]
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
     }
   }
 ]

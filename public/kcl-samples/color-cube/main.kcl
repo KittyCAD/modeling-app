@@ -1,10 +1,10 @@
 // Color Cube
 // This is a color cube centered about the origin. It is used to help determine orientation in the scene.
 
-// Set unit
+// Set units
 @settings(defaultLengthUnit = mm)
 
-// Globals referenced in drawRectangle
+// Parameters referenced in drawRectangle
 size = 100
 halfSize = size / 2
 extrudeLength = 1.0

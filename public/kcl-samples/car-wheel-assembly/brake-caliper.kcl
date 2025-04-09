@@ -4,8 +4,8 @@
 // Set units
 @settings(defaultLengthUnit = in)
 
-// Import Constants
-import caliperTolerance, caliperPadLength, caliperThickness, caliperOuterEdgeRadius, caliperInnerEdgeRadius, rotorDiameter, rotorTotalThickness, yAxisOffset from "globals.kcl"
+// Import parameters
+import caliperTolerance, caliperPadLength, caliperThickness, caliperOuterEdgeRadius, caliperInnerEdgeRadius, rotorDiameter, rotorTotalThickness, yAxisOffset from "parameters.kcl"
 
 // Sketch the brake caliper profile
 brakeCaliperSketch = startSketchOn(XY)

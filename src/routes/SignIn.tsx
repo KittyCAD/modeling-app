@@ -233,7 +233,7 @@ const SignIn = () => {
               <div className="flex gap-4 flex-wrap items-center">
                 <ActionButton
                   Element="externalLink"
-                  to="https://zoo.dev/docs/kcl-samples/a-parametric-bearing-pillow-block"
+                  to="https://zoo.dev/docs/kcl-samples/parametric-bearing-pillow-block"
                   iconStart={{
                     icon: 'settings',
                     bgClassName: '!bg-transparent',

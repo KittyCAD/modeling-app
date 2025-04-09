@@ -9,8 +9,8 @@ description: Operations executed hex-nut.kcl
       "type": "FunctionCall",
       "name": "hexNut",
       "functionSourceRange": [
-        503,
-        1054,
+        504,
+        1055,
         0
       ],
       "unlabeledArg": null,
