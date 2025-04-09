@@ -1021,6 +1021,10 @@ export function executorInputPath(fileName: string): string {
   return path.join('rust', 'kcl-lib', 'e2e', 'executor', 'inputs', fileName)
 }
 
+export function testsInputPath(fileName: string): string {
+  return path.join('rust', 'kcl-lib', 'tests', 'inputs', fileName)
+}
+
 export async function doAndWaitForImageDiff(
   page: Page,
   fn: () => Promise<unknown>,
