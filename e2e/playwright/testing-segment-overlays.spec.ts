@@ -1336,7 +1336,7 @@ part001 = startSketchOn(XZ)
         const isObj = lineOfInterest.includes('{ angle = 3,')
         test(`${lineOfInterest}${isObj ? '-[obj-input]' : ''}${
           doesHaveTagOutsideSketch ? '-[tagOutsideSketch]' : ''
-        }`, async ({ page, editor, homePage }) => {
+        }`, async ({ page, editor, scene, cmdBar, homePage }) => {
           await page.addInitScript(
             async ({ lineToBeDeleted, extraLine }) => {
               localStorage.setItem(
@@ -1359,7 +1359,7 @@ part001 = startSketchOn(XZ)
           await page.setBodyDimensions({ width: 1200, height: 500 })
 
           await homePage.goToModelingScene()
-          await u.waitForPageLoad()
+          await scene.settled(cmdBar)
           await page.waitForTimeout(1000)
 
           await expect
@@ -1401,7 +1401,17 @@ part001 = startSketchOn(XZ)
           ]
 
           await page.mouse.move(hoverPos.x + x, hoverPos.y + y)
-          await page.mouse.move(hoverPos.x, hoverPos.y, { steps: 5 })
+          await wiggleMove(
+            page,
+            hoverPos.x,
+            hoverPos.y,
+            20,
+            Math.sqrt(x * x + y * y),
+            ang,
+            10,
+            5,
+            `[data-overlay-toolbar-index="0"]`
+          )
 
           await editor.expectEditor.toContain(lineOfInterest, {
             shouldNormalise: true,
@@ -1414,7 +1424,17 @@ part001 = startSketchOn(XZ)
           await page.getByText('Cancel').click()
 
           await page.mouse.move(hoverPos.x + x, hoverPos.y + y)
-          await page.mouse.move(hoverPos.x, hoverPos.y, { steps: 5 })
+          await wiggleMove(
+            page,
+            hoverPos.x,
+            hoverPos.y,
+            20,
+            Math.sqrt(x * x + y * y),
+            ang,
+            10,
+            5,
+            `[data-overlay-toolbar-index="0"]`
+          )
 
           await editor.expectEditor.toContain(lineOfInterest, {
             shouldNormalise: true,
