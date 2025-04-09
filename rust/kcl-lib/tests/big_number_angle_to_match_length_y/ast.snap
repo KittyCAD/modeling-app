@@ -286,7 +286,7 @@ description: Result of parsing big_number_angle_to_match_length_y.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
-                      "name": "endAbsoluteY",
+                      "name": "endAbsoluteX",
                       "start": 0,
                       "type": "Identifier"
                     },
