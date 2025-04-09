@@ -1803,11 +1803,6 @@ fn import_stmt(i: &mut TokenSlice) -> PResult<BoxNode<ImportStatement>> {
             end = alias.end;
             *selector_alias = Some(alias);
         }
-
-        ParseContext::warn(CompilationError::err(
-            SourceRange::new(start, path.end, path.module_id),
-            "Importing a whole module is experimental, likely to be buggy, and likely to change",
-        ));
     }
 
     let path_string = match path.inner.value {
@@ -4498,21 +4493,9 @@ export fn cos(num: number(rad)): number(_) {}"#;
 
     #[test]
     fn warn_import() {
-        let some_program_string = r#"import "foo.kcl""#;
-        let (_, errs) = assert_no_err(some_program_string);
-        assert_eq!(errs.len(), 1, "{errs:#?}");
-
-        let some_program_string = r#"import "foo.obj""#;
-        let (_, errs) = assert_no_err(some_program_string);
-        assert_eq!(errs.len(), 1, "{errs:#?}");
-
-        let some_program_string = r#"import "foo.sldprt""#;
-        let (_, errs) = assert_no_err(some_program_string);
-        assert_eq!(errs.len(), 1, "{errs:#?}");
-
         let some_program_string = r#"import "foo.bad""#;
         let (_, errs) = assert_no_err(some_program_string);
-        assert_eq!(errs.len(), 2, "{errs:#?}");
+        assert_eq!(errs.len(), 1, "{errs:#?}");
     }
 
     #[test]
