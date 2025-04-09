@@ -105,6 +105,9 @@ test.describe('Named view tests', () => {
       PROJECT_SETTINGS_FILE_NAME
     )
 
+    const toastMessage = page.getByText('Named view uuid1 created.')
+    expect(toastMessage).toBeInViewport()
+
     // Expect project.toml to be generated on disk since a named view was created
     await expect(async () => {
       let exists = await fileExists(tempProjectSettingsFilePath)
@@ -130,7 +133,6 @@ test.describe('Named view tests', () => {
   }, testInfo) => {
     const projectName = 'named-views'
     const myNamedView1 = 'uuid1'
-    const myNamedView2 = 'uuid2'
 
     // Create project and go into the project
     await createProject({ name: projectName, page })
@@ -141,6 +143,9 @@ test.describe('Named view tests', () => {
     await cmdBar.chooseCommand('create named view')
     await cmdBar.argumentInput.fill(myNamedView1)
     await cmdBar.progressCmdBar(false)
+
+    let toastMessage = page.getByText('Named view uuid1 created.')
+    expect(toastMessage).toBeInViewport()
 
     // Generate file paths for project.toml
     const projectDirName = testInfo.outputPath('electron-test-projects-dir')
@@ -170,8 +175,11 @@ test.describe('Named view tests', () => {
     // Delete a named view
     await cmdBar.openCmdBar()
     await cmdBar.chooseCommand('delete named view')
-    cmdBar.selectOption({ name: myNamedView2 })
+    cmdBar.selectOption({ name: myNamedView1 })
     await cmdBar.progressCmdBar(false)
+
+    toastMessage = page.getByText('Named view uuid1 removed.')
+    expect(toastMessage).toBeInViewport()
 
     await expect(async () => {
       // Read project.toml into memory again since we deleted a named view
@@ -201,6 +209,9 @@ test.describe('Named view tests', () => {
     await cmdBar.chooseCommand('create named view')
     await cmdBar.argumentInput.fill(myNamedView)
     await cmdBar.progressCmdBar(false)
+
+    let toastMessage = page.getByText('Named view uuid1 created.')
+    expect(toastMessage).toBeInViewport()
 
     // Generate file paths for project.toml
     const projectDirName = testInfo.outputPath('electron-test-projects-dir')
@@ -258,7 +269,8 @@ test.describe('Named view tests', () => {
     await cmdBar.argumentInput.fill(myNamedView1)
     await cmdBar.progressCmdBar(false)
 
-    await page.waitForTimeout(1000)
+    let toastMessage = page.getByText('Named view uuid1 created.')
+    expect(toastMessage).toBeInViewport()
 
     const orbitMouseStart = { x: 800, y: 130 }
     const orbitMouseEnd = { x: 0, y: 130 }
@@ -276,8 +288,8 @@ test.describe('Named view tests', () => {
     await cmdBar.argumentInput.fill(myNamedView2)
     await cmdBar.progressCmdBar(false)
 
-    // Wait a moment for the project.toml to get written to disk with the new view point
-    await page.waitForTimeout(1000)
+    toastMessage = page.getByText('Named view uuid2 created.')
+    expect(toastMessage).toBeInViewport()
 
     // Generate paths for the project.toml
     const tempProjectSettingsFilePath = join(
