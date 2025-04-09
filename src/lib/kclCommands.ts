@@ -175,7 +175,8 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
     {
       name: 'load-external-file',
       displayName: 'Load external file',
-      description: 'Loads a file from your local disk into the current project.',
+      description:
+        'Loads a file from your local disk into the current project.',
       needsReview: true,
       icon: 'importFile',
       groupId: 'code',
