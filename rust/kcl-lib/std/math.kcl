@@ -69,7 +69,7 @@ export fn cos(@num: number(rad)): number(_) {}
 ///   |> startProfileAt([0, 0], %)
 ///   |> angledLine(
 ///     angle = 50,
-///     length = 15 / sin(toDegrees(135)),
+///     length = 15 / sin(toRadians(135)),
 ///   )
 ///   |> yLine(endAbsolute = 0)
 ///   |> close()

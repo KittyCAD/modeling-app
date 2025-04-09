@@ -115,7 +115,7 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
     await page.waitForTimeout(100) // this wait is needed for webkit - not sure why
     await page
       .getByRole('button', {
-        name: 'Length: open menu',
+        name: 'constraints: open menu',
       })
       .click()
     await page.getByRole('button', { name: 'remove constraints' }).click()
@@ -189,7 +189,7 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
         await page.waitForTimeout(100)
         await page
           .getByRole('button', {
-            name: 'Length: open menu',
+            name: 'constraints: open menu',
           })
           .click()
         await page
@@ -299,7 +299,7 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
         await page.keyboard.up('Shift')
         await page
           .getByRole('button', {
-            name: 'Length: open menu',
+            name: 'constraints: open menu',
           })
           .click()
         await page.getByRole('button', { name: constraint }).click()
@@ -420,7 +420,7 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
         await page.waitForTimeout(100)
         await page
           .getByRole('button', {
-            name: 'Length: open menu',
+            name: 'constraints: open menu',
           })
           .click()
         await page
@@ -533,7 +533,7 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
         await page.keyboard.up('Shift')
         await page
           .getByRole('button', {
-            name: 'Length: open menu',
+            name: 'constraints: open menu',
           })
           .click()
         await page.getByTestId('dropdown-constraint-angle').click()
@@ -627,7 +627,7 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
         await page.mouse.click(line3.x, line3.y)
         await page
           .getByRole('button', {
-            name: 'Length: open menu',
+            name: 'constraints: open menu',
           })
           .click()
         await page.getByTestId('dropdown-constraint-' + constraint).click()
@@ -720,7 +720,7 @@ part002 = startSketchOn(XZ)
         await page.mouse.click(line3.x, line3.y)
         await page
           .getByRole('button', {
-            name: 'Length: open menu',
+            name: 'constraints: open menu',
           })
           .click()
         await page.getByTestId('dropdown-constraint-' + constraint).click()
@@ -819,7 +819,7 @@ part002 = startSketchOn(XZ)
         const activeLinesContent = await page.locator('.cm-activeLine').all()
 
         const constraintMenuButton = page.getByRole('button', {
-          name: 'Length: open menu',
+          name: 'constraints: open menu',
         })
         const constraintButton = page
           .getByRole('button', {
@@ -907,7 +907,7 @@ part002 = startSketchOn(XZ)
         await page.mouse.click(line3.x - 3, line3.y + 20)
         await page.keyboard.up('Shift')
         const constraintMenuButton = page.getByRole('button', {
-          name: 'Length: open menu',
+          name: 'constraints: open menu',
         })
         const constraintButton = page.getByRole('button', {
           name: constraintName,
@@ -992,7 +992,7 @@ part002 = startSketchOn(XZ)
         await page.keyboard.up('Shift')
         await page.waitForTimeout(100)
         const constraintMenuButton = page.getByRole('button', {
-          name: 'Length: open menu',
+          name: 'constraints: open menu',
         })
         const constraintButton = page.getByRole('button', {
           name: constraintName,
@@ -1059,7 +1059,7 @@ part002 = startSketchOn(XZ)
 
     await page
       .getByRole('button', {
-        name: 'Length: open menu',
+        name: 'constraints: open menu',
       })
       .click()
     await page.waitForTimeout(500)

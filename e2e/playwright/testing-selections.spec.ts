@@ -124,7 +124,7 @@ test.describe('Testing selections', { tag: ['@skipWin'] }, () => {
 
       // click a segment hold shift and click an axis, see that a relevant constraint is enabled
       const constrainButton = page.getByRole('button', {
-        name: 'Length: open menu',
+        name: 'constraints: open menu',
       })
       const absXButton = page.getByRole('button', { name: 'Absolute X' })
 

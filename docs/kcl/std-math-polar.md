@@ -6,10 +6,14 @@ layout: manual
 
 
 
-Convert polar/sphere (azimuth, elevation, distance) coordinates tocartesian (x/y/z grid) coordinates.
+Convert polar/sphere (azimuth, elevation, distance) coordinates to
+cartesian (x/y/z grid) coordinates.
 
 ```js
-polar(angle: number(deg), length: number(mm)): [number(mm); 2]
+polar(
+  angle: number(deg),
+  length: number(mm),
+): [number(mm); 2]
 ```
 
 
