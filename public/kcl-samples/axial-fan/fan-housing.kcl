@@ -5,7 +5,7 @@
 @settings(defaultLengthUnit = mm)
 
 // Import Parameters
-import * from "globals.kcl"
+import * from "parameters.kcl"
 
 // Model the housing which holds the motor, the fan, and the mounting provisions
 export fn fanHousing() {
