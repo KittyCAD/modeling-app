@@ -523,15 +523,6 @@ impl Args {
         })
     }
 
-    pub(super) fn make_user_val_from_f64(&self, f: f64) -> KclValue {
-        KclValue::from_number(
-            f,
-            vec![Metadata {
-                source_range: self.source_range,
-            }],
-        )
-    }
-
     pub(super) fn make_user_val_from_f64_with_type(&self, f: TyF64) -> KclValue {
         KclValue::from_number_with_type(
             f.n,
