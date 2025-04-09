@@ -156,16 +156,16 @@ export const modelingFileRole = (
           })
         },
       },
-      { type: 'separator' },
       {
-        label: 'Insert from project file',
-        id: 'File.Insert from project file',
+        label: 'Load external file',
+        id: 'File.Load external file',
         click: () => {
           typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-            menuLabel: 'File.Insert from project file',
+            menuLabel: 'File.Load external file',
           })
         },
       },
+      { type: 'separator' },
       {
         label: 'Export current part',
         id: 'File.Export current part',

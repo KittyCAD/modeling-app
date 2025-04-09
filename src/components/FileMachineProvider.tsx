@@ -232,9 +232,11 @@ export const FileMachineProvider = ({
               entryName: input.targetPathToClone
                 ? window.electron.path.basename(input.targetPathToClone)
                 : createdName,
-              baseDir: input.targetPathToClone
-                ? window.electron.path.dirname(input.targetPathToClone)
-                : input.selectedDirectory.path,
+              baseDir: input.selectedDirectory.path,
+              // TODO: figure out how to reconcile with below
+              // baseDir: input.targetPathToClone
+              //   ? window.electron.path.dirname(input.targetPathToClone)
+              //   : input.selectedDirectory.path,
             })
             createdName = name
             createdPath = path
@@ -458,6 +460,22 @@ export const FileMachineProvider = ({
             value: sample.pathFromProjectDirectoryToFirstFile,
             name: sample.title,
           })),
+        },
+        specialPropsForLoadCommand: {
+          onSubmit: async (path) => {
+            if (path && isDesktop()) {
+              send({
+                type: 'Create file',
+                data: {
+                  name: '',
+                  makeDir: false,
+                  // TODO: potentially use this
+                  shouldSetToRename: false,
+                  targetPathToClone: path,
+                },
+              })
+            }
+          },
         },
         specialPropsForInsertCommand: {
           providedOptions: (isDesktop() && project?.children
