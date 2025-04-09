@@ -5,16 +5,14 @@ import { createSettings } from '@src/lib/settings/initialSettings'
 import { authMachine } from '@src/machines/authMachine'
 import { ACTOR_IDS } from '@src/machines/machineConstants'
 import { settingsMachine } from '@src/machines/settingsMachine'
-import { SystemIOMachineEvents } from "@src/machines/systemIO/utils"
-import { systemIOMachineWeb} from "@src/machines/systemIO/systemIOMachineWeb"
-import { systemIOMachineDesktop} from "@src/machines/systemIO/systemIOMachineDesktop"
-import { systemIOMachine} from "@src/machines/systemIO/systemIOMachine"
+import { systemIOMachineDesktop } from '@src/machines/systemIO/systemIOMachineDesktop'
+import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 
 const { AUTH, SETTINGS, SYSTEM_IO } = ACTOR_IDS
 const appMachineActors = {
   [AUTH]: authMachine,
   [SETTINGS]: settingsMachine,
-  [SYSTEM_IO]: systemIOMachineDesktop
+  [SYSTEM_IO]: systemIOMachineDesktop,
 } as const
 
 const appMachine = setup({
@@ -35,7 +33,7 @@ const appMachine = setup({
       systemId: SETTINGS,
       input: createSettings(),
     }),
-    spawnChild(SYSTEM_IO, {id: SYSTEM_IO, systemId: SYSTEM_IO})
+    spawnChild(SYSTEM_IO, { id: SYSTEM_IO, systemId: SYSTEM_IO }),
   ],
 })
 
@@ -71,10 +69,16 @@ export const useSettings = () =>
   })
 
 // TODO: Debugging
-const systemIOActor = appActor.getSnapshot().children.systemIO!
+export const systemIOActor = appActor.getSnapshot().children.systemIO!
 
 // systemIOActor.send({type:SystemIOMachineEvents.readFoldersFromProjectDirectory, data: {}})
 
-systemIOActor.send({type:SystemIOMachineEvents.setProjectDirectoryPath, data: {requestedProjectDirectoryPath:'/home/kevin-nadro/Documents/zoo-modeling-app-projects'}})
+systemIOActor.send({
+  type: SystemIOMachineEvents.setProjectDirectoryPath,
+  data: {
+    requestedProjectDirectoryPath:
+      '/home/kevin-nadro/Documents/zoo-modeling-app-projects',
+  },
+})
 
 window.systemIOActor = systemIOActor

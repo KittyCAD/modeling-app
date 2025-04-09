@@ -20,6 +20,7 @@ import { MachineManagerProvider } from '@src/components/MachineManagerProvider'
 import ModelingMachineProvider from '@src/components/ModelingMachineProvider'
 import { OpenInDesktopAppHandler } from '@src/components/OpenInDesktopAppHandler'
 import { ProjectsContextProvider } from '@src/components/ProjectsContextProvider'
+import { SystemIOMachineLogicListener } from '@src/components/Providers/SystemIOProviderDesktop'
 import { RouteProvider } from '@src/components/RouteProvider'
 import { WasmErrBanner } from '@src/components/WasmErrBanner'
 import { NetworkContext } from '@src/hooks/useNetworkContext'
@@ -143,6 +144,7 @@ const router = createRouter([
         path: PATHS.HOME,
         element: (
           <Auth>
+            <SystemIOMachineLogicListener />
             <Outlet />
             <Home />
             <CommandBar />

@@ -229,6 +229,7 @@ const ProjectsContextDesktop = ({
             const newPathName = `${PATHS.FILE}/${encodeURIComponent(
               projectPath
             )}`
+            console.log(newPathName,'asdf')
             navigate(newPathName)
           }
         },
