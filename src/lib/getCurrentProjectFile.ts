@@ -1,4 +1,7 @@
-import { importFileExtensions, relevantFileExtensions } from '@src/lang/wasm'
+import {
+  importFileExtensions,
+  relevantFileExtensions,
+} from '@src/lang/wasmUtils'
 import type { Stats } from 'fs'
 import * as fs from 'fs/promises'
 import * as path from 'path'

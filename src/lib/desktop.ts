@@ -9,8 +9,8 @@ import {
   initPromise,
   parseAppSettings,
   parseProjectSettings,
-  relevantFileExtensions,
 } from '@src/lang/wasm'
+import { relevantFileExtensions } from '@src/lang/wasmUtils'
 import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
   PROJECT_ENTRYPOINT,
