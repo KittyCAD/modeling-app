@@ -99,7 +99,7 @@ handleProfile = startProfileAt([0.0, flipperThickness], handleSketch)
   |> xLine(length = 7.071068)
   |> close()
 
-// Create an extrusion extrude001
+// Create an extrusion
 handle = extrude(handleProfile, length = handleWidth)
 
 // Fillet the bend of the spatula handle
