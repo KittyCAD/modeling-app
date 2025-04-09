@@ -4634,7 +4634,7 @@ description: Result of parsing food-service-spatula.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "newLineBlockComment",
-                      "value": "Create an extrusion extrude001",
+                      "value": "Create an extrusion",
                       "style": "line"
                     }
                   }
