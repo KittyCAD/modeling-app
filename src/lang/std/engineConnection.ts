@@ -660,6 +660,20 @@ class EngineConnection extends EventTarget {
                   detail: { conn: this, mediaStream: this.mediaStream! },
                 })
               )
+
+              setTimeout(() => {
+                // Everything is now connected.
+                this.state = {
+                  type: EngineConnectionStateType.ConnectionEstablished,
+                }
+
+                this.engineCommandManager.inSequence = 1
+
+                this.dispatchEvent(
+                  new CustomEvent(EngineConnectionEvents.Opened, { detail: this })
+                )
+                markOnce('code/endInitialEngineConnect')
+              }, 2000)
               break
             case 'connecting':
               break
@@ -787,18 +801,6 @@ class EngineConnection extends EventTarget {
                 type: ConnectingType.DataChannelEstablished,
               },
             }
-
-            // Everything is now connected.
-            this.state = {
-              type: EngineConnectionStateType.ConnectionEstablished,
-            }
-
-            this.engineCommandManager.inSequence = 1
-
-            this.dispatchEvent(
-              new CustomEvent(EngineConnectionEvents.Opened, { detail: this })
-            )
-            markOnce('code/endInitialEngineConnect')
           }
           this.unreliableDataChannel?.addEventListener(
             'open',
