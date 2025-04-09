@@ -1,11 +1,14 @@
+// Motor
+// A small electric motor to power the fan
+
 // Set Units
 @settings(defaultLengthUnit = mm)
 
 // Import Parameters
-import * from "globals.kcl"
+import * from "parameters.kcl"
 
+// Model the motor body and stem
 export fn motor() {
-  // Model a small electric motor to power the fan
   topFacePlane = offsetPlane(XY, offset = 4)
   motorBody = startSketchOn(topFacePlane)
     |> circle(center = [0, 0], radius = 10, tag = $seg04)
