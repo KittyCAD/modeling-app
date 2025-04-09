@@ -12,7 +12,6 @@ use crate::parsing::{
     token::NumericSuffix,
     DeprecationKind, PIPE_OPERATOR,
 };
-use crate::RELEVANT_FILE_EXTENSIONS;
 
 impl Program {
     pub fn recast(&self, options: &FormatOptions, indentation_level: usize) -> String {
@@ -884,7 +883,7 @@ pub async fn walk_dir(dir: &std::path::PathBuf) -> Result<Vec<std::path::PathBuf
             files.extend(walk_dir(&path).await?);
         } else if path
             .extension()
-            .is_some_and(|ext| RELEVANT_FILE_EXTENSIONS.contains(&ext.to_string_lossy().to_string()))
+            .is_some_and(|ext| crate::RELEVANT_FILE_EXTENSIONS.contains(&ext.to_string_lossy().to_string()))
         {
             files.push(path);
         }
