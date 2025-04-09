@@ -2,8 +2,8 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 
-import { isRelevantFile, listProjects } from '@src/lib/desktop'
 import { initPromise } from '@src/lang/wasm'
+import { isRelevantFile, listProjects } from '@src/lib/desktop'
 import type { DeepPartial } from '@src/lib/types'
 
 beforeAll(async () => {

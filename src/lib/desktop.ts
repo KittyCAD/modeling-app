@@ -17,7 +17,6 @@ import {
   PROJECT_FOLDER,
   PROJECT_IMAGE_NAME,
   PROJECT_SETTINGS_FILE_NAME,
-  RELEVANT_FILE_TYPES,
   SETTINGS_FILE_NAME,
   TELEMETRY_FILE_NAME,
   TELEMETRY_RAW_FILE_NAME,
@@ -202,9 +201,9 @@ export async function listProjects(
   return projects
 }
 
-  const RELEVANT_FILE_EXTENSIONS = relevantFileExtensions()
-export  const isRelevantFile = (filename: string): boolean =>
-    RELEVANT_FILE_EXTENSIONS.some((ext) => filename.endsWith('.' + ext))
+const RELEVANT_FILE_EXTENSIONS = relevantFileExtensions()
+export const isRelevantFile = (filename: string): boolean =>
+  RELEVANT_FILE_EXTENSIONS.some((ext) => filename.endsWith('.' + ext))
 
 const collectAllFilesRecursiveFrom = async (
   path: string,
