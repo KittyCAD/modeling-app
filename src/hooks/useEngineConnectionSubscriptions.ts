@@ -26,12 +26,12 @@ import {
 } from '@src/lib/singletons'
 import { err, reportRejection } from '@src/lib/trap'
 import { getModuleId } from '@src/lib/utils'
+import { engineStreamActor } from '@src/machines/appMachine'
+import { EngineStreamState } from '@src/machines/engineStreamMachine'
 import type {
   EdgeCutInfo,
   ExtrudeFacePlane,
 } from '@src/machines/modelingMachine'
-import { engineStreamActor } from '@src/machines/appMachine'
-import { EngineStreamState } from '@src/machines/engineStreamMachine'
 import toast from 'react-hot-toast'
 
 export function useEngineConnectionSubscriptions() {

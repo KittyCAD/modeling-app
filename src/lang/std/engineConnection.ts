@@ -670,7 +670,9 @@ class EngineConnection extends EventTarget {
                 this.engineCommandManager.inSequence = 1
 
                 this.dispatchEvent(
-                  new CustomEvent(EngineConnectionEvents.Opened, { detail: this })
+                  new CustomEvent(EngineConnectionEvents.Opened, {
+                    detail: this,
+                  })
                 )
                 markOnce('code/endInitialEngineConnect')
               }, 2000)
