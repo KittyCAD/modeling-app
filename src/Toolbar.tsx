@@ -17,12 +17,14 @@ import { isDesktop } from '@src/lib/isDesktop'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { editorManager, kclManager } from '@src/lib/singletons'
 import type {
+  ToolbarDropdown,
   ToolbarItem,
   ToolbarItemCallbackProps,
   ToolbarItemResolved,
+  ToolbarItemResolvedDropdown,
   ToolbarModeName,
 } from '@src/lib/toolbar'
-import { toolbarConfig } from '@src/lib/toolbar'
+import { isToolbarItemResolvedDropdown, toolbarConfig } from '@src/lib/toolbar'
 import { isArray } from '@src/lib/utils'
 import { commandBarActor } from '@src/machines/commandBarMachine'
 
@@ -131,21 +133,27 @@ export function Toolbar({
    */
   const currentModeItems: (
     | ToolbarItemResolved
-    | ToolbarItemResolved[]
+    | ToolbarItemResolvedDropdown
     | 'break'
   )[] = useMemo(() => {
     return toolbarConfig[currentMode].items.map((maybeIconConfig) => {
       if (maybeIconConfig === 'break') {
         return 'break'
-      } else if (isArray(maybeIconConfig)) {
-        return maybeIconConfig.map(resolveItemConfig)
+      } else if (isToolbarDropdown(maybeIconConfig)) {
+        return {
+          id: maybeIconConfig.id,
+          array: maybeIconConfig.array.map((item) =>
+            resolveItemConfig(item, maybeIconConfig.id)
+          ),
+        }
       } else {
         return resolveItemConfig(maybeIconConfig)
       }
     })
 
     function resolveItemConfig(
-      maybeIconConfig: ToolbarItem
+      maybeIconConfig: ToolbarItem,
+      dropdownId?: string
     ): ToolbarItemResolved {
       const isDisabled =
         disableAllButtons ||
@@ -207,16 +215,16 @@ export function Toolbar({
                 className="h-5 w-[1px] block bg-chalkboard-30 dark:bg-chalkboard-80"
               />
             )
-          } else if (isArray(maybeIconConfig)) {
+          } else if (isToolbarItemResolvedDropdown(maybeIconConfig)) {
             // A button with a dropdown
             const selectedIcon =
-              maybeIconConfig.find((c) => c.isActive) ||
-              maybeIconConfig[lastSelectedMultiActionItem.get(i) ?? 0]
+              maybeIconConfig.array.find((c) => c.isActive) ||
+              maybeIconConfig.array[lastSelectedMultiActionItem.get(i) ?? 0]
 
             // Save the last selected item in the dropdown
             lastSelectedMultiActionItem.set(
               i,
-              maybeIconConfig.indexOf(selectedIcon)
+              maybeIconConfig.array.indexOf(selectedIcon)
             )
             return (
               <ActionButtonDropdown
@@ -224,16 +232,16 @@ export function Toolbar({
                 key={selectedIcon.id}
                 data-testid={selectedIcon.id + '-dropdown'}
                 id={selectedIcon.id + '-dropdown'}
-                name={selectedIcon.title}
+                name={maybeIconConfig.id}
                 className={
-                  (maybeIconConfig[0].alwaysDark
+                  (maybeIconConfig.array[0].alwaysDark
                     ? 'dark bg-chalkboard-90 '
                     : '!bg-transparent ') +
                   'group/wrapper ' +
                   buttonBorderClassName +
                   ' relative group !gap-0'
                 }
-                splitMenuItems={maybeIconConfig.map((itemConfig) => ({
+                splitMenuItems={maybeIconConfig.array.map((itemConfig) => ({
                   id: itemConfig.id,
                   label: itemConfig.title,
                   hotkey: itemConfig.hotkey,
@@ -543,4 +551,10 @@ const ToolbarItemTooltipRichContent = ({
 // We don't want to display Esc hotkeys to avoid confusion in the Toolbar UI (eg. "EscR")
 function displayHotkeys(hotkey: string | string[]) {
   return (isArray(hotkey) ? hotkey : [hotkey]).filter((h) => h !== 'Esc')
+}
+
+function isToolbarDropdown(
+  item: ToolbarItem | ToolbarDropdown
+): item is ToolbarDropdown {
+  return 'array' in item
 }
