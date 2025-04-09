@@ -1860,46 +1860,6 @@ description: Result of parsing food-service-spatula.kcl
                                 "type": "Name",
                                 "type": "Name"
                               }
-                            },
-                            {
-<<<<<<< HEAD
-                              "type": "LabeledArg",
-                              "label": {
-                                "commentStart": 0,
-                                "end": 0,
-                                "name": "tag",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "arg": {
-                                "commentStart": 0,
-                                "end": 0,
-                                "start": 0,
-                                "type": "TagDeclarator",
-                                "type": "TagDeclarator",
-                                "value": "line000"
-                              }
-||||||| e5f23a49b
-                              "commentStart": 0,
-                              "end": 0,
-                              "start": 0,
-                              "type": "PipeSubstitution",
-                              "type": "PipeSubstitution"
-                            },
-                            {
-                              "commentStart": 0,
-                              "end": 0,
-                              "start": 0,
-                              "type": "TagDeclarator",
-                              "type": "TagDeclarator",
-                              "value": "line000"
-=======
-                              "commentStart": 0,
-                              "end": 0,
-                              "start": 0,
-                              "type": "PipeSubstitution",
-                              "type": "PipeSubstitution"
->>>>>>> main
                             }
                           ],
                           "callee": {
@@ -2099,46 +2059,6 @@ description: Result of parsing food-service-spatula.kcl
                                 "type": "UnaryExpression",
                                 "type": "UnaryExpression"
                               }
-                            },
-                            {
-<<<<<<< HEAD
-                              "type": "LabeledArg",
-                              "label": {
-                                "commentStart": 0,
-                                "end": 0,
-                                "name": "tag",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "arg": {
-                                "commentStart": 0,
-                                "end": 0,
-                                "start": 0,
-                                "type": "TagDeclarator",
-                                "type": "TagDeclarator",
-                                "value": "line001"
-                              }
-||||||| e5f23a49b
-                              "commentStart": 0,
-                              "end": 0,
-                              "start": 0,
-                              "type": "PipeSubstitution",
-                              "type": "PipeSubstitution"
-                            },
-                            {
-                              "commentStart": 0,
-                              "end": 0,
-                              "start": 0,
-                              "type": "TagDeclarator",
-                              "type": "TagDeclarator",
-                              "value": "line001"
-=======
-                              "commentStart": 0,
-                              "end": 0,
-                              "start": 0,
-                              "type": "PipeSubstitution",
-                              "type": "PipeSubstitution"
->>>>>>> main
                             }
                           ],
                           "callee": {
