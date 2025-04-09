@@ -1,15 +1,21 @@
 fn rect = (origin) => {
   return startSketchOn(XZ)
   |> startProfileAt(origin, %)
-  |> angledLine([0, 191.26], %, $rectangleSegmentA001)
-  |> angledLine([
-       segAng(rectangleSegmentA001) - 90,
-       196.99
-     ], %, $rectangleSegmentB001)
-  |> angledLine([
-       segAng(rectangleSegmentA001),
-       -segLen(rectangleSegmentA001)
-     ], %, $rectangleSegmentC001)
+  |> angledLine(
+       angle = 0,
+       length = 191.26,
+       tag = $rectangleSegmentA001,
+     )
+  |> angledLine(
+       angle = segAng(rectangleSegmentA001) - 90,
+       length = 196.99,
+       tag = $rectangleSegmentB001,
+     )
+  |> angledLine(
+       angle = segAng(rectangleSegmentA001),
+       length = -segLen(rectangleSegmentA001),
+       tag = $rectangleSegmentC001,
+     )
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 }
