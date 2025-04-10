@@ -439,19 +439,20 @@ export const FileMachineProvider = ({
             settings.modeling.defaultUnit.current ??
             DEFAULT_DEFAULT_LENGTH_UNIT,
         },
-        specialPropsForSampleCommand: {
+        specialPropsForLoadCommand: {
           onSubmit: async (data) => {
-            if (data.method === 'overwrite') {
-              codeManager.updateCodeStateEditor(data.code)
+            console.log('data in load command def', data)
+            if (data.method === 'overwrite' && data.content) {
+              codeManager.updateCodeStateEditor(data.content)
               await kclManager.executeCode()
               await codeManager.writeToFile()
             } else if (data.method === 'newFile' && isDesktop()) {
               send({
                 type: 'Create file',
                 data: {
-                  name: data.sampleName,
-                  content: data.code,
+                  ...data,
                   makeDir: false,
+                  shouldSetToRename: false,
                 },
               })
             }
@@ -460,22 +461,6 @@ export const FileMachineProvider = ({
             value: sample.pathFromProjectDirectoryToFirstFile,
             name: sample.title,
           })),
-        },
-        specialPropsForLoadCommand: {
-          onSubmit: async (path) => {
-            if (path && isDesktop()) {
-              send({
-                type: 'Create file',
-                data: {
-                  name: '',
-                  makeDir: false,
-                  // TODO: potentially use this
-                  shouldSetToRename: false,
-                  targetPathToClone: path,
-                },
-              })
-            }
-          },
         },
         specialPropsForInsertCommand: {
           providedOptions: (isDesktop() && project?.children

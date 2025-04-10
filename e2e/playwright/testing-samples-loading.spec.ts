@@ -106,7 +106,7 @@ test.describe('Testing in-app sample loading', () => {
         name: 'Overwrite',
       })
       const newFileWarning = page.getByText('Create a new file from')
-      const overwriteWarning = page.getByText('Overwrite current file with')
+      const overwriteWarning = page.getByText('Overwrite current file from')
       const confirmButton = page.getByRole('button', { name: 'Submit command' })
       const projectMenuButton = page.getByTestId('project-sidebar-toggle')
       const newlyCreatedFile = (name: string) =>
@@ -174,6 +174,8 @@ test.describe('Testing in-app sample loading', () => {
         await expect(newlyCreatedFile(sampleTwo.file)).not.toBeVisible()
         await expect(projectMenuButton).toContainText(sampleOne.file)
       })
+
+      // TODO: add test for local disk loading
     }
   )
 })
