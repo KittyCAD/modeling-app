@@ -200,14 +200,15 @@ export function getNextFileName({
   entryName: string
   baseDir: string
 }) {
+  const extension = window.electron.path.extname(entryName) ?? FILE_EXT
   // Remove any existing index from the name before adding a new one
-  let createdName = entryName.replace(FILE_EXT, '') + FILE_EXT
+  let createdName = entryName.replace(extension, '') + extension
   let createdPath = window.electron.path.join(baseDir, createdName)
   let i = 1
   while (window.electron.exists(createdPath)) {
-    const matchOnIndexAndExtension = new RegExp(`(-\\d+)?(${FILE_EXT})?$`)
+    const matchOnIndexAndExtension = new RegExp(`(-\\d+)?(${extension})?$`)
     createdName =
-      entryName.replace(matchOnIndexAndExtension, '') + `-${i}` + FILE_EXT
+      entryName.replace(matchOnIndexAndExtension, '') + `-${i}` + extension
     createdPath = window.electron.path.join(baseDir, createdName)
     i++
   }

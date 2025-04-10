@@ -4,10 +4,10 @@ import * as fsp from 'fs/promises'
 import { join } from 'path'
 
 import type { ElectronZoo } from '@e2e/playwright/fixtures/fixtureSetup'
-import { executorInputPath, getUtils } from '@e2e/playwright/test-utils'
+import { executorInputPath, getUtils, testsInputPath } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
-test.describe('Testing in-app sample loading', () => {
+test.describe('Testing loading external models', () => {
   /**
    * Note this test implicitly depends on the KCL sample "parametric-bearing-pillow-block",
    * its title, and its units settings. https://github.com/KittyCAD/kcl-samples/blob/main/parametric-bearing-pillow-block/main.kcl
@@ -179,15 +179,15 @@ test.describe('Testing in-app sample loading', () => {
   )
 
   const externalModelCases = [
-    // TODO: uncomment once .step clicking is fixed
-    // {
-    //   modelName: 'cube.step',
-    //   modelPath: testsInputPath('cube.step'),
-    // },
     {
       modelName: 'cylinder.kcl',
       deconflictedModelName: 'cylinder-1.kcl',
       modelPath: executorInputPath('cylinder.kcl'),
+    },
+    {
+      modelName: 'cube.step',
+      deconflictedModelName: 'cube-1.step',
+      modelPath: testsInputPath('cube.step'),
     },
   ]
   externalModelCases.map(({ modelName, deconflictedModelName, modelPath }) => {
@@ -258,7 +258,9 @@ test.describe('Testing in-app sample loading', () => {
           // TODO: I think the files pane should auto open?
           await toolbar.openPane('files')
           await toolbar.expectFileTreeState([modelName, 'main.kcl'])
-          await editorTextMatches(modelFileContent)
+          if (modelName.endsWith('.kcl')) {
+            await editorTextMatches(modelFileContent)
+          }
         })
 
         await test.step('Load the same external model, except deconflicted name', async () => {
@@ -269,7 +271,9 @@ test.describe('Testing in-app sample loading', () => {
             modelName,
             'main.kcl',
           ])
-          await editorTextMatches(modelFileContent)
+          if (modelName.endsWith('.kcl')) {
+            await editorTextMatches(modelFileContent)
+          }
         })
       }
     )

@@ -241,6 +241,7 @@ export const FileMachineProvider = ({
             createdName = name
             createdPath = path
             if (input.targetPathToClone) {
+              console.log('createdPath', createdPath)
               await window.electron.copyFile(
                 input.targetPathToClone,
                 createdPath
