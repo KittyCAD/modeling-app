@@ -12,6 +12,7 @@ class MyAPIReporter implements Reporter {
       // Optional information
       duration: result.duration / 1000,
       message: result.error?.stack,
+      target: process.env.TARGET || null,
       platform: process.env.RUNNER_OS || process.platform,
       // Extra test and result data
       annotations: test.annotations.map((a) => a.type),

@@ -231,6 +231,9 @@ jobs:
         env:
           token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
           snapshottoken: ${{ secrets.KITTYCAD_API_TOKEN }}
+          TAB_API_URL: ${{ secrets.TAB_API_URL }}
+          TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
+          TARGET: web
 
       - uses: actions/upload-artifact@v4
         if: ${{ needs.conditions.outputs.should-run == 'true' && !cancelled() && (success() || failure()) }}
@@ -367,6 +370,7 @@ jobs:
           token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
           TAB_API_URL: ${{ secrets.TAB_API_URL }}
           TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
+          TARGET: desktop
 
       - uses: actions/upload-artifact@v4
         if: ${{ needs.conditions.outputs.should-run == 'true' && always() }}
