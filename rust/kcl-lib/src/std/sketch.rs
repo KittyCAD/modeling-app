@@ -1712,10 +1712,10 @@ pub async fn tangential_arc(exec_state: &mut ExecState, args: Args) -> Result<Kc
     let end = args.get_kw_arg_opt("end")?;
     let end_absolute = args.get_kw_arg_opt("endAbsolute")?;
     let radius = args.get_kw_arg_opt("radius")?;
-    let offset = args.get_kw_arg_opt("offset")?;
+    let angle = args.get_kw_arg_opt("angle")?;
     let tag = args.get_kw_arg_opt(NEW_TAG_KW)?;
 
-    let new_sketch = inner_tangential_arc(sketch, end_absolute, end, radius, offset, tag, exec_state, args).await?;
+    let new_sketch = inner_tangential_arc(sketch, end_absolute, end, radius, angle, tag, exec_state, args).await?;
     Ok(KclValue::Sketch {
         value: Box::new(new_sketch),
     })
@@ -1725,11 +1725,11 @@ pub async fn tangential_arc(exec_state: &mut ExecState, args: Args) -> Result<Kc
 /// some part of an imaginary circle until it reaches the desired (x, y)
 /// coordinates.
 ///
-/// When using radius and offset, draw a curved line segment along part of an
+/// When using radius and angle, draw a curved line segment along part of an
 /// imaginary circle. The arc is constructed such that the last line segment is
 /// placed tangent to the imaginary circle of the specified radius. The
 /// resulting arc is the segment of the imaginary circle from that tangent point
-/// for 'offset' degrees along the imaginary circle.
+/// for 'angle' degrees along the imaginary circle.
 ///
 /// ```no_run
 /// exampleSketch = startSketchOn(XZ)
@@ -1766,7 +1766,7 @@ pub async fn tangential_arc(exec_state: &mut ExecState, args: Args) -> Result<Kc
 ///     angle = 60,
 ///     length = 10,
 ///   )
-///   |> tangentialArc(radius = 10, offset = -120)
+///   |> tangentialArc(radius = 10, angle = -120)
 ///   |> angledLine(
 ///     angle = -60,
 ///     length = 10,
@@ -1783,8 +1783,8 @@ pub async fn tangential_arc(exec_state: &mut ExecState, args: Args) -> Result<Kc
         sketch = { docs = "Which sketch should this path be added to?"},
         end_absolute = { docs = "Which absolute point should this arc go to? Incompatible with `end`, `radius`, and `offset`."},
         end = { docs = "How far away (along the X and Y axes) should this arc go? Incompatible with `endAbsolute`, `radius`, and `offset`."},
-        radius = { docs = "Radius of the imaginary circle. `offset` must be given. Incompatible with `end` and `endAbsolute`."},
-        offset = { docs = "Offset of the arc in degrees. `radius` must be given. Incompatible with `end` and `endAbsolute`."},
+        radius = { docs = "Radius of the imaginary circle. `angle` must be given. Incompatible with `end` and `endAbsolute`."},
+        angle = { docs = "Offset of the arc in degrees. `radius` must be given. Incompatible with `end` and `endAbsolute`."},
         tag = { docs = "Create a new tag which refers to this arc"},
     }
 }]
@@ -1793,21 +1793,21 @@ async fn inner_tangential_arc(
     end_absolute: Option<[f64; 2]>,
     end: Option<[f64; 2]>,
     radius: Option<f64>,
-    offset: Option<f64>,
+    angle: Option<f64>,
     tag: Option<TagNode>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
-    match (end_absolute, end, radius, offset) {
+    match (end_absolute, end, radius, angle) {
         (Some(point), None, None, None) => {
             return inner_tangential_arc_to_point(sketch, point, true, tag, exec_state, args).await;
         }
         (None, Some(point), None, None) => {
             return inner_tangential_arc_to_point(sketch, point, false, tag, exec_state, args).await;
         }
-        (None, None, Some(radius), Some(offset)) => {
-            let data = TangentialArcData::RadiusAndOffset { radius, offset };
-            return inner_tangential_arc_radius_offset(data, sketch, tag, exec_state, args).await;
+        (None, None, Some(radius), Some(angle)) => {
+            let data = TangentialArcData::RadiusAndOffset { radius, offset: angle };
+            return inner_tangential_arc_radius_angle(data, sketch, tag, exec_state, args).await;
         }
         (Some(_), Some(_), None, None) => {
             return Err(KclError::Semantic(KclErrorDetails {
@@ -1819,13 +1819,13 @@ async fn inner_tangential_arc(
         (None, None, Some(_), None) | (None, None, None, Some(_)) => {
             return Err(KclError::Semantic(KclErrorDetails {
                 source_ranges: vec![args.source_range],
-                message: "You must supply both `radius` and `offset` arguments".to_owned(),
+                message: "You must supply both `radius` and `angle` arguments".to_owned(),
             }));
         }
         (_, _, _, _) => {
             return Err(KclError::Semantic(KclErrorDetails {
                 source_ranges: vec![args.source_range],
-                message: "You must supply `end`, `endAbsolute`, or both `radius` and `offset` arguments".to_owned(),
+                message: "You must supply `end`, `endAbsolute`, or both `radius` and `angle` arguments".to_owned(),
             }));
         }
     }
@@ -1849,9 +1849,9 @@ pub enum TangentialArcData {
 ///
 /// The arc is constructed such that the last line segment is placed tangent
 /// to the imaginary circle of the specified radius. The resulting arc is the
-/// segment of the imaginary circle from that tangent point for 'offset'
+/// segment of the imaginary circle from that tangent point for 'angle'
 /// degrees along the imaginary circle.
-async fn inner_tangential_arc_radius_offset(
+async fn inner_tangential_arc_radius_angle(
     data: TangentialArcData,
     sketch: Sketch,
     tag: Option<TagNode>,

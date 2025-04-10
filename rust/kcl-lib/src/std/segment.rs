@@ -393,10 +393,7 @@ pub async fn segment_length(exec_state: &mut ExecState, args: Args) -> Result<Kc
 ///     length = 10,
 ///     tag = $thing,
 ///   )
-///   |> tangentialArc({
-///     offset = -120,
-///     radius = 5,
-///   }, %)
+///   |> tangentialArc(angle = -120, radius = 5)
 ///   |> angledLine(
 ///     angle = -60,
 ///     length = segLen(thing),

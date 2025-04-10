@@ -224,14 +224,14 @@ wallMountL = 8
 bracket = startSketchOn(XY)
   |> startProfileAt([0, 0], %)
   |> line(end = [0, wallMountL])
-  |> tangentialArc({ radius= filletR, offset: 90 }, %)
+  |> tangentialArc(radius = filletR, angle = 90 )
   |> line(end = [-shelfMountL, 0])
   |> line(end = [0, -thickness])
   |> line(end = [shelfMountL, 0])
-  |> tangentialArc({
-       radius= filletR - thickness,
-       offset: -90
-     }, %)
+  |> tangentialArc(
+       radius = filletR - thickness,
+       angle = -90,
+     )
   |> line(end = [0, -wallMountL])
   |> close()
   |> extrude(length = width)
