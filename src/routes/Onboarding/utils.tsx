@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { waitFor } from 'xstate'
 
@@ -8,16 +8,19 @@ import Tooltip from '@src/components/Tooltip'
 import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
 import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
+import { updateModelingState } from '@src/lang/modelingWorkflows'
 import { EngineConnectionStateType } from '@src/lang/std/engineConnection'
+import { parse, resultIsOk } from '@src/lang/wasm'
+import { EXECUTION_TYPE_REAL } from '@src/lib/constants'
 import { bracket } from '@src/lib/exampleKcl'
 import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
 import { PATHS } from '@src/lib/paths'
 import { codeManager, editorManager, kclManager } from '@src/lib/singletons'
-import { reportRejection } from '@src/lib/trap'
-import { toSync } from '@src/lib/utils'
+import { reportRejection, trap } from '@src/lib/trap'
 import { settingsActor } from '@src/machines/appMachine'
 import { onboardingRoutes } from '@src/routes/Onboarding'
 import { onboardingPaths } from '@src/routes/Onboarding/paths'
+import toast from 'react-hot-toast'
 
 export const kbdClasses =
   'py-0.5 px-1 text-sm rounded bg-chalkboard-10 dark:bg-chalkboard-100 border border-chalkboard-50 border-b-2'
@@ -36,11 +39,16 @@ function useStepNumber(
 }
 
 export function useDemoCode() {
+  const [hasRunCodeMod, setHasRunCodeMod] = useState(false)
   const { overallState, immediateState } = useNetworkContext()
 
   useEffect(() => {
     // Don't run if the editor isn't loaded or the code is already the bracket
-    if (!editorManager.editorView || codeManager.code === bracket) {
+    if (
+      hasRunCodeMod ||
+      !editorManager.editorView ||
+      codeManager.code === bracket
+    ) {
       return
     }
     // Don't run if the network isn't healthy or the connection isn't established
@@ -50,14 +58,31 @@ export function useDemoCode() {
     ) {
       return
     }
-    setTimeout(
-      toSync(async () => {
-        codeManager.updateCodeStateEditor(bracket)
-        await kclManager.executeCode()
-        await codeManager.writeToFile()
-      }, reportRejection)
-    )
-  }, [editorManager.editorView, immediateState, overallState])
+    const pResult = parse(bracket)
+    if (trap(pResult) || !resultIsOk(pResult)) {
+      toast.error('Unable to parse demo code. This is a bug')
+      return
+    }
+    const ast = pResult.program
+
+    updateModelingState(ast, EXECUTION_TYPE_REAL, {
+      kclManager,
+      editorManager,
+      codeManager,
+    })
+      .then(() => {
+        setHasRunCodeMod(true)
+      })
+      .catch(reportRejection)
+  }, [
+    editorManager.editorView,
+    kclManager,
+    codeManager,
+    immediateState.type,
+    overallState,
+    hasRunCodeMod,
+    setHasRunCodeMod,
+  ])
 }
 
 export function useNextClick(newStatus: string) {
