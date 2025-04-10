@@ -173,7 +173,7 @@ async fn inner_extrude(
     // Extrude the element(s).
     let mut solids = Vec::new();
 
-    if symmetric.is_some() && symmetric.unwrap() && bidirectional_length.is_some() {
+    if symmetric.unwrap_or(false) && bidirectional_length.is_some() {
         return Err(KclError::Semantic(KclErrorDetails {
             source_ranges: vec![args.source_range],
             message: "You cannot give both `symmetric` and `bidirectional` params, you have to choose one or the other"

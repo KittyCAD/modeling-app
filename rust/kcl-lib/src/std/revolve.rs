@@ -102,7 +102,7 @@ async fn inner_revolve(
         }
     }
 
-    if symmetric.is_some() && symmetric.unwrap() && bidirectional_angle.is_some() {
+    if symmetric.unwrap_or(false) && bidirectional_angle.is_some() {
         return Err(KclError::Semantic(KclErrorDetails {
             source_ranges: vec![args.source_range],
             message: "You cannot give both `symmetric` and `bidirectional` params, you have to choose one or the other"
