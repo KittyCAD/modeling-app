@@ -1,24 +1,18 @@
 {
-  description = "modeling-app development environment";
+  description = "zoo.dev modeling-app";
 
-  # Flake inputs
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
-    rust-overlay.url = "github:oxalica/rust-overlay"; # A helper for Rust + Nix
+    rust-overlay.url = "github:oxalica/rust-overlay";
   };
 
-  # Flake outputs
   outputs = {
     self,
     nixpkgs,
     rust-overlay,
   }: let
-    # Overlays enable you to customize the Nixpkgs attribute set
     overlays = [
-      # Makes a `rust-bin` attribute available in Nixpkgs
       (import rust-overlay)
-      # Provides a `rustToolchain` attribute for Nixpkgs that we can use to
-      # create a Rust environment
       (self: super: {
         rustToolchain = super.rust-bin.stable.latest.default.override {
           targets = ["wasm32-unknown-unknown"];
@@ -33,15 +27,13 @@
       })
     ];
 
-    # Systems supported
     allSystems = [
-      "x86_64-linux" # 64-bit Intel/AMD Linux
-      "aarch64-linux" # 64-bit ARM Linux
-      "x86_64-darwin" # 64-bit Intel macOS
-      "aarch64-darwin" # 64-bit ARM macOS
+      "x86_64-linux"
+      "aarch64-linux"
+      "x86_64-darwin"
+      "aarch64-darwin"
     ];
 
-    # Helper to provide system-specific attributes
     forAllSystems = f:
       nixpkgs.lib.genAttrs allSystems (system:
         f {
@@ -49,34 +41,25 @@
             inherit overlays system;
             config.allowBroken = true;
           };
+          system = system;
         });
   in {
-    # Development environment output
-    devShells = forAllSystems ({pkgs}: {
+    devShells = forAllSystems ({pkgs, ...}: {
       default = pkgs.mkShell {
-        # The Nix packages provided in the environment
         packages =
           (with pkgs; [
-            # The package provided by our custom overlay. Includes cargo, Clippy, cargo-fmt,
-            # rustdoc, rustfmt, and other tools.
             rustToolchain
-
             cargo-llvm-cov
             cargo-nextest
-
             just
             postgresql.lib
             openssl
             pkg-config
-
             nodejs_22
             yarn
-
             electron
             playwright-driver.browsers
-
             wasm-pack
-
             python3Full
           ])
           ++ pkgs.lib.optionals pkgs.stdenv.isDarwin (with pkgs; [
@@ -92,6 +75,37 @@
         PLAYWRIGHT_BROWSERS_PATH = "${pkgs.playwright-driver.browsers}";
         NODE_ENV = "development";
       };
+    });
+
+    packages = forAllSystems ({
+      pkgs,
+      system,
+    }: {
+      kcl-language-server = pkgs.stdenv.mkDerivation {
+        pname = "kcl-language-server";
+        version = "0.1.0";
+
+        src = ./.;
+
+        buildInputs = [
+          pkgs.rustToolchain
+          pkgs.pkg-config
+          pkgs.openssl
+        ];
+
+        buildPhase = ''
+          cd rust
+          cargo build --release -p kcl-language-server
+        '';
+
+        installPhase = ''
+          mkdir -p $out/bin
+          cp rust/target/release/kcl-language-server $out/bin/
+        '';
+
+        nativeBuildInputs = [pkgs.rustToolchain];
+      };
+      default = self.packages.${system}.kcl-language-server;
     });
   };
 }
