@@ -3,6 +3,7 @@ import { faBugSlash } from '@fortawesome/free-solid-svg-icons'
 import type { MouseEventHandler, ReactNode } from 'react'
 import type { ContextFrom } from 'xstate'
 
+import { IS_PLAYWRIGHT_KEY } from '@e2e/playwright/storageStates'
 import type { CustomIconName } from '@src/components/CustomIcon'
 import {
   FileTreeInner,
@@ -241,6 +242,8 @@ export const sidebarPanes: SidebarPane[] = [
       )
     },
     keybinding: 'Shift + D',
-    hide: ({ settings }) => !settings.app.showDebugPanel.current,
+    hide: ({ settings }) =>
+      !(window?.localStorage.getItem(IS_PLAYWRIGHT_KEY) === 'true') &&
+      !settings.app.showDebugPanel.current,
   },
 ]
