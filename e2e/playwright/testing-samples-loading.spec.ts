@@ -3,7 +3,8 @@ import { bracket } from '@src/lib/exampleKcl'
 import * as fsp from 'fs/promises'
 import { join } from 'path'
 
-import { getUtils } from '@e2e/playwright/test-utils'
+import type { ElectronZoo } from '@e2e/playwright/fixtures/fixtureSetup'
+import { executorInputPath, getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
 test.describe('Testing in-app sample loading', () => {
@@ -174,8 +175,103 @@ test.describe('Testing in-app sample loading', () => {
         await expect(newlyCreatedFile(sampleTwo.file)).not.toBeVisible()
         await expect(projectMenuButton).toContainText(sampleOne.file)
       })
-
-      // TODO: add test for local disk loading
     }
   )
+
+  const externalModelCases = [
+    // TODO: uncomment once .step clicking is fixed
+    // {
+    //   modelName: 'cube.step',
+    //   modelPath: testsInputPath('cube.step'),
+    // },
+    {
+      modelName: 'cylinder.kcl',
+      deconflictedModelName: 'cylinder-1.kcl',
+      modelPath: executorInputPath('cylinder.kcl'),
+    },
+  ]
+  externalModelCases.map(({ modelName, deconflictedModelName, modelPath }) => {
+    test(
+      `Load external models from local drive - ${modelName}`,
+      { tag: ['@electron'] },
+      async ({
+        context,
+        page,
+        homePage,
+        scene,
+        editor,
+        toolbar,
+        cmdBar,
+        tronApp,
+      }) => {
+        if (!tronApp) {
+          fail()
+        }
+
+        await page.setBodyDimensions({ width: 1000, height: 500 })
+        await homePage.goToModelingScene()
+        await scene.settled(cmdBar)
+        const modelFileContent = await fsp.readFile(modelPath, 'utf-8')
+        const { editorTextMatches } = await getUtils(page, test)
+
+        async function loadExternalFileThroughCommandBar(tronApp: ElectronZoo) {
+          await toolbar.loadButton.click()
+          await cmdBar.expectState({
+            commandName: 'Load external model',
+            currentArgKey: 'source',
+            currentArgValue: '',
+            headerArguments: {
+              Method: 'newFile',
+              Sample: '',
+              Source: '',
+            },
+            highlightedHeaderArg: 'source',
+            stage: 'arguments',
+          })
+          await cmdBar.selectOption({ name: 'Local Drive' }).click()
+
+          // Mock the file picker selection
+          const handleFile = tronApp.electron.evaluate(
+            async ({ dialog }, filePaths) => {
+              dialog.showOpenDialog = () =>
+                Promise.resolve({ canceled: false, filePaths })
+            },
+            [modelPath]
+          )
+          await page.getByTestId('cmd-bar-arg-file-button').click()
+          await handleFile
+
+          await cmdBar.progressCmdBar()
+          await cmdBar.expectState({
+            commandName: 'Load external model',
+            headerArguments: {
+              Source: 'local',
+              Path: modelPath,
+            },
+            stage: 'review',
+          })
+          await cmdBar.progressCmdBar()
+        }
+
+        await test.step('Load the external model from local drive', async () => {
+          await loadExternalFileThroughCommandBar(tronApp)
+          // TODO: I think the files pane should auto open?
+          await toolbar.openPane('files')
+          await toolbar.expectFileTreeState([modelName, 'main.kcl'])
+          await editorTextMatches(modelFileContent)
+        })
+
+        await test.step('Load the same external model, except deconflicted name', async () => {
+          await loadExternalFileThroughCommandBar(tronApp)
+          await toolbar.openPane('files')
+          await toolbar.expectFileTreeState([
+            deconflictedModelName,
+            modelName,
+            'main.kcl',
+          ])
+          await editorTextMatches(modelFileContent)
+        })
+      }
+    )
+  })
 })
