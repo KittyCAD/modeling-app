@@ -40,18 +40,19 @@ pub async fn union(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// ```no_run
 /// // Union two cubes using the stdlib functions.
 ///
-/// fn cube(center) {
+/// fn cube(center, size) {
 ///     return startSketchOn('XY')
-///         |> startProfileAt([center[0] - 10, center[1] - 10], %)
-///         |> line(endAbsolute = [center[0] + 10, center[1] - 10])
-///         |> line(endAbsolute = [center[0] + 10, center[1] + 10])
-///         |> line(endAbsolute = [center[0] - 10, center[1] + 10])
+///         |> startProfileAt([center[0] - size, center[1] - size], %)
+///         |> line(endAbsolute = [center[0] + size, center[1] - size])
+///         |> line(endAbsolute = [center[0] + size, center[1] + size])
+///         |> line(endAbsolute = [center[0] - size, center[1] + size])
 ///         |> close()
 ///         |> extrude(length = 10)
 /// }
 ///
-/// part001 = cube([0, 0])
-/// part002 = cube([20, 10])
+/// part001 = cube([0, 0], 10)
+/// part002 = cube([7, 3], 5)
+///     |> translate(z = 1)
 ///
 /// unionedPart = union([part001, part002])
 /// ```
@@ -61,18 +62,19 @@ pub async fn union(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// // NOTE: This will not work when using codemods through the UI.
 /// // Codemods will generate the stdlib function call instead.
 ///
-/// fn cube(center) {
+/// fn cube(center, size) {
 ///     return startSketchOn('XY')
-///         |> startProfileAt([center[0] - 10, center[1] - 10], %)
-///         |> line(endAbsolute = [center[0] + 10, center[1] - 10])
-///         |> line(endAbsolute = [center[0] + 10, center[1] + 10])
-///         |> line(endAbsolute = [center[0] - 10, center[1] + 10])
+///         |> startProfileAt([center[0] - size, center[1] - size], %)
+///         |> line(endAbsolute = [center[0] + size, center[1] - size])
+///         |> line(endAbsolute = [center[0] + size, center[1] + size])
+///         |> line(endAbsolute = [center[0] - size, center[1] + size])
 ///         |> close()
 ///         |> extrude(length = 10)
 /// }
 ///
-/// part001 = cube([0, 0])
-/// part002 = cube([20, 10])
+/// part001 = cube([0, 0], 10)
+/// part002 = cube([7, 3], 5)
+///     |> translate(z = 1)
 ///
 /// // This is the equivalent of: union([part001, part002])
 /// unionedPart = part001 + part002
@@ -83,18 +85,19 @@ pub async fn union(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// // NOTE: This will not work when using codemods through the UI.
 /// // Codemods will generate the stdlib function call instead.
 ///
-/// fn cube(center) {
+/// fn cube(center, size) {
 ///     return startSketchOn('XY')
-///         |> startProfileAt([center[0] - 10, center[1] - 10], %)
-///         |> line(endAbsolute = [center[0] + 10, center[1] - 10])
-///         |> line(endAbsolute = [center[0] + 10, center[1] + 10])
-///         |> line(endAbsolute = [center[0] - 10, center[1] + 10])
+///         |> startProfileAt([center[0] - size, center[1] - size], %)
+///         |> line(endAbsolute = [center[0] + size, center[1] - size])
+///         |> line(endAbsolute = [center[0] + size, center[1] + size])
+///         |> line(endAbsolute = [center[0] - size, center[1] + size])
 ///         |> close()
 ///         |> extrude(length = 10)
 /// }
 ///
-/// part001 = cube([0, 0])
-/// part002 = cube([20, 10])
+/// part001 = cube([0, 0], 10)
+/// part002 = cube([7, 3], 5)
+///     |> translate(z = 1)
 ///
 /// // This is the equivalent of: union([part001, part002])
 /// // Programmers will understand `|` as a union operation, but mechanical engineers
@@ -187,18 +190,19 @@ pub async fn intersect(exec_state: &mut ExecState, args: Args) -> Result<KclValu
 /// ```no_run
 /// // Intersect two cubes using the stdlib functions.
 ///
-/// fn cube(center) {
+/// fn cube(center, size) {
 ///     return startSketchOn('XY')
-///         |> startProfileAt([center[0] - 10, center[1] - 10], %)
-///         |> line(endAbsolute = [center[0] + 10, center[1] - 10])
-///         |> line(endAbsolute = [center[0] + 10, center[1] + 10])
-///         |> line(endAbsolute = [center[0] - 10, center[1] + 10])
+///         |> startProfileAt([center[0] - size, center[1] - size], %)
+///         |> line(endAbsolute = [center[0] + size, center[1] - size])
+///         |> line(endAbsolute = [center[0] + size, center[1] + size])
+///         |> line(endAbsolute = [center[0] - size, center[1] + size])
 ///         |> close()
 ///         |> extrude(length = 10)
 /// }
 ///
-/// part001 = cube([0, 0])
-/// part002 = cube([8, 8])
+/// part001 = cube([0, 0], 10)
+/// part002 = cube([7, 3], 5)
+///     |> translate(z = 1)
 ///
 /// intersectedPart = intersect([part001, part002])
 /// ```
@@ -208,18 +212,19 @@ pub async fn intersect(exec_state: &mut ExecState, args: Args) -> Result<KclValu
 /// // NOTE: This will not work when using codemods through the UI.
 /// // Codemods will generate the stdlib function call instead.
 ///
-/// fn cube(center) {
+/// fn cube(center, size) {
 ///     return startSketchOn('XY')
-///         |> startProfileAt([center[0] - 10, center[1] - 10], %)
-///         |> line(endAbsolute = [center[0] + 10, center[1] - 10])
-///         |> line(endAbsolute = [center[0] + 10, center[1] + 10])
-///         |> line(endAbsolute = [center[0] - 10, center[1] + 10])
+///         |> startProfileAt([center[0] - size, center[1] - size], %)
+///         |> line(endAbsolute = [center[0] + size, center[1] - size])
+///         |> line(endAbsolute = [center[0] + size, center[1] + size])
+///         |> line(endAbsolute = [center[0] - size, center[1] + size])
 ///         |> close()
 ///         |> extrude(length = 10)
 /// }
 ///
-/// part001 = cube([0, 0])
-/// part002 = cube([8, 8])
+/// part001 = cube([0, 0], 10)
+/// part002 = cube([7, 3], 5)
+///     |> translate(z = 1)
 ///
 /// // This is the equivalent of: intersect([part001, part002])
 /// intersectedPart = part001 & part002
@@ -303,20 +308,19 @@ pub async fn subtract(exec_state: &mut ExecState, args: Args) -> Result<KclValue
 /// ```no_run
 /// // Subtract a cylinder from a cube using the stdlib functions.
 ///
-/// fn cube(center) {
+/// fn cube(center, size) {
 ///     return startSketchOn('XY')
-///         |> startProfileAt([center[0] - 10, center[1] - 10], %)
-///         |> line(endAbsolute = [center[0] + 10, center[1] - 10])
-///         |> line(endAbsolute = [center[0] + 10, center[1] + 10])
-///         |> line(endAbsolute = [center[0] - 10, center[1] + 10])
+///         |> startProfileAt([center[0] - size, center[1] - size], %)
+///         |> line(endAbsolute = [center[0] + size, center[1] - size])
+///         |> line(endAbsolute = [center[0] + size, center[1] + size])
+///         |> line(endAbsolute = [center[0] - size, center[1] + size])
 ///         |> close()
 ///         |> extrude(length = 10)
 /// }
 ///
-/// part001 = cube([0, 0])
-/// part002 = startSketchOn('XY')
-///     |> circle(center = [0, 0], radius = 2)
-///     |> extrude(length = 10)
+/// part001 = cube([0, 0], 10)
+/// part002 = cube([7, 3], 5)
+///     |> translate(z = 1)
 ///
 /// subtractedPart = subtract([part001], tools=[part002])
 /// ```
@@ -326,20 +330,19 @@ pub async fn subtract(exec_state: &mut ExecState, args: Args) -> Result<KclValue
 /// // NOTE: This will not work when using codemods through the UI.
 /// // Codemods will generate the stdlib function call instead.
 ///
-/// fn cube(center) {
+/// fn cube(center, size) {
 ///     return startSketchOn('XY')
-///         |> startProfileAt([center[0] - 10, center[1] - 10], %)
-///         |> line(endAbsolute = [center[0] + 10, center[1] - 10])
-///         |> line(endAbsolute = [center[0] + 10, center[1] + 10])
-///         |> line(endAbsolute = [center[0] - 10, center[1] + 10])
+///         |> startProfileAt([center[0] - size, center[1] - size], %)
+///         |> line(endAbsolute = [center[0] + size, center[1] - size])
+///         |> line(endAbsolute = [center[0] + size, center[1] + size])
+///         |> line(endAbsolute = [center[0] - size, center[1] + size])
 ///         |> close()
 ///         |> extrude(length = 10)
 /// }
 ///
-/// part001 = cube([0, 0])
-/// part002 = startSketchOn('XY')
-///     |> circle(center = [0, 0], radius = 2)
-///     |> extrude(length = 10)
+/// part001 = cube([0, 0], 10)
+/// part002 = cube([7, 3], 5)
+///     |> translate(z = 1)
 ///
 /// // This is the equivalent of: subtract([part001], tools=[part002])
 /// subtractedPart = part001 - part002
