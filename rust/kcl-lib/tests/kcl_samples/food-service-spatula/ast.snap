@@ -1810,86 +1810,56 @@ description: Result of parsing food-service-spatula.kcl
                         {
                           "arguments": [
                             {
-                              "commentStart": 0,
-                              "end": 0,
-                              "properties": [
-                                {
+                              "type": "LabeledArg",
+                              "label": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "name": "angle",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "arg": {
+                                "abs_path": false,
+                                "commentStart": 0,
+                                "end": 0,
+                                "name": {
                                   "commentStart": 0,
                                   "end": 0,
-                                  "key": {
-                                    "commentStart": 0,
-                                    "end": 0,
-                                    "name": "angle",
-                                    "start": 0,
-                                    "type": "Identifier"
-                                  },
+                                  "name": "angle",
                                   "start": 0,
-                                  "type": "ObjectProperty",
-                                  "value": {
-                                    "abs_path": false,
-                                    "commentStart": 0,
-                                    "end": 0,
-                                    "name": {
-                                      "commentStart": 0,
-                                      "end": 0,
-                                      "name": "angle",
-                                      "start": 0,
-                                      "type": "Identifier"
-                                    },
-                                    "path": [],
-                                    "start": 0,
-                                    "type": "Name",
-                                    "type": "Name"
-                                  }
+                                  "type": "Identifier"
                                 },
-                                {
+                                "path": [],
+                                "start": 0,
+                                "type": "Name",
+                                "type": "Name"
+                              }
+                            },
+                            {
+                              "type": "LabeledArg",
+                              "label": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "name": "length",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "arg": {
+                                "abs_path": false,
+                                "commentStart": 0,
+                                "end": 0,
+                                "name": {
                                   "commentStart": 0,
                                   "end": 0,
-                                  "key": {
-                                    "commentStart": 0,
-                                    "end": 0,
-                                    "name": "length",
-                                    "start": 0,
-                                    "type": "Identifier"
-                                  },
+                                  "name": "dist",
                                   "start": 0,
-                                  "type": "ObjectProperty",
-                                  "value": {
-                                    "abs_path": false,
-                                    "commentStart": 0,
-                                    "end": 0,
-                                    "name": {
-                                      "commentStart": 0,
-                                      "end": 0,
-                                      "name": "dist",
-                                      "start": 0,
-                                      "type": "Identifier"
-                                    },
-                                    "path": [],
-                                    "start": 0,
-                                    "type": "Name",
-                                    "type": "Name"
-                                  }
-                                }
-                              ],
-                              "start": 0,
-                              "type": "ObjectExpression",
-                              "type": "ObjectExpression"
-                            },
-                            {
-                              "commentStart": 0,
-                              "end": 0,
-                              "start": 0,
-                              "type": "PipeSubstitution",
-                              "type": "PipeSubstitution"
-                            },
-                            {
-                              "commentStart": 0,
-                              "end": 0,
-                              "start": 0,
-                              "type": "TagDeclarator",
-                              "type": "TagDeclarator",
-                              "value": "line000"
+                                  "type": "Identifier"
+                                },
+                                "path": [],
+                                "start": 0,
+                                "type": "Name",
+                                "type": "Name"
+                              }
                             }
                           ],
                           "callee": {
@@ -1910,8 +1880,9 @@ description: Result of parsing food-service-spatula.kcl
                           "commentStart": 0,
                           "end": 0,
                           "start": 0,
-                          "type": "CallExpression",
-                          "type": "CallExpression"
+                          "type": "CallExpressionKw",
+                          "type": "CallExpressionKw",
+                          "unlabeled": null
                         },
                         {
                           "arguments": [
@@ -2004,14 +1975,6 @@ description: Result of parsing food-service-spatula.kcl
                               "start": 0,
                               "type": "PipeSubstitution",
                               "type": "PipeSubstitution"
-                            },
-                            {
-                              "commentStart": 0,
-                              "end": 0,
-                              "start": 0,
-                              "type": "TagDeclarator",
-                              "type": "TagDeclarator",
-                              "value": "arc000"
                             }
                           ],
                           "callee": {
@@ -2038,94 +2001,64 @@ description: Result of parsing food-service-spatula.kcl
                         {
                           "arguments": [
                             {
-                              "commentStart": 0,
-                              "end": 0,
-                              "properties": [
-                                {
+                              "type": "LabeledArg",
+                              "label": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "name": "angle",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "arg": {
+                                "abs_path": false,
+                                "commentStart": 0,
+                                "end": 0,
+                                "name": {
                                   "commentStart": 0,
                                   "end": 0,
-                                  "key": {
-                                    "commentStart": 0,
-                                    "end": 0,
-                                    "name": "angle",
-                                    "start": 0,
-                                    "type": "Identifier"
-                                  },
+                                  "name": "angle",
                                   "start": 0,
-                                  "type": "ObjectProperty",
-                                  "value": {
-                                    "abs_path": false,
-                                    "commentStart": 0,
-                                    "end": 0,
-                                    "name": {
-                                      "commentStart": 0,
-                                      "end": 0,
-                                      "name": "angle",
-                                      "start": 0,
-                                      "type": "Identifier"
-                                    },
-                                    "path": [],
-                                    "start": 0,
-                                    "type": "Name",
-                                    "type": "Name"
-                                  }
+                                  "type": "Identifier"
                                 },
-                                {
+                                "path": [],
+                                "start": 0,
+                                "type": "Name",
+                                "type": "Name"
+                              }
+                            },
+                            {
+                              "type": "LabeledArg",
+                              "label": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "name": "length",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "arg": {
+                                "argument": {
+                                  "abs_path": false,
                                   "commentStart": 0,
                                   "end": 0,
-                                  "key": {
+                                  "name": {
                                     "commentStart": 0,
                                     "end": 0,
-                                    "name": "length",
+                                    "name": "dist",
                                     "start": 0,
                                     "type": "Identifier"
                                   },
+                                  "path": [],
                                   "start": 0,
-                                  "type": "ObjectProperty",
-                                  "value": {
-                                    "argument": {
-                                      "abs_path": false,
-                                      "commentStart": 0,
-                                      "end": 0,
-                                      "name": {
-                                        "commentStart": 0,
-                                        "end": 0,
-                                        "name": "dist",
-                                        "start": 0,
-                                        "type": "Identifier"
-                                      },
-                                      "path": [],
-                                      "start": 0,
-                                      "type": "Name",
-                                      "type": "Name"
-                                    },
-                                    "commentStart": 0,
-                                    "end": 0,
-                                    "operator": "-",
-                                    "start": 0,
-                                    "type": "UnaryExpression",
-                                    "type": "UnaryExpression"
-                                  }
-                                }
-                              ],
-                              "start": 0,
-                              "type": "ObjectExpression",
-                              "type": "ObjectExpression"
-                            },
-                            {
-                              "commentStart": 0,
-                              "end": 0,
-                              "start": 0,
-                              "type": "PipeSubstitution",
-                              "type": "PipeSubstitution"
-                            },
-                            {
-                              "commentStart": 0,
-                              "end": 0,
-                              "start": 0,
-                              "type": "TagDeclarator",
-                              "type": "TagDeclarator",
-                              "value": "line001"
+                                  "type": "Name",
+                                  "type": "Name"
+                                },
+                                "commentStart": 0,
+                                "end": 0,
+                                "operator": "-",
+                                "start": 0,
+                                "type": "UnaryExpression",
+                                "type": "UnaryExpression"
+                              }
                             }
                           ],
                           "callee": {
@@ -2146,8 +2079,9 @@ description: Result of parsing food-service-spatula.kcl
                           "commentStart": 0,
                           "end": 0,
                           "start": 0,
-                          "type": "CallExpression",
-                          "type": "CallExpression"
+                          "type": "CallExpressionKw",
+                          "type": "CallExpressionKw",
+                          "unlabeled": null
                         },
                         {
                           "arguments": [
@@ -2228,14 +2162,6 @@ description: Result of parsing food-service-spatula.kcl
                               "start": 0,
                               "type": "PipeSubstitution",
                               "type": "PipeSubstitution"
-                            },
-                            {
-                              "commentStart": 0,
-                              "end": 0,
-                              "start": 0,
-                              "type": "TagDeclarator",
-                              "type": "TagDeclarator",
-                              "value": "arc001"
                             }
                           ],
                           "callee": {
@@ -2396,7 +2322,7 @@ description: Result of parsing food-service-spatula.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
-            "name": "sketch000",
+            "name": "flipperSketch",
             "start": 0,
             "type": "Identifier"
           },
@@ -2448,7 +2374,7 @@ description: Result of parsing food-service-spatula.kcl
         "preComments": [
           "",
           "",
-          "// Create a sketch on the \"XY\" plane"
+          "// Create a sketch on the \"XY\" plane for the flipper"
         ],
         "start": 0,
         "type": "VariableDeclaration",
@@ -2530,7 +2456,7 @@ description: Result of parsing food-service-spatula.kcl
                     "name": {
                       "commentStart": 0,
                       "end": 0,
-                      "name": "sketch000",
+                      "name": "flipperSketch",
                       "start": 0,
                       "type": "Identifier"
                     },
@@ -2976,7 +2902,7 @@ description: Result of parsing food-service-spatula.kcl
                 "name": {
                   "commentStart": 0,
                   "end": 0,
-                  "name": "sketch000",
+                  "name": "flipperSketch",
                   "start": 0,
                   "type": "Identifier"
                 },
@@ -3135,7 +3061,7 @@ description: Result of parsing food-service-spatula.kcl
                 "name": {
                   "commentStart": 0,
                   "end": 0,
-                  "name": "sketch000",
+                  "name": "flipperSketch",
                   "start": 0,
                   "type": "Identifier"
                 },
@@ -3299,7 +3225,7 @@ description: Result of parsing food-service-spatula.kcl
                 "name": {
                   "commentStart": 0,
                   "end": 0,
-                  "name": "sketch000",
+                  "name": "flipperSketch",
                   "start": 0,
                   "type": "Identifier"
                 },
@@ -3940,7 +3866,7 @@ description: Result of parsing food-service-spatula.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
-            "name": "sketch001",
+            "name": "handleSketch",
             "start": 0,
             "type": "Identifier"
           },
@@ -4136,7 +4062,7 @@ description: Result of parsing food-service-spatula.kcl
                     "name": {
                       "commentStart": 0,
                       "end": 0,
-                      "name": "sketch001",
+                      "name": "handleSketch",
                       "start": 0,
                       "type": "Identifier"
                     },
@@ -4666,7 +4592,7 @@ description: Result of parsing food-service-spatula.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "newLineBlockComment",
-                      "value": "Create an extrusion extrude001",
+                      "value": "Create an extrusion",
                       "style": "line"
                     }
                   }
@@ -5273,7 +5199,7 @@ description: Result of parsing food-service-spatula.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
-            "name": "sketch002",
+            "name": "gripSketch",
             "start": 0,
             "type": "Identifier"
           },
@@ -5403,7 +5329,7 @@ description: Result of parsing food-service-spatula.kcl
                     "name": {
                       "commentStart": 0,
                       "end": 0,
-                      "name": "sketch002",
+                      "name": "gripSketch",
                       "start": 0,
                       "type": "Identifier"
                     },
@@ -6497,7 +6423,7 @@ description: Result of parsing food-service-spatula.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
-            "name": "sketch003",
+            "name": "holeSketch",
             "start": 0,
             "type": "Identifier"
           },
@@ -6592,7 +6518,7 @@ description: Result of parsing food-service-spatula.kcl
                 "name": {
                   "commentStart": 0,
                   "end": 0,
-                  "name": "sketch003",
+                  "name": "holeSketch",
                   "start": 0,
                   "type": "Identifier"
                 },

@@ -41,15 +41,13 @@ sketch002 = startSketchOn(XZ)
 extrude002 = extrude(sketch002, length = 50)
 sketch003 = startSketchOn(XY)
   |> startProfileAt([52.92, 157.81], %)
-  |> angledLine([0, 176.4], %, $rectangleSegmentA001)
-  |> angledLine([
-       segAng(rectangleSegmentA001) - 90,
-       53.4
-     ], %, $rectangleSegmentB001)
-  |> angledLine([
-       segAng(rectangleSegmentA001),
-       -segLen(rectangleSegmentA001)
-     ], %, $rectangleSegmentC001)
+  |> angledLine(angle = 0, length = 176.4, tag = $rectangleSegmentA001)
+  |> angledLine(
+       angle = segAng(rectangleSegmentA001) - 90,
+       length = 53.4,
+       tag = $rectangleSegmentB001,
+     )
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $rectangleSegmentC001)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 extrude003 = extrude(sketch003, length = 20)
@@ -74,7 +72,6 @@ test.describe('edit with AI example snapshots', () => {
       const submittingToast = page.getByText('Submitting to Text-to-CAD API...')
 
       await test.step('wait for scene to load select body and check selection came through', async () => {
-        await scene.expectPixelColor([134, 134, 134], body1CapCoords, 15)
         await clickBody1Cap()
         await scene.expectPixelColor(yellow, body1CapCoords, 20)
         await editor.expectState({

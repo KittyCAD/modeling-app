@@ -214,16 +214,16 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
       part001 = startSketchOn(XZ)
         |> startProfileAt([5 + 0, 20 + 0], %)
         |> line(end = [0.5, -14 + 0])
-        |> angledLine({ angle = 3 + 0, length = 32 + 0 }, %)
+        |> angledLine(angle = 3 + 0, length = 32 + 0)
         |> line(endAbsolute = [5 + 33, 20 + 11.5 + 0])
         |> xLine(endAbsolute = 5 + 9 - 5)
         |> yLine(endAbsolute = 20 + -10.77, tag = $a)
         |> xLine(length = 26.04)
         |> yLine(length = 21.14 + 0)
-        |> angledLineOfXLength({ angle = 181 + 0, length = 23.14 }, %)
-        |> angledLineOfYLength({ angle = -91, length = 19 + 0 }, %)
-        |> angledLineToX({ angle = 3 + 0, to = 5 + 26 }, %)
-        |> angledLineToY({ angle = 89, to = 20 + 9.14 + 0 }, %)
+        |> angledLine(angle = 181 + 0, lengthX = 23.14)
+        |> angledLine(angle = -91, lengthY = 19 + 0)
+        |> angledLine(angle = 3 + 0, endAbsoluteX = 5 + 26)
+        |> angledLine(angle = 89, endAbsoluteY = 20 + 9.14 + 0)
         |> angledLineThatIntersects({
         angle = 4.14,
         intersectTag = a,
@@ -306,11 +306,9 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
       await clickConstrained({
         hoverPos: { x: angledLine.x, y: angledLine.y },
         constraintType: 'angle',
-        expectBeforeUnconstrained:
-          'angledLine({ angle = 3 + 0, length = 32 + 0 }, %)',
-        expectAfterUnconstrained:
-          'angledLine({ angle = 3, length = 32 + 0 }, %)',
-        expectFinal: 'angledLine({ angle = angle001, length = 32 + 0 }, %)',
+        expectBeforeUnconstrained: 'angledLine(angle = 3 + 0, length = 32 + 0)',
+        expectAfterUnconstrained: 'angledLine(angle = 3, length = 32 + 0)',
+        expectFinal: 'angledLine(angle = angle001, length = 32 + 0)',
         ang: ang + 180,
         locator: '[data-overlay-toolbar-index="1"]',
       })
@@ -319,10 +317,9 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
         hoverPos: { x: angledLine.x, y: angledLine.y },
         constraintType: 'length',
         expectBeforeUnconstrained:
-          'angledLine({ angle = angle001, length = 32 + 0 }, %)',
-        expectAfterUnconstrained:
-          'angledLine({ angle = angle001, length = 32 }, %)',
-        expectFinal: 'angledLine({ angle = angle001, length = len001 }, %)',
+          'angledLine(angle = angle001, length = 32 + 0)',
+        expectAfterUnconstrained: 'angledLine(angle = angle001, length = 32)',
+        expectFinal: 'angledLine(angle = angle001, length = len001)',
         ang: ang + 180,
         locator: '[data-overlay-toolbar-index="1"]',
       })
@@ -392,13 +389,13 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
     part001 = startSketchOn(XZ)
       |> startProfileAt([0, 0], %)
       |> line(end = [0.5, yRel001])
-      |> angledLine({ angle = angle001, length = len001 }, %)
+      |> angledLine(angle = angle001, length = len001)
       |> line(endAbsolute = [33, yAbs001])
       |> xLine(endAbsolute = xAbs002)
       |> yLine(endAbsolute = -10.77, tag = $a)
       |> xLine(length = 26.04)
       |> yLine(length = 21.14 + 0)
-      |> angledLineOfXLength({ angle = 181 + 0, length = 23.14 }, %)
+      |> angledLine(angle = 181 + 0, lengthX = 23.14)
       `
         )
       })
@@ -465,16 +462,16 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
       part001 = startSketchOn(XZ)
         |> startProfileAt([0, 0], %)
         |> line(end = [0.5, -14 + 0])
-        |> angledLine({ angle = 3 + 0, length = 32 + 0 }, %)
+        |> angledLine(angle = 3 + 0, length = 32 + 0)
         |> line(endAbsolute = [33, 11.5 + 0])
         |> xLine(endAbsolute = 9 - 5)
         |> yLine(endAbsolute = -10.77, tag = $a)
         |> xLine(length = 26.04)
         |> yLine(length = 21.14 + 0)
-        |> angledLineOfXLength({ angle = 181 + 0, length = 23.14 }, %)
-        |> angledLineOfYLength({ angle = -91, length = 19 + 0 }, %)
-        |> angledLineToX({ angle = 3 + 0, to = 26 }, %)
-        |> angledLineToY({ angle = 89, to = 9.14 + 0 }, %)
+        |> angledLine(angle = 181 + 0, lengthX = 23.14)
+        |> angledLine(angle = -91, lengthY = 19 + 0)
+        |> angledLine(angle = 3 + 0, endAbsoluteX = 26)
+        |> angledLine(angle = 89, endAbsoluteY = 9.14 + 0)
         |> angledLineThatIntersects({
         angle = 4.14,
         intersectTag = a,
@@ -530,11 +527,9 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
         hoverPos: { x: angledLineOfXLength.x, y: angledLineOfXLength.y },
         constraintType: 'angle',
         expectBeforeUnconstrained:
-          'angledLineOfXLength({ angle = 181 + 0, length = 23.14 }, %)',
-        expectAfterUnconstrained:
-          'angledLineOfXLength({ angle = -179, length = 23.14 }, %)',
-        expectFinal:
-          'angledLineOfXLength({ angle = angle001, length = 23.14 }, %)',
+          'angledLine(angle = 181 + 0, lengthX = 23.14)',
+        expectAfterUnconstrained: 'angledLine(angle = -179, lengthX = 23.14)',
+        expectFinal: 'angledLine(angle = angle001, lengthX = 23.14)',
         ang: ang + 180,
         locator: '[data-overlay-toolbar-index="7"]',
       })
@@ -543,11 +538,10 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
         hoverPos: { x: angledLineOfXLength.x, y: angledLineOfXLength.y },
         constraintType: 'xRelative',
         expectBeforeUnconstrained:
-          'angledLineOfXLength({ angle = angle001, length = 23.14 }, %)',
+          'angledLine(angle = angle001, lengthX = 23.14)',
         expectAfterUnconstrained:
-          'angledLineOfXLength({ angle = angle001, length = xRel001 }, %)',
-        expectFinal:
-          'angledLineOfXLength({ angle = angle001, length = 23.14 }, %)',
+          'angledLine(angle = angle001, lengthX = xRel001)',
+        expectFinal: 'angledLine(angle = angle001, lengthX = 23.14)',
         steps: 7,
         ang: ang + 180,
         locator: '[data-overlay-toolbar-index="7"]',
@@ -561,11 +555,10 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
       await clickUnconstrained({
         hoverPos: { x: angledLineOfYLength.x, y: angledLineOfYLength.y },
         constraintType: 'angle',
-        expectBeforeUnconstrained:
-          'angledLineOfYLength({ angle = -91, length = 19 + 0 }, %)',
+        expectBeforeUnconstrained: 'angledLine(angle = -91, lengthY = 19 + 0)',
         expectAfterUnconstrained:
-          'angledLineOfYLength({ angle = angle002, length = 19 + 0 }, %)',
-        expectFinal: 'angledLineOfYLength({ angle = -91, length = 19 + 0 }, %)',
+          'angledLine(angle = angle002, lengthY = 19 + 0)',
+        expectFinal: 'angledLine(angle = -91, lengthY = 19 + 0)',
         ang: ang + 180,
         steps: 6,
         locator: '[data-overlay-toolbar-index="8"]',
@@ -574,12 +567,9 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
       await clickConstrained({
         hoverPos: { x: angledLineOfYLength.x, y: angledLineOfYLength.y },
         constraintType: 'yRelative',
-        expectBeforeUnconstrained:
-          'angledLineOfYLength({ angle = -91, length = 19 + 0 }, %)',
-        expectAfterUnconstrained:
-          'angledLineOfYLength({ angle = -91, length = 19 }, %)',
-        expectFinal:
-          'angledLineOfYLength({ angle = -91, length = yRel002 }, %)',
+        expectBeforeUnconstrained: 'angledLine(angle = -91, lengthY = 19 + 0)',
+        expectAfterUnconstrained: 'angledLine(angle = -91, lengthY = 19)',
+        expectFinal: 'angledLine(angle = -91, lengthY = yRel002)',
         ang: ang + 180,
         steps: 7,
         locator: '[data-overlay-toolbar-index="8"]',
@@ -597,16 +587,16 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
       part001 = startSketchOn(XZ)
         |> startProfileAt([0, 0], %)
         |> line(end = [0.5, -14 + 0])
-        |> angledLine({ angle = 3 + 0, length = 32 + 0 }, %)
+        |> angledLine(angle = 3 + 0, length = 32 + 0)
         |> line(endAbsolute = [33, 11.5 + 0])
         |> xLine(endAbsolute = 9 - 5)
         |> yLine(endAbsolute = -10.77, tag = $a)
         |> xLine(length = 26.04)
         |> yLine(length = 21.14 + 0)
-        |> angledLineOfXLength({ angle = 181 + 0, length = 23.14 }, %)
-        |> angledLineOfYLength({ angle = -91, length = 19 + 0 }, %)
-        |> angledLineToX({ angle = 3 + 0, to = 26 }, %)
-        |> angledLineToY({ angle = 89, to = 9.14 + 0 }, %)
+        |> angledLine(angle = 181 + 0, lengthX = 23.14)
+        |> angledLine(angle = -91, lengthY = 19 + 0)
+        |> angledLine(angle = 3 + 0, endAbsoluteX = 26)
+        |> angledLine(angle = 89, endAbsoluteY = 9.14 + 0)
         |> angledLineThatIntersects({
         angle = 4.14,
         intersectTag = a,
@@ -646,9 +636,9 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
         hoverPos: { x: angledLineToX.x, y: angledLineToX.y },
         constraintType: 'angle',
         expectBeforeUnconstrained:
-          'angledLineToX({ angle = 3 + 0, to = 26 }, %)',
-        expectAfterUnconstrained: 'angledLineToX({ angle = 3, to = 26 }, %)',
-        expectFinal: 'angledLineToX({ angle = angle001, to = 26 }, %)',
+          'angledLine(angle = 3 + 0, endAbsoluteX = 26)',
+        expectAfterUnconstrained: 'angledLine(angle = 3, endAbsoluteX = 26)',
+        expectFinal: 'angledLine(angle = angle001, endAbsoluteX = 26)',
         ang: ang + 180,
         locator: '[data-overlay-toolbar-index="9"]',
       })
@@ -657,10 +647,10 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
         hoverPos: { x: angledLineToX.x, y: angledLineToX.y },
         constraintType: 'xAbsolute',
         expectBeforeUnconstrained:
-          'angledLineToX({ angle = angle001, to = 26 }, %)',
+          'angledLine(angle = angle001, endAbsoluteX = 26)',
         expectAfterUnconstrained:
-          'angledLineToX({ angle = angle001, to = xAbs001 }, %)',
-        expectFinal: 'angledLineToX({ angle = angle001, to = 26 }, %)',
+          'angledLine(angle = angle001, endAbsoluteX = xAbs001)',
+        expectFinal: 'angledLine(angle = angle001, endAbsoluteX = 26)',
         ang: ang + 180,
         locator: '[data-overlay-toolbar-index="9"]',
       })
@@ -671,11 +661,9 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
       await clickUnconstrained({
         hoverPos: { x: angledLineToY.x, y: angledLineToY.y },
         constraintType: 'angle',
-        expectBeforeUnconstrained:
-          'angledLineToY({ angle = 89, to = 9.14 + 0 }, %)',
-        expectAfterUnconstrained:
-          'angledLineToY({ angle = angle002, to = 9.14 + 0 }, %)',
-        expectFinal: 'angledLineToY({ angle = 89, to = 9.14 + 0 }, %)',
+        expectBeforeUnconstrained: 'angledLine(angle = 89, to = 9.14 + 0)',
+        expectAfterUnconstrained: 'angledLine(angle = angle002, to = 9.14 + 0)',
+        expectFinal: 'angledLine(angle = 89, to = 9.14 + 0)',
         steps: process.platform === 'darwin' ? 8 : 9,
         ang: ang + 180,
         locator: '[data-overlay-toolbar-index="10"]',
@@ -685,9 +673,9 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
         hoverPos: { x: angledLineToY.x, y: angledLineToY.y },
         constraintType: 'yAbsolute',
         expectBeforeUnconstrained:
-          'angledLineToY({ angle = 89, to = 9.14 + 0 }, %)',
-        expectAfterUnconstrained: 'angledLineToY({ angle = 89, to = 9.14 }, %)',
-        expectFinal: 'angledLineToY({ angle = 89, to = yAbs001 }, %)',
+          'angledLine(angle = 89, endAbsoluteY = 9.14 + 0)',
+        expectAfterUnconstrained: 'angledLine(angle = 89, endAbsoluteY = 9.14)',
+        expectFinal: 'angledLine(angle = 89, endAbsoluteY = yAbs001)',
         ang: ang + 180,
         locator: '[data-overlay-toolbar-index="10"]',
       })
@@ -759,16 +747,16 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
       part001 = startSketchOn(XZ)
         |> startProfileAt([0, 0], %)
         |> line(end = [0.5, -14 + 0])
-        |> angledLine({ angle = 3 + 0, length = 32 + 0 }, %)
+        |> angledLine(angle = 3 + 0, length = 32 + 0)
         |> line(endAbsolute = [33, 11.5 + 0])
         |> xLine(endAbsolute = 9 - 5)
         |> yLine(endAbsolute = -10.77, tag = $a)
         |> xLine(length = 26.04)
         |> yLine(length = 21.14 + 0)
-        |> angledLineOfXLength({ angle = 181 + 0, length = 23.14 }, %)
-        |> angledLineOfYLength({ angle = -91, length = 19 + 0 }, %)
-        |> angledLineToX({ angle = 3 + 0, to = 26 }, %)
-        |> angledLineToY({ angle = 89, to = 9.14 + 0 }, %)
+        |> angledLine(angle = 181 + 0, lengthX = 23.14)
+        |> angledLine(angle = -91, lengthY = 19 + 0)
+        |> angledLine(angle = 3 + 0, endAbsoluteX = 26)
+        |> angledLine(angle = 89, endAbsoluteY = 9.14 + 0)
         |> angledLineThatIntersects({
         angle = 4.14,
         intersectTag = a,
@@ -1088,16 +1076,16 @@ part001 = startSketchOn(XZ)
 part001 = startSketchOn(XZ)
   |>startProfileAt([0, 0], %)
   |> line(end = [0.5, -14 + 0])
-  |> angledLine({ angle = 3 + 0, length = 32 + 0 }, %)
+  |> angledLine(angle = 3 + 0, length = 32 + 0)
   |> line(endAbsolute = [33, 11.5 + 0])
   |> xLine(endAbsolute = 9 - 5)
   |> yLine(endAbsolute = -10.77, tag = $a)
   |> xLine(length = 26.04)
   |> yLine(length = 21.14 + 0)
-  |> angledLineOfXLength({ angle = 181 + 0, length = 23.14 }, %)
-  |> angledLineOfYLength({ angle = -91, length = 19 + 0 }, %)
-  |> angledLineToX({ angle = 3 + 0, to = 26 }, %)
-  |> angledLineToY({ angle = 89, to = 9.14 + 0 }, %)
+  |> angledLine(angle = 181 + 0, lengthX = 23.14)
+  |> angledLine(angle = -91, lengthY = 19 + 0)
+  |> angledLine(angle = 3 + 0, endAbsoluteX = 26)
+  |> angledLine(angle = 89, endAbsoluteY = 9.14 + 0)
   |> angledLineThatIntersects({
        angle = 4.14,
        intersectTag = a,
@@ -1199,7 +1187,7 @@ part001 = startSketchOn(XZ)
       ang = await u.getAngle('[data-overlay-index="10"]')
       await deleteSegmentSequence({
         hoverPos: { x: segmentToDelete.x, y: segmentToDelete.y },
-        codeToBeDeleted: 'angledLineToY({ angle = 89, to = 9.14 + 0 }, %)',
+        codeToBeDeleted: 'angledLine(angle = 89, endAbsoluteY = 9.14 + 0)',
         stdLibFnName: 'angledLineToY',
         ang: ang + 180,
         locator: '[data-overlay-toolbar-index="10"]',
@@ -1209,7 +1197,7 @@ part001 = startSketchOn(XZ)
       ang = await u.getAngle('[data-overlay-index="9"]')
       await deleteSegmentSequence({
         hoverPos: { x: segmentToDelete.x, y: segmentToDelete.y },
-        codeToBeDeleted: 'angledLineToX({ angle = 3 + 0, to = 26 }, %)',
+        codeToBeDeleted: 'angledLine(angle = 3 + 0, endAbsoluteX = 26)',
         stdLibFnName: 'angledLineToX',
         ang: ang + 180,
         locator: '[data-overlay-toolbar-index="9"]',
@@ -1219,8 +1207,7 @@ part001 = startSketchOn(XZ)
       ang = await u.getAngle('[data-overlay-index="8"]')
       await deleteSegmentSequence({
         hoverPos: { x: segmentToDelete.x, y: segmentToDelete.y },
-        codeToBeDeleted:
-          'angledLineOfYLength({ angle = -91, length = 19 + 0 }, %)',
+        codeToBeDeleted: 'angledLine(angle = -91, lengthY = 19 + 0)',
         stdLibFnName: 'angledLineOfYLength',
         ang: ang + 180,
         locator: '[data-overlay-toolbar-index="8"]',
@@ -1230,8 +1217,7 @@ part001 = startSketchOn(XZ)
       ang = await u.getAngle('[data-overlay-index="7"]')
       await deleteSegmentSequence({
         hoverPos: { x: segmentToDelete.x, y: segmentToDelete.y },
-        codeToBeDeleted:
-          'angledLineOfXLength({ angle = 181 + 0, length = 23.14 }, %)',
+        codeToBeDeleted: 'angledLine(angle = 181 + 0, lengthX = 23.14)',
         stdLibFnName: 'angledLineOfXLength',
         ang: ang + 180,
         locator: '[data-overlay-toolbar-index="7"]',
@@ -1314,7 +1300,7 @@ part001 = startSketchOn(XZ)
       ang = await u.getAngle('[data-overlay-index="1"]')
       await deleteSegmentSequence({
         hoverPos: { x: segmentToDelete.x, y: segmentToDelete.y },
-        codeToBeDeleted: 'angledLine({ angle = 3 + 0, length = 32 + 0 }, %)',
+        codeToBeDeleted: 'angledLine(angle = 3 + 0, length = 32 + 0)',
         stdLibFnName: 'angledLine',
         ang: ang + 180,
         locator: '[data-overlay-toolbar-index="1"]',
@@ -1335,24 +1321,20 @@ part001 = startSketchOn(XZ)
   test.describe('Testing delete with dependent segments', () => {
     const cases = [
       'line(end = [22, 2], tag = $seg01)',
-      'angledLine([5, 23.03], %, $seg01)',
+      'angledLine(angle = 5, length = 23.03, tag = $seg01)',
       'xLine(length = 23, tag = $seg01)',
       'yLine(length = -8, tag = $seg01)',
       'xLine(endAbsolute = 30, tag = $seg01)',
       'yLine(endAbsolute = -4, tag = $seg01)',
-      'angledLineOfXLength([3, 30], %, $seg01)',
-      'angledLineOfXLength({ angle = 3, length = 30 }, %, $seg01)',
-      'angledLineOfYLength([3, 1.5], %, $seg01)',
-      'angledLineOfYLength({ angle = 3, length = 1.5 }, %, $seg01)',
-      'angledLineToX([3, 30], %, $seg01)',
-      'angledLineToX({ angle = 3, to = 30 }, %, $seg01)',
-      'angledLineToY([3, 7], %, $seg01)',
-      'angledLineToY({ angle = 3, to = 7 }, %, $seg01)',
+      'angledLine(angle = 3, lengthX = 30, tag = $seg01)',
+      'angledLine(angle = 3, lengthY = 1.5, tag = $seg01)',
+      'angledLine(angle = 3, endAbsoluteX = 30, tag = $seg01)',
+      'angledLine(angle = 3, endAbsoluteY = 7, tag = $seg01)',
     ]
     for (const doesHaveTagOutsideSketch of [true, false]) {
       for (const lineOfInterest of cases) {
         const isObj = lineOfInterest.includes('{ angle = 3,')
-        test(`${lineOfInterest.split('=')[0]}${isObj ? '-[obj-input]' : ''}${
+        test(`${lineOfInterest}${isObj ? '-[obj-input]' : ''}${
           doesHaveTagOutsideSketch ? '-[tagOutsideSketch]' : ''
         }`, async ({ page, editor, homePage }) => {
           await page.addInitScript(
@@ -1364,7 +1346,7 @@ part001 = startSketchOn(XZ)
           |> startProfileAt([5, 6], %)
           |> ${lineToBeDeleted}
           |> line(end = [-10, -15])
-          |> angledLine([-176, segLen(seg01)], %)
+          |> angledLine(angle = -176, length = segLen(seg01))
         ${extraLine ? 'myVar = segLen(seg01)' : ''}`
               )
             },
@@ -1477,7 +1459,7 @@ part001 = startSketchOn(XZ)
       },
 
       {
-        before: `angledLine([5 + 0, 23.03 + 0], %, $seg01)`,
+        before: `angledLine(angle = 5 + 0, length = 23.03 + 0, tag = $seg01)`,
         after: `line(end = [22.94, 2.01], tag = $seg01)`,
       },
       {
@@ -1497,32 +1479,25 @@ part001 = startSketchOn(XZ)
         after: `line(end = [0, -10], tag = $seg01)`,
       },
       {
-        before: `angledLineOfXLength({ angle = 3 + 0, length = 30 + 0 }, %, $seg01)`,
+        before: `angledLine(angle = 3 + 0, lengthX = 30 + 0, tag = $seg01)`,
         after: `line(end = [30, 1.57], tag = $seg01)`,
       },
       {
-        before: `angledLineOfYLength({ angle = 3 + 0, length = 1.5 + 0 }, %, $seg01)`,
+        before: `angledLine(angle = 3 + 0, lengthY = 1.5 + 0, tag = $seg01)`,
         after: `line(end = [28.62, 1.5], tag = $seg01)`,
       },
       {
-        before: `angledLineToX({ angle = 3 + 0, to = 30 + 0 }, %, $seg01)`,
+        before: `angledLine(angle = 3 + 0, endAbsoluteX = 30 + 0, tag = $seg01)`,
         after: `line(end = [25, 1.31], tag = $seg01)`,
       },
       {
-        before: `angledLineToY({ angle = 3 + 0, to = 7 + 0 }, %, $seg01)`,
+        before: `angledLine(angle = 3 + 0, endAbsoluteY = 7 + 0, tag = $seg01)`,
         after: `line(end = [19.08, 1], tag = $seg01)`,
       },
     ]
 
     for (const { before, after } of cases) {
-      const isObj = before.includes('{ angle = 3')
-      test(`${before.split('=')[0]}${isObj ? '-[obj-input]' : ''}`, async ({
-        page,
-        editor,
-        homePage,
-        scene,
-        cmdBar,
-      }) => {
+      test(before, async ({ page, editor, homePage, scene, cmdBar }) => {
         await page.addInitScript(
           async ({ lineToBeDeleted }) => {
             localStorage.setItem(
@@ -1532,7 +1507,7 @@ part001 = startSketchOn(XZ)
         |> startProfileAt([5, 6], %)
         |> ${lineToBeDeleted}
         |> line(end = [-10, -15])
-        |> angledLine([-176, segLen(seg01)], %)`
+        |> angledLine(angle = -176, length = segLen(seg01))`
             )
           },
           {

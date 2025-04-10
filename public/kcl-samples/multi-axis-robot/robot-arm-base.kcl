@@ -9,15 +9,9 @@ import basePlateRadius, basePlateThickness, baseChamfer, baseHeight from "global
 // Base Plate
 sketch001 = startSketchOn(XY)
   |> startProfileAt([-basePlateRadius, -basePlateRadius], %)
-  |> angledLine([0, 2 * basePlateRadius], %, $rectangleSegmentA001)
-  |> angledLine([
-       segAng(rectangleSegmentA001) + 90,
-       2 * basePlateRadius
-     ], %, $rectangleSegmentB001)
-  |> angledLine([
-       segAng(rectangleSegmentA001),
-       -segLen(rectangleSegmentA001)
-     ], %, $rectangleSegmentC001)
+  |> angledLine(angle = 0, length = 2 * basePlateRadius, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) + 90, length = 2 * basePlateRadius, tag = $rectangleSegmentB001)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $rectangleSegmentC001)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $rectangleSegmentD001)
   |> close()
 extrude001 = extrude(sketch001, length = basePlateThickness)
