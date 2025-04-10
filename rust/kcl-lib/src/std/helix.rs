@@ -17,7 +17,7 @@ use super::args::TyF64;
 
 /// Create a helix.
 pub async fn helix(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let angle_start: TyF64 = args.get_kw_arg_typed("angleStart", &RuntimeType::angle(), exec_state)?;
+    let angle_start: TyF64 = args.get_kw_arg_typed("angleStart", &RuntimeType::degrees(), exec_state)?;
     let revolutions: TyF64 = args.get_kw_arg_typed("revolutions", &RuntimeType::count(), exec_state)?;
     let ccw = args.get_kw_arg_opt("ccw")?;
     let radius: Option<TyF64> = args.get_kw_arg_opt_typed("radius", &RuntimeType::length(), exec_state)?;

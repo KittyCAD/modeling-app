@@ -451,11 +451,11 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
         ]),
         exec_state,
     )?;
-    let roll: Option<TyF64> = args.get_kw_arg_opt_typed("roll", &RuntimeType::angle(), exec_state)?;
-    let pitch: Option<TyF64> = args.get_kw_arg_opt_typed("pitch", &RuntimeType::angle(), exec_state)?;
-    let yaw: Option<TyF64> = args.get_kw_arg_opt_typed("yaw", &RuntimeType::angle(), exec_state)?;
+    let roll: Option<TyF64> = args.get_kw_arg_opt_typed("roll", &RuntimeType::degrees(), exec_state)?;
+    let pitch: Option<TyF64> = args.get_kw_arg_opt_typed("pitch", &RuntimeType::degrees(), exec_state)?;
+    let yaw: Option<TyF64> = args.get_kw_arg_opt_typed("yaw", &RuntimeType::degrees(), exec_state)?;
     let axis: Option<[TyF64; 3]> = args.get_kw_arg_opt_typed("axis", &RuntimeType::point3d(), exec_state)?;
-    let angle: Option<TyF64> = args.get_kw_arg_opt_typed("angle", &RuntimeType::angle(), exec_state)?;
+    let angle: Option<TyF64> = args.get_kw_arg_opt_typed("angle", &RuntimeType::degrees(), exec_state)?;
     let global = args.get_kw_arg_opt("global")?;
 
     // Check if no rotation values are provided.

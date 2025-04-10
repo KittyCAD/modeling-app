@@ -219,7 +219,7 @@ pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Res
 /// // Defines how to modify each layer of the vase.
 /// // Each replica is shifted up the Z axis, and has a smoothly-varying radius
 /// fn transform(replicaId) {
-///   scale = r * abs(1 - (t * replicaId)) * (5 + cos(replicaId / 8))
+///   scale = r * abs(1 - (t * replicaId)) * (5 + cos((replicaId / 8): number(rad)))
 ///   return {
 ///     translate = [0, 0, replicaId * 10],
 ///     scale = [scale, scale, 0],
@@ -1045,7 +1045,7 @@ pub async fn pattern_circular_2d(exec_state: &mut ExecState, args: Args) -> Resu
     let sketches = args.get_unlabeled_kw_arg_typed("sketches", &RuntimeType::sketches(), exec_state)?;
     let instances: u32 = args.get_kw_arg("instances")?;
     let center: [TyF64; 2] = args.get_kw_arg_typed("center", &RuntimeType::point2d(), exec_state)?;
-    let arc_degrees: TyF64 = args.get_kw_arg_typed("arcDegrees", &RuntimeType::angle(), exec_state)?;
+    let arc_degrees: TyF64 = args.get_kw_arg_typed("arcDegrees", &RuntimeType::degrees(), exec_state)?;
     let rotate_duplicates: bool = args.get_kw_arg("rotateDuplicates")?;
     let use_original: Option<bool> = args.get_kw_arg_opt("useOriginal")?;
 
@@ -1157,7 +1157,7 @@ pub async fn pattern_circular_3d(exec_state: &mut ExecState, args: Args) -> Resu
     // The center about which to make the pattern. This is a 3D vector.
     let center: [TyF64; 3] = args.get_kw_arg_typed("center", &RuntimeType::point3d(), exec_state)?;
     // The arc angle (in degrees) to place the repetitions. Must be greater than 0.
-    let arc_degrees: TyF64 = args.get_kw_arg_typed("arcDegrees", &RuntimeType::angle(), exec_state)?;
+    let arc_degrees: TyF64 = args.get_kw_arg_typed("arcDegrees", &RuntimeType::degrees(), exec_state)?;
     // Whether or not to rotate the duplicates as they are copied.
     let rotate_duplicates: bool = args.get_kw_arg("rotateDuplicates")?;
     // If the target being patterned is itself a pattern, then, should you use the original solid,
