@@ -76,6 +76,18 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
         }),
     },
     {
+      id: 'share-link',
+      title: 'Create share link',
+      sidebarName: 'Create share link',
+      icon: 'link',
+      keybinding: 'Mod + Alt + S',
+      action: () =>
+        commandBarActor.send({
+          type: 'Find and select command',
+          data: { name: 'share-file-link', groupId: 'code' },
+        }),
+    },
+    {
       id: 'export',
       title: 'Export part',
       sidebarName: 'Export part',
