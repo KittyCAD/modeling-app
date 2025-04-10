@@ -12,6 +12,7 @@ class MyAPIReporter implements Reporter {
       // Optional information
       duration: result.duration / 1000,
       message: result.error?.stack,
+      platform: process.env.RUNNER_OS || process.platform,
       // Extra test and result data
       annotations: test.annotations.map((a) => a.type),
       retries: result.retry,
@@ -23,7 +24,6 @@ class MyAPIReporter implements Reporter {
       GITHUB_REF: process.env.GITHUB_REF || null,
       GITHUB_WORKFLOW: process.env.GITHUB_WORKFLOW || null,
       RUNNER_ARCH: process.env.RUNNER_ARCH || null,
-      RUNNER_OS: process.env.RUNNER_OS || null,
     }
 
     if (!process.env.TAB_API_URL || !process.env.TAB_API_KEY) {
