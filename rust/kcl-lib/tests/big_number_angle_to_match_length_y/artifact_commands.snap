@@ -162,7 +162,8 @@ description: Artifact commands big_number_angle_to_match_length_y.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 10.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {

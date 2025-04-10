@@ -179,7 +179,8 @@ description: Artifact commands subtract_cylinder_from_cube.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 10.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -410,7 +411,8 @@ description: Artifact commands subtract_cylinder_from_cube.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 10.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
