@@ -5,12 +5,14 @@ on:
   push:
     branches:
       - main
+      - pierremtb/issue6256-Updater-on-Nightly-on-Windows-failed
     tags:
       - 'v[0-9]+.[0-9]+.[0-9]+'
       - 'nightly-v[0-9]+.[0-9]+.[0-9]+'
 
 env:
-  IS_RELEASE: ${{ github.ref_type == 'tag' && startsWith(github.ref_name, 'v') }}
+  # IS_RELEASE: ${{ github.ref_type == 'tag' && startsWith(github.ref_name, 'v') }}
+  IS_RELEASE: true
   IS_NIGHTLY: ${{ github.ref_type == 'tag' && startsWith(github.ref_name, 'nightly-v') }}
 
 concurrency:
@@ -100,7 +102,8 @@ jobs:
           yarn files:flip-to-nightly
 
       - name: Set release version
-        if: ${{ env.IS_RELEASE == 'true' }}
+        # if: ${{ env.IS_RELEASE == 'true' }}
+        if: true
         run: |
           export VERSION=${GITHUB_REF_NAME#v}
           yarn files:set-version
