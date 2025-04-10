@@ -99,7 +99,6 @@ export class HomePageFixture {
   createAndGoToProject = async (projectTitle = 'untitled') => {
     await this.projectsLoaded()
     await this.projectButtonNew.click()
-    await this.projectTextName.click()
     await this.projectTextName.fill(projectTitle)
     await this.projectButtonContinue.click()
   }
