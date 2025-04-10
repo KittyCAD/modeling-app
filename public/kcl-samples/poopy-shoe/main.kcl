@@ -69,7 +69,7 @@ customPlane = {
 }
 sketch003 = startSketchOn(customPlane)
   |> startProfileAt([0, 0], %)
-  |> tangentialArc({ offset = 60, radius = height }, %)
+  |> tangentialArc(angle = 60, radius = height)
   |> angledLine(angle = 60, endAbsoluteY = 0)
   |> close()
   |> extrude(length = wallThickness)
