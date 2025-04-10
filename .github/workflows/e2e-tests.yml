@@ -365,6 +365,8 @@ jobs:
         env:
           FAIL_ON_CONSOLE_ERRORS: true
           token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
+          TAB_API_URL: ${{ secrets.TAB_API_URL }}
+          TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
 
       - uses: actions/upload-artifact@v4
         if: ${{ needs.conditions.outputs.should-run == 'true' && always() }}
