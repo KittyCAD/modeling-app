@@ -2,6 +2,8 @@
 
 use anyhow::Result;
 use kcl_derive_docs::stdlib;
+use kcmc::{each_cmd as mcmd, length_unit::LengthUnit, ModelingCmd};
+use kittycad_modeling_cmds::{self as kcmc};
 
 use crate::{
     errors::{KclError, KclErrorDetails},
@@ -106,14 +108,22 @@ pub(crate) async fn inner_union(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Vec<Solid>, KclError> {
+    if args.ctx.no_engine_commands().await {
+        return Ok(vec![solids[0].clone()]);
+    }
+
     // Flush the fillets for the solids.
     args.flush_batch_for_solids(exec_state, &solids).await?;
 
-    // TODO: call the engine union operation.
-    // TODO: figure out all the shit after for the faces etc.
+    args.batch_modeling_cmd(
+        exec_state.next_uuid(),
+        ModelingCmd::from(mcmd::BooleanUnion {
+            solid_ids: solids.iter().map(|s| s.id).collect(),
+        }),
+    )
+    .await?;
 
-    // For now just return the first solid.
-    // Til we have a proper implementation.
+    // This will be morphed into the first solid.
     Ok(vec![solids[0].clone()])
 }
 
@@ -196,14 +206,22 @@ pub(crate) async fn inner_intersect(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Vec<Solid>, KclError> {
+    if args.ctx.no_engine_commands().await {
+        return Ok(vec![solids[0].clone()]);
+    }
+
     // Flush the fillets for the solids.
     args.flush_batch_for_solids(exec_state, &solids).await?;
 
-    // TODO: call the engine union operation.
-    // TODO: figure out all the shit after for the faces etc.
+    args.batch_modeling_cmd(
+        exec_state.next_uuid(),
+        ModelingCmd::from(mcmd::BooleanIntersection {
+            solid_ids: solids.iter().map(|s| s.id).collect(),
+        }),
+    )
+    .await?;
 
-    // For now just return the first solid.
-    // Til we have a proper implementation.
+    // This will be morphed into the first solid.
     Ok(vec![solids[0].clone()])
 }
 
@@ -285,14 +303,23 @@ pub(crate) async fn inner_subtract(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Vec<Solid>, KclError> {
+    if args.ctx.no_engine_commands().await {
+        return Ok(vec![solids[0].clone()]);
+    }
+
     // Flush the fillets for the solids and the tools.
     let combined_solids = solids.iter().chain(tools.iter()).cloned().collect::<Vec<Solid>>();
     args.flush_batch_for_solids(exec_state, &combined_solids).await?;
 
-    // TODO: call the engine union operation.
-    // TODO: figure out all the shit after for the faces etc.
+    args.batch_modeling_cmd(
+        exec_state.next_uuid(),
+        ModelingCmd::from(mcmd::BooleanSubtract {
+            target_ids: solids.iter().map(|s| s.id).collect(),
+            tool_ids: tools.iter().map(|s| s.id).collect(),
+        }),
+    )
+    .await?;
 
-    // For now just return the first solid.
-    // Til we have a proper implementation.
+    // This will be morphed into the first solid.
     Ok(vec![solids[0].clone()])
 }
