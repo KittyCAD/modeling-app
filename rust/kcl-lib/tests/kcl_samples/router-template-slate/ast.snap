@@ -2033,13 +2033,20 @@ description: Result of parsing router-template-slate.kcl
                     "type": "Name"
                   },
                   {
+                    "abs_path": false,
                     "commentStart": 0,
                     "end": 0,
-                    "raw": "'START'",
+                    "name": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "name": "START",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 0,
-                    "type": "Literal",
-                    "type": "Literal",
-                    "value": "START"
+                    "type": "Name",
+                    "type": "Name"
                   }
                 ],
                 "callee": {
@@ -2862,13 +2869,20 @@ description: Result of parsing router-template-slate.kcl
                     "type": "Name"
                   },
                   {
+                    "abs_path": false,
                     "commentStart": 0,
                     "end": 0,
-                    "raw": "'START'",
+                    "name": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "name": "START",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 0,
-                    "type": "Literal",
-                    "type": "Literal",
-                    "value": "START"
+                    "type": "Name",
+                    "type": "Name"
                   }
                 ],
                 "callee": {

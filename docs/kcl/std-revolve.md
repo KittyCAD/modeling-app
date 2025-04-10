@@ -104,7 +104,7 @@ part001 = startSketchOn(XY)
     |> close()
     |> revolve(axis = Y, angle = 180)
 
-part002 = startSketchOn(part001, 'end')
+part002 = startSketchOn(part001, END)
     |> startProfileAt([4.5, -5], %)
     |> line(end = [0, 5])
     |> line(end = [5, 0])
@@ -124,7 +124,7 @@ box = startSketchOn(XY)
     |> close()
     |> extrude(length = 20)
 
-sketch001 = startSketchOn(box, "END")
+sketch001 = startSketchOn(box, END)
     |> circle( center = [10,10], radius = 4 )
     |> revolve(
         angle = -90,
@@ -143,7 +143,7 @@ box = startSketchOn(XY)
     |> close()
     |> extrude(length = 20)
 
-sketch001 = startSketchOn(box, "END")
+sketch001 = startSketchOn(box, END)
     |> circle( center = [10,10], radius = 4 )
     |> revolve(
         angle = 90,
@@ -162,7 +162,7 @@ box = startSketchOn(XY)
     |> close()
     |> extrude(length = 20)
 
-sketch001 = startSketchOn(box, "END")
+sketch001 = startSketchOn(box, END)
     |> circle( center = [10,10], radius = 4 )
     |> revolve(
         angle = 90,

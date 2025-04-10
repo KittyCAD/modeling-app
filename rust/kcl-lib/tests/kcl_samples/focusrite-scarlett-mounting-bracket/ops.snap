@@ -9,8 +9,8 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
       "type": "FunctionCall",
       "name": "bracketSketch",
       "functionSourceRange": [
-        1207,
-        1731,
+        1205,
+        1729,
         0
       ],
       "unlabeledArg": null,

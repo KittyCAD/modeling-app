@@ -946,13 +946,20 @@ description: Result of parsing parametric-bearing-pillow-block.kcl
                     "type": "Name"
                   },
                   {
+                    "abs_path": false,
                     "commentStart": 0,
                     "end": 0,
-                    "raw": "'end'",
+                    "name": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "name": "END",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 0,
-                    "type": "Literal",
-                    "type": "Literal",
-                    "value": "end"
+                    "type": "Name",
+                    "type": "Name"
                   }
                 ],
                 "callee": {
@@ -1636,13 +1643,20 @@ description: Result of parsing parametric-bearing-pillow-block.kcl
                     "type": "Name"
                   },
                   {
+                    "abs_path": false,
                     "commentStart": 0,
                     "end": 0,
-                    "raw": "'start'",
+                    "name": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "name": "START",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 0,
-                    "type": "Literal",
-                    "type": "Literal",
-                    "value": "start"
+                    "type": "Name",
+                    "type": "Name"
                   }
                 ],
                 "callee": {
@@ -2344,13 +2358,20 @@ description: Result of parsing parametric-bearing-pillow-block.kcl
                     "type": "Name"
                   },
                   {
+                    "abs_path": false,
                     "commentStart": 0,
                     "end": 0,
-                    "raw": "'end'",
+                    "name": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "name": "END",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 0,
-                    "type": "Literal",
-                    "type": "Literal",
-                    "value": "end"
+                    "type": "Name",
+                    "type": "Name"
                   }
                 ],
                 "callee": {

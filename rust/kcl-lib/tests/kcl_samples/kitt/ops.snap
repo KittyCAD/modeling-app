@@ -79,7 +79,7 @@ description: Operations executed kitt.kcl
       "tag": {
         "value": {
           "type": "String",
-          "value": "END"
+          "value": "end"
         },
         "sourceRange": []
       }
@@ -138,7 +138,7 @@ description: Operations executed kitt.kcl
       "tag": {
         "value": {
           "type": "String",
-          "value": "END"
+          "value": "end"
         },
         "sourceRange": []
       }
@@ -209,7 +209,7 @@ description: Operations executed kitt.kcl
       "tag": {
         "value": {
           "type": "String",
-          "value": "START"
+          "value": "start"
         },
         "sourceRange": []
       }
@@ -283,7 +283,7 @@ description: Operations executed kitt.kcl
       "tag": {
         "value": {
           "type": "String",
-          "value": "START"
+          "value": "start"
         },
         "sourceRange": []
       }
@@ -357,7 +357,7 @@ description: Operations executed kitt.kcl
       "tag": {
         "value": {
           "type": "String",
-          "value": "START"
+          "value": "start"
         },
         "sourceRange": []
       }
@@ -431,7 +431,7 @@ description: Operations executed kitt.kcl
       "tag": {
         "value": {
           "type": "String",
-          "value": "START"
+          "value": "start"
         },
         "sourceRange": []
       }
@@ -490,7 +490,7 @@ description: Operations executed kitt.kcl
       "tag": {
         "value": {
           "type": "String",
-          "value": "START"
+          "value": "start"
         },
         "sourceRange": []
       }
@@ -561,81 +561,7 @@ description: Operations executed kitt.kcl
       "tag": {
         "value": {
           "type": "String",
-          "value": "START"
-        },
-        "sourceRange": []
-      }
-    },
-    "name": "startSketchOn",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": null
-  },
-  {
-    "labeledArgs": {
-      "length": {
-        "value": {
-          "type": "Number",
-          "value": 0.5,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
-        },
-        "sourceRange": []
-      }
-    },
-    "name": "extrude",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Sketch",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": []
-    }
-  },
-  {
-    "type": "GroupEnd"
-  },
-  {
-    "type": "GroupBegin",
-    "group": {
-      "type": "FunctionCall",
-      "name": "pixelBox",
-      "functionSourceRange": [
-        95,
-        496,
-        0
-      ],
-      "unlabeledArg": null,
-      "labeledArgs": {}
-    },
-    "sourceRange": []
-  },
-  {
-    "labeledArgs": {
-      "data": {
-        "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "tag": {
-        "value": {
-          "type": "String",
-          "value": "START"
+          "value": "start"
         },
         "sourceRange": []
       }
@@ -709,7 +635,7 @@ description: Operations executed kitt.kcl
       "tag": {
         "value": {
           "type": "String",
-          "value": "START"
+          "value": "start"
         },
         "sourceRange": []
       }
@@ -783,7 +709,7 @@ description: Operations executed kitt.kcl
       "tag": {
         "value": {
           "type": "String",
-          "value": "START"
+          "value": "start"
         },
         "sourceRange": []
       }
@@ -857,7 +783,81 @@ description: Operations executed kitt.kcl
       "tag": {
         "value": {
           "type": "String",
-          "value": "END"
+          "value": "start"
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "length": {
+        "value": {
+          "type": "Number",
+          "value": 0.5,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "extrude",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "pixelBox",
+      "functionSourceRange": [
+        95,
+        496,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "tag": {
+        "value": {
+          "type": "String",
+          "value": "end"
         },
         "sourceRange": []
       }
@@ -931,7 +931,7 @@ description: Operations executed kitt.kcl
       "tag": {
         "value": {
           "type": "String",
-          "value": "END"
+          "value": "end"
         },
         "sourceRange": []
       }
@@ -1005,7 +1005,7 @@ description: Operations executed kitt.kcl
       "tag": {
         "value": {
           "type": "String",
-          "value": "END"
+          "value": "end"
         },
         "sourceRange": []
       }
@@ -1079,7 +1079,7 @@ description: Operations executed kitt.kcl
       "tag": {
         "value": {
           "type": "String",
-          "value": "END"
+          "value": "end"
         },
         "sourceRange": []
       }
@@ -1153,7 +1153,7 @@ description: Operations executed kitt.kcl
       "tag": {
         "value": {
           "type": "String",
-          "value": "END"
+          "value": "end"
         },
         "sourceRange": []
       }
@@ -1227,7 +1227,7 @@ description: Operations executed kitt.kcl
       "tag": {
         "value": {
           "type": "String",
-          "value": "END"
+          "value": "end"
         },
         "sourceRange": []
       }
@@ -1301,7 +1301,7 @@ description: Operations executed kitt.kcl
       "tag": {
         "value": {
           "type": "String",
-          "value": "END"
+          "value": "end"
         },
         "sourceRange": []
       }
@@ -1375,7 +1375,7 @@ description: Operations executed kitt.kcl
       "tag": {
         "value": {
           "type": "String",
-          "value": "END"
+          "value": "end"
         },
         "sourceRange": []
       }
@@ -1449,7 +1449,7 @@ description: Operations executed kitt.kcl
       "tag": {
         "value": {
           "type": "String",
-          "value": "END"
+          "value": "end"
         },
         "sourceRange": []
       }
@@ -1500,8 +1500,8 @@ description: Operations executed kitt.kcl
       "type": "FunctionCall",
       "name": "kitLeg",
       "functionSourceRange": [
-        6080,
-        6895,
+        6040,
+        6853,
         0
       ],
       "unlabeledArg": null,
@@ -1585,7 +1585,7 @@ description: Operations executed kitt.kcl
       "tag": {
         "value": {
           "type": "String",
-          "value": "END"
+          "value": "end"
         },
         "sourceRange": []
       }
@@ -1639,8 +1639,8 @@ description: Operations executed kitt.kcl
       "type": "FunctionCall",
       "name": "kitLeg",
       "functionSourceRange": [
-        6080,
-        6895,
+        6040,
+        6853,
         0
       ],
       "unlabeledArg": null,
@@ -1724,7 +1724,7 @@ description: Operations executed kitt.kcl
       "tag": {
         "value": {
           "type": "String",
-          "value": "END"
+          "value": "end"
         },
         "sourceRange": []
       }
@@ -1778,8 +1778,8 @@ description: Operations executed kitt.kcl
       "type": "FunctionCall",
       "name": "kitEar",
       "functionSourceRange": [
-        7082,
-        8003,
+        7040,
+        7955,
         0
       ],
       "unlabeledArg": null,
@@ -1891,7 +1891,7 @@ description: Operations executed kitt.kcl
       "tag": {
         "value": {
           "type": "String",
-          "value": "END"
+          "value": "end"
         },
         "sourceRange": []
       }
@@ -1965,7 +1965,7 @@ description: Operations executed kitt.kcl
       "tag": {
         "value": {
           "type": "String",
-          "value": "END"
+          "value": "end"
         },
         "sourceRange": []
       }
@@ -2039,7 +2039,7 @@ description: Operations executed kitt.kcl
       "tag": {
         "value": {
           "type": "String",
-          "value": "END"
+          "value": "end"
         },
         "sourceRange": []
       }
@@ -2093,8 +2093,8 @@ description: Operations executed kitt.kcl
       "type": "FunctionCall",
       "name": "kitEar",
       "functionSourceRange": [
-        7082,
-        8003,
+        7040,
+        7955,
         0
       ],
       "unlabeledArg": null,
@@ -2206,7 +2206,7 @@ description: Operations executed kitt.kcl
       "tag": {
         "value": {
           "type": "String",
-          "value": "END"
+          "value": "end"
         },
         "sourceRange": []
       }
@@ -2280,7 +2280,7 @@ description: Operations executed kitt.kcl
       "tag": {
         "value": {
           "type": "String",
-          "value": "END"
+          "value": "end"
         },
         "sourceRange": []
       }
@@ -2354,7 +2354,7 @@ description: Operations executed kitt.kcl
       "tag": {
         "value": {
           "type": "String",
-          "value": "END"
+          "value": "end"
         },
         "sourceRange": []
       }

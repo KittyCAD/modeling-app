@@ -129,7 +129,7 @@ description: Operations executed walkie-talkie.kcl
       "tag": {
         "value": {
           "type": "String",
-          "value": "END"
+          "value": "end"
         },
         "sourceRange": []
       }

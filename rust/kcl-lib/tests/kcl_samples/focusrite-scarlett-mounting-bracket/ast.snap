@@ -337,13 +337,20 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                         {
                           "arguments": [
                             {
+                              "abs_path": false,
                               "commentStart": 0,
                               "end": 0,
-                              "raw": "'xy'",
+                              "name": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "name": "XY",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 0,
-                              "type": "Literal",
-                              "type": "Literal",
-                              "value": "xy"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           ],
                           "callee": {

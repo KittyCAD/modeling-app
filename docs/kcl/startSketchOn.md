@@ -48,7 +48,7 @@ exampleSketch = startSketchOn(XY)
 
 example = extrude(exampleSketch, length = 5)
 
-exampleSketch002 = startSketchOn(example, 'end')
+exampleSketch002 = startSketchOn(example, END)
   |> startProfileAt([1, 1], %)
   |> line(end = [8, 0])
   |> line(end = [0, 8])
@@ -57,7 +57,7 @@ exampleSketch002 = startSketchOn(example, 'end')
 
 example002 = extrude(exampleSketch002, length = 5)
 
-exampleSketch003 = startSketchOn(example002, 'end')
+exampleSketch003 = startSketchOn(example002, END)
   |> startProfileAt([2, 2], %)
   |> line(end = [6, 0])
   |> line(end = [0, 6])
@@ -148,7 +148,7 @@ exampleSketch = startSketchOn(XY)
 
 example = revolve(exampleSketch, axis = Y, angle = 180)
 
-exampleSketch002 = startSketchOn(example, 'end')
+exampleSketch002 = startSketchOn(example, END)
   |> startProfileAt([4.5, -5], %)
   |> line(end = [0, 5])
   |> line(end = [5, 0])

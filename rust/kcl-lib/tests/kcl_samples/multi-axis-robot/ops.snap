@@ -129,7 +129,7 @@ description: Operations executed multi-axis-robot.kcl
       "tag": {
         "value": {
           "type": "String",
-          "value": "END"
+          "value": "end"
         },
         "sourceRange": []
       }
@@ -229,7 +229,7 @@ description: Operations executed multi-axis-robot.kcl
       "tag": {
         "value": {
           "type": "String",
-          "value": "END"
+          "value": "end"
         },
         "sourceRange": []
       }
@@ -285,7 +285,7 @@ description: Operations executed multi-axis-robot.kcl
       "tag": {
         "value": {
           "type": "String",
-          "value": "END"
+          "value": "end"
         },
         "sourceRange": []
       }
@@ -364,7 +364,7 @@ description: Operations executed multi-axis-robot.kcl
       "tag": {
         "value": {
           "type": "String",
-          "value": "END"
+          "value": "end"
         },
         "sourceRange": []
       }
@@ -947,7 +947,7 @@ description: Operations executed multi-axis-robot.kcl
       "tag": {
         "value": {
           "type": "String",
-          "value": "END"
+          "value": "end"
         },
         "sourceRange": []
       }
@@ -1083,7 +1083,7 @@ description: Operations executed multi-axis-robot.kcl
       "tag": {
         "value": {
           "type": "String",
-          "value": "END"
+          "value": "end"
         },
         "sourceRange": []
       }
@@ -1234,7 +1234,7 @@ description: Operations executed multi-axis-robot.kcl
       "tag": {
         "value": {
           "type": "String",
-          "value": "END"
+          "value": "end"
         },
         "sourceRange": []
       }
@@ -1856,7 +1856,7 @@ description: Operations executed multi-axis-robot.kcl
       "tag": {
         "value": {
           "type": "String",
-          "value": "START"
+          "value": "start"
         },
         "sourceRange": []
       }
@@ -1956,7 +1956,7 @@ description: Operations executed multi-axis-robot.kcl
       "tag": {
         "value": {
           "type": "String",
-          "value": "START"
+          "value": "start"
         },
         "sourceRange": []
       }
@@ -2092,7 +2092,7 @@ description: Operations executed multi-axis-robot.kcl
       "tag": {
         "value": {
           "type": "String",
-          "value": "END"
+          "value": "end"
         },
         "sourceRange": []
       }
@@ -2195,7 +2195,7 @@ description: Operations executed multi-axis-robot.kcl
       "tag": {
         "value": {
           "type": "String",
-          "value": "END"
+          "value": "end"
         },
         "sourceRange": []
       }
@@ -2346,7 +2346,7 @@ description: Operations executed multi-axis-robot.kcl
       "tag": {
         "value": {
           "type": "String",
-          "value": "END"
+          "value": "end"
         },
         "sourceRange": []
       }
@@ -2741,7 +2741,7 @@ description: Operations executed multi-axis-robot.kcl
       "tag": {
         "value": {
           "type": "String",
-          "value": "END"
+          "value": "end"
         },
         "sourceRange": []
       }
@@ -2877,7 +2877,7 @@ description: Operations executed multi-axis-robot.kcl
       "tag": {
         "value": {
           "type": "String",
-          "value": "END"
+          "value": "end"
         },
         "sourceRange": []
       }
@@ -3052,7 +3052,7 @@ description: Operations executed multi-axis-robot.kcl
       "tag": {
         "value": {
           "type": "String",
-          "value": "START"
+          "value": "start"
         },
         "sourceRange": []
       }
@@ -3180,7 +3180,7 @@ description: Operations executed multi-axis-robot.kcl
       "tag": {
         "value": {
           "type": "String",
-          "value": "END"
+          "value": "end"
         },
         "sourceRange": []
       }
@@ -3308,7 +3308,7 @@ description: Operations executed multi-axis-robot.kcl
       "tag": {
         "value": {
           "type": "String",
-          "value": "START"
+          "value": "start"
         },
         "sourceRange": []
       }
@@ -3364,7 +3364,7 @@ description: Operations executed multi-axis-robot.kcl
       "tag": {
         "value": {
           "type": "String",
-          "value": "START"
+          "value": "start"
         },
         "sourceRange": []
       }
@@ -3492,7 +3492,7 @@ description: Operations executed multi-axis-robot.kcl
       "tag": {
         "value": {
           "type": "String",
-          "value": "START"
+          "value": "start"
         },
         "sourceRange": []
       }
