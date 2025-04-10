@@ -106,7 +106,6 @@ pub async fn union(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     feature_tree_operation = true,
     keywords = true,
     unlabeled_first = true,
-    deprecated = true,
     args = {
         solids = {docs = "The solids to union."},
         tolerance = {docs = "The tolerance to use for the union operation."},
@@ -230,7 +229,6 @@ pub async fn intersect(exec_state: &mut ExecState, args: Args) -> Result<KclValu
     feature_tree_operation = true,
     keywords = true,
     unlabeled_first = true,
-    deprecated = true,
     args = {
         solids = {docs = "The solids to intersect."},
         tolerance = {docs = "The tolerance to use for the intersection operation."},
@@ -351,7 +349,6 @@ pub async fn subtract(exec_state: &mut ExecState, args: Args) -> Result<KclValue
     feature_tree_operation = true,
     keywords = true,
     unlabeled_first = true,
-    deprecated = true,
     args = {
         solids = {docs = "The solids to use as the base to subtract from."},
         tools = {docs = "The solids to subtract."},
