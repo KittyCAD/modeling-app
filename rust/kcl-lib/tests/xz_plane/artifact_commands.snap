@@ -162,7 +162,8 @@ description: Artifact commands xz_plane.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 12.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
