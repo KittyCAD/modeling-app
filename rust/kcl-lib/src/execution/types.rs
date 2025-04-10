@@ -18,16 +18,6 @@ use crate::{
     CompilationError, SourceRange,
 };
 
-lazy_static::lazy_static! {
-    pub(crate) static ref CHECK_NUMERIC_TYPES: bool = {
-        let env_var = std::env::var("ZOO_NUM_TYS");
-        let Ok(env_var) = env_var else {
-            return false;
-        };
-        !env_var.is_empty()
-    };
-}
-
 #[derive(Debug, Clone, PartialEq)]
 pub enum RuntimeType {
     Primitive(PrimitiveType),
@@ -62,6 +52,10 @@ impl RuntimeType {
         RuntimeType::Primitive(PrimitiveType::Solid)
     }
 
+    pub fn helix() -> Self {
+        RuntimeType::Primitive(PrimitiveType::Helix)
+    }
+
     pub fn plane() -> Self {
         RuntimeType::Primitive(PrimitiveType::Plane)
     }
@@ -92,6 +86,10 @@ impl RuntimeType {
         RuntimeType::Primitive(PrimitiveType::Number(NumericType::Known(UnitType::Length(
             UnitLen::Unknown,
         ))))
+    }
+
+    pub fn known_length(len: UnitLen) -> Self {
+        RuntimeType::Primitive(PrimitiveType::Number(NumericType::Known(UnitType::Length(len))))
     }
 
     pub fn angle() -> Self {
@@ -370,6 +368,7 @@ impl fmt::Display for PrimitiveType {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             PrimitiveType::Number(NumericType::Known(unit)) => write!(f, "number({unit})"),
+            PrimitiveType::Number(NumericType::Unknown) => write!(f, "number(unknown units)"),
             PrimitiveType::Number(_) => write!(f, "number"),
             PrimitiveType::String => write!(f, "string"),
             PrimitiveType::Boolean => write!(f, "bool"),
@@ -427,8 +426,45 @@ impl NumericType {
         NumericType::Known(UnitType::Angle(UnitAngle::Degrees))
     }
 
+    pub fn expect_default_length(&self) -> Self {
+        match self {
+            NumericType::Default { len, .. } => NumericType::Known(UnitType::Length(*len)),
+            _ => unreachable!(),
+        }
+    }
+
+    pub fn expect_default_angle(&self) -> Self {
+        match self {
+            NumericType::Default { angle, .. } => NumericType::Known(UnitType::Angle(*angle)),
+            _ => unreachable!(),
+        }
+    }
+
     /// Combine two types when we expect them to be equal.
     pub fn combine_eq(a: TyF64, b: TyF64) -> (f64, f64, NumericType) {
+        use NumericType::*;
+        match (a.ty, b.ty) {
+            (at, bt) if at == bt => (a.n, b.n, at),
+            (at, Any) => (a.n, b.n, at),
+            (Any, bt) => (a.n, b.n, bt),
+
+            (t @ Known(UnitType::Length(l1)), Known(UnitType::Length(l2))) => (a.n, l2.adjust_to(b.n, l1).0, t),
+            (t @ Known(UnitType::Angle(a1)), Known(UnitType::Angle(a2))) => (a.n, a2.adjust_to(b.n, a1).0, t),
+
+            (Known(UnitType::Count), Default { .. }) | (Default { .. }, Known(UnitType::Count)) => {
+                (a.n, b.n, Known(UnitType::Count))
+            }
+            (t @ Known(UnitType::Length(l1)), Default { len: l2, .. }) if l1 == l2 => (a.n, b.n, t),
+            (Default { len: l1, .. }, t @ Known(UnitType::Length(l2))) if l1 == l2 => (a.n, b.n, t),
+            (t @ Known(UnitType::Angle(a1)), Default { angle: a2, .. }) if a1 == a2 => (a.n, b.n, t),
+            (Default { angle: a1, .. }, t @ Known(UnitType::Angle(a2))) if a1 == a2 => (a.n, b.n, t),
+
+            _ => (a.n, b.n, Unknown),
+        }
+    }
+
+    /// Combine two types when we expect them to be equal.
+    pub fn combine_eq_coerce(a: TyF64, b: TyF64) -> (f64, f64, NumericType) {
         use NumericType::*;
         match (a.ty, b.ty) {
             (at, bt) if at == bt => (a.n, b.n, at),
@@ -458,12 +494,9 @@ impl NumericType {
 
     pub fn combine_eq_array(input: &[TyF64]) -> (Vec<f64>, NumericType) {
         use NumericType::*;
-
-        let mut result = input.iter().map(|t| t.n).collect();
+        let result = input.iter().map(|t| t.n).collect();
 
         let mut ty = Any;
-        // Invariant mismatch is true => ty is fully known
-        let mut mismatch = false;
         for i in input {
             if i.ty == Any || ty == i.ty {
                 continue;
@@ -475,57 +508,23 @@ impl NumericType {
                 }
                 (_, Unknown) | (Default { .. }, Default { .. }) => return (result, Unknown),
 
-                // Known types and compatible, but needs adjustment.
-                (Known(UnitType::Length(_)), Known(UnitType::Length(_)))
-                | (Known(UnitType::Angle(_)), Known(UnitType::Angle(_))) => {
-                    mismatch = true;
-                }
-
-                // Known but incompatible.
-                (Known(_), Known(_)) => return (result, Unknown),
-
-                // Known and unknown, no adjustment for counting numbers.
                 (Known(UnitType::Count), Default { .. }) | (Default { .. }, Known(UnitType::Count)) => {
                     ty = Known(UnitType::Count);
                 }
 
-                (Known(UnitType::Length(l1)), Default { len: l2, .. }) => {
-                    mismatch |= l1 != l2;
-                }
-                (Known(UnitType::Angle(a1)), Default { angle: a2, .. }) => {
-                    mismatch |= a1 != a2;
-                }
+                (Known(UnitType::Length(l1)), Default { len: l2, .. }) if l1 == l2 => {}
+                (Known(UnitType::Angle(a1)), Default { angle: a2, .. }) if a1 == a2 => {}
 
-                (Default { len: l1, .. }, Known(UnitType::Length(l2))) => {
-                    mismatch |= l1 != l2;
+                (Default { len: l1, .. }, Known(UnitType::Length(l2))) if l1 == l2 => {
                     ty = Known(UnitType::Length(*l2));
                 }
-                (Default { angle: a1, .. }, Known(UnitType::Angle(a2))) => {
-                    mismatch |= a1 != a2;
+                (Default { angle: a1, .. }, Known(UnitType::Angle(a2))) if a1 == a2 => {
                     ty = Known(UnitType::Angle(*a2));
                 }
 
-                (Unknown, _) | (_, Any) => unreachable!(),
+                _ => return (result, Unknown),
             }
         }
-
-        if !mismatch {
-            return (result, ty);
-        }
-
-        result = result
-            .into_iter()
-            .zip(input)
-            .map(|(n, i)| match (&ty, &i.ty) {
-                (Known(UnitType::Length(l1)), Known(UnitType::Length(l2)) | Default { len: l2, .. }) => {
-                    l2.adjust_to(n, *l1).0
-                }
-                (Known(UnitType::Angle(a1)), Known(UnitType::Angle(a2)) | Default { angle: a2, .. }) => {
-                    a2.adjust_to(n, *a1).0
-                }
-                _ => unreachable!(),
-            })
-            .collect();
 
         (result, ty)
     }
@@ -534,11 +533,11 @@ impl NumericType {
     pub fn combine_mul(a: TyF64, b: TyF64) -> (f64, f64, NumericType) {
         use NumericType::*;
         match (a.ty, b.ty) {
-            (at @ Default { .. }, bt @ Default { .. }) if at != bt => (a.n, b.n, Unknown),
+            (at @ Default { .. }, bt @ Default { .. }) if at == bt => (a.n, b.n, at),
+            (Default { .. }, Default { .. }) => (a.n, b.n, Unknown),
             (Known(UnitType::Count), bt) => (a.n, b.n, bt),
             (at, Known(UnitType::Count)) => (a.n, b.n, at),
-            (Default { .. }, bt) => (a.n, b.n, bt),
-            (at, Default { .. }) => (a.n, b.n, at),
+            (at @ Known(_), Default { .. }) | (Default { .. }, at @ Known(_)) => (a.n, b.n, at),
             (Any, Any) => (a.n, b.n, Any),
             _ => (a.n, b.n, Unknown),
         }
@@ -552,18 +551,7 @@ impl NumericType {
             (at, bt) if at == bt => (a.n, b.n, Known(UnitType::Count)),
             (Default { .. }, Default { .. }) => (a.n, b.n, Unknown),
             (at, Known(UnitType::Count) | Any) => (a.n, b.n, at),
-            (Known(UnitType::Length(l1)), Known(UnitType::Length(l2))) => {
-                (a.n, l2.adjust_to(b.n, l1).0, Known(UnitType::Count))
-            }
-            (Known(UnitType::Angle(a1)), Known(UnitType::Angle(a2))) => {
-                (a.n, a2.adjust_to(b.n, a1).0, Known(UnitType::Count))
-            }
-            (Default { len: l1, .. }, Known(UnitType::Length(l2))) => {
-                (l1.adjust_to(a.n, l2).0, b.n, Known(UnitType::Count))
-            }
-            (Default { angle: a1, .. }, Known(UnitType::Angle(a2))) => {
-                (a1.adjust_to(a.n, a2).0, b.n, Known(UnitType::Count))
-            }
+            (at @ Known(_), Default { .. }) => (a.n, b.n, at),
             (Known(UnitType::Count), _) => (a.n, b.n, Known(UnitType::Count)),
             _ => (a.n, b.n, Unknown),
         }
@@ -608,9 +596,18 @@ impl NumericType {
         }
     }
 
+    fn is_unknown(&self) -> bool {
+        match self {
+            NumericType::Unknown
+            | NumericType::Known(UnitType::Angle(UnitAngle::Unknown))
+            | NumericType::Known(UnitType::Length(UnitLen::Unknown)) => true,
+            _ => false,
+        }
+    }
+
     fn example_ty(&self) -> Option<String> {
         match self {
-            Self::Known(t) => Some(t.to_string()),
+            Self::Known(t) if !self.is_unknown() => Some(t.to_string()),
             Self::Default { len, .. } => Some(len.to_string()),
             _ => None,
         }
@@ -620,10 +617,6 @@ impl NumericType {
         let KclValue::Number { value, ty, meta } = val else {
             return Err(val.into());
         };
-
-        if !*CHECK_NUMERIC_TYPES {
-            return Ok(val.clone());
-        }
 
         if ty.subtype(self) {
             return Ok(KclValue::Number {
@@ -778,7 +771,7 @@ impl UnitLen {
     fn adjust_to(self, value: f64, to: UnitLen) -> (f64, UnitLen) {
         use UnitLen::*;
 
-        if !*CHECK_NUMERIC_TYPES || self == to {
+        if self == to {
             return (value, to);
         }
 
@@ -902,10 +895,6 @@ impl UnitAngle {
         use std::f64::consts::PI;
 
         use UnitAngle::*;
-
-        if !*CHECK_NUMERIC_TYPES {
-            return (value, to);
-        }
 
         if to == Unknown {
             return (value, self);
@@ -1952,10 +1941,6 @@ mod test {
         assert_coerce_results(&unknown, &NumericType::Any.into(), &unknown, &mut exec_state);
         assert_coerce_results(&default, &NumericType::Any.into(), &default, &mut exec_state);
 
-        if !*CHECK_NUMERIC_TYPES {
-            return;
-        }
-
         assert_eq!(
             default
                 .coerce(
@@ -2068,20 +2053,14 @@ u = min(3rad, 4in)
 "#;
 
         let result = parse_execute(program).await.unwrap();
-        if *CHECK_NUMERIC_TYPES {
-            assert_eq!(result.exec_state.errors().len(), 3);
-        } else {
-            assert!(result.exec_state.errors().is_empty());
-        }
+        assert_eq!(result.exec_state.errors().len(), 5);
 
         assert_value_and_type("a", &result, 9.0, NumericType::default());
         assert_value_and_type("b", &result, 3.0, NumericType::default());
         assert_value_and_type("c", &result, 13.0, NumericType::mm());
         assert_value_and_type("d", &result, 13.0, NumericType::mm());
         assert_value_and_type("e", &result, 13.0, NumericType::mm());
-        if *CHECK_NUMERIC_TYPES {
-            assert_value_and_type("f", &result, 5.0, NumericType::mm());
-        }
+        assert_value_and_type("f", &result, 5.0, NumericType::mm());
 
         assert_value_and_type("g", &result, 20.0, NumericType::default());
         assert_value_and_type("h", &result, 20.0, NumericType::mm());
@@ -2091,16 +2070,14 @@ u = min(3rad, 4in)
 
         assert_value_and_type("l", &result, 0.0, NumericType::default());
         assert_value_and_type("m", &result, 2.0, NumericType::count());
-        if *CHECK_NUMERIC_TYPES {
-            assert_value_and_type("n", &result, 127.0, NumericType::count());
-        }
-        assert_value_and_type("o", &result, 1.0, NumericType::Unknown);
+        assert_value_and_type("n", &result, 5.0, NumericType::Unknown);
+        assert_value_and_type("o", &result, 1.0, NumericType::mm());
         assert_value_and_type("p", &result, 1.0, NumericType::count());
         assert_value_and_type("q", &result, 2.0, NumericType::Known(UnitType::Length(UnitLen::Inches)));
 
         assert_value_and_type("r", &result, 0.0, NumericType::default());
         assert_value_and_type("s", &result, -42.0, NumericType::mm());
-        assert_value_and_type("t", &result, 3.0, NumericType::Known(UnitType::Length(UnitLen::Inches)));
+        assert_value_and_type("t", &result, 3.0, NumericType::Unknown);
         assert_value_and_type("u", &result, 3.0, NumericType::Unknown);
     }
 
@@ -2114,7 +2091,24 @@ b = 180 / PI * a + 360
         let result = parse_execute(program).await.unwrap();
 
         assert_value_and_type("a", &result, 1.0, NumericType::radians());
-        // TODO type is not ideal
-        assert_value_and_type("b", &result, 417.0, NumericType::radians());
+        assert_value_and_type("b", &result, 417.0, NumericType::Unknown);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn cos_coercions() {
+        let program = r#"
+a = cos(toRadians(30))
+b = 3 / a
+c = cos(30deg)
+d = cos(30)
+"#;
+
+        let result = parse_execute(program).await.unwrap();
+        assert_eq!(result.exec_state.errors().len(), 1);
+
+        assert_value_and_type("a", &result, 1.0, NumericType::count());
+        assert_value_and_type("b", &result, 3.0, NumericType::default());
+        assert_value_and_type("c", &result, 1.0, NumericType::count());
+        assert_value_and_type("d", &result, 0.0, NumericType::count());
     }
 }

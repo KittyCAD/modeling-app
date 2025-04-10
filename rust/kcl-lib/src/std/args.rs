@@ -547,6 +547,29 @@ impl Args {
         FromArgs::from_args(self, 0)
     }
 
+    pub(crate) fn get_number_typed(&self, ty: &RuntimeType, exec_state: &mut ExecState) -> Result<f64, KclError> {
+        let Some(arg) = self.args.get(0) else {
+            return Err(KclError::Semantic(KclErrorDetails {
+                message: format!("Expected an argument"),
+                source_ranges: vec![self.source_range],
+            }));
+        };
+
+        arg.value.coerce(ty, exec_state).map_err(|_| {
+            let actual_type_name = arg.value.human_friendly_type();
+            let message = format!(
+                "This function expected the input argument to be {} but it's actually of type {actual_type_name}",
+                ty.human_friendly_type(),
+            );
+            KclError::Semantic(KclErrorDetails {
+                source_ranges: arg.source_ranges(),
+                message,
+            })
+        })?;
+
+        Ok(TyF64::from_kcl_val(&arg.value).unwrap().n)
+    }
+
     pub(crate) fn get_number_array_with_types(&self) -> Result<Vec<TyF64>, KclError> {
         let numbers = self
             .args
@@ -577,7 +600,7 @@ impl Args {
         let mut numbers = numbers.into_iter();
         let a = numbers.next().unwrap();
         let b = numbers.next().unwrap();
-        Ok(NumericType::combine_eq(a, b))
+        Ok(NumericType::combine_eq_coerce(a, b))
     }
 
     pub(crate) fn get_sketches(&self, exec_state: &mut ExecState) -> Result<(Vec<Sketch>, Sketch), KclError> {
