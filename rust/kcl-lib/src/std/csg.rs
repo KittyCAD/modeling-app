@@ -3,7 +3,12 @@
 use anyhow::Result;
 use kcl_derive_docs::stdlib;
 use kcmc::{each_cmd as mcmd, length_unit::LengthUnit, ModelingCmd};
-use kittycad_modeling_cmds::{self as kcmc};
+use kittycad_modeling_cmds::{
+    self as kcmc,
+    ok_response::OkModelingCmdResponse,
+    output::{BooleanIntersection, BooleanSubtract, BooleanUnion},
+    websocket::OkWebSocketResponseData,
+};
 
 use crate::{
     errors::{KclError, KclErrorDetails},
@@ -113,24 +118,46 @@ pub(crate) async fn inner_union(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Vec<Solid>, KclError> {
+    let solid_out_id = exec_state.next_uuid();
+
+    let mut solid = solids[0].clone();
+    solid.id = solid_out_id;
+    let mut new_solids = vec![solid.clone()];
+
     if args.ctx.no_engine_commands().await {
-        return Ok(vec![solids[0].clone()]);
+        return Ok(new_solids);
     }
 
     // Flush the fillets for the solids.
     args.flush_batch_for_solids(exec_state, &solids).await?;
 
-    args.batch_modeling_cmd(
-        exec_state.next_uuid(),
-        ModelingCmd::from(mcmd::BooleanUnion {
-            solid_ids: solids.iter().map(|s| s.id).collect(),
-            tolerance: LengthUnit(tolerance.unwrap_or(DEFAULT_TOLERANCE)),
-        }),
-    )
-    .await?;
+    let result = args
+        .send_modeling_cmd(
+            solid_out_id,
+            ModelingCmd::from(mcmd::BooleanUnion {
+                solid_ids: solids.iter().map(|s| s.id).collect(),
+                tolerance: LengthUnit(tolerance.unwrap_or(DEFAULT_TOLERANCE)),
+            }),
+        )
+        .await?;
 
-    // This will be morphed into the first solid.
-    Ok(vec![solids[0].clone()])
+    let OkWebSocketResponseData::Modeling {
+        modeling_response: OkModelingCmdResponse::BooleanUnion(BooleanUnion { extra_solid_ids }),
+    } = result
+    else {
+        return Err(KclError::Internal(KclErrorDetails {
+            message: "Failed to get the result of the union operation.".to_string(),
+            source_ranges: vec![args.source_range],
+        }));
+    };
+
+    // If we have more solids, set those as well.
+    if !extra_solid_ids.is_empty() {
+        solid.id = extra_solid_ids[0];
+        new_solids.push(solid.clone());
+    }
+
+    Ok(new_solids)
 }
 
 /// Intersect returns the shared volume between multiple solids, preserving only
@@ -215,24 +242,46 @@ pub(crate) async fn inner_intersect(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Vec<Solid>, KclError> {
+    let solid_out_id = exec_state.next_uuid();
+
+    let mut solid = solids[0].clone();
+    solid.id = solid_out_id;
+    let mut new_solids = vec![solid.clone()];
+
     if args.ctx.no_engine_commands().await {
-        return Ok(vec![solids[0].clone()]);
+        return Ok(new_solids);
     }
 
     // Flush the fillets for the solids.
     args.flush_batch_for_solids(exec_state, &solids).await?;
 
-    args.batch_modeling_cmd(
-        exec_state.next_uuid(),
-        ModelingCmd::from(mcmd::BooleanIntersection {
-            solid_ids: solids.iter().map(|s| s.id).collect(),
-            tolerance: LengthUnit(tolerance.unwrap_or(DEFAULT_TOLERANCE)),
-        }),
-    )
-    .await?;
+    let result = args
+        .send_modeling_cmd(
+            solid_out_id,
+            ModelingCmd::from(mcmd::BooleanIntersection {
+                solid_ids: solids.iter().map(|s| s.id).collect(),
+                tolerance: LengthUnit(tolerance.unwrap_or(DEFAULT_TOLERANCE)),
+            }),
+        )
+        .await?;
 
-    // This will be morphed into the first solid.
-    Ok(vec![solids[0].clone()])
+    let OkWebSocketResponseData::Modeling {
+        modeling_response: OkModelingCmdResponse::BooleanIntersection(BooleanIntersection { extra_solid_ids }),
+    } = result
+    else {
+        return Err(KclError::Internal(KclErrorDetails {
+            message: "Failed to get the result of the intersection operation.".to_string(),
+            source_ranges: vec![args.source_range],
+        }));
+    };
+
+    // If we have more solids, set those as well.
+    if !extra_solid_ids.is_empty() {
+        solid.id = extra_solid_ids[0];
+        new_solids.push(solid.clone());
+    }
+
+    Ok(new_solids)
 }
 
 /// Subtract removes tool solids from base solids, leaving the remaining material.
@@ -316,24 +365,46 @@ pub(crate) async fn inner_subtract(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Vec<Solid>, KclError> {
+    let solid_out_id = exec_state.next_uuid();
+
+    let mut solid = solids[0].clone();
+    solid.id = solid_out_id;
+    let mut new_solids = vec![solid.clone()];
+
     if args.ctx.no_engine_commands().await {
-        return Ok(vec![solids[0].clone()]);
+        return Ok(new_solids);
     }
 
     // Flush the fillets for the solids and the tools.
     let combined_solids = solids.iter().chain(tools.iter()).cloned().collect::<Vec<Solid>>();
     args.flush_batch_for_solids(exec_state, &combined_solids).await?;
 
-    args.batch_modeling_cmd(
-        exec_state.next_uuid(),
-        ModelingCmd::from(mcmd::BooleanSubtract {
-            target_ids: solids.iter().map(|s| s.id).collect(),
-            tool_ids: tools.iter().map(|s| s.id).collect(),
-            tolerance: LengthUnit(tolerance.unwrap_or(DEFAULT_TOLERANCE)),
-        }),
-    )
-    .await?;
+    let result = args
+        .send_modeling_cmd(
+            solid_out_id,
+            ModelingCmd::from(mcmd::BooleanSubtract {
+                target_ids: solids.iter().map(|s| s.id).collect(),
+                tool_ids: tools.iter().map(|s| s.id).collect(),
+                tolerance: LengthUnit(tolerance.unwrap_or(DEFAULT_TOLERANCE)),
+            }),
+        )
+        .await?;
 
-    // This will be morphed into the first solid.
-    Ok(vec![solids[0].clone()])
+    let OkWebSocketResponseData::Modeling {
+        modeling_response: OkModelingCmdResponse::BooleanSubtract(BooleanSubtract { extra_solid_ids }),
+    } = result
+    else {
+        return Err(KclError::Internal(KclErrorDetails {
+            message: "Failed to get the result of the subtract operation.".to_string(),
+            source_ranges: vec![args.source_range],
+        }));
+    };
+
+    // If we have more solids, set those as well.
+    if !extra_solid_ids.is_empty() {
+        solid.id = extra_solid_ids[0];
+        new_solids.push(solid.clone());
+    }
+
+    Ok(new_solids)
 }
