@@ -27,7 +27,7 @@ exports.default = async (configuration) => {
       `smctl sign --fingerprint="${process.env.WINDOWS_CERTIFICATE_THUMBPRINT
       }" --input "${String(configuration.path)}"`,
       {
-        stdio: 'inherit',
+        stdio: 'pipe',
       }
     )
     console.log('Signing using signWin.js script: successful')
