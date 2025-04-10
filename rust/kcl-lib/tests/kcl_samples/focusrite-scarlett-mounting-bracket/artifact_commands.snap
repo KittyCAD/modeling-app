@@ -255,7 +255,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 88.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -726,7 +727,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -4.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -1181,7 +1183,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -4.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -1525,7 +1528,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 104.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -1762,7 +1766,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 104.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
