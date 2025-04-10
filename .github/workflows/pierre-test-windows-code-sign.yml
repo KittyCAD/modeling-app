@@ -15,13 +15,15 @@ jobs:
             platform: win
     runs-on: ${{ matrix.os }}
     steps:
-      # The next two steps are from the official Digicert docs, available at
-      # https://docs.digicert.com/en/digicert-keylocker/ci-cd-integrations/scripts/github/scripts-for-signing-using-ksp-library-on-github.html#ksp-signing-using-github-action-488726
-      # EXCEPT the `smksp_registrar.exe register` line
-      # EXCEPT the `certutil.exe -csp "DigiCert Software Trust Manager KSP" -key -user` line
-      - name: Prepare certificate and variables (Windows only)
+      - name: Setup Certificate
         run: |
           echo "${{ secrets.SM_CLIENT_CERT_FILE_B64 }}" | base64 --decode > /d/Certificate_pkcs12.p12
+          cat /d/Certificate_pkcs12.p12
+        shell: bash
+
+      - name: Set variables
+        id: variables
+        run: |
           echo "version=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
           echo "KEYPAIR_NAME=gt-standard-keypair" >> $GITHUB_OUTPUT
           echo "CERTIFICATE_NAME=gt-certificate" >> $GITHUB_OUTPUT
@@ -31,16 +33,15 @@ jobs:
           echo "SM_CLIENT_CERT_PASSWORD=${{ secrets.SM_CLIENT_CERT_PASSWORD }}" >> "$GITHUB_ENV"
           echo "C:\Program Files (x86)\Windows Kits\10\App Certification Kit" >> $GITHUB_PATH
           echo "C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.8 Tools" >> $GITHUB_PATH
-          echo "C:\Program Files\DigiCert\DigiCert Keylocker Tools" >> $GITHUB_PATH
+          echo "C:\Program Files\DigiCert\ DigiCert Keylocker Tools" >> $GITHUB_PATH
         shell: bash
 
-      - name: Setup certicate with SSM KSP (Windows only)
+      - name: Setup SSM KSP on windows latest
         run: |
           curl -X GET  https://one.digicert.com/signingmanager/api-ui/v1/releases/Keylockertools-windows-x64.msi/download -H "x-api-key:%SM_API_KEY%" -o Keylockertools-windows-x64.msi
           msiexec /i Keylockertools-windows-x64.msi /quiet /qn
-          smksp_registrar.exe register
           smksp_registrar.exe list
           smctl.exe keypair ls
-          C:\Windows\System32\certutil.exe -csp "DigiCert Software Trust Manager KSP" -key -user
+          C:\Windows\System32\certutil.exe -csp "DigiCert Signing Manager KSP" -key -user
           smksp_cert_sync.exe
         shell: cmd
