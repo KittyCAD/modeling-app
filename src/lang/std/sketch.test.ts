@@ -334,7 +334,7 @@ describe('testing getConstraintInfo', () => {
     intersectTag = a,
     offset = 0
   }, %)
-  |> tangentialArcTo([3.14, 13.14], %)`
+  |> tangentialArc(endAbsolute = [3.14, 13.14])`
     test.each([
       [
         'line',
@@ -625,7 +625,7 @@ describe('testing getConstraintInfo', () => {
         ],
       ],
       [
-        'tangentialArcTo',
+        'tangentialArc',
         [
           {
             type: 'tangentialWithPrevious',
@@ -700,7 +700,7 @@ describe('testing getConstraintInfo', () => {
          intersectTag = a,
          offset = 0
        }, %)
-    |> tangentialArcTo([3.14, 13.14], %)`
+    |> tangentialArc(endAbsolute = [3.14, 13.14])`
     test.each([
       [
         `angledLine.* length = `,
@@ -861,7 +861,7 @@ describe('testing getConstraintInfo', () => {
          intersectTag = a,
          offset = 0 + 0
        }, %)
-    |> tangentialArcTo([3.14 + 0, 13.14 + 0], %)`
+    |> tangentialArc(endAbsolute = [3.14 + 0, 13.14 + 0])`
     test.each([
       [
         'line',
@@ -1149,7 +1149,7 @@ describe('testing getConstraintInfo', () => {
         ],
       ],
       [
-        'tangentialArcTo',
+        'tangentialArc',
         [
           {
             type: 'tangentialWithPrevious',

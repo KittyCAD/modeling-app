@@ -95,7 +95,7 @@ import {
 } from '@src/clientSideScene/segments'
 import type EditorManager from '@src/editor/manager'
 import type CodeManager from '@src/lang/codeManager'
-import { ARG_END_ABSOLUTE } from '@src/lang/constants'
+import { ARG_END, ARG_END_ABSOLUTE } from '@src/lang/constants'
 import {
   createArrayExpression,
   createCallExpressionStdLib,
@@ -1000,9 +1000,8 @@ export class SceneEntities {
             pathToNode: sketchEntryNodePath,
             expressions: [
               segmentName === 'tangentialArcTo'
-                ? createCallExpressionStdLib('tangentialArcTo', [
-                    originCoords,
-                    createPipeSubstitution(),
+                ? createCallExpressionStdLibKw('tangentialArc', null, [
+                    createLabeledArg(ARG_END_ABSOLUTE, originCoords),
                   ])
                 : createCallExpressionStdLibKw('line', null, [
                     createLabeledArg(ARG_END_ABSOLUTE, originCoords),
@@ -3525,17 +3524,19 @@ function prepareTruncatedAst(
     if (draftSegment === 'line') {
       newSegment = createCallExpressionStdLibKw('line', null, [
         createLabeledArg(
-          'end',
+          ARG_END,
           createArrayExpression([createLiteral(0), createLiteral(0)])
         ),
       ])
     } else {
-      newSegment = createCallExpressionStdLib('tangentialArcTo', [
-        createArrayExpression([
-          createLiteral(lastSeg.to[0]),
-          createLiteral(lastSeg.to[1]),
-        ]),
-        createPipeSubstitution(),
+      newSegment = createCallExpressionStdLibKw('tangentialArc', null, [
+        createLabeledArg(
+          ARG_END_ABSOLUTE,
+          createArrayExpression([
+            createLiteral(lastSeg.to[0]),
+            createLiteral(lastSeg.to[1]),
+          ])
+        ),
       ])
     }
     ;(

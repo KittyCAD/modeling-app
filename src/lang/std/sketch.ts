@@ -1017,13 +1017,13 @@ export const yLine: SketchLineHelperKw = {
     ),
 }
 
-export const tangentialArcTo: SketchLineHelper = {
+export const tangentialArcTo: SketchLineHelperKw = {
   add: ({ node, pathToNode, segmentInput, replaceExistingCallback }) => {
     if (segmentInput.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR
     const { to } = segmentInput
     const _node = { ...node }
     const getNode = getNodeFromPathCurry(_node, pathToNode)
-    const _node1 = getNode<PipeExpression | CallExpression>('PipeExpression')
+    const _node1 = getNode<PipeExpression | CallExpressionKw>('PipeExpression')
     if (err(_node1)) return _node1
     const { node: pipe } = _node1
     const _node2 = getNodeFromPath<VariableDeclarator>(
@@ -1037,13 +1037,13 @@ export const tangentialArcTo: SketchLineHelper = {
     const toX = createLiteral(roundOff(to[0], 2))
     const toY = createLiteral(roundOff(to[1], 2))
 
-    if (replaceExistingCallback && pipe.type !== 'CallExpression') {
+    if (replaceExistingCallback && pipe.type !== 'CallExpressionKw') {
       const { index: callIndex } = splitPathAtPipeExpression(pathToNode)
       const result = replaceExistingCallback([
         {
           type: 'arrayItem',
           index: 0,
-          argType: 'xRelative',
+          argType: 'xAbsolute',
           expr: toX,
         },
         {
@@ -1062,10 +1062,11 @@ export const tangentialArcTo: SketchLineHelper = {
         valueUsedInTransform,
       }
     }
-    const newLine = createCallExpression('tangentialArcTo', [
-      createArrayExpression([toX, toY]),
-      createPipeSubstitution(),
-    ])
+    const newLine = createCallExpressionStdLibKw(
+      'tangentialArc',
+      null, // Assumes this is being called in a pipeline, so the first arg is optional and if not given, will become pipeline substitution.
+      [createLabeledArg(ARG_END_ABSOLUTE, createArrayExpression([toX, toY]))]
+    )
     if (pipe.type === 'PipeExpression') {
       pipe.body = [...pipe.body, newLine]
       return {
@@ -1091,25 +1092,25 @@ export const tangentialArcTo: SketchLineHelper = {
     if (input.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR
     const { to } = input
     const _node = { ...node }
-    const nodeMeta = getNodeFromPath<CallExpression>(_node, pathToNode)
+    const nodeMeta = getNodeFromPath<CallExpressionKw>(_node, pathToNode)
     if (err(nodeMeta)) return nodeMeta
     const { node: callExpression } = nodeMeta
-    const x = createLiteral(roundOff(to[0], 2))
-    const y = createLiteral(roundOff(to[1], 2))
 
-    const firstArg = callExpression.arguments?.[0]
-    if (!mutateArrExp(firstArg, createArrayExpression([x, y]))) {
-      mutateObjExpProp(firstArg, createArrayExpression([x, y]), 'to')
-    }
+    const toArrExp = createArrayExpression([
+      createLiteral(roundOff(to[0], 2)),
+      createLiteral(roundOff(to[1], 2)),
+    ])
+
+    mutateKwArg(ARG_END_ABSOLUTE, callExpression, toArrExp)
     return {
       modifiedAst: _node,
       pathToNode,
     }
   },
-  getTag: getTag(),
-  addTag: addTag(),
-  getConstraintInfo: (callExp: CallExpression, code, pathToNode) => {
-    if (callExp.type !== 'CallExpression') return []
+  getTag: getTagKwArg(),
+  addTag: addTagKw(),
+  getConstraintInfo: (callExp: CallExpressionKw, code, pathToNode) => {
+    if (callExp.type !== 'CallExpressionKw') return []
     const firstArg = callExp.arguments?.[0]
     if (firstArg.type !== 'ArrayExpression') return []
     const callee = callExp.callee
@@ -2999,7 +3000,6 @@ export const updateStartProfileAtArgs: SketchLineHelper['updateArgs'] = ({
 
 export const sketchLineHelperMap: { [key: string]: SketchLineHelper } = {
   angledLineThatIntersects,
-  tangentialArcTo,
   arc,
   arcTo,
 } as const
@@ -3018,6 +3018,7 @@ export const sketchLineHelperMapKw: { [key: string]: SketchLineHelperKw } = {
   angledLineOfYLength,
   angledLineToX,
   angledLineToY,
+  tangentialArcTo,
 } as const
 
 export function changeSketchArguments(

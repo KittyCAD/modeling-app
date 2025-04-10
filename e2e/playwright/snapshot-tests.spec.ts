@@ -683,7 +683,7 @@ test.describe(
       await page.mouse.click(startXPx + PUR * 30, 500 - PUR * 20)
 
       code += `
-  |> tangentialArcTo([551.2, -62.01], %)`
+  |> tangentialArc(endAbsolute = [551.2, -62.01])`
       await expect(u.codeLocator).toHaveText(code)
 
       // click tangential arc tool again to unequip it
@@ -777,7 +777,7 @@ test.describe(
       await page.mouse.click(startXPx + PUR * 30, 500 - PUR * 20)
 
       code += `
-  |> tangentialArcTo([551.2, -62.01], %)`
+  |> tangentialArc(endAbsolute = [551.2, -62.01])`
       await expect(u.codeLocator).toHaveText(code)
 
       await page

@@ -807,6 +807,7 @@ pub enum UnitAngle {
 impl UnitAngle {
     fn adjust_to(self, value: f64, to: UnitAngle) -> f64 {
         use std::f64::consts::PI;
+
         use UnitAngle::*;
 
         if !*CHECK_NUMERIC_TYPES {
@@ -1171,9 +1172,8 @@ impl KclValue {
 
 #[cfg(test)]
 mod test {
-    use crate::execution::{parse_execute, ExecTestResults};
-
     use super::*;
+    use crate::execution::{parse_execute, ExecTestResults};
 
     fn values(exec_state: &mut ExecState) -> Vec<KclValue> {
         vec![
