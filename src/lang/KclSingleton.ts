@@ -524,7 +524,7 @@ export class KclManager {
       return newCode
     }
     const newAst = await this.safeParse(newCode)
-  
+
     if (!newAst) {
       // By clearing the AST we indicate to our callers that there was an issue with execution and
       // the pre-execution state should be restored.
