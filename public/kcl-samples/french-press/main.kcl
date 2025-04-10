@@ -12,15 +12,9 @@ handleThickness = 0.65
 // Upper ring of the metal structure
 sketch001 = startSketchOn(XZ)
   |> startProfileAt([carafeDiameter / 2, 5.7], %)
-  |> angledLine([0, 0.1], %, $rectangleSegmentA001)
-  |> angledLine([
-       segAng(rectangleSegmentA001) - 90,
-       -0.75
-     ], %, $rectangleSegmentB001)
-  |> angledLine([
-       segAng(rectangleSegmentA001),
-       -segLen(rectangleSegmentA001)
-     ], %, $rectangleSegmentC001)
+  |> angledLine(angle = 0, length = 0.1, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = -0.75, tag = $rectangleSegmentB001)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $rectangleSegmentC001)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
   |> revolve(angle = 360, axis = Y)
@@ -45,13 +39,13 @@ sketch002 = startSketchOn(plane001)
        angleEnd = 205,
        radius = 0.3
      }, %)
-  |> angledLine({ angle = -60, length = 0.6 }, %, $edge2)
+  |> angledLine(angle = -60, length = 0.6, tag = $edge2)
   |> arc({
        angleStart = 30,
        angleEnd = -120,
        radius = 0.6
      }, %)
-  |> angledLineToY({ angle = 150, to = -0.2 }, %, $edge3)
+  |> angledLine(angle = 150, endAbsoluteY = -0.2, tag = $edge3)
   |> arc({
        angleStart = 60,
        angleEnd = 90,
@@ -65,19 +59,13 @@ sketch002 = startSketchOn(plane001)
        angleEnd = 60,
        radius = 0.6
      }, %)
-  |> angledLine({
-       angle = 150,
-       length = -segLen(edge3) + 0.035
-     }, %, $edge5)
+  |> angledLine(angle = 150, length = -segLen(edge3) + 0.035, tag = $edge5)
   |> arc({
        angleStart = -120,
        angleEnd = 30,
        radius = 0.5
      }, %)
-  |> angledLine({
-       angle = -60,
-       length = -segLen(edge2) + 0.035
-     }, %, $edge6)
+  |> angledLine(angle = -60, length = -segLen(edge2) + 0.035, tag = $edge6)
   |> arc({
        angleStart = 205,
        angleEnd = 180,
@@ -123,12 +111,9 @@ extrude002 = extrude(sketch004, length = -0.050)
 sketch005 = startSketchOn(XZ)
   |> startProfileAt([0.15, 1.11], %)
   |> xLine(endAbsolute = carafeDiameter / 2 - 0.2)
-  |> angledLineToX({
-       angle = 30,
-       to = carafeDiameter / 2 - 0.07
-     }, %, $seg1)
-  |> angledLine({ angle = -60, length = 0.050 }, %)
-  |> angledLine({ angle = 30, length = -segLen(seg1) }, %)
+  |> angledLine(angle = 30, endAbsoluteX = carafeDiameter / 2 - 0.07, tag = $seg1)
+  |> angledLine(angle = -60, length = 0.050)
+  |> angledLine(angle = 30, length = -segLen(seg1))
   |> xLine(endAbsolute = 0.15)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
@@ -138,7 +123,7 @@ sketch005 = startSketchOn(XZ)
 sketch006 = startSketchOn(XZ)
   |> startProfileAt([0.1, 1], %)
   |> line(end = [0.1, 0])
-  |> angledLineToX({ angle = 10, to = 0.05 }, %)
+  |> angledLine(angle = 10, endAbsoluteX = 0.05)
   |> yLine(length = 10)
   |> line(end = [0.6, 0])
   |> yLine(length = -.05)
