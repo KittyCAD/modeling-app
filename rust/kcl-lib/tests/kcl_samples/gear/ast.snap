@@ -1293,27 +1293,42 @@ description: Result of parsing gear.kcl
                           "arguments": [
                             {
                               "commentStart": 0,
-                              "computed": true,
                               "end": 0,
-                              "object": {
+                              "expr": {
                                 "commentStart": 0,
+                                "computed": true,
                                 "end": 0,
-                                "name": "invas",
+                                "object": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "name": "invas",
+                                  "start": 0,
+                                  "type": "Identifier",
+                                  "type": "Identifier"
+                                },
+                                "property": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "name": "i",
+                                  "start": 0,
+                                  "type": "Identifier",
+                                  "type": "Identifier"
+                                },
                                 "start": 0,
-                                "type": "Identifier",
-                                "type": "Identifier"
-                              },
-                              "property": {
-                                "commentStart": 0,
-                                "end": 0,
-                                "name": "i",
-                                "start": 0,
-                                "type": "Identifier",
-                                "type": "Identifier"
+                                "type": "MemberExpression",
+                                "type": "MemberExpression"
                               },
                               "start": 0,
-                              "type": "MemberExpression",
-                              "type": "MemberExpression"
+                              "ty": {
+                                "Rad": null,
+                                "commentStart": 0,
+                                "end": 0,
+                                "start": 0,
+                                "type": "Primitive",
+                                "type": "Number"
+                              },
+                              "type": "AscribedExpression",
+                              "type": "Ascription"
                             }
                           ],
                           "callee": {
@@ -1492,27 +1507,42 @@ description: Result of parsing gear.kcl
                           "arguments": [
                             {
                               "commentStart": 0,
-                              "computed": true,
                               "end": 0,
-                              "object": {
+                              "expr": {
                                 "commentStart": 0,
+                                "computed": true,
                                 "end": 0,
-                                "name": "invas",
+                                "object": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "name": "invas",
+                                  "start": 0,
+                                  "type": "Identifier",
+                                  "type": "Identifier"
+                                },
+                                "property": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "name": "i",
+                                  "start": 0,
+                                  "type": "Identifier",
+                                  "type": "Identifier"
+                                },
                                 "start": 0,
-                                "type": "Identifier",
-                                "type": "Identifier"
-                              },
-                              "property": {
-                                "commentStart": 0,
-                                "end": 0,
-                                "name": "i",
-                                "start": 0,
-                                "type": "Identifier",
-                                "type": "Identifier"
+                                "type": "MemberExpression",
+                                "type": "MemberExpression"
                               },
                               "start": 0,
-                              "type": "MemberExpression",
-                              "type": "MemberExpression"
+                              "ty": {
+                                "Rad": null,
+                                "commentStart": 0,
+                                "end": 0,
+                                "start": 0,
+                                "type": "Primitive",
+                                "type": "Number"
+                              },
+                              "type": "AscribedExpression",
+                              "type": "Ascription"
                             }
                           ],
                           "callee": {

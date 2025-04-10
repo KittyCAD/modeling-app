@@ -5,19 +5,27 @@ use kcl_derive_docs::stdlib;
 
 use crate::{
     errors::KclError,
-    execution::{types::UnitLen, ExecState, KclValue},
+    execution::{
+        types::{RuntimeType, UnitLen},
+        ExecState, KclValue,
+    },
     std::{args::TyF64, Args},
 };
 
 /// Millimeters conversion factor for current files units.
 pub async fn from_mm(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let input = args.get_number_with_type()?;
-    let result = inner_from_mm(input.n, exec_state)?;
+    let input = args.get_number_typed(&RuntimeType::known_length(UnitLen::Mm), exec_state)?;
+    let result = inner_from_mm(input, exec_state)?;
 
-    Ok(args.make_user_val_from_f64_with_type(TyF64::new(result, exec_state.current_default_units())))
+    Ok(args.make_user_val_from_f64_with_type(TyF64::new(
+        result,
+        exec_state.current_default_units().expect_default_length(),
+    )))
 }
 
 /// Converts a number from mm to the current default unit.
+///
+/// *DEPRECATED* prefer using explicit numberic suffixes (e.g., `42mm`) or the `to...` conversion functions.
 ///
 /// No matter what units the current file uses, this function will always return a number equivalent
 /// to the input in millimeters.
@@ -39,6 +47,7 @@ pub async fn from_mm(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 #[stdlib {
     name = "fromMm",
     tags = ["units"],
+    deprecated = true,
 }]
 fn inner_from_mm(input: f64, exec_state: &ExecState) -> Result<f64, KclError> {
     Ok(match exec_state.length_unit() {
@@ -54,13 +63,18 @@ fn inner_from_mm(input: f64, exec_state: &ExecState) -> Result<f64, KclError> {
 
 /// Inches conversion factor for current files units.
 pub async fn from_inches(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let input = args.get_number_with_type()?;
-    let result = inner_from_inches(input.n, exec_state)?;
+    let input = args.get_number_typed(&RuntimeType::known_length(UnitLen::Inches), exec_state)?;
+    let result = inner_from_inches(input, exec_state)?;
 
-    Ok(args.make_user_val_from_f64_with_type(TyF64::new(result, exec_state.current_default_units())))
+    Ok(args.make_user_val_from_f64_with_type(TyF64::new(
+        result,
+        exec_state.current_default_units().expect_default_length(),
+    )))
 }
 
 /// Converts a number from inches to the current default unit.
+///
+/// *DEPRECATED* prefer using explicit numberic suffixes (e.g., `42inch`) or the `to...` conversion functions.
 ///
 /// No matter what units the current file uses, this function will always return a number equivalent
 /// to the input in inches.
@@ -82,6 +96,7 @@ pub async fn from_inches(exec_state: &mut ExecState, args: Args) -> Result<KclVa
 #[stdlib {
     name = "fromInches",
     tags = ["units"],
+    deprecated = true,
 }]
 fn inner_from_inches(input: f64, exec_state: &ExecState) -> Result<f64, KclError> {
     match exec_state.length_unit() {
@@ -97,13 +112,18 @@ fn inner_from_inches(input: f64, exec_state: &ExecState) -> Result<f64, KclError
 
 /// Feet conversion factor for current files units.
 pub async fn from_ft(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let input = args.get_number_with_type()?;
-    let result = inner_from_ft(input.n, exec_state)?;
+    let input = args.get_number_typed(&RuntimeType::known_length(UnitLen::Feet), exec_state)?;
+    let result = inner_from_ft(input, exec_state)?;
 
-    Ok(args.make_user_val_from_f64_with_type(TyF64::new(result, exec_state.current_default_units())))
+    Ok(args.make_user_val_from_f64_with_type(TyF64::new(
+        result,
+        exec_state.current_default_units().expect_default_length(),
+    )))
 }
 
 /// Converts a number from feet to the current default unit.
+///
+/// *DEPRECATED* prefer using explicit numberic suffixes (e.g., `42ft`) or the `to...` conversion functions.
 ///
 /// No matter what units the current file uses, this function will always return a number equivalent
 /// to the input in feet.
@@ -126,6 +146,7 @@ pub async fn from_ft(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 #[stdlib {
     name = "fromFt",
     tags = ["units"],
+    deprecated = true,
 }]
 fn inner_from_ft(input: f64, exec_state: &ExecState) -> Result<f64, KclError> {
     match exec_state.length_unit() {
@@ -141,13 +162,18 @@ fn inner_from_ft(input: f64, exec_state: &ExecState) -> Result<f64, KclError> {
 
 /// Meters conversion factor for current files units.
 pub async fn from_m(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let input = args.get_number_with_type()?;
-    let result = inner_from_m(input.n, exec_state)?;
+    let input = args.get_number_typed(&RuntimeType::known_length(UnitLen::M), exec_state)?;
+    let result = inner_from_m(input, exec_state)?;
 
-    Ok(args.make_user_val_from_f64_with_type(TyF64::new(result, exec_state.current_default_units())))
+    Ok(args.make_user_val_from_f64_with_type(TyF64::new(
+        result,
+        exec_state.current_default_units().expect_default_length(),
+    )))
 }
 
 /// Converts a number from meters to the current default unit.
+///
+/// *DEPRECATED* prefer using explicit numberic suffixes (e.g., `42m`) or the `to...` conversion functions.
 ///
 /// No matter what units the current file uses, this function will always return a number equivalent
 /// to the input in meters.
@@ -170,6 +196,7 @@ pub async fn from_m(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 #[stdlib {
     name = "fromM",
     tags = ["units"],
+    deprecated = true,
 }]
 fn inner_from_m(input: f64, exec_state: &ExecState) -> Result<f64, KclError> {
     match exec_state.length_unit() {
@@ -185,13 +212,18 @@ fn inner_from_m(input: f64, exec_state: &ExecState) -> Result<f64, KclError> {
 
 /// Centimeters conversion factor for current files units.
 pub async fn from_cm(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let input = args.get_number_with_type()?;
-    let result = inner_from_cm(input.n, exec_state)?;
+    let input = args.get_number_typed(&RuntimeType::known_length(UnitLen::Cm), exec_state)?;
+    let result = inner_from_cm(input, exec_state)?;
 
-    Ok(args.make_user_val_from_f64_with_type(TyF64::new(result, exec_state.current_default_units())))
+    Ok(args.make_user_val_from_f64_with_type(TyF64::new(
+        result,
+        exec_state.current_default_units().expect_default_length(),
+    )))
 }
 
 /// Converts a number from centimeters to the current default unit.
+///
+/// *DEPRECATED* prefer using explicit numberic suffixes (e.g., `42cm`) or the `to...` conversion functions.
 ///
 /// No matter what units the current file uses, this function will always return a number equivalent
 /// to the input in centimeters.
@@ -214,6 +246,7 @@ pub async fn from_cm(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 #[stdlib {
     name = "fromCm",
     tags = ["units"],
+    deprecated = true,
 }]
 fn inner_from_cm(input: f64, exec_state: &ExecState) -> Result<f64, KclError> {
     match exec_state.length_unit() {
@@ -229,13 +262,18 @@ fn inner_from_cm(input: f64, exec_state: &ExecState) -> Result<f64, KclError> {
 
 /// Yards conversion factor for current files units.
 pub async fn from_yd(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let input = args.get_number_with_type()?;
-    let result = inner_from_yd(input.n, exec_state)?;
+    let input = args.get_number_typed(&RuntimeType::known_length(UnitLen::Yards), exec_state)?;
+    let result = inner_from_yd(input, exec_state)?;
 
-    Ok(args.make_user_val_from_f64_with_type(TyF64::new(result, exec_state.current_default_units())))
+    Ok(args.make_user_val_from_f64_with_type(TyF64::new(
+        result,
+        exec_state.current_default_units().expect_default_length(),
+    )))
 }
 
 /// Converts a number from yards to the current default unit.
+///
+/// *DEPRECATED* prefer using explicit numberic suffixes (e.g., `42yd`) or the `to...` conversion functions.
 ///
 /// No matter what units the current file uses, this function will always return a number equivalent
 /// to the input in yards.
@@ -258,6 +296,7 @@ pub async fn from_yd(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 #[stdlib {
     name = "fromYd",
     tags = ["units"],
+    deprecated = true,
 }]
 fn inner_from_yd(input: f64, exec_state: &ExecState) -> Result<f64, KclError> {
     match exec_state.length_unit() {

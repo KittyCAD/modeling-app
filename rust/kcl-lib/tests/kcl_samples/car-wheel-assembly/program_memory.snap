@@ -145,26 +145,18 @@ description: Variables in memory after executing car-wheel-assembly.kcl
     "type": "Number",
     "value": 0.9449,
     "ty": {
-      "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "type": "Known",
+      "type": "Length",
+      "type": "Inches"
     }
   },
   "lugHeadLength": {
     "type": "Number",
     "value": 0.4724,
     "ty": {
-      "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "type": "Known",
+      "type": "Length",
+      "type": "Inches"
     }
   },
   "lugHolePatternDia": {
@@ -184,13 +176,9 @@ description: Variables in memory after executing car-wheel-assembly.kcl
     "type": "Number",
     "value": 1.1811,
     "ty": {
-      "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "type": "Known",
+      "type": "Length",
+      "type": "Inches"
     }
   },
   "lugNut": {
@@ -201,52 +189,36 @@ description: Variables in memory after executing car-wheel-assembly.kcl
     "type": "Number",
     "value": 4.5,
     "ty": {
-      "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "type": "Known",
+      "type": "Length",
+      "type": "Inches"
     }
   },
   "lugThreadDepth": {
     "type": "Number",
     "value": 0.6811,
     "ty": {
-      "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "type": "Known",
+      "type": "Length",
+      "type": "Inches"
     }
   },
   "lugThreadDiameter": {
     "type": "Number",
     "value": 0.4016,
     "ty": {
-      "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "type": "Known",
+      "type": "Length",
+      "type": "Inches"
     }
   },
   "offset": {
     "type": "Number",
     "value": -1.378,
     "ty": {
-      "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "type": "Known",
+      "type": "Length",
+      "type": "Inches"
     }
   },
   "rotorDiameter": {

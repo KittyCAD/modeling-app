@@ -373,7 +373,7 @@ description: Variables in memory after executing dodecahedron.kcl
               "origin": {
                 "x": -17.76901418668612,
                 "y": 0.0,
-                "z": 10.981854713951094,
+                "z": 10.981854713951092,
                 "units": {
                   "type": "Inches"
                 }
@@ -589,7 +589,7 @@ description: Variables in memory after executing dodecahedron.kcl
               "origin": {
                 "x": -17.76901418668612,
                 "y": 0.0,
-                "z": 10.981854713951094,
+                "z": 10.981854713951092,
                 "units": {
                   "type": "Inches"
                 }
@@ -805,7 +805,7 @@ description: Variables in memory after executing dodecahedron.kcl
               "origin": {
                 "x": -17.76901418668612,
                 "y": 0.0,
-                "z": 10.981854713951094,
+                "z": 10.981854713951092,
                 "units": {
                   "type": "Inches"
                 }
@@ -1021,7 +1021,7 @@ description: Variables in memory after executing dodecahedron.kcl
               "origin": {
                 "x": -17.76901418668612,
                 "y": 0.0,
-                "z": 10.981854713951094,
+                "z": 10.981854713951092,
                 "units": {
                   "type": "Inches"
                 }
@@ -1237,7 +1237,7 @@ description: Variables in memory after executing dodecahedron.kcl
               "origin": {
                 "x": -17.76901418668612,
                 "y": 0.0,
-                "z": 10.981854713951094,
+                "z": 10.981854713951092,
                 "units": {
                   "type": "Inches"
                 }
@@ -1623,7 +1623,7 @@ description: Variables in memory after executing dodecahedron.kcl
           "origin": {
             "x": -17.76901418668612,
             "y": 0.0,
-            "z": 10.981854713951094,
+            "z": 10.981854713951092,
             "units": {
               "type": "Inches"
             }
@@ -1798,7 +1798,7 @@ description: Variables in memory after executing dodecahedron.kcl
         "origin": {
           "x": -17.76901418668612,
           "y": 0.0,
-          "z": 10.981854713951094,
+          "z": 10.981854713951092,
           "units": {
             "type": "Inches"
           }
