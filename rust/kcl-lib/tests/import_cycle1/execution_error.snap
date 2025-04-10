@@ -2,15 +2,12 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Error from executing import_cycle1.kcl
 ---
-KCL ImportCycle error
+[31mKCL ImportCycle error[0m
 
-  × import cycle: circular import of modules is not allowed: tests/
-  │ import_cycle1/import_cycle2.kcl -> tests/import_cycle1/import_cycle3.kcl
-  │ -> tests/import_cycle1/input.kcl
-   ╭─[3:1]
- 2 │ 
- 3 │ import two from "import_cycle2.kcl"
-   · ─────────────────┬─────────────────
-   ·                  ╰── tests/import_cycle1/input.kcl
- 4 │ 
+  [31m×[0m import cycle: circular import of modules not allowed: import_cycle2.kcl, import_cycle3.kcl
+   ╭─[1:1]
+ [2m1[0m │ @settings(defaultLengthUnit = in)
+   · [35;1m▲[0m
+   · [35;1m╰── [35;1mtests/import_cycle1/input.kcl[0m[0m
+ [2m2[0m │ 
    ╰────
