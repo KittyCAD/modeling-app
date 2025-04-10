@@ -151,6 +151,10 @@ impl Args {
         let Some(arg) = self.kw_args.labeled.get(label) else {
             return Ok(None);
         };
+        if let KclValue::KclNone { .. } = arg.value {
+            // It is set, but it's an optional parameter that wasn't provided.
+            return Ok(None);
+        }
 
         T::from_kcl_val(&arg.value).map(Some).ok_or_else(|| {
             KclError::Type(KclErrorDetails {

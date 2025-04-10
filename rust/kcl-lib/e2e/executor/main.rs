@@ -1352,10 +1352,11 @@ secondSketch = startSketchOn(part001, '')
 "#;
 
     let result = execute_and_snapshot(code, None).await;
-    assert!(result.is_err());
+    let err = result.unwrap_err();
+    let err = err.as_kcl_error().unwrap();
     assert_eq!(
-        result.err().unwrap().to_string(),
-        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([297, 299, 0])], message: "Argument at index 1 was supposed to be type Option<FaceTag> but found string (text)" }"#
+        err.message(),
+        "Argument at index 1 was supposed to be type Option<FaceTag> but found string (text)"
     );
 }
 
