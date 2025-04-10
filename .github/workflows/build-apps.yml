@@ -236,7 +236,7 @@ jobs:
           CSC_KEY_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
           CSC_KEYCHAIN: ${{ secrets.APPLE_SIGNING_IDENTITY }}
           WINDOWS_CERTIFICATE_THUMBPRINT: ${{ secrets.WINDOWS_CERTIFICATE_THUMBPRINT }}
-          DEBUG: "electron-notarize*"
+          DEBUG: electron-builder
         # TODO: Fix electron-notarize flakes. The logs above should help gather more data on failures
         uses: nick-fields/retry@v3.0.2
         with:
