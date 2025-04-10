@@ -1097,12 +1097,16 @@ export const tangentialArc: SketchLineHelperKw = {
     const { node: callExpression } = nodeMeta
 
     if (callExpression.type !== 'CallExpressionKw') {
-      return new Error(`Expected CallExpressionKw, but found ${callExpression.type}`)
+      return new Error(
+        `Expected CallExpressionKw, but found ${callExpression.type}`
+      )
     }
 
     for (const arg of callExpression.arguments) {
       if (arg.label.name !== ARG_END_ABSOLUTE && arg.label.name !== ARG_TAG) {
-        console.debug('Trying to edit unsupported tangentialArc keyword arguments; skipping')
+        console.debug(
+          'Trying to edit unsupported tangentialArc keyword arguments; skipping'
+        )
         return {
           modifiedAst: _node,
           pathToNode,
