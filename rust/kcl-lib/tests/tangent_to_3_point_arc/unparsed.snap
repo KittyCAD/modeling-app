@@ -9,7 +9,4 @@ profile001 = startProfileAt([100.0, 0.0], sketch001)
        interior = [300.0, 100.0],
        end = [200.0, -100.0]
      }, %, $seg01)
-  |> angledLine({
-       angle = tangentToEnd(seg01),
-       length = 100.0
-     }, %)
+  |> angledLine(angle = tangentToEnd(seg01), length = 100.0)
