@@ -164,7 +164,7 @@ import type {
   SketchTool,
 } from '@src/machines/modelingMachine'
 
-type DraftSegment = 'line' | 'tangentialArcTo'
+type DraftSegment = 'line' | 'tangentialArc'
 
 type Vec3Array = [number, number, number]
 
@@ -235,7 +235,7 @@ export class SceneEntities {
         segment.userData.prevSegment &&
         segment.userData.type === TANGENTIAL_ARC_TO_SEGMENT
       ) {
-        update = segmentUtils.tangentialArcTo.update
+        update = segmentUtils.tangentialArc.update
       }
       if (
         segment.userData &&
@@ -758,7 +758,7 @@ export class SceneEntities {
 
         const initSegment =
           segment.type === 'TangentialArcTo'
-            ? segmentUtils.tangentialArcTo.init
+            ? segmentUtils.tangentialArc.init
             : segment.type === 'Circle'
               ? segmentUtils.circle.init
               : segment.type === 'Arc'
@@ -903,7 +903,7 @@ export class SceneEntities {
     forward: [number, number, number],
     up: [number, number, number],
     origin: [number, number, number],
-    segmentName: 'line' | 'tangentialArcTo' = 'line',
+    segmentName: 'line' | 'tangentialArc' = 'line',
     shouldTearDown = true
   ) => {
     const _ast = structuredClone(this.kclManager.ast)
@@ -999,7 +999,7 @@ export class SceneEntities {
             variables: this.kclManager.variables,
             pathToNode: sketchEntryNodePath,
             expressions: [
-              segmentName === 'tangentialArcTo'
+              segmentName === 'tangentialArc'
                 ? createCallExpressionStdLibKw('tangentialArc', null, [
                     createLabeledArg(ARG_END_ABSOLUTE, originCoords),
                   ])
@@ -1047,11 +1047,11 @@ export class SceneEntities {
           // This might need to become its own function if we want more
           // case-based logic for different segment types
           if (
-            (lastSegment.type === 'TangentialArcTo' &&
+            (lastSegment.type === 'TangentialArc' &&
               segmentName !== 'line') ||
-            segmentName === 'tangentialArcTo'
+            segmentName === 'tangentialArc'
           ) {
-            resolvedFunctionName = 'tangentialArcTo'
+            resolvedFunctionName = 'tangentialArc'
           } else if (isHorizontal) {
             // If the angle between is 0 or 180 degrees (+/- the snapping angle), make the line an xLine
             resolvedFunctionName = 'xLine'
@@ -2994,7 +2994,7 @@ export class SceneEntities {
     }
     let update: SegmentUtils['update'] | null = null
     if (type === TANGENTIAL_ARC_TO_SEGMENT) {
-      update = segmentUtils.tangentialArcTo.update
+      update = segmentUtils.tangentialArc.update
     } else if (type === STRAIGHT_SEGMENT) {
       update = segmentUtils.straight.update
     } else if (
@@ -3173,7 +3173,7 @@ export class SceneEntities {
           if (parent.name === STRAIGHT_SEGMENT) {
             update = segmentUtils.straight.update
           } else if (parent.name === TANGENTIAL_ARC_TO_SEGMENT) {
-            update = segmentUtils.tangentialArcTo.update
+            update = segmentUtils.tangentialArc.update
             input = {
               type: 'arc-segment',
               from: parent.userData.from,
@@ -3250,7 +3250,7 @@ export class SceneEntities {
           if (parent.name === STRAIGHT_SEGMENT) {
             update = segmentUtils.straight.update
           } else if (parent.name === TANGENTIAL_ARC_TO_SEGMENT) {
-            update = segmentUtils.tangentialArcTo.update
+            update = segmentUtils.tangentialArc.update
             input = {
               type: 'arc-segment',
               from: parent.userData.from,

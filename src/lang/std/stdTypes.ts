@@ -37,7 +37,7 @@ export interface AddTagInfo {
 
 /** Inputs for all straight segments, to and from are absolute values, as this gives a
  * consistent base that can be converted to all of the line, angledLine, etc segment types
- * One notable exception to "straight segment" is that tangentialArcTo is included in this
+ * One notable exception to "straight segment" is that tangentialArc is included in this
  * Input type since it too only takes x-y values and is able to get extra info it needs
  * to be tangential from the previous segment */
 interface StraightSegmentInput {
@@ -46,8 +46,8 @@ interface StraightSegmentInput {
   to: [number, number]
 }
 
-/** Inputs for arcs, excluding tangentialArcTo for reasons explain in
- * the @straightSegmentInput comment */
+/** Inputs for arcs, excluding tangentialArc for reasons explain in the
+ * @straightSegmentInput comment */
 interface ArcSegmentInput {
   type: 'arc-segment'
   from: [number, number]
@@ -210,7 +210,7 @@ export type SimplifiedArgDetails =
   | Omit<LabeledArg<null>, 'expr' | 'argType'>
 
 /**
- * Represents the result of creating a sketch expression (line, tangentialArcTo, angledLine, circle, etc.).
+ * Represents the result of creating a sketch expression (line, tangentialArc, angledLine, circle, etc.).
  *
  * @property {Expr} callExp - This is the main result; recasting the expression should give the user the new function call.
  * @property {number} [valueUsedInTransform] - Aside from `callExp`, we also return the number used in the transform, which is useful for constraints.

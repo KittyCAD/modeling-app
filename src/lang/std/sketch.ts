@@ -1017,7 +1017,7 @@ export const yLine: SketchLineHelperKw = {
     ),
 }
 
-export const tangentialArcTo: SketchLineHelperKw = {
+export const tangentialArc: SketchLineHelperKw = {
   add: ({ node, pathToNode, segmentInput, replaceExistingCallback }) => {
     if (segmentInput.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR
     const { to } = segmentInput
@@ -1111,50 +1111,97 @@ export const tangentialArcTo: SketchLineHelperKw = {
   addTag: addTagKw(),
   getConstraintInfo: (callExp: CallExpressionKw, code, pathToNode) => {
     if (callExp.type !== 'CallExpressionKw') return []
-    const firstArg = callExp.arguments?.[0]
-    if (firstArg.type !== 'ArrayExpression') return []
+    if (callExp.callee.name.name !== 'tangentialArc') return []
     const callee = callExp.callee
     const pathToCallee: PathToNode = [
       ...pathToNode,
-      ['callee', 'CallExpression'],
+      ['callee', 'CallExpressionKw'],
     ]
-    const pathToArrayExpression: PathToNode = [
-      ...pathToNode,
-      ['arguments', 'CallExpression'],
-      [0, 'index'],
-      ['elements', 'ArrayExpression'],
-    ]
-    const pathToFirstArg: PathToNode = [...pathToArrayExpression, [0, 'index']]
-    const pathToSecondArg: PathToNode = [...pathToArrayExpression, [1, 'index']]
-    return [
+    const endAbsoluteArg = findKwArgWithIndex(ARG_END_ABSOLUTE, callExp)
+
+    const constraints: ConstrainInfo[] = [
       constrainInfo(
         'tangentialWithPrevious',
         true,
         callee.name.name,
-        'tangentialArcTo',
+        'tangentialArc',
         undefined,
         topLevelRange(callee.start, callee.end),
         pathToCallee
       ),
-      constrainInfo(
-        'xAbsolute',
-        isNotLiteralArrayOrStatic(firstArg.elements[0]),
-        code.slice(firstArg.elements[0].start, firstArg.elements[0].end),
-        'tangentialArcTo',
-        0,
-        topLevelRange(firstArg.elements[0].start, firstArg.elements[0].end),
-        pathToFirstArg
-      ),
-      constrainInfo(
-        'yAbsolute',
-        isNotLiteralArrayOrStatic(firstArg.elements[1]),
-        code.slice(firstArg.elements[1].start, firstArg.elements[1].end),
-        'tangentialArcTo',
-        1,
-        topLevelRange(firstArg.elements[1].start, firstArg.elements[1].end),
-        pathToSecondArg
-      ),
     ]
+    if (endAbsoluteArg) {
+      const { expr, argIndex } = endAbsoluteArg
+      const pathToArgs: PathToNode = [
+        ...pathToNode,
+        ['arguments', 'CallExpressionKw'],
+      ]
+      const pathToArg: PathToNode = [
+        ...pathToArgs,
+        [argIndex, ARG_INDEX_FIELD],
+        ['arg', LABELED_ARG_FIELD],
+      ]
+      if (expr.type !== 'ArrayExpression' || expr.elements.length < 2) {
+        constraints.push(
+          constrainInfo(
+            'xAbsolute',
+            isNotLiteralArrayOrStatic(expr),
+            code.slice(expr.start, expr.end),
+            'tangentialArc',
+            0,
+            topLevelRange(expr.start, expr.end),
+            pathToArg
+          )
+        )
+        constraints.push(
+          constrainInfo(
+            'yAbsolute',
+            isNotLiteralArrayOrStatic(expr),
+            code.slice(expr.start, expr.end),
+            'tangentialArc',
+            1,
+            topLevelRange(expr.start, expr.end),
+            pathToArg
+          )
+        )
+        return constraints
+      }
+      const pathToX: PathToNode = [
+        ...pathToArg,
+        ['elements', 'ArrayExpression'],
+        [0, 'index'],
+      ]
+      const pathToY: PathToNode = [
+        ...pathToArg,
+        ['elements', 'ArrayExpression'],
+        [1, 'index'],
+      ]
+      const exprX = expr.elements[0]
+      const exprY = expr.elements[1]
+      constraints.push(
+        constrainInfo(
+          'xAbsolute',
+          isNotLiteralArrayOrStatic(exprX),
+          code.slice(exprX.start, exprX.end),
+          'tangentialArc',
+          0,
+          topLevelRange(exprX.start, exprX.end),
+          pathToX
+        )
+      )
+      constraints.push(
+        constrainInfo(
+          'yAbsolute',
+          isNotLiteralArrayOrStatic(exprY),
+          code.slice(exprY.start, exprY.end),
+          'tangentialArc',
+          1,
+          topLevelRange(exprY.start, exprY.end),
+          pathToY
+        )
+      )
+    }
+    return constraints
   },
 }
 export const circle: SketchLineHelperKw = {
@@ -3018,7 +3065,7 @@ export const sketchLineHelperMapKw: { [key: string]: SketchLineHelperKw } = {
   angledLineOfYLength,
   angledLineToX,
   angledLineToY,
-  tangentialArcTo,
+  tangentialArc,
 } as const
 
 export function changeSketchArguments(
@@ -3110,6 +3157,7 @@ export function fnNameToTooltip(
       return isAbsolute ? 'yLineTo' : 'yLine'
     case 'circleThreePoint':
     case 'circle':
+    case 'tangentialArc':
       return fnName
     case 'angledLine': {
       const argmap: Record<string, ToolTip> = {
@@ -3859,6 +3907,7 @@ export function isAbsoluteLine(lineCall: CallExpressionKw): boolean | Error {
   const name = lineCall?.callee?.name.name
   switch (name) {
     case 'line':
+      case 'tangentialArc':
       if (findKwArg(ARG_END, lineCall) !== undefined) {
         return false
       }
@@ -3866,7 +3915,7 @@ export function isAbsoluteLine(lineCall: CallExpressionKw): boolean | Error {
         return true
       }
       return new Error(
-        `line call has neither ${ARG_END} nor ${ARG_END_ABSOLUTE} params`
+        `${name} call has neither ${ARG_END} nor ${ARG_END_ABSOLUTE} params`
       )
     case 'xLine':
     case 'yLine':
@@ -3975,7 +4024,7 @@ export function getFirstArg(callExp: CallExpression):
   if (['angledLineThatIntersects'].includes(name)) {
     return getAngledLineThatIntersects(callExp)
   }
-  if (['tangentialArcTo'].includes(name)) {
+  if (['tangentialArc'].includes(name)) {
     // TODO probably needs it's own implementation
     return getFirstArgValuesForXYFns(callExp)
   }

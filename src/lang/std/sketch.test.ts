@@ -630,11 +630,11 @@ describe('testing getConstraintInfo', () => {
           {
             type: 'tangentialWithPrevious',
             isConstrained: true,
-            value: 'tangentialArcTo',
+            value: 'tangentialArc',
             sourceRange: [expect.any(Number), expect.any(Number), 0],
             argPosition: undefined,
             pathToNode: expect.any(Array),
-            stdLibFnName: 'tangentialArcTo',
+            stdLibFnName: 'tangentialArc',
           },
           {
             type: 'xAbsolute',
@@ -643,7 +643,7 @@ describe('testing getConstraintInfo', () => {
             sourceRange: [expect.any(Number), expect.any(Number), 0],
             argPosition: { type: 'arrayItem', index: 0 },
             pathToNode: expect.any(Array),
-            stdLibFnName: 'tangentialArcTo',
+            stdLibFnName: 'tangentialArc',
           },
           {
             type: 'yAbsolute',
@@ -652,7 +652,7 @@ describe('testing getConstraintInfo', () => {
             sourceRange: [expect.any(Number), expect.any(Number), 0],
             argPosition: { type: 'arrayItem', index: 1 },
             pathToNode: expect.any(Array),
-            stdLibFnName: 'tangentialArcTo',
+            stdLibFnName: 'tangentialArc',
           },
         ],
       ],
@@ -1154,11 +1154,11 @@ describe('testing getConstraintInfo', () => {
           {
             type: 'tangentialWithPrevious',
             isConstrained: true,
-            value: 'tangentialArcTo',
+            value: 'tangentialArc',
             sourceRange: [expect.any(Number), expect.any(Number), 0],
             argPosition: undefined,
             pathToNode: expect.any(Array),
-            stdLibFnName: 'tangentialArcTo',
+            stdLibFnName: 'tangentialArc',
           },
           {
             type: 'xAbsolute',
@@ -1167,7 +1167,7 @@ describe('testing getConstraintInfo', () => {
             sourceRange: [expect.any(Number), expect.any(Number), 0],
             argPosition: { type: 'arrayItem', index: 0 },
             pathToNode: expect.any(Array),
-            stdLibFnName: 'tangentialArcTo',
+            stdLibFnName: 'tangentialArc',
           },
           {
             type: 'yAbsolute',
@@ -1176,7 +1176,7 @@ describe('testing getConstraintInfo', () => {
             sourceRange: [expect.any(Number), expect.any(Number), 0],
             argPosition: { type: 'arrayItem', index: 1 },
             pathToNode: expect.any(Array),
-            stdLibFnName: 'tangentialArcTo',
+            stdLibFnName: 'tangentialArc',
           },
         ],
       ],
