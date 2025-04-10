@@ -101,12 +101,11 @@ jobs:
           yarn files:set-version
           yarn files:flip-to-nightly
 
-      - name: Set release version
-        # if: ${{ env.IS_RELEASE == 'true' }}
-        if: true
-        run: |
-          export VERSION=${GITHUB_REF_NAME#v}
-          yarn files:set-version
+      # - name: Set release version
+      #   if: ${{ env.IS_RELEASE == 'true' }}
+      #   run: |
+      #     export VERSION=${GITHUB_REF_NAME#v}
+      #     yarn files:set-version
 
       - uses: actions/upload-artifact@v4
         with:
