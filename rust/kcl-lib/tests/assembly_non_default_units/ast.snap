@@ -6,7 +6,7 @@ description: Result of parsing assembly_non_default_units.kcl
   "Ok": {
     "body": [
       {
-        "commentStart": 33,
+        "commentStart": 0,
         "end": 0,
         "path": {
           "type": "Kcl",
@@ -25,7 +25,7 @@ description: Result of parsing assembly_non_default_units.kcl
         "type": "ImportStatement"
       },
       {
-        "commentStart": 172,
+        "commentStart": 0,
         "end": 0,
         "path": {
           "type": "Kcl",
@@ -40,14 +40,14 @@ description: Result of parsing assembly_non_default_units.kcl
         "type": "ImportStatement"
       },
       {
-        "commentStart": 191,
+        "commentStart": 0,
         "end": 0,
         "expression": {
           "abs_path": false,
-          "commentStart": 193,
+          "commentStart": 0,
           "end": 0,
           "name": {
-            "commentStart": 193,
+            "commentStart": 0,
             "end": 0,
             "name": "other1",
             "start": 0,
@@ -63,14 +63,14 @@ description: Result of parsing assembly_non_default_units.kcl
         "type": "ExpressionStatement"
       },
       {
-        "commentStart": 200,
+        "commentStart": 0,
         "end": 0,
         "expression": {
           "abs_path": false,
-          "commentStart": 200,
+          "commentStart": 0,
           "end": 0,
           "name": {
-            "commentStart": 200,
+            "commentStart": 0,
             "end": 0,
             "name": "other2",
             "start": 0,
@@ -93,7 +93,7 @@ description: Result of parsing assembly_non_default_units.kcl
         "commentStart": 0,
         "end": 0,
         "name": {
-          "commentStart": 1,
+          "commentStart": 0,
           "end": 0,
           "name": "settings",
           "start": 0,
@@ -101,10 +101,10 @@ description: Result of parsing assembly_non_default_units.kcl
         },
         "properties": [
           {
-            "commentStart": 10,
+            "commentStart": 0,
             "end": 0,
             "key": {
-              "commentStart": 10,
+              "commentStart": 0,
               "end": 0,
               "name": "defaultLengthUnit",
               "start": 0,
@@ -114,10 +114,10 @@ description: Result of parsing assembly_non_default_units.kcl
             "type": "ObjectProperty",
             "value": {
               "abs_path": false,
-              "commentStart": 30,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 30,
+                "commentStart": 0,
                 "end": 0,
                 "name": "in",
                 "start": 0,
@@ -138,7 +138,7 @@ description: Result of parsing assembly_non_default_units.kcl
       "nonCodeNodes": {
         "1": [
           {
-            "commentStart": 191,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -150,7 +150,7 @@ description: Result of parsing assembly_non_default_units.kcl
       },
       "startNodes": [
         {
-          "commentStart": 33,
+          "commentStart": 0,
           "end": 0,
           "start": 0,
           "type": "NonCodeNode",

@@ -799,7 +799,7 @@ impl Backend {
                     // We do not have project descriptions yet.
                     project_description: None,
                     project_name,
-                    // The UUID for the modeling app.
+                    // The UUID for the Design Studio.
                     // We can unwrap here because we know it will not panic.
                     source_id: uuid::Uuid::from_str("70178592-dfca-47b3-bd2d-6fce2bcaee04").unwrap(),
                     type_: kittycad::types::Type::ModelingAppEvent,
@@ -810,56 +810,6 @@ impl Backend {
             .map_err(|e| anyhow::anyhow!(e.to_string()))?;
 
         Ok(())
-    }
-
-    pub async fn update_units(
-        &self,
-        params: custom_notifications::UpdateUnitsParams,
-    ) -> RpcResult<Option<custom_notifications::UpdateUnitsResponse>> {
-        {
-            let mut ctx = self.executor_ctx.write().await;
-            // Borrow the executor context mutably.
-            let Some(ref mut executor_ctx) = *ctx else {
-                self.client
-                    .log_message(MessageType::ERROR, "no executor context set to update units for")
-                    .await;
-                return Ok(None);
-            };
-
-            self.client
-                .log_message(MessageType::INFO, format!("update units: {:?}", params))
-                .await;
-
-            if executor_ctx.settings.units == params.units
-                && !self.has_diagnostics(params.text_document.uri.as_ref()).await
-            {
-                // Return early the units are the same.
-                return Ok(None);
-            }
-
-            // Set the engine units.
-            executor_ctx.update_units(params.units);
-        }
-        // Lock is dropped here since nested.
-        // This is IMPORTANT.
-
-        let new_params = TextDocumentItem {
-            uri: params.text_document.uri.clone(),
-            text: std::mem::take(&mut params.text.to_string()),
-            version: Default::default(),
-            language_id: Default::default(),
-        };
-
-        // Force re-execution.
-        self.inner_on_change(new_params, true).await;
-
-        // Check if we have diagnostics.
-        // If we do we return early, since we failed in some way.
-        if self.has_diagnostics(params.text_document.uri.as_ref()).await {
-            return Ok(None);
-        }
-
-        Ok(Some(custom_notifications::UpdateUnitsResponse {}))
     }
 
     pub async fn update_can_execute(
@@ -1244,7 +1194,7 @@ impl LanguageServer for Backend {
                 // Get last word
                 let last_word = line_prefix
                     .split(|c: char| c.is_whitespace() || c.is_ascii_punctuation())
-                    .last()
+                    .next_back()
                     .unwrap_or("");
 
                 // If the last word starts with a digit, return no completions

@@ -2,21 +2,22 @@
  * Modeling Workflows
  *
  * This module contains higher-level CAD operation workflows that
- * coordinate between different subsystems in the modeling app:
+ * coordinate between different subsystems in the app
  * AST, code editor, file system and 3D engine.
  */
+import type { Node } from '@rust/kcl-lib/bindings/Node'
 
-import { Node } from '@rust/kcl-lib/bindings/Node'
-import { KclManager } from 'lang/KclSingleton'
-import { ExecutionType } from 'lib/constants'
+import type EditorManager from '@src/editor/manager'
+import type { KclManager } from '@src/lang/KclSingleton'
+import type CodeManager from '@src/lang/codeManager'
+import type { PathToNode, Program } from '@src/lang/wasm'
+import type { ExecutionType } from '@src/lib/constants'
 import {
   EXECUTION_TYPE_MOCK,
   EXECUTION_TYPE_NONE,
   EXECUTION_TYPE_REAL,
-} from 'lib/constants'
-import { PathToNode, Program, SourceRange } from 'lang/wasm'
-import EditorManager from 'editor/manager'
-import CodeManager from 'lang/codeManager'
+} from '@src/lib/constants'
+import type { Selections } from '@src/lib/selections'
 
 /**
  * Updates the complete modeling state:
@@ -52,20 +53,23 @@ export async function updateModelingState(
   },
   options?: {
     focusPath?: Array<PathToNode>
-    zoomToFit?: boolean
-    zoomOnRangeAndType?: {
-      range: SourceRange
-      type: string
-    }
+    skipUpdateAst?: boolean
   }
 ): Promise<void> {
-  // Step 1: Update AST without executing (prepare selections)
-  const updatedAst = await dependencies.kclManager.updateAst(
-    ast,
-    // false == mock execution. Is this what we want?
-    false, // Execution handled separately for error resilience
-    options
-  )
+  let updatedAst: {
+    newAst: Node<Program>
+    selections?: Selections
+  } = { newAst: ast }
+  // TODO: understand why this skip flag is needed for insertAstMod.
+  // It's unclear why we double casts the AST
+  if (!options?.skipUpdateAst) {
+    // Step 1: Update AST without executing (prepare selections)
+    updatedAst = await dependencies.kclManager.updateAst(
+      ast,
+      false, // Execution handled separately for error resilience
+      options
+    )
+  }
 
   // Step 2: Update the code editor and save file
   await dependencies.codeManager.updateEditorWithAstAndWriteToFile(
@@ -83,8 +87,6 @@ export async function updateModelingState(
     if (executionType === EXECUTION_TYPE_REAL) {
       await dependencies.kclManager.executeAst({
         ast: updatedAst.newAst,
-        zoomToFit: options?.zoomToFit,
-        zoomOnRangeAndType: options?.zoomOnRangeAndType,
       })
     } else if (executionType === EXECUTION_TYPE_MOCK) {
       await dependencies.kclManager.executeAstMock(updatedAst.newAst)

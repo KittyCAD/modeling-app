@@ -8,9 +8,15 @@ description: Variables in memory after executing add_lots.kcl
   },
   "x": {
     "type": "Number",
-    "value": 10100.0,
+    "value": 4970.0,
     "ty": {
-      "type": "Unknown"
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
     }
   }
 }

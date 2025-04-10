@@ -15,14 +15,6 @@ description: Artifact commands car-wheel-assembly.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "set_scene_units",
-      "unit": "mm"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
       "hidden": true
@@ -177,7 +169,8 @@ description: Artifact commands car-wheel-assembly.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.25,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -332,7 +325,8 @@ description: Artifact commands car-wheel-assembly.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.5,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -491,7 +485,8 @@ description: Artifact commands car-wheel-assembly.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -0.75,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -557,7 +552,8 @@ description: Artifact commands car-wheel-assembly.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -0.75,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -623,7 +619,8 @@ description: Artifact commands car-wheel-assembly.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -0.75,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -689,7 +686,8 @@ description: Artifact commands car-wheel-assembly.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -0.75,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -755,7 +753,8 @@ description: Artifact commands car-wheel-assembly.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -0.75,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -978,7 +977,8 @@ description: Artifact commands car-wheel-assembly.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.5,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -1116,7 +1116,8 @@ description: Artifact commands car-wheel-assembly.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.25,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -1275,7 +1276,8 @@ description: Artifact commands car-wheel-assembly.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -0.25,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -1341,7 +1343,8 @@ description: Artifact commands car-wheel-assembly.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -0.25,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -1407,7 +1410,8 @@ description: Artifact commands car-wheel-assembly.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -0.25,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -1473,7 +1477,8 @@ description: Artifact commands car-wheel-assembly.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -0.25,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -1539,7 +1544,8 @@ description: Artifact commands car-wheel-assembly.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -0.25,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -1698,7 +1704,8 @@ description: Artifact commands car-wheel-assembly.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.5,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -1764,7 +1771,8 @@ description: Artifact commands car-wheel-assembly.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.5,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -1830,7 +1838,8 @@ description: Artifact commands car-wheel-assembly.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.5,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -1896,7 +1905,8 @@ description: Artifact commands car-wheel-assembly.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.5,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -1962,7 +1972,8 @@ description: Artifact commands car-wheel-assembly.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.5,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -2028,7 +2039,8 @@ description: Artifact commands car-wheel-assembly.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.5,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -2094,7 +2106,8 @@ description: Artifact commands car-wheel-assembly.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.5,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -2160,7 +2173,8 @@ description: Artifact commands car-wheel-assembly.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.5,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -2226,7 +2240,8 @@ description: Artifact commands car-wheel-assembly.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.5,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -2292,7 +2307,8 @@ description: Artifact commands car-wheel-assembly.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.5,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -2358,7 +2374,8 @@ description: Artifact commands car-wheel-assembly.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.5,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -2424,7 +2441,8 @@ description: Artifact commands car-wheel-assembly.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.5,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -2490,7 +2508,8 @@ description: Artifact commands car-wheel-assembly.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.5,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -2556,7 +2575,8 @@ description: Artifact commands car-wheel-assembly.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.5,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -2622,7 +2642,8 @@ description: Artifact commands car-wheel-assembly.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.5,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -2688,7 +2709,8 @@ description: Artifact commands car-wheel-assembly.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.5,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -2890,7 +2912,8 @@ description: Artifact commands car-wheel-assembly.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -0.125,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -3016,7 +3039,8 @@ description: Artifact commands car-wheel-assembly.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -0.125,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -3142,7 +3166,8 @@ description: Artifact commands car-wheel-assembly.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -0.125,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -3268,7 +3293,8 @@ description: Artifact commands car-wheel-assembly.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -0.125,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -3394,7 +3420,8 @@ description: Artifact commands car-wheel-assembly.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -0.125,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -3656,7 +3683,8 @@ description: Artifact commands car-wheel-assembly.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -0.125,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -3782,7 +3810,8 @@ description: Artifact commands car-wheel-assembly.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -0.125,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -3908,7 +3937,8 @@ description: Artifact commands car-wheel-assembly.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -0.125,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -4034,7 +4064,8 @@ description: Artifact commands car-wheel-assembly.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -0.125,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -4160,7 +4191,8 @@ description: Artifact commands car-wheel-assembly.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -0.125,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -4698,7 +4730,8 @@ description: Artifact commands car-wheel-assembly.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.475,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -4946,7 +4979,8 @@ description: Artifact commands car-wheel-assembly.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.95,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -5125,7 +5159,8 @@ description: Artifact commands car-wheel-assembly.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -0.95,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -5191,7 +5226,8 @@ description: Artifact commands car-wheel-assembly.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -0.95,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -5257,7 +5293,8 @@ description: Artifact commands car-wheel-assembly.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -0.95,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -5323,7 +5360,8 @@ description: Artifact commands car-wheel-assembly.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -0.95,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -5389,7 +5427,8 @@ description: Artifact commands car-wheel-assembly.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -0.95,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -5548,7 +5587,8 @@ description: Artifact commands car-wheel-assembly.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -0.475,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -5614,7 +5654,8 @@ description: Artifact commands car-wheel-assembly.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -0.475,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -5680,7 +5721,8 @@ description: Artifact commands car-wheel-assembly.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -0.475,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -5746,7 +5788,8 @@ description: Artifact commands car-wheel-assembly.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -0.475,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -5812,7 +5855,8 @@ description: Artifact commands car-wheel-assembly.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -0.475,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -6119,7 +6163,8 @@ description: Artifact commands car-wheel-assembly.kcl
         "unit": "degrees",
         "value": 360.0
       },
-      "tolerance": 0.0000001
+      "tolerance": 0.0000001,
+      "opposite": "None"
     }
   },
   {
@@ -6411,7 +6456,8 @@ description: Artifact commands car-wheel-assembly.kcl
         "unit": "degrees",
         "value": 360.0
       },
-      "tolerance": 0.0000001
+      "tolerance": 0.0000001,
+      "opposite": "None"
     }
   },
   {
@@ -6715,7 +6761,8 @@ description: Artifact commands car-wheel-assembly.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.95,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -7132,7 +7179,8 @@ description: Artifact commands car-wheel-assembly.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -0.95,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -7850,7 +7898,8 @@ description: Artifact commands car-wheel-assembly.kcl
         "unit": "degrees",
         "value": 360.0
       },
-      "tolerance": 0.0000001
+      "tolerance": 0.0000001,
+      "opposite": "None"
     }
   },
   {
@@ -8448,7 +8497,7 @@ description: Artifact commands car-wheel-assembly.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 0.47244094488188976,
+        "x": 0.4724409448818898,
         "y": 0.0,
         "z": 0.0
       }
@@ -8520,7 +8569,7 @@ description: Artifact commands car-wheel-assembly.kcl
       "path": "[uuid]",
       "segment": {
         "type": "tangential_arc",
-        "radius": 0.11811023622047244,
+        "radius": 0.11811023622047245,
         "offset": {
           "unit": "degrees",
           "value": 90.0
@@ -8625,7 +8674,8 @@ description: Artifact commands car-wheel-assembly.kcl
         "unit": "degrees",
         "value": 360.0
       },
-      "tolerance": 0.0000001
+      "tolerance": 0.0000001,
+      "opposite": "None"
     }
   },
   {
@@ -9241,7 +9291,8 @@ description: Artifact commands car-wheel-assembly.kcl
         "unit": "degrees",
         "value": -70.0
       },
-      "tolerance": 0.0000001
+      "tolerance": 0.0000001,
+      "opposite": "None"
     }
   },
   {
@@ -9966,7 +10017,8 @@ description: Artifact commands car-wheel-assembly.kcl
         "unit": "degrees",
         "value": 360.0
       },
-      "tolerance": 0.0000001
+      "tolerance": 0.0000001,
+      "opposite": "None"
     }
   },
   {

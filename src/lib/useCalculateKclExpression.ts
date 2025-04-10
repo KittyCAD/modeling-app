@@ -1,14 +1,16 @@
-import { useModelingContext } from 'hooks/useModelingContext'
-import { kclManager } from 'lib/singletons'
-import { useKclContext } from 'lang/KclProvider'
-import { findUniqueName } from 'lang/modifyAst'
-import { PrevVariable, findAllPreviousVariables } from 'lang/queryAst'
-import { Expr, SourceRange } from 'lang/wasm'
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { getCalculatedKclExpressionValue } from './kclHelpers'
-import { parse, resultIsOk } from 'lang/wasm'
-import { err } from 'lib/trap'
-import { getSafeInsertIndex } from 'lang/queryAst/getSafeInsertIndex'
+
+import { useModelingContext } from '@src/hooks/useModelingContext'
+import { useKclContext } from '@src/lang/KclProvider'
+import { findUniqueName } from '@src/lang/create'
+import type { PrevVariable } from '@src/lang/queryAst'
+import { findAllPreviousVariables } from '@src/lang/queryAst'
+import { getSafeInsertIndex } from '@src/lang/queryAst/getSafeInsertIndex'
+import type { Expr, SourceRange } from '@src/lang/wasm'
+import { parse, resultIsOk } from '@src/lang/wasm'
+import { getCalculatedKclExpressionValue } from '@src/lib/kclHelpers'
+import { kclManager } from '@src/lib/singletons'
+import { err } from '@src/lib/trap'
 
 const isValidVariableName = (name: string) =>
   /^[a-zA-Z_][a-zA-Z0-9_]*$/.test(name)

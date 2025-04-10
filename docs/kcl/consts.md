@@ -9,9 +9,12 @@ layout: manual
 
 ### `std`
 
+- [`X`](/docs/kcl/consts/std-X)
 - [`XY`](/docs/kcl/consts/std-XY)
 - [`XZ`](/docs/kcl/consts/std-XZ)
+- [`Y`](/docs/kcl/consts/std-Y)
 - [`YZ`](/docs/kcl/consts/std-YZ)
+- [`Z`](/docs/kcl/consts/std-Z)
 
 ### `std::math`
 

@@ -1,5 +1,5 @@
-import { getUniqueProjectName } from './desktopFS'
-import { FileEntry } from './project'
+import { getUniqueProjectName } from '@src/lib/desktopFS'
+import type { FileEntry } from '@src/lib/project'
 
 /** Create a dummy project */
 function project(name: string, children?: FileEntry[]): FileEntry {

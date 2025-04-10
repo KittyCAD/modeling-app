@@ -1,28 +1,35 @@
-import { Diagnostic } from '@codemirror/lint'
+import type { Diagnostic } from '@codemirror/lint'
 import { useMachine, useSelector } from '@xstate/react'
-import { ContextMenu, ContextMenuItem } from 'components/ContextMenu'
-import { CustomIcon, CustomIconName } from 'components/CustomIcon'
-import Loading from 'components/Loading'
-import { useModelingContext } from 'hooks/useModelingContext'
-import { useKclContext } from 'lang/KclProvider'
-import { codeRefFromRange, getArtifactFromRange } from 'lang/std/artifactGraph'
-import { sourceRangeFromRust } from 'lang/wasm'
+import type { ComponentProps } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import type { Actor, Prop } from 'xstate'
+
+import type { Operation } from '@rust/kcl-lib/bindings/Operation'
+
+import { ContextMenu, ContextMenuItem } from '@src/components/ContextMenu'
+import type { CustomIconName } from '@src/components/CustomIcon'
+import { CustomIcon } from '@src/components/CustomIcon'
+import Loading from '@src/components/Loading'
+import { useModelingContext } from '@src/hooks/useModelingContext'
+import { useKclContext } from '@src/lang/KclProvider'
+import {
+  codeRefFromRange,
+  getArtifactFromRange,
+} from '@src/lang/std/artifactGraph'
+import { sourceRangeFromRust } from '@src/lang/wasm'
 import {
   filterOperations,
   getOperationIcon,
   getOperationLabel,
   stdLibMap,
-} from 'lib/operations'
-import { editorManager, kclManager } from 'lib/singletons'
-import { ComponentProps, useEffect, useMemo, useRef, useState } from 'react'
-import { Operation } from '@rust/kcl-lib/bindings/Operation'
-import { Actor, Prop } from 'xstate'
-import { featureTreeMachine } from 'machines/featureTreeMachine'
+} from '@src/lib/operations'
+import { editorManager, kclManager } from '@src/lib/singletons'
+import { featureTreeMachine } from '@src/machines/featureTreeMachine'
 import {
   editorIsMountedSelector,
   kclEditorActor,
   selectionEventSelector,
-} from 'machines/kclEditorMachine'
+} from '@src/machines/kclEditorMachine'
 
 export const FeatureTreePane = () => {
   const isEditorMounted = useSelector(kclEditorActor, editorIsMountedSelector)
@@ -282,10 +289,7 @@ const OperationItem = (props: {
   send: Prop<Actor<typeof featureTreeMachine>, 'send'>
 }) => {
   const kclContext = useKclContext()
-  const name =
-    'name' in props.item && props.item.name !== null
-      ? getOperationLabel(props.item)
-      : 'anonymous'
+  const name = getOperationLabel(props.item)
   const errors = useMemo(() => {
     return kclContext.diagnostics.filter(
       (diag) =>
@@ -297,7 +301,7 @@ const OperationItem = (props: {
   }, [kclContext.diagnostics.length])
 
   function selectOperation() {
-    if (props.item.type === 'UserDefinedFunctionReturn') {
+    if (props.item.type === 'GroupEnd') {
       return
     }
     props.send({
@@ -313,7 +317,10 @@ const OperationItem = (props: {
    * TODO: https://github.com/KittyCAD/modeling-app/issues/4442
    */
   function enterEditFlow() {
-    if (props.item.type === 'StdLibCall') {
+    if (
+      props.item.type === 'StdLibCall' ||
+      props.item.type === 'KclStdLibCall'
+    ) {
       props.send({
         type: 'enterEditFlow',
         data: {
@@ -325,7 +332,10 @@ const OperationItem = (props: {
   }
 
   function enterAppearanceFlow() {
-    if (props.item.type === 'StdLibCall') {
+    if (
+      props.item.type === 'StdLibCall' ||
+      props.item.type === 'KclStdLibCall'
+    ) {
       props.send({
         type: 'enterAppearanceFlow',
         data: {
@@ -339,7 +349,8 @@ const OperationItem = (props: {
   function deleteOperation() {
     if (
       props.item.type === 'StdLibCall' ||
-      props.item.type === 'UserDefinedFunctionCall'
+      props.item.type === 'GroupBegin' ||
+      props.item.type === 'KclStdLibCall'
     ) {
       props.send({
         type: 'deleteOperation',
@@ -354,7 +365,7 @@ const OperationItem = (props: {
     () => [
       <ContextMenuItem
         onClick={() => {
-          if (props.item.type === 'UserDefinedFunctionReturn') {
+          if (props.item.type === 'GroupEnd') {
             return
           }
           props.send({
@@ -367,14 +378,19 @@ const OperationItem = (props: {
       >
         View KCL source code
       </ContextMenuItem>,
-      ...(props.item.type === 'UserDefinedFunctionCall'
+      ...(props.item.type === 'GroupBegin' &&
+      props.item.group.type === 'FunctionCall'
         ? [
             <ContextMenuItem
               onClick={() => {
-                if (props.item.type !== 'UserDefinedFunctionCall') {
+                if (props.item.type !== 'GroupBegin') {
                   return
                 }
-                const functionRange = props.item.functionSourceRange
+                if (props.item.group.type !== 'FunctionCall') {
+                  // TODO: Add module instance support.
+                  return
+                }
+                const functionRange = props.item.group.functionSourceRange
                 // For some reason, the cursor goes to the end of the source
                 // range we select.  So set the end equal to the beginning.
                 functionRange[1] = functionRange[0]
@@ -390,7 +406,8 @@ const OperationItem = (props: {
             </ContextMenuItem>,
           ]
         : []),
-      ...(props.item.type === 'StdLibCall'
+      ...(props.item.type === 'StdLibCall' ||
+      props.item.type === 'KclStdLibCall'
         ? [
             <ContextMenuItem
               disabled={!stdLibMap[props.item.name]?.supportsAppearance}

@@ -93,6 +93,16 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
     /// Get the artifact commands that have accumulated so far.
     fn artifact_commands(&self) -> Arc<RwLock<Vec<ArtifactCommand>>>;
 
+    /// Take the batch of commands that have accumulated so far and clear them.
+    async fn take_batch(&self) -> Vec<(WebSocketRequest, SourceRange)> {
+        std::mem::take(&mut *self.batch().write().await)
+    }
+
+    /// Take the batch of end commands that have accumulated so far and clear them.
+    async fn take_batch_end(&self) -> IndexMap<Uuid, (WebSocketRequest, SourceRange)> {
+        std::mem::take(&mut *self.batch_end().write().await)
+    }
+
     /// Clear all artifact commands that have accumulated so far.
     async fn clear_artifact_commands(&self) {
         self.artifact_commands().write().await.clear();
@@ -176,6 +186,10 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         )
         .await?;
 
+        // Reset to the default units.  Modules assume the engine starts in the
+        // default state.
+        self.set_units(Default::default(), source_range, id_generator).await?;
+
         // Flush the batch queue, so clear is run right away.
         // Otherwise the hooks below won't work.
         self.flush_batch(false, source_range).await?;
@@ -255,9 +269,6 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         // Set the edge visibility.
         self.set_edge_visibility(settings.highlight_edges, source_range, id_generator)
             .await?;
-
-        // Change the units.
-        self.set_units(settings.units, source_range, id_generator).await?;
 
         // Send the command to show the grid.
         self.modify_grid(!settings.show_grid, source_range, id_generator)
@@ -369,11 +380,11 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         source_range: SourceRange,
     ) -> Result<OkWebSocketResponseData, crate::errors::KclError> {
         let all_requests = if batch_end {
-            let mut requests = self.batch().read().await.clone();
-            requests.extend(self.batch_end().read().await.values().cloned());
+            let mut requests = self.take_batch().await.clone();
+            requests.extend(self.take_batch_end().await.values().cloned());
             requests
         } else {
-            self.batch().read().await.clone()
+            self.take_batch().await.clone()
         };
 
         // Return early if we have no commands to send.
@@ -441,11 +452,6 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
             }
         }
 
-        // Throw away the old batch queue.
-        self.batch().write().await.clear();
-        if batch_end {
-            self.batch_end().write().await.clear();
-        }
         self.stats().batches_sent.fetch_add(1, Ordering::Relaxed);
 
         // We pop off the responses to cleanup our mappings.

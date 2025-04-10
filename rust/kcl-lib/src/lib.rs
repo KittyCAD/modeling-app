@@ -195,6 +195,10 @@ impl Program {
         })
     }
 
+    pub fn is_empty_or_only_settings(&self) -> bool {
+        self.ast.is_empty_or_only_settings()
+    }
+
     pub fn lint_all(&self) -> Result<Vec<lint::Discovered>, anyhow::Error> {
         self.ast.lint_all()
     }

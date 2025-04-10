@@ -1,28 +1,32 @@
-import { useRef, useMemo, memo, useCallback, useState } from 'react'
-import { isCursorInSketchCommandRange } from 'lang/util'
-import { editorManager, kclManager } from 'lib/singletons'
-import { useModelingContext } from 'hooks/useModelingContext'
-import { useNetworkContext } from 'hooks/useNetworkContext'
-import { NetworkHealthState } from 'hooks/useNetworkStatus'
-import { ActionButton } from 'components/ActionButton'
-import { useKclContext } from 'lang/KclProvider'
-import { ActionButtonDropdown } from 'components/ActionButtonDropdown'
+import { memo, useCallback, useMemo, useRef, useState } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
-import Tooltip from 'components/Tooltip'
-import { useAppState } from 'AppState'
-import { CustomIcon } from 'components/CustomIcon'
-import {
-  toolbarConfig,
+
+import { useAppState } from '@src/AppState'
+import { ActionButton } from '@src/components/ActionButton'
+import { ActionButtonDropdown } from '@src/components/ActionButtonDropdown'
+import { CustomIcon } from '@src/components/CustomIcon'
+import Tooltip from '@src/components/Tooltip'
+import { useModelingContext } from '@src/hooks/useModelingContext'
+import { useNetworkContext } from '@src/hooks/useNetworkContext'
+import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
+import { useKclContext } from '@src/lang/KclProvider'
+import { isCursorInFunctionDefinition } from '@src/lang/queryAst'
+import { EngineConnectionStateType } from '@src/lang/std/engineConnection'
+import { isCursorInSketchCommandRange } from '@src/lang/util'
+import { isDesktop } from '@src/lib/isDesktop'
+import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
+import { editorManager, kclManager } from '@src/lib/singletons'
+import type {
+  ToolbarDropdown,
   ToolbarItem,
   ToolbarItemCallbackProps,
   ToolbarItemResolved,
+  ToolbarItemResolvedDropdown,
   ToolbarModeName,
-} from 'lib/toolbar'
-import { isDesktop } from 'lib/isDesktop'
-import { openExternalBrowserIfDesktop } from 'lib/openWindow'
-import { isCursorInFunctionDefinition } from 'lang/queryAst'
-import { commandBarActor } from 'machines/commandBarMachine'
-import { isArray } from 'lib/utils'
+} from '@src/lib/toolbar'
+import { isToolbarItemResolvedDropdown, toolbarConfig } from '@src/lib/toolbar'
+import { isArray } from '@src/lib/utils'
+import { commandBarActor } from '@src/machines/commandBarMachine'
 
 export function Toolbar({
   className = '',
@@ -51,7 +55,7 @@ export function Toolbar({
   }, [kclManager.artifactGraph, context.selectionRanges])
 
   const toolbarButtonsRef = useRef<HTMLUListElement>(null)
-  const { overallState } = useNetworkContext()
+  const { overallState, immediateState } = useNetworkContext()
   const { isExecuting } = useKclContext()
   const { isStreamReady } = useAppState()
   const [showRichContent, setShowRichContent] = useState(false)
@@ -60,6 +64,7 @@ export function Toolbar({
     (overallState !== NetworkHealthState.Ok &&
       overallState !== NetworkHealthState.Weak) ||
     isExecuting ||
+    immediateState.type !== EngineConnectionStateType.ConnectionEstablished ||
     !isStreamReady
 
   const currentMode =
@@ -128,21 +133,27 @@ export function Toolbar({
    */
   const currentModeItems: (
     | ToolbarItemResolved
-    | ToolbarItemResolved[]
+    | ToolbarItemResolvedDropdown
     | 'break'
   )[] = useMemo(() => {
     return toolbarConfig[currentMode].items.map((maybeIconConfig) => {
       if (maybeIconConfig === 'break') {
         return 'break'
-      } else if (isArray(maybeIconConfig)) {
-        return maybeIconConfig.map(resolveItemConfig)
+      } else if (isToolbarDropdown(maybeIconConfig)) {
+        return {
+          id: maybeIconConfig.id,
+          array: maybeIconConfig.array.map((item) =>
+            resolveItemConfig(item, maybeIconConfig.id)
+          ),
+        }
       } else {
         return resolveItemConfig(maybeIconConfig)
       }
     })
 
     function resolveItemConfig(
-      maybeIconConfig: ToolbarItem
+      maybeIconConfig: ToolbarItem,
+      dropdownId?: string
     ): ToolbarItemResolved {
       const isDisabled =
         disableAllButtons ||
@@ -173,6 +184,14 @@ export function Toolbar({
     }
   }, [currentMode, disableAllButtons, configCallbackProps])
 
+  // To remember the last selected item in an ActionButtonDropdown
+  const [lastSelectedMultiActionItem, _] = useState(
+    new Map<
+      number /* index in currentModeItems */,
+      number /* index in maybeIconConfig */
+    >()
+  )
+
   return (
     <menu
       data-current-mode={currentMode}
@@ -196,24 +215,33 @@ export function Toolbar({
                 className="h-5 w-[1px] block bg-chalkboard-30 dark:bg-chalkboard-80"
               />
             )
-          } else if (isArray(maybeIconConfig)) {
+          } else if (isToolbarItemResolvedDropdown(maybeIconConfig)) {
             // A button with a dropdown
+            const selectedIcon =
+              maybeIconConfig.array.find((c) => c.isActive) ||
+              maybeIconConfig.array[lastSelectedMultiActionItem.get(i) ?? 0]
+
+            // Save the last selected item in the dropdown
+            lastSelectedMultiActionItem.set(
+              i,
+              maybeIconConfig.array.indexOf(selectedIcon)
+            )
             return (
               <ActionButtonDropdown
                 Element="button"
-                key={maybeIconConfig[0].id}
-                data-testid={maybeIconConfig[0].id + '-dropdown'}
-                id={maybeIconConfig[0].id + '-dropdown'}
-                name={maybeIconConfig[0].title}
+                key={selectedIcon.id}
+                data-testid={selectedIcon.id + '-dropdown'}
+                id={selectedIcon.id + '-dropdown'}
+                name={maybeIconConfig.id}
                 className={
-                  (maybeIconConfig[0].alwaysDark
+                  (maybeIconConfig.array[0].alwaysDark
                     ? 'dark bg-chalkboard-90 '
                     : '!bg-transparent ') +
                   'group/wrapper ' +
                   buttonBorderClassName +
                   ' relative group !gap-0'
                 }
-                splitMenuItems={maybeIconConfig.map((itemConfig) => ({
+                splitMenuItems={maybeIconConfig.array.map((itemConfig) => ({
                   id: itemConfig.id,
                   label: itemConfig.title,
                   hotkey: itemConfig.hotkey,
@@ -233,11 +261,11 @@ export function Toolbar({
                 >
                   <ActionButton
                     Element="button"
-                    id={maybeIconConfig[0].id}
-                    data-testid={maybeIconConfig[0].id}
+                    id={selectedIcon.id}
+                    data-testid={selectedIcon.id}
                     iconStart={{
-                      icon: maybeIconConfig[0].icon,
-                      iconColor: maybeIconConfig[0].iconColor,
+                      icon: selectedIcon.icon,
+                      iconColor: selectedIcon.iconColor,
                       className: iconClassName,
                       bgClassName: bgClassName,
                     }}
@@ -245,40 +273,36 @@ export function Toolbar({
                       '!border-transparent !px-0 pressed:!text-chalkboard-10 pressed:enabled:hovered:!text-chalkboard-10 ' +
                       buttonBgClassName
                     }
-                    aria-pressed={maybeIconConfig[0].isActive}
+                    aria-pressed={selectedIcon.isActive}
                     disabled={
                       disableAllButtons ||
-                      maybeIconConfig[0].status !== 'available' ||
-                      maybeIconConfig[0].disabled
+                      selectedIcon.status !== 'available' ||
+                      selectedIcon.disabled
                     }
-                    name={maybeIconConfig[0].title}
+                    name={selectedIcon.title}
                     // aria-description is still in ARIA 1.3 draft.
                     // eslint-disable-next-line jsx-a11y/aria-props
-                    aria-description={maybeIconConfig[0].description}
-                    onClick={() =>
-                      maybeIconConfig[0].onClick(configCallbackProps)
-                    }
+                    aria-description={selectedIcon.description}
+                    onClick={() => selectedIcon.onClick(configCallbackProps)}
                   >
-                    <span
-                      className={!maybeIconConfig[0].showTitle ? 'sr-only' : ''}
-                    >
-                      {maybeIconConfig[0].title}
+                    <span className={!selectedIcon.showTitle ? 'sr-only' : ''}>
+                      {selectedIcon.title}
                     </span>
                     <ToolbarItemTooltip
-                      itemConfig={maybeIconConfig[0]}
+                      itemConfig={selectedIcon}
                       configCallbackProps={configCallbackProps}
                       wrapperClassName="ui-open:!hidden"
                       contentClassName={tooltipContentClassName}
                     >
                       {showRichContent ? (
                         <ToolbarItemTooltipRichContent
-                          itemConfig={maybeIconConfig[0]}
+                          itemConfig={selectedIcon}
                         />
                       ) : (
                         <ToolbarItemTooltipShortContent
-                          status={maybeIconConfig[0].status}
-                          title={maybeIconConfig[0].title}
-                          hotkey={maybeIconConfig[0].hotkey}
+                          status={selectedIcon.status}
+                          title={selectedIcon.title}
+                          hotkey={selectedIcon.hotkey}
                         />
                       )}
                     </ToolbarItemTooltip>
@@ -427,7 +451,9 @@ const ToolbarItemTooltipShortContent = ({
   >
     {title}
     {hotkey && (
-      <kbd className="inline-block ml-2 flex-none hotkey">{hotkey}</kbd>
+      <kbd className="inline-block ml-2 flex-none hotkey">
+        {displayHotkeys(hotkey)}
+      </kbd>
     )}
   </span>
 )
@@ -458,7 +484,9 @@ const ToolbarItemTooltipRichContent = ({
           {itemConfig.title}
         </span>
         {itemConfig.status === 'available' && itemConfig.hotkey ? (
-          <kbd className="flex-none hotkey">{itemConfig.hotkey}</kbd>
+          <kbd className="flex-none hotkey">
+            {displayHotkeys(itemConfig.hotkey)}
+          </kbd>
         ) : itemConfig.status === 'kcl-only' ? (
           <>
             <span className="text-wrap font-sans flex-0 text-chalkboard-70 dark:text-chalkboard-40">
@@ -518,4 +546,15 @@ const ToolbarItemTooltipRichContent = ({
       )}
     </>
   )
+}
+
+// We don't want to display Esc hotkeys to avoid confusion in the Toolbar UI (eg. "EscR")
+function displayHotkeys(hotkey: string | string[]) {
+  return (isArray(hotkey) ? hotkey : [hotkey]).filter((h) => h !== 'Esc')
+}
+
+function isToolbarDropdown(
+  item: ToolbarItem | ToolbarDropdown
+): item is ToolbarDropdown {
+  return 'array' in item
 }

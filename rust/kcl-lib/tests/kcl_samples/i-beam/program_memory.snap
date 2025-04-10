@@ -20,7 +20,13 @@ description: Variables in memory after executing i-beam.kcl
     "type": "Number",
     "value": 72.0,
     "ty": {
-      "type": "Unknown"
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
     }
   },
   "flangeThickness": {
@@ -49,20 +55,7 @@ description: Variables in memory after executing i-beam.kcl
       }
     }
   },
-  "rootRadius": {
-    "type": "Number",
-    "value": 0.457,
-    "ty": {
-      "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
-    }
-  },
-  "sketch001": {
+  "iBeam": {
     "type": "Solid",
     "value": {
       "type": "Solid",
@@ -227,11 +220,24 @@ description: Variables in memory after executing i-beam.kcl
           "type": "Inches"
         }
       },
-      "height": 72.00000000000001,
-      "startCapId": null,
-      "endCapId": null,
+      "height": 72.0,
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": {
         "type": "Inches"
+      }
+    }
+  },
+  "rootRadius": {
+    "type": "Number",
+    "value": 0.457,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
       }
     }
   },

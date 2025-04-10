@@ -1,23 +1,24 @@
-import { toolTips } from 'lang/langHelpers'
-import { Program, Expr } from '../../lang/wasm'
-import { Selections } from 'lib/selections'
-import { getNodeFromPath } from '../../lang/queryAst'
-import {
-  getTransformInfos,
-  transformAstSketchLines,
-  PathToNodeMap,
-  isExprBinaryPart,
-} from '../../lang/std/sketchcombos'
-import { TransformInfo } from 'lang/std/stdTypes'
+import type { Node } from '@rust/kcl-lib/bindings/Node'
+
+import { removeDoubleNegatives } from '@src/components/AvailableVarsHelpers'
 import {
   SetAngleLengthModal,
   createSetAngleLengthModal,
-} from '../SetAngleLengthModal'
-import { createName, createVariableDeclaration } from '../../lang/modifyAst'
-import { removeDoubleNegatives } from '../AvailableVarsHelpers'
-import { kclManager } from 'lib/singletons'
-import { err } from 'lib/trap'
-import { Node } from '@rust/kcl-lib/bindings/Node'
+} from '@src/components/SetAngleLengthModal'
+import { createName, createVariableDeclaration } from '@src/lang/create'
+import { toolTips } from '@src/lang/langHelpers'
+import { getNodeFromPath } from '@src/lang/queryAst'
+import type { PathToNodeMap } from '@src/lang/std/sketchcombos'
+import {
+  getTransformInfos,
+  isExprBinaryPart,
+  transformAstSketchLines,
+} from '@src/lang/std/sketchcombos'
+import type { TransformInfo } from '@src/lang/std/stdTypes'
+import type { Expr, Program } from '@src/lang/wasm'
+import type { Selections } from '@src/lib/selections'
+import { kclManager } from '@src/lib/singletons'
+import { err } from '@src/lib/trap'
 
 const getModalInfo = createSetAngleLengthModal(SetAngleLengthModal)
 
@@ -39,8 +40,8 @@ export function absDistanceInfo({
     constraint === 'xAbs' || constraint === 'yAbs'
       ? constraint
       : constraint === 'snapToYAxis'
-      ? 'xAbs'
-      : 'yAbs'
+        ? 'xAbs'
+        : 'yAbs'
   const _nodes = selectionRanges.graphSelections.map(({ codeRef }) => {
     const tmp = getNodeFromPath<Expr>(kclManager.ast, codeRef.pathToNode, [
       'CallExpression',

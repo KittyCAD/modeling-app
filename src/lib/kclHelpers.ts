@@ -1,8 +1,8 @@
-import { err } from './trap'
-import { parse, resultIsOk } from 'lang/wasm'
-import { executeAstMock } from 'lang/langHelpers'
-import { KclExpression } from './commandTypes'
-import { rustContext } from './singletons'
+import { executeAstMock } from '@src/lang/langHelpers'
+import { parse, resultIsOk } from '@src/lang/wasm'
+import type { KclExpression } from '@src/lib/commandTypes'
+import { rustContext } from '@src/lib/singletons'
+import { err } from '@src/lib/trap'
 
 const DUMMY_VARIABLE_NAME = '__result__'
 

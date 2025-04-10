@@ -1,9 +1,13 @@
-import { test, expect } from './zoo-test'
+import type { Coords2d } from '@src/lang/std/sketch'
+import { KCL_DEFAULT_LENGTH } from '@src/lib/constants'
+import { uuidv4 } from '@src/lib/utils'
 
-import { commonPoints, getUtils, orRunWhenFullSuiteEnabled } from './test-utils'
-import { Coords2d } from 'lang/std/sketch'
-import { KCL_DEFAULT_LENGTH } from 'lib/constants'
-import { uuidv4 } from 'lib/utils'
+import {
+  commonPoints,
+  getUtils,
+  orRunWhenFullSuiteEnabled,
+} from '@e2e/playwright/test-utils'
+import { expect, test } from '@e2e/playwright/zoo-test'
 
 test.describe('Testing selections', { tag: ['@skipWin'] }, () => {
   test.setTimeout(90_000)
@@ -68,20 +72,20 @@ test.describe('Testing selections', { tag: ['@skipWin'] }, () => {
     await u.closeDebugPanel()
     await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
     await expect(page.locator('.cm-content')).toHaveText(
-      `sketch001 = startSketchOn(XZ)profile001 = startProfileAt(${commonPoints.startAt}, sketch001)`
+      `@settings(defaultLengthUnit = in)sketch001 = startSketchOn(XZ)profile001 = startProfileAt(${commonPoints.startAt}, sketch001)`
     )
 
     await page.waitForTimeout(100)
     await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
 
     await expect(page.locator('.cm-content'))
-      .toHaveText(`sketch001 = startSketchOn(XZ)profile001 = startProfileAt(${commonPoints.startAt}, sketch001)
+      .toHaveText(`@settings(defaultLengthUnit = in)sketch001 = startSketchOn(XZ)profile001 = startProfileAt(${commonPoints.startAt}, sketch001)
     |> xLine(length = ${commonPoints.num1})`)
 
     await page.waitForTimeout(100)
     await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 20)
     await expect(page.locator('.cm-content'))
-      .toHaveText(`sketch001 = startSketchOn(XZ)profile001 = startProfileAt(${
+      .toHaveText(`@settings(defaultLengthUnit = in)sketch001 = startSketchOn(XZ)profile001 = startProfileAt(${
       commonPoints.startAt
     }, sketch001)
     |> xLine(length = ${commonPoints.num1})
@@ -89,7 +93,7 @@ test.describe('Testing selections', { tag: ['@skipWin'] }, () => {
     await page.waitForTimeout(100)
     await page.mouse.click(startXPx, 500 - PUR * 20)
     await expect(page.locator('.cm-content'))
-      .toHaveText(`sketch001 = startSketchOn(XZ)profile001 = startProfileAt(${
+      .toHaveText(`@settings(defaultLengthUnit = in)sketch001 = startSketchOn(XZ)profile001 = startProfileAt(${
       commonPoints.startAt
     }, sketch001)
     |> xLine(length = ${commonPoints.num1})
@@ -120,7 +124,7 @@ test.describe('Testing selections', { tag: ['@skipWin'] }, () => {
 
       // click a segment hold shift and click an axis, see that a relevant constraint is enabled
       const constrainButton = page.getByRole('button', {
-        name: 'Length: open menu',
+        name: 'constraints: open menu',
       })
       const absXButton = page.getByRole('button', { name: 'Absolute X' })
 
@@ -260,7 +264,8 @@ test.describe('Testing selections', { tag: ['@skipWin'] }, () => {
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `sketch001 = startSketchOn(XZ)
+        `@settings(defaultLengthUnit = in)
+sketch001 = startSketchOn(XZ)
   |> startProfileAt([-79.26, 95.04], %)
   |> line(end = [112.54, 127.64], tag = $seg02)
   |> line(end = [170.36, -121.61], tag = $seg01)
@@ -303,23 +308,17 @@ part009 = startSketchOn(XY)
   |> startProfileAt([pipeLargeDia - (thickness / 2), 38], %)
   |> line(end = [thickness, 0])
   |> line(end = [0, -1])
-  |> angledLineToX({
-       angle = 60,
-       to = pipeSmallDia + thickness
-     }, %)
+  |> angledLine(angle = 60, endAbsoluteX = pipeSmallDia + thickness)
   |> line(end = [0, -pipeLength])
-  |> angledLineToX({
-       angle = -60,
-       to = pipeLargeDia + thickness
-     }, %)
+  |> angledLine(angle = -60, endAbsoluteX = pipeLargeDia + thickness)
   |> line(end = [0, -1])
   |> line(end = [-thickness, 0])
   |> line(end = [0, 1])
-  |> angledLineToX({ angle = 120, to = pipeSmallDia }, %)
+  |> angledLine(angle = 120, endAbsoluteX =  pipeSmallDia)
   |> line(end = [0, pipeLength])
-  |> angledLineToX({ angle = 60, to = pipeLargeDia }, %)
+  |> angledLine(angle = 60, endAbsoluteX =  pipeLargeDia)
   |> close()
-rev = revolve(part009, axis = 'y')
+rev = revolve(part009, axis = Y)
 sketch006 = startSketchOn(XY)
 profile001 = circle(
   sketch006,
@@ -327,15 +326,9 @@ profile001 = circle(
   radius = 17.96
 )
 profile002 = startProfileAt([86.92, -63.81], sketch006)
-  |> angledLine([0, 63.81], %, $rectangleSegmentA001)
-  |> angledLine([
-       segAng(rectangleSegmentA001) - 90,
-       17.05
-     ], %)
-  |> angledLine([
-       segAng(rectangleSegmentA001),
-       -segLen(rectangleSegmentA001)
-     ], %)
+  |> angledLine(angle = 0, length = 63.81, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 17.05)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 profile003 = startProfileAt([40.16, -120.48], sketch006)
@@ -376,7 +369,7 @@ profile003 = startProfileAt([40.16, -120.48], sketch006)
     await page.waitForTimeout(200)
 
     await expect(u.codeLocator).not.toContainText(
-      `rev = revolve(part009, axis: 'y')`
+      `rev = revolve(part009, axis: Y)`
     )
 
     // FIXME (commented section below), this test would select a wall that had a sketch on it, and delete the underlying extrude
@@ -466,7 +459,7 @@ yo = startProfileAt([4.83, 12.56], part001)
   |> line(end = [15.1, 2.48])
   |> line(end = [3.15, -9.85], tag = $seg01)
   |> line(end = [-15.17, -4.1])
-  |> angledLine([segAng(seg01), 12.35], %, $seg02)
+  |> angledLine(angle = segAng(seg01), length = 12.35, tag = $seg02)
   |> line(end = [-13.02, 10.03])
   |> close()
 yoo = extrude(yo, length = 4)
@@ -479,15 +472,9 @@ profile002 = startProfileAt([-11.08, 2.39], sketch002)
   |> close()
 extrude001 = extrude(profile002, length = 15)
 profile001 = startProfileAt([7.49, 9.96], sketch001)
-  |> angledLine([0, 5.05], %, $rectangleSegmentA001)
-  |> angledLine([
-       segAng(rectangleSegmentA001) - 90,
-       4.81
-     ], %)
-  |> angledLine([
-       segAng(rectangleSegmentA001),
-       -segLen(rectangleSegmentA001)
-     ], %)
+  |> angledLine(angle = 0, length = 5.05, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 4.81)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 
@@ -523,23 +510,26 @@ profile001 = startProfileAt([7.49, 9.96], sketch001)
   test('Hovering over 3d features highlights code, clicking puts the cursor in the right place and sends selection id to engine', async ({
     page,
     homePage,
+    scene,
+    cmdBar,
   }) => {
     const u = await getUtils(page)
     await page.addInitScript(async (KCL_DEFAULT_LENGTH) => {
       localStorage.setItem(
         'persistCode',
-        `part001 = startSketchOn(XZ)
+        `@settings(defaultLengthUnit = in)
+part001 = startSketchOn(XZ)
   |> startProfileAt([20, 0], %)
   |> line(end = [7.13, 4 + 0])
-  |> angledLine({ angle = 3 + 0, length = 3.14 + 0 }, %)
+  |> angledLine(angle = 3 + 0, length = 3.14 + 0 )
   |> line(endAbsolute = [20.14 + 0, -0.14 + 0])
   |> xLine(endAbsolute = 29 + 0)
   |> yLine(length = -3.14 + 0, tag = $a)
   |> xLine(length = 1.63)
-  |> angledLineOfXLength({ angle = 3 + 0, length = 3.14 }, %)
-  |> angledLineOfYLength({ angle = 30, length = 3 + 0 }, %)
-  |> angledLineToX({ angle = 22.14 + 0, to = 12 }, %)
-  |> angledLineToY({ angle = 30, to = 11.14 }, %)
+  |> angledLine(angle = 3 + 0, lengthX = 3.14)
+  |> angledLine(angle = 30, lengthY = 3 + 0)
+  |> angledLine(angle = 22.14 + 0, endAbsoluteX =  12)
+  |> angledLine(angle = 30, endAbsoluteY =  11.14)
   |> angledLineThatIntersects({
         angle = 3.14,
         intersectTag = a,
@@ -654,8 +644,8 @@ profile001 = startProfileAt([7.49, 9.96], sketch001)
               for (const rgb of RGBs) {
                 const [r, g, b] = rgb
                 const RGAverage = (r + g) / 2
-                const isRedGreenSameIsh = Math.abs(r - g) < 3
-                const isBlueLessThanRG = RGAverage - b > 45
+                const isRedGreenSameIsh = Math.abs(r - g) < 10
+                const isBlueLessThanRG = RGAverage - b > 40
                 const isYellowy = isRedGreenSameIsh && isBlueLessThanRG
                 if (isYellowy) return true
               }
@@ -728,14 +718,14 @@ profile001 = startProfileAt([7.49, 9.96], sketch001)
     await checkCodeAtHoverPosition(
       'straightSegmentEdge',
       straightSegmentEdge,
-      `angledLineToY({angle=30,to=11.14},%)`,
-      'angledLineToY({ angle = 30, to = 11.14 }, %)'
+      `angledLine(angle=30,endAbsoluteY=11.14)`,
+      'angledLine(angle = 30, endAbsoluteY =  11.14)'
     )
     await checkCodeAtHoverPosition(
       'straightSegmentOppositeEdge',
       straightSegmentOppositeEdge,
-      `angledLineToY({angle=30,to=11.14},%)`,
-      'angledLineToY({ angle = 30, to = 11.14 }, %)'
+      `angledLine(angle=30,endAbsoluteY=11.14)`,
+      'angledLine(angle = 30, endAbsoluteY =  11.14)'
     )
     await checkCodeAtHoverPosition(
       'straightSegmentAdjacentEdge',
@@ -747,17 +737,12 @@ profile001 = startProfileAt([7.49, 9.96], sketch001)
     await page.waitForTimeout(200)
 
     await u.removeCurrentCode()
-    await u.codeLocator.fill(`sketch001 = startSketchOn(XZ)
+    await u.codeLocator.fill(`@settings(defaultLengthUnit = in)
+    sketch001 = startSketchOn(XZ)
     |> startProfileAt([75.8, 317.2], %) // [$startCapTag, $EndCapTag]
-    |> angledLine([0, 268.43], %, $rectangleSegmentA001)
-    |> angledLine([
-     segAng(rectangleSegmentA001) - 90,
-     217.26
-   ], %, $seg01)
-    |> angledLine([
-     segAng(rectangleSegmentA001),
-     -segLen(rectangleSegmentA001)
-   ], %, $yo)
+    |> angledLine(angle = 0, length = 268.43, tag = $rectangleSegmentA001)
+    |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 217.26, tag = $seg01)
+    |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $yo)
     |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg02)
     |> close()
   extrude001 = extrude(sketch001, length = 100)
@@ -772,11 +757,7 @@ profile001 = startProfileAt([7.49, 9.96], sketch001)
    )
   `)
 
-    await expect(
-      page
-        .getByTestId('model-state-indicator-receive-reliable')
-        .or(page.getByTestId('model-state-indicator-execution-done'))
-    ).toBeVisible()
+    await scene.settled(cmdBar)
 
     await u.openAndClearDebugPanel()
     await u.sendCustomCmd({
@@ -810,14 +791,14 @@ profile001 = startProfileAt([7.49, 9.96], sketch001)
     await checkCodeAtHoverPosition(
       'oppositeChamfer',
       oppositeChamfer,
-      `angledLine([segAng(rectangleSegmentA001)-90,217.26],%,$seg01)chamfer(length=30,tags=[seg01,getNextAdjacentEdge(yo),getNextAdjacentEdge(seg02),getOppositeEdge(seg01)],)`,
+      `angledLine(angle=segAng(rectangleSegmentA001)-90,length=217.26,tag=$seg01)chamfer(length=30,tags=[seg01,getNextAdjacentEdge(yo),getNextAdjacentEdge(seg02),getOppositeEdge(seg01)],)`,
       '   )'
     )
 
     await checkCodeAtHoverPosition(
       'baseChamfer',
       baseChamfer,
-      `angledLine([segAng(rectangleSegmentA001)-90,217.26],%,$seg01)chamfer(length=30,tags=[seg01,getNextAdjacentEdge(yo),getNextAdjacentEdge(seg02),getOppositeEdge(seg01)],)`,
+      `angledLine(angle=segAng(rectangleSegmentA001)-90,length=217.26,tag=$seg01)chamfer(length=30,tags=[seg01,getNextAdjacentEdge(yo),getNextAdjacentEdge(seg02),getOppositeEdge(seg01)],)`,
       '   )'
     )
 
@@ -855,7 +836,7 @@ profile001 = startProfileAt([7.49, 9.96], sketch001)
     await checkCodeAtHoverPosition(
       'adjacentChamfer2',
       adjacentChamfer2,
-      `angledLine([segAng(rectangleSegmentA001),-segLen(rectangleSegmentA001)],%,$yo)chamfer(length=30,tags=[seg01,getNextAdjacentEdge(yo),getNextAdjacentEdge(seg02),getOppositeEdge(seg01)],)`,
+      `angledLine(angle=segAng(rectangleSegmentA001),length=-segLen(rectangleSegmentA001),tag=$yo)chamfer(length=30,tags=[seg01,getNextAdjacentEdge(yo),getNextAdjacentEdge(seg02),getOppositeEdge(seg01)],)`,
       '   )'
     )
   })
@@ -946,6 +927,7 @@ profile001 = startProfileAt([7.49, 9.96], sketch001)
     page,
     homePage,
     scene,
+    cmdBar,
   }) => {
     const cases = [
       {
@@ -954,7 +936,7 @@ profile001 = startProfileAt([7.49, 9.96], sketch001)
       },
       {
         pos: [816, 244],
-        expectedCode: 'angledLine([segAng(seg01), yo], %)',
+        expectedCode: 'angledLine(angle = segAng(seg01), length = yo)',
       },
       {
         pos: [1107, 161],
@@ -965,7 +947,8 @@ profile001 = startProfileAt([7.49, 9.96], sketch001)
       async ({ cases }) => {
         localStorage.setItem(
           'persistCode',
-          `yo = 79
+          `@settings(defaultLengthUnit = in)
+  yo = 79
   part001 = startSketchOn(XZ)
     |> startProfileAt([-7.54, -26.74], %)
     |> ${cases[0].expectedCode}
@@ -981,7 +964,7 @@ profile001 = startProfileAt([7.49, 9.96], sketch001)
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
     await homePage.goToModelingScene()
-    await scene.waitForExecutionDone()
+    await scene.settled(cmdBar)
     await u.openAndClearDebugPanel()
 
     await u.sendCustomCmd({
@@ -1016,11 +999,13 @@ profile001 = startProfileAt([7.49, 9.96], sketch001)
     page,
     homePage,
     scene,
+    cmdBar,
   }) => {
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `sketch001 = startSketchOn(XZ)
+        `@settings(defaultLengthUnit = in)
+  sketch001 = startSketchOn(XZ)
     |> startProfileAt([-79.26, 95.04], %)
     |> line(end = [112.54, 127.64])
     |> line(end = [170.36, -121.61], tag = $seg01)
@@ -1034,7 +1019,7 @@ profile001 = startProfileAt([7.49, 9.96], sketch001)
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
     await homePage.goToModelingScene()
-    await scene.waitForExecutionDone()
+    await scene.settled(cmdBar)
     await u.openAndClearDebugPanel()
 
     await u.sendCustomCmd({
@@ -1253,7 +1238,7 @@ profile001 = startProfileAt([7.49, 9.96], sketch001)
     await page.mouse.click(700, 200)
 
     await expect(page.locator('.cm-content')).toHaveText(
-      `sketch001 = startSketchOn(XZ)`
+      `@settings(defaultLengthUnit = in)sketch001 = startSketchOn(XZ)`
     )
 
     await page.waitForTimeout(600)

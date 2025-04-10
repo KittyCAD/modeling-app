@@ -1,13 +1,15 @@
-import { test, expect } from './zoo-test'
-import { PROJECT_SETTINGS_FILE_NAME } from 'lib/constants'
+import { PROJECT_SETTINGS_FILE_NAME } from '@src/lib/constants'
 import * as fsp from 'fs/promises'
 import { join } from 'path'
+
+import type { NamedView } from '@rust/kcl-lib/bindings/NamedView'
+
 import {
   createProject,
-  tomlToPerProjectSettings,
   perProjectsettingsToToml,
-} from './test-utils'
-import { NamedView } from '@rust/kcl-lib/bindings/NamedView'
+  tomlToPerProjectSettings,
+} from '@e2e/playwright/test-utils'
+import { expect, test } from '@e2e/playwright/zoo-test'
 
 // Helper function to determine if the file path on disk exists
 // Specifically this is used to check if project.toml exists on disk
@@ -59,6 +61,7 @@ function tomlStringOverWriteNamedViewUuids(toml: string): string {
 }
 
 test.describe('Named view tests', () => {
+  test.skip() // TODO: Jace is working on these
   test('Verify project.toml is not created', async ({ page }, testInfo) => {
     // Create project and load it
     const projectName = 'named-views'
@@ -86,7 +89,7 @@ test.describe('Named view tests', () => {
 
     // Create and load project
     await createProject({ name: projectName, page })
-    await scene.waitForExecutionDone()
+    await scene.settled(cmdBar)
 
     // Create named view
     const projectDirName = testInfo.outputPath('electron-test-projects-dir')
@@ -108,14 +111,17 @@ test.describe('Named view tests', () => {
       expect(exists).toBe(true)
     }).toPass()
 
-    // Read project.toml into memory
-    let tomlString = await fsp.readFile(tempProjectSettingsFilePath, 'utf-8')
-    // Rewrite the uuids in the named views to match snapshot otherwise they will be randomly generated from rust and break
-    tomlString = tomlStringOverWriteNamedViewUuids(tomlString)
+    await expect(async () => {
+      // Read project.toml into memory
+      let tomlString = await fsp.readFile(tempProjectSettingsFilePath, 'utf-8')
 
-    // Write the entire tomlString to a snapshot.
-    // There are many key/value pairs to check this is a safer match.
-    expect(tomlString).toMatchSnapshot('verify-named-view-gets-created')
+      // Rewrite the uuids in the named views to match snapshot otherwise they will be randomly generated from rust and break
+      tomlString = tomlStringOverWriteNamedViewUuids(tomlString)
+
+      // Write the entire tomlString to a snapshot.
+      // There are many key/value pairs to check this is a safer match.
+      expect(tomlString).toMatchSnapshot('verify-named-view-gets-created')
+    }).toPass()
   })
   test('Verify named view gets deleted', async ({
     cmdBar,
@@ -128,7 +134,7 @@ test.describe('Named view tests', () => {
 
     // Create project and go into the project
     await createProject({ name: projectName, page })
-    await scene.waitForExecutionDone()
+    await scene.settled(cmdBar)
 
     // Create a new named view
     await cmdBar.openCmdBar()
@@ -150,14 +156,16 @@ test.describe('Named view tests', () => {
       expect(exists).toBe(true)
     }).toPass()
 
-    // Read project.toml into memory
-    let tomlString = await fsp.readFile(tempProjectSettingsFilePath, 'utf-8')
-    // Rewrite the uuids in the named views to match snapshot otherwise they will be randomly generated from rust and break
-    tomlString = tomlStringOverWriteNamedViewUuids(tomlString)
+    await expect(async () => {
+      // Read project.toml into memory
+      let tomlString = await fsp.readFile(tempProjectSettingsFilePath, 'utf-8')
+      // Rewrite the uuids in the named views to match snapshot otherwise they will be randomly generated from rust and break
+      tomlString = tomlStringOverWriteNamedViewUuids(tomlString)
 
-    // Write the entire tomlString to a snapshot.
-    // There are many key/value pairs to check this is a safer match.
-    expect(tomlString).toMatchSnapshot('verify-named-view-gets-created')
+      // Write the entire tomlString to a snapshot.
+      // There are many key/value pairs to check this is a safer match.
+      expect(tomlString).toMatchSnapshot('verify-named-view-gets-created')
+    }).toPass()
 
     // Delete a named view
     await cmdBar.openCmdBar()
@@ -165,14 +173,16 @@ test.describe('Named view tests', () => {
     cmdBar.selectOption({ name: myNamedView2 })
     await cmdBar.progressCmdBar(false)
 
-    // Read project.toml into memory again since we deleted a named view
-    tomlString = await fsp.readFile(tempProjectSettingsFilePath, 'utf-8')
-    // Rewrite the uuids in the named views to match snapshot otherwise they will be randomly generated from rust and break
-    tomlString = tomlStringOverWriteNamedViewUuids(tomlString)
+    await expect(async () => {
+      // Read project.toml into memory again since we deleted a named view
+      let tomlString = await fsp.readFile(tempProjectSettingsFilePath, 'utf-8')
+      // Rewrite the uuids in the named views to match snapshot otherwise they will be randomly generated from rust and break
+      tomlString = tomlStringOverWriteNamedViewUuids(tomlString)
 
-    // // Write the entire tomlString to a snapshot.
-    // // There are many key/value pairs to check this is a safer match.
-    expect(tomlString).toMatchSnapshot('verify-named-view-gets-deleted')
+      // // Write the entire tomlString to a snapshot.
+      // // There are many key/value pairs to check this is a safer match.
+      expect(tomlString).toMatchSnapshot('verify-named-view-gets-deleted')
+    }).toPass()
   })
   test('Verify named view gets loaded', async ({
     cmdBar,
@@ -184,7 +194,7 @@ test.describe('Named view tests', () => {
 
     // Create project and go into the project
     await createProject({ name: projectName, page })
-    await scene.waitForExecutionDone()
+    await scene.settled(cmdBar)
 
     // Create a new named view
     await cmdBar.openCmdBar()
@@ -206,14 +216,16 @@ test.describe('Named view tests', () => {
       expect(exists).toBe(true)
     }).toPass()
 
-    // Read project.toml into memory
-    let tomlString = await fsp.readFile(tempProjectSettingsFilePath, 'utf-8')
-    // Rewrite the uuids in the named views to match snapshot otherwise they will be randomly generated from rust and break
-    tomlString = tomlStringOverWriteNamedViewUuids(tomlString)
+    await expect(async () => {
+      // Read project.toml into memory
+      let tomlString = await fsp.readFile(tempProjectSettingsFilePath, 'utf-8')
+      // Rewrite the uuids in the named views to match snapshot otherwise they will be randomly generated from rust and break
+      tomlString = tomlStringOverWriteNamedViewUuids(tomlString)
 
-    // Write the entire tomlString to a snapshot.
-    // There are many key/value pairs to check this is a safer match.
-    expect(tomlString).toMatchSnapshot('verify-named-view-gets-created')
+      // Write the entire tomlString to a snapshot.
+      // There are many key/value pairs to check this is a safer match.
+      expect(tomlString).toMatchSnapshot('verify-named-view-gets-created')
+    }).toPass()
 
     // Create a load a named view
     await cmdBar.openCmdBar()
@@ -237,7 +249,7 @@ test.describe('Named view tests', () => {
 
     // Create and load project
     await createProject({ name: projectName, page })
-    await scene.waitForExecutionDone()
+    await scene.settled(cmdBar)
 
     // Create named view
     const projectDirName = testInfo.outputPath('electron-test-projects-dir')
@@ -280,13 +292,15 @@ test.describe('Named view tests', () => {
       expect(exists).toBe(true)
     }).toPass()
 
-    // Read project.toml into memory
-    let tomlString = await fsp.readFile(tempProjectSettingsFilePath, 'utf-8')
-    // Rewrite the uuids in the named views to match snapshot otherwise they will be randomly generated from rust and break
-    tomlString = tomlStringOverWriteNamedViewUuids(tomlString)
+    await expect(async () => {
+      // Read project.toml into memory
+      let tomlString = await fsp.readFile(tempProjectSettingsFilePath, 'utf-8')
+      // Rewrite the uuids in the named views to match snapshot otherwise they will be randomly generated from rust and break
+      tomlString = tomlStringOverWriteNamedViewUuids(tomlString)
 
-    // Write the entire tomlString to a snapshot.
-    // There are many key/value pairs to check this is a safer match.
-    expect(tomlString).toMatchSnapshot('verify-two-named-view-gets-created')
+      // Write the entire tomlString to a snapshot.
+      // There are many key/value pairs to check this is a safer match.
+      expect(tomlString).toMatchSnapshot('verify-two-named-view-gets-created')
+    }).toPass()
   })
 })

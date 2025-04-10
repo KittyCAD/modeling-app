@@ -1,15 +1,16 @@
-import { test, expect } from './zoo-test'
-import * as fsp from 'fs/promises'
+import { FILE_EXT } from '@src/lib/constants'
 import * as fs from 'fs'
+import * as fsp from 'fs/promises'
+import { join } from 'path'
+
 import {
   createProject,
   executorInputPath,
   getUtils,
   orRunWhenFullSuiteEnabled,
   runningOnWindows,
-} from './test-utils'
-import { join } from 'path'
-import { FILE_EXT } from 'lib/constants'
+} from '@e2e/playwright/test-utils'
+import { expect, test } from '@e2e/playwright/zoo-test'
 
 test.describe('integrations tests', () => {
   test(
@@ -46,6 +47,7 @@ test.describe('integrations tests', () => {
         await scene.connectionEstablished()
         await scene.settled(cmdBar)
         await clickObj()
+        await page.waitForTimeout(1000)
         await scene.moveNoWhere()
         await editor.expectState({
           activeLines: [
@@ -71,11 +73,11 @@ test.describe('integrations tests', () => {
       })
       await test.step('setup for next assertion', async () => {
         await toolbar.openFile('main.kcl')
-
-        await scene.settled(cmdBar)
-
+        await page.waitForTimeout(1000)
         await clickObj()
+        await page.waitForTimeout(1000)
         await scene.moveNoWhere()
+        await page.waitForTimeout(1000)
         await editor.expectState({
           activeLines: [
             '|>startProfileAt([75.8,317.2],%)//[$startCapTag,$EndCapTag]',
@@ -88,7 +90,7 @@ test.describe('integrations tests', () => {
         await toolbar.expectFileTreeState(['main.kcl', fileName])
       })
       await test.step('check sketch mode is exited when opening a different file', async () => {
-        await toolbar.openFile(fileName, { wait: false })
+        await toolbar.openFile(fileName)
 
         // check we're out of sketch mode
         await expect(toolbar.exitSketchBtn).not.toBeVisible()

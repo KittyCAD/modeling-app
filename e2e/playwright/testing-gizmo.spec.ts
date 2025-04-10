@@ -1,43 +1,44 @@
-import { test, expect } from './zoo-test'
-import { getUtils } from './test-utils'
-import { uuidv4 } from 'lib/utils'
-import { TEST_CODE_GIZMO } from './storageStates'
+import { uuidv4 } from '@src/lib/utils'
+
+import { TEST_CODE_GIZMO } from '@e2e/playwright/storageStates'
+import { getUtils } from '@e2e/playwright/test-utils'
+import { expect, test } from '@e2e/playwright/zoo-test'
 
 test.describe('Testing Gizmo', { tag: ['@skipWin'] }, () => {
   const cases = [
     {
       testDescription: 'top view',
-      clickPosition: { x: 951, y: 347 },
+      clickPosition: { x: 951, y: 385 },
       expectedCameraPosition: { x: 800, y: -152, z: 4886.02 },
       expectedCameraTarget: { x: 800, y: -152, z: 26 },
     },
     {
       testDescription: 'bottom view',
-      clickPosition: { x: 951, y: 391 },
+      clickPosition: { x: 951, y: 429 },
       expectedCameraPosition: { x: 800, y: -152, z: -4834.02 },
       expectedCameraTarget: { x: 800, y: -152, z: 26 },
     },
     {
       testDescription: 'right view',
-      clickPosition: { x: 929, y: 379 },
+      clickPosition: { x: 929, y: 417 },
       expectedCameraPosition: { x: 5660.02, y: -152, z: 26 },
       expectedCameraTarget: { x: 800, y: -152, z: 26 },
     },
     {
       testDescription: 'left view',
-      clickPosition: { x: 974, y: 359 },
+      clickPosition: { x: 974, y: 397 },
       expectedCameraPosition: { x: -4060.02, y: -152, z: 26 },
       expectedCameraTarget: { x: 800, y: -152, z: 26 },
     },
     {
       testDescription: 'back view',
-      clickPosition: { x: 967, y: 383 },
+      clickPosition: { x: 967, y: 421 },
       expectedCameraPosition: { x: 800, y: 4708.02, z: 26 },
       expectedCameraTarget: { x: 800, y: -152, z: 26 },
     },
     {
       testDescription: 'front view',
-      clickPosition: { x: 935, y: 355 },
+      clickPosition: { x: 935, y: 393 },
       expectedCameraPosition: { x: 800, y: -5012.02, z: 26 },
       expectedCameraTarget: { x: 800, y: -152, z: 26 },
     },
@@ -255,18 +256,12 @@ test.describe(`Testing gizmo, fixture-based`, () => {
     await context.addInitScript(() => {
       localStorage.setItem(
         'persistCode',
-        `
+        `@settings(defaultLengthUnit = in)
         const sketch002 = startSketchOn(XZ)
           |> startProfileAt([-108.83, -57.48], %)
-          |> angledLine([0, 105.13], %, $rectangleSegmentA001)
-          |> angledLine([
-               segAng(rectangleSegmentA001) - 90,
-               77.9
-             ], %)
-          |> angledLine([
-               segAng(rectangleSegmentA001),
-               -segLen(rectangleSegmentA001)
-             ], %)
+          |> angledLine(angle = 0, length = 105.13, tag = $rectangleSegmentA001)
+          |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 77.9)
+          |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
           |> close()
         const sketch001 = startSketchOn(XZ)
           |> circle(center = [818.33, 168.1], radius = 182.8)

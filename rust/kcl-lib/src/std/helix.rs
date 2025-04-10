@@ -1,13 +1,15 @@
 //! Standard library helices.
 
 use anyhow::Result;
-use kcl_derive_docs::stdlib;
 use kcmc::{each_cmd as mcmd, length_unit::LengthUnit, shared::Angle, ModelingCmd};
-use kittycad_modeling_cmds as kcmc;
+use kittycad_modeling_cmds::{self as kcmc, shared::Point3d};
 
 use crate::{
     errors::KclError,
-    execution::{ExecState, Helix as HelixValue, KclValue, Solid},
+    execution::{
+        types::{PrimitiveType, RuntimeType},
+        ExecState, Helix as HelixValue, KclValue, Solid,
+    },
     std::{axis_or_reference::Axis3dOrEdgeReference, Args},
 };
 
@@ -17,7 +19,14 @@ pub async fn helix(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     let revolutions = args.get_kw_arg("revolutions")?;
     let ccw = args.get_kw_arg_opt("ccw")?;
     let radius = args.get_kw_arg_opt("radius")?;
-    let axis = args.get_kw_arg_opt("axis")?;
+    let axis: Option<Axis3dOrEdgeReference> = args.get_kw_arg_opt_typed(
+        "axis",
+        &RuntimeType::Union(vec![
+            RuntimeType::Primitive(PrimitiveType::Edge),
+            RuntimeType::Primitive(PrimitiveType::Axis3d),
+        ]),
+        exec_state,
+    )?;
     let length = args.get_kw_arg_opt("length")?;
     let cylinder = args.get_kw_arg_opt("cylinder")?;
 
@@ -84,100 +93,6 @@ pub async fn helix(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     Ok(KclValue::Helix { value })
 }
 
-/// Create a helix.
-///
-/// ```no_run
-/// // Create a helix around the Z axis.
-/// helixPath = helix(
-///     angleStart = 0,
-///     ccw = true,
-///     revolutions = 5,
-///     length = 10,
-///     radius = 5,
-///     axis = 'Z',
-///  )
-///
-///
-/// // Create a spring by sweeping around the helix path.
-/// springSketch = startSketchOn('YZ')
-///     |> circle( center = [0, 0], radius = 0.5)
-///     |> sweep(path = helixPath)
-/// ```
-///
-/// ```no_run
-/// // Create a helix around an edge.
-/// helper001 = startSketchOn('XZ')
-///  |> startProfileAt([0, 0], %)
-///  |> line(end = [0, 10], tag = $edge001)
-///
-/// helixPath = helix(
-///     angleStart = 0,
-///     ccw = true,
-///     revolutions = 5,
-///     length = 10,
-///     radius = 5,
-///     axis = edge001,
-///  )
-///
-/// // Create a spring by sweeping around the helix path.
-/// springSketch = startSketchOn('XY')
-///     |> circle( center = [0, 0], radius = 0.5 )
-///     |> sweep(path = helixPath)
-/// ```
-///
-/// ```no_run
-/// // Create a helix around a custom axis.
-/// helixPath = helix(
-///     angleStart = 0,
-///     ccw = true,
-///     revolutions = 5,
-///     length = 10,
-///     radius = 5,
-///     axis = {
-///         custom = {
-///             axis = [0, 0, 1.0],
-///             origin = [0, 0.25, 0]
-///             }
-///         }
-///  )
-///
-/// // Create a spring by sweeping around the helix path.
-/// springSketch = startSketchOn('XY')
-///     |> circle( center = [0, 0], radius = 1 )
-///     |> sweep(path = helixPath)
-/// ```
-///
-///
-///
-/// ```no_run
-/// // Create a helix on a cylinder.
-///
-/// part001 = startSketchOn('XY')
-///   |> circle( center= [5, 5], radius= 10 )
-///   |> extrude(length = 10)
-///
-/// helix(
-///     angleStart = 0,
-///     ccw = true,
-///     revolutions = 16,
-///     cylinder = part001,
-///  )
-/// ```
-#[stdlib {
-    name = "helix",
-    keywords = true,
-    unlabeled_first = false,
-    args = {
-        revolutions = { docs = "Number of revolutions."},
-        angle_start = { docs = "Start angle (in degrees)."},
-        ccw = { docs = "Is the helix rotation counter clockwise? The default is `false`.", include_in_snippet = false},
-        radius = { docs = "Radius of the helix.", include_in_snippet = true},
-        axis = { docs = "Axis to use for the helix.", include_in_snippet = true},
-        length = { docs = "Length of the helix. This is not necessary if the helix is created around an edge. If not given the length of the edge is used.", include_in_snippet = true},
-        cylinder = { docs = "Cylinder to create the helix on.", include_in_snippet = false},
-    },
-    feature_tree_operation = true,
-}]
 #[allow(clippy::too_many_arguments)]
 async fn inner_helix(
     revolutions: f64,
@@ -221,9 +136,7 @@ async fn inner_helix(
         .await?;
     } else if let (Some(axis), Some(radius)) = (axis, radius) {
         match axis {
-            Axis3dOrEdgeReference::Axis(axis) => {
-                let (axis, origin) = axis.axis_and_origin()?;
-
+            Axis3dOrEdgeReference::Axis { direction, origin } => {
                 // Make sure they gave us a length.
                 let Some(length) = length else {
                     return Err(KclError::Semantic(crate::errors::KclErrorDetails {
@@ -240,8 +153,16 @@ async fn inner_helix(
                         length: LengthUnit(length),
                         revolutions,
                         start_angle: Angle::from_degrees(angle_start),
-                        axis,
-                        center: origin,
+                        axis: Point3d {
+                            x: direction[0],
+                            y: direction[1],
+                            z: direction[2],
+                        },
+                        center: Point3d {
+                            x: LengthUnit(origin[0]),
+                            y: LengthUnit(origin[1]),
+                            z: LengthUnit(origin[2]),
+                        },
                     }),
                 )
                 .await?;

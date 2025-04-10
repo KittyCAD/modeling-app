@@ -369,6 +369,26 @@ impl Node<Program> {
 
         Ok(new_program)
     }
+
+    /// Returns true if the given KCL is empty or only contains settings that
+    /// would be auto-generated.
+    pub fn is_empty_or_only_settings(&self) -> bool {
+        if !self.body.is_empty() {
+            return false;
+        }
+
+        if self.non_code_meta.start_nodes.iter().any(|node| node.is_comment()) {
+            return false;
+        }
+
+        for item in &self.inner_attrs {
+            if item.name() != Some(annotations::SETTINGS) {
+                return false;
+            }
+        }
+
+        true
+    }
 }
 
 impl Program {
@@ -3563,6 +3583,37 @@ mod tests {
     use pretty_assertions::assert_eq;
 
     use super::*;
+
+    #[track_caller]
+    fn parse(code: &str) -> Node<Program> {
+        crate::parsing::top_level_parse(code).unwrap()
+    }
+
+    #[test]
+    fn test_empty_or_only_settings() {
+        // Empty is empty.
+        assert!(parse("").is_empty_or_only_settings());
+
+        // Whitespace is empty.
+        assert!(parse(" ").is_empty_or_only_settings());
+
+        // Settings are empty.
+        assert!(parse(r#"@settings(defaultLengthUnit = mm)"#).is_empty_or_only_settings());
+
+        // Only comments is not empty.
+        assert!(!parse("// comment").is_empty_or_only_settings());
+
+        // Any statement is not empty.
+        assert!(!parse("5").is_empty_or_only_settings());
+
+        // Any statement is not empty, even with settings.
+        let code = r#"@settings(defaultLengthUnit = mm)
+5"#;
+        assert!(!parse(code).is_empty_or_only_settings());
+
+        // Non-settings attributes are not empty.
+        assert!(!parse("@foo").is_empty_or_only_settings());
+    }
 
     // We have this as a test so we can ensure it never panics with an unwrap in the server.
     #[test]

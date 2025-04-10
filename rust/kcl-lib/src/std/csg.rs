@@ -28,6 +28,8 @@ pub async fn union(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// Union two or more solids into a single solid.
 ///
 /// ```no_run
+/// // Union two cubes using the stdlib functions.
+///
 /// fn cube(center) {
 ///     return startSketchOn('XY')
 ///         |> startProfileAt([center[0] - 10, center[1] - 10], %)
@@ -43,6 +45,52 @@ pub async fn union(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///
 /// unionedPart = union([part001, part002])
 /// ```
+///
+/// ```no_run
+/// // Union two cubes using operators.
+/// // NOTE: This will not work when using codemods through the UI.
+/// // Codemods will generate the stdlib function call instead.
+///
+/// fn cube(center) {
+///     return startSketchOn('XY')
+///         |> startProfileAt([center[0] - 10, center[1] - 10], %)
+///         |> line(endAbsolute = [center[0] + 10, center[1] - 10])
+///         |> line(endAbsolute = [center[0] + 10, center[1] + 10])
+///         |> line(endAbsolute = [center[0] - 10, center[1] + 10])
+///         |> close()
+///         |> extrude(length = 10)
+/// }
+///
+/// part001 = cube([0, 0])
+/// part002 = cube([20, 10])
+///
+/// // This is the equivalent of: union([part001, part002])
+/// unionedPart = part001 + part002
+/// ```
+///
+/// ```no_run
+/// // Union two cubes using the more programmer-friendly operator.
+/// // NOTE: This will not work when using codemods through the UI.
+/// // Codemods will generate the stdlib function call instead.
+///
+/// fn cube(center) {
+///     return startSketchOn('XY')
+///         |> startProfileAt([center[0] - 10, center[1] - 10], %)
+///         |> line(endAbsolute = [center[0] + 10, center[1] - 10])
+///         |> line(endAbsolute = [center[0] + 10, center[1] + 10])
+///         |> line(endAbsolute = [center[0] - 10, center[1] + 10])
+///         |> close()
+///         |> extrude(length = 10)
+/// }
+///
+/// part001 = cube([0, 0])
+/// part002 = cube([20, 10])
+///
+/// // This is the equivalent of: union([part001, part002])
+/// // Programmers will understand `|` as a union operation, but mechanical engineers
+/// // will understand `+`, we made both work.
+/// unionedPart = part001 | part002
+/// ```
 #[stdlib {
     name = "union",
     feature_tree_operation = true,
@@ -53,7 +101,11 @@ pub async fn union(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
         solids = {docs = "The solids to union."},
     }
 }]
-async fn inner_union(solids: Vec<Solid>, exec_state: &mut ExecState, args: Args) -> Result<Vec<Solid>, KclError> {
+pub(crate) async fn inner_union(
+    solids: Vec<Solid>,
+    exec_state: &mut ExecState,
+    args: Args,
+) -> Result<Vec<Solid>, KclError> {
     // Flush the fillets for the solids.
     args.flush_batch_for_solids(exec_state, &solids).await?;
 
@@ -90,6 +142,8 @@ pub async fn intersect(exec_state: &mut ExecState, args: Args) -> Result<KclValu
 /// verifying fit, and analyzing overlapping geometries in assemblies.
 ///
 /// ```no_run
+/// // Intersect two cubes using the stdlib functions.
+///
 /// fn cube(center) {
 ///     return startSketchOn('XY')
 ///         |> startProfileAt([center[0] - 10, center[1] - 10], %)
@@ -105,6 +159,28 @@ pub async fn intersect(exec_state: &mut ExecState, args: Args) -> Result<KclValu
 ///
 /// intersectedPart = intersect([part001, part002])
 /// ```
+///
+/// ```no_run
+/// // Intersect two cubes using operators.
+/// // NOTE: This will not work when using codemods through the UI.
+/// // Codemods will generate the stdlib function call instead.
+///
+/// fn cube(center) {
+///     return startSketchOn('XY')
+///         |> startProfileAt([center[0] - 10, center[1] - 10], %)
+///         |> line(endAbsolute = [center[0] + 10, center[1] - 10])
+///         |> line(endAbsolute = [center[0] + 10, center[1] + 10])
+///         |> line(endAbsolute = [center[0] - 10, center[1] + 10])
+///         |> close()
+///         |> extrude(length = 10)
+/// }
+///
+/// part001 = cube([0, 0])
+/// part002 = cube([8, 8])
+///
+/// // This is the equivalent of: intersect([part001, part002])
+/// intersectedPart = part001 & part002
+/// ```
 #[stdlib {
     name = "intersect",
     feature_tree_operation = true,
@@ -115,7 +191,11 @@ pub async fn intersect(exec_state: &mut ExecState, args: Args) -> Result<KclValu
         solids = {docs = "The solids to intersect."},
     }
 }]
-async fn inner_intersect(solids: Vec<Solid>, exec_state: &mut ExecState, args: Args) -> Result<Vec<Solid>, KclError> {
+pub(crate) async fn inner_intersect(
+    solids: Vec<Solid>,
+    exec_state: &mut ExecState,
+    args: Args,
+) -> Result<Vec<Solid>, KclError> {
     // Flush the fillets for the solids.
     args.flush_batch_for_solids(exec_state, &solids).await?;
 
@@ -145,6 +225,8 @@ pub async fn subtract(exec_state: &mut ExecState, args: Args) -> Result<KclValue
 /// and complex multi-body part modeling.
 ///
 /// ```no_run
+/// // Subtract a cylinder from a cube using the stdlib functions.
+///
 /// fn cube(center) {
 ///     return startSketchOn('XY')
 ///         |> startProfileAt([center[0] - 10, center[1] - 10], %)
@@ -162,6 +244,30 @@ pub async fn subtract(exec_state: &mut ExecState, args: Args) -> Result<KclValue
 ///
 /// subtractedPart = subtract([part001], tools=[part002])
 /// ```
+///
+/// ```no_run
+/// // Subtract a cylinder from a cube using operators.
+/// // NOTE: This will not work when using codemods through the UI.
+/// // Codemods will generate the stdlib function call instead.
+///
+/// fn cube(center) {
+///     return startSketchOn('XY')
+///         |> startProfileAt([center[0] - 10, center[1] - 10], %)
+///         |> line(endAbsolute = [center[0] + 10, center[1] - 10])
+///         |> line(endAbsolute = [center[0] + 10, center[1] + 10])
+///         |> line(endAbsolute = [center[0] - 10, center[1] + 10])
+///         |> close()
+///         |> extrude(length = 10)
+/// }
+///
+/// part001 = cube([0, 0])
+/// part002 = startSketchOn('XY')
+///     |> circle(center = [0, 0], radius = 2)
+///     |> extrude(length = 10)
+///
+/// // This is the equivalent of: subtract([part001], tools=[part002])
+/// subtractedPart = part001 - part002
+/// ```
 #[stdlib {
     name = "subtract",
     feature_tree_operation = true,
@@ -169,11 +275,11 @@ pub async fn subtract(exec_state: &mut ExecState, args: Args) -> Result<KclValue
     unlabeled_first = true,
     deprecated = true,
     args = {
-        solids = {docs = "The solids to intersect."},
+        solids = {docs = "The solids to use as the base to subtract from."},
         tools = {docs = "The solids to subtract."},
     }
 }]
-async fn inner_subtract(
+pub(crate) async fn inner_subtract(
     solids: Vec<Solid>,
     tools: Vec<Solid>,
     exec_state: &mut ExecState,

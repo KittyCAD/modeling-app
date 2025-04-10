@@ -15,14 +15,6 @@ description: Artifact commands router-template-slate.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "set_scene_units",
-      "unit": "mm"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
       "hidden": true
@@ -364,7 +356,8 @@ description: Artifact commands router-template-slate.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 5.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -745,7 +738,8 @@ description: Artifact commands router-template-slate.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 7.5,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -986,7 +980,8 @@ description: Artifact commands router-template-slate.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 7.5,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {

@@ -1,4 +1,4 @@
-import { Message } from 'vscode-languageserver-protocol'
+import type { Message } from 'vscode-languageserver-protocol'
 
 export default class Tracer {
   static client(message: string): void {

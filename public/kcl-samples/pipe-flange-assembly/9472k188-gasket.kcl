@@ -1,26 +1,19 @@
-// 9472K188 Gasket
-// gasket for the pipe flange assembly. A gasket is a mechanical seal that fills the space between two or more mating surfaces, preventing leaks of liquids or gases under compression
+// Gasket
+// Gasket for the pipe flange assembly. A gasket is a mechanical seal that fills the space between two or more mating surfaces, preventing leaks of liquids or gases under compression
 
-// set units
+// Set units
 @settings(defaultLengthUnit = in)
 
-// import constants
-import gasketOutsideDiameter, gasketInnerDiameter, gasketThickness from "globals.kcl"
+// Import parameters
+import gasketOutsideDiameter, gasketInnerDiameter, gasketThickness from "parameters.kcl"
 
-// create a function to make the gasket
-export fn gasket() {
-  // create the base of the gasket
-  gasketBase = startSketchOn(XY)
-    |> circle(%, center = [0, 0], radius = gasketOutsideDiameter / 2)
-    |> extrude(%, length = gasketThickness)
+// Create the base of the gasket
+gasketBase = startSketchOn(XY)
+  |> circle(%, center = [0, 0], radius = gasketOutsideDiameter / 2)
+  |> extrude(%, length = gasketThickness)
 
-  // extrude a circular hole through the gasket base
-  gasket = startSketchOn(gasketBase, 'end')
-    |> circle(%, center = [0, 0], radius = gasketInnerDiameter / 2)
-    |> extrude(%, length = -gasketThickness)
-    |> appearance(%, color = "#d0cb3e")
-
-  return gasket
-}
-
-// https://www.mcmaster.com/9472K616/
+// Extrude a circular hole through the gasket base
+startSketchOn(gasketBase, 'end')
+  |> circle(%, center = [0, 0], radius = gasketInnerDiameter / 2)
+  |> extrude(%, length = -gasketThickness)
+  |> appearance(%, color = "#d0cb3e")

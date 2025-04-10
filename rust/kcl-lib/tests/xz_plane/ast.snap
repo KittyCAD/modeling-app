@@ -22,7 +22,7 @@ description: Result of parsing xz_plane.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 24,
+                    "commentStart": 0,
                     "end": 0,
                     "raw": "'XZ'",
                     "start": 0,
@@ -33,10 +33,10 @@ description: Result of parsing xz_plane.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 10,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 10,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "startSketchOn",
                     "start": 0,
@@ -46,7 +46,7 @@ description: Result of parsing xz_plane.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 10,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -55,10 +55,10 @@ description: Result of parsing xz_plane.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 50,
+                    "commentStart": 0,
                     "elements": [
                       {
-                        "commentStart": 51,
+                        "commentStart": 0,
                         "end": 0,
                         "raw": "0",
                         "start": 0,
@@ -70,7 +70,7 @@ description: Result of parsing xz_plane.kcl
                         }
                       },
                       {
-                        "commentStart": 54,
+                        "commentStart": 0,
                         "end": 0,
                         "raw": "0",
                         "start": 0,
@@ -88,7 +88,7 @@ description: Result of parsing xz_plane.kcl
                     "type": "ArrayExpression"
                   },
                   {
-                    "commentStart": 58,
+                    "commentStart": 0,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -97,10 +97,10 @@ description: Result of parsing xz_plane.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 35,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 35,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "startProfileAt",
                     "start": 0,
@@ -110,7 +110,7 @@ description: Result of parsing xz_plane.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 35,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -121,17 +121,17 @@ description: Result of parsing xz_plane.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 71,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "endAbsolute",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 85,
+                      "commentStart": 0,
                       "elements": [
                         {
-                          "commentStart": 86,
+                          "commentStart": 0,
                           "end": 0,
                           "raw": "100",
                           "start": 0,
@@ -143,7 +143,7 @@ description: Result of parsing xz_plane.kcl
                           }
                         },
                         {
-                          "commentStart": 91,
+                          "commentStart": 0,
                           "end": 0,
                           "raw": "100",
                           "start": 0,
@@ -164,10 +164,10 @@ description: Result of parsing xz_plane.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 66,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 66,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "line",
                     "start": 0,
@@ -177,7 +177,7 @@ description: Result of parsing xz_plane.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 66,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -189,17 +189,17 @@ description: Result of parsing xz_plane.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 107,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "endAbsolute",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 121,
+                      "commentStart": 0,
                       "elements": [
                         {
-                          "commentStart": 122,
+                          "commentStart": 0,
                           "end": 0,
                           "raw": "100",
                           "start": 0,
@@ -211,7 +211,7 @@ description: Result of parsing xz_plane.kcl
                           }
                         },
                         {
-                          "commentStart": 127,
+                          "commentStart": 0,
                           "end": 0,
                           "raw": "0",
                           "start": 0,
@@ -232,10 +232,10 @@ description: Result of parsing xz_plane.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 102,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 102,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "line",
                     "start": 0,
@@ -245,7 +245,7 @@ description: Result of parsing xz_plane.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 102,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -255,7 +255,7 @@ description: Result of parsing xz_plane.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 142,
+                    "commentStart": 0,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -264,10 +264,10 @@ description: Result of parsing xz_plane.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 136,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 136,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "close",
                     "start": 0,
@@ -277,7 +277,7 @@ description: Result of parsing xz_plane.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 136,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -288,17 +288,17 @@ description: Result of parsing xz_plane.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 158,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 167,
+                      "commentStart": 0,
                       "end": 0,
                       "left": {
-                        "commentStart": 167,
+                        "commentStart": 0,
                         "end": 0,
                         "raw": "5",
                         "start": 0,
@@ -311,7 +311,7 @@ description: Result of parsing xz_plane.kcl
                       },
                       "operator": "+",
                       "right": {
-                        "commentStart": 171,
+                        "commentStart": 0,
                         "end": 0,
                         "raw": "7",
                         "start": 0,
@@ -330,10 +330,10 @@ description: Result of parsing xz_plane.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 150,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 150,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "extrude",
                     "start": 0,
@@ -343,7 +343,7 @@ description: Result of parsing xz_plane.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 150,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -351,7 +351,7 @@ description: Result of parsing xz_plane.kcl
                 "unlabeled": null
               }
             ],
-            "commentStart": 10,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "PipeExpression",

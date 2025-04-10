@@ -1,6 +1,7 @@
-import { APP_NAME } from 'lib/constants'
-import { OnboardingButtons } from '.'
-import { onboardingPaths } from 'routes/Onboarding/paths'
+import { APP_NAME } from '@src/lib/constants'
+import { onboardingPaths } from '@src/routes/Onboarding/paths'
+
+import { OnboardingButtons } from '@src/routes/Onboarding/utils'
 
 export default function Export() {
   return (

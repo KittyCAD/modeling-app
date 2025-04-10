@@ -4,8 +4,8 @@
 // Set units
 @settings(defaultLengthUnit = in)
 
-// Import Constants
-import tireInnerDiameter, tireOuterDiameter, tireDepth, bendRadius, tireTreadWidth, tireTreadDepth, tireTreadOffset from "globals.kcl"
+// Import parameters
+import tireInnerDiameter, tireOuterDiameter, tireDepth, bendRadius, tireTreadWidth, tireTreadDepth, tireTreadOffset from "parameters.kcl"
 
 // Create the sketch of the tire
 tireSketch = startSketchOn(XY)
@@ -41,5 +41,5 @@ tireSketch = startSketchOn(XY)
   |> close()
 
 // Revolve the sketch to create the tire
-revolve(tireSketch, axis = "Y")
+revolve(tireSketch, axis = Y)
   |> appearance(color = "#0f0f0f", roughness = 80)

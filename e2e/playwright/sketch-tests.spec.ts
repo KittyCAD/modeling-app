@@ -1,20 +1,20 @@
-import { Page } from '@playwright/test'
-import { test, expect } from './zoo-test'
+import type { Page } from '@playwright/test'
+import { roundOff, uuidv4 } from '@src/lib/utils'
 import fs from 'node:fs/promises'
 import path from 'node:path'
-import { HomePageFixture } from './fixtures/homePageFixture'
 
+import type { CmdBarFixture } from '@e2e/playwright/fixtures/cmdBarFixture'
+import type { HomePageFixture } from '@e2e/playwright/fixtures/homePageFixture'
+import type { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
+import type { ToolbarFixture } from '@e2e/playwright/fixtures/toolbarFixture'
 import {
-  getMovementUtils,
-  getUtils,
   PERSIST_MODELING_CONTEXT,
   TEST_COLORS,
+  getMovementUtils,
+  getUtils,
   orRunWhenFullSuiteEnabled,
-} from './test-utils'
-import { uuidv4, roundOff } from 'lib/utils'
-import { SceneFixture } from './fixtures/sceneFixture'
-import { ToolbarFixture } from './fixtures/toolbarFixture'
-import { CmdBarFixture } from './fixtures/cmdBarFixture'
+} from '@e2e/playwright/test-utils'
+import { expect, test } from '@e2e/playwright/zoo-test'
 
 test.describe('Sketch tests', { tag: ['@skipWin'] }, () => {
   test('multi-sketch file shows multiple Edit Sketch buttons', async ({
@@ -22,6 +22,7 @@ test.describe('Sketch tests', { tag: ['@skipWin'] }, () => {
     context,
     homePage,
     scene,
+    cmdBar,
   }) => {
     const u = await getUtils(page)
     const selectionsSnippets = {
@@ -82,7 +83,7 @@ test.describe('Sketch tests', { tag: ['@skipWin'] }, () => {
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
     await homePage.goToModelingScene()
-    await scene.waitForExecutionDone()
+    await scene.settled(cmdBar)
 
     // wait for execution done
     await u.openDebugPanel()
@@ -108,12 +109,14 @@ test.describe('Sketch tests', { tag: ['@skipWin'] }, () => {
     page,
     scene,
     homePage,
+    cmdBar,
   }) => {
     const u = await getUtils(page)
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `sketch001 = startSketchOn(XZ)
+        `@settings(defaultLengthUnit = in)
+sketch001 = startSketchOn(XZ)
   |> startProfileAt([2.61, -4.01], %)
   |> xLine(length = 8.73)
   |> tangentialArcTo([8.33, -1.31], %)`
@@ -121,7 +124,7 @@ test.describe('Sketch tests', { tag: ['@skipWin'] }, () => {
     })
 
     await homePage.goToModelingScene()
-    await scene.waitForExecutionDone()
+    await scene.settled(cmdBar)
 
     await scene.expectPixelColor(TEST_COLORS.WHITE, { x: 587, y: 270 }, 15)
 
@@ -159,7 +162,10 @@ test.describe('Sketch tests', { tag: ['@skipWin'] }, () => {
       await page.mouse.click(700, 200)
 
       await expect.poll(u.normalisedEditorCode, { timeout: 1000 })
-        .toBe(`sketch002 = startSketchOn(XZ)
+        .toBe(`@settings(defaultLengthUnit = in)
+
+
+sketch002 = startSketchOn(XZ)
 sketch001 = startProfileAt([12.34, -12.34], sketch002)
   |> yLine(length = 12.34)
 
@@ -475,7 +481,8 @@ sketch001 = startProfileAt([12.34, -12.34], sketch002)
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `sketch001 = startSketchOn(XZ)
+        `@settings(defaultLengthUnit=in)
+sketch001 = startSketchOn(XZ)
     |> circle(center = [4.61, -5.01], radius = 8)`
       )
     })
@@ -560,12 +567,14 @@ sketch001 = startProfileAt([12.34, -12.34], sketch002)
   test('Can edit a sketch that has been extruded in the same pipe', async ({
     page,
     homePage,
+    editor,
   }) => {
     const u = await getUtils(page)
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `sketch001 = startSketchOn(XZ)
+        `@settings(defaultLengthUnit=in)
+sketch001 = startSketchOn(XZ)
   |> startProfileAt([4.61, -10.01], %)
   |> line(end = [12.73, -0.09])
   |> tangentialArcTo([24.95, -0.38], %)
@@ -650,36 +659,40 @@ sketch001 = startProfileAt([12.34, -12.34], sketch002)
     await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
 
     // expect the code to have changed
-    await expect(page.locator('.cm-content'))
-      .toHaveText(`sketch001 = startSketchOn(XZ)
+    await editor.expectEditor.toContain(
+      `sketch001 = startSketchOn(XZ)
     |> startProfileAt([7.12, -12.68], %)
     |> line(end = [12.68, -1.09])
     |> tangentialArcTo([24.89, 0.68], %)
     |> close()
-    |> extrude(length = 5)
-  `)
+    |> extrude(length = 5)`,
+      { shouldNormalise: true }
+    )
   })
 
   test('Can edit a sketch that has been revolved in the same pipe', async ({
     page,
     homePage,
     scene,
+    editor,
+    cmdBar,
   }) => {
     const u = await getUtils(page)
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `sketch001 = startSketchOn(XZ)
+        `@settings(defaultLengthUnit=in)
+sketch001 = startSketchOn(XZ)
   |> startProfileAt([4.61, -14.01], %)
   |> line(end = [12.73, -0.09])
   |> tangentialArcTo([24.95, -5.38], %)
   |> close()
-  |> revolve(axis = "X")`
+  |> revolve(axis = X)`
       )
     })
 
     await homePage.goToModelingScene()
-    await scene.waitForExecutionDone()
+    await scene.settled(cmdBar)
 
     await expect(
       page.getByRole('button', { name: 'Start Sketch' })
@@ -754,14 +767,16 @@ sketch001 = startProfileAt([12.34, -12.34], sketch002)
     await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
 
     // expect the code to have changed
-    await expect(page.locator('.cm-content'))
-      .toHaveText(`sketch001 = startSketchOn(XZ)
+    await editor.expectEditor.toContain(
+      `sketch001 = startSketchOn(XZ)
   |> startProfileAt([6.44, -12.07], %)
   |> line(end = [14.72, 1.97])
   |> tangentialArcTo([24.95, -5.38], %)
   |> line(end = [1.97, 2.06])
   |> close()
-  |> revolve(axis = "X")`)
+  |> revolve(axis = X)`,
+      { shouldNormalise: true }
+    )
   })
   test('Can add multiple sketches', async ({ page, homePage }) => {
     const u = await getUtils(page)
@@ -789,7 +804,8 @@ sketch001 = startProfileAt([12.34, -12.34], sketch002)
       200
     )
 
-    let codeStr = 'sketch001 = startSketchOn(XY)'
+    let codeStr =
+      '@settings(defaultLengthUnit = in)sketch001 = startSketchOn(XY)'
 
     await page.mouse.click(center.x, viewportSize.height * 0.55)
     await expect(u.codeLocator).toHaveText(codeStr)
@@ -868,7 +884,8 @@ sketch001 = startProfileAt([12.34, -12.34], sketch002)
 
       await u.openDebugPanel()
 
-      const code = `sketch001 = startSketchOn(-XZ)
+      const code = `@settings(defaultLengthUnit = in)
+sketch001 = startSketchOn(-XZ)
 profile001 = startProfileAt([${roundOff(scale * 69.6)}, ${roundOff(
         scale * 34.8
       )}], sketch001)
@@ -898,7 +915,7 @@ profile001 = startProfileAt([${roundOff(scale * 69.6)}, ${roundOff(
       await page.mouse.move(700, 200, { steps: 10 })
       await page.mouse.click(700, 200, { delay: 200 })
       await expect(page.locator('.cm-content')).toHaveText(
-        `sketch001 = startSketchOn(-XZ)`
+        `@settings(defaultLengthUnit = in)sketch001 = startSketchOn(-XZ)`
       )
 
       let prevContent = await page.locator('.cm-content').innerText()
@@ -1205,11 +1222,11 @@ profile001 = startProfileAt([${roundOff(scale * 69.6)}, ${roundOff(
       fn lug = (origin, length, diameter, plane) => {
         lugSketch = startSketchOn(plane)
           |> startProfileAt([origin[0] + lugDiameter / 2, origin[1]], %)
-          |> angledLineOfYLength({ angle = 60, length = lugHeadLength }, %)
+          |> angledLine(angle = 60, lengthY = lugHeadLength)
           |> xLine(endAbsolute = 0 + .001)
           |> yLine(endAbsolute = 0)
           |> close()
-          |> revolve(axis = "Y")
+          |> revolve(axis = Y)
 
         return lugSketch
       }
@@ -1426,7 +1443,8 @@ test.describe(`Sketching with offset planes`, () => {
     await context.addInitScript(() => {
       localStorage.setItem(
         'persistCode',
-        `offsetPlane001 = offsetPlane(XY, offset = 10)`
+        `@settings(defaultLengthUnit = in)
+offsetPlane001 = offsetPlane(XY, offset = 10)`
       )
     })
 
@@ -1440,7 +1458,7 @@ test.describe(`Sketching with offset planes`, () => {
       await test.step(`Hovering should highlight code`, async () => {
         await planeHover()
         await editor.expectState({
-          activeLines: [`offsetPlane001=offsetPlane(XY,offset=10)`],
+          activeLines: [`@settings(defaultLengthUnit = in)`],
           diagnostics: [],
           highlightedCode: 'offsetPlane(XY, offset = 10)',
         })
@@ -1453,7 +1471,7 @@ test.describe(`Sketching with offset planes`, () => {
         await expect(toolbar.lineBtn).toBeEnabled()
         await editor.expectEditor.toContain('startSketchOn(offsetPlane001)')
         await editor.expectState({
-          activeLines: [`offsetPlane001=offsetPlane(XY,offset=10)`],
+          activeLines: [`@settings(defaultLengthUnit = in)`],
           diagnostics: [],
           highlightedCode: '',
         })
@@ -1599,12 +1617,13 @@ profile002 = startProfileAt([117.2, 56.08], sketch001)
   test(
     `snapToProfile start only works for current profile`,
     { tag: ['@skipWin'] },
-    async ({ context, page, scene, toolbar, editor, homePage }) => {
+    async ({ context, page, scene, toolbar, editor, homePage, cmdBar }) => {
       // We seed the scene with a single offset plane
       await context.addInitScript(() => {
         localStorage.setItem(
           'persistCode',
-          `sketch001 = startSketchOn(XZ)
+          `@settings(defaultLengthUnit = in)
+sketch001 = startSketchOn(XZ)
 profile002 = startProfileAt([40.68, 87.67], sketch001)
   |> xLine(length = 239.17)
 profile003 = startProfileAt([206.63, -56.73], sketch001)
@@ -1614,6 +1633,8 @@ profile003 = startProfileAt([206.63, -56.73], sketch001)
       })
 
       await homePage.goToModelingScene()
+      await scene.settled(cmdBar)
+
       await expect(
         page.getByRole('button', { name: 'Start Sketch' })
       ).not.toBeDisabled()
@@ -1635,9 +1656,13 @@ profile003 = startProfileAt([206.63, -56.73], sketch001)
       const codeFromTangentialArc = `  |> tangentialArcTo([39.49, 88.22], %)`
       await test.step('check that tangential tool does not snap to other profile starts', async () => {
         await toolbar.tangentialArcBtn.click()
+        await page.waitForTimeout(1000)
         await endOfLowerSegMove()
+        await page.waitForTimeout(1000)
         await endOfLowerSegClick()
+        await page.waitForTimeout(1000)
         await profileStartOfHigherSegClick()
+        await page.waitForTimeout(1000)
         await editor.expectEditor.toContain(codeFromTangentialArc)
         await editor.expectEditor.not.toContain(
           `[profileStartX(%), profileStartY(%)]`
@@ -1952,12 +1977,9 @@ profile003 = startProfileAt([206.63, -56.73], sketch001)
       )
       await crnRect1point2()
       await editor.expectEditor.toContain(
-        `|> angledLine([0, 2.37], %, $rectangleSegmentA001)
-  |> angledLine([segAng(rectangleSegmentA001) - 90, 7.8], %)
-  |> angledLine([
-       segAng(rectangleSegmentA001),
-       -segLen(rectangleSegmentA001)
-     ], %)
+        `|> angledLine(angle = 0, length = 2.37, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 7.8)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()`.replaceAll('\n', '')
       )
@@ -1970,15 +1992,9 @@ profile003 = startProfileAt([206.63, -56.73], sketch001)
       await crnRect2point2()
       await page.waitForTimeout(300)
       await editor.expectEditor.toContain(
-        `|> angledLine([0, 5.49], %, $rectangleSegmentA002)
-  |> angledLine([
-       segAng(rectangleSegmentA002) - 90,
-       4.14
-     ], %)
-  |> angledLine([
-       segAng(rectangleSegmentA002),
-       -segLen(rectangleSegmentA002)
-     ], %)
+        `|> angledLine(angle = 0, length = 5.49, tag = $rectangleSegmentA002)
+  |> angledLine(angle = segAng(rectangleSegmentA002) - 90, length = 4.14)
+  |> angledLine(angle = segAng(rectangleSegmentA002), length = -segLen(rectangleSegmentA002))
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()`.replaceAll('\n', '')
       )
@@ -1995,15 +2011,9 @@ profile003 = startProfileAt([206.63, -56.73], sketch001)
       await cntrRect1point2()
       await page.waitForTimeout(300)
       await editor.expectEditor.toContain(
-        `|> angledLine([0, 7.06], %, $rectangleSegmentA003)
-  |> angledLine([
-       segAng(rectangleSegmentA003) + 90,
-       4.34
-     ], %)
-  |> angledLine([
-       segAng(rectangleSegmentA003),
-       -segLen(rectangleSegmentA003)
-     ], %)
+        `|> angledLine(angle = 0, length = 7.06, tag = $rectangleSegmentA003)
+  |> angledLine(angle = segAng(rectangleSegmentA003) + 90, length = 4.34)
+  |> angledLine(angle = segAng(rectangleSegmentA003), length = -segLen(rectangleSegmentA003))
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()`.replaceAll('\n', '')
       )
@@ -2017,15 +2027,9 @@ profile003 = startProfileAt([206.63, -56.73], sketch001)
       await cntrRect2point2()
       await page.waitForTimeout(300)
       await editor.expectEditor.toContain(
-        `|> angledLine([0, 3.12], %, $rectangleSegmentA004)
-  |> angledLine([
-       segAng(rectangleSegmentA004) + 90,
-       6.24
-     ], %)
-  |> angledLine([
-       segAng(rectangleSegmentA004),
-       -segLen(rectangleSegmentA004)
-     ], %)
+        `|> angledLine(angle = 0, length = 3.12, tag = $rectangleSegmentA004)
+  |> angledLine(angle = segAng(rectangleSegmentA004) + 90, length = 6.24)
+  |> angledLine(angle = segAng(rectangleSegmentA004), length = -segLen(rectangleSegmentA004))
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()`.replaceAll('\n', '')
       )
@@ -2172,21 +2176,16 @@ profile003 = startProfileAt([206.63, -56.73], sketch001)
       await page.addInitScript(async () => {
         localStorage.setItem(
           'persistCode',
-          `sketch001 = startSketchOn(XZ)
+          `@settings(defaultLengthUnit = in)
+sketch001 = startSketchOn(XZ)
 profile001 = startProfileAt([6.24, 4.54], sketch001)
   |> line(end = [-0.41, 6.99])
   |> line(end = [8.61, 0.74])
   |> line(end = [10.99, -5.22])
 profile002 = startProfileAt([11.19, 5.02], sketch001)
-  |> angledLine([0, 10.78], %, $rectangleSegmentA001)
-  |> angledLine([
-       segAng(rectangleSegmentA001) - 90,
-       4.14
-     ], %)
-  |> angledLine([
-       segAng(rectangleSegmentA001),
-       -segLen(rectangleSegmentA001)
-     ], %)
+  |> angledLine(angle = 0, length = 10.78, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 4.14)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 profile003 = circle(sketch001, center = [6.92, -4.2], radius = 3.16)
@@ -2225,8 +2224,9 @@ profile004 = circleThreePoint(sketch001, p1 = [13.44, -6.8], p2 = [13.39, -2.07]
 
       await test.step('enter sketch and setup', async () => {
         await moveToClearToolBarPopover()
+        await page.waitForTimeout(1000)
         await pointOnSegment({ shouldDbClick: true })
-        await page.waitForTimeout(600)
+        await page.waitForTimeout(2000)
 
         await toolbar.lineBtn.click()
         await page.waitForTimeout(100)
@@ -2255,7 +2255,7 @@ profile004 = circleThreePoint(sketch001, p1 = [13.44, -6.8], p2 = [13.39, -2.07]
         await rectDragTo()
         await page.mouse.up()
         await editor.expectEditor.toContain(
-          `angledLine([-7, 10.27], %, $rectangleSegmentA001)`
+          `angledLine(angle = -7, length = 10.27, tag = $rectangleSegmentA001)`
         )
       })
 
@@ -2295,15 +2295,9 @@ profile004 = circleThreePoint(sketch001, p1 = [13.44, -6.8], p2 = [13.39, -2.07]
         await page.waitForTimeout(100)
         await rectEnd()
         await editor.expectEditor.toContain(
-          `|> angledLine([180, 1.97], %, $rectangleSegmentA002)
-  |> angledLine([
-       segAng(rectangleSegmentA002) + 90,
-       3.89
-     ], %)
-  |> angledLine([
-       segAng(rectangleSegmentA002),
-       -segLen(rectangleSegmentA002)
-     ], %)
+          `|> angledLine(angle = 180, length = 1.97, tag = $rectangleSegmentA002)
+  |> angledLine(angle = segAng(rectangleSegmentA002) + 90, length = 3.89)
+  |> angledLine(angle = segAng(rectangleSegmentA002), length = -segLen(rectangleSegmentA002))
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()`.replaceAll('\n', '')
         )
@@ -2317,21 +2311,16 @@ profile004 = circleThreePoint(sketch001, p1 = [13.44, -6.8], p2 = [13.39, -2.07]
       await page.addInitScript(async () => {
         localStorage.setItem(
           'persistCode',
-          `sketch001 = startSketchOn(XZ)
+          `@settings(defaultLengthUnit = in)
+sketch001 = startSketchOn(XZ)
 profile001 = startProfileAt([6.24, 4.54], sketch001)
   |> line(end = [-0.41, 6.99])
   |> line(end = [8.61, 0.74])
   |> line(end = [10.99, -5.22])
 profile002 = startProfileAt([11.19, 5.02], sketch001)
-  |> angledLine([0, 10.78], %, $rectangleSegmentA001)
-  |> angledLine([
-       segAng(rectangleSegmentA001) - 90,
-       4.14
-     ], %)
-  |> angledLine([
-       segAng(rectangleSegmentA001),
-       -segLen(rectangleSegmentA001)
-     ], %)
+  |> angledLine(angle = 0, length = 10.78, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 4.14)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 profile003 = circle(sketch001, center = [6.92, -4.2], radius = 3.16)
@@ -2341,7 +2330,7 @@ profile003 = circle(sketch001, center = [6.92, -4.2], radius = 3.16)
 
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
-      await scene.waitForExecutionDone()
+      await scene.settled(cmdBar)
       await expect(
         page.getByRole('button', { name: 'Start Sketch' })
       ).not.toBeDisabled()
@@ -2422,7 +2411,8 @@ profile003 = circle(sketch001, center = [6.92, -4.2], radius = 3.16)
       await page.addInitScript(async () => {
         localStorage.setItem(
           'persistCode',
-          `sketch001 = startSketchOn(XZ)
+          `@settings(defaultLengthUnit = in)
+sketch001 = startSketchOn(XZ)
 profile001 = startProfileAt([-63.43, 193.08], sketch001)
   |> line(end = [168.52, 149.87])
   |> line(end = [190.29, -39.18])
@@ -2431,15 +2421,9 @@ profile001 = startProfileAt([-63.43, 193.08], sketch001)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 profile003 = startProfileAt([16.79, 38.24], sketch001)
-  |> angledLine([0, 182.82], %, $rectangleSegmentA001)
-  |> angledLine([
-       segAng(rectangleSegmentA001) - 90,
-       105.71
-     ], %)
-  |> angledLine([
-       segAng(rectangleSegmentA001),
-       -segLen(rectangleSegmentA001)
-     ], %)
+  |> angledLine(angle = 0, length = 182.82, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 105.71)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 profile004 = circle(
@@ -2486,7 +2470,11 @@ extrude001 = extrude(profile003, length = 5)
     page,
   }) => {
     await page.addInitScript(async () => {
-      localStorage.setItem('persistCode', `myVar = 5`)
+      localStorage.setItem(
+        'persistCode',
+        `@settings(defaultLengthUnit = in)
+        myVar = 5`
+      )
     })
 
     await page.setBodyDimensions({ width: 1000, height: 500 })
@@ -2533,7 +2521,8 @@ extrude001 = extrude(profile003, length = 5)
       await page.addInitScript(async () => {
         localStorage.setItem(
           'persistCode',
-          `sketch001 = startSketchOn(XZ)
+          `@settings(defaultLengthUnit = in)
+sketch001 = startSketchOn(XZ)
 profile001 = startProfileAt([85.19, 338.59], sketch001)
   |> line(end = [213.3, -94.52])
   |> line(end = [-230.09, -55.34])
@@ -2575,7 +2564,8 @@ profile002 = startProfileAt([85.81, 52.55], sketch002)
       await page.addInitScript(async () => {
         localStorage.setItem(
           'persistCode',
-          `thePart = startSketchOn(XZ)
+          `@settings(defaultLengthUnit = in)
+thePart = startSketchOn(XZ)
   |> startProfileAt([7.53, 10.51], %)
   |> line(end = [12.54, 1.83])
   |> line(end = [6.65, -6.91])
@@ -2636,7 +2626,8 @@ extrude001 = extrude(thePart, length = 75)
       await page.addInitScript(async () => {
         localStorage.setItem(
           'persistCode',
-          `sketch001 = startSketchOn(XZ)
+          `@settings(defaultLengthUnit = in)
+sketch001 = startSketchOn(XZ)
 profile001 = startProfileAt([6.71, -3.66], sketch001)
   |> line(end = [2.65, 9.02], tag = $seg02)
   |> line(end = [3.73, -9.36], tag = $seg01)
@@ -2648,15 +2639,9 @@ profile002 = startProfileAt([0.75, 13.46], sketch002)
   |> line(end = [4.52, 3.79])
   |> line(end = [5.98, -2.81])
 profile003 = startProfileAt([3.19, 13.3], sketch002)
-  |> angledLine([0, 6.64], %, $rectangleSegmentA001)
-  |> angledLine([
-       segAng(rectangleSegmentA001) - 90,
-       2.81
-     ], %)
-  |> angledLine([
-       segAng(rectangleSegmentA001),
-       -segLen(rectangleSegmentA001)
-     ], %)
+  |> angledLine(angle = 0, length = 6.64, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 2.81)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 profile004 = startProfileAt([3.15, 9.39], sketch002)
@@ -2696,15 +2681,9 @@ profile010 = circle(
   radius = 2.67
 )
 profile011 = startProfileAt([5.07, -6.39], sketch003)
-  |> angledLine([0, 4.54], %, $rectangleSegmentA002)
-  |> angledLine([
-       segAng(rectangleSegmentA002) - 90,
-       4.17
-     ], %)
-  |> angledLine([
-       segAng(rectangleSegmentA002),
-       -segLen(rectangleSegmentA002)
-     ], %)
+  |> angledLine(angle = 0, length = 4.54, tag = $rectangleSegmentA002)
+  |> angledLine(angle = segAng(rectangleSegmentA002) - 90, length = 4.17)
+  |> angledLine(angle = segAng(rectangleSegmentA002), length = -segLen(rectangleSegmentA002))
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 extrude003 = extrude(profile011, length = 2.5)
@@ -2809,7 +2788,8 @@ extrude003 = extrude(profile011, length = 2.5)
       await page.addInitScript(async () => {
         localStorage.setItem(
           'persistCode',
-          `sketch001 = startSketchOn(XZ)
+          `@settings(defaultLengthUnit = in)
+sketch001 = startSketchOn(XZ)
 profile001 = startProfileAt([34, 42.66], sketch001)
   |> line(end = [102.65, 151.99])
   |> line(end = [76, -138.66])
@@ -2852,7 +2832,7 @@ loft([profile001, profile002])
       )
       await rect1Crn2()
       await editor.expectEditor.toContain(
-        `angledLine([0, 113.01], %, $rectangleSegmentA001)`
+        `angledLine(angle = 0, length = 113.01, tag = $rectangleSegmentA001)`
       )
     }
   )
@@ -2923,7 +2903,7 @@ loft([profile001, profile002])
     )
     await rect1Crn2()
     await editor.expectEditor.toContain(
-      `angledLine([0, 106.42], %, $rectangleSegmentA001)`
+      `angledLine(angle = 0, length = 106.42], tag = $rectangleSegmentA001)`
     )
     await page.waitForTimeout(100)
   })
@@ -2938,6 +2918,7 @@ test.describe(`Click based selection don't brick the app when clicked out of ran
     toolbar,
     editor,
     homePage,
+    cmdBar,
   }) => {
     // We seed the scene with a single offset plane
     await context.addInitScript(() => {
@@ -2955,7 +2936,7 @@ test.describe(`Click based selection don't brick the app when clicked out of ran
     })
 
     await homePage.goToModelingScene()
-    await scene.waitForExecutionDone()
+    await scene.settled(cmdBar)
 
     await test.step(`format the code`, async () => {
       // doesn't contain condensed version
@@ -3020,6 +3001,7 @@ test.describe('Redirecting to home page and back to the original file should cle
     toolbar,
     editor,
     homePage,
+    cmdBar,
   }) => {
     // We seed the scene with a single offset plane
     await context.addInitScript(() => {
@@ -3032,7 +3014,7 @@ test.describe('Redirecting to home page and back to the original file should cle
       )
     })
     await homePage.goToModelingScene()
-    await scene.waitForExecutionDone()
+    await scene.settled(cmdBar)
 
     const [objClick] = scene.makeMouseHelpers(634, 274)
     await objClick()

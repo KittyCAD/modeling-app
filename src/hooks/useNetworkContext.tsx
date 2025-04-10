@@ -1,11 +1,13 @@
 import { createContext, useContext } from 'react'
+
+import type { NetworkStatus } from '@src/hooks/useNetworkStatus'
+import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
+import type { EngineConnectionState } from '@src/lang/std/engineConnection'
 import {
   ConnectingTypeGroup,
   EngineConnectionStateType,
-  EngineConnectionState,
   initialConnectingTypeGroupState,
-} from '../lang/std/engineConnection'
-import { NetworkStatus, NetworkHealthState } from './useNetworkStatus'
+} from '@src/lang/std/engineConnection'
 
 export const NetworkContext = createContext<NetworkStatus>({
   immediateState: {
@@ -23,7 +25,7 @@ export const NetworkContext = createContext<NetworkStatus>({
   error: undefined,
   setHasCopied: (b: boolean) => {},
   hasCopied: false,
-  pingPongHealth: undefined,
+  ping: undefined,
 } as NetworkStatus)
 export const useNetworkContext = () => {
   return useContext(NetworkContext)

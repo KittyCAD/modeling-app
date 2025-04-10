@@ -1,32 +1,33 @@
-import type * as LSP from 'vscode-languageserver-protocol'
-import React, { createContext, useMemo, useContext, useState } from 'react'
+import type { LanguageSupport } from '@codemirror/language'
+import type { Extension } from '@codemirror/state'
+import type { LanguageServerPlugin } from '@kittycad/codemirror-lsp-client'
 import {
-  LanguageServerClient,
   FromServer,
   IntoServer,
+  LanguageServerClient,
   LspWorkerEventType,
-  LanguageServerPlugin,
 } from '@kittycad/codemirror-lsp-client'
-import { TEST, VITE_KC_API_BASE_URL } from 'env'
-import { kcl } from 'editor/plugins/lsp/kcl/language'
-import { copilotPlugin } from 'editor/plugins/lsp/copilot'
-import { Extension } from '@codemirror/state'
-import { LanguageSupport } from '@codemirror/language'
+import { TEST, VITE_KC_API_BASE_URL } from '@src/env'
+import React, { createContext, useContext, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { PATHS } from 'lib/paths'
-import { FileEntry } from 'lib/project'
-import Worker from 'editor/plugins/lsp/worker.ts?worker'
-import {
-  KclWorkerOptions,
+import type * as LSP from 'vscode-languageserver-protocol'
+
+import { copilotPlugin } from '@src/editor/plugins/lsp/copilot'
+import { kcl } from '@src/editor/plugins/lsp/kcl/language'
+import type {
   CopilotWorkerOptions,
-  LspWorker,
-} from 'editor/plugins/lsp/types'
-import { wasmUrl } from 'lang/wasm'
-import { PROJECT_ENTRYPOINT } from 'lib/constants'
-import { err } from 'lib/trap'
-import { isDesktop } from 'lib/isDesktop'
-import { codeManager } from 'lib/singletons'
-import { useToken } from 'machines/appMachine'
+  KclWorkerOptions,
+} from '@src/editor/plugins/lsp/types'
+import { LspWorker } from '@src/editor/plugins/lsp/types'
+import Worker from '@src/editor/plugins/lsp/worker.ts?worker'
+import { wasmUrl } from '@src/lang/wasm'
+import { PROJECT_ENTRYPOINT } from '@src/lib/constants'
+import { isDesktop } from '@src/lib/isDesktop'
+import { PATHS } from '@src/lib/paths'
+import type { FileEntry } from '@src/lib/project'
+import { codeManager } from '@src/lib/singletons'
+import { err } from '@src/lib/trap'
+import { useToken } from '@src/machines/appMachine'
 
 function getWorkspaceFolders(): LSP.WorkspaceFolder[] {
   return []

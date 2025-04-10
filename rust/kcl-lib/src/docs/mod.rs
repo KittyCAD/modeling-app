@@ -612,7 +612,7 @@ pub fn get_description_string_from_schema(schema: &schemars::schema::RootSchema)
     }
 
     if let Some(reference) = &schema.schema.reference {
-        if let Some(definition) = schema.definitions.get(reference.split('/').last().unwrap_or("")) {
+        if let Some(definition) = schema.definitions.get(reference.split('/').next_back().unwrap_or("")) {
             let schemars::schema::Schema::Object(definition) = definition else {
                 return None;
             };
@@ -658,69 +658,6 @@ pub fn get_description_string_from_schema(schema: &schemars::schema::RootSchema)
     }
 
     None
-}
-
-pub fn cleanup_number_tuples_root(mut schema: schemars::schema::RootSchema) -> schemars::schema::RootSchema {
-    cleanup_number_tuples_object(&mut schema.schema);
-    schema
-}
-
-fn cleanup_number_tuples_object(o: &mut schemars::schema::SchemaObject) {
-    if let Some(object) = &mut o.object {
-        for (_, value) in object.properties.iter_mut() {
-            *value = cleanup_number_tuples(value);
-        }
-    }
-
-    if let Some(array) = &mut o.array {
-        if let Some(items) = &mut array.items {
-            match items {
-                schemars::schema::SingleOrVec::Single(_) => {
-                    // Do nothing since its only a single item.
-                }
-                schemars::schema::SingleOrVec::Vec(items) => {
-                    if items.len() == 2 {
-                        // Get the second item and see if its a NumericType.
-
-                        if let Some(schemars::schema::Schema::Object(obj)) = items.get(1) {
-                            if let Some(reference) = &obj.reference {
-                                if reference == "#/components/schemas/NumericType" {
-                                    // Get the first item.
-                                    if let Some(schemars::schema::Schema::Object(obj2)) = items.first() {
-                                        let mut obj2 = obj2.clone();
-                                        obj2.metadata = o.metadata.clone();
-                                        // Replace the array with the first item.
-                                        *o = obj2;
-                                    }
-                                }
-                            } else if NUMERIC_TYPE_SCHEMA.object == obj.object {
-                                if let Some(schemars::schema::Schema::Object(obj2)) = items.first() {
-                                    let mut obj2 = obj2.clone();
-                                    obj2.metadata = o.metadata.clone();
-                                    // Replace the array with the first item.
-                                    *o = obj2;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
-/// Some numbers will be tuples of 2 where the second type is always "NumericType". We want to
-/// replace these with the first item in the array and not have an array as it messes
-/// with the docs generation which assumes if there is a tuple that you give 2 values not one
-/// in the form of an array.
-fn cleanup_number_tuples(schema: &schemars::schema::Schema) -> schemars::schema::Schema {
-    let mut schema = schema.clone();
-
-    if let schemars::schema::Schema::Object(o) = &mut schema {
-        cleanup_number_tuples_object(o);
-    }
-
-    schema
 }
 
 pub fn is_primitive(schema: &schemars::schema::Schema) -> Result<Option<Primitive>> {
@@ -1000,9 +937,12 @@ mod tests {
 
     #[test]
     fn get_autocomplete_snippet_revolve() {
-        let revolve_fn: Box<dyn StdLibFn> = Box::new(crate::std::revolve::Revolve);
-        let snippet = revolve_fn.to_autocomplete_snippet().unwrap();
-        assert_eq!(snippet, r#"revolve(${0:%}, axis = ${1:"X"})${}"#);
+        let data = kcl_doc::walk_prelude();
+        let DocData::Fn(revolve_fn) = data.into_iter().find(|d| d.name() == "revolve").unwrap() else {
+            panic!();
+        };
+        let snippet = revolve_fn.to_autocomplete_snippet();
+        assert_eq!(snippet, r#"revolve(axis = ${0:X})${}"#);
     }
 
     #[test]
@@ -1015,7 +955,7 @@ mod tests {
         let snippet = circle_fn.to_autocomplete_snippet();
         assert_eq!(
             snippet,
-            r#"circle(${0:%}, center = [${1:3.14}, ${2:3.14}], radius = ${3:3.14})${}"#
+            r#"circle(center = [${0:3.14}, ${1:3.14}], radius = ${2:3.14})${}"#
         );
     }
 
@@ -1089,11 +1029,14 @@ mod tests {
     #[test]
     #[allow(clippy::literal_string_with_formatting_args)]
     fn get_autocomplete_snippet_helix() {
-        let helix_fn: Box<dyn StdLibFn> = Box::new(crate::std::helix::Helix);
-        let snippet = helix_fn.to_autocomplete_snippet().unwrap();
+        let data = kcl_doc::walk_prelude();
+        let DocData::Fn(helix_fn) = data.into_iter().find(|d| d.name() == "helix").unwrap() else {
+            panic!();
+        };
+        let snippet = helix_fn.to_autocomplete_snippet();
         assert_eq!(
             snippet,
-            r#"helix(revolutions = ${0:3.14}, angleStart = ${1:3.14}, radius = ${2:3.14}, axis = ${3:"X"}, length = ${4:3.14})${}"#
+            r#"helix(revolutions = ${0:3.14}, angleStart = ${1:3.14}, radius = ${2:3.14}, axis = ${3:X}, length = ${4:3.14})${}"#
         );
     }
 

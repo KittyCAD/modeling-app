@@ -1,30 +1,17 @@
-import * as path from 'path'
+import type { Stats } from 'fs'
 import * as fs from 'fs/promises'
-import { Stats } from 'fs'
-import { Models } from '@kittycad/lib/dist/types/src'
-import { PROJECT_ENTRYPOINT } from './constants'
+import * as path from 'path'
 
-// Create a const object with the values
-const FILE_IMPORT_FORMATS = {
-  fbx: 'fbx',
-  gltf: 'gltf',
-  obj: 'obj',
-  ply: 'ply',
-  sldprt: 'sldprt',
-  step: 'step',
-  stl: 'stl',
-} as const
+import {
+  NATIVE_FILE_TYPE,
+  PROJECT_ENTRYPOINT,
+  RELEVANT_FILE_TYPES,
+  type RelevantFileType,
+} from '@src/lib/constants'
 
-// Extract the values into an array
-const fileImportFormats: Models['FileImportFormat_type'][] =
-  Object.values(FILE_IMPORT_FORMATS)
-export const allFileImportFormats: string[] = [
-  ...fileImportFormats,
-  'stp',
-  'fbxb',
-  'glb',
-]
-export const relevantExtensions = ['kcl', ...allFileImportFormats]
+const shouldWrapExtension = (extension: string) =>
+  RELEVANT_FILE_TYPES.includes(extension as RelevantFileType) &&
+  extension !== NATIVE_FILE_TYPE
 
 /// Get the current project file from the path.
 /// This is used for double-clicking on a file in the file explorer,
@@ -82,11 +69,14 @@ export default async function getCurrentProjectFile(
   }
 
   // Check if the extension on what we are trying to open is a relevant file type.
-  const extension = path.extname(sourcePath).slice(1)
+  const extension = path.extname(sourcePath).slice(1).toLowerCase()
 
-  if (!relevantExtensions.includes(extension) && extension !== 'toml') {
+  if (
+    !RELEVANT_FILE_TYPES.includes(extension as RelevantFileType) &&
+    extension !== 'toml'
+  ) {
     return new Error(
-      `File type (${extension}) cannot be opened with this app: '${sourcePath}', try opening one of the following file types: ${relevantExtensions.join(
+      `File type (${extension}) cannot be opened with this app: '${sourcePath}', try opening one of the following file types: ${RELEVANT_FILE_TYPES.join(
         ', '
       )}`
     )
@@ -98,7 +88,9 @@ export default async function getCurrentProjectFile(
 
   // If we got an import model file, we need to check if we have a file in the project for
   // this import model.
-  if (allFileImportFormats.includes(extension)) {
+  // TODO: once we have some sort of a load file into project it would make sense to stop creating these wrapper files
+  // and let people save their own kcl file importing
+  if (shouldWrapExtension(extension)) {
     const importFileName = path.basename(sourcePath)
     // Check if we have a file in the project for this import model.
     const kclWrapperFilename = `${importFileName}.kcl`
@@ -114,7 +106,8 @@ export default async function getCurrentProjectFile(
 // But we recommend you keep the import statement as it is.
 // For more information on the import statement, see the documentation at:
 // https://zoo.dev/docs/kcl/import
-const model = import("${importFileName}")`
+import "${importFileName}" as model
+model`
       await fs.writeFile(kclWrapperFilePath, content)
     }
 

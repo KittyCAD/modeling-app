@@ -1,8 +1,10 @@
-import { err } from 'lib/trap'
-import { formatNumber, initPromise, parse, ParseResult } from './wasm'
-import { enginelessExecutor } from 'lib/testHelpers'
-import { Node } from '@rust/kcl-lib/bindings/Node'
-import { Program } from '@rust/kcl-lib/bindings/Program'
+import type { Node } from '@rust/kcl-lib/bindings/Node'
+import type { Program } from '@rust/kcl-lib/bindings/Program'
+
+import type { ParseResult } from '@src/lang/wasm'
+import { formatNumber, initPromise, parse } from '@src/lang/wasm'
+import { enginelessExecutor } from '@src/lib/testHelpers'
+import { err } from '@src/lib/trap'
 
 beforeEach(async () => {
   await initPromise

@@ -52,45 +52,6 @@ async fn cache_test(
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_cache_change_units_changes_output() {
-    let code = r#"part001 = startSketchOn('XY')
-  |> startProfileAt([5.5229, 5.25217], %)
-  |> line(end = [10.50433, -1.19122])
-  |> line(end = [8.01362, -5.48731])
-  |> line(end = [-1.02877, -6.76825])
-  |> line(end = [-11.53311, 2.81559])
-  |> close()
-  |> extrude(length = 4)
-"#;
-
-    let result = cache_test(
-        "change_units_changes_output",
-        vec![
-            Variation {
-                code,
-                settings: &kcl_lib::ExecutorSettings {
-                    units: kcl_lib::UnitLength::In,
-                    ..Default::default()
-                },
-            },
-            Variation {
-                code,
-                settings: &kcl_lib::ExecutorSettings {
-                    units: kcl_lib::UnitLength::Mm,
-                    ..Default::default()
-                },
-            },
-        ],
-    )
-    .await;
-
-    let first = result.first().unwrap();
-    let second = result.last().unwrap();
-
-    assert!(first.1 != second.1);
-}
-
-#[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_cache_change_grid_visualizes_grid_off_to_on() {
     let code = r#"part001 = startSketchOn('XY')
   |> startProfileAt([5.5229, 5.25217], %)
@@ -261,9 +222,7 @@ async fn kcl_test_cache_empty_file_pop_cache_empty_file_planes_work() {
     // Get the current working directory.
     let code = "";
 
-    let ctx = kcl_lib::ExecutorContext::new_with_default_client(Default::default())
-        .await
-        .unwrap();
+    let ctx = kcl_lib::ExecutorContext::new_with_default_client().await.unwrap();
     let program = kcl_lib::Program::parse_no_errs(code).unwrap();
     let outcome = ctx.run_with_caching(program).await.unwrap();
 

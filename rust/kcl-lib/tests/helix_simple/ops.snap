@@ -19,6 +19,9 @@ description: Operations executed helix_simple.kcl
     "unlabeledArg": null
   },
   {
+    "type": "KclStdLibCall",
+    "name": "helix",
+    "unlabeledArg": null,
     "labeledArgs": {
       "angleStart": {
         "value": {
@@ -100,9 +103,6 @@ description: Operations executed helix_simple.kcl
         "sourceRange": []
       }
     },
-    "name": "helix",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": null
+    "sourceRange": []
   }
 ]

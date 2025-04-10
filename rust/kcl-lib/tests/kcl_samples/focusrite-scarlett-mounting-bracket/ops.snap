@@ -4,15 +4,18 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
 ---
 [
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "bracketSketch",
-    "functionSourceRange": [
-      1212,
-      1736,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "bracketSketch",
+      "functionSourceRange": [
+        1207,
+        1731,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
@@ -44,7 +47,8 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
                       "type": "Number",
                       "value": 44.0,
                       "ty": {
-                        "type": "Unknown"
+                        "type": "Known",
+                        "type": "Count"
                       }
                     },
                     "z": {
@@ -207,7 +211,7 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
     "unlabeledArg": null
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
     "labeledArgs": {
@@ -216,7 +220,13 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
           "type": "Number",
           "value": 88.0,
           "ty": {
-            "type": "Unknown"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -489,54 +499,6 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
     "unlabeledArg": null
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "circle",
-    "functionSourceRange": [
-      0,
-      0,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {
-      "center": {
-        "value": {
-          "type": "Array",
-          "value": [
-            {
-              "type": "Number",
-              "value": 82.0,
-              "ty": {
-                "type": "Unknown"
-              }
-            },
-            {
-              "type": "Number",
-              "value": 27.333333333333332,
-              "ty": {
-                "type": "Unknown"
-              }
-            }
-          ]
-        },
-        "sourceRange": []
-      },
-      "radius": {
-        "value": {
-          "type": "Number",
-          "value": 2.5,
-          "ty": {
-            "type": "Unknown"
-          }
-        },
-        "sourceRange": []
-      }
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "UserDefinedFunctionReturn"
-  },
-  {
     "labeledArgs": {
       "holeSketch": {
         "value": {
@@ -601,7 +563,8 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
           "type": "Number",
           "value": 2.5,
           "ty": {
-            "type": "Unknown"
+            "type": "Known",
+            "type": "Count"
           }
         },
         "sourceRange": []
@@ -690,7 +653,8 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
           "type": "Number",
           "value": 54.666666666666664,
           "ty": {
-            "type": "Unknown"
+            "type": "Known",
+            "type": "Count"
           }
         },
         "sourceRange": []
@@ -923,54 +887,6 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
     "unlabeledArg": null
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "circle",
-    "functionSourceRange": [
-      0,
-      0,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {
-      "center": {
-        "value": {
-          "type": "Array",
-          "value": [
-            {
-              "type": "Number",
-              "value": -82.0,
-              "ty": {
-                "type": "Unknown"
-              }
-            },
-            {
-              "type": "Number",
-              "value": 27.333333333333332,
-              "ty": {
-                "type": "Unknown"
-              }
-            }
-          ]
-        },
-        "sourceRange": []
-      },
-      "radius": {
-        "value": {
-          "type": "Number",
-          "value": 2.5,
-          "ty": {
-            "type": "Unknown"
-          }
-        },
-        "sourceRange": []
-      }
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "UserDefinedFunctionReturn"
-  },
-  {
     "labeledArgs": {
       "holeSketch": {
         "value": {
@@ -1035,7 +951,8 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
           "type": "Number",
           "value": 2.5,
           "ty": {
-            "type": "Unknown"
+            "type": "Known",
+            "type": "Count"
           }
         },
         "sourceRange": []
@@ -1124,7 +1041,8 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
           "type": "Number",
           "value": 54.666666666666664,
           "ty": {
-            "type": "Unknown"
+            "type": "Known",
+            "type": "Count"
           }
         },
         "sourceRange": []
@@ -1175,7 +1093,8 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
                       "type": "Number",
                       "value": -52.0,
                       "ty": {
-                        "type": "Unknown"
+                        "type": "Known",
+                        "type": "Count"
                       }
                     },
                     "y": {
@@ -1398,7 +1317,8 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
                       "type": "Number",
                       "value": -52.0,
                       "ty": {
-                        "type": "Unknown"
+                        "type": "Known",
+                        "type": "Count"
                       }
                     },
                     "y": {

@@ -1,26 +1,28 @@
+import type { IconDefinition } from '@fortawesome/free-solid-svg-icons'
 import { Resizable } from 're-resizable'
-import {
-  MouseEventHandler,
-  useCallback,
-  useEffect,
-  useMemo,
-  useContext,
-} from 'react'
+import type { MouseEventHandler } from 'react'
+import { useCallback, useContext, useEffect, useMemo } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
-import { SidebarAction, SidebarType, sidebarPanes } from './ModelingPanes'
-import Tooltip from 'components/Tooltip'
-import { ActionIcon } from 'components/ActionIcon'
-import { ModelingPane } from './ModelingPane'
-import { isDesktop } from 'lib/isDesktop'
-import { useModelingContext } from 'hooks/useModelingContext'
-import { CustomIconName } from 'components/CustomIcon'
-import { IconDefinition } from '@fortawesome/free-solid-svg-icons'
-import { useKclContext } from 'lang/KclProvider'
-import { MachineManagerContext } from 'components/MachineManagerProvider'
-import { onboardingPaths } from 'routes/Onboarding/paths'
-import { SIDEBAR_BUTTON_SUFFIX } from 'lib/constants'
-import { commandBarActor } from 'machines/commandBarMachine'
-import { useSettings } from 'machines/appMachine'
+
+import { ActionIcon } from '@src/components/ActionIcon'
+import type { CustomIconName } from '@src/components/CustomIcon'
+import { MachineManagerContext } from '@src/components/MachineManagerProvider'
+import { ModelingPane } from '@src/components/ModelingSidebar/ModelingPane'
+import type {
+  SidebarAction,
+  SidebarType,
+} from '@src/components/ModelingSidebar/ModelingPanes'
+import { sidebarPanes } from '@src/components/ModelingSidebar/ModelingPanes'
+import Tooltip from '@src/components/Tooltip'
+import { DEV } from '@src/env'
+import { useModelingContext } from '@src/hooks/useModelingContext'
+import { useKclContext } from '@src/lang/KclProvider'
+import { SIDEBAR_BUTTON_SUFFIX } from '@src/lib/constants'
+import { isDesktop } from '@src/lib/isDesktop'
+import { useSettings } from '@src/machines/appMachine'
+import { commandBarActor } from '@src/machines/commandBarMachine'
+import { onboardingPaths } from '@src/routes/Onboarding/paths'
+import { IS_NIGHTLY_OR_DEBUG } from '@src/routes/utils'
 
 interface ModelingSidebarProps {
   paneOpacity: '' | 'opacity-20' | 'opacity-40'
@@ -60,6 +62,31 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
   )
 
   const sidebarActions: SidebarAction[] = [
+    {
+      id: 'insert',
+      title: 'Insert from project file',
+      sidebarName: 'Insert from project file',
+      icon: 'import',
+      keybinding: 'Ctrl + Shift + I',
+      hide: (a) => a.platform === 'web' || !(DEV || IS_NIGHTLY_OR_DEBUG),
+      action: () =>
+        commandBarActor.send({
+          type: 'Find and select command',
+          data: { name: 'Insert', groupId: 'code' },
+        }),
+    },
+    {
+      id: 'share-link',
+      title: 'Create share link',
+      sidebarName: 'Create share link',
+      icon: 'link',
+      keybinding: 'Mod + Alt + S',
+      action: () =>
+        commandBarActor.send({
+          type: 'Find and select command',
+          data: { name: 'share-file-link', groupId: 'code' },
+        }),
+    },
     {
       id: 'export',
       title: 'Export part',
@@ -113,17 +140,20 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
   )
 
   const paneBadgeMap: Record<SidebarType, BadgeInfoComputed> = useMemo(() => {
-    return filteredPanes.reduce((acc, pane) => {
-      if (pane.showBadge) {
-        acc[pane.id] = {
-          value: pane.showBadge.value(paneCallbackProps),
-          onClick: pane.showBadge.onClick,
-          className: pane.showBadge.className,
-          title: pane.showBadge.title,
+    return filteredPanes.reduce(
+      (acc, pane) => {
+        if (pane.showBadge) {
+          acc[pane.id] = {
+            value: pane.showBadge.value(paneCallbackProps),
+            onClick: pane.showBadge.onClick,
+            className: pane.showBadge.className,
+            title: pane.showBadge.title,
+          }
         }
-      }
-      return acc
-    }, {} as Record<SidebarType, BadgeInfoComputed>)
+        return acc
+      },
+      {} as Record<SidebarType, BadgeInfoComputed>
+    )
   }, [paneCallbackProps])
 
   // Clear any hidden panes from the `openPanes` array

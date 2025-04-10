@@ -15,26 +15,26 @@ description: Artifact commands walkie-talkie.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "set_scene_units",
-      "unit": "mm"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
+      "unit": "in"
     }
   },
   {
@@ -195,7 +195,8 @@ description: Artifact commands walkie-talkie.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 1.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -575,7 +576,8 @@ description: Artifact commands walkie-talkie.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -0.0625,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -896,7 +898,8 @@ description: Artifact commands walkie-talkie.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -0.0625,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -1120,7 +1123,8 @@ description: Artifact commands walkie-talkie.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -0.5,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -1242,6 +1246,14 @@ description: Artifact commands walkie-talkie.kcl
       "metalness": 0.0,
       "roughness": 0.0,
       "ambient_occlusion": 0.0
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "set_scene_units",
+      "unit": "in"
     }
   },
   {
@@ -1645,6 +1657,15 @@ description: Artifact commands walkie-talkie.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "set_object_transform",
       "object_id": "[uuid]",
       "transforms": [
@@ -1663,6 +1684,14 @@ description: Artifact commands walkie-talkie.kcl
           "scale": null
         }
       ]
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "set_scene_units",
+      "unit": "in"
     }
   },
   {
@@ -10011,7 +10040,8 @@ description: Artifact commands walkie-talkie.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -0.0625,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -22403,6 +22433,14 @@ description: Artifact commands walkie-talkie.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "set_scene_units",
+      "unit": "in"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "make_plane",
       "origin": {
         "x": 0.0,
@@ -22549,7 +22587,8 @@ description: Artifact commands walkie-talkie.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.05,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -22789,6 +22828,14 @@ description: Artifact commands walkie-talkie.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "set_scene_units",
+      "unit": "in"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "make_plane",
       "origin": {
         "x": 0.0,
@@ -22958,7 +23005,8 @@ description: Artifact commands walkie-talkie.kcl
         "unit": "degrees",
         "value": 360.0
       },
-      "tolerance": 0.0000001
+      "tolerance": 0.0000001,
+      "opposite": "None"
     }
   },
   {
@@ -23269,7 +23317,8 @@ description: Artifact commands walkie-talkie.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.04,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -23611,7 +23660,8 @@ description: Artifact commands walkie-talkie.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.04,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -23953,7 +24003,8 @@ description: Artifact commands walkie-talkie.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.04,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -24319,7 +24370,8 @@ description: Artifact commands walkie-talkie.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.04,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -24533,15 +24585,6 @@ description: Artifact commands walkie-talkie.kcl
           "scale": null
         }
       ]
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
     }
   }
 ]

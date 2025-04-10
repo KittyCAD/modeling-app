@@ -15,14 +15,6 @@ description: Artifact commands poopy-shoe.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "set_scene_units",
-      "unit": "mm"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
       "hidden": true
@@ -346,7 +338,8 @@ description: Artifact commands poopy-shoe.kcl
         "unit": "degrees",
         "value": 90.0
       },
-      "tolerance": 0.0000001
+      "tolerance": 0.0000001,
+      "opposite": "None"
     }
   },
   {
@@ -929,7 +922,8 @@ description: Artifact commands poopy-shoe.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.875,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -1348,7 +1342,8 @@ description: Artifact commands poopy-shoe.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.125,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -1688,7 +1683,8 @@ description: Artifact commands poopy-shoe.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.125,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -2139,7 +2135,8 @@ description: Artifact commands poopy-shoe.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.125,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -2403,7 +2400,8 @@ description: Artifact commands poopy-shoe.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.125,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -2627,7 +2625,8 @@ description: Artifact commands poopy-shoe.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 2.75,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -2884,7 +2883,8 @@ description: Artifact commands poopy-shoe.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -0.125,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {

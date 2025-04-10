@@ -146,7 +146,7 @@ exampleSketch = startSketchOn(XY)
   |> line(end = [-2, 0])
   |> close()
 
-example = revolve(exampleSketch, axis = 'y', angle = 180)
+example = revolve(exampleSketch, axis = Y, angle = 180)
 
 exampleSketch002 = startSketchOn(example, 'end')
   |> startProfileAt([4.5, -5], %)
@@ -177,7 +177,7 @@ exampleSketch = startSketchOn(XY)
 
 example = revolve(
   exampleSketch,
-  axis = 'y',
+  axis = Y,
   angle = 180,
   tagEnd = $end01,
 )

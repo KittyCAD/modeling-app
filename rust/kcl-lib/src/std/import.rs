@@ -116,7 +116,7 @@ pub async fn import(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// are relative to the current project directory.
 ///
 /// Note: The import command currently only works when using the native
-/// Modeling App.
+/// Design Studio.
 ///
 /// ```no_run
 /// model = import("tests/inputs/cube.obj")

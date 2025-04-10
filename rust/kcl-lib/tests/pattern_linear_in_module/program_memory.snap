@@ -1,0 +1,9 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Variables in memory after executing pattern_linear_in_module.kcl
+---
+{
+  "thing": {
+    "type": "Function"
+  }
+}

@@ -1,8 +1,9 @@
-import usePlatform from 'hooks/usePlatform'
-import { OnboardingButtons, kbdClasses } from '.'
-import { onboardingPaths } from 'routes/Onboarding/paths'
-import { hotkeyDisplay } from 'lib/hotkeyWrapper'
-import { COMMAND_PALETTE_HOTKEY } from 'components/CommandBar/CommandBar'
+import { COMMAND_PALETTE_HOTKEY } from '@src/components/CommandBar/CommandBar'
+import usePlatform from '@src/hooks/usePlatform'
+import { hotkeyDisplay } from '@src/lib/hotkeyWrapper'
+import { onboardingPaths } from '@src/routes/Onboarding/paths'
+
+import { OnboardingButtons, kbdClasses } from '@src/routes/Onboarding/utils'
 
 export default function CmdK() {
   const platformName = usePlatform()
@@ -24,7 +25,7 @@ export default function CmdK() {
         </p>
         <p className="my-4">
           We are working on a command bar that will allow you to quickly see and
-          search for any available commands. We are building Zoo Modeling App's
+          search for any available commands. We are building Zoo Design Studio's
           state management system on top of{' '}
           <a
             href="https://xstate.js.org/"

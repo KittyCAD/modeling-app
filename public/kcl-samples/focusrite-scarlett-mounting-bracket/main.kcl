@@ -4,7 +4,7 @@
 // Set units
 @settings(defaultLengthUnit = mm)
 
-// define constants in mm
+// define parameters
 radius = 6.0
 width = 144.0
 length = 80.0
@@ -15,7 +15,7 @@ tabLength = 25
 tabWidth = 12
 tabThk = 4
 
-// define a rectangular shape func
+// Define a rectangular shape func
 fn rectShape(pos, w, l) {
   rr = startSketchOn('xy')
     |> startProfileAt([pos[0] - (w / 2), pos[1] - (l / 2)], %)
@@ -26,7 +26,7 @@ fn rectShape(pos, w, l) {
   return rr
 }
 
-// define the bracket plane
+// Define the bracket plane
 bracketPlane = {
   plane = {
     origin = { x = 0, y = length / 2 + thk, z = 0 },
@@ -36,7 +36,7 @@ bracketPlane = {
   }
 }
 
-// build the bracket sketch around the body
+// Build the bracket sketch around the body
 fn bracketSketch(w, d, t) {
   s = startSketchOn(bracketPlane)
     |> startProfileAt([-w / 2 - t, d + t], %)
@@ -51,7 +51,7 @@ fn bracketSketch(w, d, t) {
   return s
 }
 
-// build the body of the bracket
+// Build the body of the bracket
 bs = bracketSketch(width, depth, thk)
 bracketBody = bs
   |> extrude(length = length + 2 * thk)
@@ -65,7 +65,7 @@ bracketBody = bs
        ],
      )
 
-// define the tab plane
+// Define the tab plane
 tabPlane = {
   plane = {
     origin = { x = 0, y = 0, z = depth + thk },
@@ -75,7 +75,7 @@ tabPlane = {
   }
 }
 
-// build the tabs of the mounting bracket (right side)
+// Build the tabs of the mounting bracket (right side)
 tabsR = startSketchOn(tabPlane)
   |> startProfileAt([width / 2 + thk, length / 2 + thk], %)
   |> line(end = [tabWidth, -tabLength / 3], tag = $edge11)
@@ -99,7 +99,7 @@ tabsR = startSketchOn(tabPlane)
      )
   |> patternLinear3d(axis = [0, -1, 0], instances = 2, distance = length + 2 * thk - (tabLength * 4 / 3))
 
-// build the tabs of the mounting bracket (left side)
+// Build the tabs of the mounting bracket (left side)
 tabsL = startSketchOn(tabPlane)
   |> startProfileAt([-width / 2 - thk, length / 2 + thk], %)
   |> line(end = [-tabWidth, -tabLength / 3], tag = $edge21)
@@ -123,7 +123,7 @@ tabsL = startSketchOn(tabPlane)
      )
   |> patternLinear3d(axis = [0, -1, 0], instances = 2, distance = length + 2 * thk - (tabLength * 4 / 3))
 
-// define a plane for retention bumps
+// Define a plane for retention bumps
 retPlane = {
   plane = {
     origin = { x = -width / 2 + 20, y = 0, z = 0 },
@@ -133,7 +133,7 @@ retPlane = {
   }
 }
 
-// build the retention bump in the front
+// Build the retention bump in the front
 retFront = startSketchOn(retPlane)
   |> startProfileAt([-length / 2 - thk, 0], %)
   |> line(end = [0, thk])
@@ -141,7 +141,7 @@ retFront = startSketchOn(retPlane)
   |> close()
   |> extrude(length = width - 40)
 
-// build the retention bump in the back
+// Build the retention bump in the back
 retBack = startSketchOn(retPlane)
   |> startProfileAt([length / 2 + thk, 0], %)
   |> line(end = [0, thk])

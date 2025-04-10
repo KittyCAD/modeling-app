@@ -1,15 +1,17 @@
-import type { Page, Locator } from '@playwright/test'
-import { expect } from '../zoo-test'
-import { isArray, uuidv4 } from 'lib/utils'
-import { CmdBarFixture } from './cmdBarFixture'
+import type { Locator, Page } from '@playwright/test'
+import { isArray, uuidv4 } from '@src/lib/utils'
+
+import type { CmdBarFixture } from '@e2e/playwright/fixtures/cmdBarFixture'
+
 import {
   closeDebugPanel,
   doAndWaitForImageDiff,
   getPixelRGBs,
+  getUtils,
   openAndClearDebugPanel,
   sendCustomCmd,
-  getUtils,
-} from '../test-utils'
+} from '@e2e/playwright/test-utils'
+import { expect } from '@e2e/playwright/zoo-test'
 
 type MouseParams = {
   pixelDiff?: number
@@ -41,21 +43,15 @@ type DragFromHandler = (
 export class SceneFixture {
   public page: Page
   public streamWrapper!: Locator
-  public loadingIndicator!: Locator
   public networkToggleConnected!: Locator
   public startEditSketchBtn!: Locator
-
-  get exeIndicator() {
-    return this.page
-      .getByTestId('model-state-indicator-execution-done')
-      .or(this.page.getByTestId('model-state-indicator-receive-reliable'))
-  }
 
   constructor(page: Page) {
     this.page = page
     this.streamWrapper = page.getByTestId('stream')
-    this.networkToggleConnected = page.getByTestId('network-toggle-ok')
-    this.loadingIndicator = this.streamWrapper.getByTestId('loading')
+    this.networkToggleConnected = page
+      .getByTestId('network-toggle-ok')
+      .or(page.getByTestId('network-toggle-other'))
     this.startEditSketchBtn = page
       .getByRole('button', { name: 'Start Sketch' })
       .or(page.getByRole('button', { name: 'Edit Sketch' }))
@@ -229,10 +225,6 @@ export class SceneFixture {
     }
   }
 
-  waitForExecutionDone = async () => {
-    await expect(this.exeIndicator).toBeVisible({ timeout: 30000 })
-  }
-
   connectionEstablished = async () => {
     const timeout = 30000
     await expect(this.networkToggleConnected).toBeVisible({ timeout })
@@ -241,6 +233,9 @@ export class SceneFixture {
   settled = async (cmdBar: CmdBarFixture) => {
     const u = await getUtils(this.page)
 
+    await expect(this.startEditSketchBtn).not.toBeDisabled()
+    await expect(this.startEditSketchBtn).toBeVisible()
+
     await cmdBar.openCmdBar()
     await cmdBar.chooseCommand('Settings · app · show debug panel')
     await cmdBar.selectOption({ name: 'on' }).click()
@@ -248,10 +243,6 @@ export class SceneFixture {
     await u.openDebugPanel()
     await u.expectCmdLog('[data-message-type="execution-done"]')
     await u.closeDebugPanel()
-
-    await this.waitForExecutionDone()
-    await expect(this.startEditSketchBtn).not.toBeDisabled()
-    await expect(this.startEditSketchBtn).toBeVisible()
   }
 
   expectPixelColor = async (
@@ -310,7 +301,9 @@ export async function expectPixelColor(
     .toBeTruthy()
     .catch((cause) => {
       throw new Error(
-        `ExpectPixelColor: expecting ${colour} got ${finalValue}`,
+        `ExpectPixelColor: point ${JSON.stringify(
+          coords
+        )} was expecting ${colour} but got ${finalValue}`,
         { cause }
       )
     })

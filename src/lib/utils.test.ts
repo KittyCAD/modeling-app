@@ -1,13 +1,15 @@
+import type { SourceRange } from '@rust/kcl-lib/bindings/SourceRange'
+import { topLevelRange } from '@src/lang/util'
 import {
+  getInVariableCase,
+  hasDigitsLeftOfDecimal,
+  hasLeadingZero,
+  isClockwise,
   isOverlap,
+  onDragNumberCalculation,
   roundOff,
   simulateOnMouseDragMatch,
-  onDragNumberCalculation,
-  hasLeadingZero,
-  hasDigitsLeftOfDecimal,
-  isClockwise,
-} from './utils'
-import { SourceRange, topLevelRange } from '../lang/wasm'
+} from '@src/lib/utils'
 
 describe('testing isOverlapping', () => {
   testBothOrders(topLevelRange(0, 3), topLevelRange(3, 10))
@@ -1305,5 +1307,26 @@ describe('testing isClockwise', () => {
       [10, 0],
     ]
     expect(isClockwise(counterClockwiseTriangle)).toBe(true)
+  })
+})
+
+describe('testing getInVariableCase', () => {
+  it('properly parses cylinder into cylinder', () => {
+    expect(getInVariableCase('cylinder')).toBe('cylinder')
+  })
+  it('properly parses my-ugly_Cased_Part123 into myUglyCasedPart', () => {
+    expect(getInVariableCase('my-ugly_Cased_Part123')).toBe(
+      'myUglyCasedPart123'
+    )
+  })
+  it('properly parses PascalCase into pascalCase', () => {
+    expect(getInVariableCase('PascalCase')).toBe('pascalCase')
+  })
+  it('properly parses my/File/Path into myFilePath', () => {
+    expect(getInVariableCase('my/File/Path')).toBe('myFilePath')
+  })
+  it('properly parses prefixes 1120t74-pipe.step', () => {
+    expect(getInVariableCase('1120t74-pipe')).toBe('m1120T74Pipe')
+    expect(getInVariableCase('1120t74-pipe', 'p')).toBe('p1120T74Pipe')
   })
 })

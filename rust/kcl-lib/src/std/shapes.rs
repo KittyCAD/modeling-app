@@ -25,7 +25,7 @@ use crate::{
 };
 
 /// A sketch surface or a sketch.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(untagged)]
 pub enum SketchOrSurface {
