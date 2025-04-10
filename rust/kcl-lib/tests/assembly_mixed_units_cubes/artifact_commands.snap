@@ -212,7 +212,8 @@ description: Artifact commands assembly_mixed_units_cubes.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 5.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -494,7 +495,8 @@ description: Artifact commands assembly_mixed_units_cubes.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 5.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {

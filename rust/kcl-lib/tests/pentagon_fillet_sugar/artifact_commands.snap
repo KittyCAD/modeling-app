@@ -171,7 +171,8 @@ description: Artifact commands pentagon_fillet_sugar.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 200.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -349,7 +350,8 @@ description: Artifact commands pentagon_fillet_sugar.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 100.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -521,7 +523,8 @@ description: Artifact commands pentagon_fillet_sugar.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 100.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {

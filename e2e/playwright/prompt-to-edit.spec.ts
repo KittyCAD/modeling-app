@@ -51,6 +51,7 @@ test.describe('Prompt-to-edit tests', { tag: '@skipWin' }, () => {
         page,
         scene,
       }) => {
+        test.fixme(orRunWhenFullSuiteEnabled())
         await context.addInitScript((file) => {
           localStorage.setItem('persistCode', file)
         }, file)
@@ -259,6 +260,7 @@ test.describe('Prompt-to-edit tests', { tag: '@skipWin' }, () => {
     page,
     scene,
   }) => {
+    test.fixme(orRunWhenFullSuiteEnabled())
     const body1CapCoords = { x: 571, y: 311 }
     const body2WallCoords = { x: 620, y: 152 }
     const [clickBody1Cap] = scene.makeMouseHelpers(

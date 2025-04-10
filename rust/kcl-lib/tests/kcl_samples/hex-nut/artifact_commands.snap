@@ -315,7 +315,8 @@ description: Artifact commands hex-nut.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.266,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
