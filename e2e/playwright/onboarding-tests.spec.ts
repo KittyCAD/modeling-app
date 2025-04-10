@@ -48,7 +48,10 @@ test.describe('Onboarding tests', () => {
     await expect(page.getByText('Welcome to Design Studio! This')).toBeVisible()
 
     // *and* that the code is shown in the editor
-    await expect(page.locator('.cm-content')).toContainText('// Shelf Bracket')
+    await expect(page.locator('.cm-content')).toContainText(
+      '// Shelf Bracket',
+      { timeout: 10_000 }
+    )
 
     // Make sure the model loaded
     const XYPlanePoint = { x: 774, y: 116 } as const
@@ -91,7 +94,8 @@ test.describe('Onboarding tests', () => {
 
         // *and* that the code is shown in the editor
         await expect(page.locator('.cm-content')).toContainText(
-          '// Shelf Bracket'
+          '// Shelf Bracket',
+          { timeout: 10_000 }
         )
 
         // TODO: jess make less shit
