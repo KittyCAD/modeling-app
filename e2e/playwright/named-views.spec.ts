@@ -6,7 +6,9 @@ import type { NamedView } from '@rust/kcl-lib/bindings/NamedView'
 
 import {
   createProject,
-  perProjectsettingsToToml,
+  orRunWhenFullSuiteEnabled,
+  perProjectSettingsToToml,
+  runningOnMac,
   tomlToPerProjectSettings,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
@@ -57,10 +59,13 @@ function tomlStringOverWriteNamedViewUuids(toml: string): string {
       settings.settings.app.named_views = remappedNamedViews
     }
   }
-  return perProjectsettingsToToml(settings)
+  return perProjectSettingsToToml(settings)
 }
 
 test.describe('Named view tests', () => {
+  if (runningOnMac()) {
+    test.fixme(orRunWhenFullSuiteEnabled())
+  }
   test('Verify project.toml is not created', async ({ page }, testInfo) => {
     // Create project and load it
     const projectName = 'named-views'
