@@ -588,6 +588,7 @@ test(
   'Draft circle should look right',
   { tag: '@snapshot' },
   async ({ page, context, cmdBar, scene }) => {
+    test.fixme(orRunWhenFullSuiteEnabled())
     const u = await getUtils(page)
     await page.setViewportSize({ width: 1200, height: 500 })
     const PUR = 400 / 37.5 //pixeltoUnitRatio
