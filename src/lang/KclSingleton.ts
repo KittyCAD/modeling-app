@@ -654,7 +654,7 @@ export class KclManager {
       // memory with the new ast. So we will hit the mock executor
       // instead..
       const didReParse = await this.executeAstMock(astWithUpdatedSource)
-      if (err(didReParse)) return reject(didReParse)
+      if (err(didReParse)) return Promise.reject(didReParse)
     }
 
     return { selections: returnVal, newAst: astWithUpdatedSource }
