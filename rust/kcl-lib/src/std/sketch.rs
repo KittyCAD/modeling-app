@@ -1788,6 +1788,7 @@ pub async fn tangential_arc(exec_state: &mut ExecState, args: Args) -> Result<Kc
         tag = { docs = "Create a new tag which refers to this arc"},
     }
 }]
+#[allow(clippy::too_many_arguments)]
 async fn inner_tangential_arc(
     sketch: Sketch,
     end_absolute: Option<[f64; 2]>,
@@ -1800,34 +1801,28 @@ async fn inner_tangential_arc(
 ) -> Result<Sketch, KclError> {
     match (end_absolute, end, radius, angle) {
         (Some(point), None, None, None) => {
-            return inner_tangential_arc_to_point(sketch, point, true, tag, exec_state, args).await;
+            inner_tangential_arc_to_point(sketch, point, true, tag, exec_state, args).await
         }
         (None, Some(point), None, None) => {
-            return inner_tangential_arc_to_point(sketch, point, false, tag, exec_state, args).await;
+            inner_tangential_arc_to_point(sketch, point, false, tag, exec_state, args).await
         }
         (None, None, Some(radius), Some(angle)) => {
             let data = TangentialArcData::RadiusAndOffset { radius, offset: angle };
-            return inner_tangential_arc_radius_angle(data, sketch, tag, exec_state, args).await;
+            inner_tangential_arc_radius_angle(data, sketch, tag, exec_state, args).await
         }
-        (Some(_), Some(_), None, None) => {
-            return Err(KclError::Semantic(KclErrorDetails {
-                source_ranges: vec![args.source_range],
-                message: "You cannot give both `end` and `endAbsolute` params, you have to choose one or the other"
-                    .to_owned(),
-            }));
-        }
-        (None, None, Some(_), None) | (None, None, None, Some(_)) => {
-            return Err(KclError::Semantic(KclErrorDetails {
-                source_ranges: vec![args.source_range],
-                message: "You must supply both `radius` and `angle` arguments".to_owned(),
-            }));
-        }
-        (_, _, _, _) => {
-            return Err(KclError::Semantic(KclErrorDetails {
-                source_ranges: vec![args.source_range],
-                message: "You must supply `end`, `endAbsolute`, or both `radius` and `angle` arguments".to_owned(),
-            }));
-        }
+        (Some(_), Some(_), None, None) => Err(KclError::Semantic(KclErrorDetails {
+            source_ranges: vec![args.source_range],
+            message: "You cannot give both `end` and `endAbsolute` params, you have to choose one or the other"
+                .to_owned(),
+        })),
+        (None, None, Some(_), None) | (None, None, None, Some(_)) => Err(KclError::Semantic(KclErrorDetails {
+            source_ranges: vec![args.source_range],
+            message: "You must supply both `radius` and `angle` arguments".to_owned(),
+        })),
+        (_, _, _, _) => Err(KclError::Semantic(KclErrorDetails {
+            source_ranges: vec![args.source_range],
+            message: "You must supply `end`, `endAbsolute`, or both `radius` and `angle` arguments".to_owned(),
+        })),
     }
 }
 
