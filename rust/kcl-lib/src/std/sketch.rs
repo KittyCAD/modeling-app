@@ -1782,7 +1782,7 @@ pub async fn tangential_arc(exec_state: &mut ExecState, args: Args) -> Result<Kc
     args = {
         sketch = { docs = "Which sketch should this path be added to?"},
         end_absolute = { docs = "Which absolute point should this arc go to? Incompatible with `end`, `radius`, and `offset`."},
-        end = { docs = "How far away (along the X and Y axes) should this arc go? Incompatible with `endAbsolute`, `radius`, and `offset`."},
+        end = { docs = "How far away (along the X and Y axes) should this arc go? Incompatible with `endAbsolute`, `radius`, and `offset`.", include_in_snippet = true },
         radius = { docs = "Radius of the imaginary circle. `angle` must be given. Incompatible with `end` and `endAbsolute`."},
         angle = { docs = "Offset of the arc in degrees. `radius` must be given. Incompatible with `end` and `endAbsolute`."},
         tag = { docs = "Create a new tag which refers to this arc"},
