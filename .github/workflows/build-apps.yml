@@ -185,6 +185,9 @@ jobs:
           max_attempts: 3
           command: yarn install
 
+      # The next two steps are from the official Digicert docs, available at
+      # https://docs.digicert.com/en/digicert-keylocker/ci-cd-integrations/scripts/github/scripts-for-signing-using-ksp-library-on-github.html#ksp-signing-using-github-action-488726
+      # EXCEPT the `smksp_registrar.exe register` line
       - name: Prepare certificate and variables (Windows only)
         if: ${{ (env.IS_RELEASE == 'true' || env.IS_NIGHTLY == 'true') && matrix.os == 'windows-2022' }}
         run: |
@@ -206,6 +209,7 @@ jobs:
         run: |
           curl -X GET  https://one.digicert.com/signingmanager/api-ui/v1/releases/Keylockertools-windows-x64.msi/download -H "x-api-key:%SM_API_KEY%" -o Keylockertools-windows-x64.msi
           msiexec /i Keylockertools-windows-x64.msi /quiet /qn
+          smksp_registrar.exe register
           smksp_registrar.exe list
           smctl.exe keypair ls
           C:\Windows\System32\certutil.exe -csp "DigiCert Signing Manager KSP" -key -user
