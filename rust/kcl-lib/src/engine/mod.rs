@@ -342,7 +342,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         self.run_batch(requests, source_range).await
     }
 
-    /// Run the batch for the specifc commands.
+    /// Run the batch for the specific commands.
     async fn run_batch(
         &self,
         orig_requests: Vec<(WebSocketRequest, SourceRange)>,
