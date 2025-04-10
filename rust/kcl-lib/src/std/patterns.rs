@@ -828,11 +828,11 @@ pub async fn pattern_linear_3d(exec_state: &mut ExecState, args: Args) -> Result
 ///     |> close(%)
 ///     |> extrude(length = 65)
 ///
-/// const thing1 = startSketchOn(case, 'end')
+/// const thing1 = startSketchOn(case, END)
 ///     |> circle(center = [-size / 2, -size / 2], radius = 25)
 ///     |> extrude(length = 50)
 ///
-/// const thing2 = startSketchOn(case, 'end')
+/// const thing2 = startSketchOn(case, END)
 ///     |> circle(center = [size / 2, -size / 2], radius = 25)
 ///     |> extrude(length = 50)
 ///
@@ -856,7 +856,7 @@ pub async fn pattern_linear_3d(exec_state: &mut ExecState, args: Args) -> Result
 ///     |> close(%)
 ///     |> extrude(length = 65)
 ///
-/// const thing1 = startSketchOn(case, 'end')
+/// const thing1 = startSketchOn(case, END)
 ///     |> circle(center =[-size / 2, -size / 2], radius = 25)
 ///     |> extrude(length = 50)
 ///

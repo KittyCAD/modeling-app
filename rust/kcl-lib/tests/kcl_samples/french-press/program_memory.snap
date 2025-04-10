@@ -8045,9 +8045,9 @@ description: Variables in memory after executing french-press.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3161,
-            "end": 3166,
-            "start": 3161,
+            "commentStart": 3159,
+            "end": 3164,
+            "start": 3159,
             "type": "TagDeclarator",
             "value": "seg1"
           },
@@ -8115,9 +8115,9 @@ description: Variables in memory after executing french-press.kcl
               1.11
             ],
             "tag": {
-              "commentStart": 3161,
-              "end": 3166,
-              "start": 3161,
+              "commentStart": 3159,
+              "end": 3164,
+              "start": 3159,
               "type": "TagDeclarator",
               "value": "seg1"
             },

@@ -514,9 +514,9 @@ description: Variables in memory after executing router-template-slate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1616,
-            "end": 1637,
-            "start": 1616,
+            "commentStart": 1614,
+            "end": 1635,
+            "start": 1614,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA001"
           },
@@ -527,9 +527,9 @@ description: Variables in memory after executing router-template-slate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1734,
-            "end": 1755,
-            "start": 1734,
+            "commentStart": 1732,
+            "end": 1753,
+            "start": 1732,
             "type": "TagDeclarator",
             "value": "rectangleSegmentB001"
           },
@@ -540,9 +540,9 @@ description: Variables in memory after executing router-template-slate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1857,
-            "end": 1878,
-            "start": 1857,
+            "commentStart": 1855,
+            "end": 1876,
+            "start": 1855,
             "type": "TagDeclarator",
             "value": "rectangleSegmentC001"
           },
@@ -570,9 +570,9 @@ description: Variables in memory after executing router-template-slate.kcl
               -12.4937
             ],
             "tag": {
-              "commentStart": 1616,
-              "end": 1637,
-              "start": 1616,
+              "commentStart": 1614,
+              "end": 1635,
+              "start": 1614,
               "type": "TagDeclarator",
               "value": "rectangleSegmentA001"
             },
@@ -595,9 +595,9 @@ description: Variables in memory after executing router-template-slate.kcl
               -12.4937
             ],
             "tag": {
-              "commentStart": 1734,
-              "end": 1755,
-              "start": 1734,
+              "commentStart": 1732,
+              "end": 1753,
+              "start": 1732,
               "type": "TagDeclarator",
               "value": "rectangleSegmentB001"
             },
@@ -620,9 +620,9 @@ description: Variables in memory after executing router-template-slate.kcl
               -92.4938
             ],
             "tag": {
-              "commentStart": 1857,
-              "end": 1878,
-              "start": 1857,
+              "commentStart": 1855,
+              "end": 1876,
+              "start": 1855,
               "type": "TagDeclarator",
               "value": "rectangleSegmentC001"
             },
@@ -1239,9 +1239,9 @@ description: Variables in memory after executing router-template-slate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2240,
-            "end": 2261,
-            "start": 2240,
+            "commentStart": 2236,
+            "end": 2257,
+            "start": 2236,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA002"
           },
@@ -1283,9 +1283,9 @@ description: Variables in memory after executing router-template-slate.kcl
               -12.4937
             ],
             "tag": {
-              "commentStart": 2240,
-              "end": 2261,
-              "start": 2240,
+              "commentStart": 2236,
+              "end": 2257,
+              "start": 2236,
               "type": "TagDeclarator",
               "value": "rectangleSegmentA002"
             },
@@ -2413,9 +2413,9 @@ description: Variables in memory after executing router-template-slate.kcl
             -12.4937
           ],
           "tag": {
-            "commentStart": 1616,
-            "end": 1637,
-            "start": 1616,
+            "commentStart": 1614,
+            "end": 1635,
+            "start": 1614,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA001"
           },
@@ -2438,9 +2438,9 @@ description: Variables in memory after executing router-template-slate.kcl
             -12.4937
           ],
           "tag": {
-            "commentStart": 1734,
-            "end": 1755,
-            "start": 1734,
+            "commentStart": 1732,
+            "end": 1753,
+            "start": 1732,
             "type": "TagDeclarator",
             "value": "rectangleSegmentB001"
           },
@@ -2463,9 +2463,9 @@ description: Variables in memory after executing router-template-slate.kcl
             -92.4938
           ],
           "tag": {
-            "commentStart": 1857,
-            "end": 1878,
-            "start": 1857,
+            "commentStart": 1855,
+            "end": 1876,
+            "start": 1855,
             "type": "TagDeclarator",
             "value": "rectangleSegmentC001"
           },
@@ -3079,9 +3079,9 @@ description: Variables in memory after executing router-template-slate.kcl
             -12.4937
           ],
           "tag": {
-            "commentStart": 2240,
-            "end": 2261,
-            "start": 2240,
+            "commentStart": 2236,
+            "end": 2257,
+            "start": 2236,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA002"
           },

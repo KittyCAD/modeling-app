@@ -9422,7 +9422,7 @@ description: Operations executed gear.kcl
       "tag": {
         "value": {
           "type": "String",
-          "value": "END"
+          "value": "end"
         },
         "sourceRange": []
       }
