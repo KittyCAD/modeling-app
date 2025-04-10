@@ -46,7 +46,7 @@ jobs:
 
       - name: Download Wasm Cache
         id: download-wasm
-        if: ${{ github.event_name == 'pull_request' && steps.filter.outputs.rust == 'false' }}
+        # if: ${{ github.event_name == 'pull_request' && steps.filter.outputs.rust == 'false' }}
         uses: dawidd6/action-download-artifact@v7
         continue-on-error: true
         with:

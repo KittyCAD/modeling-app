@@ -33,7 +33,6 @@ win:
         - x64
         - arm64
   signtoolOptions:
-    sign: "./scripts/sign-win.js"
     signingHashAlgorithms:
       - sha256
     publisherName: "KittyCAD Inc" # needs to be exactly like on Digicert
