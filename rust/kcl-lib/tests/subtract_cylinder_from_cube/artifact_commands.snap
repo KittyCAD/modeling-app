@@ -463,30 +463,6 @@ description: Artifact commands subtract_cylinder_from_cube.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "set_object_transform",
-      "object_id": "[uuid]",
-      "transforms": [
-        {
-          "translate": {
-            "property": {
-              "x": 0.0,
-              "y": 0.0,
-              "z": 1.0
-            },
-            "set": false,
-            "is_local": true
-          },
-          "rotate_rpy": null,
-          "rotate_angle_axis": null,
-          "scale": null
-        }
-      ]
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
       "type": "boolean_subtract",
       "target_ids": [
         "[uuid]"
