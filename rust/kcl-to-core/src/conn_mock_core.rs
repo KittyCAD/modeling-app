@@ -191,6 +191,7 @@ impl EngineConnection {
                 distance,
                 target,
                 faces: _, // Engine team: start using this once the frontend and engine both use it.
+                opposite: _,
             }) => {
                 format!(
                     r#"
@@ -206,6 +207,7 @@ impl EngineConnection {
                 origin,
                 target,
                 tolerance,
+                opposite: _,
             }) => {
                 let ox = origin.x.0;
                 let oy = origin.y.0;
