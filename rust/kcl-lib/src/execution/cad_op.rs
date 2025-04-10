@@ -3,11 +3,11 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use super::{types::NumericType, ArtifactId, KclValue};
-use crate::{docs::StdLibFn, std::get_stdlib_fn, ModuleId, SourceRange};
+use crate::{docs::StdLibFn, ModuleId, SourceRange};
 
 /// A CAD modeling operation for display in the feature tree, AKA operations
 /// timeline.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export_to = "Operation.ts")]
 #[serde(tag = "type")]
 pub enum Operation {
@@ -60,7 +60,7 @@ impl Operation {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export_to = "Operation.ts")]
 #[serde(tag = "type")]
 #[expect(clippy::large_enum_variant)]
@@ -90,7 +90,7 @@ pub enum Group {
 }
 
 /// An argument to a CAD modeling operation.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export_to = "Operation.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct OpArg {
@@ -110,7 +110,7 @@ impl OpArg {
 
 /// A reference to a standard library function.  This exists to implement
 /// `PartialEq` and `Eq` for `Operation`.
-#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, ts_rs::TS, JsonSchema)]
 #[ts(export_to = "Operation.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct StdLibFnRef {
@@ -156,25 +156,13 @@ where
     serializer.serialize_str(&name)
 }
 
-fn std_lib_fn_from_name<'de, D>(deserializer: D) -> Result<Box<dyn StdLibFn>, D::Error>
-where
-    D: serde::Deserializer<'de>,
-{
-    let s = String::deserialize(deserializer)?;
-    if let Some(std_lib_fn) = get_stdlib_fn(&s) {
-        Ok(std_lib_fn)
-    } else {
-        Err(serde::de::Error::custom(format!("not a KCL stdlib function: {}", s)))
-    }
-}
-
 fn is_false(b: &bool) -> bool {
     !*b
 }
 
 /// A KCL value used in Operations.  `ArtifactId`s are used to refer to the
 /// actual scene objects.  Any data not needed in the UI may be omitted.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export_to = "Operation.ts")]
 #[serde(tag = "type")]
 pub enum OpKclValue {

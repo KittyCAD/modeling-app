@@ -7,7 +7,8 @@ description: Variables in memory after executing makeup-mirror.kcl
     "type": "Number",
     "value": 90.0,
     "ty": {
-      "type": "Unknown"
+      "type": "Known",
+      "type": "Count"
     }
   },
   "archThickness": {
@@ -297,7 +298,13 @@ description: Variables in memory after executing makeup-mirror.kcl
     "type": "Number",
     "value": 24.0,
     "ty": {
-      "type": "Unknown"
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
     }
   },
   "hingePartA1": {
@@ -1168,7 +1175,8 @@ description: Variables in memory after executing makeup-mirror.kcl
     "type": "Number",
     "value": 85.0,
     "ty": {
-      "type": "Unknown"
+      "type": "Known",
+      "type": "Count"
     }
   },
   "mirrorThickness": {

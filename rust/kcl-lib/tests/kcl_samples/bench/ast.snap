@@ -6,19 +6,19 @@ description: Result of parsing bench.kcl
   "Ok": {
     "body": [
       {
-        "commentStart": 394,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 423,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 423,
+            "commentStart": 0,
             "end": 0,
             "name": "benchLength",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 437,
+            "commentStart": 0,
             "end": 0,
             "raw": "56",
             "start": 0,
@@ -42,7 +42,7 @@ description: Result of parsing bench.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 439,
+        "commentStart": 0,
         "end": 0,
         "path": {
           "type": "Kcl",
@@ -58,10 +58,10 @@ description: Result of parsing bench.kcl
           "items": [
             {
               "alias": null,
-              "commentStart": 507,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 507,
+                "commentStart": 0,
                 "end": 0,
                 "name": "dividerThickness",
                 "start": 0,
@@ -77,7 +77,7 @@ description: Result of parsing bench.kcl
         "type": "ImportStatement"
       },
       {
-        "commentStart": 547,
+        "commentStart": 0,
         "end": 0,
         "path": {
           "type": "Kcl",
@@ -88,10 +88,10 @@ description: Result of parsing bench.kcl
           "items": [
             {
               "alias": null,
-              "commentStart": 554,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 554,
+                "commentStart": 0,
                 "end": 0,
                 "name": "divider",
                 "start": 0,
@@ -107,7 +107,7 @@ description: Result of parsing bench.kcl
         "type": "ImportStatement"
       },
       {
-        "commentStart": 585,
+        "commentStart": 0,
         "end": 0,
         "path": {
           "type": "Kcl",
@@ -118,10 +118,10 @@ description: Result of parsing bench.kcl
           "items": [
             {
               "alias": null,
-              "commentStart": 592,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 592,
+                "commentStart": 0,
                 "end": 0,
                 "name": "connector",
                 "start": 0,
@@ -137,7 +137,7 @@ description: Result of parsing bench.kcl
         "type": "ImportStatement"
       },
       {
-        "commentStart": 625,
+        "commentStart": 0,
         "end": 0,
         "path": {
           "type": "Kcl",
@@ -148,10 +148,10 @@ description: Result of parsing bench.kcl
           "items": [
             {
               "alias": null,
-              "commentStart": 632,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 632,
+                "commentStart": 0,
                 "end": 0,
                 "name": "seatSlats",
                 "start": 0,
@@ -167,7 +167,7 @@ description: Result of parsing bench.kcl
         "type": "ImportStatement"
       },
       {
-        "commentStart": 665,
+        "commentStart": 0,
         "end": 0,
         "path": {
           "type": "Kcl",
@@ -178,10 +178,10 @@ description: Result of parsing bench.kcl
           "items": [
             {
               "alias": null,
-              "commentStart": 672,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 672,
+                "commentStart": 0,
                 "end": 0,
                 "name": "backSlats",
                 "start": 0,
@@ -197,7 +197,7 @@ description: Result of parsing bench.kcl
         "type": "ImportStatement"
       },
       {
-        "commentStart": 705,
+        "commentStart": 0,
         "end": 0,
         "path": {
           "type": "Kcl",
@@ -208,10 +208,10 @@ description: Result of parsing bench.kcl
           "items": [
             {
               "alias": null,
-              "commentStart": 712,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 712,
+                "commentStart": 0,
                 "end": 0,
                 "name": "armRest",
                 "start": 0,
@@ -227,16 +227,16 @@ description: Result of parsing bench.kcl
         "type": "ImportStatement"
       },
       {
-        "commentStart": 742,
+        "commentStart": 0,
         "end": 0,
         "expression": {
           "arguments": [
             {
               "abs_path": false,
-              "commentStart": 811,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 811,
+                "commentStart": 0,
                 "end": 0,
                 "name": "YZ",
                 "start": 0,
@@ -250,10 +250,10 @@ description: Result of parsing bench.kcl
           ],
           "callee": {
             "abs_path": false,
-            "commentStart": 803,
+            "commentStart": 0,
             "end": 0,
             "name": {
-              "commentStart": 803,
+              "commentStart": 0,
               "end": 0,
               "name": "divider",
               "start": 0,
@@ -263,7 +263,7 @@ description: Result of parsing bench.kcl
             "start": 0,
             "type": "Name"
           },
-          "commentStart": 803,
+          "commentStart": 0,
           "end": 0,
           "start": 0,
           "type": "CallExpression",
@@ -279,7 +279,7 @@ description: Result of parsing bench.kcl
         "type": "ExpressionStatement"
       },
       {
-        "commentStart": 815,
+        "commentStart": 0,
         "end": 0,
         "expression": {
           "arguments": [
@@ -288,21 +288,21 @@ description: Result of parsing bench.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "commentStart": 840,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "offset",
                     "start": 0,
                     "type": "Identifier"
                   },
                   "arg": {
-                    "commentStart": 849,
+                    "commentStart": 0,
                     "end": 0,
                     "left": {
                       "abs_path": false,
-                      "commentStart": 849,
+                      "commentStart": 0,
                       "end": 0,
                       "name": {
-                        "commentStart": 849,
+                        "commentStart": 0,
                         "end": 0,
                         "name": "benchLength",
                         "start": 0,
@@ -315,7 +315,7 @@ description: Result of parsing bench.kcl
                     },
                     "operator": "/",
                     "right": {
-                      "commentStart": 863,
+                      "commentStart": 0,
                       "end": 0,
                       "raw": "2",
                       "start": 0,
@@ -334,10 +334,10 @@ description: Result of parsing bench.kcl
               ],
               "callee": {
                 "abs_path": false,
-                "commentStart": 823,
+                "commentStart": 0,
                 "end": 0,
                 "name": {
-                  "commentStart": 823,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "offsetPlane",
                   "start": 0,
@@ -347,7 +347,7 @@ description: Result of parsing bench.kcl
                 "start": 0,
                 "type": "Name"
               },
-              "commentStart": 823,
+              "commentStart": 0,
               "end": 0,
               "start": 0,
               "type": "CallExpressionKw",
@@ -355,10 +355,10 @@ description: Result of parsing bench.kcl
               "unlabeled": {
                 "argument": {
                   "abs_path": false,
-                  "commentStart": 836,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 836,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "YZ",
                     "start": 0,
@@ -369,7 +369,7 @@ description: Result of parsing bench.kcl
                   "type": "Name",
                   "type": "Name"
                 },
-                "commentStart": 835,
+                "commentStart": 0,
                 "end": 0,
                 "operator": "-",
                 "start": 0,
@@ -380,10 +380,10 @@ description: Result of parsing bench.kcl
           ],
           "callee": {
             "abs_path": false,
-            "commentStart": 815,
+            "commentStart": 0,
             "end": 0,
             "name": {
-              "commentStart": 815,
+              "commentStart": 0,
               "end": 0,
               "name": "divider",
               "start": 0,
@@ -393,7 +393,7 @@ description: Result of parsing bench.kcl
             "start": 0,
             "type": "Name"
           },
-          "commentStart": 815,
+          "commentStart": 0,
           "end": 0,
           "start": 0,
           "type": "CallExpression",
@@ -404,7 +404,7 @@ description: Result of parsing bench.kcl
         "type": "ExpressionStatement"
       },
       {
-        "commentStart": 867,
+        "commentStart": 0,
         "end": 0,
         "expression": {
           "arguments": [
@@ -413,21 +413,21 @@ description: Result of parsing bench.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "commentStart": 891,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "offset",
                     "start": 0,
                     "type": "Identifier"
                   },
                   "arg": {
-                    "commentStart": 900,
+                    "commentStart": 0,
                     "end": 0,
                     "left": {
                       "abs_path": false,
-                      "commentStart": 900,
+                      "commentStart": 0,
                       "end": 0,
                       "name": {
-                        "commentStart": 900,
+                        "commentStart": 0,
                         "end": 0,
                         "name": "benchLength",
                         "start": 0,
@@ -440,7 +440,7 @@ description: Result of parsing bench.kcl
                     },
                     "operator": "/",
                     "right": {
-                      "commentStart": 914,
+                      "commentStart": 0,
                       "end": 0,
                       "raw": "2",
                       "start": 0,
@@ -459,10 +459,10 @@ description: Result of parsing bench.kcl
               ],
               "callee": {
                 "abs_path": false,
-                "commentStart": 875,
+                "commentStart": 0,
                 "end": 0,
                 "name": {
-                  "commentStart": 875,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "offsetPlane",
                   "start": 0,
@@ -472,17 +472,17 @@ description: Result of parsing bench.kcl
                 "start": 0,
                 "type": "Name"
               },
-              "commentStart": 875,
+              "commentStart": 0,
               "end": 0,
               "start": 0,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
               "unlabeled": {
                 "abs_path": false,
-                "commentStart": 887,
+                "commentStart": 0,
                 "end": 0,
                 "name": {
-                  "commentStart": 887,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "YZ",
                   "start": 0,
@@ -497,10 +497,10 @@ description: Result of parsing bench.kcl
           ],
           "callee": {
             "abs_path": false,
-            "commentStart": 867,
+            "commentStart": 0,
             "end": 0,
             "name": {
-              "commentStart": 867,
+              "commentStart": 0,
               "end": 0,
               "name": "divider",
               "start": 0,
@@ -510,7 +510,7 @@ description: Result of parsing bench.kcl
             "start": 0,
             "type": "Name"
           },
-          "commentStart": 867,
+          "commentStart": 0,
           "end": 0,
           "start": 0,
           "type": "CallExpression",
@@ -521,7 +521,7 @@ description: Result of parsing bench.kcl
         "type": "ExpressionStatement"
       },
       {
-        "commentStart": 917,
+        "commentStart": 0,
         "end": 0,
         "expression": {
           "arguments": [
@@ -530,22 +530,22 @@ description: Result of parsing bench.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "commentStart": 991,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "offset",
                     "start": 0,
                     "type": "Identifier"
                   },
                   "arg": {
-                    "commentStart": 1000,
+                    "commentStart": 0,
                     "end": 0,
                     "left": {
                       "argument": {
                         "abs_path": false,
-                        "commentStart": 1001,
+                        "commentStart": 0,
                         "end": 0,
                         "name": {
-                          "commentStart": 1001,
+                          "commentStart": 0,
                           "end": 0,
                           "name": "benchLength",
                           "start": 0,
@@ -556,7 +556,7 @@ description: Result of parsing bench.kcl
                         "type": "Name",
                         "type": "Name"
                       },
-                      "commentStart": 1000,
+                      "commentStart": 0,
                       "end": 0,
                       "operator": "-",
                       "start": 0,
@@ -565,7 +565,7 @@ description: Result of parsing bench.kcl
                     },
                     "operator": "/",
                     "right": {
-                      "commentStart": 1015,
+                      "commentStart": 0,
                       "end": 0,
                       "raw": "2",
                       "start": 0,
@@ -584,10 +584,10 @@ description: Result of parsing bench.kcl
               ],
               "callee": {
                 "abs_path": false,
-                "commentStart": 975,
+                "commentStart": 0,
                 "end": 0,
                 "name": {
-                  "commentStart": 975,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "offsetPlane",
                   "start": 0,
@@ -597,17 +597,17 @@ description: Result of parsing bench.kcl
                 "start": 0,
                 "type": "Name"
               },
-              "commentStart": 975,
+              "commentStart": 0,
               "end": 0,
               "start": 0,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
               "unlabeled": {
                 "abs_path": false,
-                "commentStart": 987,
+                "commentStart": 0,
                 "end": 0,
                 "name": {
-                  "commentStart": 987,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "YZ",
                   "start": 0,
@@ -621,10 +621,10 @@ description: Result of parsing bench.kcl
             },
             {
               "abs_path": false,
-              "commentStart": 1019,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 1019,
+                "commentStart": 0,
                 "end": 0,
                 "name": "benchLength",
                 "start": 0,
@@ -638,10 +638,10 @@ description: Result of parsing bench.kcl
           ],
           "callee": {
             "abs_path": false,
-            "commentStart": 965,
+            "commentStart": 0,
             "end": 0,
             "name": {
-              "commentStart": 965,
+              "commentStart": 0,
               "end": 0,
               "name": "connector",
               "start": 0,
@@ -651,7 +651,7 @@ description: Result of parsing bench.kcl
             "start": 0,
             "type": "Name"
           },
-          "commentStart": 965,
+          "commentStart": 0,
           "end": 0,
           "start": 0,
           "type": "CallExpression",
@@ -667,7 +667,7 @@ description: Result of parsing bench.kcl
         "type": "ExpressionStatement"
       },
       {
-        "commentStart": 1031,
+        "commentStart": 0,
         "end": 0,
         "expression": {
           "arguments": [
@@ -676,25 +676,25 @@ description: Result of parsing bench.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "commentStart": 1084,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "offset",
                     "start": 0,
                     "type": "Identifier"
                   },
                   "arg": {
-                    "commentStart": 1093,
+                    "commentStart": 0,
                     "end": 0,
                     "left": {
-                      "commentStart": 1093,
+                      "commentStart": 0,
                       "end": 0,
                       "left": {
                         "argument": {
                           "abs_path": false,
-                          "commentStart": 1094,
+                          "commentStart": 0,
                           "end": 0,
                           "name": {
-                            "commentStart": 1094,
+                            "commentStart": 0,
                             "end": 0,
                             "name": "benchLength",
                             "start": 0,
@@ -705,7 +705,7 @@ description: Result of parsing bench.kcl
                           "type": "Name",
                           "type": "Name"
                         },
-                        "commentStart": 1093,
+                        "commentStart": 0,
                         "end": 0,
                         "operator": "-",
                         "start": 0,
@@ -714,7 +714,7 @@ description: Result of parsing bench.kcl
                       },
                       "operator": "/",
                       "right": {
-                        "commentStart": 1108,
+                        "commentStart": 0,
                         "end": 0,
                         "raw": "2",
                         "start": 0,
@@ -731,14 +731,14 @@ description: Result of parsing bench.kcl
                     },
                     "operator": "-",
                     "right": {
-                      "commentStart": 1113,
+                      "commentStart": 0,
                       "end": 0,
                       "left": {
                         "abs_path": false,
-                        "commentStart": 1113,
+                        "commentStart": 0,
                         "end": 0,
                         "name": {
-                          "commentStart": 1113,
+                          "commentStart": 0,
                           "end": 0,
                           "name": "dividerThickness",
                           "start": 0,
@@ -751,7 +751,7 @@ description: Result of parsing bench.kcl
                       },
                       "operator": "/",
                       "right": {
-                        "commentStart": 1132,
+                        "commentStart": 0,
                         "end": 0,
                         "raw": "2",
                         "start": 0,
@@ -774,10 +774,10 @@ description: Result of parsing bench.kcl
               ],
               "callee": {
                 "abs_path": false,
-                "commentStart": 1068,
+                "commentStart": 0,
                 "end": 0,
                 "name": {
-                  "commentStart": 1068,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "offsetPlane",
                   "start": 0,
@@ -787,17 +787,17 @@ description: Result of parsing bench.kcl
                 "start": 0,
                 "type": "Name"
               },
-              "commentStart": 1068,
+              "commentStart": 0,
               "end": 0,
               "start": 0,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
               "unlabeled": {
                 "abs_path": false,
-                "commentStart": 1080,
+                "commentStart": 0,
                 "end": 0,
                 "name": {
-                  "commentStart": 1080,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "YZ",
                   "start": 0,
@@ -810,14 +810,14 @@ description: Result of parsing bench.kcl
               }
             },
             {
-              "commentStart": 1137,
+              "commentStart": 0,
               "end": 0,
               "left": {
                 "abs_path": false,
-                "commentStart": 1137,
+                "commentStart": 0,
                 "end": 0,
                 "name": {
-                  "commentStart": 1137,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "benchLength",
                   "start": 0,
@@ -831,10 +831,10 @@ description: Result of parsing bench.kcl
               "operator": "+",
               "right": {
                 "abs_path": false,
-                "commentStart": 1151,
+                "commentStart": 0,
                 "end": 0,
                 "name": {
-                  "commentStart": 1151,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "dividerThickness",
                   "start": 0,
@@ -852,10 +852,10 @@ description: Result of parsing bench.kcl
           ],
           "callee": {
             "abs_path": false,
-            "commentStart": 1058,
+            "commentStart": 0,
             "end": 0,
             "name": {
-              "commentStart": 1058,
+              "commentStart": 0,
               "end": 0,
               "name": "seatSlats",
               "start": 0,
@@ -865,7 +865,7 @@ description: Result of parsing bench.kcl
             "start": 0,
             "type": "Name"
           },
-          "commentStart": 1058,
+          "commentStart": 0,
           "end": 0,
           "start": 0,
           "type": "CallExpression",
@@ -881,7 +881,7 @@ description: Result of parsing bench.kcl
         "type": "ExpressionStatement"
       },
       {
-        "commentStart": 1168,
+        "commentStart": 0,
         "end": 0,
         "expression": {
           "arguments": [
@@ -890,25 +890,25 @@ description: Result of parsing bench.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "commentStart": 1221,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "offset",
                     "start": 0,
                     "type": "Identifier"
                   },
                   "arg": {
-                    "commentStart": 1230,
+                    "commentStart": 0,
                     "end": 0,
                     "left": {
-                      "commentStart": 1230,
+                      "commentStart": 0,
                       "end": 0,
                       "left": {
                         "argument": {
                           "abs_path": false,
-                          "commentStart": 1231,
+                          "commentStart": 0,
                           "end": 0,
                           "name": {
-                            "commentStart": 1231,
+                            "commentStart": 0,
                             "end": 0,
                             "name": "benchLength",
                             "start": 0,
@@ -919,7 +919,7 @@ description: Result of parsing bench.kcl
                           "type": "Name",
                           "type": "Name"
                         },
-                        "commentStart": 1230,
+                        "commentStart": 0,
                         "end": 0,
                         "operator": "-",
                         "start": 0,
@@ -928,7 +928,7 @@ description: Result of parsing bench.kcl
                       },
                       "operator": "/",
                       "right": {
-                        "commentStart": 1245,
+                        "commentStart": 0,
                         "end": 0,
                         "raw": "2",
                         "start": 0,
@@ -945,14 +945,14 @@ description: Result of parsing bench.kcl
                     },
                     "operator": "-",
                     "right": {
-                      "commentStart": 1250,
+                      "commentStart": 0,
                       "end": 0,
                       "left": {
                         "abs_path": false,
-                        "commentStart": 1250,
+                        "commentStart": 0,
                         "end": 0,
                         "name": {
-                          "commentStart": 1250,
+                          "commentStart": 0,
                           "end": 0,
                           "name": "dividerThickness",
                           "start": 0,
@@ -965,7 +965,7 @@ description: Result of parsing bench.kcl
                       },
                       "operator": "/",
                       "right": {
-                        "commentStart": 1269,
+                        "commentStart": 0,
                         "end": 0,
                         "raw": "2",
                         "start": 0,
@@ -988,10 +988,10 @@ description: Result of parsing bench.kcl
               ],
               "callee": {
                 "abs_path": false,
-                "commentStart": 1205,
+                "commentStart": 0,
                 "end": 0,
                 "name": {
-                  "commentStart": 1205,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "offsetPlane",
                   "start": 0,
@@ -1001,17 +1001,17 @@ description: Result of parsing bench.kcl
                 "start": 0,
                 "type": "Name"
               },
-              "commentStart": 1205,
+              "commentStart": 0,
               "end": 0,
               "start": 0,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
               "unlabeled": {
                 "abs_path": false,
-                "commentStart": 1217,
+                "commentStart": 0,
                 "end": 0,
                 "name": {
-                  "commentStart": 1217,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "YZ",
                   "start": 0,
@@ -1024,14 +1024,14 @@ description: Result of parsing bench.kcl
               }
             },
             {
-              "commentStart": 1274,
+              "commentStart": 0,
               "end": 0,
               "left": {
                 "abs_path": false,
-                "commentStart": 1274,
+                "commentStart": 0,
                 "end": 0,
                 "name": {
-                  "commentStart": 1274,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "benchLength",
                   "start": 0,
@@ -1045,10 +1045,10 @@ description: Result of parsing bench.kcl
               "operator": "+",
               "right": {
                 "abs_path": false,
-                "commentStart": 1288,
+                "commentStart": 0,
                 "end": 0,
                 "name": {
-                  "commentStart": 1288,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "dividerThickness",
                   "start": 0,
@@ -1066,10 +1066,10 @@ description: Result of parsing bench.kcl
           ],
           "callee": {
             "abs_path": false,
-            "commentStart": 1195,
+            "commentStart": 0,
             "end": 0,
             "name": {
-              "commentStart": 1195,
+              "commentStart": 0,
               "end": 0,
               "name": "backSlats",
               "start": 0,
@@ -1079,7 +1079,7 @@ description: Result of parsing bench.kcl
             "start": 0,
             "type": "Name"
           },
-          "commentStart": 1195,
+          "commentStart": 0,
           "end": 0,
           "start": 0,
           "type": "CallExpression",
@@ -1095,17 +1095,17 @@ description: Result of parsing bench.kcl
         "type": "ExpressionStatement"
       },
       {
-        "commentStart": 1305,
+        "commentStart": 0,
         "end": 0,
         "expression": {
           "arguments": [
             {
               "argument": {
                 "abs_path": false,
-                "commentStart": 1340,
+                "commentStart": 0,
                 "end": 0,
                 "name": {
-                  "commentStart": 1340,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "YZ",
                   "start": 0,
@@ -1116,7 +1116,7 @@ description: Result of parsing bench.kcl
                 "type": "Name",
                 "type": "Name"
               },
-              "commentStart": 1339,
+              "commentStart": 0,
               "end": 0,
               "operator": "-",
               "start": 0,
@@ -1124,14 +1124,14 @@ description: Result of parsing bench.kcl
               "type": "UnaryExpression"
             },
             {
-              "commentStart": 1344,
+              "commentStart": 0,
               "end": 0,
               "left": {
                 "abs_path": false,
-                "commentStart": 1344,
+                "commentStart": 0,
                 "end": 0,
                 "name": {
-                  "commentStart": 1344,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "benchLength",
                   "start": 0,
@@ -1144,7 +1144,7 @@ description: Result of parsing bench.kcl
               },
               "operator": "/",
               "right": {
-                "commentStart": 1358,
+                "commentStart": 0,
                 "end": 0,
                 "raw": "2",
                 "start": 0,
@@ -1162,10 +1162,10 @@ description: Result of parsing bench.kcl
           ],
           "callee": {
             "abs_path": false,
-            "commentStart": 1331,
+            "commentStart": 0,
             "end": 0,
             "name": {
-              "commentStart": 1331,
+              "commentStart": 0,
               "end": 0,
               "name": "armRest",
               "start": 0,
@@ -1175,7 +1175,7 @@ description: Result of parsing bench.kcl
             "start": 0,
             "type": "Name"
           },
-          "commentStart": 1331,
+          "commentStart": 0,
           "end": 0,
           "start": 0,
           "type": "CallExpression",
@@ -1191,17 +1191,17 @@ description: Result of parsing bench.kcl
         "type": "ExpressionStatement"
       },
       {
-        "commentStart": 1361,
+        "commentStart": 0,
         "end": 0,
         "expression": {
           "arguments": [
             {
               "argument": {
                 "abs_path": false,
-                "commentStart": 1370,
+                "commentStart": 0,
                 "end": 0,
                 "name": {
-                  "commentStart": 1370,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "YZ",
                   "start": 0,
@@ -1212,7 +1212,7 @@ description: Result of parsing bench.kcl
                 "type": "Name",
                 "type": "Name"
               },
-              "commentStart": 1369,
+              "commentStart": 0,
               "end": 0,
               "operator": "-",
               "start": 0,
@@ -1220,15 +1220,15 @@ description: Result of parsing bench.kcl
               "type": "UnaryExpression"
             },
             {
-              "commentStart": 1374,
+              "commentStart": 0,
               "end": 0,
               "left": {
                 "argument": {
                   "abs_path": false,
-                  "commentStart": 1375,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1375,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "benchLength",
                     "start": 0,
@@ -1239,7 +1239,7 @@ description: Result of parsing bench.kcl
                   "type": "Name",
                   "type": "Name"
                 },
-                "commentStart": 1374,
+                "commentStart": 0,
                 "end": 0,
                 "operator": "-",
                 "start": 0,
@@ -1248,7 +1248,7 @@ description: Result of parsing bench.kcl
               },
               "operator": "/",
               "right": {
-                "commentStart": 1389,
+                "commentStart": 0,
                 "end": 0,
                 "raw": "2",
                 "start": 0,
@@ -1266,10 +1266,10 @@ description: Result of parsing bench.kcl
           ],
           "callee": {
             "abs_path": false,
-            "commentStart": 1361,
+            "commentStart": 0,
             "end": 0,
             "name": {
-              "commentStart": 1361,
+              "commentStart": 0,
               "end": 0,
               "name": "armRest",
               "start": 0,
@@ -1279,7 +1279,7 @@ description: Result of parsing bench.kcl
             "start": 0,
             "type": "Name"
           },
-          "commentStart": 1361,
+          "commentStart": 0,
           "end": 0,
           "start": 0,
           "type": "CallExpression",
@@ -1297,7 +1297,7 @@ description: Result of parsing bench.kcl
         "commentStart": 0,
         "end": 0,
         "name": {
-          "commentStart": 362,
+          "commentStart": 0,
           "end": 0,
           "name": "settings",
           "start": 0,
@@ -1312,10 +1312,10 @@ description: Result of parsing bench.kcl
         ],
         "properties": [
           {
-            "commentStart": 371,
+            "commentStart": 0,
             "end": 0,
             "key": {
-              "commentStart": 371,
+              "commentStart": 0,
               "end": 0,
               "name": "defaultLengthUnit",
               "start": 0,
@@ -1325,10 +1325,10 @@ description: Result of parsing bench.kcl
             "type": "ObjectProperty",
             "value": {
               "abs_path": false,
-              "commentStart": 391,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 391,
+                "commentStart": 0,
                 "end": 0,
                 "name": "mm",
                 "start": 0,
@@ -1349,7 +1349,7 @@ description: Result of parsing bench.kcl
       "nonCodeNodes": {},
       "startNodes": [
         {
-          "commentStart": 394,
+          "commentStart": 0,
           "end": 0,
           "start": 0,
           "type": "NonCodeNode",

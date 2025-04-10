@@ -25,7 +25,13 @@ description: Operations executed sheet-metal-bracket.kcl
           "type": "Number",
           "value": 5.5,
           "ty": {
-            "type": "Unknown"
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -51,7 +57,8 @@ description: Operations executed sheet-metal-bracket.kcl
           "type": "Number",
           "value": 0.5,
           "ty": {
-            "type": "Unknown"
+            "type": "Known",
+            "type": "Count"
           }
         },
         "sourceRange": []

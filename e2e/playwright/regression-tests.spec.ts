@@ -68,15 +68,9 @@ test.describe('Regression tests', { tag: ['@skipWin'] }, () => {
         'persistCode',
         `sketch001 = startSketchOn(XY)
   |> startProfileAt([82.33, 238.21], %)
-  |> angledLine([0, 288.63], %, $rectangleSegmentA001)
-  |> angledLine([
-       segAng(rectangleSegmentA001) - 90,
-       197.97
-     ], %, $rectangleSegmentB001)
-  |> angledLine([
-       segAng(rectangleSegmentA001),
-       -segLen(rectangleSegmentA001)
-     ], %, $rectangleSegmentC001)
+  |> angledLine(angle = 0, length = 288.63, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 197.97, tag = $rectangleSegmentB001)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $rectangleSegmentC001)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 extrude001 = extrude(sketch001, length = 50)
@@ -257,7 +251,7 @@ extrude001 = extrude(sketch001, length = 50)
           'persistCode',
           `exampleSketch = startSketchOn("XZ")
       |> startProfileAt([0, 0], %)
-      |> angledLine({ angle: 50, length: 45 }, %)
+      |> angledLine(angle = 50, length = 45 )
       |> yLine(endAbsolute = 0)
       |> close()
       |>
@@ -313,7 +307,7 @@ extrude001 = extrude(sketch001, length = 50)
       await expect(page.locator('.cm-content'))
         .toContainText(`exampleSketch = startSketchOn("XZ")
       |> startProfileAt([0, 0], %)
-      |> angledLine({ angle: 50, length: 45 }, %)
+      |> angledLine(angle = 50, length = 45 )
       |> yLine(endAbsolute = 0)
       |> close()
 
@@ -334,15 +328,9 @@ extrude001 = extrude(sketch001, length = 50)
             `@settings(defaultLengthUnit = mm)
 sketch002 = startSketchOn(XY)
 profile002 = startProfileAt([72.24, -52.05], sketch002)
-  |> angledLine([0, 181.26], %, $rectangleSegmentA001)
-  |> angledLine([
-       segAng(rectangleSegmentA001) - 90,
-       21.54
-     ], %)
-  |> angledLine([
-       segAng(rectangleSegmentA001),
-       -segLen(rectangleSegmentA001)
-     ], %)
+  |> angledLine(angle = 0, length = 181.26, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 21.54)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 extrude002 = extrude(profile002, length = 150)
@@ -689,6 +677,7 @@ extrude002 = extrude(profile002, length = 150)
     homePage,
     scene,
     toolbar,
+    viewport,
   }) => {
     await context.folderSetupFn(async (dir) => {
       const legoDir = path.join(dir, 'lego')
@@ -703,8 +692,8 @@ extrude002 = extrude(profile002, length = 150)
       await homePage.openProject('lego')
       await toolbar.closePane('code')
     })
-    await test.step(`Waiting for the loading spinner to disappear`, async () => {
-      await scene.loadingIndicator.waitFor({ state: 'detached' })
+    await test.step(`Waiting for scene to settle`, async () => {
+      await scene.connectionEstablished()
     })
     await test.step(`The part should start loading quickly, not waiting until execution is complete`, async () => {
       // TODO: use the viewport size to pick the center point, but the `viewport` fixture's values were wrong.
@@ -762,7 +751,7 @@ plane002 = offsetPlane(XZ, offset = -2 * x)`
       )
     })
     await homePage.openProject('test-sample')
-    await scene.waitForExecutionDone()
+    await scene.settled(cmdBar)
     await expect(toolbar.startSketchBtn).toBeEnabled({ timeout: 20_000 })
     const operationButton = await toolbar.getFeatureTreeOperation(
       'Offset Plane',

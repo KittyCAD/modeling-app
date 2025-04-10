@@ -709,7 +709,7 @@ fn add_to_types(
         return Err(anyhow::anyhow!("Empty type name"));
     }
 
-    if DECLARED_TYPES.contains(&name) {
+    if DECLARED_TYPES.contains(&name) || name == "TyF64" {
         return Ok(());
     }
 
@@ -769,7 +769,7 @@ fn generate_type(
     }
 
     // Skip over TagDeclarator and TagIdentifier since they have custom docs.
-    if name == "TagDeclarator" || name == "TagIdentifier" || name == "TagNode" {
+    if name == "TagDeclarator" || name == "TagIdentifier" || name == "TagNode" || name == "TyF64" {
         return Ok(());
     }
 
@@ -930,7 +930,7 @@ fn recurse_and_create_references(
     schema: &schemars::schema::Schema,
     types: &BTreeMap<String, schemars::schema::Schema>,
 ) -> Result<schemars::schema::Schema> {
-    if DECLARED_TYPES.contains(&name) {
+    if DECLARED_TYPES.contains(&name) || name == "TyF64" {
         return Ok(schema.clone());
     }
 
@@ -944,7 +944,7 @@ fn recurse_and_create_references(
     if let Some(reference) = &o.reference {
         let mut obj = o.clone();
         let reference = reference.trim_start_matches("#/components/schemas/");
-        if DECLARED_TYPES.contains(&reference) {
+        if DECLARED_TYPES.contains(&reference) || reference == "TyF64" {
             return Ok(schema.clone());
         }
 

@@ -3425,14 +3425,16 @@ description: Variables in memory after executing ball-bearing.kcl
     "type": "Number",
     "value": 0.0313,
     "ty": {
-      "type": "Unknown"
+      "type": "Known",
+      "type": "Count"
     }
   },
   "chainWidth": {
     "type": "Number",
     "value": 0.125,
     "ty": {
-      "type": "Unknown"
+      "type": "Known",
+      "type": "Count"
     }
   },
   "insideWall": {
@@ -3631,7 +3633,8 @@ description: Variables in memory after executing ball-bearing.kcl
     "type": "Number",
     "value": 0.0625,
     "ty": {
-      "type": "Unknown"
+      "type": "Known",
+      "type": "Count"
     }
   },
   "linkRevolve": {

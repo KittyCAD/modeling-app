@@ -28,7 +28,7 @@ description: Operations executed rotate_after_fillet.kcl
       "name": "bolt",
       "functionSourceRange": [
         264,
-        1573,
+        1553,
         0
       ],
       "unlabeledArg": null,
@@ -163,7 +163,13 @@ description: Operations executed rotate_after_fillet.kcl
           "type": "Number",
           "value": -0.46875,
           "ty": {
-            "type": "Unknown"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []

@@ -15,7 +15,7 @@ use crate::{
     parsing::ast::types::{
         DefaultParamVal, FunctionExpression, KclNone, Literal, LiteralValue, Node, TagDeclarator, TagNode,
     },
-    std::StdFnProps,
+    std::{args::TyF64, StdFnProps},
     CompilationError, KclError, ModuleId, SourceRange,
 };
 
@@ -360,15 +360,6 @@ impl KclValue {
         result
     }
 
-    /// Put the number into a KCL value.
-    pub const fn from_number(f: f64, meta: Vec<Metadata>) -> Self {
-        Self::Number {
-            value: f,
-            meta,
-            ty: NumericType::Unknown,
-        }
-    }
-
     pub const fn from_number_with_type(f: f64, ty: NumericType, meta: Vec<Metadata>) -> Self {
         Self::Number { value: f, meta, ty }
     }
@@ -495,9 +486,18 @@ impl KclValue {
             None
         }
     }
+
     pub fn as_f64(&self) -> Option<f64> {
         if let KclValue::Number { value, .. } = &self {
             Some(*value)
+        } else {
+            None
+        }
+    }
+
+    pub fn as_ty_f64(&self) -> Option<TyF64> {
+        if let KclValue::Number { value, ty, .. } = &self {
+            Some(TyF64::new(*value, ty.clone()))
         } else {
             None
         }

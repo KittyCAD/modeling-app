@@ -70,10 +70,11 @@ part001 = startSketchOn(-XZ)
   |> startProfileAt([0, 0], %)
   |> yLine(length = baseHeight)
   |> xLine(length = baseLen)
-  |> angledLineToY({
+  |> angledLine(
         angle = topAng,
-        to = totalHeightHalf,
-      }, %, $seg04)
+        endAbsoluteY = totalHeightHalf,
+        tag = $seg04,
+     )
   |> xLine(endAbsolute = totalLen, tag = $seg03)
   |> yLine(length = -armThick, tag = $seg01)
   |> angledLineThatIntersects({
@@ -81,11 +82,12 @@ part001 = startSketchOn(-XZ)
         offset = -armThick,
         intersectTag = seg04
       }, %)
-  |> angledLineToY([segAng(seg04, %) + 180, turns::ZERO], %)
-  |> angledLineToY({
+  |> angledLine(angle = segAng(seg04, %) + 180, endAbsoluteY = turns::ZERO)
+  |> angledLine(
         angle = -bottomAng,
-        to = -totalHeightHalf - armThick,
-      }, %, $seg02)
+        endAbsoluteY = -totalHeightHalf - armThick,
+        tag = $seg02,
+     )
   |> xLine(length = endAbsolute = segEndX(seg03) + 0)
   |> yLine(length = -segLen(seg01, %))
   |> angledLineThatIntersects({
@@ -93,7 +95,7 @@ part001 = startSketchOn(-XZ)
         offset = -armThick,
         intersectTag = seg02
       }, %)
-  |> angledLineToY([segAng(seg02, %) + 180, -baseHeight], %)
+  |> angledLine(angle = segAng(seg02, %) + 180, endAbsoluteY = -baseHeight)
   |> xLine(endAbsolute = turns::ZERO)
   |> close()
   |> extrude(length = 4)`
@@ -103,7 +105,6 @@ part001 = startSketchOn(-XZ)
 
     await u.waitForAuthSkipAppStart()
 
-    await scene.connectionEstablished()
     await scene.settled(cmdBar)
 
     const axisDirectionPair: Models['AxisDirectionPair_type'] = {
@@ -369,7 +370,6 @@ const extrudeDefaultPlane = async (
   await page.setViewportSize({ width: 1200, height: 500 })
 
   await u.waitForAuthSkipAppStart()
-  await scene.connectionEstablished()
   await scene.settled(cmdBar)
 
   await expect(page).toHaveScreenshot({
@@ -420,8 +420,6 @@ test(
     await page.setViewportSize({ width: 1200, height: 500 })
     const PUR = 400 / 37.5 //pixeltoUnitRatio
     await u.waitForAuthSkipAppStart()
-
-    await scene.connectionEstablished()
 
     const startXPx = 600
     const [endOfTangentClk, endOfTangentMv] = scene.makeMouseHelpers(
@@ -551,8 +549,6 @@ test(
 
     await u.waitForAuthSkipAppStart()
 
-    await scene.connectionEstablished()
-
     // click on "Start Sketch" button
     await u.doAndWaitForImageDiff(
       () => page.getByRole('button', { name: 'Start Sketch' }).click(),
@@ -597,8 +593,6 @@ test(
     const PUR = 400 / 37.5 //pixeltoUnitRatio
 
     await u.waitForAuthSkipAppStart()
-
-    await scene.connectionEstablished()
 
     await u.doAndWaitForImageDiff(
       () => page.getByRole('button', { name: 'Start Sketch' }).click(),
@@ -649,8 +643,6 @@ test.describe(
       const PUR = 400 / 37.5 //pixeltoUnitRatio
 
       await u.waitForAuthSkipAppStart()
-
-      await scene.connectionEstablished()
 
       await u.doAndWaitForImageDiff(
         () => page.getByRole('button', { name: 'Start Sketch' }).click(),
@@ -744,7 +736,6 @@ test.describe(
 
       await u.waitForAuthSkipAppStart()
 
-      await scene.connectionEstablished()
       await scene.settled(cmdBar)
 
       await u.doAndWaitForImageDiff(
@@ -846,7 +837,6 @@ part002 = startSketchOn(part001, seg01)
 
     await u.waitForAuthSkipAppStart()
 
-    await scene.connectionEstablished()
     await scene.settled(cmdBar)
 
     // Wait for the second extrusion to appear
@@ -902,7 +892,6 @@ test(
 
     await u.waitForAuthSkipAppStart()
 
-    await scene.connectionEstablished()
     await scene.settled(cmdBar)
 
     // Wait for the second extrusion to appear
@@ -943,7 +932,6 @@ test(
 
     await u.waitForAuthSkipAppStart()
 
-    await scene.connectionEstablished()
     await scene.settled(cmdBar)
 
     // Wait for the second extrusion to appear
@@ -976,7 +964,6 @@ test.describe('Grid visibility', { tag: '@snapshot' }, () => {
     await page.goto('/')
     await u.waitForAuthSkipAppStart()
 
-    await scene.connectionEstablished()
     await scene.settled(cmdBar)
 
     await u.closeKclCodePanel()
@@ -1041,7 +1028,6 @@ test.describe('Grid visibility', { tag: '@snapshot' }, () => {
     await page.goto('/')
     await u.waitForAuthSkipAppStart()
 
-    await scene.connectionEstablished()
     await scene.settled(cmdBar)
 
     await u.closeKclCodePanel()
@@ -1086,7 +1072,6 @@ test.describe('Grid visibility', { tag: '@snapshot' }, () => {
     await page.goto('/')
     await u.waitForAuthSkipAppStart()
 
-    await scene.connectionEstablished()
     await scene.settled(cmdBar)
 
     await u.closeKclCodePanel()
@@ -1205,7 +1190,6 @@ sweepSketch = startSketchOn(XY)
     await page.setViewportSize({ width: 1200, height: 1000 })
     await u.waitForAuthSkipAppStart()
 
-    await scene.connectionEstablished()
     await scene.settled(cmdBar)
 
     await expect(page, 'expect small color widget').toHaveScreenshot({
@@ -1255,7 +1239,6 @@ sweepSketch = startSketchOn(XY)
     await page.setViewportSize({ width: 1200, height: 1000 })
     await u.waitForAuthSkipAppStart()
 
-    await scene.connectionEstablished()
     await scene.settled(cmdBar)
 
     await expect(page.locator('.cm-css-color-picker-wrapper')).toBeVisible()

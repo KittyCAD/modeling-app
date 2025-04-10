@@ -95,7 +95,7 @@ fn F = (state, F) => {
 
   } else {
     // Pass onto the next instruction
-    state |> setSketch(%, angledLine({ angle: state.currentAngle, length: state.currentLength }, state.q))
+    state |> setSketch(%, angledLine(state.q, angle = state.currentAngle, length = state.currentLength))
   }
 }
 

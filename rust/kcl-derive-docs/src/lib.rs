@@ -764,14 +764,14 @@ fn rust_type_to_openapi_type(t: &str) -> String {
         t = format!("[{inner_type}]")
     }
 
-    if t == "f64" {
+    if t == "f64" || t == "TyF64" {
         return "number".to_string();
     } else if t == "u32" {
         return "integer".to_string();
     } else if t == "str" {
         return "string".to_string();
     } else {
-        return t.replace("f64", "number").to_string();
+        return t.replace("f64", "number").replace("TyF64", "number").to_string();
     }
 }
 

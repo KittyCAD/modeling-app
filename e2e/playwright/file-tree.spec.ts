@@ -47,6 +47,7 @@ test.describe('integrations tests', () => {
         await scene.connectionEstablished()
         await scene.settled(cmdBar)
         await clickObj()
+        await page.waitForTimeout(1000)
         await scene.moveNoWhere()
         await editor.expectState({
           activeLines: [
@@ -72,11 +73,11 @@ test.describe('integrations tests', () => {
       })
       await test.step('setup for next assertion', async () => {
         await toolbar.openFile('main.kcl')
-
-        await scene.settled(cmdBar)
-
+        await page.waitForTimeout(1000)
         await clickObj()
+        await page.waitForTimeout(1000)
         await scene.moveNoWhere()
+        await page.waitForTimeout(1000)
         await editor.expectState({
           activeLines: [
             '|>startProfileAt([75.8,317.2],%)//[$startCapTag,$EndCapTag]',
@@ -89,7 +90,7 @@ test.describe('integrations tests', () => {
         await toolbar.expectFileTreeState(['main.kcl', fileName])
       })
       await test.step('check sketch mode is exited when opening a different file', async () => {
-        await toolbar.openFile(fileName, { wait: false })
+        await toolbar.openFile(fileName)
 
         // check we're out of sketch mode
         await expect(toolbar.exitSketchBtn).not.toBeVisible()
