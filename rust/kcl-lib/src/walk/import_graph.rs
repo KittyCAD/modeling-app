@@ -10,7 +10,7 @@ use crate::{
     modules::{ModulePath, ModuleRepr},
     parsing::ast::types::{ImportPath, ImportStatement, Node as AstNode, NodeRef, Program},
     walk::{Node, Visitable},
-    ExecState, ExecutorContext, KclError, ModuleId,
+    ExecState, ExecutorContext, KclError, ModuleId, SourceRange,
 };
 
 /// Specific dependency between two modules. The 0th element of this info
@@ -96,7 +96,8 @@ fn topsort(all_modules: &[&str], graph: Graph) -> Result<Vec<Vec<String>>, KclEr
 
             return Err(KclError::ImportCycle(KclErrorDetails {
                 message: format!("circular import of modules not allowed: {}", waiting_modules.join(", ")),
-                source_ranges: Default::default(),
+                // TODO: we can get the right import lines from the AST, but we don't
+                source_ranges: vec![SourceRange::default()],
             }));
         }
 
