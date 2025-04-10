@@ -1008,16 +1008,12 @@ export function updatePathToNodesAfterEdit(
   newAst: Node<Program>,
   pathToUpdate: PathToNode
 ): PathToNode | Error {
-
   // First, let's find all topLevel the variable declarations in both ASTs
   // and map their name to their body index
   const oldVarDecls = new Map<string, number>()
   const newVarDecls = new Map<string, number>()
 
-  const maxBodyLength = Math.max(
-    oldAst.body.length,
-    newAst.body.length
-  )
+  const maxBodyLength = Math.max(oldAst.body.length, newAst.body.length)
   for (let bodyIndex = 0; bodyIndex < maxBodyLength; bodyIndex++) {
     const oldNode = oldAst.body[bodyIndex]
     const newNode = newAst.body[bodyIndex]

@@ -3029,23 +3029,23 @@ export const modelingMachine = setup({
           },
 
           states: {
-            "set up segments": {
+            'set up segments': {
               invoke: {
-                src: "setup-client-side-sketch-segments",
-                id: "setup-client-side-sketch-segments3",
+                src: 'setup-client-side-sketch-segments',
+                id: 'setup-client-side-sketch-segments3',
                 input: ({ context: { sketchDetails, selectionRanges } }) => ({
                   sketchDetails,
                   selectionRanges,
                 }),
-                onDone: "scene drawn",
-                onError: "#Modeling.idle"
-              }
+                onDone: 'scene drawn',
+                onError: '#Modeling.idle',
+              },
             },
 
-            "scene drawn": {}
+            'scene drawn': {},
           },
 
-          initial: "set up segments"
+          initial: 'set up segments',
         },
 
         'Await horizontal distance info': {
