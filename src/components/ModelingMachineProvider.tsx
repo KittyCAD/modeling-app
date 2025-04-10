@@ -808,7 +808,6 @@ export const ModelingMachineProvider = ({
             await letEngineAnimateAndSyncCamAfter(engineCommandManager, id)
             sceneInfra.camControls.syncDirection = 'clientToEngine'
             return {
-              planeArtifactIdFromLastFullExecution: id,
               sketchEntryNodePath: [],
               planeNodePath: pathToNewSketchNode,
               sketchNodePaths: [],
@@ -832,7 +831,6 @@ export const ModelingMachineProvider = ({
           )
 
           return {
-            planeArtifactIdFromLastFullExecution: input.planeId,
             sketchEntryNodePath: [],
             planeNodePath: pathToNode,
             sketchNodePaths: [],
@@ -909,7 +907,6 @@ export const ModelingMachineProvider = ({
                   artifact.id
                 )
                 return {
-                  planeArtifactIdFromLastFullExecution: artifact.id,
                   sketchEntryNodePath: [],
                   planeNodePath: planPath,
                   sketchNodePaths: [],
@@ -947,7 +944,6 @@ export const ModelingMachineProvider = ({
               codeRef.range
             )
             return {
-              planeArtifactIdFromLastFullExecution: plane.id,
               sketchEntryNodePath: sketchArtifact.codeRef.pathToNode || [],
               sketchNodePaths: sketchPaths,
               planeNodePath,

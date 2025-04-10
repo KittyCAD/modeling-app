@@ -83,6 +83,21 @@ export class KclManager {
     preComments: [],
     commentStart: 0,
   }
+  _lastAst: Node<Program> = {
+    body: [],
+    shebang: null,
+    start: 0,
+    end: 0,
+    moduleId: 0,
+    nonCodeMeta: {
+      nonCodeNodes: {},
+      startNodes: [],
+    },
+    innerAttrs: [],
+    outerAttrs: [],
+    preComments: [],
+    commentStart: 0,
+  }
   private _execState: ExecState = emptyExecState()
   private _variables: VariableMap = {}
   lastSuccessfulVariables: VariableMap = {}
@@ -116,6 +131,7 @@ export class KclManager {
     return this._ast
   }
   set ast(ast) {
+    this._lastAst = structuredClone(this._ast)
     this._ast = ast
     this._astCallBack(ast)
   }
@@ -232,6 +248,8 @@ export class KclManager {
       await this.safeParse(codeManager.code).then((ast) => {
         if (ast) {
           this.ast = ast
+          // on setup, set _lastAst so it's populated.
+          this._lastAst = ast
         }
       })
     })
@@ -447,7 +465,7 @@ export class KclManager {
       this.lastSuccessfulVariables = execState.variables
       this.lastSuccessfulOperations = execState.operations
     }
-    this.ast = { ...ast }
+    this.ast = structuredClone(ast)
     // updateArtifactGraph relies on updated executeState/variables
     await this.updateArtifactGraph(execState.artifactGraph)
     this._executeCallback()
@@ -526,8 +544,7 @@ export class KclManager {
       return
     }
 
-    this.ast = { ...ast }
-    return this.executeAst()
+    return this.executeAst({ ast })
   }
 
   async format() {
