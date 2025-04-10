@@ -71,7 +71,7 @@ flangeSketch = startSketchOn(XY)
   |> xLine(length = -segLen(seg03), tag = $seg09)
   |> tangentialArc({ radius = .3, offset = -40 }, %)
   |> tangentialArc({ radius = .9, offset = 80 }, %)
-  |> tangentialArcTo([profileStartX(%), profileStartY(%)], %)
+  |> tangentialArc(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 
   // Create openings in the flange to accommodate each tube
