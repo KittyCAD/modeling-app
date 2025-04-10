@@ -187,7 +187,8 @@ description: Artifact commands parametric-bearing-pillow-block.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 1.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -505,7 +506,8 @@ description: Artifact commands parametric-bearing-pillow-block.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -0.25,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -571,7 +573,8 @@ description: Artifact commands parametric-bearing-pillow-block.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -0.25,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -637,7 +640,8 @@ description: Artifact commands parametric-bearing-pillow-block.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -0.25,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -703,7 +707,8 @@ description: Artifact commands parametric-bearing-pillow-block.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -0.25,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -961,7 +966,8 @@ description: Artifact commands parametric-bearing-pillow-block.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -0.75,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -1027,7 +1033,8 @@ description: Artifact commands parametric-bearing-pillow-block.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -0.75,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -1093,7 +1100,8 @@ description: Artifact commands parametric-bearing-pillow-block.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -0.75,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -1159,7 +1167,8 @@ description: Artifact commands parametric-bearing-pillow-block.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -0.75,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -1297,7 +1306,8 @@ description: Artifact commands parametric-bearing-pillow-block.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -1.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {

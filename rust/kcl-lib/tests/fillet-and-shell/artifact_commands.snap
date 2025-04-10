@@ -306,7 +306,8 @@ description: Artifact commands fillet-and-shell.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 8.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -714,7 +715,8 @@ description: Artifact commands fillet-and-shell.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 4.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -1042,7 +1044,8 @@ description: Artifact commands fillet-and-shell.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 4.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -1370,7 +1373,8 @@ description: Artifact commands fillet-and-shell.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 4.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -1698,7 +1702,8 @@ description: Artifact commands fillet-and-shell.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 4.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
