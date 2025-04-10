@@ -41,7 +41,7 @@ bracketProfile = startSketchOn(XZ)
        radius = exteriorBendRadius,
        offset = bendAngle
      }, %)
-  |> angledLineToY([bendAngle, hatHeight - thickness], %, $seg01)
+  |> angledLine(angle = bendAngle, endAbsoluteY = hatHeight - thickness, tag = $seg01)
   |> tangentialArc({
        radius = interiorBendRadius,
        offset = -bendAngle
@@ -52,7 +52,7 @@ bracketProfile = startSketchOn(XZ)
        radius = interiorBendRadius,
        offset = -bendAngle
      }, %)
-  |> angledLine([-bendAngle, segLen(seg01)], %)
+  |> angledLine(angle = -bendAngle, length = segLen(seg01))
   |> tangentialArc({
        radius = exteriorBendRadius,
        offset = bendAngle
@@ -64,7 +64,7 @@ bracketProfile = startSketchOn(XZ)
        radius = interiorBendRadius,
        offset = -bendAngle
      }, %)
-  |> angledLine([180 - bendAngle, segLen(seg01)], %)
+  |> angledLine(angle = 180 - bendAngle, length = segLen(seg01))
   |> tangentialArc({
        radius = exteriorBendRadius,
        offset = bendAngle
@@ -75,7 +75,7 @@ bracketProfile = startSketchOn(XZ)
        radius = exteriorBendRadius,
        offset = bendAngle
      }, %)
-  |> angledLine([bendAngle - 180, segLen(seg01)], %)
+  |> angledLine(angle = bendAngle - 180, length = segLen(seg01))
   |> tangentialArc({
        radius = interiorBendRadius,
        offset = -bendAngle

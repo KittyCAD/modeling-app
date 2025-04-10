@@ -8,6 +8,7 @@ include = ["/tmp/github-actions.log"]
 type = "remap"
 inputs = [ "github-actions-file" ]
 source = '''
+.platform = "OS_NAME"
 .action = "GITHUB_WORKFLOW"
 .repo = "GITHUB_REPOSITORY"
 .sha = "GITHUB_SHA"

@@ -1168,7 +1168,7 @@ export function filterOperations(operations: Operation[]): Operation[] {
  * for use in the feature tree UI
  */
 const operationFilters = [
-  isNotGroupWithNoOperations,
+  isNotUserFunctionWithNoOperations,
   isNotInsideGroup,
   isNotGroupEnd,
 ]
@@ -1202,22 +1202,28 @@ function isNotInsideGroup(operations: Operation[]): Operation[] {
 
 /**
  * A filter to exclude GroupBegin operations and their corresponding GroupEnd
- * that don't have any operations inside them from a list of operations.
+ * that don't have any operations inside them from a list of operations, if it's
+ * a function call.
  */
-function isNotGroupWithNoOperations(operations: Operation[]): Operation[] {
+function isNotUserFunctionWithNoOperations(
+  operations: Operation[]
+): Operation[] {
   return operations.filter((op, index) => {
     if (
       op.type === 'GroupBegin' &&
-      // If this is a begin at the end of the array, it's preserved.
+      op.group.type === 'FunctionCall' &&
+      // If this is a "begin" at the end of the array, it's preserved.
       index < operations.length - 1 &&
       operations[index + 1].type === 'GroupEnd'
     )
       return false
+    const previousOp = index > 0 ? operations[index - 1] : undefined
     if (
       op.type === 'GroupEnd' &&
-      // If this is an end at the beginning of the array, it's preserved.
-      index > 0 &&
-      operations[index - 1].type === 'GroupBegin'
+      // If this is an "end" at the beginning of the array, it's preserved.
+      previousOp !== undefined &&
+      previousOp.type === 'GroupBegin' &&
+      previousOp.group.type === 'FunctionCall'
     )
       return false
 

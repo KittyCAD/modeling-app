@@ -35,7 +35,7 @@ tangentialArcToRelative(
 ```js
 exampleSketch = startSketchOn(XZ)
   |> startProfileAt([0, 0], %)
-  |> angledLine({ angle = 45, length = 10 }, %)
+  |> angledLine(angle = 45, length = 10)
   |> tangentialArcToRelative([0, -10], %)
   |> line(end = [-10, 0])
   |> close()
