@@ -382,7 +382,8 @@ description: Artifact commands dodecahedron.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 5.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -532,7 +533,8 @@ description: Artifact commands dodecahedron.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 5.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {

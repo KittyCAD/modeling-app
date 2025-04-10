@@ -196,7 +196,8 @@ description: Artifact commands kitt.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 18.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -437,7 +438,8 @@ description: Artifact commands kitt.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 3.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -814,7 +816,8 @@ description: Artifact commands kitt.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -2.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -1215,7 +1218,8 @@ description: Artifact commands kitt.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.5,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -1456,7 +1460,8 @@ description: Artifact commands kitt.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.5,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -1697,7 +1702,8 @@ description: Artifact commands kitt.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.5,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -1938,7 +1944,8 @@ description: Artifact commands kitt.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.5,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -2315,7 +2322,8 @@ description: Artifact commands kitt.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.5,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -2716,7 +2724,8 @@ description: Artifact commands kitt.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.5,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -2957,7 +2966,8 @@ description: Artifact commands kitt.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.5,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -3198,7 +3208,8 @@ description: Artifact commands kitt.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.5,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -3439,7 +3450,8 @@ description: Artifact commands kitt.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.5,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -3680,7 +3692,8 @@ description: Artifact commands kitt.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 3.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -3921,7 +3934,8 @@ description: Artifact commands kitt.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 1.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -4162,7 +4176,8 @@ description: Artifact commands kitt.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -2.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -4403,7 +4418,8 @@ description: Artifact commands kitt.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -2.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -4644,7 +4660,8 @@ description: Artifact commands kitt.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -2.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -4885,7 +4902,8 @@ description: Artifact commands kitt.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 4.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -5126,7 +5144,8 @@ description: Artifact commands kitt.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -2.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -5367,7 +5386,8 @@ description: Artifact commands kitt.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -2.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -5608,7 +5628,8 @@ description: Artifact commands kitt.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -2.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -5882,7 +5903,8 @@ description: Artifact commands kitt.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 3.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -6123,7 +6145,8 @@ description: Artifact commands kitt.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 3.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -6397,7 +6420,8 @@ description: Artifact commands kitt.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 3.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -6638,7 +6662,8 @@ description: Artifact commands kitt.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 3.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -6879,7 +6904,8 @@ description: Artifact commands kitt.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 2.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -7120,7 +7146,8 @@ description: Artifact commands kitt.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 2.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -7361,7 +7388,8 @@ description: Artifact commands kitt.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 2.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -7602,7 +7630,8 @@ description: Artifact commands kitt.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 2.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -7843,7 +7872,8 @@ description: Artifact commands kitt.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 2.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -8084,7 +8114,8 @@ description: Artifact commands kitt.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 2.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -8325,7 +8356,8 @@ description: Artifact commands kitt.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 2.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -8566,7 +8598,8 @@ description: Artifact commands kitt.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 2.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -8807,7 +8840,8 @@ description: Artifact commands kitt.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -2.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -9048,7 +9082,8 @@ description: Artifact commands kitt.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -2.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -9289,7 +9324,8 @@ description: Artifact commands kitt.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -2.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -9530,7 +9566,8 @@ description: Artifact commands kitt.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -2.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -9771,7 +9808,8 @@ description: Artifact commands kitt.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -2.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -10012,7 +10050,8 @@ description: Artifact commands kitt.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -2.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -10253,7 +10292,8 @@ description: Artifact commands kitt.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -2.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -10494,7 +10534,8 @@ description: Artifact commands kitt.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -2.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -10735,7 +10776,8 @@ description: Artifact commands kitt.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -2.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -10976,7 +11018,8 @@ description: Artifact commands kitt.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -2.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
