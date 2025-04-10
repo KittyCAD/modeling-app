@@ -903,7 +903,6 @@ export const ModelingMachineProvider = ({
                   zAxis: toTuple(planeVar.zAxis),
                   yAxis: toTuple(planeVar.yAxis),
                   origin: toTuple(planeVar.origin),
-                  animateTargetId: artifact.id,
                 }
               }
               return Promise.reject(new Error('No sketch'))
