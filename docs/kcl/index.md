@@ -77,6 +77,7 @@ layout: manual
   * [`helix`](kcl/std-helix)
   * [`hole`](kcl/hole)
   * [`hollow`](kcl/hollow)
+  * [`involuteCircular`](kcl/involuteCircular)
   * [`lastSegX`](kcl/lastSegX)
   * [`lastSegY`](kcl/lastSegY)
   * [`legAngX`](kcl/legAngX)
