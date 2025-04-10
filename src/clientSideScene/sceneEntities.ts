@@ -1047,8 +1047,7 @@ export class SceneEntities {
           // This might need to become its own function if we want more
           // case-based logic for different segment types
           if (
-            (lastSegment.type === 'TangentialArc' &&
-              segmentName !== 'line') ||
+            (lastSegment.type === 'TangentialArc' && segmentName !== 'line') ||
             segmentName === 'tangentialArc'
           ) {
             resolvedFunctionName = 'tangentialArc'

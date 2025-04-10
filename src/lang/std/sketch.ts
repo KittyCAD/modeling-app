@@ -3907,7 +3907,7 @@ export function isAbsoluteLine(lineCall: CallExpressionKw): boolean | Error {
   const name = lineCall?.callee?.name.name
   switch (name) {
     case 'line':
-      case 'tangentialArc':
+    case 'tangentialArc':
       if (findKwArg(ARG_END, lineCall) !== undefined) {
         return false
       }
