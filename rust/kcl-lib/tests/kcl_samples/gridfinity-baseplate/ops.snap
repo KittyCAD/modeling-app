@@ -40,7 +40,7 @@ description: Operations executed gridfinity-baseplate.kcl
       "name": "face",
       "functionSourceRange": [
         746,
-        1060,
+        1030,
         0
       ],
       "unlabeledArg": null,
@@ -274,7 +274,7 @@ description: Operations executed gridfinity-baseplate.kcl
       "name": "face",
       "functionSourceRange": [
         746,
-        1060,
+        1030,
         0
       ],
       "unlabeledArg": null,

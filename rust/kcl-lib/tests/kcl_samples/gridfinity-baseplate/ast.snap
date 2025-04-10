@@ -521,82 +521,60 @@ description: Result of parsing gridfinity-baseplate.kcl
                         {
                           "arguments": [
                             {
-                              "commentStart": 0,
-                              "end": 0,
-                              "properties": [
-                                {
+                              "type": "LabeledArg",
+                              "label": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "name": "angle",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "arg": {
+                                "argument": {
                                   "commentStart": 0,
                                   "end": 0,
-                                  "key": {
-                                    "commentStart": 0,
-                                    "end": 0,
-                                    "name": "angle",
-                                    "start": 0,
-                                    "type": "Identifier"
-                                  },
+                                  "raw": "45",
                                   "start": 0,
-                                  "type": "ObjectProperty",
+                                  "type": "Literal",
+                                  "type": "Literal",
                                   "value": {
-                                    "argument": {
-                                      "commentStart": 0,
-                                      "end": 0,
-                                      "raw": "45",
-                                      "start": 0,
-                                      "type": "Literal",
-                                      "type": "Literal",
-                                      "value": {
-                                        "value": 45.0,
-                                        "suffix": "None"
-                                      }
-                                    },
-                                    "commentStart": 0,
-                                    "end": 0,
-                                    "operator": "-",
-                                    "start": 0,
-                                    "type": "UnaryExpression",
-                                    "type": "UnaryExpression"
+                                    "value": 45.0,
+                                    "suffix": "None"
                                   }
                                 },
-                                {
-                                  "commentStart": 0,
-                                  "end": 0,
-                                  "key": {
-                                    "commentStart": 0,
-                                    "end": 0,
-                                    "name": "length",
-                                    "start": 0,
-                                    "type": "Identifier"
-                                  },
-                                  "start": 0,
-                                  "type": "ObjectProperty",
-                                  "value": {
-                                    "abs_path": false,
-                                    "commentStart": 0,
-                                    "end": 0,
-                                    "name": {
-                                      "commentStart": 0,
-                                      "end": 0,
-                                      "name": "thirdStep",
-                                      "start": 0,
-                                      "type": "Identifier"
-                                    },
-                                    "path": [],
-                                    "start": 0,
-                                    "type": "Name",
-                                    "type": "Name"
-                                  }
-                                }
-                              ],
-                              "start": 0,
-                              "type": "ObjectExpression",
-                              "type": "ObjectExpression"
+                                "commentStart": 0,
+                                "end": 0,
+                                "operator": "-",
+                                "start": 0,
+                                "type": "UnaryExpression",
+                                "type": "UnaryExpression"
+                              }
                             },
                             {
-                              "commentStart": 0,
-                              "end": 0,
-                              "start": 0,
-                              "type": "PipeSubstitution",
-                              "type": "PipeSubstitution"
+                              "type": "LabeledArg",
+                              "label": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "name": "lengthY",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "arg": {
+                                "abs_path": false,
+                                "commentStart": 0,
+                                "end": 0,
+                                "name": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "name": "thirdStep",
+                                  "start": 0,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
+                                "start": 0,
+                                "type": "Name",
+                                "type": "Name"
+                              }
                             }
                           ],
                           "callee": {
@@ -606,7 +584,7 @@ description: Result of parsing gridfinity-baseplate.kcl
                             "name": {
                               "commentStart": 0,
                               "end": 0,
-                              "name": "angledLineOfYLength",
+                              "name": "angledLine",
                               "start": 0,
                               "type": "Identifier"
                             },
@@ -617,8 +595,9 @@ description: Result of parsing gridfinity-baseplate.kcl
                           "commentStart": 0,
                           "end": 0,
                           "start": 0,
-                          "type": "CallExpression",
-                          "type": "CallExpression"
+                          "type": "CallExpressionKw",
+                          "type": "CallExpressionKw",
+                          "unlabeled": null
                         },
                         {
                           "arguments": [
@@ -682,82 +661,60 @@ description: Result of parsing gridfinity-baseplate.kcl
                         {
                           "arguments": [
                             {
-                              "commentStart": 0,
-                              "end": 0,
-                              "properties": [
-                                {
+                              "type": "LabeledArg",
+                              "label": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "name": "angle",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "arg": {
+                                "argument": {
                                   "commentStart": 0,
                                   "end": 0,
-                                  "key": {
-                                    "commentStart": 0,
-                                    "end": 0,
-                                    "name": "angle",
-                                    "start": 0,
-                                    "type": "Identifier"
-                                  },
+                                  "raw": "45",
                                   "start": 0,
-                                  "type": "ObjectProperty",
+                                  "type": "Literal",
+                                  "type": "Literal",
                                   "value": {
-                                    "argument": {
-                                      "commentStart": 0,
-                                      "end": 0,
-                                      "raw": "45",
-                                      "start": 0,
-                                      "type": "Literal",
-                                      "type": "Literal",
-                                      "value": {
-                                        "value": 45.0,
-                                        "suffix": "None"
-                                      }
-                                    },
-                                    "commentStart": 0,
-                                    "end": 0,
-                                    "operator": "-",
-                                    "start": 0,
-                                    "type": "UnaryExpression",
-                                    "type": "UnaryExpression"
+                                    "value": 45.0,
+                                    "suffix": "None"
                                   }
                                 },
-                                {
-                                  "commentStart": 0,
-                                  "end": 0,
-                                  "key": {
-                                    "commentStart": 0,
-                                    "end": 0,
-                                    "name": "length",
-                                    "start": 0,
-                                    "type": "Identifier"
-                                  },
-                                  "start": 0,
-                                  "type": "ObjectProperty",
-                                  "value": {
-                                    "abs_path": false,
-                                    "commentStart": 0,
-                                    "end": 0,
-                                    "name": {
-                                      "commentStart": 0,
-                                      "end": 0,
-                                      "name": "firstStep",
-                                      "start": 0,
-                                      "type": "Identifier"
-                                    },
-                                    "path": [],
-                                    "start": 0,
-                                    "type": "Name",
-                                    "type": "Name"
-                                  }
-                                }
-                              ],
-                              "start": 0,
-                              "type": "ObjectExpression",
-                              "type": "ObjectExpression"
+                                "commentStart": 0,
+                                "end": 0,
+                                "operator": "-",
+                                "start": 0,
+                                "type": "UnaryExpression",
+                                "type": "UnaryExpression"
+                              }
                             },
                             {
-                              "commentStart": 0,
-                              "end": 0,
-                              "start": 0,
-                              "type": "PipeSubstitution",
-                              "type": "PipeSubstitution"
+                              "type": "LabeledArg",
+                              "label": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "name": "lengthY",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "arg": {
+                                "abs_path": false,
+                                "commentStart": 0,
+                                "end": 0,
+                                "name": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "name": "firstStep",
+                                  "start": 0,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
+                                "start": 0,
+                                "type": "Name",
+                                "type": "Name"
+                              }
                             }
                           ],
                           "callee": {
@@ -767,7 +724,7 @@ description: Result of parsing gridfinity-baseplate.kcl
                             "name": {
                               "commentStart": 0,
                               "end": 0,
-                              "name": "angledLineOfYLength",
+                              "name": "angledLine",
                               "start": 0,
                               "type": "Identifier"
                             },
@@ -778,8 +735,9 @@ description: Result of parsing gridfinity-baseplate.kcl
                           "commentStart": 0,
                           "end": 0,
                           "start": 0,
-                          "type": "CallExpression",
-                          "type": "CallExpression"
+                          "type": "CallExpressionKw",
+                          "type": "CallExpressionKw",
+                          "unlabeled": null
                         },
                         {
                           "arguments": [],

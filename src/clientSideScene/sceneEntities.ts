@@ -1436,7 +1436,7 @@ export class SceneEntities {
         const y = (args.intersectionPoint.twoD.y || 0) - rectangleOrigin[1]
 
         if (sketchInit.type === 'PipeExpression') {
-          updateCenterRectangleSketch(
+          const maybeError = updateCenterRectangleSketch(
             sketchInit,
             x,
             y,
@@ -1444,6 +1444,9 @@ export class SceneEntities {
             rectangleOrigin[0],
             rectangleOrigin[1]
           )
+          if (err(maybeError)) {
+            return Promise.reject(maybeError)
+          }
         }
 
         const { execState } = await executeAstMock({
@@ -1491,7 +1494,7 @@ export class SceneEntities {
         const sketchInit = _node.node?.declaration.init
 
         if (sketchInit.type === 'PipeExpression') {
-          updateCenterRectangleSketch(
+          const maybeError = updateCenterRectangleSketch(
             sketchInit,
             x,
             y,
@@ -1499,6 +1502,9 @@ export class SceneEntities {
             rectangleOrigin[0],
             rectangleOrigin[1]
           )
+          if (err(maybeError)) {
+            return Promise.reject(maybeError)
+          }
 
           const pResult = parse(recast(_ast))
           if (trap(pResult) || !resultIsOk(pResult))

@@ -1,5 +1,12 @@
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 
+import type {
+  ARG_END_ABSOLUTE_X,
+  ARG_END_ABSOLUTE_Y,
+  ARG_LENGTH,
+  ARG_LENGTH_X,
+  ARG_LENGTH_Y,
+} from '@src/lang/constants'
 import type { ToolTip } from '@src/lang/langHelpers'
 import type { LineInputsType } from '@src/lang/std/sketchcombos'
 import type {
@@ -93,7 +100,6 @@ interface updateArgs extends ModifyAstBase {
 export type InputArgKeys =
   | 'angle'
   | 'offset'
-  | 'length'
   | 'to'
   | 'intersectTag'
   | 'radius'
@@ -103,6 +109,11 @@ export type InputArgKeys =
   | 'p3'
   | 'end'
   | 'interior'
+  | typeof ARG_END_ABSOLUTE_X
+  | typeof ARG_END_ABSOLUTE_Y
+  | typeof ARG_LENGTH_X
+  | typeof ARG_LENGTH_Y
+  | typeof ARG_LENGTH
   | `angle${'Start' | 'End'}`
 export interface SingleValueInput<T> {
   type: 'singleValue'
@@ -138,12 +149,20 @@ interface ArrayInObject<T> {
   expr: T
 }
 
+interface LabeledArg<T> {
+  type: 'labeledArg'
+  key: InputArgKeys
+  argType: LineInputsType
+  expr: T
+}
+
 type _InputArg<T> =
   | SingleValueInput<T>
   | ArrayItemInput<T>
   | ObjectPropertyInput<T>
   | ArrayOrObjItemInput<T>
   | ArrayInObject<T>
+  | LabeledArg<T>
 
 /**
  * {@link RawArg.expr} is the current expression for each of the args for a segment
@@ -186,6 +205,7 @@ export type SimplifiedArgDetails =
   | Omit<ObjectPropertyInput<null>, 'expr' | 'argType'>
   | Omit<ArrayOrObjItemInput<null>, 'expr' | 'argType'>
   | Omit<ArrayInObject<null>, 'expr' | 'argType'>
+  | Omit<LabeledArg<null>, 'expr' | 'argType'>
 
 /**
  * Represents the result of creating a sketch expression (line, tangentialArcTo, angledLine, circle, etc.).

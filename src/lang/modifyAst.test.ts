@@ -25,7 +25,7 @@ import { findUsesOfTagInPipe } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import type { Artifact } from '@src/lang/std/artifactGraph'
 import { codeRefFromRange } from '@src/lang/std/artifactGraph'
-import type { SimplifiedArgDetails } from '@src/lang/std/stdTypes'
+import type { InputArgKeys, SimplifiedArgDetails } from '@src/lang/std/stdTypes'
 import { topLevelRange } from '@src/lang/util'
 import type { Identifier, Literal, LiteralValue } from '@src/lang/wasm'
 import { assertParse, initPromise, recast } from '@src/lang/wasm'
@@ -322,11 +322,11 @@ yo = 5 + 6
 part001 = startSketchOn(XY)
 |> startProfileAt([-1.2, 4.83], %)
 |> line(end = [2.8, 0])
-|> angledLine([100 + 100, 3.09], %)
-|> angledLine([abc, 3.09], %)
-|> angledLine([def(yo), 3.09], %)
-|> angledLine([ghi(%), 3.09], %)
-|> angledLine([jkl(yo) + 2, 3.09], %)
+|> angledLine(angle = 100 + 100, length = 3.09)
+|> angledLine(angle = abc, length = 3.09)
+|> angledLine(angle = def(yo), length = 3.09)
+|> angledLine(angle = ghi(%), length = 3.09)
+|> angledLine(angle = jkl(yo) + 2, length = 3.09)
 yo2 = hmm([identifierGuy + 5])`
   it('should move a binary expression into a new variable', async () => {
     const ast = assertParse(code)
@@ -340,7 +340,7 @@ yo2 = hmm([identifierGuy + 5])`
     )
     const newCode = recast(modifiedAst)
     expect(newCode).toContain(`newVar = 100 + 100`)
-    expect(newCode).toContain(`angledLine([newVar, 3.09], %)`)
+    expect(newCode).toContain(`angledLine(angle = newVar, length = 3.09)`)
   })
   it('should move a value into a new variable', async () => {
     const ast = assertParse(code)
@@ -368,7 +368,7 @@ yo2 = hmm([identifierGuy + 5])`
     )
     const newCode = recast(modifiedAst)
     expect(newCode).toContain(`newVar = def(yo)`)
-    expect(newCode).toContain(`angledLine([newVar, 3.09], %)`)
+    expect(newCode).toContain(`angledLine(angle = newVar, length = 3.09)`)
   })
   it('should move a binary expression with call expression into a new variable', async () => {
     const ast = assertParse(code)
@@ -382,7 +382,7 @@ yo2 = hmm([identifierGuy + 5])`
     )
     const newCode = recast(modifiedAst)
     expect(newCode).toContain(`newVar = jkl(yo) + 2`)
-    expect(newCode).toContain(`angledLine([newVar, 3.09], %)`)
+    expect(newCode).toContain(`angledLine(angle = newVar, length = 3.09)`)
   })
   it('should move a identifier into a new variable', async () => {
     const ast = assertParse(code)
@@ -596,11 +596,11 @@ describe('Testing deleteSegmentFromPipeExpression', () => {
     ) => `part001 = startSketchOn(-XZ)
   |> startProfileAt([54.78, -95.91], %)
   |> line(end = [306.21, 198.82], tag = $b)
-${!replace1 ? `  |> ${line}\n` : ''}  |> angledLine([-65, ${
+${!replace1 ? `  |> ${line}\n` : ''}  |> angledLine(angle = -65, length = ${
       !replace1 ? 'segLen(a)' : replace1
-    }], %)
+    })
   |> line(end = [306.21, 198.87])
-  |> angledLine([65, ${!replace2 ? 'segAng(a)' : replace2}], %)
+  |> angledLine(angle = 65, length = ${!replace2 ? 'segAng(a)' : replace2})
   |> line(end = [-963.39, -154.67])
 `
     test.each([
@@ -616,27 +616,27 @@ ${!replace1 ? `  |> ${line}\n` : ''}  |> angledLine([-65, ${
       ['xLineTo', 'xLine(endAbsolute = 198.85, tag = $a)', ['162.14', '180']],
       [
         'angledLine',
-        'angledLine({ angle: 45.5, length: 198.85 }, %, $a)',
+        'angledLine(angle = 45.5, length = 198.85, tag = $a)',
         ['198.85', '45.5'],
       ],
       [
-        'angledLineOfXLength',
-        'angledLineOfXLength({ angle = 45.5, length = 198.85 }, %, $a)',
+        'angledLine',
+        'angledLine(angle = 45.5, lengthX = 198.85, tag = $a)',
         ['283.7', '45.5'],
       ],
       [
-        'angledLineOfYLength',
-        'angledLineOfYLength({ angle = 45.5, length = 198.85 }, %, $a)',
+        'angledLine',
+        'angledLine(angle = 45.5, lengthY = 198.85, tag = $a)',
         ['278.79', '45.5'],
       ],
       [
-        'angledLineToX',
-        'angledLineToX({ angle = 45.5, to = 198.85 }, %, $a)',
+        'angledLine',
+        'angledLine(angle = 45.5, endAbsoluteX = 198.85, tag = $a)',
         ['231.33', '134.5'],
       ],
       [
-        'angledLineToY',
-        'angledLineToY({ angle = 45.5, to = 198.85 }, %, $a)',
+        'angledLine',
+        'angledLine(angle = 45.5, endAbsoluteY = 198.85, tag = $a)',
         ['134.51', '45.5'],
       ],
       [
@@ -649,10 +649,8 @@ ${!replace1 ? `  |> ${line}\n` : ''}  |> angledLine([-65, ${
       const ast = assertParse(code)
       const execState = await enginelessExecutor(ast)
       const lineOfInterest = line
-      const range = topLevelRange(
-        code.indexOf(lineOfInterest),
-        code.indexOf(lineOfInterest) + lineOfInterest.length
-      )
+      const start = code.indexOf(lineOfInterest)
+      const range = topLevelRange(start, start + lineOfInterest.length)
       const pathToNode = getNodePathFromSourceRange(ast, range)
       const dependentSegments = findUsesOfTagInPipe(ast, pathToNode)
       const modifiedAst = deleteSegmentFromPipeExpression(
@@ -664,7 +662,8 @@ ${!replace1 ? `  |> ${line}\n` : ''}  |> angledLine([-65, ${
       )
       if (err(modifiedAst)) throw modifiedAst
       const newCode = recast(modifiedAst)
-      expect(newCode).toBe(makeCode(line, replace1, replace2))
+      const expected = makeCode(line, replace1, replace2)
+      expect(newCode).toBe(expected)
     })
   })
 })
@@ -674,16 +673,16 @@ describe('Testing removeSingleConstraintInfo', () => {
     const code = `part001 = startSketchOn(-XZ)
   |> startProfileAt([0, 0], %)
   |> line(end = [3 + 0, 4 + 0])
-  |> angledLine({ angle = 3 + 0, length = 3.14 + 0 }, %)
+  |> /*0*/ angledLine(angle = 3 + 0, length = 3.14 + 0)
   |> line(endAbsolute = [6.14 + 0, 3.14 + 0])
   |> xLine(/*xAbs*/ endAbsolute = 8 + 0)
   |> yLine(/*yAbs*/ endAbsolute = 5 + 0)
   |> yLine(/*yRel*/ length = 3.14 + 0, tag = $a)
   |> xLine(/*xRel*/ length = 3.14 + 0)
-  |> angledLineOfXLength({ angle = 3 + 0, length = 3.14 + 0 }, %)
-  |> angledLineOfYLength({ angle = 30 + 0, length = 3 + 0 }, %)
-  |> angledLineToX({ angle = 12.14 + 0, to = 12 + 0 }, %)
-  |> angledLineToY({ angle = 30 + 0, to = 10.14 + 0 }, %)
+  |> /*1*/ angledLine(angle = 3 + 0, lengthX = 3.14 + 0)
+  |> /*2*/ angledLine(angle = 30 + 0, lengthY = 3 + 0)
+  |> /*3*/ angledLine(angle = 12.14 + 0, endAbsoluteX =  12 + 0)
+  |> /*4*/ angledLine(angle = 30 + 0, endAbsoluteY =  10.14 + 0)
   |> angledLineThatIntersects({
         angle = 3.14 + 0,
         intersectTag = a,
@@ -693,8 +692,8 @@ describe('Testing removeSingleConstraintInfo', () => {
     test.each([
       [' line(end = [3 + 0, 4])', 'arrayIndex', 1, ''],
       [
-        'angledLine({ angle = 3, length = 3.14 + 0 }, %)',
-        'objectProperty',
+        '/*0*/ angledLine(angle = 3, length = 3.14 + 0)',
+        'labeledArg',
         'angle',
         '',
       ],
@@ -704,26 +703,26 @@ describe('Testing removeSingleConstraintInfo', () => {
       ['yLine(length = 3.14, tag = $a)', '', '', '/*yRel*/'],
       ['xLine(length = 3.14)', '', '', '/*xRel*/'],
       [
-        'angledLineOfXLength({ angle = 3, length = 3.14 + 0 }, %)',
-        'objectProperty',
+        '/*1*/ angledLine(angle = 3, lengthX = 3.14 + 0)',
+        'labeledArg',
         'angle',
         '',
       ],
       [
-        'angledLineOfYLength({ angle = 30 + 0, length = 3 }, %)',
-        'objectProperty',
+        '/*2*/ angledLine(angle = 30 + 0, lengthY = 3)',
+        'labeledArg',
         'length',
         '',
       ],
       [
-        'angledLineToX({ angle = 12.14 + 0, to = 12 }, %)',
-        'objectProperty',
-        'to',
+        '/*3*/ angledLine(angle = 12.14 + 0, endAbsoluteX = 12)',
+        'labeledArg',
+        'endAbsoluteX',
         '',
       ],
       [
-        'angledLineToY({ angle = 30, to = 10.14 + 0 }, %)',
-        'objectProperty',
+        '/*4*/ angledLine(angle = 30, endAbsoluteY = 10.14 + 0)',
+        'labeledArg',
         'angle',
         '',
       ],
@@ -766,6 +765,11 @@ describe('Testing removeSingleConstraintInfo', () => {
           argPosition = {
             type: 'singleValue',
           }
+        } else if (key === 'labeledArg') {
+          argPosition = {
+            type: 'labeledArg',
+            key: value,
+          }
         } else {
           throw new Error('argPosition is undefined')
         }
@@ -784,36 +788,52 @@ describe('Testing removeSingleConstraintInfo', () => {
   describe('with array notation', () => {
     const code = `part001 = startSketchOn(-XZ)
   |> startProfileAt([0, 0], %)
-  |> angledLine([3.14 + 0, 3.14 + 0], %)
-  |> angledLineOfXLength([3 + 0, 3.14 + 0], %)
-  |> angledLineOfYLength([30 + 0, 3 + 0], %)
-  |> angledLineToX([12.14 + 0, 12 + 0], %)
-  |> angledLineToY([30 + 0, 10.14 + 0], %)`
+  |> /*0*/ angledLine(angle = 3.14 + 0, length = 3.14 + 0)
+  |> /*1*/ angledLine(angle = 3 + 0, lengthX = 3.14 + 0)
+  |> /*2*/ angledLine(angle = 30 + 0, lengthY = 3 + 0)
+  |> /*3*/ angledLine(angle = 12.14 + 0, endAbsoluteX = 12 + 0)
+  |> /*4*/ angledLine(angle = 30 + 0, endAbsoluteY = 10.14 + 0)`
+    const ang: InputArgKeys = 'angle'
     test.each([
-      ['angledLine([3, 3.14 + 0], %)', 'arrayIndex', 0],
-      ['angledLineOfXLength([3, 3.14 + 0], %)', 'arrayIndex', 0],
-      ['angledLineOfYLength([30 + 0, 3], %)', 'arrayIndex', 1],
-      ['angledLineToX([12.14 + 0, 12], %)', 'arrayIndex', 1],
-      ['angledLineToY([30, 10.14 + 0], %)', 'arrayIndex', 0],
+      ['/*0*/ angledLine(angle = 3, length = 3.14 + 0)', 'labeledArg', ang],
+      [
+        '/*1*/ angledLine(angle = 3, lengthX = 3.14 + 0)',
+        'labeledArg',
+        'angle',
+      ],
+      [
+        '/*2*/ angledLine(angle = 30 + 0, lengthY = 3)',
+        'labeledArg',
+        'lengthY',
+      ],
+      [
+        '/*3*/ angledLine(angle = 12.14 + 0, endAbsoluteX = 12)',
+        'labeledArg',
+        'endAbsoluteX',
+      ],
+      [
+        '/*4*/ angledLine(angle = 30, endAbsoluteY = 10.14 + 0)',
+        'labeledArg',
+        'angle',
+      ],
     ])('stdlib fn: %s', async (expectedFinish, key, value) => {
       const ast = assertParse(code)
 
       const execState = await enginelessExecutor(ast)
       const lineOfInterest = expectedFinish.split('(')[0] + '('
-      const range = topLevelRange(
-        code.indexOf(lineOfInterest) + 1,
-        code.indexOf(lineOfInterest) + lineOfInterest.length
-      )
+      const start = code.indexOf(lineOfInterest)
+      expect(start).toBeGreaterThanOrEqual(0)
+      const range = topLevelRange(start + 1, start + lineOfInterest.length)
       let argPosition: SimplifiedArgDetails
       if (key === 'arrayIndex' && typeof value === 'number') {
         argPosition = {
           type: 'arrayItem',
           index: value === 0 ? 0 : 1,
         }
-      } else if (key === 'objectProperty' && typeof value === 'string') {
+      } else if (key === 'labeledArg') {
         argPosition = {
-          type: 'objectProperty',
-          key: value,
+          type: 'labeledArg',
+          key: value as InputArgKeys,
         }
       } else {
         throw new Error('argPosition is undefined')
@@ -896,7 +916,7 @@ sketch003 = startSketchOn(XZ)
     //   |> startProfileAt([-12.55, 2.89], %)
     //   |> line(end = [3.02, 1.9])
     //   |> line(end = [1.82, -1.49], tag = $seg02)
-    //   |> angledLine([-86, segLen(seg02)], %)
+    //   |> angledLine(angle = -86, length = segLen(seg02))
     //   |> line(end = [-3.97, -0.53])
     //   |> line(end = [0.3, 0.84])
     //   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
@@ -923,7 +943,7 @@ sketch003 = startSketchOn(XZ)
     //   |> startProfileAt([-12.55, 2.89], %)
     //   |> line(end = [3.02, 1.9])
     //   |> line(end = [1.82, -1.49], tag = $seg02)
-    //   |> angledLine([-86, segLen(seg02)], %)
+    //   |> angledLine(angle = -86, length = segLen(seg02))
     //   |> line(end = [-3.97, -0.53])
     //   |> line(end = [0.3, 0.84])
     //   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
@@ -952,7 +972,7 @@ sketch003 = startSketchOn(XZ)
     //   |> startProfileAt([-12.55, 2.89], %)
     //   |> line(end = [3.02, 1.9])
     //   |> line(end = [1.82, -1.49], tag = $seg02)
-    //   |> angledLine([-86, segLen(seg02)], %)
+    //   |> angledLine(angle = -86, length = segLen(seg02))
     //   |> line(end = [-3.97, -0.53])
     //   |> line(end = [0.3, 0.84])
     //   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
@@ -979,7 +999,7 @@ sketch003 = startSketchOn(XZ)
     //   |> startProfileAt([-12.55, 2.89], %)
     //   |> line(end = [3.02, 1.9])
     //   |> line(end = [1.82, -1.49], tag = $seg02)
-    //   |> angledLine([-86, segLen(seg02)], %)
+    //   |> angledLine(angle = -86, length = segLen(seg02))
     //   |> line(end = [-3.97, -0.53])
     //   |> line(end = [0.3, 0.84])
     //   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
