@@ -93,7 +93,6 @@ export default async function getCurrentProjectFile(
   if (shouldWrapExtension(extension)) {
     const importFileName = path.basename(sourcePath)
     // Check if we have a file in the project for this import model.
-    console.log("WE ARE HERE")
     const kclWrapperFilename = `${importFileName}.kcl`
     const kclWrapperFilePath = path.join(parent, kclWrapperFilename)
 

@@ -4,7 +4,11 @@ import * as fsp from 'fs/promises'
 import { join } from 'path'
 
 import type { ElectronZoo } from '@e2e/playwright/fixtures/fixtureSetup'
-import { executorInputPath, getUtils, testsInputPath } from '@e2e/playwright/test-utils'
+import {
+  executorInputPath,
+  getUtils,
+  testsInputPath,
+} from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
 test.describe('Testing loading external models', () => {
