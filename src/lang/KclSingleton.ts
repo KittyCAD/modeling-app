@@ -515,20 +515,21 @@ export class KclManager {
   }
 
   // DO NOT CALL THIS from codemirror ever.
-  async executeAstMock(ast: Program) {
+  async executeAstMock(ast: Program): Promise<null | Error> {
     await this.ensureWasmInit()
 
     const newCode = recast(ast)
     if (err(newCode)) {
       console.error(newCode)
-      return
+      return newCode
     }
     const newAst = await this.safeParse(newCode)
+  
     if (!newAst) {
       // By clearing the AST we indicate to our callers that there was an issue with execution and
       // the pre-execution state should be restored.
       this.clearAst()
-      return
+      return new Error('failed to re-parse')
     }
     this._ast = { ...newAst }
 
@@ -544,6 +545,7 @@ export class KclManager {
       this.lastSuccessfulVariables = execState.variables
       this.lastSuccessfulOperations = execState.operations
     }
+    return null
   }
   cancelAllExecutions() {
     this._cancelTokens.forEach((_, key) => {
@@ -651,7 +653,8 @@ export class KclManager {
       // When we don't re-execute, we still want to update the program
       // memory with the new ast. So we will hit the mock executor
       // instead..
-      await this.executeAstMock(astWithUpdatedSource)
+      const didReParse = await this.executeAstMock(astWithUpdatedSource)
+      if (err(didReParse)) return reject(didReParse)
     }
 
     return { selections: returnVal, newAst: astWithUpdatedSource }
