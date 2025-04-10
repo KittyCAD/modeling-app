@@ -11,10 +11,13 @@ use crate::{
     std::Args,
 };
 
+use super::DEFAULT_TOLERANCE;
+
 /// Union two or more solids into a single solid.
 pub async fn union(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let solids: Vec<Solid> =
         args.get_unlabeled_kw_arg_typed("solids", &RuntimeType::Union(vec![RuntimeType::solids()]), exec_state)?;
+    let tolerance = args.get_kw_arg_opt("tolerance")?;
 
     if solids.len() < 2 {
         return Err(KclError::UndefinedValue(KclErrorDetails {
@@ -23,7 +26,7 @@ pub async fn union(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
         }));
     }
 
-    let solids = inner_union(solids, exec_state, args).await?;
+    let solids = inner_union(solids, tolerance, exec_state, args).await?;
     Ok(solids.into())
 }
 
@@ -101,10 +104,12 @@ pub async fn union(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     deprecated = true,
     args = {
         solids = {docs = "The solids to union."},
+        tolerance = {docs = "The tolerance to use for the union operation."},
     }
 }]
 pub(crate) async fn inner_union(
     solids: Vec<Solid>,
+    tolerance: Option<f64>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Vec<Solid>, KclError> {
@@ -119,6 +124,7 @@ pub(crate) async fn inner_union(
         exec_state.next_uuid(),
         ModelingCmd::from(mcmd::BooleanUnion {
             solid_ids: solids.iter().map(|s| s.id).collect(),
+            tolerance: LengthUnit(tolerance.unwrap_or(DEFAULT_TOLERANCE)),
         }),
     )
     .await?;
@@ -131,6 +137,7 @@ pub(crate) async fn inner_union(
 /// overlapping regions.
 pub async fn intersect(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let solids: Vec<Solid> = args.get_unlabeled_kw_arg_typed("solids", &RuntimeType::solids(), exec_state)?;
+    let tolerance = args.get_kw_arg_opt("tolerance")?;
 
     if solids.len() < 2 {
         return Err(KclError::UndefinedValue(KclErrorDetails {
@@ -139,7 +146,7 @@ pub async fn intersect(exec_state: &mut ExecState, args: Args) -> Result<KclValu
         }));
     }
 
-    let solids = inner_intersect(solids, exec_state, args).await?;
+    let solids = inner_intersect(solids, tolerance, exec_state, args).await?;
     Ok(solids.into())
 }
 
@@ -199,10 +206,12 @@ pub async fn intersect(exec_state: &mut ExecState, args: Args) -> Result<KclValu
     deprecated = true,
     args = {
         solids = {docs = "The solids to intersect."},
+        tolerance = {docs = "The tolerance to use for the intersection operation."},
     }
 }]
 pub(crate) async fn inner_intersect(
     solids: Vec<Solid>,
+    tolerance: Option<f64>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Vec<Solid>, KclError> {
@@ -217,6 +226,7 @@ pub(crate) async fn inner_intersect(
         exec_state.next_uuid(),
         ModelingCmd::from(mcmd::BooleanIntersection {
             solid_ids: solids.iter().map(|s| s.id).collect(),
+            tolerance: LengthUnit(tolerance.unwrap_or(DEFAULT_TOLERANCE)),
         }),
     )
     .await?;
@@ -229,8 +239,9 @@ pub(crate) async fn inner_intersect(
 pub async fn subtract(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let solids: Vec<Solid> = args.get_unlabeled_kw_arg_typed("solids", &RuntimeType::solids(), exec_state)?;
     let tools: Vec<Solid> = args.get_kw_arg_typed("tools", &RuntimeType::solids(), exec_state)?;
+    let tolerance = args.get_kw_arg_opt("tolerance")?;
 
-    let solids = inner_subtract(solids, tools, exec_state, args).await?;
+    let solids = inner_subtract(solids, tools, tolerance, exec_state, args).await?;
     Ok(solids.into())
 }
 
@@ -295,11 +306,13 @@ pub async fn subtract(exec_state: &mut ExecState, args: Args) -> Result<KclValue
     args = {
         solids = {docs = "The solids to use as the base to subtract from."},
         tools = {docs = "The solids to subtract."},
+        tolerance = {docs = "The tolerance to use for the subtraction operation."},
     }
 }]
 pub(crate) async fn inner_subtract(
     solids: Vec<Solid>,
     tools: Vec<Solid>,
+    tolerance: Option<f64>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Vec<Solid>, KclError> {
@@ -316,6 +329,7 @@ pub(crate) async fn inner_subtract(
         ModelingCmd::from(mcmd::BooleanSubtract {
             target_ids: solids.iter().map(|s| s.id).collect(),
             tool_ids: tools.iter().map(|s| s.id).collect(),
+            tolerance: LengthUnit(tolerance.unwrap_or(DEFAULT_TOLERANCE)),
         }),
     )
     .await?;
