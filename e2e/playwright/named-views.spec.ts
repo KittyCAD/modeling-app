@@ -61,7 +61,6 @@ function tomlStringOverWriteNamedViewUuids(toml: string): string {
 }
 
 test.describe('Named view tests', () => {
-  test.skip() // TODO: Jace is working on these
   test('Verify project.toml is not created', async ({ page }, testInfo) => {
     // Create project and load it
     const projectName = 'named-views'
@@ -106,7 +105,7 @@ test.describe('Named view tests', () => {
     )
 
     const toastMessage = page.getByText('Named view uuid1 created.')
-    expect(toastMessage).toBeInViewport()
+    await expect(toastMessage).toBeInViewport()
 
     // Expect project.toml to be generated on disk since a named view was created
     await expect(async () => {
@@ -145,7 +144,7 @@ test.describe('Named view tests', () => {
     await cmdBar.progressCmdBar(false)
 
     let toastMessage = page.getByText('Named view uuid1 created.')
-    expect(toastMessage).toBeInViewport()
+    await expect(toastMessage).toBeInViewport()
 
     // Generate file paths for project.toml
     const projectDirName = testInfo.outputPath('electron-test-projects-dir')
@@ -179,7 +178,7 @@ test.describe('Named view tests', () => {
     await cmdBar.progressCmdBar(false)
 
     toastMessage = page.getByText('Named view uuid1 removed.')
-    expect(toastMessage).toBeInViewport()
+    await expect(toastMessage).toBeInViewport()
 
     await expect(async () => {
       // Read project.toml into memory again since we deleted a named view
@@ -187,8 +186,8 @@ test.describe('Named view tests', () => {
       // Rewrite the uuids in the named views to match snapshot otherwise they will be randomly generated from rust and break
       tomlString = tomlStringOverWriteNamedViewUuids(tomlString)
 
-      // // Write the entire tomlString to a snapshot.
-      // // There are many key/value pairs to check this is a safer match.
+      // Write the entire tomlString to a snapshot.
+      // There are many key/value pairs to check this is a safer match.
       expect(tomlString).toMatchSnapshot('verify-named-view-gets-deleted')
     }).toPass()
   })
@@ -211,7 +210,7 @@ test.describe('Named view tests', () => {
     await cmdBar.progressCmdBar(false)
 
     let toastMessage = page.getByText('Named view uuid1 created.')
-    expect(toastMessage).toBeInViewport()
+    await expect(toastMessage).toBeInViewport()
 
     // Generate file paths for project.toml
     const projectDirName = testInfo.outputPath('electron-test-projects-dir')
@@ -270,7 +269,7 @@ test.describe('Named view tests', () => {
     await cmdBar.progressCmdBar(false)
 
     let toastMessage = page.getByText('Named view uuid1 created.')
-    expect(toastMessage).toBeInViewport()
+    await expect(toastMessage).toBeInViewport()
 
     const orbitMouseStart = { x: 800, y: 130 }
     const orbitMouseEnd = { x: 0, y: 130 }
@@ -281,7 +280,7 @@ test.describe('Named view tests', () => {
     })
     await page.mouse.up({ button: 'middle' })
 
-    await page.waitForTimeout(1000)
+    await page.waitForTimeout(5000)
 
     await cmdBar.openCmdBar()
     await cmdBar.chooseCommand('create named view')
@@ -289,7 +288,7 @@ test.describe('Named view tests', () => {
     await cmdBar.progressCmdBar(false)
 
     toastMessage = page.getByText('Named view uuid2 created.')
-    expect(toastMessage).toBeInViewport()
+    await expect(toastMessage).toBeInViewport()
 
     // Generate paths for the project.toml
     const tempProjectSettingsFilePath = join(
