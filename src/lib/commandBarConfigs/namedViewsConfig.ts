@@ -214,7 +214,7 @@ export function createNamedViewsCommand() {
             toastCallback: () => {
               toast.success(`Named view ${viewToDelete.name} removed.`)
             },
-        },
+          },
         })
       } else {
         toast.error(`Unable to delete, could not find the named view`)

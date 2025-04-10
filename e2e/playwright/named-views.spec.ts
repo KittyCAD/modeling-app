@@ -271,10 +271,7 @@ test.describe('Named view tests', () => {
     let toastMessage = page.getByText('Named view uuid1 created.')
     await expect(toastMessage).toBeInViewport()
 
-    await scene.moveCameraTo(
-      { x: 608, y: 0, z: 0},
-      { x: 0, y: 0, z: 0 }
-    )
+    await scene.moveCameraTo({ x: 608, y: 0, z: 0 }, { x: 0, y: 0, z: 0 })
     await page.waitForTimeout(2500)
 
     await cmdBar.openCmdBar()
