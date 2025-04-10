@@ -230,15 +230,11 @@ export class SceneFixture {
     await expect(this.networkToggleConnected).toBeVisible({ timeout })
   }
 
-  settled = async (cmdBar: CmdBarFixture) => {
+  settled = async (cmdBar?: CmdBarFixture) => {
     const u = await getUtils(this.page)
 
     await expect(this.startEditSketchBtn).not.toBeDisabled({ timeout: 15_000 })
     await expect(this.startEditSketchBtn).toBeVisible()
-
-    await cmdBar.openCmdBar()
-    await cmdBar.chooseCommand('Settings · app · show debug panel')
-    await cmdBar.selectOption({ name: 'on' }).click()
 
     await u.openDebugPanel()
     await u.expectCmdLog('[data-message-type="execution-done"]')
