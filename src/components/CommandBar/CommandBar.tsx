@@ -14,6 +14,7 @@ import {
   commandBarActor,
   useCommandBarState,
 } from '@src/machines/commandBarMachine'
+import toast from 'react-hot-toast'
 
 export const COMMAND_PALETTE_HOTKEY = 'mod+k'
 
@@ -48,6 +49,7 @@ export const CommandBar = () => {
       immediateState.type === EngineConnectionStateType.Disconnected
     ) {
       commandBarActor.send({ type: 'Close' })
+      toast.error('Exiting command flow because engine disconnected')
     }
   }, [immediateState])
 
