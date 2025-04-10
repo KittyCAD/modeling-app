@@ -271,16 +271,11 @@ test.describe('Named view tests', () => {
     let toastMessage = page.getByText('Named view uuid1 created.')
     await expect(toastMessage).toBeInViewport()
 
-    const orbitMouseStart = { x: 800, y: 130 }
-    const orbitMouseEnd = { x: 0, y: 130 }
-    await page.mouse.move(orbitMouseStart.x, orbitMouseStart.y)
-    await page.mouse.down({ button: 'middle' })
-    await page.mouse.move(orbitMouseEnd.x, orbitMouseEnd.y, {
-      steps: 3,
-    })
-    await page.mouse.up({ button: 'middle' })
-
-    await page.waitForTimeout(5000)
+    await scene.moveCameraTo(
+      { x: 608, y: 0, z: 0},
+      { x: 0, y: 0, z: 0 }
+    )
+    await page.waitForTimeout(2500)
 
     await cmdBar.openCmdBar()
     await cmdBar.chooseCommand('create named view')
