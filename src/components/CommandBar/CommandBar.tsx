@@ -45,13 +45,14 @@ export const CommandBar = () => {
    */
   useEffect(() => {
     if (
-      immediateState.type === EngineConnectionStateType.Disconnecting ||
-      immediateState.type === EngineConnectionStateType.Disconnected
+      !commandBarActor.getSnapshot().matches('Closed') &&
+      (immediateState.type === EngineConnectionStateType.Disconnecting ||
+        immediateState.type === EngineConnectionStateType.Disconnected)
     ) {
       commandBarActor.send({ type: 'Close' })
       toast.error('Exiting command flow because engine disconnected')
     }
-  }, [immediateState])
+  }, [immediateState, commandBarActor])
 
   // Hook up keyboard shortcuts
   useHotkeyWrapper([COMMAND_PALETTE_HOTKEY], () => {
