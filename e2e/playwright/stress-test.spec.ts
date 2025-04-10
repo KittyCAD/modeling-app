@@ -7,7 +7,6 @@ test.describe('Stress test', () => {
     scene,
     page,
   }, testInfo) => {
-    page.on('console', console.log)
     const projectName = 'stress-test-project'
     // Create and load project
     await createProject({ name: projectName, page })
