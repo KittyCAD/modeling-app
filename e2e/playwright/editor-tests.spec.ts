@@ -1144,7 +1144,7 @@ sketch001 = startSketchOn(XZ)
   )
 
   test(
-    `Can use the import stdlib function on a local OBJ file`,
+    `Can import a local OBJ file`,
     { tag: '@electron' },
     async ({ page, context }, testInfo) => {
       test.fixme(orRunWhenFullSuiteEnabled())
@@ -1194,7 +1194,7 @@ sketch001 = startSketchOn(XZ)
           .toBeLessThan(15)
       })
       await test.step(`Write the import function line`, async () => {
-        await u.codeLocator.fill(`import('cube.obj')`)
+        await u.codeLocator.fill(`import 'cube.obj'\ncube`)
         await page.waitForTimeout(800)
       })
       await test.step(`Reset the camera before checking`, async () => {

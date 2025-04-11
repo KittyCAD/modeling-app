@@ -389,6 +389,13 @@ export class LanguageServerPlugin implements PluginValue {
         }
 
         if (insertText && insertTextFormat === 2) {
+          // We end with ${} so you can jump to the end of the snippet.
+          // After the last argument.
+          // This is not standard from the lsp so we add it here.
+          if (insertText.endsWith(')')) {
+            // We have a function its safe to insert the ${} at the end.
+            insertText = insertText + '${}'
+          }
           return snippetCompletion(insertText, completion)
         }
 

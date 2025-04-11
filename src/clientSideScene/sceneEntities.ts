@@ -1178,7 +1178,8 @@ export class SceneEntities {
     _ast = pResult.program
 
     // do a quick mock execution to get the program memory up-to-date
-    await this.kclManager.executeAstMock(_ast)
+    const didReParse = await this.kclManager.executeAstMock(_ast)
+    if (err(didReParse)) return didReParse
 
     const justCreatedNode = getNodeFromPath<VariableDeclaration>(
       _ast,
@@ -1578,7 +1579,8 @@ export class SceneEntities {
     _ast = pResult.program
 
     // do a quick mock execution to get the program memory up-to-date
-    await this.kclManager.executeAstMock(_ast)
+    const didReParse = await this.kclManager.executeAstMock(_ast)
+    if (err(didReParse)) return didReParse
 
     const { truncatedAst } = await this.setupSketch({
       sketchEntryNodePath: updatedEntryNodePath,
@@ -1773,7 +1775,8 @@ export class SceneEntities {
     _ast = pResult.program
 
     // do a quick mock execution to get the program memory up-to-date
-    await this.kclManager.executeAstMock(_ast)
+    const didReParse = await this.kclManager.executeAstMock(_ast)
+    if (err(didReParse)) return didReParse
 
     const index = sg.paths.length // because we've added a new segment that's not in the memory yet
     const draftExpressionsIndices = { start: index, end: index }
@@ -2000,7 +2003,8 @@ export class SceneEntities {
     _ast = pResult.program
 
     // do a quick mock execution to get the program memory up-to-date
-    await this.kclManager.executeAstMock(_ast)
+    const didReParse = await this.kclManager.executeAstMock(_ast)
+    if (err(didReParse)) return didReParse
 
     const index = sg.paths.length // because we've added a new segment that's not in the memory yet
     const draftExpressionsIndices = { start: index, end: index }
@@ -2265,7 +2269,8 @@ export class SceneEntities {
     _ast = pResult.program
 
     // do a quick mock execution to get the program memory up-to-date
-    await this.kclManager.executeAstMock(_ast)
+    const didReParse = await this.kclManager.executeAstMock(_ast)
+    if (err(didReParse)) return didReParse
 
     const { truncatedAst } = await this.setupSketch({
       sketchEntryNodePath: updatedEntryNodePath,
@@ -2498,7 +2503,10 @@ export class SceneEntities {
             addingNewSegmentStatus = 'pending'
             if (trap(mod)) return
 
-            await this.kclManager.executeAstMock(mod.modifiedAst)
+            const didReParse = await this.kclManager.executeAstMock(
+              mod.modifiedAst
+            )
+            if (err(didReParse)) return
             this.tearDownSketch({ removeAxis: false })
             // eslint-disable-next-line @typescript-eslint/no-floating-promises
             this.setupSketch({

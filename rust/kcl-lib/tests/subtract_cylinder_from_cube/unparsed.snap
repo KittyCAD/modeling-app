@@ -14,7 +14,7 @@ fn cube(center) {
 
 part001 = cube([0, 0])
 part002 = startSketchOn(XY)
-  |> circle(center = [0, 0], radius = 2)
-  |> extrude(length = 10)
+  |> circle(center = [2, 2], radius = 2)
+  |> extrude(length = 5)
 
 fullPart = subtract([part001], tools = [part002])
