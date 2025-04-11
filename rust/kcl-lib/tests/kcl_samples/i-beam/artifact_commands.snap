@@ -268,7 +268,8 @@ description: Artifact commands i-beam.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 72.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
