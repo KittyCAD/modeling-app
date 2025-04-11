@@ -535,7 +535,7 @@ part001 = startSketchOn(XZ)
         intersectTag = a,
         offset = 0
       }, %)
-  |> tangentialArcTo([13.14 + 0, 13.14], %)
+  |> tangentialArc(endAbsolute = [13.14 + 0, 13.14])
   |> close()
   |> extrude(length = 5 + 7)
     `
@@ -574,7 +574,7 @@ part001 = startSketchOn(XZ)
 
     const extrusionTopCap: Coords2d = [800, 240]
     const flatExtrusionFace: Coords2d = [960, 160]
-    const tangentialArcTo: Coords2d = [840, 160]
+    const tangentialArc: Coords2d = [840, 160]
     const close: Coords2d = [720, 200]
     const nothing: Coords2d = [600, 200]
     const closeEdge: Coords2d = [744, 233]
@@ -671,28 +671,28 @@ part001 = startSketchOn(XZ)
     )
 
     await checkCodeAtHoverPosition(
-      'tangentialArcTo',
-      tangentialArcTo,
-      'tangentialArcTo([13.14+0,13.14],%)extrude(length=5+7)',
-      'tangentialArcTo([13.14 + 0, 13.14], %)'
+      'tangentialArc',
+      tangentialArc,
+      'tangentialArc(endAbsolute=[13.14+0,13.14])extrude(length=5+7)',
+      'tangentialArc(endAbsolute = [13.14 + 0, 13.14])'
     )
     await checkCodeAtHoverPosition(
       'tangentialArcEdge',
       tangentialArcEdge,
-      `tangentialArcTo([13.14+0,13.14],%)`,
-      'tangentialArcTo([13.14 + 0, 13.14], %)'
+      `tangentialArc(endAbsolute=[13.14+0,13.14])`,
+      'tangentialArc(endAbsolute = [13.14 + 0, 13.14])'
     )
     await checkCodeAtHoverPosition(
       'tangentialArcOppositeEdge',
       tangentialArcOppositeEdge,
-      `tangentialArcTo([13.14+0,13.14],%)`,
-      'tangentialArcTo([13.14 + 0, 13.14], %)'
+      `tangentialArc(endAbsolute=[13.14+0,13.14])`,
+      'tangentialArc(endAbsolute = [13.14 + 0, 13.14])'
     )
     await checkCodeAtHoverPosition(
       'tangentialArcAdjacentEdge',
       tangentialArcAdjacentEdge,
-      `tangentialArcTo([13.14+0,13.14],%)`,
-      'tangentialArcTo([13.14 + 0, 13.14], %)'
+      `tangentialArc(endAbsolute=[13.14+0,13.14])`,
+      'tangentialArc(endAbsolute = [13.14 + 0, 13.14])'
     )
 
     await checkCodeAtHoverPosition(
@@ -940,7 +940,7 @@ part001 = startSketchOn(XZ)
       },
       {
         pos: [1107, 161],
-        expectedCode: 'tangentialArcTo([167.95, -28.85], %)',
+        expectedCode: 'tangentialArc(endAbsolute = [167.95, -28.85])',
       },
     ] as const
     await page.addInitScript(

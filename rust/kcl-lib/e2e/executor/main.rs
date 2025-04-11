@@ -159,7 +159,7 @@ async fn kcl_test_basic_tangential_arc_with_point() {
     let code = r#"boxSketch = startSketchOn(XY)
     |> startProfileAt([0, 0], %)
     |> line(end = [0, 10])
-    |> tangentialArcToRelative([-5, 5], %)
+    |> tangentialArc(end = [-5, 5])
     |> line(end = [5, -15])
     |> extrude(length = 10)
 "#;
@@ -173,7 +173,7 @@ async fn kcl_test_basic_tangential_arc_to() {
     let code = r#"boxSketch = startSketchOn(XY)
     |> startProfileAt([0, 0], %)
     |> line(end = [0, 10])
-    |> tangentialArcTo([-5, 15], %)
+    |> tangentialArc(endAbsolute = [-5, 15])
     |> line(end = [5, -15])
     |> extrude(length = 10)
 "#;
@@ -224,14 +224,14 @@ wallMountL = 8
 bracket = startSketchOn(XY)
   |> startProfileAt([0, 0], %)
   |> line(end = [0, wallMountL])
-  |> tangentialArc({ radius= filletR, offset: 90 }, %)
+  |> tangentialArc(radius = filletR, angle = 90 )
   |> line(end = [-shelfMountL, 0])
   |> line(end = [0, -thickness])
   |> line(end = [shelfMountL, 0])
-  |> tangentialArc({
-       radius= filletR - thickness,
-       offset: -90
-     }, %)
+  |> tangentialArc(
+       radius = filletR - thickness,
+       angle = -90,
+     )
   |> line(end = [0, -wallMountL])
   |> close()
   |> extrude(length = width)
@@ -306,7 +306,7 @@ thing = other_circle([2, 2], 20)
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_rounded_with_holes() {
     let code = r#"fn tarc = (to, sktch, tag?) => {
-  return tangentialArcTo(to, sktch, tag)
+  return tangentialArc(sktch, endAbsolute = to, tag = tag)
 }
 
 fn roundedRectangle = (pos, w, l, cornerRadius) => {
@@ -705,7 +705,7 @@ async fn kcl_test_error_sketch_on_arc_face() {
     let code = r#"fn cube = (pos, scale) => {
   sg = startSketchOn(XY)
   |> startProfileAt(pos, %)
-  |> tangentialArcToRelative([0, scale], %, $here)
+  |> tangentialArc(end = [0, scale], tag = $here)
   |> line(end = [scale, 0])
   |> line(end = [0, -scale])
 
@@ -1342,7 +1342,7 @@ async fn kcl_test_error_empty_start_sketch_on_string() {
   |> line(end = [190.03, -118.13])
   |> line(end = [-33.38, -202.86])
   |> line(end = [-315.86, -64.2])
-  |> tangentialArcTo([-147.66, 121.34], %)
+  |> tangentialArc(endAbsolute = [-147.66, 121.34])
   |> close()
   |> extrude(length = 100)
 
@@ -1352,10 +1352,11 @@ secondSketch = startSketchOn(part001, '')
 "#;
 
     let result = execute_and_snapshot(code, None).await;
-    assert!(result.is_err());
+    let err = result.unwrap_err();
+    let err = err.as_kcl_error().unwrap();
     assert_eq!(
-        result.err().unwrap().to_string(),
-        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([297, 299, 0])], message: "Argument at index 1 was supposed to be type Option<FaceTag> but found string (text)" }"#
+        err.message(),
+        "Argument at index 1 was supposed to be type Option<FaceTag> but found string (text)"
     );
 }
 

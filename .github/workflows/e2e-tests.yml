@@ -231,6 +231,11 @@ jobs:
         env:
           token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
           snapshottoken: ${{ secrets.KITTYCAD_API_TOKEN }}
+          TAB_API_URL: ${{ secrets.TAB_API_URL }}
+          TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
+          CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
+          CI_PR_NUMBER: ${{ github.event.pull_request.number }}
+          TARGET: web
 
       - uses: actions/upload-artifact@v4
         if: ${{ needs.conditions.outputs.should-run == 'true' && !cancelled() && (success() || failure()) }}
@@ -365,6 +370,11 @@ jobs:
         env:
           FAIL_ON_CONSOLE_ERRORS: true
           token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
+          TAB_API_URL: ${{ secrets.TAB_API_URL }}
+          TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
+          CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
+          CI_PR_NUMBER: ${{ github.event.pull_request.number }}
+          TARGET: desktop
 
       - uses: actions/upload-artifact@v4
         if: ${{ needs.conditions.outputs.should-run == 'true' && always() }}

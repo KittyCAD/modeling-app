@@ -550,7 +550,7 @@ openSketch = startSketchOn(XY)
   |> startProfileAt([-5, 0], %)
   |> line(endAbsolute = [0, 5])
   |> xLine(length = 5)
-  |> tangentialArcTo([10, 0], %)
+  |> tangentialArc(endAbsolute = [10, 0])
 `
     const viewPortSize = { width: 1000, height: 500 }
     await page.setBodyDimensions(viewPortSize)
@@ -634,8 +634,8 @@ openSketch = startSketchOn(XY)
       // Wait for enter sketch mode to complete
       await page.waitForTimeout(500)
       await editor.expectState({
-        activeLines: [`|>tangentialArcTo([10,0],%)`],
-        highlightedCode: 'tangentialArcTo([10,0],%)',
+        activeLines: [`|>tangentialArc(endAbsolute=[10,0])`],
+        highlightedCode: 'tangentialArc(endAbsolute=[10,0])',
         diagnostics: [],
       })
     })
@@ -1624,7 +1624,7 @@ profile001 = circle(sketch001, center = [0, 0], radius = 500)
 sketch002 = startSketchOn(XZ)
   |> startProfileAt([0, 0], %)
   |> xLine(length = -500)
-  |> tangentialArcTo([-2000, 500], %)`,
+  |> tangentialArc(endAbsolute = [-2000, 500])`,
     },
     {
       targetType: 'rectangle',
@@ -1640,7 +1640,7 @@ profile001 = startProfileAt([-400, -400], sketch001)
 sketch002 = startSketchOn(XZ)
   |> startProfileAt([0, 0], %)
   |> xLine(length = -500)
-  |> tangentialArcTo([-2000, 500], %)`,
+  |> tangentialArc(endAbsolute = [-2000, 500])`,
     },
   ]
   sweepCases.map(({ initialCode, targetType, testPoint }) => {

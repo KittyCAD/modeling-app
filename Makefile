@@ -17,7 +17,7 @@ WASM_PACK ?= $(USERPROFILE)/.cargo/bin/wasm-pack.exe
 else
 CARGO ?= ~/.cargo/bin/cargo
 WASM_PACK ?= ~/.cargo/bin/wasm-pack
-endif 
+endif
 
 .PHONY: install
 install: node_modules/.npm-integrity $(CARGO) $(WASM_PACK) ## Install dependencies

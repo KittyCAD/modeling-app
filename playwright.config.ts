@@ -45,6 +45,7 @@ export default defineConfig({
     [process.env.CI ? 'dot' : 'list'],
     ['json', { outputFile: './test-results/report.json' }],
     ['html'],
+    ['./e2e/playwright/lib/api-reporter.ts'],
   ],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {

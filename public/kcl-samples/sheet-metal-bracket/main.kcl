@@ -37,49 +37,25 @@ bracketProfile = startSketchOn(XZ)
        0
      ], %)
   |> xLine(length = flangeLength)
-  |> tangentialArc({
-       radius = exteriorBendRadius,
-       offset = bendAngle
-     }, %)
+  |> tangentialArc(radius = exteriorBendRadius, angle = bendAngle)
   |> angledLine(angle = bendAngle, endAbsoluteY = hatHeight - thickness, tag = $seg01)
-  |> tangentialArc({
-       radius = interiorBendRadius,
-       offset = -bendAngle
-     }, %)
+  |> tangentialArc(radius = interiorBendRadius, angle = -bendAngle)
   |> xLine(endAbsolute = 0, tag = $seg02)
   |> xLine(length = segLen(seg02))
-  |> tangentialArc({
-       radius = interiorBendRadius,
-       offset = -bendAngle
-     }, %)
+  |> tangentialArc(radius = interiorBendRadius, angle = -bendAngle)
   |> angledLine(angle = -bendAngle, length = segLen(seg01))
-  |> tangentialArc({
-       radius = exteriorBendRadius,
-       offset = bendAngle
-     }, %)
+  |> tangentialArc(radius = exteriorBendRadius, angle = bendAngle)
   |> xLine(length = flangeLength)
   |> yLine(length = thickness, tag = $seg03)
   |> xLine(length = -flangeLength, tag = $seg04)
-  |> tangentialArc({
-       radius = interiorBendRadius,
-       offset = -bendAngle
-     }, %)
+  |> tangentialArc(radius = interiorBendRadius, angle = -bendAngle)
   |> angledLine(angle = 180 - bendAngle, length = segLen(seg01))
-  |> tangentialArc({
-       radius = exteriorBendRadius,
-       offset = bendAngle
-     }, %)
+  |> tangentialArc(radius = exteriorBendRadius, angle = bendAngle)
   |> xLine(endAbsolute = 0, tag = $seg05)
   |> xLine(length = -segLen(seg05))
-  |> tangentialArc({
-       radius = exteriorBendRadius,
-       offset = bendAngle
-     }, %)
+  |> tangentialArc(radius = exteriorBendRadius, angle = bendAngle)
   |> angledLine(angle = bendAngle - 180, length = segLen(seg01))
-  |> tangentialArc({
-       radius = interiorBendRadius,
-       offset = -bendAngle
-     }, %)
+  |> tangentialArc(radius = interiorBendRadius, angle = -bendAngle)
   |> xLine(length = -flangeLength, tag = $seg06)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg07)
   |> close()

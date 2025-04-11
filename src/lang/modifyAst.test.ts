@@ -28,7 +28,8 @@ import { codeRefFromRange } from '@src/lang/std/artifactGraph'
 import type { InputArgKeys, SimplifiedArgDetails } from '@src/lang/std/stdTypes'
 import { topLevelRange } from '@src/lang/util'
 import type { Identifier, Literal, LiteralValue } from '@src/lang/wasm'
-import { assertParse, initPromise, recast } from '@src/lang/wasm'
+import { assertParse, recast } from '@src/lang/wasm'
+import { initPromise } from '@src/lang/wasmUtils'
 import { enginelessExecutor } from '@src/lib/testHelpers'
 import { err } from '@src/lib/trap'
 
@@ -688,7 +689,7 @@ describe('Testing removeSingleConstraintInfo', () => {
         intersectTag = a,
         offset = 0 + 0
       }, %)
-  |> tangentialArcTo([3.14 + 0, 13.14 + 0], %)`
+  |> tangentialArc(endAbsolute = [3.14 + 0, 13.14 + 0])`
     test.each([
       [' line(end = [3 + 0, 4])', 'arrayIndex', 1, ''],
       [
@@ -736,7 +737,12 @@ describe('Testing removeSingleConstraintInfo', () => {
         'offset',
         '',
       ],
-      ['tangentialArcTo([3.14 + 0, 13.14], %)', 'arrayIndex', 1, ''],
+      [
+        'tangentialArc(endAbsolute = [3.14 + 0, 13.14])',
+        'labeledArg',
+        'endAbsolute',
+        '',
+      ],
     ] as const)(
       'stdlib fn: %s',
       async (expectedFinish, key, value, commentLabel) => {
