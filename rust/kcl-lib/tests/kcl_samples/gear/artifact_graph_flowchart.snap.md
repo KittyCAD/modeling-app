@@ -218,10 +218,9 @@ flowchart LR
     220["Segment<br>[2675, 2702, 0]"]
     221["Segment<br>[2708, 2736, 0]"]
     222["Segment<br>[2742, 2770, 0]"]
-    223["Segment<br>[2776, 2896, 0]"]
-    224["Segment<br>[2902, 3011, 0]"]
-    225["Segment<br>[3017, 3024, 0]"]
-    226[Solid2d]
+    223["Segment<br>[2776, 2915, 0]"]
+    224["Segment<br>[2921, 2928, 0]"]
+    225[Solid2d]
   end
   1["Plane<br>[1299, 1316, 0]"]
   5["Sweep Extrusion<br>[1378, 1406, 0]"]
@@ -232,20 +231,20 @@ flowchart LR
   10["SweepEdge Adjacent"]
   11["Plane<br>[1826, 1843, 0]"]
   218["Sweep Extrusion<br>[2099, 2127, 0]"]
-  227["Sweep Extrusion<br>[3030, 3059, 0]"]
+  226["Sweep Extrusion<br>[2934, 2963, 0]"]
+  227[Wall]
   228[Wall]
   229[Wall]
   230[Wall]
-  231[Wall]
-  232["SweepEdge Opposite"]
-  233["SweepEdge Adjacent"]
-  234["SweepEdge Opposite"]
-  235["SweepEdge Adjacent"]
-  236["SweepEdge Opposite"]
-  237["SweepEdge Adjacent"]
-  238["SweepEdge Opposite"]
-  239["SweepEdge Adjacent"]
-  240["StartSketchOnFace<br>[2537, 2563, 0]"]
+  231["SweepEdge Opposite"]
+  232["SweepEdge Adjacent"]
+  233["SweepEdge Opposite"]
+  234["SweepEdge Adjacent"]
+  235["SweepEdge Opposite"]
+  236["SweepEdge Adjacent"]
+  237["SweepEdge Opposite"]
+  238["SweepEdge Adjacent"]
+  239["StartSketchOnFace<br>[2537, 2563, 0]"]
   1 --- 2
   2 --- 3
   2 ---- 5
@@ -471,32 +470,31 @@ flowchart LR
   219 --- 222
   219 --- 223
   219 --- 224
+  219 ---- 226
   219 --- 225
-  219 ---- 227
-  219 --- 226
-  220 --- 231
+  220 --- 230
+  220 --- 237
   220 --- 238
-  220 --- 239
-  221 --- 230
+  221 --- 229
+  221 --- 235
   221 --- 236
-  221 --- 237
-  222 --- 229
+  222 --- 228
+  222 --- 233
   222 --- 234
-  222 --- 235
-  224 --- 228
-  224 --- 232
-  224 --- 233
-  227 --- 228
-  227 --- 229
-  227 --- 230
-  227 --- 231
-  227 --- 232
-  227 --- 233
-  227 --- 234
-  227 --- 235
-  227 --- 236
-  227 --- 237
-  227 --- 238
-  227 --- 239
-  8 <--x 240
+  223 --- 227
+  223 --- 231
+  223 --- 232
+  226 --- 227
+  226 --- 228
+  226 --- 229
+  226 --- 230
+  226 --- 231
+  226 --- 232
+  226 --- 233
+  226 --- 234
+  226 --- 235
+  226 --- 236
+  226 --- 237
+  226 --- 238
+  8 <--x 239
 ```

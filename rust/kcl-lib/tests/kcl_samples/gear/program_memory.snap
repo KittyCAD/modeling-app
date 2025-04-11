@@ -1942,36 +1942,11 @@ description: Variables in memory after executing gear.kcl
             "ccw": false,
             "center": [
               0.0,
-              0.0
+              -0.0
             ],
             "from": [
               0.9922,
               -0.125
-            ],
-            "radius": 1.0,
-            "tag": null,
-            "to": [
-              -1.0,
-              0.0
-            ],
-            "type": "Arc",
-            "units": {
-              "type": "Inches"
-            }
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "ccw": false,
-            "center": [
-              0.0,
-              0.0
-            ],
-            "from": [
-              -1.0,
-              0.0
             ],
             "radius": 1.0,
             "tag": null,
