@@ -184,15 +184,15 @@ handlePlane = startSketchOn(offsetPlane(XY, offset = handleHeightAboveTheFloor))
 
 handleProfilePath = startProfileAt([0 + handleOffset, 0], handlePlane)
   |> yLine(length = -handleLengthSegmentA)
-  |> tangentialArcTo([
+  |> tangentialArc(endAbsolute = [
        handleFillet + handleOffset,
        -handleDepth
-     ], %)
+     ])
   |> xLine(length = handleLengthSegmentB)
-  |> tangentialArcTo([
+  |> tangentialArc(endAbsolute = [
        handleOffset + handleWidth,
        -handleLengthSegmentA
-     ], %)
+     ])
   |> yLine(length = handleLengthSegmentA)
 handleSectionPlane = startSketchOn(XZ)
 handleProfileSection = circle(

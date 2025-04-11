@@ -1,7 +1,8 @@
 import fs from 'node:fs'
 
 import type { Program } from '@src/lang/wasm'
-import { assertParse, initPromise, recast } from '@src/lang/wasm'
+import { assertParse, recast } from '@src/lang/wasm'
+import { initPromise } from '@src/lang/wasmUtils'
 import { err } from '@src/lib/trap'
 
 beforeAll(async () => {

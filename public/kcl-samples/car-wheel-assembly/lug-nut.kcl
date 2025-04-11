@@ -26,7 +26,7 @@ fn lug(plane, length, diameter) {
     |> angledLine(angle = 70, lengthY = lugHeadLength)
     |> xLine(endAbsolute = lugDiameter / 2)
     |> yLine(endAbsolute = lugLength)
-    |> tangentialArc({ offset = 90, radius = fromMm(3) }, %)
+    |> tangentialArc(angle = 90, radius = fromMm(3))
     |> xLine(endAbsolute = 0 + .001, tag = $c1)
     |> yLine(endAbsolute = lugThreadDepth)
     |> xLine(endAbsolute = lugThreadDiameter)

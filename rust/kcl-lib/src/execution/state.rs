@@ -7,6 +7,7 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
+use super::types::NumericType;
 use crate::{
     errors::{KclError, KclErrorDetails, Severity},
     execution::{
@@ -21,8 +22,6 @@ use crate::{
     source_range::SourceRange,
     CompilationError,
 };
-
-use super::types::NumericType;
 
 /// State for executing a program.
 #[derive(Debug, Clone)]

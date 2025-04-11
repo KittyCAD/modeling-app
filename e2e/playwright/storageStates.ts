@@ -98,7 +98,7 @@ part001 = startSketchOn(XZ)
   intersectTag: a,
   offset: 0
 }, %)
-|> tangentialArcTo([13.14 + 0, 13.14], %)
+|> tangentialArc(endAbsolute = [13.14 + 0, 13.14])
 |> close()
 |> extrude(length = 5 + 7)
 `
