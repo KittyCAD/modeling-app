@@ -64,6 +64,7 @@ export enum DisconnectingType {
 export enum ConnectionError {
   Unset = 0,
   LongLoadingTime,
+  VeryLongLoadingTime,
 
   ICENegotiate,
   DataChannelError,
@@ -75,6 +76,7 @@ export enum ConnectionError {
   MissingAuthToken,
   BadAuthToken,
   TooManyConnections,
+  Outage,
 
   // An unknown error is the most severe because it has not been classified
   // or encountered before.
@@ -85,6 +87,8 @@ export const CONNECTION_ERROR_TEXT: Record<ConnectionError, string> = {
   [ConnectionError.Unset]: '',
   [ConnectionError.LongLoadingTime]:
     'Loading is taking longer than expected...',
+  [ConnectionError.VeryLongLoadingTime]:
+    'Loading seems stuck. Do you have a firewall turned on?',
   [ConnectionError.ICENegotiate]: 'ICE negotiation failed.',
   [ConnectionError.DataChannelError]: 'The data channel signaled an error.',
   [ConnectionError.WebSocketError]: 'The websocket signaled an error.',
@@ -94,7 +98,10 @@ export const CONNECTION_ERROR_TEXT: Record<ConnectionError, string> = {
     'Your authorization token is missing; please login again.',
   [ConnectionError.BadAuthToken]:
     'Your authorization token is invalid; please login again.',
-  [ConnectionError.TooManyConnections]: 'There are too many connections.',
+  [ConnectionError.TooManyConnections]:
+    'There are too many open engine connections associated with your account.',
+  [ConnectionError.Outage]:
+    'We seem to be experiencing an outage. Please visit [status.zoo.dev](https://status.zoo.dev) for updates.',
   [ConnectionError.Unknown]:
     'An unexpected error occurred. Please report this to us.',
 }
@@ -989,6 +996,20 @@ class EngineConnection extends EventTarget {
                   type: DisconnectingType.Error,
                   value: {
                     error: ConnectionError.BadAuthToken,
+                    context: firstError.message,
+                  },
+                },
+              }
+              this.disconnectAll()
+            }
+
+            if (firstError.error_code === 'internal_api') {
+              this.state = {
+                type: EngineConnectionStateType.Disconnecting,
+                value: {
+                  type: DisconnectingType.Error,
+                  value: {
+                    error: ConnectionError.Outage,
                     context: firstError.message,
                   },
                 },
