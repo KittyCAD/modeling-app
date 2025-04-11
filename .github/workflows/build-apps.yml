@@ -10,7 +10,8 @@ on:
       - 'nightly-v[0-9]+.[0-9]+.[0-9]+'
 
 env:
-  IS_RELEASE: ${{ github.ref_type == 'tag' && startsWith(github.ref_name, 'v') }}
+  # IS_RELEASE: ${{ github.ref_type == 'tag' && startsWith(github.ref_name, 'v') }}
+  IS_RELEASE: true
   IS_NIGHTLY: ${{ github.ref_type == 'tag' && startsWith(github.ref_name, 'nightly-v') }}
 
 concurrency:
@@ -99,11 +100,11 @@ jobs:
           yarn files:set-version
           yarn files:flip-to-nightly
 
-      - name: Set release version
-        if: ${{ env.IS_RELEASE == 'true' }}
-        run: |
-          export VERSION=${GITHUB_REF_NAME#v}
-          yarn files:set-version
+      # - name: Set release version
+      #   if: ${{ env.IS_RELEASE == 'true' }}
+      #   run: |
+      #     export VERSION=${GITHUB_REF_NAME#v}
+      #     yarn files:set-version
 
       - uses: actions/upload-artifact@v4
         with:
@@ -183,30 +184,32 @@ jobs:
           max_attempts: 3
           command: yarn install
 
+      # Next steps are from Digicert docs at
+      # https://docs.digicert.com/en/digicert-keylocker/ci-cd-integrations/scripts/github/scripts-for-signing-using-ksp-library-on-github.html#ksp-signing-using-github-action-488726
       - name: Prepare certificate and variables (Windows only)
         if: ${{ (env.IS_RELEASE == 'true' || env.IS_NIGHTLY == 'true') && matrix.os == 'windows-2022' }}
         run: |
-          echo "${{secrets.SM_CLIENT_CERT_FILE_B64 }}" | base64 --decode > /d/Certificate_pkcs12.p12
-          cat /d/Certificate_pkcs12.p12
-          echo "::set-output name=version::${GITHUB_REF#refs/tags/v}"
+          CERTIFICATE_PATH=$RUNNER_TEMP/certificate.p12
+          echo "$SM_CLIENT_CERT_FILE_B64" | base64 --decode > $CERTIFICATE_PATH
+          echo "SM_CLIENT_CERT_FILE=$CERTIFICATE_PATH" >> "$GITHUB_ENV"
           echo "SM_HOST=${{ secrets.SM_HOST }}" >> "$GITHUB_ENV"
           echo "SM_API_KEY=${{ secrets.SM_API_KEY }}" >> "$GITHUB_ENV"
-          echo "SM_CLIENT_CERT_FILE=D:\\Certificate_pkcs12.p12" >> "$GITHUB_ENV"
           echo "SM_CLIENT_CERT_PASSWORD=${{ secrets.SM_CLIENT_CERT_PASSWORD }}" >> "$GITHUB_ENV"
           echo "C:\Program Files (x86)\Windows Kits\10\App Certification Kit" >> $GITHUB_PATH
           echo "C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.8 Tools" >> $GITHUB_PATH
-          echo "C:\Program Files\DigiCert\DigiCert One Signing Manager Tools" >> $GITHUB_PATH
+          echo "C:\Program Files\DigiCert\DigiCert Keylocker Tools" >> $GITHUB_PATH
         shell: bash
 
       - name: Setup certicate with SSM KSP (Windows only)
         if: ${{ (env.IS_RELEASE == 'true' || env.IS_NIGHTLY == 'true') && matrix.os == 'windows-2022' }}
         run: |
-          curl -X GET  https://one.digicert.com/signingmanager/api-ui/v1/releases/smtools-windows-x64.msi/download -H "x-api-key:%SM_API_KEY%" -o smtools-windows-x64.msi
-          msiexec /i smtools-windows-x64.msi /quiet /qn
+          curl -X GET  https://one.digicert.com/signingmanager/api-ui/v1/releases/Keylockertools-windows-x64.msi/download -H "x-api-key:%SM_API_KEY%" -o Keylockertools-windows-x64.msi
+          msiexec /i Keylockertools-windows-x64.msi /quiet /qn
           smksp_registrar.exe list
           smctl.exe keypair ls
           C:\Windows\System32\certutil.exe -csp "DigiCert Signing Manager KSP" -key -user
           smksp_cert_sync.exe
+          smctl windows certsync
         shell: cmd
 
       - name: Build the app (debug)
@@ -225,8 +228,8 @@ jobs:
           CSC_LINK: ${{ secrets.APPLE_CERTIFICATE }}
           CSC_KEY_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
           CSC_KEYCHAIN: ${{ secrets.APPLE_SIGNING_IDENTITY }}
-          WINDOWS_CERTIFICATE_THUMBPRINT: ${{ secrets.WINDOWS_CERTIFICATE_THUMBPRINT }}
-          DEBUG: "electron-notarize*"
+          # DEBUG: "electron-notarize*"
+          DEBUG: electron-builder
         # TODO: Fix electron-notarize flakes. The logs above should help gather more data on failures
         uses: nick-fields/retry@v3.0.2
         with:
