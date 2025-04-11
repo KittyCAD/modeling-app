@@ -264,25 +264,12 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
       }) => {
         if (!tronApp) fail()
         await homePage.goToModelingScene()
+        await scene.settled(cmdBar)
         await scene.connectionEstablished()
-
-        // Run electron snippet to find the Menu!
-        await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
-        await tronApp.electron.evaluate(async ({ app }) => {
-          if (!app || !app.applicationMenu) fail()
-          const newProject =
-            app.applicationMenu.getMenuItemById('File.New project')
-          if (!newProject) fail()
-          newProject.click()
-        })
-        // Check that the command bar is opened
-        await expect(cmdBar.cmdBarElement).toBeVisible()
-        // Check the placeholder project name exists
-        const actualArgument = await cmdBar.cmdBarElement
-          .getByTestId('cmd-bar-arg-value')
-          .inputValue()
-        const expectedArgument = 'untitled'
-        expect(actualArgument).toBe(expectedArgument)
+        await scene.isNativeFileMenuCreated()
+        await clickElectronNativeMenuById(tronApp, 'File.New project')
+        await cmdBar.toBeOpened()
+        await cmdBar.expectArgValue('untitled')
       })
       test('Modeling.File.Open project', async ({
         tronApp,
@@ -296,29 +283,12 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
           return
         }
         await homePage.goToModelingScene()
+        await scene.settled(cmdBar)
         await scene.connectionEstablished()
-
-        // Run electron snippet to find the Menu!
-        await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
-        await tronApp.electron.evaluate(async ({ app }) => {
-          if (!app || !app.applicationMenu) {
-            throw new Error('app or app.applicationMenu is missing')
-          }
-          const openProject =
-            app.applicationMenu.getMenuItemById('File.Open project')
-          if (!openProject) {
-            throw new Error('File.Open project')
-          }
-          openProject.click()
-        })
-        // Check that the command bar is opened
-        await expect(cmdBar.cmdBarElement).toBeVisible()
-        // Check the placeholder project name exists
-        const actual = await cmdBar.cmdBarElement
-          .getByTestId('command-name')
-          .textContent()
-        const expected = 'Open project'
-        expect(actual).toBe(expected)
+        await scene.isNativeFileMenuCreated()
+        await clickElectronNativeMenuById(tronApp, 'File.Open project')
+        await cmdBar.toBeOpened()
+        await cmdBar.expectCommandName('Open project')
       })
       test('Modeling.File.Load a sample model', async ({
         tronApp,
@@ -332,30 +302,12 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
           return
         }
         await homePage.goToModelingScene()
+        await scene.settled(cmdBar)
         await scene.connectionEstablished()
-
-        // Run electron snippet to find the Menu!
-        await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
-        await tronApp.electron.evaluate(async ({ app }) => {
-          if (!app || !app.applicationMenu) {
-            throw new Error('app or app.applicationMenu is missing')
-          }
-          const openProject = app.applicationMenu.getMenuItemById(
-            'File.Load a sample model'
-          )
-          if (!openProject) {
-            throw new Error('File.Load a sample model')
-          }
-          openProject.click()
-        })
-        // Check that the command bar is opened
-        await expect(cmdBar.cmdBarElement).toBeVisible()
-        // Check the placeholder project name exists
-        const actual = await cmdBar.cmdBarElement
-          .getByTestId('command-name')
-          .textContent()
-        const expected = 'Open sample'
-        expect(actual).toBe(expected)
+        await scene.isNativeFileMenuCreated()
+        await clickElectronNativeMenuById(tronApp, 'File.Load a sample model')
+        await cmdBar.toBeOpened()
+        await cmdBar.expectCommandName('Open sample')
       })
       test('Modeling.File.Insert from project file', async ({
         tronApp,
@@ -370,29 +322,14 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         }
         await homePage.goToModelingScene()
         await scene.settled(cmdBar)
-
-        // Run electron snippet to find the Menu!
-        await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
-        await tronApp.electron.evaluate(async ({ app }) => {
-          if (!app || !app.applicationMenu) {
-            throw new Error('app or app.applicationMenu is missing')
-          }
-          const openProject = app.applicationMenu.getMenuItemById(
-            'File.Insert from project file'
-          )
-          if (!openProject) {
-            throw new Error('File.Insert from project file')
-          }
-          openProject.click()
-        })
-        // Check that the command bar is opened
-        await expect(cmdBar.cmdBarElement).toBeVisible()
-        // Check the placeholder project name exists
-        const actual = await cmdBar.cmdBarElement
-          .getByTestId('command-name')
-          .textContent()
-        const expected = 'Insert'
-        expect(actual).toBe(expected)
+        await scene.connectionEstablished()
+        await scene.isNativeFileMenuCreated()
+        await clickElectronNativeMenuById(
+          tronApp,
+          'File.Insert from project file'
+        )
+        await cmdBar.toBeOpened()
+        await cmdBar.expectCommandName('Insert')
       })
       test('Modeling.File.Export current part', async ({
         tronApp,
@@ -406,30 +343,12 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
           return
         }
         await homePage.goToModelingScene()
+        await scene.settled(cmdBar)
         await scene.connectionEstablished()
-
-        // Run electron snippet to find the Menu!
-        await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
-        await tronApp.electron.evaluate(async ({ app }) => {
-          if (!app || !app.applicationMenu) {
-            throw new Error('app or app.applicationMenu is missing')
-          }
-          const openProject = app.applicationMenu.getMenuItemById(
-            'File.Export current part'
-          )
-          if (!openProject) {
-            throw new Error('File.Export current part')
-          }
-          openProject.click()
-        })
-        // Check that the command bar is opened
-        await expect(cmdBar.cmdBarElement).toBeVisible()
-        // Check the placeholder project name exists
-        const actual = await cmdBar.cmdBarElement
-          .getByTestId('command-name')
-          .textContent()
-        const expected = 'Export'
-        expect(actual).toBe(expected)
+        await scene.isNativeFileMenuCreated()
+        await clickElectronNativeMenuById(tronApp, 'File.Export current part')
+        await cmdBar.toBeOpened()
+        await cmdBar.expectCommandName('Export')
       })
       test('Modeling.File.Share current part (via Zoo link)', async ({
         tronApp,
@@ -443,23 +362,13 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
           return
         }
         await homePage.goToModelingScene()
+        await scene.settled(cmdBar)
         await scene.connectionEstablished()
-
-        // Run electron snippet to find the Menu!
-        await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
-        await tronApp.electron.evaluate(async ({ app }) => {
-          if (!app || !app.applicationMenu) {
-            throw new Error('app or app.applicationMenu is missing')
-          }
-          const openProject = app.applicationMenu.getMenuItemById(
-            'File.Share current part (via Zoo link)'
-          )
-          if (!openProject) {
-            throw new Error('File.Share current part (via Zoo link)')
-          }
-          openProject.click()
-        })
-
+        await scene.isNativeFileMenuCreated()
+        await clickElectronNativeMenuById(
+          tronApp,
+          'File.Share current part (via Zoo link)'
+        )
         const textToCheck =
           'Link copied to clipboard. Anyone who clicks this link will get a copy of this file. Share carefully!'
         // Check if text appears anywhere in the page
@@ -480,29 +389,15 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         }
         await homePage.goToModelingScene()
         await scene.connectionEstablished()
-
-        // Run electron snippet to find the Menu!
-        await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
-        await tronApp.electron.evaluate(async ({ app }) => {
-          if (!app || !app.applicationMenu) {
-            throw new Error('app or app.applicationMenu is missing')
-          }
-          const openProject = app.applicationMenu.getMenuItemById(
-            'File.Preferences.Project settings'
-          )
-          if (!openProject) {
-            throw new Error('File.Preferences.Project settings')
-          }
-          openProject.click()
-        })
-
-        const settings = page.getByTestId('settings-dialog-panel')
-        await expect(settings).toBeVisible()
-        // You are viewing the user tab
-        const actualText = settings.getByText(
+        await scene.isNativeFileMenuCreated()
+        await clickElectronNativeMenuById(
+          tronApp,
+          'File.Preferences.Project settings'
+        )
+        await openSettingsExpectText(
+          page,
           'The hue of the primary theme color for the app'
         )
-        await expect(actualText).toBeVisible()
       })
       test('Modeling.File.Preferences.User settings', async ({
         tronApp,
@@ -517,28 +412,12 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         }
         await homePage.goToModelingScene()
         await scene.connectionEstablished()
-
-        // Run electron snippet to find the Menu!
-        await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
-        await tronApp.electron.evaluate(async ({ app }) => {
-          if (!app || !app.applicationMenu) {
-            throw new Error('app or app.applicationMenu is missing')
-          }
-          const userSettings = app.applicationMenu.getMenuItemById(
-            'File.Preferences.User settings'
-          )
-          if (!userSettings) {
-            throw new Error('File.Preferences.User settings')
-          }
-          userSettings.click()
-        })
-        const settings = page.getByTestId('settings-dialog-panel')
-        await expect(settings).toBeVisible()
-        // You are viewing the user tab
-        const actualText = settings.getByText(
-          'The overall appearance of the app'
+        await scene.isNativeFileMenuCreated()
+        await clickElectronNativeMenuById(
+          tronApp,
+          'File.Preferences.User settings'
         )
-        await expect(actualText).toBeVisible()
+        await openSettingsExpectText(page, 'The overall appearance of the app')
       })
       test('Modeling.File.Preferences.Keybindings', async ({
         tronApp,
@@ -553,26 +432,12 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         }
         await homePage.goToModelingScene()
         await scene.connectionEstablished()
-
-        // Run electron snippet to find the Menu!
-        await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
-        await tronApp.electron.evaluate(async ({ app }) => {
-          if (!app || !app.applicationMenu) {
-            throw new Error('app or app.applicationMenu is missing')
-          }
-          const keybindings = app.applicationMenu.getMenuItemById(
-            'File.Preferences.Keybindings'
-          )
-          if (!keybindings) {
-            throw new Error('File.Preferences.Keybindings')
-          }
-          keybindings.click()
-        })
-        const settings = page.getByTestId('settings-dialog-panel')
-        await expect(settings).toBeVisible()
-        // You are viewing the keybindings tab
-        const enterSketchMode = settings.locator('#enter-sketch-mode')
-        await expect(enterSketchMode).toBeVisible()
+        await scene.isNativeFileMenuCreated()
+        await clickElectronNativeMenuById(
+          tronApp,
+          'File.Preferences.Keybindings'
+        )
+        await openSettingsExpectLocator(page, '#enter-sketch-mode')
       })
       test('Modeling.File.Preferences.User default units', async ({
         tronApp,
@@ -587,25 +452,12 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         }
         await homePage.goToModelingScene()
         await scene.connectionEstablished()
-
-        // Run electron snippet to find the Menu!
-        await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
-        await tronApp.electron.evaluate(async ({ app }) => {
-          if (!app || !app.applicationMenu) {
-            throw new Error('app or app.applicationMenu is missing')
-          }
-          const menu = app.applicationMenu.getMenuItemById(
-            'File.Preferences.User default units'
-          )
-          if (!menu) {
-            throw new Error('File.Preferences.User default units')
-          }
-          menu.click()
-        })
-        const settings = page.getByTestId('settings-dialog-panel')
-        await expect(settings).toBeVisible()
-        const defaultUnit = settings.locator('#defaultUnit')
-        await expect(defaultUnit).toBeVisible()
+        await scene.isNativeFileMenuCreated()
+        await clickElectronNativeMenuById(
+          tronApp,
+          'File.Preferences.User default units'
+        )
+        await openSettingsExpectLocator(page, '#defaultUnit')
       })
       test('Modeling.File.Preferences.Theme', async ({
         tronApp,
@@ -619,30 +471,12 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
           return
         }
         await homePage.goToModelingScene()
+        await scene.settled(cmdBar)
         await scene.connectionEstablished()
-
-        // Run electron snippet to find the Menu!
-        await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
-        await tronApp.electron.evaluate(async ({ app }) => {
-          if (!app || !app.applicationMenu) {
-            throw new Error('app or app.applicationMenu is missing')
-          }
-          const menu = app.applicationMenu.getMenuItemById(
-            'File.Preferences.Theme'
-          )
-          if (!menu) {
-            throw new Error('File.Preferences.Theme')
-          }
-          menu.click()
-        })
-        // Check that the command bar is opened
-        await expect(cmdBar.cmdBarElement).toBeVisible()
-        // Check the placeholder project name exists
-        const actual = await cmdBar.cmdBarElement
-          .getByTestId('command-name')
-          .textContent()
-        const expected = 'Settings · app · theme'
-        expect(actual).toBe(expected)
+        await scene.isNativeFileMenuCreated()
+        await clickElectronNativeMenuById(tronApp, 'File.Preferences.Theme')
+        await cmdBar.toBeOpened()
+        await cmdBar.expectCommandName('Settings · app · theme')
       })
       test('Modeling.File.Preferences.Theme color', async ({
         tronApp,
@@ -657,25 +491,12 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         }
         await homePage.goToModelingScene()
         await scene.connectionEstablished()
-
-        // Run electron snippet to find the Menu!
-        await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
-        await tronApp.electron.evaluate(async ({ app }) => {
-          if (!app || !app.applicationMenu) {
-            throw new Error('app or app.applicationMenu is missing')
-          }
-          const menu = app.applicationMenu.getMenuItemById(
-            'File.Preferences.Theme color'
-          )
-          if (!menu) {
-            throw new Error('File.Preferences.Theme color')
-          }
-          menu.click()
-        })
-        const settings = page.getByTestId('settings-dialog-panel')
-        await expect(settings).toBeVisible()
-        const defaultUnit = settings.locator('#themeColor')
-        await expect(defaultUnit).toBeVisible()
+        await scene.isNativeFileMenuCreated()
+        await clickElectronNativeMenuById(
+          tronApp,
+          'File.Preferences.Theme color'
+        )
+        await openSettingsExpectLocator(page, '#themeColor')
       })
       test('Modeling.File.Preferences.Sign out', async ({
         tronApp,
@@ -690,27 +511,8 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         }
         await homePage.goToModelingScene()
         await scene.connectionEstablished()
-
-        // Run electron snippet to find the Menu!
-        await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
-        await expect
-          .poll(
-            async () =>
-              await tronApp.electron.evaluate(async ({ app }) => {
-                if (!app || !app.applicationMenu) {
-                  throw new Error('app or app.applicationMenu is missing')
-                }
-                const menu =
-                  app.applicationMenu.getMenuItemById('File.Sign out')
-                if (!menu) {
-                  throw new Error('File.Sign out')
-                }
-                // FIXME: Add back when you can actually sign out
-                // menu.click()
-                return true
-              })
-          )
-          .toBe(true)
+        await scene.isNativeFileMenuCreated()
+        await clickElectronNativeMenuById(tronApp, 'File.Sign out')
         // FIXME: When signing out during E2E the page is not bound correctly.
         // It cannot find the button
         // const signIn = page.getByTestId('sign-in-button')
@@ -730,28 +532,15 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
           return
         }
         await homePage.goToModelingScene()
+        await scene.settled(cmdBar)
         await scene.connectionEstablished()
-
-        // Run electron snippet to find the Menu!
-        await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
-        await tronApp.electron.evaluate(async ({ app }) => {
-          if (!app || !app.applicationMenu) {
-            throw new Error('app or app.applicationMenu is missing')
-          }
-          const menu = app.applicationMenu.getMenuItemById(
-            'Edit.Modify with Zoo Text-To-CAD'
-          )
-          if (!menu) {
-            throw new Error('Edit.Modify with Zoo Text-To-CAD')
-          }
-          menu.click()
-        })
-        // Check the placeholder project name exists
-        const actual = await cmdBar.cmdBarElement
-          .getByTestId('command-name')
-          .textContent()
-        const expected = 'Prompt-to-edit'
-        expect(actual).toBe(expected)
+        await scene.isNativeFileMenuCreated()
+        await clickElectronNativeMenuById(
+          tronApp,
+          'Edit.Modify with Zoo Text-To-CAD'
+        )
+        await cmdBar.toBeOpened()
+        await cmdBar.expectCommandName('Prompt-to-edit')
       })
       test('Modeling.Edit.Edit parameter', async ({
         tronApp,

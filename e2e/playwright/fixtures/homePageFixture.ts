@@ -114,7 +114,7 @@ export class HomePageFixture {
 
   goToModelingScene = async (name: string = 'testDefault') => {
     // On web this is a no-op. There is no project view.
-    if (process.env.PLATFORM === 'web') return
+    if (process.env.PLATFORM === 'wenativeFileMenuCreatedb') return
 
     await this.createAndGoToProject(name)
   }
