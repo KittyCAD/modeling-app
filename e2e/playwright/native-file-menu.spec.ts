@@ -9,25 +9,22 @@ import { expect, test } from '@e2e/playwright/zoo-test'
 test.describe('Native file menu', { tag: ['@electron'] }, () => {
   test.describe('Home page', () => {
     test.describe('File role', () => {
-      test('Home.File.Create project', async ({ tronApp, cmdBar, page }) => {
+      test('Home.File.Create project', async ({ tronApp, cmdBar, page, homePage }) => {
         if (!tronApp) fail()
-        // Run electron snippet to find the Menu!
-        await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
-        await expect
-          .poll(
-            async () =>
-              await tronApp.electron.evaluate(async ({ app }) => {
-                if (!app || !app.applicationMenu) {
-                  return false
-                }
-                const newProject =
-                  app.applicationMenu.getMenuItemById('File.New project')
-                if (!newProject) return false
-                newProject.click()
-                return true
-              })
-          )
-          .toBe(true)
+        await homePage.projectsLoaded()
+        await homePage.isNativeFileMenuCreated()
+
+            await tronApp.electron.evaluate(async ({ app }) => {
+              if (!app || !app.applicationMenu) {
+                return false
+              }
+              const newProject =
+                app.applicationMenu.getMenuItemById('File.New project')
+              if (!newProject) return false
+              newProject.click()
+              return true
+            })
+    
         // Check that the command bar is opened
         await expect(cmdBar.cmdBarElement).toBeVisible()
         // Check the placeholder project name exists

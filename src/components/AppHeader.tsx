@@ -15,6 +15,7 @@ interface AppHeaderProps extends React.PropsWithChildren {
   className?: string
   enableMenu?: boolean
   style?: React.CSSProperties
+  nativeFileMenuCreated: boolean
 }
 
 export const AppHeader = ({
@@ -24,12 +25,14 @@ export const AppHeader = ({
   className = '',
   style,
   enableMenu = false,
+  nativeFileMenuCreated
 }: AppHeaderProps) => {
   const user = useUser()
 
   return (
     <header
       id="app-header"
+      data-testid="app-header"
       className={
         'w-full grid ' +
         styles.header +
@@ -38,6 +41,7 @@ export const AppHeader = ({
         }overlaid-panes sticky top-0 z-20 px-2 items-start ` +
         className
       }
+      data-native-file-menu={nativeFileMenuCreated}
       style={style}
     >
       <ProjectSidebarMenu

@@ -1,4 +1,14 @@
-import * as TOML from '@iarna/toml'
+await tronApp.electron.evaluate(async ({ app }) => {
+  if (!app || !app.applicationMenu) {
+    return false
+  }
+  const newProject =
+    app.applicationMenu.getMenuItemById('File.New project')
+  if (!newProject) return false
+  newProject.click()
+  return true
+})
+)import * as TOML from '@iarna/toml'
 import type { Models } from '@kittycad/lib'
 import type { BrowserContext, Locator, Page, TestInfo } from '@playwright/test'
 import { expect } from '@playwright/test'
