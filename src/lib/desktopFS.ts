@@ -201,10 +201,11 @@ export function getNextFileName({
   entryName: string
   baseDir: string
 }) {
-  let extension = window.electron.path.extname(entryName).replace('.', '')
-  if (!extension || !relevantFileExtensions().includes(extension)) {
+  let extension = window.electron.path.extname(entryName)
+  if (!relevantFileExtensions().includes(extension.replace('.', ''))) {
     extension = FILE_EXT
   }
+
   // Remove any existing index from the name before adding a new one
   let createdName = entryName.replace(extension, '') + extension
   let createdPath = window.electron.path.join(baseDir, createdName)
