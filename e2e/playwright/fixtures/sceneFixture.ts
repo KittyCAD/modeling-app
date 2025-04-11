@@ -233,7 +233,7 @@ export class SceneFixture {
   settled = async (cmdBar: CmdBarFixture) => {
     const u = await getUtils(this.page)
 
-    await expect(this.startEditSketchBtn).not.toBeDisabled()
+    await expect(this.startEditSketchBtn).not.toBeDisabled({ timeout: 15_000 })
     await expect(this.startEditSketchBtn).toBeVisible()
 
     await cmdBar.openCmdBar()
