@@ -1,7 +1,6 @@
 // Some of the following was taken from bits and pieces of the vite-typescript
 // template that ElectronJS provides.
 // @ts-ignore: TS1343
-import * as kittycad from '@kittycad/lib/import'
 import * as packageJSON from '@root/package.json'
 import type { Service } from 'bonjour-service'
 import { Bonjour } from 'bonjour-service'
@@ -371,12 +370,6 @@ ipcMain.handle('startDeviceFlow', async (_, host: string) => {
 
   // Return the user code so the app can display it.
   return handle.user_code
-})
-
-ipcMain.handle('kittycad', (event, data) => {
-  return data.access
-    .split('.')
-    .reduce((obj: any, prop: any) => obj[prop], kittycad)(data.args)
 })
 
 // Used to find other devices on the local network, e.g. 3D printers, CNC machines, etc.
