@@ -31,7 +31,19 @@ async fn cache_test(
         // set the new settings.
         ctx.settings = variation.settings.clone();
 
-        let outcome = ctx.run_with_caching(program).await.unwrap();
+        let outcome = match ctx.run_with_caching(program).await {
+            Ok(outcome) => outcome,
+            Err(err) => {
+                miette::set_hook(Box::new(|_| {
+                    Box::new(miette::MietteHandlerOpts::new().show_related_errors_as_nested().build())
+                }))
+                .unwrap();
+                let report = err.clone().into_miette_report_with_outputs(variation.code).unwrap();
+                let report = miette::Report::new(report);
+                let report = format!("{:?}", report);
+                panic!("Error: {}", report);
+            }
+        };
         let snapshot_png_bytes = ctx.prepare_snapshot().await.unwrap().contents.0;
 
         // Decode the snapshot, return it.
@@ -281,4 +293,34 @@ async fn kcl_test_cache_empty_file_pop_cache_empty_file_planes_work() {
         .unwrap();
 
     ctx.close().await;
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn kcl_test_cache_fillet_error_opening_closing_specific_files() {
+    let main_code = include_str!("../../tests/fillet_error_switch_files/main.kcl");
+    let switch_code = include_str!("../../tests/fillet_error_switch_files/switch_protector.kcl");
+
+    let result = cache_test(
+        "fillet_error_opening_closing_specific_files",
+        vec![
+            Variation {
+                code: main_code,
+                settings: &Default::default(),
+            },
+            Variation {
+                code: switch_code,
+                settings: &Default::default(),
+            },
+            Variation {
+                code: main_code,
+                settings: &Default::default(),
+            },
+        ],
+    )
+    .await;
+
+    // Make sure nothing failed.
+    result.first().unwrap();
+    result.get(1).unwrap();
+    result.last().unwrap();
 }
