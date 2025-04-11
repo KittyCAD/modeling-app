@@ -447,9 +447,9 @@ impl FnData {
     #[allow(clippy::literal_string_with_formatting_args)]
     pub(super) fn to_autocomplete_snippet(&self) -> String {
         if self.name == "loft" {
-            return "loft([${0:sketch000}, ${1:sketch001}])${}".to_owned();
+            return "loft([${0:sketch000}, ${1:sketch001}])".to_owned();
         } else if self.name == "hole" {
-            return "hole(${0:holeSketch}, ${1:%})${}".to_owned();
+            return "hole(${0:holeSketch}, ${1:%})".to_owned();
         }
         let mut args = Vec::new();
         let mut index = 0;
@@ -459,9 +459,7 @@ impl FnData {
                 args.push(arg_str);
             }
         }
-        // We end with ${} so you can jump to the end of the snippet.
-        // After the last argument.
-        format!("{}({})${{}}", self.preferred_name, args.join(", "))
+        format!("{}({})", self.preferred_name, args.join(", "))
     }
 
     fn to_signature_help(&self) -> SignatureHelp {
