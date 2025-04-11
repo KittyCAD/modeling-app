@@ -78,6 +78,7 @@ import {
   deletionErrorMessage,
 } from '@src/lang/modifyAst/deleteSelection'
 import { setAppearance } from '@src/lang/modifyAst/setAppearance'
+import { setTransform } from '@src/lang/modifyAst/setTransform'
 import {
   getNodeFromPath,
   isNodeSafeToReplacePath,
@@ -367,6 +368,7 @@ export type ModelingMachineEvent =
       data: ModelingCommandSchema['Delete selection']
     }
   | { type: 'Appearance'; data: ModelingCommandSchema['Appearance'] }
+  | { type: 'Transform'; data: ModelingCommandSchema['Transform'] }
   | {
       type:
         | 'Add circle origin'
@@ -2676,6 +2678,77 @@ export const modelingMachine = setup({
         )
       }
     ),
+    transformAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input: ModelingCommandSchema['Transform'] | undefined
+      }) => {
+        if (!input) return new Error('No input provided')
+        // Extract inputs
+        const ast = kclManager.ast
+        const { tx, ty, tz, rr, rp, ry, nodeToEdit, selection } = input
+        let pathToNode = nodeToEdit
+        if (!(pathToNode && typeof pathToNode[1][0] === 'number')) {
+          if (selection.graphSelections[0].codeRef.pathToNode) {
+            pathToNode = getNodePathFromSourceRange(
+              ast,
+              selection.graphSelections[0]?.codeRef.range
+            )
+          } else {
+            return new Error("Couldn't find corresponding path to node")
+          }
+        }
+
+        for (const v of [tx, ty, tz, rr, rp, ry]) {
+          if (v === undefined) {
+            continue
+          }
+          // Insert the variable if it exists
+          if ('variableName' in v && v.variableName) {
+            const newBody = [...ast.body]
+            newBody.splice(v.insertIndex, 0, v.variableDeclarationAst)
+            ast.body = newBody
+          }
+        }
+
+        const valueOrVariable = (variable: KclCommandValue) => {
+          return 'variableName' in variable
+            ? variable.variableIdentifierAst
+            : variable.valueAst
+        }
+
+        const result = setTransform({
+          ast,
+          pathToNode,
+          tx: valueOrVariable(tx),
+          ty: valueOrVariable(ty),
+          tz: valueOrVariable(tz),
+          rr: valueOrVariable(rr),
+          rp: valueOrVariable(rp),
+          ry: valueOrVariable(ry),
+        })
+
+        if (err(result)) {
+          return err(result)
+        }
+
+        console.log('result.modifiedAst', result.modifiedAst)
+
+        await updateModelingState(
+          result.modifiedAst,
+          EXECUTION_TYPE_REAL,
+          {
+            kclManager,
+            editorManager,
+            codeManager,
+          },
+          {
+            focusPath: [result.pathToNode],
+          }
+        )
+      }
+    ),
     exportFromEngine: fromPromise(
       async ({}: { input?: ModelingCommandSchema['Export'] }) => {
         return undefined as Error | undefined
@@ -2860,6 +2933,11 @@ export const modelingMachine = setup({
 
         Appearance: {
           target: 'Applying appearance',
+          reenter: true,
+        },
+
+        Transform: {
+          target: 'Applying transform',
           reenter: true,
         },
 
@@ -4228,6 +4306,19 @@ export const modelingMachine = setup({
         id: 'appearanceAstMod',
         input: ({ event }) => {
           if (event.type !== 'Appearance') return undefined
+          return event.data
+        },
+        onDone: ['idle'],
+        onError: ['idle'],
+      },
+    },
+
+    'Applying transform': {
+      invoke: {
+        src: 'transformAstMod',
+        id: 'transformAstMod',
+        input: ({ event }) => {
+          if (event.type !== 'Transform') return undefined
           return event.data
         },
         onDone: ['idle'],

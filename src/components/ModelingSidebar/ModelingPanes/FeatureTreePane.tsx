@@ -346,6 +346,18 @@ const OperationItem = (props: {
     }
   }
 
+  function enterTransformFlow() {
+    if (props.item.type === 'GroupBegin') {
+      props.send({
+        type: 'enterTransformFlow',
+        data: {
+          targetSourceRange: sourceRangeFromRust(props.item.sourceRange),
+          currentOperation: props.item,
+        },
+      })
+    }
+  }
+
   function deleteOperation() {
     if (
       props.item.type === 'StdLibCall' ||
@@ -403,6 +415,16 @@ const OperationItem = (props: {
               }}
             >
               View function definition
+            </ContextMenuItem>,
+          ]
+        : []),
+      ...(props.item.type === 'GroupBegin'
+        ? [
+            <ContextMenuItem
+              onClick={enterTransformFlow}
+              data-testid="context-menu-set-transform"
+            >
+              Set transform
             </ContextMenuItem>,
           ]
         : []),

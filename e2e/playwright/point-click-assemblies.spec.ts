@@ -289,4 +289,105 @@ test.describe('Point-and-click assemblies tests', () => {
       })
     }
   )
+
+  // TODO: figure out if this should live as part of the insert test.
+  // Had to separate them due hasExpressionStatement in enterTransformFlow
+  // evaluating to false on first insert.
+  test(
+    `Set transforms on assembly parts with whole module import`,
+    { tag: ['@electron'] },
+    async ({
+      context,
+      page,
+      homePage,
+      scene,
+      editor,
+      toolbar,
+      cmdBar,
+      tronApp,
+    }) => {
+      if (!tronApp) {
+        fail()
+      }
+
+      const initialCode = `import "cylinder.kcl" as cylinder
+import "bracket.kcl" as bracket
+cylinder
+bracket
+`
+      const projectName = 'assembly'
+      await context.folderSetupFn(async (dir) => {
+        const bracketDir = path.join(dir, projectName)
+        await fsp.mkdir(bracketDir, { recursive: true })
+        await Promise.all([
+          fsp.copyFile(
+            executorInputPath('cylinder-inches.kcl'),
+            path.join(bracketDir, 'cylinder.kcl')
+          ),
+          fsp.copyFile(
+            executorInputPath('e2e-can-sketch-on-chamfer.kcl'),
+            path.join(bracketDir, 'bracket.kcl')
+          ),
+          fsp.writeFile(path.join(bracketDir, 'main.kcl'), initialCode),
+        ])
+      })
+      await homePage.openProject(projectName)
+      await scene.settled(cmdBar)
+
+      await test.step('Set transform on the first part', async () => {
+        await toolbar.closePane('code')
+        await toolbar.openPane('feature-tree')
+
+        const op = await toolbar.getFeatureTreeOperation('cylinder', 0)
+        await op.click({ button: 'right' })
+        await page.getByTestId('context-menu-set-transform').click()
+        await cmdBar.expectState({
+          stage: 'arguments',
+          currentArgKey: 'tx',
+          currentArgValue: '0',
+          headerArguments: {
+            Tx: '',
+            Ty: '',
+            Tz: '',
+            Rr: '',
+            Rp: '',
+            Ry: '',
+          },
+          highlightedHeaderArg: 'tx',
+          commandName: 'Transform',
+        })
+        await cmdBar.progressCmdBar()
+        await cmdBar.progressCmdBar()
+        await cmdBar.progressCmdBar()
+        await cmdBar.progressCmdBar()
+        await cmdBar.progressCmdBar()
+        await cmdBar.progressCmdBar()
+        await cmdBar.progressCmdBar()
+        await toolbar.closePane('feature-tree')
+        await toolbar.openPane('code')
+
+        // TODO: this below doesn't actually execute because cylinder doesn't return a solid.
+        // This is a broader discussion to have
+        await editor.expectEditor.toContain(
+          `
+        cylinder
+          |> translate(
+              %,
+              x = 0,
+              y = 0,
+              z = 0,
+            )
+          |> rotate(
+              %,
+              roll = 0,
+              pitch = 0,
+              yaw = 0,
+            )
+      `,
+          { shouldNormalise: true }
+        )
+      })
+      await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
+    }
+  )
 })

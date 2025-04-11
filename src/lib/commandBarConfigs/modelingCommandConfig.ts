@@ -22,7 +22,11 @@ import type {
   KclCommandValue,
   StateMachineCommandSetConfig,
 } from '@src/lib/commandTypes'
-import { KCL_DEFAULT_DEGREE, KCL_DEFAULT_LENGTH } from '@src/lib/constants'
+import {
+  KCL_DEFAULT_DEGREE,
+  KCL_DEFAULT_LENGTH,
+  KCL_DEFAULT_TRANSFORM,
+} from '@src/lib/constants'
 import type { components } from '@src/lib/machine-api'
 import type { Selections } from '@src/lib/selections'
 import { codeManager, kclManager } from '@src/lib/singletons'
@@ -162,6 +166,16 @@ export type ModelingCommandSchema = {
   Appearance: {
     nodeToEdit?: PathToNode
     color: string
+  }
+  Transform: {
+    nodeToEdit?: PathToNode
+    selection: Selections
+    tx: KclCommandValue
+    ty: KclCommandValue
+    tz: KclCommandValue
+    rr: KclCommandValue
+    rp: KclCommandValue
+    ry: KclCommandValue
   }
   'Boolean Subtract': {
     target: Selections
@@ -1024,6 +1038,67 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         ],
       },
       // Add more fields
+    },
+  },
+  Transform: {
+    description: 'Set the rotation and translation.',
+    icon: 'angle', // TODO: find proper icon
+    needsReview: true,
+    args: {
+      nodeToEdit: {
+        description:
+          'Path to the node in the AST to edit. Never shown to the user.',
+        skip: true,
+        inputType: 'text',
+        required: false,
+        hidden: true,
+      },
+      selection: {
+        inputType: 'selectionMixed',
+        multiple: true,
+        required: true,
+        skip: true,
+        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+        warningMessage:
+          'This is still in development and only supports feature tree selection of whole-module imports',
+        selectionSource: {
+          allowSceneSelection: false,
+          allowCodeSelection: true,
+        },
+        selectionTypes: [
+          // TODO: figure out what we could support here beyond module. Likely sweeps and solid2d first
+        ],
+      },
+      tx: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_TRANSFORM,
+        required: true,
+      },
+      ty: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_TRANSFORM,
+        required: true,
+      },
+      tz: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_TRANSFORM,
+        required: true,
+      },
+      rr: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_TRANSFORM,
+        required: true,
+      },
+      rp: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_TRANSFORM,
+        required: true,
+      },
+      ry: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_TRANSFORM,
+        required: true,
+      },
     },
   },
 }
