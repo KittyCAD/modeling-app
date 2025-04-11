@@ -235,7 +235,7 @@ jobs:
         # TODO: Fix electron-notarize flakes. The logs above should help gather more data on failures
         uses: nick-fields/retry@v3.0.2
         with:
-          shell: bash
+          shell: pwsh
           timeout_minutes: 10
           max_attempts: 3
           command: yarn tronb:package:prod
