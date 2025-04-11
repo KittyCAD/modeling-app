@@ -37,7 +37,7 @@ win:
     signingHashAlgorithms:
       - sha1
       - sha256
-    publisherName: "KittyCAD, Inc."
+    publisherName: "KittyCAD Inc"
     certificateSubjectName: "KittyCAD Inc"
   icon: "assets/icon.ico"
   fileAssociations:
