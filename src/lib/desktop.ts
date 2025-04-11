@@ -701,10 +701,9 @@ export const getUser = async (
   try {
     const user = await fetch(`${hostname}/users/me`, {
       headers: new Headers({
-        'Authorization': `Bearer ${token}`
-    }),
-
-    });
+        Authorization: `Bearer ${token}`,
+      }),
+    })
     return user
   } catch (e) {
     console.error(e)

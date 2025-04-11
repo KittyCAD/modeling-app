@@ -1,7 +1,6 @@
 // Some of the following was taken from bits and pieces of the vite-typescript
 // template that ElectronJS provides.
 // @ts-ignore: TS1343
-import * as kittycad from '@kittycad/lib/import'
 import * as packageJSON from '@root/package.json'
 import type { Service } from 'bonjour-service'
 import { Bonjour } from 'bonjour-service'
