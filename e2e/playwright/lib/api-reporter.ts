@@ -2,6 +2,10 @@ import type { Reporter, TestCase, TestResult } from '@playwright/test/reporter'
 
 class MyAPIReporter implements Reporter {
   onTestEnd(test: TestCase, result: TestResult): void {
+    if (!process.env.TAB_API_URL || !process.env.TAB_API_KEY) {
+      return
+    }
+
     const payload = {
       // Required information
       project: 'https://github.com/KittyCAD/modeling-app',
@@ -25,10 +29,6 @@ class MyAPIReporter implements Reporter {
       GITHUB_REF: process.env.GITHUB_REF || null,
       GITHUB_WORKFLOW: process.env.GITHUB_WORKFLOW || null,
       RUNNER_ARCH: process.env.RUNNER_ARCH || null,
-    }
-
-    if (!process.env.TAB_API_URL || !process.env.TAB_API_KEY) {
-      return
     }
 
     void (async () => {
