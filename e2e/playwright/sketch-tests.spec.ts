@@ -1916,7 +1916,9 @@ profile003 = startProfileAt([206.63, -56.73], sketch001)
       await page.waitForTimeout(300)
 
       await page.mouse.click(572, 110)
-      await editor.expectEditor.toContain(`|> line(end = [-1.22, 10.85])`)
+      await editor.expectEditor.toContain(
+        `|> angledLine(angle = tangentToEnd(seg01) + turns::HALF_TURN, length = 10.8)`
+      )
       await startProfile1()
       await editor.expectEditor.toContain(
         `|> line(endAbsolute = [profileStartX(%), profileStartY(%)])
@@ -3099,18 +3101,12 @@ sketch001 = startSketchOn(XZ)
 profile001 = startProfileAt([0, 0], sketch001)
   |> line(end = [191.39, 191.39])
   |> tangentialArcTo([287.08, 95.69], %, $seg01)
-  |> angledLine({
-       angle = tangentToEnd(seg01),
-       length = 135.34
-     }, %)
+  |> angledLine(angle = tangentToEnd(seg01), length = 135.34)
   |> arcTo({
        interior = [191.39, -95.69],
        end = [287.08, -95.69]
      }, %, $seg02)
-  |> angledLine({
-       angle = tangentToEnd(seg02) + turns::HALF_TURN,
-       length = 270.67
-     }, %)
+  |> angledLine(angle = tangentToEnd(seg02) + turns::HALF_TURN, length = 270.67)
 `.replaceAll('\n', '')
     )
   })
