@@ -14,7 +14,7 @@ description: Operations executed assembly_non_default_units.kcl
   },
   {
     "labeledArgs": {
-      "data": {
+      "planeOrSolid": {
         "value": {
           "type": "String",
           "value": "XZ"
@@ -41,7 +41,7 @@ description: Operations executed assembly_non_default_units.kcl
   },
   {
     "labeledArgs": {
-      "data": {
+      "planeOrSolid": {
         "value": {
           "type": "String",
           "value": "XZ"

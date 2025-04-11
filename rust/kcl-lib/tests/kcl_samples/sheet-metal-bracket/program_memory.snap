@@ -738,22 +738,34 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "origin": {
             "x": 0.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
+            "z": 1.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "units": {
             "type": "Inches"
@@ -820,28 +832,72 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         {
           "type": "fillet",
           "id": "[uuid]",
-          "radius": 0.5,
+          "radius": {
+            "n": 0.5,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Inches"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
           "edgeId": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
           "id": "[uuid]",
-          "radius": 0.5,
+          "radius": {
+            "n": 0.5,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Inches"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
           "edgeId": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
           "id": "[uuid]",
-          "radius": 0.5,
+          "radius": {
+            "n": 0.5,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Inches"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
           "edgeId": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
           "id": "[uuid]",
-          "radius": 0.5,
+          "radius": {
+            "n": 0.5,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Inches"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
           "edgeId": "[uuid]",
           "tag": null
         }
@@ -904,17 +960,26 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
+            "z": 1.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "solid": {
             "type": "Solid",
@@ -1636,22 +1701,34 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "yAxis": {
                   "x": 0.0,
                   "y": 0.0,
-                  "z": 1.0
+                  "z": 1.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "zAxis": {
                   "x": 0.0,
                   "y": -1.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "units": {
                   "type": "Inches"
@@ -1718,28 +1795,72 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               {
                 "type": "fillet",
                 "id": "[uuid]",
-                "radius": 0.5,
+                "radius": {
+                  "n": 0.5,
+                  "ty": {
+                    "type": "Default",
+                    "len": {
+                      "type": "Inches"
+                    },
+                    "angle": {
+                      "type": "Degrees"
+                    }
+                  }
+                },
                 "edgeId": "[uuid]",
                 "tag": null
               },
               {
                 "type": "fillet",
                 "id": "[uuid]",
-                "radius": 0.5,
+                "radius": {
+                  "n": 0.5,
+                  "ty": {
+                    "type": "Default",
+                    "len": {
+                      "type": "Inches"
+                    },
+                    "angle": {
+                      "type": "Degrees"
+                    }
+                  }
+                },
                 "edgeId": "[uuid]",
                 "tag": null
               },
               {
                 "type": "fillet",
                 "id": "[uuid]",
-                "radius": 0.5,
+                "radius": {
+                  "n": 0.5,
+                  "ty": {
+                    "type": "Default",
+                    "len": {
+                      "type": "Inches"
+                    },
+                    "angle": {
+                      "type": "Degrees"
+                    }
+                  }
+                },
                 "edgeId": "[uuid]",
                 "tag": null
               },
               {
                 "type": "fillet",
                 "id": "[uuid]",
-                "radius": 0.5,
+                "radius": {
+                  "n": 0.5,
+                  "ty": {
+                    "type": "Default",
+                    "len": {
+                      "type": "Inches"
+                    },
+                    "angle": {
+                      "type": "Degrees"
+                    }
+                  }
+                },
                 "edgeId": "[uuid]",
                 "tag": null
               }
@@ -1788,8 +1909,13 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
     "type": "Number",
     "value": 0.1875,
     "ty": {
-      "type": "Known",
-      "type": "Count"
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
     }
   },
   "componentBoltPatternX": {
@@ -1848,8 +1974,13 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
     "type": "Number",
     "value": 1.5,
     "ty": {
-      "type": "Known",
-      "type": "Count"
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
     }
   },
   "hatHeight": {
@@ -1934,17 +2065,26 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "solid": {
                 "type": "Solid",
@@ -2666,22 +2806,34 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
-                      "z": 0.0
+                      "z": 0.0,
+                      "units": {
+                        "type": "Mm"
+                      }
                     },
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
-                      "z": 0.0
+                      "z": 0.0,
+                      "units": {
+                        "type": "Mm"
+                      }
                     },
                     "yAxis": {
                       "x": 0.0,
                       "y": 0.0,
-                      "z": 1.0
+                      "z": 1.0,
+                      "units": {
+                        "type": "Mm"
+                      }
                     },
                     "zAxis": {
                       "x": 0.0,
                       "y": -1.0,
-                      "z": 0.0
+                      "z": 0.0,
+                      "units": {
+                        "type": "Mm"
+                      }
                     },
                     "units": {
                       "type": "Inches"
@@ -2748,28 +2900,72 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   {
                     "type": "fillet",
                     "id": "[uuid]",
-                    "radius": 0.5,
+                    "radius": {
+                      "n": 0.5,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Inches"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
                     "edgeId": "[uuid]",
                     "tag": null
                   },
                   {
                     "type": "fillet",
                     "id": "[uuid]",
-                    "radius": 0.5,
+                    "radius": {
+                      "n": 0.5,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Inches"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
                     "edgeId": "[uuid]",
                     "tag": null
                   },
                   {
                     "type": "fillet",
                     "id": "[uuid]",
-                    "radius": 0.5,
+                    "radius": {
+                      "n": 0.5,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Inches"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
                     "edgeId": "[uuid]",
                     "tag": null
                   },
                   {
                     "type": "fillet",
                     "id": "[uuid]",
-                    "radius": 0.5,
+                    "radius": {
+                      "n": 0.5,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Inches"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
                     "edgeId": "[uuid]",
                     "tag": null
                   }
@@ -2867,17 +3063,26 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "solid": {
                 "type": "Solid",
@@ -3599,22 +3804,34 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
-                      "z": 0.0
+                      "z": 0.0,
+                      "units": {
+                        "type": "Mm"
+                      }
                     },
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
-                      "z": 0.0
+                      "z": 0.0,
+                      "units": {
+                        "type": "Mm"
+                      }
                     },
                     "yAxis": {
                       "x": 0.0,
                       "y": 0.0,
-                      "z": 1.0
+                      "z": 1.0,
+                      "units": {
+                        "type": "Mm"
+                      }
                     },
                     "zAxis": {
                       "x": 0.0,
                       "y": -1.0,
-                      "z": 0.0
+                      "z": 0.0,
+                      "units": {
+                        "type": "Mm"
+                      }
                     },
                     "units": {
                       "type": "Inches"
@@ -3681,28 +3898,72 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   {
                     "type": "fillet",
                     "id": "[uuid]",
-                    "radius": 0.5,
+                    "radius": {
+                      "n": 0.5,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Inches"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
                     "edgeId": "[uuid]",
                     "tag": null
                   },
                   {
                     "type": "fillet",
                     "id": "[uuid]",
-                    "radius": 0.5,
+                    "radius": {
+                      "n": 0.5,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Inches"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
                     "edgeId": "[uuid]",
                     "tag": null
                   },
                   {
                     "type": "fillet",
                     "id": "[uuid]",
-                    "radius": 0.5,
+                    "radius": {
+                      "n": 0.5,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Inches"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
                     "edgeId": "[uuid]",
                     "tag": null
                   },
                   {
                     "type": "fillet",
                     "id": "[uuid]",
-                    "radius": 0.5,
+                    "radius": {
+                      "n": 0.5,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Inches"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
                     "edgeId": "[uuid]",
                     "tag": null
                   }
@@ -3753,8 +4014,13 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
     "type": "Number",
     "value": 0.25,
     "ty": {
-      "type": "Known",
-      "type": "Count"
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
     }
   },
   "mountingBoltPatternX": {
@@ -3787,8 +4053,13 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
     "type": "Number",
     "value": 0.75,
     "ty": {
-      "type": "Known",
-      "type": "Count"
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
     }
   },
   "rightFlangeBoltPattern": {
@@ -3847,17 +4118,26 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "solid": {
                 "type": "Solid",
@@ -4579,22 +4859,34 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
-                      "z": 0.0
+                      "z": 0.0,
+                      "units": {
+                        "type": "Mm"
+                      }
                     },
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
-                      "z": 0.0
+                      "z": 0.0,
+                      "units": {
+                        "type": "Mm"
+                      }
                     },
                     "yAxis": {
                       "x": 0.0,
                       "y": 0.0,
-                      "z": 1.0
+                      "z": 1.0,
+                      "units": {
+                        "type": "Mm"
+                      }
                     },
                     "zAxis": {
                       "x": 0.0,
                       "y": -1.0,
-                      "z": 0.0
+                      "z": 0.0,
+                      "units": {
+                        "type": "Mm"
+                      }
                     },
                     "units": {
                       "type": "Inches"
@@ -4661,28 +4953,72 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   {
                     "type": "fillet",
                     "id": "[uuid]",
-                    "radius": 0.5,
+                    "radius": {
+                      "n": 0.5,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Inches"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
                     "edgeId": "[uuid]",
                     "tag": null
                   },
                   {
                     "type": "fillet",
                     "id": "[uuid]",
-                    "radius": 0.5,
+                    "radius": {
+                      "n": 0.5,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Inches"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
                     "edgeId": "[uuid]",
                     "tag": null
                   },
                   {
                     "type": "fillet",
                     "id": "[uuid]",
-                    "radius": 0.5,
+                    "radius": {
+                      "n": 0.5,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Inches"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
                     "edgeId": "[uuid]",
                     "tag": null
                   },
                   {
                     "type": "fillet",
                     "id": "[uuid]",
-                    "radius": 0.5,
+                    "radius": {
+                      "n": 0.5,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Inches"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
                     "edgeId": "[uuid]",
                     "tag": null
                   }
@@ -4780,17 +5116,26 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "solid": {
                 "type": "Solid",
@@ -5512,22 +5857,34 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
-                      "z": 0.0
+                      "z": 0.0,
+                      "units": {
+                        "type": "Mm"
+                      }
                     },
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
-                      "z": 0.0
+                      "z": 0.0,
+                      "units": {
+                        "type": "Mm"
+                      }
                     },
                     "yAxis": {
                       "x": 0.0,
                       "y": 0.0,
-                      "z": 1.0
+                      "z": 1.0,
+                      "units": {
+                        "type": "Mm"
+                      }
                     },
                     "zAxis": {
                       "x": 0.0,
                       "y": -1.0,
-                      "z": 0.0
+                      "z": 0.0,
+                      "units": {
+                        "type": "Mm"
+                      }
                     },
                     "units": {
                       "type": "Inches"
@@ -5594,28 +5951,72 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   {
                     "type": "fillet",
                     "id": "[uuid]",
-                    "radius": 0.5,
+                    "radius": {
+                      "n": 0.5,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Inches"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
                     "edgeId": "[uuid]",
                     "tag": null
                   },
                   {
                     "type": "fillet",
                     "id": "[uuid]",
-                    "radius": 0.5,
+                    "radius": {
+                      "n": 0.5,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Inches"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
                     "edgeId": "[uuid]",
                     "tag": null
                   },
                   {
                     "type": "fillet",
                     "id": "[uuid]",
-                    "radius": 0.5,
+                    "radius": {
+                      "n": 0.5,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Inches"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
                     "edgeId": "[uuid]",
                     "tag": null
                   },
                   {
                     "type": "fillet",
                     "id": "[uuid]",
-                    "radius": 0.5,
+                    "radius": {
+                      "n": 0.5,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Inches"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
                     "edgeId": "[uuid]",
                     "tag": null
                   }
@@ -5766,17 +6167,26 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "solid": {
                 "type": "Solid",
@@ -6498,22 +6908,34 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
-                      "z": 0.0
+                      "z": 0.0,
+                      "units": {
+                        "type": "Mm"
+                      }
                     },
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
-                      "z": 0.0
+                      "z": 0.0,
+                      "units": {
+                        "type": "Mm"
+                      }
                     },
                     "yAxis": {
                       "x": 0.0,
                       "y": 0.0,
-                      "z": 1.0
+                      "z": 1.0,
+                      "units": {
+                        "type": "Mm"
+                      }
                     },
                     "zAxis": {
                       "x": 0.0,
                       "y": -1.0,
-                      "z": 0.0
+                      "z": 0.0,
+                      "units": {
+                        "type": "Mm"
+                      }
                     },
                     "units": {
                       "type": "Inches"
@@ -6580,28 +7002,72 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   {
                     "type": "fillet",
                     "id": "[uuid]",
-                    "radius": 0.5,
+                    "radius": {
+                      "n": 0.5,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Inches"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
                     "edgeId": "[uuid]",
                     "tag": null
                   },
                   {
                     "type": "fillet",
                     "id": "[uuid]",
-                    "radius": 0.5,
+                    "radius": {
+                      "n": 0.5,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Inches"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
                     "edgeId": "[uuid]",
                     "tag": null
                   },
                   {
                     "type": "fillet",
                     "id": "[uuid]",
-                    "radius": 0.5,
+                    "radius": {
+                      "n": 0.5,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Inches"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
                     "edgeId": "[uuid]",
                     "tag": null
                   },
                   {
                     "type": "fillet",
                     "id": "[uuid]",
-                    "radius": 0.5,
+                    "radius": {
+                      "n": 0.5,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Inches"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
                     "edgeId": "[uuid]",
                     "tag": null
                   }
@@ -6699,17 +7165,26 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "solid": {
                 "type": "Solid",
@@ -7431,22 +7906,34 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
-                      "z": 0.0
+                      "z": 0.0,
+                      "units": {
+                        "type": "Mm"
+                      }
                     },
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
-                      "z": 0.0
+                      "z": 0.0,
+                      "units": {
+                        "type": "Mm"
+                      }
                     },
                     "yAxis": {
                       "x": 0.0,
                       "y": 0.0,
-                      "z": 1.0
+                      "z": 1.0,
+                      "units": {
+                        "type": "Mm"
+                      }
                     },
                     "zAxis": {
                       "x": 0.0,
                       "y": -1.0,
-                      "z": 0.0
+                      "z": 0.0,
+                      "units": {
+                        "type": "Mm"
+                      }
                     },
                     "units": {
                       "type": "Inches"
@@ -7513,28 +8000,72 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   {
                     "type": "fillet",
                     "id": "[uuid]",
-                    "radius": 0.5,
+                    "radius": {
+                      "n": 0.5,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Inches"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
                     "edgeId": "[uuid]",
                     "tag": null
                   },
                   {
                     "type": "fillet",
                     "id": "[uuid]",
-                    "radius": 0.5,
+                    "radius": {
+                      "n": 0.5,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Inches"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
                     "edgeId": "[uuid]",
                     "tag": null
                   },
                   {
                     "type": "fillet",
                     "id": "[uuid]",
-                    "radius": 0.5,
+                    "radius": {
+                      "n": 0.5,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Inches"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
                     "edgeId": "[uuid]",
                     "tag": null
                   },
                   {
                     "type": "fillet",
                     "id": "[uuid]",
-                    "radius": 0.5,
+                    "radius": {
+                      "n": 0.5,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Inches"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
                     "edgeId": "[uuid]",
                     "tag": null
                   }
@@ -7632,17 +8163,26 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "solid": {
                 "type": "Solid",
@@ -8364,22 +8904,34 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
-                      "z": 0.0
+                      "z": 0.0,
+                      "units": {
+                        "type": "Mm"
+                      }
                     },
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
-                      "z": 0.0
+                      "z": 0.0,
+                      "units": {
+                        "type": "Mm"
+                      }
                     },
                     "yAxis": {
                       "x": 0.0,
                       "y": 0.0,
-                      "z": 1.0
+                      "z": 1.0,
+                      "units": {
+                        "type": "Mm"
+                      }
                     },
                     "zAxis": {
                       "x": 0.0,
                       "y": -1.0,
-                      "z": 0.0
+                      "z": 0.0,
+                      "units": {
+                        "type": "Mm"
+                      }
                     },
                     "units": {
                       "type": "Inches"
@@ -8446,28 +8998,72 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   {
                     "type": "fillet",
                     "id": "[uuid]",
-                    "radius": 0.5,
+                    "radius": {
+                      "n": 0.5,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Inches"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
                     "edgeId": "[uuid]",
                     "tag": null
                   },
                   {
                     "type": "fillet",
                     "id": "[uuid]",
-                    "radius": 0.5,
+                    "radius": {
+                      "n": 0.5,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Inches"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
                     "edgeId": "[uuid]",
                     "tag": null
                   },
                   {
                     "type": "fillet",
                     "id": "[uuid]",
-                    "radius": 0.5,
+                    "radius": {
+                      "n": 0.5,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Inches"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
                     "edgeId": "[uuid]",
                     "tag": null
                   },
                   {
                     "type": "fillet",
                     "id": "[uuid]",
-                    "radius": 0.5,
+                    "radius": {
+                      "n": 0.5,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Inches"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
                     "edgeId": "[uuid]",
                     "tag": null
                   }
@@ -8565,17 +9161,26 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "solid": {
                 "type": "Solid",
@@ -9297,22 +9902,34 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
-                      "z": 0.0
+                      "z": 0.0,
+                      "units": {
+                        "type": "Mm"
+                      }
                     },
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
-                      "z": 0.0
+                      "z": 0.0,
+                      "units": {
+                        "type": "Mm"
+                      }
                     },
                     "yAxis": {
                       "x": 0.0,
                       "y": 0.0,
-                      "z": 1.0
+                      "z": 1.0,
+                      "units": {
+                        "type": "Mm"
+                      }
                     },
                     "zAxis": {
                       "x": 0.0,
                       "y": -1.0,
-                      "z": 0.0
+                      "z": 0.0,
+                      "units": {
+                        "type": "Mm"
+                      }
                     },
                     "units": {
                       "type": "Inches"
@@ -9379,28 +9996,72 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   {
                     "type": "fillet",
                     "id": "[uuid]",
-                    "radius": 0.5,
+                    "radius": {
+                      "n": 0.5,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Inches"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
                     "edgeId": "[uuid]",
                     "tag": null
                   },
                   {
                     "type": "fillet",
                     "id": "[uuid]",
-                    "radius": 0.5,
+                    "radius": {
+                      "n": 0.5,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Inches"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
                     "edgeId": "[uuid]",
                     "tag": null
                   },
                   {
                     "type": "fillet",
                     "id": "[uuid]",
-                    "radius": 0.5,
+                    "radius": {
+                      "n": 0.5,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Inches"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
                     "edgeId": "[uuid]",
                     "tag": null
                   },
                   {
                     "type": "fillet",
                     "id": "[uuid]",
-                    "radius": 0.5,
+                    "radius": {
+                      "n": 0.5,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Inches"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
                     "edgeId": "[uuid]",
                     "tag": null
                   }

@@ -177,22 +177,34 @@ description: Variables in memory after executing food-service-spatula.kcl
           "origin": {
             "x": 0.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
+            "z": 1.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "units": {
             "type": "Mm"
@@ -384,22 +396,34 @@ description: Variables in memory after executing food-service-spatula.kcl
         "origin": {
           "x": 0.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": {
+            "type": "Mm"
+          }
         },
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": {
+            "type": "Mm"
+          }
         },
         "yAxis": {
           "x": 0.0,
           "y": 1.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": {
+            "type": "Mm"
+          }
         },
         "zAxis": {
           "x": 0.0,
           "y": 0.0,
-          "z": 1.0
+          "z": 1.0,
+          "units": {
+            "type": "Mm"
+          }
         },
         "units": {
           "type": "Mm"
@@ -445,22 +469,34 @@ description: Variables in memory after executing food-service-spatula.kcl
       "origin": {
         "x": 0.0,
         "y": 0.0,
-        "z": 0.0
+        "z": 0.0,
+        "units": {
+          "type": "Mm"
+        }
       },
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
-        "z": 0.0
+        "z": 0.0,
+        "units": {
+          "type": "Mm"
+        }
       },
       "yAxis": {
         "x": 0.0,
         "y": 1.0,
-        "z": 0.0
+        "z": 0.0,
+        "units": {
+          "type": "Mm"
+        }
       },
       "zAxis": {
         "x": 0.0,
         "y": 0.0,
-        "z": 1.0
+        "z": 1.0,
+        "units": {
+          "type": "Mm"
+        }
       },
       "units": {
         "type": "Mm"
@@ -547,9 +583,9 @@ description: Variables in memory after executing food-service-spatula.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4308,
-            "end": 4320,
-            "start": 4308,
+            "commentStart": 4284,
+            "end": 4296,
+            "start": 4284,
             "type": "TagDeclarator",
             "value": "gripEdgeTop"
           },
@@ -709,9 +745,9 @@ description: Variables in memory after executing food-service-spatula.kcl
               7.0
             ],
             "tag": {
-              "commentStart": 4308,
-              "end": 4320,
-              "start": 4308,
+              "commentStart": 4284,
+              "end": 4296,
+              "start": 4284,
               "type": "TagDeclarator",
               "value": "gripEdgeTop"
             },
@@ -777,22 +813,34 @@ description: Variables in memory after executing food-service-spatula.kcl
           "origin": {
             "x": 208.593833,
             "y": 0.0,
-            "z": 75.921946
+            "z": 75.921946,
+            "units": {
+              "type": "Mm"
+            }
           },
           "xAxis": {
             "x": 0.34202,
             "y": -0.0,
-            "z": -0.939693
+            "z": -0.939693,
+            "units": {
+              "type": "Mm"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "zAxis": {
             "x": 0.939693,
             "y": -0.0,
-            "z": 0.34202
+            "z": 0.34202,
+            "units": {
+              "type": "Mm"
+            }
           },
           "units": {
             "type": "Mm"
@@ -987,17 +1035,26 @@ description: Variables in memory after executing food-service-spatula.kcl
         "xAxis": {
           "x": 0.34202,
           "y": -0.0,
-          "z": -0.939693
+          "z": -0.939693,
+          "units": {
+            "type": "Mm"
+          }
         },
         "yAxis": {
           "x": 0.0,
           "y": 1.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": {
+            "type": "Mm"
+          }
         },
         "zAxis": {
           "x": 0.939693,
           "y": -0.0,
-          "z": 0.34202
+          "z": 0.34202,
+          "units": {
+            "type": "Mm"
+          }
         },
         "solid": {
           "type": "Solid",
@@ -1051,9 +1108,9 @@ description: Variables in memory after executing food-service-spatula.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4308,
-                "end": 4320,
-                "start": 4308,
+                "commentStart": 4284,
+                "end": 4296,
+                "start": 4284,
                 "type": "TagDeclarator",
                 "value": "gripEdgeTop"
               },
@@ -1213,9 +1270,9 @@ description: Variables in memory after executing food-service-spatula.kcl
                   7.0
                 ],
                 "tag": {
-                  "commentStart": 4308,
-                  "end": 4320,
-                  "start": 4308,
+                  "commentStart": 4284,
+                  "end": 4296,
+                  "start": 4284,
                   "type": "TagDeclarator",
                   "value": "gripEdgeTop"
                 },
@@ -1281,22 +1338,34 @@ description: Variables in memory after executing food-service-spatula.kcl
               "origin": {
                 "x": 208.593833,
                 "y": 0.0,
-                "z": 75.921946
+                "z": 75.921946,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 0.34202,
                 "y": -0.0,
-                "z": -0.939693
+                "z": -0.939693,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 0.939693,
                 "y": -0.0,
-                "z": 0.34202
+                "z": 0.34202,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Mm"
@@ -1529,9 +1598,9 @@ description: Variables in memory after executing food-service-spatula.kcl
             7.0
           ],
           "tag": {
-            "commentStart": 4308,
-            "end": 4320,
-            "start": 4308,
+            "commentStart": 4284,
+            "end": 4296,
+            "start": 4284,
             "type": "TagDeclarator",
             "value": "gripEdgeTop"
           },
@@ -1597,22 +1666,34 @@ description: Variables in memory after executing food-service-spatula.kcl
         "origin": {
           "x": 208.593833,
           "y": 0.0,
-          "z": 75.921946
+          "z": 75.921946,
+          "units": {
+            "type": "Mm"
+          }
         },
         "xAxis": {
           "x": 0.34202,
           "y": -0.0,
-          "z": -0.939693
+          "z": -0.939693,
+          "units": {
+            "type": "Mm"
+          }
         },
         "yAxis": {
           "x": 0.0,
           "y": 1.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": {
+            "type": "Mm"
+          }
         },
         "zAxis": {
           "x": 0.939693,
           "y": -0.0,
-          "z": 0.34202
+          "z": 0.34202,
+          "units": {
+            "type": "Mm"
+          }
         },
         "units": {
           "type": "Mm"
@@ -1658,22 +1739,34 @@ description: Variables in memory after executing food-service-spatula.kcl
       "origin": {
         "x": 208.593833,
         "y": 0.0,
-        "z": 75.921946
+        "z": 75.921946,
+        "units": {
+          "type": "Mm"
+        }
       },
       "xAxis": {
         "x": 0.34202,
         "y": -0.0,
-        "z": -0.939693
+        "z": -0.939693,
+        "units": {
+          "type": "Mm"
+        }
       },
       "yAxis": {
         "x": 0.0,
         "y": 1.0,
-        "z": 0.0
+        "z": 0.0,
+        "units": {
+          "type": "Mm"
+        }
       },
       "zAxis": {
         "x": 0.939693,
         "y": -0.0,
-        "z": 0.34202
+        "z": 0.34202,
+        "units": {
+          "type": "Mm"
+        }
       },
       "units": {
         "type": "Mm"
@@ -1933,22 +2026,34 @@ description: Variables in memory after executing food-service-spatula.kcl
           "origin": {
             "x": 0.0,
             "y": 7.5,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
+            "z": 1.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "units": {
             "type": "Mm"
@@ -2004,186 +2109,181 @@ description: Variables in memory after executing food-service-spatula.kcl
   "handlePlane": {
     "type": "Object",
     "value": {
-      "plane": {
-        "type": "Object",
-        "value": {
-          "origin": {
-            "type": "MixedArray",
-            "value": [
-              {
-                "type": "Number",
-                "value": 208.5938,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
+      "origin": {
+        "type": "MixedArray",
+        "value": [
+          {
+            "type": "Number",
+            "value": 208.5938,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
               },
-              {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              },
-              {
-                "type": "Number",
-                "value": 75.9219,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
+              "angle": {
+                "type": "Degrees"
               }
-            ]
+            }
           },
-          "xAxis": {
-            "type": "MixedArray",
-            "value": [
-              {
-                "type": "Number",
-                "value": 0.342,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
+          {
+            "type": "Number",
+            "value": 0.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
               },
-              {
-                "type": "Number",
-                "value": -0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              },
-              {
-                "type": "Number",
-                "value": -0.9397,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
+              "angle": {
+                "type": "Degrees"
               }
-            ]
+            }
           },
-          "yAxis": {
-            "type": "MixedArray",
-            "value": [
-              {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
+          {
+            "type": "Number",
+            "value": 75.9219,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
               },
-              {
-                "type": "Number",
-                "value": 1.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              },
-              {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
+              "angle": {
+                "type": "Degrees"
               }
-            ]
-          },
-          "zAxis": {
-            "type": "MixedArray",
-            "value": [
-              {
-                "type": "Number",
-                "value": 0.9397,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              },
-              {
-                "type": "Number",
-                "value": -0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              },
-              {
-                "type": "Number",
-                "value": 0.342,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              }
-            ]
+            }
           }
-        }
+        ]
+      },
+      "xAxis": {
+        "type": "MixedArray",
+        "value": [
+          {
+            "type": "Number",
+            "value": 0.342,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          {
+            "type": "Number",
+            "value": -0.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          {
+            "type": "Number",
+            "value": -0.9397,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          }
+        ]
+      },
+      "yAxis": {
+        "type": "MixedArray",
+        "value": [
+          {
+            "type": "Number",
+            "value": 0.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          {
+            "type": "Number",
+            "value": 1.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          {
+            "type": "Number",
+            "value": 0.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          }
+        ]
+      },
+      "zAxis": {
+        "type": "MixedArray",
+        "value": [
+          {
+            "type": "Number",
+            "value": 0.9397,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          {
+            "type": "Number",
+            "value": -0.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          {
+            "type": "Number",
+            "value": 0.342,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          }
+        ]
       }
     }
   },
@@ -2347,22 +2447,34 @@ description: Variables in memory after executing food-service-spatula.kcl
         "origin": {
           "x": 0.0,
           "y": 7.5,
-          "z": 0.0
+          "z": 0.0,
+          "units": {
+            "type": "Mm"
+          }
         },
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": {
+            "type": "Mm"
+          }
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
-          "z": 1.0
+          "z": 1.0,
+          "units": {
+            "type": "Mm"
+          }
         },
         "zAxis": {
           "x": 0.0,
           "y": -1.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": {
+            "type": "Mm"
+          }
         },
         "units": {
           "type": "Mm"
@@ -2412,22 +2524,34 @@ description: Variables in memory after executing food-service-spatula.kcl
       "origin": {
         "x": 0.0,
         "y": 7.5,
-        "z": 0.0
+        "z": 0.0,
+        "units": {
+          "type": "Mm"
+        }
       },
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
-        "z": 0.0
+        "z": 0.0,
+        "units": {
+          "type": "Mm"
+        }
       },
       "yAxis": {
         "x": 0.0,
         "y": 0.0,
-        "z": 1.0
+        "z": 1.0,
+        "units": {
+          "type": "Mm"
+        }
       },
       "zAxis": {
         "x": 0.0,
         "y": -1.0,
-        "z": 0.0
+        "z": 0.0,
+        "units": {
+          "type": "Mm"
+        }
       },
       "units": {
         "type": "Mm"
@@ -2461,17 +2585,26 @@ description: Variables in memory after executing food-service-spatula.kcl
       "xAxis": {
         "x": 0.34202,
         "y": -0.0,
-        "z": -0.939693
+        "z": -0.939693,
+        "units": {
+          "type": "Mm"
+        }
       },
       "yAxis": {
         "x": 0.0,
         "y": 1.0,
-        "z": 0.0
+        "z": 0.0,
+        "units": {
+          "type": "Mm"
+        }
       },
       "zAxis": {
         "x": 0.939693,
         "y": -0.0,
-        "z": 0.34202
+        "z": 0.34202,
+        "units": {
+          "type": "Mm"
+        }
       },
       "solid": {
         "type": "Solid",
@@ -2525,9 +2658,9 @@ description: Variables in memory after executing food-service-spatula.kcl
             "id": "[uuid]",
             "sourceRange": [],
             "tag": {
-              "commentStart": 4308,
-              "end": 4320,
-              "start": 4308,
+              "commentStart": 4284,
+              "end": 4296,
+              "start": 4284,
               "type": "TagDeclarator",
               "value": "gripEdgeTop"
             },
@@ -2687,9 +2820,9 @@ description: Variables in memory after executing food-service-spatula.kcl
                 7.0
               ],
               "tag": {
-                "commentStart": 4308,
-                "end": 4320,
-                "start": 4308,
+                "commentStart": 4284,
+                "end": 4296,
+                "start": 4284,
                 "type": "TagDeclarator",
                 "value": "gripEdgeTop"
               },
@@ -2755,22 +2888,34 @@ description: Variables in memory after executing food-service-spatula.kcl
             "origin": {
               "x": 208.593833,
               "y": 0.0,
-              "z": 75.921946
+              "z": 75.921946,
+              "units": {
+                "type": "Mm"
+              }
             },
             "xAxis": {
               "x": 0.34202,
               "y": -0.0,
-              "z": -0.939693
+              "z": -0.939693,
+              "units": {
+                "type": "Mm"
+              }
             },
             "yAxis": {
               "x": 0.0,
               "y": 1.0,
-              "z": 0.0
+              "z": 0.0,
+              "units": {
+                "type": "Mm"
+              }
             },
             "zAxis": {
               "x": 0.939693,
               "y": -0.0,
-              "z": 0.34202
+              "z": 0.34202,
+              "units": {
+                "type": "Mm"
+              }
             },
             "units": {
               "type": "Mm"
@@ -2941,22 +3086,34 @@ description: Variables in memory after executing food-service-spatula.kcl
         "origin": {
           "x": 0.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": {
+            "type": "Mm"
+          }
         },
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": {
+            "type": "Mm"
+          }
         },
         "yAxis": {
           "x": 0.0,
           "y": 1.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": {
+            "type": "Mm"
+          }
         },
         "zAxis": {
           "x": 0.0,
           "y": 0.0,
-          "z": 1.0
+          "z": 1.0,
+          "units": {
+            "type": "Mm"
+          }
         },
         "units": {
           "type": "Mm"
@@ -3107,22 +3264,34 @@ description: Variables in memory after executing food-service-spatula.kcl
         "origin": {
           "x": 0.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": {
+            "type": "Mm"
+          }
         },
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": {
+            "type": "Mm"
+          }
         },
         "yAxis": {
           "x": 0.0,
           "y": 1.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": {
+            "type": "Mm"
+          }
         },
         "zAxis": {
           "x": 0.0,
           "y": 0.0,
-          "z": 1.0
+          "z": 1.0,
+          "units": {
+            "type": "Mm"
+          }
         },
         "units": {
           "type": "Mm"
@@ -3273,22 +3442,34 @@ description: Variables in memory after executing food-service-spatula.kcl
         "origin": {
           "x": 0.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": {
+            "type": "Mm"
+          }
         },
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": {
+            "type": "Mm"
+          }
         },
         "yAxis": {
           "x": 0.0,
           "y": 1.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": {
+            "type": "Mm"
+          }
         },
         "zAxis": {
           "x": 0.0,
           "y": 0.0,
-          "z": 1.0
+          "z": 1.0,
+          "units": {
+            "type": "Mm"
+          }
         },
         "units": {
           "type": "Mm"
@@ -3441,22 +3622,34 @@ description: Variables in memory after executing food-service-spatula.kcl
         "origin": {
           "x": 0.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": {
+            "type": "Mm"
+          }
         },
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": {
+            "type": "Mm"
+          }
         },
         "yAxis": {
           "x": 0.0,
           "y": 1.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": {
+            "type": "Mm"
+          }
         },
         "zAxis": {
           "x": 0.0,
           "y": 0.0,
-          "z": 1.0
+          "z": 1.0,
+          "units": {
+            "type": "Mm"
+          }
         },
         "units": {
           "type": "Mm"

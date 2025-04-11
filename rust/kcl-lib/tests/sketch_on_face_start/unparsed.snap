@@ -15,7 +15,7 @@ part001 = cube([0, 0], 20)
   |> close(%)
   |> extrude(length = 20) as foo
 
-part002 = startSketchOn(foo, "start")
+part002 = startSketchOn(foo, face = "start")
   |> startProfileAt([0, 0], %)
   |> line(end = [0, 10])
   |> line(end = [10, 0])

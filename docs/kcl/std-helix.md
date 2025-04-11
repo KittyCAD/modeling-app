@@ -11,11 +11,11 @@ Create a helix.
 ```js
 helix(
   revolutions: number(_),
-  angleStart: number(deg),
+  angleStart: number(Angle),
   ccw?: bool,
-  radius?: number(mm),
+  radius?: number(Length),
   axis?: Axis3d | Edge,
-  length?: number(mm),
+  length?: number(Length),
   cylinder?: Solid,
 ): Helix
 ```
@@ -26,11 +26,11 @@ helix(
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
 | `revolutions` | `number(_)` | Number of revolutions. | Yes |
-| `angleStart` | `number(deg)` | Start angle (in degrees). | Yes |
+| `angleStart` | `number(Angle)` | Start angle (in degrees). | Yes |
 | `ccw` | [`bool`](/docs/kcl/types/bool) | Is the helix rotation counter clockwise? The default is `false`. | No |
-| `radius` | `number(mm)` | Radius of the helix. | No |
+| `radius` | `number(Length)` | Radius of the helix. | No |
 | `axis` | `Axis3d | Edge` | Axis to use for the helix. | No |
-| `length` | `number(mm)` | Length of the helix. This is not necessary if the helix is created around an edge. If not given the length of the edge is used. | No |
+| `length` | `number(Length)` | Length of the helix. This is not necessary if the helix is created around an edge. If not given the length of the edge is used. | No |
 | `cylinder` | [`Solid`](/docs/kcl/types/Solid) | Cylinder to create the helix on. | No |
 
 ### Returns

@@ -81,7 +81,7 @@ export async function submitPromptToEditToQueue({
 The source range most likely refers to "startProfileAt" simply because this is the start of the profile that was swept.
 If you need to operate on this cap, for example for sketching on the face, you can use the special string ${
             artifact.subType === 'end' ? 'END' : 'START'
-          } i.e. \`startSketchOn(someSweepVariable, ${
+          } i.e. \`startSketchOn(someSweepVariable, face = ${
             artifact.subType === 'end' ? 'END' : 'START'
           })\`
 When they made this selection they main have intended this surface directly or meant something more general like the sweep body.
@@ -102,7 +102,7 @@ See later source ranges for more context.`,
       if (artifact?.type === 'wall') {
         prompts.push({
           prompt: `The users main selection is the wall of a general-sweep (that is an extrusion, revolve, sweep or loft).
-The source range though is for the original segment before it was extruded, you can add a tag to that segment in order to refer to this wall, for example "startSketchOn(someSweepVariable, segmentTag)"
+The source range though is for the original segment before it was extruded, you can add a tag to that segment in order to refer to this wall, for example "startSketchOn(someSweepVariable, face = segmentTag)"
 But it's also worth bearing in mind that the user may have intended to select the sweep itself, not this individual wall, see later source ranges for more context. about the sweep`,
           range: convertAppRangeToApiRange(selection.codeRef.range, code),
         })

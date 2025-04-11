@@ -95,7 +95,7 @@ description: Operations executed artifact_graph_example_code_offset_planes.kcl
   },
   {
     "labeledArgs": {
-      "data": {
+      "planeOrSolid": {
         "value": {
           "type": "Plane",
           "artifact_id": "[uuid]"

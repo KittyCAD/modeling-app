@@ -5,7 +5,7 @@ description: Operations executed artifact_graph_example_code_no_3d.kcl
 [
   {
     "labeledArgs": {
-      "data": {
+      "planeOrSolid": {
         "value": {
           "type": "String",
           "value": "YZ"
@@ -20,7 +20,7 @@ description: Operations executed artifact_graph_example_code_no_3d.kcl
   },
   {
     "labeledArgs": {
-      "data": {
+      "planeOrSolid": {
         "value": {
           "type": "String",
           "value": "-XZ"

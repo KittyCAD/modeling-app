@@ -715,7 +715,7 @@ part001 = cube([0, 0], 20)
   |> close()
   |> extrude(length = 20)
 
-part002 = startSketchOn(part001, part001.sketch.tags.here)
+part002 = startSketchOn(part001, face = part001.sketch.tags.here)
   |> startProfileAt([0, 0], %)
   |> line(end = [5, 0])
   |> line(end = [5, 5])
@@ -751,7 +751,7 @@ part001 = cube([0,0], 20)
     |> close()
     |> extrude(length = 20)
 
-part002 = startSketchOn(part001, "end")
+part002 = startSketchOn(part001, face = "end")
   |> startProfileAt([0, 0], %)
   |> line(end = [0, 10])
   |> line(end = [10, 0])
@@ -759,7 +759,7 @@ part002 = startSketchOn(part001, "end")
   |> close()
   |> extrude(length = 5)
 
-part003 = startSketchOn(part002, "end")
+part003 = startSketchOn(part002, face = "end")
   |> startProfileAt([0, 0], %)
   |> line(end = [0, 5])
   |> line(end = [5, 0])
@@ -811,7 +811,7 @@ part001 = cube([0,0], 20)
     |> close()
     |> extrude(length = 20)
 
-part002 = startSketchOn(part001, "end")
+part002 = startSketchOn(part001, face = "end")
   |> circle(center = [0, 0], radius= 5) 
   |> extrude(length = 5)
 "#;
@@ -865,7 +865,7 @@ part = rectShape([0, 0], 20, 20)
     };
     assert_eq!(
         err.error.message(),
-        "The input argument of `std::sketch::circle` requires a value with type `Sketch | Plane | Face`, but found string (text)"
+        "This function expected the input argument to be of type SketchOrSurface but it's actually of type string (text)"
     );
 }
 
@@ -1031,7 +1031,7 @@ async fn kcl_test_revolve_on_edge() {
   |> close()
   |> extrude(length = 10)
 
-sketch001 = startSketchOn(box, "end")
+sketch001 = startSketchOn(box, face = "end")
   |> startProfileAt([5, 10], %)
   |> line(end = [0, -10])
   |> line(end = [2, 0])
@@ -1055,7 +1055,7 @@ async fn kcl_test_revolve_on_edge_get_edge() {
   |> close()
   |> extrude(length = 10)
 
-sketch001 = startSketchOn(box, revolveAxis)
+sketch001 = startSketchOn(box, face = revolveAxis)
   |> startProfileAt([5, 10], %)
   |> line(end = [0, -10])
   |> line(end = [2, 0])
@@ -1085,7 +1085,7 @@ async fn kcl_test_revolve_on_face_circle_edge() {
   |> close()
   |> extrude(length = 20)
 
-sketch001 = startSketchOn(box, "END")
+sketch001 = startSketchOn(box, face = "END")
   |> circle(center = [10,10], radius= 4)
   |> revolve(
     angle = 90,
@@ -1107,7 +1107,7 @@ async fn kcl_test_revolve_on_face_circle() {
   |> close()
   |> extrude(length = 20)
 
-sketch001 = startSketchOn(box, "END")
+sketch001 = startSketchOn(box, face = "END")
   |> circle(center = [10,10], radius= 4 )
   |> revolve(
     angle = -90, 
@@ -1129,7 +1129,7 @@ async fn kcl_test_revolve_on_face() {
   |> close(tag = $revolveAxis)
   |> extrude(length = 10)
 
-sketch001 = startSketchOn(box, "end")
+sketch001 = startSketchOn(box, face = "end")
   |> startProfileAt([5, 10], %)
   |> line(end = [0, -10])
   |> line(end = [2, 0])
@@ -1173,7 +1173,7 @@ async fn kcl_test_simple_revolve_sketch_on_edge() {
      |> close()
      |> revolve(axis = Y, angle = 180)
 
-part002 = startSketchOn(part001, 'end')
+part002 = startSketchOn(part001, face = 'end')
     |> startProfileAt([4.5, -5], %)
     |> line(end = [0, 5])
     |> line(end = [5, 0])
@@ -1189,7 +1189,7 @@ part002 = startSketchOn(part001, 'end')
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_plumbus_fillets() {
     let code = r#"fn make_circle = (ext, face, pos, radius) => {
-  sg = startSketchOn(ext, face)
+  sg = startSketchOn(ext, face = face)
   |> startProfileAt([pos[0] + radius, pos[1]], %)
   |> arc({
        angleEnd = 360,
@@ -1264,20 +1264,18 @@ async fn kcl_test_empty_file_is_ok() {
 async fn kcl_test_member_expression_in_params() {
     let code = r#"fn capScrew = (originStart, length, dia, capDia, capHeadLength) => {
   screwHead = startSketchOn({
-       plane: {
-         origin: {
-          x: originStart[0],
-          y: originStart[1],
-          z: originStart[2],
-         },
-         xAxis: { x: 0, y: 0, z: -1 },
-         yAxis: { x: 1, y: 0, z: 0 },
-         zAxis: { x: 0, y: 1, z: 0 }
-      }
+      origin: {
+      x: originStart[0],
+      y: originStart[1],
+      z: originStart[2],
+      },
+      xAxis: { x: 0, y: 0, z: -1 },
+      yAxis: { x: 1, y: 0, z: 0 },
+      zAxis: { x: 0, y: 1, z: 0 }
   })
     |> circle(center = [0, 0], radius= capDia / 2)
     |> extrude(length = capHeadLength)
-  screw = startSketchOn(screwHead, "start")
+  screw = startSketchOn(screwHead, face = "start")
     |> circle(center = [0, 0], radius= dia / 2)
     |> extrude(length = length)
   return screw
@@ -1346,7 +1344,7 @@ async fn kcl_test_error_empty_start_sketch_on_string() {
   |> close()
   |> extrude(length = 100)
 
-secondSketch = startSketchOn(part001, '')
+secondSketch = startSketchOn(part001, face = '')
   |> circle(center = [-20, 50], radius= 40)
   |> extrude(length = 20)
 "#;
@@ -1355,7 +1353,7 @@ secondSketch = startSketchOn(part001, '')
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([297, 299, 0])], message: "Argument at index 1 was supposed to be type Option<FaceTag> but found string (text)" }"#
+        r#"type: KclErrorDetails { source_ranges: [SourceRange([274, 307, 0])], message: "The arg face was given, but it was the wrong type. It should be type FaceTag but it was string (text)" }"#
     );
 }
 
@@ -1991,7 +1989,7 @@ someFunction('INVALID')
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([51, 60, 0]), SourceRange([65, 88, 0])], message: "Argument at index 0 was supposed to be type SketchData but found string (text)" }"#
+        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([51, 60, 0]), SourceRange([65, 88, 0])], message: "This function expected the input argument to be Solid or Plane but it's actually of type string (text)" }"#
     );
 }
 
@@ -2012,7 +2010,7 @@ someFunction('INVALID')
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([103, 113, 0]), SourceRange([126, 155, 0]), SourceRange([159, 182, 0])], message: "Argument at index 0 was supposed to be type SketchData but found string (text)" }"#
+        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([103, 113, 0]), SourceRange([126, 155, 0]), SourceRange([159, 182, 0])], message: "This function expected the input argument to be Solid or Plane but it's actually of type string (text)" }"#
     );
 }
 

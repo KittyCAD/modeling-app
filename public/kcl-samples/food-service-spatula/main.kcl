@@ -114,12 +114,10 @@ fillet(
 
 // Define a plane which is at the end of the handle
 handlePlane = {
-  plane = {
-    origin = [208.593833, 0.0, 75.921946],
-    xAxis = [0.342020, -0.0, -0.939693],
-    yAxis = [0.0, 1.0, 0.0],
-    zAxis = [0.939693, -0.0, 0.342020]
-  }
+  origin = [208.593833, 0.0, 75.921946],
+  xAxis = [0.342020, -0.0, -0.939693],
+  yAxis = [0.0, 1.0, 0.0],
+  zAxis = [0.939693, -0.0, 0.342020]
 }
 
 // Create a sketch on the handle plane
@@ -157,7 +155,7 @@ gripProfile = startProfileAt([-26.806746, -10.0], gripSketch)
 grip = extrude(gripProfile, length = -gripLength)
 
 // Create a sketch on the grip for the hole
-holeSketch = startSketchOn(grip, gripEdgeTop)
+holeSketch = startSketchOn(grip, face = gripEdgeTop)
 
 // Create a profile for the grip hole
 gripHoleProfile = slot(holeSketch, [0, 200], [0, 210], gripSlotWidth)

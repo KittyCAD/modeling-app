@@ -16,8 +16,8 @@ Data to draw a bezier curve.
 
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
-| `to` |`[number, number]`| The to point. | No |
-| `control1` |`[number, number]`| The first control point. | No |
-| `control2` |`[number, number]`| The second control point. | No |
+| `to` |`[, `TyF64`, `TyF64`]`| The to point. | No |
+| `control1` |`[, `TyF64`, `TyF64`]`| The first control point. | No |
+| `control2` |`[, `TyF64`, `TyF64`]`| The second control point. | No |
 
 

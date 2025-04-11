@@ -546,7 +546,7 @@ extrude001 = extrude(sketch001, length = 5 + 7)`
   previousCodeContent = await page.locator('.cm-content').innerText()
 
   await expect.poll(u.normalisedEditorCode).toContain(
-    u.normalisedCode(`sketch002 = startSketchOn(extrude001, seg01)
+    u.normalisedCode(`sketch002 = startSketchOn(extrude001, face = seg01)
 profile001 = startProfileAt([-12.34, 12.34], sketch002)
   |> line(end = [12.34, -12.34])
   |> line(end = [-12.34, -12.34])
@@ -583,7 +583,7 @@ profile001 = startProfileAt([-12.34, 12.34], sketch002)
   await expect(page.locator('.cm-content')).not.toHaveText(previousCodeContent)
   previousCodeContent = await page.locator('.cm-content').innerText()
 
-  const result = makeTemplate`sketch002 = startSketchOn(extrude001, seg01)
+  const result = makeTemplate`sketch002 = startSketchOn(extrude001, face = seg01)
 |> startProfileAt([-12.83, 6.7], %)
 |> line(end = [${[2.28, 2.35]}, -${0.07}])
 |> line(end = [-3.05, -1.47])

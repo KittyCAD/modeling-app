@@ -5,7 +5,7 @@ description: Operations executed circular_pattern3d_a_pattern.kcl
 [
   {
     "labeledArgs": {
-      "data": {
+      "planeOrSolid": {
         "value": {
           "type": "String",
           "value": "XZ"

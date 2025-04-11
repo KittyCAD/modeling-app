@@ -2733,7 +2733,7 @@ description: Result of parsing poopy-shoe.kcl
                 "key": {
                   "commentStart": 0,
                   "end": 0,
-                  "name": "plane",
+                  "name": "origin",
                   "start": 0,
                   "type": "Identifier"
                 },
@@ -2749,7 +2749,7 @@ description: Result of parsing poopy-shoe.kcl
                       "key": {
                         "commentStart": 0,
                         "end": 0,
-                        "name": "origin",
+                        "name": "x",
                         "start": 0,
                         "type": "Identifier"
                       },
@@ -2758,461 +2758,439 @@ description: Result of parsing poopy-shoe.kcl
                       "value": {
                         "commentStart": 0,
                         "end": 0,
-                        "properties": [
-                          {
+                        "raw": "0",
+                        "start": 0,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
+                      }
+                    },
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "key": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "name": "y",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "start": 0,
+                      "type": "ObjectProperty",
+                      "value": {
+                        "argument": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "left": {
                             "commentStart": 0,
                             "end": 0,
-                            "key": {
+                            "left": {
+                              "abs_path": false,
                               "commentStart": 0,
                               "end": 0,
-                              "name": "x",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "start": 0,
-                            "type": "ObjectProperty",
-                            "value": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "raw": "0",
-                              "start": 0,
-                              "type": "Literal",
-                              "type": "Literal",
-                              "value": {
-                                "value": 0.0,
-                                "suffix": "None"
-                              }
-                            }
-                          },
-                          {
-                            "commentStart": 0,
-                            "end": 0,
-                            "key": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "name": "y",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "start": 0,
-                            "type": "ObjectProperty",
-                            "value": {
-                              "argument": {
+                              "name": {
                                 "commentStart": 0,
                                 "end": 0,
-                                "left": {
-                                  "commentStart": 0,
-                                  "end": 0,
-                                  "left": {
-                                    "abs_path": false,
-                                    "commentStart": 0,
-                                    "end": 0,
-                                    "name": {
-                                      "commentStart": 0,
-                                      "end": 0,
-                                      "name": "wallsWidth",
-                                      "start": 0,
-                                      "type": "Identifier"
-                                    },
-                                    "path": [],
-                                    "start": 0,
-                                    "type": "Name",
-                                    "type": "Name"
-                                  },
-                                  "operator": "/",
-                                  "right": {
-                                    "commentStart": 0,
-                                    "end": 0,
-                                    "raw": "2",
-                                    "start": 0,
-                                    "type": "Literal",
-                                    "type": "Literal",
-                                    "value": {
-                                      "value": 2.0,
-                                      "suffix": "None"
-                                    }
-                                  },
-                                  "start": 0,
-                                  "type": "BinaryExpression",
-                                  "type": "BinaryExpression"
-                                },
-                                "operator": "-",
-                                "right": {
-                                  "commentStart": 0,
-                                  "end": 0,
-                                  "left": {
-                                    "abs_path": false,
-                                    "commentStart": 0,
-                                    "end": 0,
-                                    "name": {
-                                      "commentStart": 0,
-                                      "end": 0,
-                                      "name": "wallThickness",
-                                      "start": 0,
-                                      "type": "Identifier"
-                                    },
-                                    "path": [],
-                                    "start": 0,
-                                    "type": "Name",
-                                    "type": "Name"
-                                  },
-                                  "operator": "/",
-                                  "right": {
-                                    "commentStart": 0,
-                                    "end": 0,
-                                    "raw": "2",
-                                    "start": 0,
-                                    "type": "Literal",
-                                    "type": "Literal",
-                                    "value": {
-                                      "value": 2.0,
-                                      "suffix": "None"
-                                    }
-                                  },
-                                  "start": 0,
-                                  "type": "BinaryExpression",
-                                  "type": "BinaryExpression"
-                                },
+                                "name": "wallsWidth",
                                 "start": 0,
-                                "type": "BinaryExpression",
-                                "type": "BinaryExpression"
+                                "type": "Identifier"
                               },
+                              "path": [],
+                              "start": 0,
+                              "type": "Name",
+                              "type": "Name"
+                            },
+                            "operator": "/",
+                            "right": {
                               "commentStart": 0,
                               "end": 0,
-                              "operator": "-",
+                              "raw": "2",
                               "start": 0,
-                              "type": "UnaryExpression",
-                              "type": "UnaryExpression"
-                            }
+                              "type": "Literal",
+                              "type": "Literal",
+                              "value": {
+                                "value": 2.0,
+                                "suffix": "None"
+                              }
+                            },
+                            "start": 0,
+                            "type": "BinaryExpression",
+                            "type": "BinaryExpression"
                           },
-                          {
+                          "operator": "-",
+                          "right": {
                             "commentStart": 0,
                             "end": 0,
-                            "key": {
+                            "left": {
+                              "abs_path": false,
                               "commentStart": 0,
                               "end": 0,
-                              "name": "z",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "start": 0,
-                            "type": "ObjectProperty",
-                            "value": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "raw": "0",
-                              "start": 0,
-                              "type": "Literal",
-                              "type": "Literal",
-                              "value": {
-                                "value": 0.0,
-                                "suffix": "None"
-                              }
-                            }
-                          }
-                        ],
-                        "start": 0,
-                        "type": "ObjectExpression",
-                        "type": "ObjectExpression"
-                      }
-                    },
-                    {
-                      "commentStart": 0,
-                      "end": 0,
-                      "key": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "name": "xAxis",
-                        "start": 0,
-                        "type": "Identifier"
-                      },
-                      "start": 0,
-                      "type": "ObjectProperty",
-                      "value": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "properties": [
-                          {
-                            "commentStart": 0,
-                            "end": 0,
-                            "key": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "name": "x",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "start": 0,
-                            "type": "ObjectProperty",
-                            "value": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "raw": "1",
-                              "start": 0,
-                              "type": "Literal",
-                              "type": "Literal",
-                              "value": {
-                                "value": 1.0,
-                                "suffix": "None"
-                              }
-                            }
-                          },
-                          {
-                            "commentStart": 0,
-                            "end": 0,
-                            "key": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "name": "y",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "start": 0,
-                            "type": "ObjectProperty",
-                            "value": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "raw": "0",
-                              "start": 0,
-                              "type": "Literal",
-                              "type": "Literal",
-                              "value": {
-                                "value": 0.0,
-                                "suffix": "None"
-                              }
-                            }
-                          },
-                          {
-                            "commentStart": 0,
-                            "end": 0,
-                            "key": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "name": "z",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "start": 0,
-                            "type": "ObjectProperty",
-                            "value": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "raw": "0",
-                              "start": 0,
-                              "type": "Literal",
-                              "type": "Literal",
-                              "value": {
-                                "value": 0.0,
-                                "suffix": "None"
-                              }
-                            }
-                          }
-                        ],
-                        "start": 0,
-                        "type": "ObjectExpression",
-                        "type": "ObjectExpression"
-                      }
-                    },
-                    {
-                      "commentStart": 0,
-                      "end": 0,
-                      "key": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "name": "yAxis",
-                        "start": 0,
-                        "type": "Identifier"
-                      },
-                      "start": 0,
-                      "type": "ObjectProperty",
-                      "value": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "properties": [
-                          {
-                            "commentStart": 0,
-                            "end": 0,
-                            "key": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "name": "x",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "start": 0,
-                            "type": "ObjectProperty",
-                            "value": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "raw": "0",
-                              "start": 0,
-                              "type": "Literal",
-                              "type": "Literal",
-                              "value": {
-                                "value": 0.0,
-                                "suffix": "None"
-                              }
-                            }
-                          },
-                          {
-                            "commentStart": 0,
-                            "end": 0,
-                            "key": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "name": "y",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "start": 0,
-                            "type": "ObjectProperty",
-                            "value": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "raw": "0",
-                              "start": 0,
-                              "type": "Literal",
-                              "type": "Literal",
-                              "value": {
-                                "value": 0.0,
-                                "suffix": "None"
-                              }
-                            }
-                          },
-                          {
-                            "commentStart": 0,
-                            "end": 0,
-                            "key": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "name": "z",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "start": 0,
-                            "type": "ObjectProperty",
-                            "value": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "raw": "1",
-                              "start": 0,
-                              "type": "Literal",
-                              "type": "Literal",
-                              "value": {
-                                "value": 1.0,
-                                "suffix": "None"
-                              }
-                            }
-                          }
-                        ],
-                        "start": 0,
-                        "type": "ObjectExpression",
-                        "type": "ObjectExpression"
-                      }
-                    },
-                    {
-                      "commentStart": 0,
-                      "end": 0,
-                      "key": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "name": "zAxis",
-                        "start": 0,
-                        "type": "Identifier"
-                      },
-                      "start": 0,
-                      "type": "ObjectProperty",
-                      "value": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "properties": [
-                          {
-                            "commentStart": 0,
-                            "end": 0,
-                            "key": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "name": "x",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "start": 0,
-                            "type": "ObjectProperty",
-                            "value": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "raw": "0",
-                              "start": 0,
-                              "type": "Literal",
-                              "type": "Literal",
-                              "value": {
-                                "value": 0.0,
-                                "suffix": "None"
-                              }
-                            }
-                          },
-                          {
-                            "commentStart": 0,
-                            "end": 0,
-                            "key": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "name": "y",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "start": 0,
-                            "type": "ObjectProperty",
-                            "value": {
-                              "argument": {
+                              "name": {
                                 "commentStart": 0,
                                 "end": 0,
-                                "raw": "1",
+                                "name": "wallThickness",
                                 "start": 0,
-                                "type": "Literal",
-                                "type": "Literal",
-                                "value": {
-                                  "value": 1.0,
-                                  "suffix": "None"
-                                }
+                                "type": "Identifier"
                               },
-                              "commentStart": 0,
-                              "end": 0,
-                              "operator": "-",
+                              "path": [],
                               "start": 0,
-                              "type": "UnaryExpression",
-                              "type": "UnaryExpression"
-                            }
-                          },
-                          {
-                            "commentStart": 0,
-                            "end": 0,
-                            "key": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "name": "z",
-                              "start": 0,
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
-                            "start": 0,
-                            "type": "ObjectProperty",
-                            "value": {
+                            "operator": "/",
+                            "right": {
                               "commentStart": 0,
                               "end": 0,
-                              "raw": "0",
+                              "raw": "2",
                               "start": 0,
                               "type": "Literal",
                               "type": "Literal",
                               "value": {
-                                "value": 0.0,
+                                "value": 2.0,
                                 "suffix": "None"
                               }
-                            }
-                          }
-                        ],
+                            },
+                            "start": 0,
+                            "type": "BinaryExpression",
+                            "type": "BinaryExpression"
+                          },
+                          "start": 0,
+                          "type": "BinaryExpression",
+                          "type": "BinaryExpression"
+                        },
+                        "commentStart": 0,
+                        "end": 0,
+                        "operator": "-",
                         "start": 0,
-                        "type": "ObjectExpression",
-                        "type": "ObjectExpression"
+                        "type": "UnaryExpression",
+                        "type": "UnaryExpression"
+                      }
+                    },
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "key": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "name": "z",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "start": 0,
+                      "type": "ObjectProperty",
+                      "value": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "raw": "0",
+                        "start": 0,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
+                      }
+                    }
+                  ],
+                  "start": 0,
+                  "type": "ObjectExpression",
+                  "type": "ObjectExpression"
+                }
+              },
+              {
+                "commentStart": 0,
+                "end": 0,
+                "key": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "name": "xAxis",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "start": 0,
+                "type": "ObjectProperty",
+                "value": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "properties": [
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "key": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "name": "x",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "start": 0,
+                      "type": "ObjectProperty",
+                      "value": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "raw": "1",
+                        "start": 0,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 1.0,
+                          "suffix": "None"
+                        }
+                      }
+                    },
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "key": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "name": "y",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "start": 0,
+                      "type": "ObjectProperty",
+                      "value": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "raw": "0",
+                        "start": 0,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
+                      }
+                    },
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "key": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "name": "z",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "start": 0,
+                      "type": "ObjectProperty",
+                      "value": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "raw": "0",
+                        "start": 0,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
+                      }
+                    }
+                  ],
+                  "start": 0,
+                  "type": "ObjectExpression",
+                  "type": "ObjectExpression"
+                }
+              },
+              {
+                "commentStart": 0,
+                "end": 0,
+                "key": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "name": "yAxis",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "start": 0,
+                "type": "ObjectProperty",
+                "value": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "properties": [
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "key": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "name": "x",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "start": 0,
+                      "type": "ObjectProperty",
+                      "value": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "raw": "0",
+                        "start": 0,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
+                      }
+                    },
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "key": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "name": "y",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "start": 0,
+                      "type": "ObjectProperty",
+                      "value": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "raw": "0",
+                        "start": 0,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
+                      }
+                    },
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "key": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "name": "z",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "start": 0,
+                      "type": "ObjectProperty",
+                      "value": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "raw": "1",
+                        "start": 0,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 1.0,
+                          "suffix": "None"
+                        }
+                      }
+                    }
+                  ],
+                  "start": 0,
+                  "type": "ObjectExpression",
+                  "type": "ObjectExpression"
+                }
+              },
+              {
+                "commentStart": 0,
+                "end": 0,
+                "key": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "name": "zAxis",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "start": 0,
+                "type": "ObjectProperty",
+                "value": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "properties": [
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "key": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "name": "x",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "start": 0,
+                      "type": "ObjectProperty",
+                      "value": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "raw": "0",
+                        "start": 0,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
+                      }
+                    },
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "key": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "name": "y",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "start": 0,
+                      "type": "ObjectProperty",
+                      "value": {
+                        "argument": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "raw": "1",
+                          "start": 0,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 1.0,
+                            "suffix": "None"
+                          }
+                        },
+                        "commentStart": 0,
+                        "end": 0,
+                        "operator": "-",
+                        "start": 0,
+                        "type": "UnaryExpression",
+                        "type": "UnaryExpression"
+                      }
+                    },
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "key": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "name": "z",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "start": 0,
+                      "type": "ObjectProperty",
+                      "value": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "raw": "0",
+                        "start": 0,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
                       }
                     }
                   ],
@@ -3641,29 +3619,23 @@ description: Result of parsing poopy-shoe.kcl
               {
                 "arguments": [
                   {
-                    "abs_path": false,
-                    "commentStart": 0,
-                    "end": 0,
-                    "name": {
+                    "type": "LabeledArg",
+                    "label": {
                       "commentStart": 0,
                       "end": 0,
-                      "name": "sketch002",
+                      "name": "face",
                       "start": 0,
                       "type": "Identifier"
                     },
-                    "path": [],
-                    "start": 0,
-                    "type": "Name",
-                    "type": "Name"
-                  },
-                  {
-                    "commentStart": 0,
-                    "end": 0,
-                    "raw": "'END'",
-                    "start": 0,
-                    "type": "Literal",
-                    "type": "Literal",
-                    "value": "END"
+                    "arg": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "raw": "'END'",
+                      "start": 0,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": "END"
+                    }
                   }
                 ],
                 "callee": {
@@ -3684,8 +3656,24 @@ description: Result of parsing poopy-shoe.kcl
                 "commentStart": 0,
                 "end": 0,
                 "start": 0,
-                "type": "CallExpression",
-                "type": "CallExpression"
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": {
+                  "abs_path": false,
+                  "commentStart": 0,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "name": "sketch002",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name",
+                  "type": "Name"
+                }
               },
               {
                 "arguments": [
@@ -4794,7 +4782,7 @@ description: Result of parsing poopy-shoe.kcl
                 "key": {
                   "commentStart": 0,
                   "end": 0,
-                  "name": "plane",
+                  "name": "origin",
                   "start": 0,
                   "type": "Identifier"
                 },
@@ -4810,7 +4798,7 @@ description: Result of parsing poopy-shoe.kcl
                       "key": {
                         "commentStart": 0,
                         "end": 0,
-                        "name": "origin",
+                        "name": "x",
                         "start": 0,
                         "type": "Identifier"
                       },
@@ -4819,166 +4807,94 @@ description: Result of parsing poopy-shoe.kcl
                       "value": {
                         "commentStart": 0,
                         "end": 0,
-                        "properties": [
-                          {
+                        "left": {
+                          "argument": {
                             "commentStart": 0,
                             "end": 0,
-                            "key": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "name": "x",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
+                            "raw": "1",
                             "start": 0,
-                            "type": "ObjectProperty",
+                            "type": "Literal",
+                            "type": "Literal",
                             "value": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "left": {
-                                "argument": {
-                                  "commentStart": 0,
-                                  "end": 0,
-                                  "raw": "1",
-                                  "start": 0,
-                                  "type": "Literal",
-                                  "type": "Literal",
-                                  "value": {
-                                    "value": 1.0,
-                                    "suffix": "None"
-                                  }
-                                },
-                                "commentStart": 0,
-                                "end": 0,
-                                "operator": "-",
-                                "start": 0,
-                                "type": "UnaryExpression",
-                                "type": "UnaryExpression"
-                              },
-                              "operator": "*",
-                              "right": {
-                                "commentStart": 0,
-                                "end": 0,
-                                "left": {
-                                  "commentStart": 0,
-                                  "end": 0,
-                                  "left": {
-                                    "abs_path": false,
-                                    "commentStart": 0,
-                                    "end": 0,
-                                    "name": {
-                                      "commentStart": 0,
-                                      "end": 0,
-                                      "name": "backLength",
-                                      "start": 0,
-                                      "type": "Identifier"
-                                    },
-                                    "path": [],
-                                    "start": 0,
-                                    "type": "Name",
-                                    "type": "Name"
-                                  },
-                                  "operator": "-",
-                                  "right": {
-                                    "abs_path": false,
-                                    "commentStart": 0,
-                                    "end": 0,
-                                    "name": {
-                                      "commentStart": 0,
-                                      "end": 0,
-                                      "name": "height",
-                                      "start": 0,
-                                      "type": "Identifier"
-                                    },
-                                    "path": [],
-                                    "start": 0,
-                                    "type": "Name",
-                                    "type": "Name"
-                                  },
-                                  "start": 0,
-                                  "type": "BinaryExpression",
-                                  "type": "BinaryExpression"
-                                },
-                                "operator": "+",
-                                "right": {
-                                  "abs_path": false,
-                                  "commentStart": 0,
-                                  "end": 0,
-                                  "name": {
-                                    "commentStart": 0,
-                                    "end": 0,
-                                    "name": "wallsWidth",
-                                    "start": 0,
-                                    "type": "Identifier"
-                                  },
-                                  "path": [],
-                                  "start": 0,
-                                  "type": "Name",
-                                  "type": "Name"
-                                },
-                                "start": 0,
-                                "type": "BinaryExpression",
-                                "type": "BinaryExpression"
-                              },
-                              "start": 0,
-                              "type": "BinaryExpression",
-                              "type": "BinaryExpression"
+                              "value": 1.0,
+                              "suffix": "None"
                             }
                           },
-                          {
+                          "commentStart": 0,
+                          "end": 0,
+                          "operator": "-",
+                          "start": 0,
+                          "type": "UnaryExpression",
+                          "type": "UnaryExpression"
+                        },
+                        "operator": "*",
+                        "right": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "left": {
                             "commentStart": 0,
                             "end": 0,
-                            "key": {
+                            "left": {
+                              "abs_path": false,
                               "commentStart": 0,
                               "end": 0,
-                              "name": "y",
+                              "name": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "name": "backLength",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 0,
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
+                            },
+                            "operator": "-",
+                            "right": {
+                              "abs_path": false,
+                              "commentStart": 0,
+                              "end": 0,
+                              "name": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "name": "height",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "path": [],
+                              "start": 0,
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "start": 0,
-                            "type": "ObjectProperty",
-                            "value": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "raw": "0",
-                              "start": 0,
-                              "type": "Literal",
-                              "type": "Literal",
-                              "value": {
-                                "value": 0.0,
-                                "suffix": "None"
-                              }
-                            }
+                            "type": "BinaryExpression",
+                            "type": "BinaryExpression"
                           },
-                          {
+                          "operator": "+",
+                          "right": {
+                            "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
-                            "key": {
+                            "name": {
                               "commentStart": 0,
                               "end": 0,
-                              "name": "z",
+                              "name": "wallsWidth",
                               "start": 0,
                               "type": "Identifier"
                             },
+                            "path": [],
                             "start": 0,
-                            "type": "ObjectProperty",
-                            "value": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "raw": "0",
-                              "start": 0,
-                              "type": "Literal",
-                              "type": "Literal",
-                              "value": {
-                                "value": 0.0,
-                                "suffix": "None"
-                              }
-                            }
-                          }
-                        ],
+                            "type": "Name",
+                            "type": "Name"
+                          },
+                          "start": 0,
+                          "type": "BinaryExpression",
+                          "type": "BinaryExpression"
+                        },
                         "start": 0,
-                        "type": "ObjectExpression",
-                        "type": "ObjectExpression"
+                        "type": "BinaryExpression",
+                        "type": "BinaryExpression"
                       }
                     },
                     {
@@ -4987,7 +4903,7 @@ description: Result of parsing poopy-shoe.kcl
                       "key": {
                         "commentStart": 0,
                         "end": 0,
-                        "name": "xAxis",
+                        "name": "y",
                         "start": 0,
                         "type": "Identifier"
                       },
@@ -4996,94 +4912,14 @@ description: Result of parsing poopy-shoe.kcl
                       "value": {
                         "commentStart": 0,
                         "end": 0,
-                        "properties": [
-                          {
-                            "commentStart": 0,
-                            "end": 0,
-                            "key": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "name": "x",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "start": 0,
-                            "type": "ObjectProperty",
-                            "value": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "raw": "0",
-                              "start": 0,
-                              "type": "Literal",
-                              "type": "Literal",
-                              "value": {
-                                "value": 0.0,
-                                "suffix": "None"
-                              }
-                            }
-                          },
-                          {
-                            "commentStart": 0,
-                            "end": 0,
-                            "key": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "name": "y",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "start": 0,
-                            "type": "ObjectProperty",
-                            "value": {
-                              "argument": {
-                                "commentStart": 0,
-                                "end": 0,
-                                "raw": "1",
-                                "start": 0,
-                                "type": "Literal",
-                                "type": "Literal",
-                                "value": {
-                                  "value": 1.0,
-                                  "suffix": "None"
-                                }
-                              },
-                              "commentStart": 0,
-                              "end": 0,
-                              "operator": "-",
-                              "start": 0,
-                              "type": "UnaryExpression",
-                              "type": "UnaryExpression"
-                            }
-                          },
-                          {
-                            "commentStart": 0,
-                            "end": 0,
-                            "key": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "name": "z",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "start": 0,
-                            "type": "ObjectProperty",
-                            "value": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "raw": "0",
-                              "start": 0,
-                              "type": "Literal",
-                              "type": "Literal",
-                              "value": {
-                                "value": 0.0,
-                                "suffix": "None"
-                              }
-                            }
-                          }
-                        ],
+                        "raw": "0",
                         "start": 0,
-                        "type": "ObjectExpression",
-                        "type": "ObjectExpression"
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
                       }
                     },
                     {
@@ -5092,7 +4928,7 @@ description: Result of parsing poopy-shoe.kcl
                       "key": {
                         "commentStart": 0,
                         "end": 0,
-                        "name": "yAxis",
+                        "name": "z",
                         "start": 0,
                         "type": "Identifier"
                       },
@@ -5101,86 +4937,61 @@ description: Result of parsing poopy-shoe.kcl
                       "value": {
                         "commentStart": 0,
                         "end": 0,
-                        "properties": [
-                          {
-                            "commentStart": 0,
-                            "end": 0,
-                            "key": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "name": "x",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "start": 0,
-                            "type": "ObjectProperty",
-                            "value": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "raw": "0",
-                              "start": 0,
-                              "type": "Literal",
-                              "type": "Literal",
-                              "value": {
-                                "value": 0.0,
-                                "suffix": "None"
-                              }
-                            }
-                          },
-                          {
-                            "commentStart": 0,
-                            "end": 0,
-                            "key": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "name": "y",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "start": 0,
-                            "type": "ObjectProperty",
-                            "value": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "raw": "0",
-                              "start": 0,
-                              "type": "Literal",
-                              "type": "Literal",
-                              "value": {
-                                "value": 0.0,
-                                "suffix": "None"
-                              }
-                            }
-                          },
-                          {
-                            "commentStart": 0,
-                            "end": 0,
-                            "key": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "name": "z",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "start": 0,
-                            "type": "ObjectProperty",
-                            "value": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "raw": "1",
-                              "start": 0,
-                              "type": "Literal",
-                              "type": "Literal",
-                              "value": {
-                                "value": 1.0,
-                                "suffix": "None"
-                              }
-                            }
-                          }
-                        ],
+                        "raw": "0",
                         "start": 0,
-                        "type": "ObjectExpression",
-                        "type": "ObjectExpression"
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
+                      }
+                    }
+                  ],
+                  "start": 0,
+                  "type": "ObjectExpression",
+                  "type": "ObjectExpression"
+                }
+              },
+              {
+                "commentStart": 0,
+                "end": 0,
+                "key": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "name": "xAxis",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "start": 0,
+                "type": "ObjectProperty",
+                "value": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "properties": [
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "key": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "name": "x",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "start": 0,
+                      "type": "ObjectProperty",
+                      "value": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "raw": "0",
+                        "start": 0,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
                       }
                     },
                     {
@@ -5189,7 +5000,40 @@ description: Result of parsing poopy-shoe.kcl
                       "key": {
                         "commentStart": 0,
                         "end": 0,
-                        "name": "zAxis",
+                        "name": "y",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "start": 0,
+                      "type": "ObjectProperty",
+                      "value": {
+                        "argument": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "raw": "1",
+                          "start": 0,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 1.0,
+                            "suffix": "None"
+                          }
+                        },
+                        "commentStart": 0,
+                        "end": 0,
+                        "operator": "-",
+                        "start": 0,
+                        "type": "UnaryExpression",
+                        "type": "UnaryExpression"
+                      }
+                    },
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "key": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "name": "z",
                         "start": 0,
                         "type": "Identifier"
                       },
@@ -5198,86 +5042,208 @@ description: Result of parsing poopy-shoe.kcl
                       "value": {
                         "commentStart": 0,
                         "end": 0,
-                        "properties": [
-                          {
-                            "commentStart": 0,
-                            "end": 0,
-                            "key": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "name": "x",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "start": 0,
-                            "type": "ObjectProperty",
-                            "value": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "raw": "1",
-                              "start": 0,
-                              "type": "Literal",
-                              "type": "Literal",
-                              "value": {
-                                "value": 1.0,
-                                "suffix": "None"
-                              }
-                            }
-                          },
-                          {
-                            "commentStart": 0,
-                            "end": 0,
-                            "key": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "name": "y",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "start": 0,
-                            "type": "ObjectProperty",
-                            "value": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "raw": "0",
-                              "start": 0,
-                              "type": "Literal",
-                              "type": "Literal",
-                              "value": {
-                                "value": 0.0,
-                                "suffix": "None"
-                              }
-                            }
-                          },
-                          {
-                            "commentStart": 0,
-                            "end": 0,
-                            "key": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "name": "z",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "start": 0,
-                            "type": "ObjectProperty",
-                            "value": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "raw": "0",
-                              "start": 0,
-                              "type": "Literal",
-                              "type": "Literal",
-                              "value": {
-                                "value": 0.0,
-                                "suffix": "None"
-                              }
-                            }
-                          }
-                        ],
+                        "raw": "0",
                         "start": 0,
-                        "type": "ObjectExpression",
-                        "type": "ObjectExpression"
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
+                      }
+                    }
+                  ],
+                  "start": 0,
+                  "type": "ObjectExpression",
+                  "type": "ObjectExpression"
+                }
+              },
+              {
+                "commentStart": 0,
+                "end": 0,
+                "key": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "name": "yAxis",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "start": 0,
+                "type": "ObjectProperty",
+                "value": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "properties": [
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "key": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "name": "x",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "start": 0,
+                      "type": "ObjectProperty",
+                      "value": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "raw": "0",
+                        "start": 0,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
+                      }
+                    },
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "key": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "name": "y",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "start": 0,
+                      "type": "ObjectProperty",
+                      "value": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "raw": "0",
+                        "start": 0,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
+                      }
+                    },
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "key": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "name": "z",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "start": 0,
+                      "type": "ObjectProperty",
+                      "value": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "raw": "1",
+                        "start": 0,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 1.0,
+                          "suffix": "None"
+                        }
+                      }
+                    }
+                  ],
+                  "start": 0,
+                  "type": "ObjectExpression",
+                  "type": "ObjectExpression"
+                }
+              },
+              {
+                "commentStart": 0,
+                "end": 0,
+                "key": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "name": "zAxis",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "start": 0,
+                "type": "ObjectProperty",
+                "value": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "properties": [
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "key": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "name": "x",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "start": 0,
+                      "type": "ObjectProperty",
+                      "value": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "raw": "1",
+                        "start": 0,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 1.0,
+                          "suffix": "None"
+                        }
+                      }
+                    },
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "key": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "name": "y",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "start": 0,
+                      "type": "ObjectProperty",
+                      "value": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "raw": "0",
+                        "start": 0,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
+                      }
+                    },
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "key": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "name": "z",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "start": 0,
+                      "type": "ObjectProperty",
+                      "value": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "raw": "0",
+                        "start": 0,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
                       }
                     }
                   ],
@@ -5972,36 +5938,30 @@ description: Result of parsing poopy-shoe.kcl
               {
                 "arguments": [
                   {
-                    "abs_path": false,
-                    "commentStart": 0,
-                    "end": 0,
-                    "name": {
+                    "type": "LabeledArg",
+                    "label": {
                       "commentStart": 0,
                       "end": 0,
-                      "name": "sketch005",
+                      "name": "face",
                       "start": 0,
                       "type": "Identifier"
                     },
-                    "path": [],
-                    "start": 0,
-                    "type": "Name",
-                    "type": "Name"
-                  },
-                  {
-                    "abs_path": false,
-                    "commentStart": 0,
-                    "end": 0,
-                    "name": {
+                    "arg": {
+                      "abs_path": false,
                       "commentStart": 0,
                       "end": 0,
-                      "name": "seg03",
+                      "name": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "name": "seg03",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 0,
-                      "type": "Identifier"
-                    },
-                    "path": [],
-                    "start": 0,
-                    "type": "Name",
-                    "type": "Name"
+                      "type": "Name",
+                      "type": "Name"
+                    }
                   }
                 ],
                 "callee": {
@@ -6022,8 +5982,24 @@ description: Result of parsing poopy-shoe.kcl
                 "commentStart": 0,
                 "end": 0,
                 "start": 0,
-                "type": "CallExpression",
-                "type": "CallExpression"
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": {
+                  "abs_path": false,
+                  "commentStart": 0,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "name": "sketch005",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name",
+                  "type": "Name"
+                }
               },
               {
                 "arguments": [
@@ -6417,29 +6393,23 @@ description: Result of parsing poopy-shoe.kcl
               {
                 "arguments": [
                   {
-                    "abs_path": false,
-                    "commentStart": 0,
-                    "end": 0,
-                    "name": {
+                    "type": "LabeledArg",
+                    "label": {
                       "commentStart": 0,
                       "end": 0,
-                      "name": "sketch004",
+                      "name": "face",
                       "start": 0,
                       "type": "Identifier"
                     },
-                    "path": [],
-                    "start": 0,
-                    "type": "Name",
-                    "type": "Name"
-                  },
-                  {
-                    "commentStart": 0,
-                    "end": 0,
-                    "raw": "'END'",
-                    "start": 0,
-                    "type": "Literal",
-                    "type": "Literal",
-                    "value": "END"
+                    "arg": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "raw": "'END'",
+                      "start": 0,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": "END"
+                    }
                   }
                 ],
                 "callee": {
@@ -6460,8 +6430,24 @@ description: Result of parsing poopy-shoe.kcl
                 "commentStart": 0,
                 "end": 0,
                 "start": 0,
-                "type": "CallExpression",
-                "type": "CallExpression"
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": {
+                  "abs_path": false,
+                  "commentStart": 0,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "name": "sketch004",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name",
+                  "type": "Name"
+                }
               },
               {
                 "arguments": [
@@ -6832,7 +6818,7 @@ description: Result of parsing poopy-shoe.kcl
                 "key": {
                   "commentStart": 0,
                   "end": 0,
-                  "name": "plane",
+                  "name": "origin",
                   "start": 0,
                   "type": "Identifier"
                 },
@@ -6848,7 +6834,7 @@ description: Result of parsing poopy-shoe.kcl
                       "key": {
                         "commentStart": 0,
                         "end": 0,
-                        "name": "origin",
+                        "name": "x",
                         "start": 0,
                         "type": "Identifier"
                       },
@@ -6857,157 +6843,41 @@ description: Result of parsing poopy-shoe.kcl
                       "value": {
                         "commentStart": 0,
                         "end": 0,
-                        "properties": [
-                          {
+                        "left": {
+                          "argument": {
                             "commentStart": 0,
                             "end": 0,
-                            "key": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "name": "x",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
+                            "raw": "1",
                             "start": 0,
-                            "type": "ObjectProperty",
+                            "type": "Literal",
+                            "type": "Literal",
                             "value": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "left": {
-                                "argument": {
-                                  "commentStart": 0,
-                                  "end": 0,
-                                  "raw": "1",
-                                  "start": 0,
-                                  "type": "Literal",
-                                  "type": "Literal",
-                                  "value": {
-                                    "value": 1.0,
-                                    "suffix": "None"
-                                  }
-                                },
-                                "commentStart": 0,
-                                "end": 0,
-                                "operator": "-",
-                                "start": 0,
-                                "type": "UnaryExpression",
-                                "type": "UnaryExpression"
-                              },
-                              "operator": "*",
-                              "right": {
-                                "commentStart": 0,
-                                "end": 0,
-                                "left": {
-                                  "commentStart": 0,
-                                  "end": 0,
-                                  "left": {
-                                    "abs_path": false,
-                                    "commentStart": 0,
-                                    "end": 0,
-                                    "name": {
-                                      "commentStart": 0,
-                                      "end": 0,
-                                      "name": "backLength",
-                                      "start": 0,
-                                      "type": "Identifier"
-                                    },
-                                    "path": [],
-                                    "start": 0,
-                                    "type": "Name",
-                                    "type": "Name"
-                                  },
-                                  "operator": "-",
-                                  "right": {
-                                    "abs_path": false,
-                                    "commentStart": 0,
-                                    "end": 0,
-                                    "name": {
-                                      "commentStart": 0,
-                                      "end": 0,
-                                      "name": "height",
-                                      "start": 0,
-                                      "type": "Identifier"
-                                    },
-                                    "path": [],
-                                    "start": 0,
-                                    "type": "Name",
-                                    "type": "Name"
-                                  },
-                                  "start": 0,
-                                  "type": "BinaryExpression",
-                                  "type": "BinaryExpression"
-                                },
-                                "operator": "+",
-                                "right": {
-                                  "abs_path": false,
-                                  "commentStart": 0,
-                                  "end": 0,
-                                  "name": {
-                                    "commentStart": 0,
-                                    "end": 0,
-                                    "name": "wallsWidth",
-                                    "start": 0,
-                                    "type": "Identifier"
-                                  },
-                                  "path": [],
-                                  "start": 0,
-                                  "type": "Name",
-                                  "type": "Name"
-                                },
-                                "start": 0,
-                                "type": "BinaryExpression",
-                                "type": "BinaryExpression"
-                              },
-                              "start": 0,
-                              "type": "BinaryExpression",
-                              "type": "BinaryExpression"
+                              "value": 1.0,
+                              "suffix": "None"
                             }
                           },
-                          {
+                          "commentStart": 0,
+                          "end": 0,
+                          "operator": "-",
+                          "start": 0,
+                          "type": "UnaryExpression",
+                          "type": "UnaryExpression"
+                        },
+                        "operator": "*",
+                        "right": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "left": {
                             "commentStart": 0,
                             "end": 0,
-                            "key": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "name": "y",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "start": 0,
-                            "type": "ObjectProperty",
-                            "value": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "raw": "0",
-                              "start": 0,
-                              "type": "Literal",
-                              "type": "Literal",
-                              "value": {
-                                "value": 0.0,
-                                "suffix": "None"
-                              }
-                            }
-                          },
-                          {
-                            "commentStart": 0,
-                            "end": 0,
-                            "key": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "name": "z",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "start": 0,
-                            "type": "ObjectProperty",
-                            "value": {
+                            "left": {
                               "abs_path": false,
                               "commentStart": 0,
                               "end": 0,
                               "name": {
                                 "commentStart": 0,
                                 "end": 0,
-                                "name": "wallThickness",
+                                "name": "backLength",
                                 "start": 0,
                                 "type": "Identifier"
                               },
@@ -7015,117 +6885,52 @@ description: Result of parsing poopy-shoe.kcl
                               "start": 0,
                               "type": "Name",
                               "type": "Name"
-                            }
-                          }
-                        ],
-                        "start": 0,
-                        "type": "ObjectExpression",
-                        "type": "ObjectExpression"
-                      }
-                    },
-                    {
-                      "commentStart": 0,
-                      "end": 0,
-                      "key": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "name": "xAxis",
-                        "start": 0,
-                        "type": "Identifier"
-                      },
-                      "start": 0,
-                      "type": "ObjectProperty",
-                      "value": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "properties": [
-                          {
-                            "commentStart": 0,
-                            "end": 0,
-                            "key": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "name": "x",
-                              "start": 0,
-                              "type": "Identifier"
                             },
-                            "start": 0,
-                            "type": "ObjectProperty",
-                            "value": {
+                            "operator": "-",
+                            "right": {
+                              "abs_path": false,
                               "commentStart": 0,
                               "end": 0,
-                              "raw": "0",
-                              "start": 0,
-                              "type": "Literal",
-                              "type": "Literal",
-                              "value": {
-                                "value": 0.0,
-                                "suffix": "None"
-                              }
-                            }
-                          },
-                          {
-                            "commentStart": 0,
-                            "end": 0,
-                            "key": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "name": "y",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "start": 0,
-                            "type": "ObjectProperty",
-                            "value": {
-                              "argument": {
+                              "name": {
                                 "commentStart": 0,
                                 "end": 0,
-                                "raw": "1",
+                                "name": "height",
                                 "start": 0,
-                                "type": "Literal",
-                                "type": "Literal",
-                                "value": {
-                                  "value": 1.0,
-                                  "suffix": "None"
-                                }
+                                "type": "Identifier"
                               },
-                              "commentStart": 0,
-                              "end": 0,
-                              "operator": "-",
+                              "path": [],
                               "start": 0,
-                              "type": "UnaryExpression",
-                              "type": "UnaryExpression"
-                            }
+                              "type": "Name",
+                              "type": "Name"
+                            },
+                            "start": 0,
+                            "type": "BinaryExpression",
+                            "type": "BinaryExpression"
                           },
-                          {
+                          "operator": "+",
+                          "right": {
+                            "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
-                            "key": {
+                            "name": {
                               "commentStart": 0,
                               "end": 0,
-                              "name": "z",
+                              "name": "wallsWidth",
                               "start": 0,
                               "type": "Identifier"
                             },
+                            "path": [],
                             "start": 0,
-                            "type": "ObjectProperty",
-                            "value": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "raw": "0",
-                              "start": 0,
-                              "type": "Literal",
-                              "type": "Literal",
-                              "value": {
-                                "value": 0.0,
-                                "suffix": "None"
-                              }
-                            }
-                          }
-                        ],
+                            "type": "Name",
+                            "type": "Name"
+                          },
+                          "start": 0,
+                          "type": "BinaryExpression",
+                          "type": "BinaryExpression"
+                        },
                         "start": 0,
-                        "type": "ObjectExpression",
-                        "type": "ObjectExpression"
+                        "type": "BinaryExpression",
+                        "type": "BinaryExpression"
                       }
                     },
                     {
@@ -7134,7 +6939,7 @@ description: Result of parsing poopy-shoe.kcl
                       "key": {
                         "commentStart": 0,
                         "end": 0,
-                        "name": "yAxis",
+                        "name": "y",
                         "start": 0,
                         "type": "Identifier"
                       },
@@ -7143,86 +6948,14 @@ description: Result of parsing poopy-shoe.kcl
                       "value": {
                         "commentStart": 0,
                         "end": 0,
-                        "properties": [
-                          {
-                            "commentStart": 0,
-                            "end": 0,
-                            "key": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "name": "x",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "start": 0,
-                            "type": "ObjectProperty",
-                            "value": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "raw": "1",
-                              "start": 0,
-                              "type": "Literal",
-                              "type": "Literal",
-                              "value": {
-                                "value": 1.0,
-                                "suffix": "None"
-                              }
-                            }
-                          },
-                          {
-                            "commentStart": 0,
-                            "end": 0,
-                            "key": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "name": "y",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "start": 0,
-                            "type": "ObjectProperty",
-                            "value": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "raw": "0",
-                              "start": 0,
-                              "type": "Literal",
-                              "type": "Literal",
-                              "value": {
-                                "value": 0.0,
-                                "suffix": "None"
-                              }
-                            }
-                          },
-                          {
-                            "commentStart": 0,
-                            "end": 0,
-                            "key": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "name": "z",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "start": 0,
-                            "type": "ObjectProperty",
-                            "value": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "raw": "0",
-                              "start": 0,
-                              "type": "Literal",
-                              "type": "Literal",
-                              "value": {
-                                "value": 0.0,
-                                "suffix": "None"
-                              }
-                            }
-                          }
-                        ],
+                        "raw": "0",
                         "start": 0,
-                        "type": "ObjectExpression",
-                        "type": "ObjectExpression"
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
                       }
                     },
                     {
@@ -7231,7 +6964,58 @@ description: Result of parsing poopy-shoe.kcl
                       "key": {
                         "commentStart": 0,
                         "end": 0,
-                        "name": "zAxis",
+                        "name": "z",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "start": 0,
+                      "type": "ObjectProperty",
+                      "value": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "name": "wallThickness",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
+                      }
+                    }
+                  ],
+                  "start": 0,
+                  "type": "ObjectExpression",
+                  "type": "ObjectExpression"
+                }
+              },
+              {
+                "commentStart": 0,
+                "end": 0,
+                "key": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "name": "xAxis",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "start": 0,
+                "type": "ObjectProperty",
+                "value": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "properties": [
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "key": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "name": "x",
                         "start": 0,
                         "type": "Identifier"
                       },
@@ -7240,86 +7024,266 @@ description: Result of parsing poopy-shoe.kcl
                       "value": {
                         "commentStart": 0,
                         "end": 0,
-                        "properties": [
-                          {
-                            "commentStart": 0,
-                            "end": 0,
-                            "key": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "name": "x",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "start": 0,
-                            "type": "ObjectProperty",
-                            "value": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "raw": "0",
-                              "start": 0,
-                              "type": "Literal",
-                              "type": "Literal",
-                              "value": {
-                                "value": 0.0,
-                                "suffix": "None"
-                              }
-                            }
-                          },
-                          {
-                            "commentStart": 0,
-                            "end": 0,
-                            "key": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "name": "y",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "start": 0,
-                            "type": "ObjectProperty",
-                            "value": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "raw": "0",
-                              "start": 0,
-                              "type": "Literal",
-                              "type": "Literal",
-                              "value": {
-                                "value": 0.0,
-                                "suffix": "None"
-                              }
-                            }
-                          },
-                          {
-                            "commentStart": 0,
-                            "end": 0,
-                            "key": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "name": "z",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "start": 0,
-                            "type": "ObjectProperty",
-                            "value": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "raw": "1",
-                              "start": 0,
-                              "type": "Literal",
-                              "type": "Literal",
-                              "value": {
-                                "value": 1.0,
-                                "suffix": "None"
-                              }
-                            }
-                          }
-                        ],
+                        "raw": "0",
                         "start": 0,
-                        "type": "ObjectExpression",
-                        "type": "ObjectExpression"
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
+                      }
+                    },
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "key": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "name": "y",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "start": 0,
+                      "type": "ObjectProperty",
+                      "value": {
+                        "argument": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "raw": "1",
+                          "start": 0,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 1.0,
+                            "suffix": "None"
+                          }
+                        },
+                        "commentStart": 0,
+                        "end": 0,
+                        "operator": "-",
+                        "start": 0,
+                        "type": "UnaryExpression",
+                        "type": "UnaryExpression"
+                      }
+                    },
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "key": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "name": "z",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "start": 0,
+                      "type": "ObjectProperty",
+                      "value": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "raw": "0",
+                        "start": 0,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
+                      }
+                    }
+                  ],
+                  "start": 0,
+                  "type": "ObjectExpression",
+                  "type": "ObjectExpression"
+                }
+              },
+              {
+                "commentStart": 0,
+                "end": 0,
+                "key": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "name": "yAxis",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "start": 0,
+                "type": "ObjectProperty",
+                "value": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "properties": [
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "key": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "name": "x",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "start": 0,
+                      "type": "ObjectProperty",
+                      "value": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "raw": "1",
+                        "start": 0,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 1.0,
+                          "suffix": "None"
+                        }
+                      }
+                    },
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "key": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "name": "y",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "start": 0,
+                      "type": "ObjectProperty",
+                      "value": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "raw": "0",
+                        "start": 0,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
+                      }
+                    },
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "key": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "name": "z",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "start": 0,
+                      "type": "ObjectProperty",
+                      "value": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "raw": "0",
+                        "start": 0,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
+                      }
+                    }
+                  ],
+                  "start": 0,
+                  "type": "ObjectExpression",
+                  "type": "ObjectExpression"
+                }
+              },
+              {
+                "commentStart": 0,
+                "end": 0,
+                "key": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "name": "zAxis",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "start": 0,
+                "type": "ObjectProperty",
+                "value": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "properties": [
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "key": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "name": "x",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "start": 0,
+                      "type": "ObjectProperty",
+                      "value": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "raw": "0",
+                        "start": 0,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
+                      }
+                    },
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "key": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "name": "y",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "start": 0,
+                      "type": "ObjectProperty",
+                      "value": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "raw": "0",
+                        "start": 0,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
+                      }
+                    },
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "key": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "name": "z",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "start": 0,
+                      "type": "ObjectProperty",
+                      "value": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "raw": "1",
+                        "start": 0,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 1.0,
+                          "suffix": "None"
+                        }
                       }
                     }
                   ],

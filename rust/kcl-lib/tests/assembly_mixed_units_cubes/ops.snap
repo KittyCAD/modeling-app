@@ -14,7 +14,7 @@ description: Operations executed assembly_mixed_units_cubes.kcl
   },
   {
     "labeledArgs": {
-      "data": {
+      "planeOrSolid": {
         "value": {
           "type": "String",
           "value": "XY"
@@ -73,7 +73,7 @@ description: Operations executed assembly_mixed_units_cubes.kcl
   },
   {
     "labeledArgs": {
-      "data": {
+      "planeOrSolid": {
         "value": {
           "type": "String",
           "value": "XY"

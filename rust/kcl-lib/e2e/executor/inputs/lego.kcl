@@ -27,7 +27,7 @@ const s = startSketchOn(XY)
   |> close()
   |> extrude(length = height)
 
-const shellExtrude = startSketchOn(s, "start")
+const shellExtrude = startSketchOn(s, face = "start")
   |> startProfileAt([
        -(total_width / 2 - t),
        -(total_length / 2 - t)
@@ -38,7 +38,7 @@ const shellExtrude = startSketchOn(s, "start")
   |> close()
   |> extrude(length = -(height - t))
 
-const peg = startSketchOn(s, "end")
+const peg = startSketchOn(s, face = "end")
   |> circle( center= [
        -(total_width / 2 - wSegments),
        -(total_length / 2 - lSegments)
