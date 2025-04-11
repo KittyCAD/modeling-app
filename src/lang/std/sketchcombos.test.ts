@@ -624,7 +624,7 @@ async function helperThing(
 }
 
 describe('testing getConstraintLevelFromSourceRange', () => {
-  it('should divide up lines into free, partial and fully contrained', () => {
+  it('should divide up lines into free, partial and fully constrained', () => {
     const code = `baseLength = 3
 baseThick = 1
 armThick = 0.5
