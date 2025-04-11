@@ -77,6 +77,7 @@ layout: manual
   * [`helix`](kcl/std-helix)
   * [`hole`](kcl/hole)
   * [`hollow`](kcl/hollow)
+  * [`intersect`](kcl/intersect)
   * [`involuteCircular`](kcl/involuteCircular)
   * [`lastSegX`](kcl/lastSegX)
   * [`lastSegY`](kcl/lastSegY)
@@ -124,6 +125,7 @@ layout: manual
   * [`sqrt`](kcl/sqrt)
   * [`startProfileAt`](kcl/startProfileAt)
   * [`startSketchOn`](kcl/startSketchOn)
+  * [`subtract`](kcl/subtract)
   * [`sweep`](kcl/sweep)
   * [`tangentToEnd`](kcl/tangentToEnd)
   * [`tangentialArc`](kcl/tangentialArc)
@@ -132,6 +134,7 @@ layout: manual
   * [`toDegrees`](kcl/toDegrees)
   * [`toRadians`](kcl/toRadians)
   * [`translate`](kcl/translate)
+  * [`union`](kcl/union)
   * [`xLine`](kcl/xLine)
   * [`yLine`](kcl/yLine)
 * **std::math**

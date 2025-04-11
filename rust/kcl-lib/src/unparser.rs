@@ -192,7 +192,7 @@ impl Node<Annotation> {
                 result.push_str(&indentation);
                 result.push_str(comment);
             }
-            if !comment.ends_with("*/") && !result.ends_with("\n\n") && result != "\n" {
+            if !result.ends_with("\n\n") && result != "\n" {
                 result.push('\n');
             }
         }
@@ -1016,6 +1016,20 @@ foo = 42
 // Comment on another item
 @(impl = kcl)
 bar = 0
+"#;
+        let program = crate::parsing::top_level_parse(input).unwrap();
+        let output = program.recast(&Default::default(), 0);
+        assert_eq!(output, input);
+    }
+
+    #[test]
+    fn recast_annotations_with_block_comment() {
+        let input = r#"/* Start comment
+
+sdfsdfsdfs */
+@settings(defaultLengthUnit = in)
+
+foo = 42
 "#;
         let program = crate::parsing::top_level_parse(input).unwrap();
         let output = program.recast(&Default::default(), 0);
