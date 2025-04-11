@@ -1,7 +1,7 @@
 import type { Diagnostic } from '@codemirror/lint'
 import { useMachine, useSelector } from '@xstate/react'
 import type { ComponentProps } from 'react'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { Actor, Prop } from 'xstate'
 
 import type { Operation } from '@rust/kcl-lib/bindings/Operation'
@@ -23,7 +23,7 @@ import {
   getOperationLabel,
   stdLibMap,
 } from '@src/lib/operations'
-import { editorManager, kclManager } from '@src/lib/singletons'
+import { editorManager, kclManager, rustContext } from '@src/lib/singletons'
 import { featureTreeMachine } from '@src/machines/featureTreeMachine'
 import {
   editorIsMountedSelector,
@@ -151,6 +151,7 @@ export const FeatureTreePane = () => {
           <Loading className="h-full">Building feature tree...</Loading>
         ) : (
           <>
+            <DefaultPlanes />
             {parseErrors.length > 0 && (
               <div
                 className={`absolute inset-0 rounded-lg p-2 ${
@@ -445,5 +446,48 @@ const OperationItem = (props: {
       onDoubleClick={enterEditFlow}
       errors={errors}
     />
+  )
+}
+
+const DefaultPlanes = () => {
+  const defaultPlanes = rustContext.defaultPlanes
+  if (!defaultPlanes) return null
+
+  const planes = [
+    { name: 'Front plane', id: defaultPlanes.xz },
+    { name: 'Top plane', id: defaultPlanes.xy },
+    { name: 'Side plane', id: defaultPlanes.yz },
+  ]
+
+  const handleVisibilityChange = useCallback(
+    (planeId: string, isCurrentlyVisible: boolean) => {
+      kclManager.engineCommandManager.setPlaneHidden(
+        planeId,
+        isCurrentlyVisible
+      )
+    },
+    []
+  )
+
+  return (
+    <div className="mb-2">
+      {planes.map((plane) => (
+        <OperationItemWrapper
+          key={plane.id}
+          icon={'plane'}
+          name={plane.name}
+          visibilityToggle={{
+            entityId: plane.id,
+            initialVisibility: true,
+            onVisibilityChange: () =>
+              handleVisibilityChange(
+                plane.id,
+                !(visibilityMap.get(plane.id) ?? true)
+              ),
+          }}
+        />
+      ))}
+      <div className="h-px bg-chalkboard-50/20 my-2" />
+    </div>
   )
 }
