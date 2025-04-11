@@ -35,10 +35,10 @@ win:
   signtoolOptions:
     certificateSha1: F4C9A52FF7BC26EE5E054946F6B11DEEA94C748D
     signingHashAlgorithms:
-      - sha1
       - sha256
     publisherName: "KittyCAD Inc"
     certificateSubjectName: "KittyCAD Inc"
+    rfc3161TimeStampServer: http://timestamp.digicert.com
   icon: "assets/icon.ico"
   fileAssociations:
     - ext: kcl
