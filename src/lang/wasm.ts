@@ -71,6 +71,7 @@ export type {
   ArtifactId,
   Cap as CapArtifact,
   CodeRef,
+  CompositeSolid as CompositeSolidArtifact,
   EdgeCut,
   Path as PathArtifact,
   Plane as PlaneArtifact,

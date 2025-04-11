@@ -10,13 +10,13 @@ import {
   parseAppSettings,
   parseProjectSettings,
 } from '@src/lang/wasm'
+import { relevantFileExtensions } from '@src/lang/wasmUtils'
 import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
   PROJECT_ENTRYPOINT,
   PROJECT_FOLDER,
   PROJECT_IMAGE_NAME,
   PROJECT_SETTINGS_FILE_NAME,
-  RELEVANT_FILE_TYPES,
   SETTINGS_FILE_NAME,
   TELEMETRY_FILE_NAME,
   TELEMETRY_RAW_FILE_NAME,
@@ -201,15 +201,13 @@ export async function listProjects(
   return projects
 }
 
-// TODO: we should be lowercasing the extension here to check. .sldprt or .SLDPRT should be supported
-// But the api doesn't allow it today, so revisit this and the tests once this is done
-export const isRelevantFile = (filename: string): boolean =>
-  RELEVANT_FILE_TYPES.some((ext) => filename.endsWith('.' + ext))
-
 const collectAllFilesRecursiveFrom = async (
   path: string,
   canReadWritePath: boolean
 ) => {
+  const RELEVANT_FILE_EXTENSIONS = relevantFileExtensions()
+  const isRelevantFile = (filename: string): boolean =>
+    RELEVANT_FILE_EXTENSIONS.some((ext) => filename.endsWith('.' + ext))
   // Make sure the filesystem object exists.
   try {
     await window.electron.stat(path)
