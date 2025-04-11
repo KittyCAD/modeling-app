@@ -586,7 +586,7 @@ description: Operations executed dual-basin-utility-sink.kcl
       "tag": {
         "value": {
           "type": "String",
-          "value": "START"
+          "value": "start"
         },
         "sourceRange": []
       }
@@ -653,7 +653,7 @@ description: Operations executed dual-basin-utility-sink.kcl
       "tag": {
         "value": {
           "type": "String",
-          "value": "END"
+          "value": "end"
         },
         "sourceRange": []
       }

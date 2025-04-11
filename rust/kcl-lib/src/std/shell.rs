@@ -38,7 +38,7 @@ pub async fn shell(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// // Remove the end face for the extrusion.
 /// shell(
 ///     firstSketch,
-///     faces = ['end'],
+///     faces = [END],
 ///     thickness = 0.25,
 /// )
 /// ```
@@ -56,7 +56,7 @@ pub async fn shell(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// // Remove the start face for the extrusion.
 /// shell(
 ///     firstSketch,
-///     faces = ['start'],
+///     faces = [START],
 ///     thickness = 0.25,
 /// )
 /// ```
@@ -92,7 +92,7 @@ pub async fn shell(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// // Remove a tagged face and the end face for the extrusion.
 /// shell(
 ///     firstSketch,
-///     faces = [myTag, 'end'],
+///     faces = [myTag, END],
 ///     thickness = 0.25,
 /// )
 /// ```
@@ -108,16 +108,16 @@ pub async fn shell(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///     |> close()
 ///     |> extrude(length = 65)
 ///
-/// thing1 = startSketchOn(case, 'end')
+/// thing1 = startSketchOn(case, END)
 ///     |> circle( center = [-size / 2, -size / 2], radius = 25 )
 ///     |> extrude(length = 50)
 ///
-/// thing2 = startSketchOn(case, 'end')
+/// thing2 = startSketchOn(case, END)
 ///     |> circle( center = [size / 2, -size / 2], radius = 25 )
 ///     |> extrude(length = 50)
 ///
 /// // We put "case" in the shell function to shell the entire object.
-/// shell(case, faces = ['start'], thickness = 5)
+/// shell(case, faces = [START], thickness = 5)
 /// ```
 ///
 /// ```no_run
@@ -131,16 +131,16 @@ pub async fn shell(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///     |> close()
 ///     |> extrude(length = 65)
 ///
-/// thing1 = startSketchOn(case, 'end')
+/// thing1 = startSketchOn(case, END)
 ///     |> circle( center = [-size / 2, -size / 2], radius = 25 )
 ///     |> extrude(length = 50)
 ///
-/// thing2 = startSketchOn(case, 'end')
+/// thing2 = startSketchOn(case, END)
 ///     |> circle( center = [size / 2, -size / 2], radius = 25 )
 ///     |> extrude(length = 50)
 ///
 /// // We put "thing1" in the shell function to shell the end face of the object.
-/// shell(thing1, faces = ['end'], thickness = 5)
+/// shell(thing1, faces = [END], thickness = 5)
 /// ```
 ///
 /// ```no_run
@@ -156,16 +156,16 @@ pub async fn shell(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///     |> close()
 ///     |> extrude(length = 65)
 ///
-/// thing1 = startSketchOn(case, 'end')
+/// thing1 = startSketchOn(case, END)
 ///     |> circle( center = [-size / 2, -size / 2], radius = 25 )
 ///     |> extrude(length = 50)
 ///
-/// thing2 = startSketchOn(case, 'end')
+/// thing2 = startSketchOn(case, END)
 ///     |> circle( center = [size / 2, -size / 2], radius = 25)
 ///     |> extrude(length = 50)
 ///
 /// // We put "thing1" and "thing2" in the shell function to shell the end face of the object.
-/// shell([thing1, thing2], faces = ['end'], thickness = 5)
+/// shell([thing1, thing2], faces = [END], thickness = 5)
 /// ```
 #[stdlib {
     name = "shell",
@@ -291,11 +291,11 @@ pub async fn hollow(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 ///     |> close()
 ///     |> extrude(length = 65)
 ///
-/// thing1 = startSketchOn(case, 'end')
+/// thing1 = startSketchOn(case, END)
 ///     |> circle( center = [-size / 2, -size / 2], radius = 25 )
 ///     |> extrude(length = 50)
 ///
-/// thing2 = startSketchOn(case, 'end')
+/// thing2 = startSketchOn(case, END)
 ///     |> circle( center = [size / 2, -size / 2], radius = 25 )
 ///     |> extrude(length = 50)
 ///

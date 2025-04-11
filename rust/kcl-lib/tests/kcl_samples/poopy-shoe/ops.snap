@@ -410,7 +410,7 @@ description: Operations executed poopy-shoe.kcl
       "tag": {
         "value": {
           "type": "String",
-          "value": "END"
+          "value": "end"
         },
         "sourceRange": []
       }
@@ -752,7 +752,7 @@ description: Operations executed poopy-shoe.kcl
       "tag": {
         "value": {
           "type": "String",
-          "value": "END"
+          "value": "end"
         },
         "sourceRange": []
       }

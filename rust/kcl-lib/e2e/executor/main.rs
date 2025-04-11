@@ -751,7 +751,7 @@ part001 = cube([0,0], 20)
     |> close()
     |> extrude(length = 20)
 
-part002 = startSketchOn(part001, "end")
+part002 = startSketchOn(part001, END)
   |> startProfileAt([0, 0], %)
   |> line(end = [0, 10])
   |> line(end = [10, 0])
@@ -759,7 +759,7 @@ part002 = startSketchOn(part001, "end")
   |> close()
   |> extrude(length = 5)
 
-part003 = startSketchOn(part002, "end")
+part003 = startSketchOn(part002, END)
   |> startProfileAt([0, 0], %)
   |> line(end = [0, 5])
   |> line(end = [5, 0])
@@ -811,7 +811,7 @@ part001 = cube([0,0], 20)
     |> close()
     |> extrude(length = 20)
 
-part002 = startSketchOn(part001, "end")
+part002 = startSketchOn(part001, END)
   |> circle(center = [0, 0], radius= 5) 
   |> extrude(length = 5)
 "#;
@@ -1031,7 +1031,7 @@ async fn kcl_test_revolve_on_edge() {
   |> close()
   |> extrude(length = 10)
 
-sketch001 = startSketchOn(box, "end")
+sketch001 = startSketchOn(box, END)
   |> startProfileAt([5, 10], %)
   |> line(end = [0, -10])
   |> line(end = [2, 0])
@@ -1129,7 +1129,7 @@ async fn kcl_test_revolve_on_face() {
   |> close(tag = $revolveAxis)
   |> extrude(length = 10)
 
-sketch001 = startSketchOn(box, "end")
+sketch001 = startSketchOn(box, END)
   |> startProfileAt([5, 10], %)
   |> line(end = [0, -10])
   |> line(end = [2, 0])
@@ -1173,7 +1173,7 @@ async fn kcl_test_simple_revolve_sketch_on_edge() {
      |> close()
      |> revolve(axis = Y, angle = 180)
 
-part002 = startSketchOn(part001, 'end')
+part002 = startSketchOn(part001, END)
     |> startProfileAt([4.5, -5], %)
     |> line(end = [0, 5])
     |> line(end = [5, 0])
@@ -1277,7 +1277,7 @@ async fn kcl_test_member_expression_in_params() {
   })
     |> circle(center = [0, 0], radius= capDia / 2)
     |> extrude(length = capHeadLength)
-  screw = startSketchOn(screwHead, "start")
+  screw = startSketchOn(screwHead, START)
     |> circle(center = [0, 0], radius= dia / 2)
     |> extrude(length = length)
   return screw
