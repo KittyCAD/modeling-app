@@ -285,7 +285,7 @@ mod tests {
     // Here you can bring your functions into scope
     use approx::assert_relative_eq;
     use pretty_assertions::assert_eq;
-    use std::f64::consts::{PI, TAU};
+    use std::f64::consts::TAU;
 
     use super::{calculate_circle_center, get_x_component, get_y_component, Angle};
     use crate::SourceRange;
