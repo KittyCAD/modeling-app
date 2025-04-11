@@ -188,10 +188,10 @@ jobs:
           max_attempts: 3
           command: yarn install
 
+      # Next steps are from Digicert docs at
+      # https://docs.digicert.com/en/digicert-keylocker/ci-cd-integrations/scripts/github/scripts-for-signing-using-ksp-library-on-github.html#ksp-signing-using-github-action-488726
       - name: Prepare certificate and variables (Windows only)
         if: ${{ (env.IS_RELEASE == 'true' || env.IS_NIGHTLY == 'true') && matrix.os == 'windows-2022' }}
-        env:
-          SM_CLIENT_CERT_FILE_B64: ${{ secrets.SM_CLIENT_CERT_FILE_B64 }}
         run: |
           CERTIFICATE_PATH=$RUNNER_TEMP/certificate.p12
           echo "$SM_CLIENT_CERT_FILE_B64" | base64 --decode > $CERTIFICATE_PATH
@@ -207,12 +207,20 @@ jobs:
       - name: Setup certicate with SSM KSP (Windows only)
         if: ${{ (env.IS_RELEASE == 'true' || env.IS_NIGHTLY == 'true') && matrix.os == 'windows-2022' }}
         run: |
-          curl -X GET https://one.digicert.com/signingmanager/api-ui/v1/releases/Keylockertools-windows-x64.msi/download -H "x-api-key:%SM_API_KEY%" -o Keylockertools-windows-x64.msi
+          curl -X GET  https://one.digicert.com/signingmanager/api-ui/v1/releases/Keylockertools-windows-x64.msi/download -H "x-api-key:%SM_API_KEY%" -o Keylockertools-windows-x64.msi
           msiexec /i Keylockertools-windows-x64.msi /quiet /qn
           smksp_registrar.exe list
           smctl.exe keypair ls
+          C:\Windows\System32\certutil.exe -csp "DigiCert Signing Manager KSP" -key -user
           smksp_cert_sync.exe
+          smctl windows certsync
         shell: cmd
+
+      # This is what electron-builder seems to want
+      - name: List certs
+        shell: pwsh
+        run: |
+          Get-ChildItem -Recurse Cert: -CodeSigningCert | Select-Object -Property Subject,PSParentPath,Thumbprint
 
       - name: Build the app (debug)
         if: ${{ env.IS_RELEASE == 'false' && env.IS_NIGHTLY == 'false' }}
@@ -235,7 +243,7 @@ jobs:
         # TODO: Fix electron-notarize flakes. The logs above should help gather more data on failures
         uses: nick-fields/retry@v3.0.2
         with:
-          shell: pwsh
+          shell: bash
           timeout_minutes: 10
           max_attempts: 3
           command: yarn tronb:package:prod
