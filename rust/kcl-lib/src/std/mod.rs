@@ -71,6 +71,7 @@ lazy_static! {
         Box::new(crate::std::segment::AngleToMatchLengthY),
         Box::new(crate::std::shapes::CircleThreePoint),
         Box::new(crate::std::shapes::Polygon),
+        Box::new(crate::std::sketch::InvoluteCircular),
         Box::new(crate::std::sketch::Line),
         Box::new(crate::std::sketch::XLine),
         Box::new(crate::std::sketch::YLine),
