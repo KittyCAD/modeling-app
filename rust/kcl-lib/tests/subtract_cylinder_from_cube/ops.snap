@@ -88,7 +88,7 @@ description: Operations executed subtract_cylinder_from_cube.kcl
       "length": {
         "value": {
           "type": "Number",
-          "value": 10.0,
+          "value": 5.0,
           "ty": {
             "type": "Default",
             "len": {

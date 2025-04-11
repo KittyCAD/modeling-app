@@ -179,7 +179,8 @@ description: Artifact commands linear_pattern3d_a_pattern.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 1.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {

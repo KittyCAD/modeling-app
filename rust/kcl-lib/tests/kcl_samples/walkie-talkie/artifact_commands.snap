@@ -195,7 +195,8 @@ description: Artifact commands walkie-talkie.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 1.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -575,7 +576,8 @@ description: Artifact commands walkie-talkie.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -0.0625,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -896,7 +898,8 @@ description: Artifact commands walkie-talkie.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -0.0625,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -1120,7 +1123,8 @@ description: Artifact commands walkie-talkie.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -0.5,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -10036,7 +10040,8 @@ description: Artifact commands walkie-talkie.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -0.0625,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -22582,7 +22587,8 @@ description: Artifact commands walkie-talkie.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.05,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -22999,7 +23005,8 @@ description: Artifact commands walkie-talkie.kcl
         "unit": "degrees",
         "value": 360.0
       },
-      "tolerance": 0.0000001
+      "tolerance": 0.0000001,
+      "opposite": "None"
     }
   },
   {
@@ -23310,7 +23317,8 @@ description: Artifact commands walkie-talkie.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.04,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -23652,7 +23660,8 @@ description: Artifact commands walkie-talkie.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.04,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -23994,7 +24003,8 @@ description: Artifact commands walkie-talkie.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.04,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -24360,7 +24370,8 @@ description: Artifact commands walkie-talkie.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.04,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {

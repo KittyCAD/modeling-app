@@ -255,7 +255,8 @@ description: Artifact commands flush_batch_on_end.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 1.5,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {

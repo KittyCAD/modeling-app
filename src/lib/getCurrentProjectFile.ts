@@ -1,17 +1,12 @@
+import {
+  importFileExtensions,
+  relevantFileExtensions,
+} from '@src/lang/wasmUtils'
 import type { Stats } from 'fs'
 import * as fs from 'fs/promises'
 import * as path from 'path'
 
-import {
-  NATIVE_FILE_TYPE,
-  PROJECT_ENTRYPOINT,
-  RELEVANT_FILE_TYPES,
-  type RelevantFileType,
-} from '@src/lib/constants'
-
-const shouldWrapExtension = (extension: string) =>
-  RELEVANT_FILE_TYPES.includes(extension as RelevantFileType) &&
-  extension !== NATIVE_FILE_TYPE
+import { PROJECT_ENTRYPOINT } from '@src/lib/constants'
 
 /// Get the current project file from the path.
 /// This is used for double-clicking on a file in the file explorer,
@@ -19,6 +14,12 @@ const shouldWrapExtension = (extension: string) =>
 export default async function getCurrentProjectFile(
   pathString: string
 ): Promise<string | Error> {
+  // Extract the values into an array
+  const allFileImportFormats: string[] = importFileExtensions()
+  const relevantExtensions: string[] = relevantFileExtensions()
+  const shouldWrapExtension = (extension: string) =>
+    allFileImportFormats.includes(extension)
+
   // Fix for "." path, which is the current directory.
   let sourcePath = pathString === '.' ? process.cwd() : pathString
 
@@ -71,12 +72,9 @@ export default async function getCurrentProjectFile(
   // Check if the extension on what we are trying to open is a relevant file type.
   const extension = path.extname(sourcePath).slice(1).toLowerCase()
 
-  if (
-    !RELEVANT_FILE_TYPES.includes(extension as RelevantFileType) &&
-    extension !== 'toml'
-  ) {
+  if (!relevantExtensions.includes(extension) && extension !== 'toml') {
     return new Error(
-      `File type (${extension}) cannot be opened with this app: '${sourcePath}', try opening one of the following file types: ${RELEVANT_FILE_TYPES.join(
+      `File type (${extension}) cannot be opened with this app: '${sourcePath}', try opening one of the following file types: ${relevantExtensions.join(
         ', '
       )}`
     )

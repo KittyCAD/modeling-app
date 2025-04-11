@@ -15,6 +15,7 @@ import type {
   format_number as FormatNumber,
   get_kcl_version as GetKclVersion,
   get_tangential_arc_to_info as GetTangentialArcToInfo,
+  import_file_extensions as ImportFileExtensions,
   is_kcl_empty_or_only_settings as IsKclEmptyOrOnlySettings,
   is_points_ccw as IsPointsCcw,
   kcl_lint as KclLint,
@@ -23,6 +24,7 @@ import type {
   parse_project_settings as ParseProjectSettings,
   parse_wasm as ParseWasm,
   recast_wasm as RecastWasm,
+  relevant_file_extensions as RelevantFileExtensions,
   serialize_configuration as SerializeConfiguration,
   serialize_project_configuration as SerializeProjectConfiguration,
 } from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
@@ -111,3 +113,9 @@ export const serialize_project_configuration: typeof SerializeProjectConfigurati
   (...args) => {
     return getModule().serialize_project_configuration(...args)
   }
+export const import_file_extensions: typeof ImportFileExtensions = () => {
+  return getModule().import_file_extensions()
+}
+export const relevant_file_extensions: typeof RelevantFileExtensions = () => {
+  return getModule().relevant_file_extensions()
+}

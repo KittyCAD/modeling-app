@@ -3418,3 +3418,148 @@ async fn kcl_test_kcl_lsp_multi_file_error() {
 
     server.executor_ctx().await.clone().unwrap().close().await;
 }
+
+#[tokio::test(flavor = "multi_thread")]
+async fn test_kcl_lsp_on_hover_untitled_file_scheme() {
+    let server = kcl_lsp_server(true).await.unwrap();
+
+    // Send open file.
+    server
+        .did_open(tower_lsp::lsp_types::DidOpenTextDocumentParams {
+            text_document: tower_lsp::lsp_types::TextDocumentItem {
+                uri: "untitled:Untitled-1".try_into().unwrap(),
+                language_id: "kcl".to_string(),
+                version: 1,
+                text: r#"startSketchOn(XY)
+foo = 42
+foo
+
+fn bar(x: string): string {
+  return x
+}
+
+bar("an arg")
+
+startSketchOn(XY)
+  |> startProfileAt([0, 0], %)
+  |> line(end = [10, 0])
+  |> line(end = [0, 10])
+"#
+                .to_string(),
+            },
+        })
+        .await;
+
+    // Std lib call
+    let hover = server
+        .hover(tower_lsp::lsp_types::HoverParams {
+            text_document_position_params: tower_lsp::lsp_types::TextDocumentPositionParams {
+                text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
+                    uri: "untitled:Untitled-1".try_into().unwrap(),
+                },
+                position: tower_lsp::lsp_types::Position { line: 0, character: 2 },
+            },
+            work_done_progress_params: Default::default(),
+        })
+        .await
+        .unwrap();
+
+    match hover.unwrap().contents {
+        tower_lsp::lsp_types::HoverContents::Markup(tower_lsp::lsp_types::MarkupContent { value, .. }) => {
+            assert!(value.contains("startSketchOn"));
+            assert!(value.contains(": SketchSurface"));
+            assert!(value.contains("Start a new 2-dimensional sketch on a specific"));
+        }
+        _ => unreachable!(),
+    }
+
+    // Variable use
+    let hover = server
+        .hover(tower_lsp::lsp_types::HoverParams {
+            text_document_position_params: tower_lsp::lsp_types::TextDocumentPositionParams {
+                text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
+                    uri: "untitled:Untitled-1".try_into().unwrap(),
+                },
+                position: tower_lsp::lsp_types::Position { line: 2, character: 1 },
+            },
+            work_done_progress_params: Default::default(),
+        })
+        .await
+        .unwrap();
+
+    match hover.unwrap().contents {
+        tower_lsp::lsp_types::HoverContents::Markup(tower_lsp::lsp_types::MarkupContent { value, .. }) => {
+            assert!(value.contains("foo: number = 42"));
+        }
+        _ => unreachable!(),
+    }
+
+    // User-defined function call.
+    let hover = server
+        .hover(tower_lsp::lsp_types::HoverParams {
+            text_document_position_params: tower_lsp::lsp_types::TextDocumentPositionParams {
+                text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
+                    uri: "untitled:Untitled-1".try_into().unwrap(),
+                },
+                position: tower_lsp::lsp_types::Position { line: 8, character: 1 },
+            },
+            work_done_progress_params: Default::default(),
+        })
+        .await
+        .unwrap();
+
+    match hover.unwrap().contents {
+        tower_lsp::lsp_types::HoverContents::Markup(tower_lsp::lsp_types::MarkupContent { value, .. }) => {
+            assert!(value.contains("bar(x: string): string"));
+        }
+        _ => unreachable!(),
+    }
+
+    // Variable inside a function
+    let hover = server
+        .hover(tower_lsp::lsp_types::HoverParams {
+            text_document_position_params: tower_lsp::lsp_types::TextDocumentPositionParams {
+                text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
+                    uri: "untitled:Untitled-1".try_into().unwrap(),
+                },
+                position: tower_lsp::lsp_types::Position { line: 5, character: 9 },
+            },
+            work_done_progress_params: Default::default(),
+        })
+        .await
+        .unwrap();
+
+    match hover.unwrap().contents {
+        tower_lsp::lsp_types::HoverContents::Markup(tower_lsp::lsp_types::MarkupContent { value, .. }) => {
+            assert!(value.contains("x: string"));
+        }
+        _ => unreachable!(),
+    }
+
+    // std function KwArg
+    let hover = server
+        .hover(tower_lsp::lsp_types::HoverParams {
+            text_document_position_params: tower_lsp::lsp_types::TextDocumentPositionParams {
+                text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
+                    uri: "untitled:Untitled-1".try_into().unwrap(),
+                },
+                position: tower_lsp::lsp_types::Position {
+                    line: 12,
+                    character: 11,
+                },
+            },
+            work_done_progress_params: Default::default(),
+        })
+        .await
+        .unwrap();
+
+    match hover.unwrap().contents {
+        tower_lsp::lsp_types::HoverContents::Markup(tower_lsp::lsp_types::MarkupContent { value, .. }) => {
+            assert!(value.contains("end?: [number]"));
+            assert!(value.contains("How far away (along the X and Y axes) should this line go?"));
+        }
+        _ => unreachable!(),
+    }
+
+    server.executor_ctx().await.clone().unwrap().close().await;
+}

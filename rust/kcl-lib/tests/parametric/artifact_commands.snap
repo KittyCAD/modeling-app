@@ -213,7 +213,8 @@ description: Artifact commands parametric.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 9.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {

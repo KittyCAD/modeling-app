@@ -153,7 +153,8 @@ description: Artifact commands circle_three_point.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 10.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {

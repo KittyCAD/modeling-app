@@ -253,7 +253,8 @@ description: Artifact commands pipe-with-bend.kcl
         "unit": "degrees",
         "value": 90.0
       },
-      "tolerance": 0.0000001
+      "tolerance": 0.0000001,
+      "opposite": "None"
     }
   },
   {

@@ -173,7 +173,7 @@ pub(super) fn format_from_annotations(
                     KclError::Semantic(KclErrorDetails {
                         message: format!(
                             "Unknown format for import, expected one of: {}",
-                            annotations::IMPORT_FORMAT_VALUES.join(", ")
+                            crate::IMPORT_FILE_EXTENSIONS.join(", ")
                         ),
                         source_ranges: vec![p.as_source_range()],
                     })

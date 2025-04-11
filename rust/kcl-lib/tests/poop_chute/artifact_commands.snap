@@ -330,7 +330,8 @@ description: Artifact commands poop_chute.kcl
         "unit": "degrees",
         "value": 90.0
       },
-      "tolerance": 0.0000001
+      "tolerance": 0.0000001,
+      "opposite": "None"
     }
   },
   {
@@ -913,7 +914,8 @@ description: Artifact commands poop_chute.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 1.5,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {

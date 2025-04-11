@@ -30,7 +30,7 @@ flowchart LR
   21["SweepEdge Opposite"]
   22["SweepEdge Adjacent"]
   23["Plane<br>[363, 382, 0]"]
-  27["Sweep Extrusion<br>[429, 449, 0]"]
+  27["Sweep Extrusion<br>[429, 448, 0]"]
   28[Wall]
   29["Cap Start"]
   30["Cap End"]

@@ -196,7 +196,8 @@ description: Artifact commands sketch-on-chamfer-two-times.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 100.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -598,7 +599,8 @@ description: Artifact commands sketch-on-chamfer-two-times.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 50.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {

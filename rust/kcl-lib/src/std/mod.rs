@@ -12,7 +12,6 @@ pub mod edge;
 pub mod extrude;
 pub mod fillet;
 pub mod helix;
-pub mod import;
 pub mod loft;
 pub mod math;
 pub mod mirror;
@@ -111,7 +110,6 @@ lazy_static! {
         Box::new(crate::std::sweep::Sweep),
         Box::new(crate::std::loft::Loft),
         Box::new(crate::std::planes::OffsetPlane),
-        Box::new(crate::std::import::Import),
         Box::new(crate::std::math::Acos),
         Box::new(crate::std::math::Asin),
         Box::new(crate::std::math::Atan),

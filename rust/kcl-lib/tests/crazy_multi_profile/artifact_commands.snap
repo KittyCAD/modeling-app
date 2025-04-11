@@ -179,7 +179,8 @@ description: Artifact commands crazy_multi_profile.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 20.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -743,7 +744,8 @@ description: Artifact commands crazy_multi_profile.kcl
         "unit": "degrees",
         "value": 45.0
       },
-      "tolerance": 0.0000001
+      "tolerance": 0.0000001,
+      "opposite": "None"
     }
   },
   {
@@ -842,7 +844,8 @@ description: Artifact commands crazy_multi_profile.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 4.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -1453,7 +1456,8 @@ description: Artifact commands crazy_multi_profile.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 2.5,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -1571,7 +1575,8 @@ description: Artifact commands crazy_multi_profile.kcl
         "unit": "degrees",
         "value": 45.0
       },
-      "tolerance": 0.0000001
+      "tolerance": 0.0000001,
+      "opposite": "None"
     }
   },
   {

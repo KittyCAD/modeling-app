@@ -196,7 +196,8 @@ description: Artifact commands cube_with_error.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 40.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {

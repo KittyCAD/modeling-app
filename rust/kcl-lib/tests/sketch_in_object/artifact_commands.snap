@@ -179,7 +179,8 @@ description: Artifact commands sketch_in_object.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -10.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -436,7 +437,8 @@ description: Artifact commands sketch_in_object.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 10.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {

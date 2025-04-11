@@ -292,3 +292,22 @@ pub fn get_kcl_version() -> String {
 
     kcl_lib::version().to_string()
 }
+
+/// Get the allowed import file extensions.
+#[wasm_bindgen]
+pub fn import_file_extensions() -> Result<Vec<String>, String> {
+    console_error_panic_hook::set_once();
+
+    Ok(kcl_lib::IMPORT_FILE_EXTENSIONS.iter().map(|s| s.to_string()).collect())
+}
+
+/// Get the allowed relevant file extensions (imports + kcl).
+#[wasm_bindgen]
+pub fn relevant_file_extensions() -> Result<Vec<String>, String> {
+    console_error_panic_hook::set_once();
+
+    Ok(kcl_lib::RELEVANT_FILE_EXTENSIONS
+        .iter()
+        .map(|s| s.to_string())
+        .collect::<Vec<String>>())
+}
