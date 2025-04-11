@@ -78,6 +78,7 @@ layout: manual
   * [`hole`](kcl/hole)
   * [`hollow`](kcl/hollow)
   * [`intersect`](kcl/intersect)
+  * [`involuteCircular`](kcl/involuteCircular)
   * [`lastSegX`](kcl/lastSegX)
   * [`lastSegY`](kcl/lastSegY)
   * [`legAngX`](kcl/legAngX)
