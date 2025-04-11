@@ -1,0 +1,14 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Error from executing pattern_into_union.kcl
+---
+KCL Semantic error
+
+  × semantic: This function expected the input argument to be one or more
+  │ Solids but it's actually of type array (list)
+    ╭─[67:7]
+ 66 │ 
+ 67 │ union([base,endTabs])
+    ·       ───────┬──────
+    ·              ╰── tests/pattern_into_union/input.kcl
+    ╰────
