@@ -56,21 +56,21 @@ jobs:
           node-version-file: ".nvmrc"
       - name: Install dependencies
         run: |
-          yarn install
+          npm install
           cd rust/kcl-language-server
-          yarn install
+          npm install
       - name: Run tests
         run: |
           cd rust/kcl-language-server
-          yarn build
-          yarn test-compile
+          npm build
+          npm run test-compile
           ls -la dist
-          xvfb-run -a yarn test
+          xvfb-run -a npm run test
         if: runner.os == 'Linux'
       - name: Run tests
         run: |
           cd rust/kcl-language-server
-          yarn test
+          npm run test
         if: runner.os != 'Linux'
   build-release:
     strategy:
@@ -183,7 +183,7 @@ jobs:
       - name: Install dependencies
         run: |
           cd rust/kcl-language-server
-          yarn install
+          npm install
 
       - name: Package Extension (release)
         if: startsWith(github.event.ref, 'refs/tags/')
@@ -244,7 +244,7 @@ jobs:
             lld \
             musl-dev \
             nodejs \
-            yarn \
+            npm run \
             npm
 
       - name: Checkout repository
@@ -272,7 +272,7 @@ jobs:
       - name: Install dependencies
         run: |
           cd rust/kcl-language-server
-          yarn install
+          npm install
 
       - name: Package Extension (release)
         if: startsWith(github.event.ref, 'refs/tags/')

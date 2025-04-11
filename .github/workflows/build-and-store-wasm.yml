@@ -13,9 +13,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
-          cache: 'yarn'
+          cache: 'npm'
       - name: Install dependencies
-        run: yarn
+        run: npm
       - name: Use correct Rust toolchain
         shell: bash
         run: |
@@ -32,7 +32,7 @@ jobs:
         with:
           workspaces: rust
       - name: build wasm
-        run: yarn build:wasm
+        run: npm run build:wasm
 
 
       # Upload the WASM bundle as an artifact

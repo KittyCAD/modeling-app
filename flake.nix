@@ -50,7 +50,7 @@
             openssl
             pkg-config
             nodejs_22
-            yarn
+            npm
             electron
             playwright-driver.browsers
             wasm-pack
