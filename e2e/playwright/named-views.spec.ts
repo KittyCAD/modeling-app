@@ -6,9 +6,8 @@ import type { NamedView } from '@rust/kcl-lib/bindings/NamedView'
 
 import {
   createProject,
-  orRunWhenFullSuiteEnabled,
   perProjectSettingsToToml,
-  runningOnMac,
+  runningOnWindows,
   tomlToPerProjectSettings,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
@@ -63,9 +62,7 @@ function tomlStringOverWriteNamedViewUuids(toml: string): string {
 }
 
 test.describe('Named view tests', () => {
-  if (runningOnMac()) {
-    test.fixme(orRunWhenFullSuiteEnabled())
-  }
+  test.skip(runningOnWindows(), 'Windows line endings break snapshot matching')
   test('Verify project.toml is not created', async ({ page }, testInfo) => {
     // Create project and load it
     const projectName = 'named-views'
@@ -127,7 +124,7 @@ test.describe('Named view tests', () => {
 
       // Write the entire tomlString to a snapshot.
       // There are many key/value pairs to check this is a safer match.
-      expect(tomlString).toMatchSnapshot('verify-named-view-gets-created')
+      expect(tomlString).toMatchSnapshot('verify-named-view-gets-created.toml')
     }).toPass()
   })
   test('Verify named view gets deleted', async ({
@@ -173,7 +170,7 @@ test.describe('Named view tests', () => {
 
       // Write the entire tomlString to a snapshot.
       // There are many key/value pairs to check this is a safer match.
-      expect(tomlString).toMatchSnapshot('verify-named-view-gets-created')
+      expect(tomlString).toMatchSnapshot('verify-named-view-gets-created.toml')
     }).toPass()
 
     // Delete a named view
@@ -193,7 +190,7 @@ test.describe('Named view tests', () => {
 
       // Write the entire tomlString to a snapshot.
       // There are many key/value pairs to check this is a safer match.
-      expect(tomlString).toMatchSnapshot('verify-named-view-gets-deleted')
+      expect(tomlString).toMatchSnapshot('verify-named-view-gets-deleted.toml')
     }).toPass()
   })
   test('Verify named view gets loaded', async ({
@@ -239,7 +236,7 @@ test.describe('Named view tests', () => {
 
       // Write the entire tomlString to a snapshot.
       // There are many key/value pairs to check this is a safer match.
-      expect(tomlString).toMatchSnapshot('verify-named-view-gets-created')
+      expect(tomlString).toMatchSnapshot('verify-named-view-gets-created.toml')
     }).toPass()
 
     // Create a load a named view
@@ -308,7 +305,9 @@ test.describe('Named view tests', () => {
 
       // Write the entire tomlString to a snapshot.
       // There are many key/value pairs to check this is a safer match.
-      expect(tomlString).toMatchSnapshot('verify-two-named-view-gets-created')
+      expect(tomlString).toMatchSnapshot(
+        'verify-two-named-view-gets-created.toml'
+      )
     }).toPass()
   })
 })
