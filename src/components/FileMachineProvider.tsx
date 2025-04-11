@@ -234,6 +234,7 @@ export const FileMachineProvider = ({
                 : createdName,
               baseDir: input.selectedDirectory.path,
               // TODO: figure out how to reconcile with below
+              // Changing this is to the above broke nested clones :'(
               // baseDir: input.targetPathToClone
               //   ? window.electron.path.dirname(input.targetPathToClone)
               //   : input.selectedDirectory.path,
