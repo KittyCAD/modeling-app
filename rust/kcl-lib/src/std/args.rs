@@ -664,10 +664,6 @@ impl Args {
         FromArgs::from_args(self, 0)
     }
 
-    pub(crate) fn get_import_data(&self) -> Result<(String, Option<crate::std::import::ImportFormat>), KclError> {
-        FromArgs::from_args(self, 0)
-    }
-
     pub(crate) fn get_sketch_data_and_optional_tag(
         &self,
     ) -> Result<(super::sketch::SketchData, Option<FaceTag>), KclError> {
@@ -1075,35 +1071,6 @@ macro_rules! let_field_of {
     ($obj:ident, $field:ident $(, $annotation:ty)?) => {
         let $field $(: $annotation)? = $obj.get(stringify!($field)).and_then(FromKclValue::from_kcl_val)?;
     };
-}
-
-impl<'a> FromKclValue<'a> for crate::std::import::ImportFormat {
-    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        let obj = arg.as_object()?;
-        let_field_of!(obj, typ "format");
-        match typ {
-            "fbx" => Some(Self::Fbx {}),
-            "gltf" => Some(Self::Gltf {}),
-            "sldprt" => Some(Self::Sldprt {}),
-            "step" => Some(Self::Step {}),
-            "stl" => {
-                let_field_of!(obj, coords?);
-                let_field_of!(obj, units);
-                Some(Self::Stl { coords, units })
-            }
-            "obj" => {
-                let_field_of!(obj, coords?);
-                let_field_of!(obj, units);
-                Some(Self::Obj { coords, units })
-            }
-            "ply" => {
-                let_field_of!(obj, coords?);
-                let_field_of!(obj, units);
-                Some(Self::Ply { coords, units })
-            }
-            _ => None,
-        }
-    }
 }
 
 impl<'a> FromKclValue<'a> for super::sketch::AngledLineThatIntersectsData {

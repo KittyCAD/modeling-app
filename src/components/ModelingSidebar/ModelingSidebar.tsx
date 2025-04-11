@@ -4,6 +4,7 @@ import type { MouseEventHandler } from 'react'
 import { useCallback, useContext, useEffect, useMemo } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 
+import { useAppState } from '@src/AppState'
 import { ActionIcon } from '@src/components/ActionIcon'
 import type { CustomIconName } from '@src/components/CustomIcon'
 import { MachineManagerContext } from '@src/components/MachineManagerProvider'
@@ -16,7 +17,10 @@ import { sidebarPanes } from '@src/components/ModelingSidebar/ModelingPanes'
 import Tooltip from '@src/components/Tooltip'
 import { DEV } from '@src/env'
 import { useModelingContext } from '@src/hooks/useModelingContext'
+import { useNetworkContext } from '@src/hooks/useNetworkContext'
+import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
 import { useKclContext } from '@src/lang/KclProvider'
+import { EngineConnectionStateType } from '@src/lang/std/engineConnection'
 import { SIDEBAR_BUTTON_SUFFIX } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 import { useSettings } from '@src/machines/appMachine'
@@ -51,6 +55,16 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
       ? 'pointer-events-none '
       : 'pointer-events-auto '
   const showDebugPanel = settings.app.showDebugPanel
+
+  const { overallState, immediateState } = useNetworkContext()
+  const { isExecuting } = useKclContext()
+  const { isStreamReady } = useAppState()
+  const reliesOnEngine =
+    (overallState !== NetworkHealthState.Ok &&
+      overallState !== NetworkHealthState.Weak) ||
+    isExecuting ||
+    immediateState.type !== EngineConnectionStateType.ConnectionEstablished ||
+    !isStreamReady
 
   const paneCallbackProps = useMemo(
     () => ({
@@ -93,6 +107,8 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
       sidebarName: 'Export part',
       icon: 'floppyDiskArrow',
       keybinding: 'Ctrl + Shift + E',
+      disable: () =>
+        reliesOnEngine ? 'Need engine connection to export' : undefined,
       action: () =>
         commandBarActor.send({
           type: 'Find and select command',
