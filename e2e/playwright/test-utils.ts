@@ -1,14 +1,4 @@
-await tronApp.electron.evaluate(async ({ app }) => {
-  if (!app || !app.applicationMenu) {
-    return false
-  }
-  const newProject =
-    app.applicationMenu.getMenuItemById('File.New project')
-  if (!newProject) return false
-  newProject.click()
-  return true
-})
-)import * as TOML from '@iarna/toml'
+import * as TOML from '@iarna/toml'
 import type { Models } from '@kittycad/lib'
 import type { BrowserContext, Locator, Page, TestInfo } from '@playwright/test'
 import { expect } from '@playwright/test'
@@ -34,6 +24,7 @@ import {
   TEST_SETTINGS_KEY,
 } from '@e2e/playwright/storageStates'
 import { test } from '@e2e/playwright/zoo-test'
+import { ElectronZoo } from './fixtures/fixtureSetup'
 
 const toNormalizedCode = (text: string) => {
   return text.replace(/\s+/g, '')
@@ -1155,4 +1146,28 @@ export function perProjectsettingsToToml(
 ) {
   // eslint-disable-next-line no-restricted-syntax
   return TOML.stringify(settings as any)
+}
+
+export async function clickElectronNativeMenuById (tronApp: ElectronZoo, menuId:string) {
+  const clickWasTriggered = await tronApp.electron.evaluate(async ({ app }, menuId) => {
+    if (!app || !app.applicationMenu) {
+      return false
+    }
+    const menu =
+      app.applicationMenu.getMenuItemById(menuId)
+    if (!menu) return false
+    menu.click()
+    return true
+  }, menuId)
+  expect(clickWasTriggered).toBe(true)
+}
+
+export async function openSettingsExpectText (page: Page, text: string) {
+  const settings = page.getByTestId('settings-dialog-panel')
+  await expect(settings).toBeVisible()
+  // You are viewing the user tab
+  const actualText = settings.getByText(
+    text
+  )
+  await expect(actualText).toBeVisible()
 }

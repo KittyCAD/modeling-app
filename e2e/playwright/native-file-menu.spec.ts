@@ -1,5 +1,5 @@
 import { throwTronAppMissing } from '@e2e/playwright/lib/electron-helpers'
-import { orRunWhenFullSuiteEnabled } from '@e2e/playwright/test-utils'
+import { orRunWhenFullSuiteEnabled, clickElectronNativeMenuById, openSettingsExpectText} from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
 /**
@@ -13,87 +13,29 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         if (!tronApp) fail()
         await homePage.projectsLoaded()
         await homePage.isNativeFileMenuCreated()
-
-            await tronApp.electron.evaluate(async ({ app }) => {
-              if (!app || !app.applicationMenu) {
-                return false
-              }
-              const newProject =
-                app.applicationMenu.getMenuItemById('File.New project')
-              if (!newProject) return false
-              newProject.click()
-              return true
-            })
-    
-        // Check that the command bar is opened
-        await expect(cmdBar.cmdBarElement).toBeVisible()
-        // Check the placeholder project name exists
-        const actualArgument = await cmdBar.cmdBarElement
-          .getByTestId('cmd-bar-arg-value')
-          .inputValue()
-        const expectedArgument = 'untitled'
-        expect(actualArgument).toBe(expectedArgument)
+        await clickElectronNativeMenuById(tronApp, 'File.New project')
+        await cmdBar.toBeOpened()
+        await cmdBar.expectArgValue('untitled')
       })
-      test('Home.File.Open project', async ({ tronApp, cmdBar, page }) => {
+      test('Home.File.Open project', async ({ tronApp, cmdBar, page, homePage}) => {
         if (!tronApp) fail()
-        // Run electron snippet to find the Menu!
-        await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
-        await expect
-          .poll(
-            async () =>
-              await tronApp.electron.evaluate(async ({ app }) => {
-                if (!app || !app.applicationMenu) return false
-                const openProject =
-                  app.applicationMenu.getMenuItemById('File.Open project')
-                if (!openProject) {
-                  return false
-                }
-                openProject.click()
-                return true
-              })
-          )
-          .toBe(true)
-        // Check that the command bar is opened
-        await expect(cmdBar.cmdBarElement).toBeVisible()
-        // Check the placeholder project name exists
-        const actual = await cmdBar.cmdBarElement
-          .getByTestId('command-name')
-          .textContent()
-        const expected = 'Open project'
-        expect(actual).toBe(expected)
+        await homePage.projectsLoaded()
+        await homePage.isNativeFileMenuCreated()
+        await clickElectronNativeMenuById(tronApp, 'File.Open project')
+        await cmdBar.toBeOpened()
+        await cmdBar.expectCommandName('Open project')
       })
       test('Home.File.Preferences.User settings', async ({
         tronApp,
         cmdBar,
         page,
+        homePage
       }) => {
         if (!tronApp) fail()
-        // Run electron snippet to find the Menu!
-        await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
-        await expect
-          .poll(
-            async () =>
-              await tronApp.electron.evaluate(async ({ app }) => {
-                console.log(app)
-                if (!app || !app.applicationMenu) {
-                  return false
-                }
-                const userSettings = app.applicationMenu.getMenuItemById(
-                  'File.Preferences.User settings'
-                )
-                if (!userSettings) return false
-                userSettings.click()
-                return true
-              })
-          )
-          .toBe(true)
-        const settings = page.getByTestId('settings-dialog-panel')
-        await expect(settings).toBeVisible()
-        // You are viewing the user tab
-        const actualText = settings.getByText(
-          'The overall appearance of the app'
-        )
-        await expect(actualText).toBeVisible()
+        await homePage.projectsLoaded()
+        await homePage.isNativeFileMenuCreated()
+        await clickElectronNativeMenuById(tronApp, 'File.Preferences.User settings')
+        await openSettingsExpectText(page, 'The overall appearance of the app')
       })
       test('Home.File.Preferences.Keybindings', async ({
         tronApp,
