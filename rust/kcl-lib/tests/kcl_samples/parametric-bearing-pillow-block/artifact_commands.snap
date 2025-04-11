@@ -33,14 +33,6 @@ description: Artifact commands parametric-bearing-pillow-block.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "set_scene_units",
-      "unit": "in"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
       "type": "make_plane",
       "origin": {
         "x": 0.0,
@@ -92,8 +84,8 @@ description: Artifact commands parametric-bearing-pillow-block.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": -2.0,
-        "y": -3.0,
+        "x": -50.8,
+        "y": -76.19999999999999,
         "z": 0.0
       }
     }
@@ -114,8 +106,8 @@ description: Artifact commands parametric-bearing-pillow-block.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 2.0,
-          "y": -3.0,
+          "x": 50.8,
+          "y": -76.2,
           "z": 0.0
         },
         "relative": false
@@ -131,8 +123,8 @@ description: Artifact commands parametric-bearing-pillow-block.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 2.0,
-          "y": 3.0,
+          "x": 50.8,
+          "y": 76.2,
           "z": 0.0
         },
         "relative": false
@@ -148,8 +140,8 @@ description: Artifact commands parametric-bearing-pillow-block.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -2.0,
-          "y": 3.0,
+          "x": -50.8,
+          "y": 76.2,
           "z": 0.0
         },
         "relative": false
@@ -186,7 +178,7 @@ description: Artifact commands parametric-bearing-pillow-block.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 1.0,
+      "distance": 25.4,
       "faces": null,
       "opposite": "None"
     }
@@ -321,8 +313,8 @@ description: Artifact commands parametric-bearing-pillow-block.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": -0.9,
-        "y": -2.25,
+        "x": -22.86,
+        "y": -57.15,
         "z": 0.0
       }
     }
@@ -343,10 +335,10 @@ description: Artifact commands parametric-bearing-pillow-block.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": -1.25,
-          "y": -2.25
+          "x": -31.75,
+          "y": -57.15
         },
-        "radius": 0.35,
+        "radius": 8.889999999999999,
         "start": {
           "unit": "degrees",
           "value": 0.0
@@ -379,7 +371,7 @@ description: Artifact commands parametric-bearing-pillow-block.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": 4.5,
+              "y": 114.3,
               "z": 0.0
             },
             "scale": {
@@ -418,7 +410,7 @@ description: Artifact commands parametric-bearing-pillow-block.kcl
         [
           {
             "translate": {
-              "x": 2.5,
+              "x": 63.5,
               "y": 0.0,
               "z": 0.0
             },
@@ -458,7 +450,7 @@ description: Artifact commands parametric-bearing-pillow-block.kcl
         [
           {
             "translate": {
-              "x": 2.5,
+              "x": 63.5,
               "y": 0.0,
               "z": 0.0
             },
@@ -505,7 +497,7 @@ description: Artifact commands parametric-bearing-pillow-block.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": -0.25,
+      "distance": -6.35,
       "faces": null,
       "opposite": "None"
     }
@@ -572,7 +564,7 @@ description: Artifact commands parametric-bearing-pillow-block.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": -0.25,
+      "distance": -6.35,
       "faces": null,
       "opposite": "None"
     }
@@ -639,7 +631,7 @@ description: Artifact commands parametric-bearing-pillow-block.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": -0.25,
+      "distance": -6.35,
       "faces": null,
       "opposite": "None"
     }
@@ -706,7 +698,7 @@ description: Artifact commands parametric-bearing-pillow-block.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": -0.25,
+      "distance": -6.35,
       "faces": null,
       "opposite": "None"
     }
@@ -781,8 +773,8 @@ description: Artifact commands parametric-bearing-pillow-block.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": -1.0625,
-        "y": -2.25,
+        "x": -26.987499999999997,
+        "y": -57.15,
         "z": 0.0
       }
     }
@@ -803,10 +795,10 @@ description: Artifact commands parametric-bearing-pillow-block.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": -1.25,
-          "y": -2.25
+          "x": -31.75,
+          "y": -57.15
         },
-        "radius": 0.1875,
+        "radius": 4.762499999999999,
         "start": {
           "unit": "degrees",
           "value": 0.0
@@ -839,7 +831,7 @@ description: Artifact commands parametric-bearing-pillow-block.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": 4.5,
+              "y": 114.3,
               "z": 0.0
             },
             "scale": {
@@ -878,7 +870,7 @@ description: Artifact commands parametric-bearing-pillow-block.kcl
         [
           {
             "translate": {
-              "x": 2.5,
+              "x": 63.5,
               "y": 0.0,
               "z": 0.0
             },
@@ -918,7 +910,7 @@ description: Artifact commands parametric-bearing-pillow-block.kcl
         [
           {
             "translate": {
-              "x": 2.5,
+              "x": 63.5,
               "y": 0.0,
               "z": 0.0
             },
@@ -965,7 +957,7 @@ description: Artifact commands parametric-bearing-pillow-block.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": -0.75,
+      "distance": -19.049999999999997,
       "faces": null,
       "opposite": "None"
     }
@@ -1032,7 +1024,7 @@ description: Artifact commands parametric-bearing-pillow-block.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": -0.75,
+      "distance": -19.049999999999997,
       "faces": null,
       "opposite": "None"
     }
@@ -1099,7 +1091,7 @@ description: Artifact commands parametric-bearing-pillow-block.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": -0.75,
+      "distance": -19.049999999999997,
       "faces": null,
       "opposite": "None"
     }
@@ -1166,7 +1158,7 @@ description: Artifact commands parametric-bearing-pillow-block.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": -0.75,
+      "distance": -19.049999999999997,
       "faces": null,
       "opposite": "None"
     }
@@ -1241,7 +1233,7 @@ description: Artifact commands parametric-bearing-pillow-block.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 1.5,
+        "x": 38.099999999999994,
         "y": 0.0,
         "z": 0.0
       }
@@ -1266,7 +1258,7 @@ description: Artifact commands parametric-bearing-pillow-block.kcl
           "x": 0.0,
           "y": 0.0
         },
-        "radius": 1.5,
+        "radius": 38.099999999999994,
         "start": {
           "unit": "degrees",
           "value": 0.0
@@ -1305,7 +1297,7 @@ description: Artifact commands parametric-bearing-pillow-block.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": -1.0,
+      "distance": -25.4,
       "faces": null,
       "opposite": "None"
     }
@@ -1352,38 +1344,6 @@ description: Artifact commands parametric-bearing-pillow-block.kcl
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "set_scene_units",
-      "unit": "mm"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "set_scene_units",
-      "unit": "mm"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "set_scene_units",
-      "unit": "mm"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "set_scene_units",
-      "unit": "mm"
     }
   }
 ]

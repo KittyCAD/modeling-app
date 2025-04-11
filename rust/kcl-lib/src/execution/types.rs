@@ -440,7 +440,11 @@ impl NumericType {
         }
     }
 
-    /// Combine two types when we expect them to be equal.
+    /// Combine two types when we expect them to be equal, erring on the side of less coercion. To be
+    /// precise, only adjusting one number or the other when they are of known types.
+    ///
+    /// This combinator function is suitable for comparisons or arithmetic where uncertainty should
+    /// be handled by the user.
     pub fn combine_eq(a: TyF64, b: TyF64) -> (f64, f64, NumericType) {
         use NumericType::*;
         match (a.ty, b.ty) {
@@ -463,13 +467,20 @@ impl NumericType {
         }
     }
 
-    /// Combine two types when we expect them to be equal.
+    /// Combine two types when we expect them to be equal, erring on the side of more coercion. Including adjusting when
+    /// we are certain about only one type.
+    ///
+    /// This combinator function is suitable for situations where the user would almost certainly want the types to be
+    /// coerced together, for example two arguments to the same function or two numbers in an array being used as a point.
+    ///
+    /// Prefer to use `combine_eq` if possible since using that prioritises correctness over ergonomics.
     pub fn combine_eq_coerce(a: TyF64, b: TyF64) -> (f64, f64, NumericType) {
         use NumericType::*;
         match (a.ty, b.ty) {
             (at, bt) if at == bt => (a.n, b.n, at),
             (at, Any) => (a.n, b.n, at),
             (Any, bt) => (a.n, b.n, bt),
+
             (Default { .. }, Default { .. }) | (_, Unknown) | (Unknown, _) => (a.n, b.n, Unknown),
 
             // Known types and compatible, but needs adjustment.
@@ -597,12 +608,12 @@ impl NumericType {
     }
 
     fn is_unknown(&self) -> bool {
-        match self {
+        matches!(
+            self,
             NumericType::Unknown
-            | NumericType::Known(UnitType::Angle(UnitAngle::Unknown))
-            | NumericType::Known(UnitType::Length(UnitLen::Unknown)) => true,
-            _ => false,
-        }
+                | NumericType::Known(UnitType::Angle(UnitAngle::Unknown))
+                | NumericType::Known(UnitType::Length(UnitLen::Unknown))
+        )
     }
 
     fn example_ty(&self) -> Option<String> {
@@ -768,7 +779,7 @@ pub enum UnitLen {
 }
 
 impl UnitLen {
-    fn adjust_to(self, value: f64, to: UnitLen) -> (f64, UnitLen) {
+    pub fn adjust_to(self, value: f64, to: UnitLen) -> (f64, UnitLen) {
         use UnitLen::*;
 
         if self == to {
@@ -891,7 +902,7 @@ pub enum UnitAngle {
 }
 
 impl UnitAngle {
-    fn adjust_to(self, value: f64, to: UnitAngle) -> (f64, UnitAngle) {
+    pub fn adjust_to(self, value: f64, to: UnitAngle) -> (f64, UnitAngle) {
         use std::f64::consts::PI;
 
         use UnitAngle::*;
@@ -1046,8 +1057,6 @@ impl KclValue {
                         y_axis,
                         z_axis,
                         value: super::PlaneType::Uninit,
-                        // TODO use length unit from origin
-                        units: exec_state.length_unit(),
                         meta: meta.clone(),
                     };
 

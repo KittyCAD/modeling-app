@@ -1010,9 +1010,6 @@ description: Variables in memory after executing poopy-shoe.kcl
             "units": {
               "type": "Mm"
             }
-          },
-          "units": {
-            "type": "Inches"
           }
         },
         "start": {
@@ -1047,7 +1044,7 @@ description: Variables in memory after executing poopy-shoe.kcl
       },
       "height": 0.0,
       "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "endCapId": null,
       "units": {
         "type": "Inches"
       }
@@ -1369,9 +1366,6 @@ description: Variables in memory after executing poopy-shoe.kcl
           "units": {
             "type": "Mm"
           }
-        },
-        "units": {
-          "type": "Inches"
         }
       },
       "start": {
@@ -1804,9 +1798,6 @@ description: Variables in memory after executing poopy-shoe.kcl
             "units": {
               "type": "Mm"
             }
-          },
-          "units": {
-            "type": "Inches"
           }
         },
         "start": {
@@ -1979,9 +1970,6 @@ description: Variables in memory after executing poopy-shoe.kcl
             "units": {
               "type": "Inches"
             }
-          },
-          "units": {
-            "type": "Inches"
           }
         },
         "start": {
@@ -2789,9 +2777,6 @@ description: Variables in memory after executing poopy-shoe.kcl
                   "units": {
                     "type": "Mm"
                   }
-                },
-                "units": {
-                  "type": "Inches"
                 }
               },
               "start": {
@@ -3100,9 +3085,6 @@ description: Variables in memory after executing poopy-shoe.kcl
             "units": {
               "type": "Inches"
             }
-          },
-          "units": {
-            "type": "Inches"
           }
         },
         "start": {
@@ -3514,9 +3496,6 @@ description: Variables in memory after executing poopy-shoe.kcl
                   "units": {
                     "type": "Inches"
                   }
-                },
-                "units": {
-                  "type": "Inches"
                 }
               },
               "start": {
@@ -4509,9 +4488,6 @@ description: Variables in memory after executing poopy-shoe.kcl
                         "units": {
                           "type": "Mm"
                         }
-                      },
-                      "units": {
-                        "type": "Inches"
                       }
                     },
                     "start": {
@@ -4781,9 +4757,6 @@ description: Variables in memory after executing poopy-shoe.kcl
             "units": {
               "type": "Inches"
             }
-          },
-          "units": {
-            "type": "Inches"
           }
         },
         "start": {

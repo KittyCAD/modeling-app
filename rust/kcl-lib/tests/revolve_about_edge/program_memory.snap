@@ -76,9 +76,6 @@ description: Variables in memory after executing revolve_about_edge.kcl
           "units": {
             "type": "Mm"
           }
-        },
-        "units": {
-          "type": "Mm"
         }
       },
       "start": {
@@ -193,9 +190,6 @@ description: Variables in memory after executing revolve_about_edge.kcl
             "units": {
               "type": "Mm"
             }
-          },
-          "units": {
-            "type": "Mm"
           }
         },
         "start": {

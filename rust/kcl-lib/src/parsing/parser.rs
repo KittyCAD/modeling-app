@@ -14,7 +14,7 @@ use winnow::{
 };
 
 use super::{
-    ast::types::{Ascription, ImportPath, LabelledExpression},
+    ast::types::{AscribedExpression, ImportPath, LabelledExpression},
     token::{NumericSuffix, RESERVED_WORDS},
     DeprecationKind,
 };
@@ -2008,7 +2008,7 @@ fn expression_but_not_pipe(i: &mut TokenSlice) -> PResult<Expr> {
 
     let ty = opt((colon, opt(whitespace), argument_type)).parse_next(i)?;
     if let Some((_, _, ty)) = ty {
-        expr = Expr::AscribedExpression(Box::new(Ascription::new(expr, ty)))
+        expr = Expr::AscribedExpression(Box::new(AscribedExpression::new(expr, ty)))
     }
     let label = opt(label).parse_next(i)?;
     match label {
@@ -4516,13 +4516,13 @@ export fn cos(num: number(rad)): number(_) {}"#;
     fn fn_decl_uom_ty() {
         let some_program_string = r#"fn foo(x: number(mm)): number(_) { return 1 }"#;
         let (_, errs) = assert_no_fatal(some_program_string);
-        assert!(errs.is_empty());
+        assert!(errs.is_empty(), "Expected no errors, found: {errs:?}");
     }
 
     #[test]
     fn error_underscore() {
         let (_, errs) = assert_no_fatal("_foo(_blah, _)");
-        assert_eq!(errs.len(), 3, "found: {:#?}", errs);
+        assert_eq!(errs.len(), 3, "found: {errs:#?}");
     }
 
     #[test]
