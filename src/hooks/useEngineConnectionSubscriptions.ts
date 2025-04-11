@@ -190,10 +190,9 @@ export function useEngineConnectionSubscriptions() {
                 kclManager.artifactGraph
               )
               if (!err(extrusion)) {
-                const fileIndex = getModuleId(extrusion.codeRef.range)
-                if (fileIndex !== 0) {
-                  const importDetails =
-                    kclManager.execState.filenames[fileIndex]
+                const moduleId = getModuleId(extrusion.codeRef.range)
+                if (moduleId !== 0) {
+                  const importDetails = kclManager.execState.filenames[moduleId]
                   if (!importDetails) {
                     toast.error("can't sketch on this face")
                     return
@@ -208,6 +207,7 @@ export function useEngineConnectionSubscriptions() {
                   ) {
                     toast.error("can't sketch on this face")
                   } else {
+                    // force tsc error if more cases are added
                     const _exhaustiveCheck: never = importDetails
                   }
                 }

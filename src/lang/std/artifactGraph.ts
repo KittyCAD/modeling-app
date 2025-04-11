@@ -736,7 +736,7 @@ const onlyConsecutivePaths = (
 }
 
 export function getPathsFromPlaneArtifact(
-  planeArtifact: PlaneArtifact,
+  planeArtifact: PlaneArtifact | WallArtifact | CapArtifact,
   artifactGraph: ArtifactGraph,
   ast: Program
 ): PathToNode[] {

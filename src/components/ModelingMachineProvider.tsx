@@ -846,6 +846,7 @@ export const ModelingMachineProvider = ({
                 : plane?.pathIds[0]
             let sketch: KclValue | null = null
             let planeVar: Plane | null = null
+
             for (const variable of Object.values(
               kclManager.execState.variables
             )) {
@@ -876,6 +877,7 @@ export const ModelingMachineProvider = ({
                 planeVar = variable.value
               }
             }
+
             if (!sketch || sketch.type !== 'Sketch') {
               if (artifact?.type !== 'plane')
                 return Promise.reject(new Error('No sketch'))
