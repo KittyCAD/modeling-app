@@ -7,7 +7,6 @@ import { expect, test } from '@e2e/playwright/zoo-test'
  * Test file menu actions that trigger something in the frontend
  */
 test.describe('Native file menu', { tag: ['@electron'] }, () => {
-  test.skip() // TODO: Reimplement native file menu tests
   test.describe('Home page', () => {
     test.describe('File role', () => {
       test('Home.File.Create project', async ({ tronApp, cmdBar, page }) => {
