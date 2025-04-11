@@ -97,11 +97,11 @@ jobs:
         if: needs.conditions.outputs.should-run == 'true'
         with:
           node-version-file: '.nvmrc'
-          cache: 'yarn'
+          cache: 'npm'
 
       - name: Install dependencies
         if: needs.conditions.outputs.should-run == 'true'
-        run: yarn
+        run: npm install
 
       - name: Download Wasm Cache
         id: download-wasm
@@ -154,7 +154,7 @@ jobs:
       - name: Build Wasm
         if: ${{ needs.conditions.outputs.should-run == 'true' && steps.wasm.outputs.should-build-wasm == 'true' }}
         shell: bash
-        run: yarn build:wasm
+        run: npm run build:wasm
 
       - uses: actions/upload-artifact@v4
         if: needs.conditions.outputs.should-run == 'true'
@@ -197,12 +197,12 @@ jobs:
         if: needs.conditions.outputs.should-run == 'true'
         with:
           node-version-file: '.nvmrc'
-          cache: 'yarn'
+          cache: 'npm'
 
       - name: Install dependencies
         id: deps-install
         if: needs.conditions.outputs.should-run == 'true'
-        run: yarn
+        run: npm install
 
       - name: Cache Playwright Browsers
         if: needs.conditions.outputs.should-run == 'true'
@@ -210,22 +210,22 @@ jobs:
         with:
           path: |
             ~/.cache/ms-playwright/
-          key: ${{ runner.os }}-playwright-${{ hashFiles('yarn.lock') }}
+          key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
 
       - name: Install Playwright Browsers
         if: needs.conditions.outputs.should-run == 'true'
-        run: yarn playwright install --with-deps
+        run: npm run playwright install --with-deps
 
       - name: build web
         if: needs.conditions.outputs.should-run == 'true'
-        run: yarn tronb:vite:dev
+        run: npm run tronb:vite:dev
 
       - name: Run ubuntu/chrome snapshots
         if: needs.conditions.outputs.should-run == 'true'
         uses: nick-fields/retry@v3.0.2
         with:
           shell: bash
-          command: yarn test:snapshots
+          command: npm run test:snapshots
           timeout_minutes: 30
           max_attempts: 3
         env:
@@ -321,12 +321,12 @@ jobs:
         if: needs.conditions.outputs.should-run == 'true'
         with:
           node-version-file: '.nvmrc'
-          cache: 'yarn'
+          cache: 'npm'
 
       - name: Install dependencies
         id: deps-install
         if: needs.conditions.outputs.should-run == 'true'
-        run: yarn
+        run: npm install
 
       - name: Cache Playwright Browsers
         if: needs.conditions.outputs.should-run == 'true'
@@ -334,15 +334,15 @@ jobs:
         with:
           path: |
             ~/.cache/ms-playwright/
-          key: ${{ runner.os }}-playwright-${{ hashFiles('yarn.lock') }}
+          key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
 
       - name: Install Playwright Browsers
         if: needs.conditions.outputs.should-run == 'true'
-        run: yarn playwright install --with-deps
+        run: npm run playwright install --with-deps
 
       - name: Build web
         if: needs.conditions.outputs.should-run == 'true'
-        run: yarn tronb:vite:dev
+        run: npm run tronb:vite:dev
 
       - name: Start Vector
         if: ${{ needs.conditions.outputs.should-run == 'true' && !contains(matrix.os, 'windows') }}

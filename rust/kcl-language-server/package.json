@@ -118,14 +118,14 @@
     }
   },
   "scripts": {
-    "vscode:prepublish": "yarn run build-base -- --minify",
-    "deploy": "vsce publish --yarn",
+    "vscode:prepublish": "npm run build-base -- --minify",
+    "deploy": "vsce publish --npm",
     "build-base": "esbuild ./client/src/main.ts --bundle --outfile=dist/main.js --external:vscode --format=cjs --platform=node --target=node16",
     "test-compile": "tsc -p ./",
     "compile": "cross-env NODE_ENV=production tsc -b",
-    "build": "yarn run build-base -- --sourcemap",
-    "watch": "yarn run build-base -- --sourcemap --watch",
-    "pretest": "yarn run build && yarn test-compile",
+    "build": "npm run build-base -- --sourcemap",
+    "watch": "npm run build-base -- --sourcemap --watch",
+    "pretest": "npm run build && npm run test-compile",
     "test": "node ./dist/client/src/test/runTest.js",
     "package": "vsce package -o kcl-language-server.vsix"
   },
