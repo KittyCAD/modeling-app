@@ -285,7 +285,7 @@ mod tests {
     // Here you can bring your functions into scope
     use approx::assert_relative_eq;
     use pretty_assertions::assert_eq;
-    use std::f64::consts::PI;
+    use std::f64::consts::{PI, TAU};
 
     use super::{calculate_circle_center, get_x_component, get_y_component, Angle};
     use crate::SourceRange;
@@ -471,7 +471,7 @@ mod tests {
         let points_array = [[0.0, 0.33, 0.66], [0.0, 0.1, 0.2], [0.0, -0.1, 0.1], [0.0, 0.5, 0.7]];
 
         let get_point = |radius: f64, t: f64| {
-            let angle = t * 2.0 * PI;
+            let angle = t * TAU;
             [center[0] + radius * angle.cos(), center[1] + radius * angle.sin()]
         };
 
