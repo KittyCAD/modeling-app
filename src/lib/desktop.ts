@@ -699,9 +699,12 @@ export const getUser = async (
   hostname: string
 ): Promise<Models['User_type']> => {
   try {
-    const user = await window.electron.kittycad('users.get_user_self', {
-      client: { token },
-    })
+    const user = await fetch(`${hostname}/users/me`, {
+      headers: new Headers({
+        'Authorization': `Bearer ${token}`
+    }),
+
+    });
     return user
   } catch (e) {
     console.error(e)

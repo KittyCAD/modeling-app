@@ -373,12 +373,6 @@ ipcMain.handle('startDeviceFlow', async (_, host: string) => {
   return handle.user_code
 })
 
-ipcMain.handle('kittycad', (event, data) => {
-  return data.access
-    .split('.')
-    .reduce((obj: any, prop: any) => obj[prop], kittycad)(data.args)
-})
-
 // Used to find other devices on the local network, e.g. 3D printers, CNC machines, etc.
 ipcMain.handle('find_machine_api', () => {
   const timeoutAfterMs = 5000
