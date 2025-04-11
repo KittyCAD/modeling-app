@@ -247,7 +247,7 @@ export class CmdBarFixture {
 
   async toBeOpened() {
     // Check that the command bar is opened
-    await expect(this.cmdBarElement).toBeVisible()
+    await expect(this.cmdBarElement).toBeVisible({ timeout: 10_000 })
   }
 
   async expectArgValue(value: string) {

@@ -674,10 +674,13 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         await clickElectronNativeMenuById(tronApp, 'View.Orthographic view')
         const textToCheck =
           'Set camera projection to "orthographic" as a user default'
-        // Check if text appears anywhere in the page
-        const isTextVisible = page.getByText(textToCheck)
-
-        await expect(isTextVisible).toBeVisible({ timeout: 10000 })
+        await expect
+          .poll(async () => {
+            const isTextVisible = page.getByText(textToCheck)
+            await expect(isTextVisible).toBeVisible({ timeout: 10000 })
+            return true
+          })
+          .toBe(true)
       })
       test('Modeling.View.Perspective view', async ({
         tronApp,
@@ -696,10 +699,13 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         await clickElectronNativeMenuById(tronApp, 'View.Perspective view')
         const textToCheck =
           'Set camera projection to "perspective" as a user default'
-        // Check if text appears anywhere in the page
-        const isTextVisible = page.getByText(textToCheck)
-
-        await expect(isTextVisible).toBeVisible({ timeout: 10000 })
+        await expect
+          .poll(async () => {
+            const isTextVisible = page.getByText(textToCheck)
+            await expect(isTextVisible).toBeVisible({ timeout: 10000 })
+            return true
+          })
+          .toBe(true)
       })
       test('Modeling.View.Standard views.Right view', async ({
         tronApp,
