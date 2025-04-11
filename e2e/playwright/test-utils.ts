@@ -16,6 +16,7 @@ import { PNG } from 'pngjs'
 
 import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
 
+import type { ElectronZoo } from '@e2e/playwright/fixtures/fixtureSetup'
 import { isErrorWhitelisted } from '@e2e/playwright/lib/console-error-whitelist'
 import { secrets } from '@e2e/playwright/secrets'
 import {
@@ -24,7 +25,6 @@ import {
   TEST_SETTINGS_KEY,
 } from '@e2e/playwright/storageStates'
 import { test } from '@e2e/playwright/zoo-test'
-import type { ElectronZoo } from './fixtures/fixtureSetup'
 
 const toNormalizedCode = (text: string) => {
   return text.replace(/\s+/g, '')

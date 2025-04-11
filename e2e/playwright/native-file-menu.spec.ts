@@ -4,7 +4,6 @@ import {
   findElectronNativeMenuById,
   openSettingsExpectLocator,
   openSettingsExpectText,
-  orRunWhenFullSuiteEnabled,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
@@ -1053,30 +1052,15 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
           return
         }
         await homePage.goToModelingScene()
+        await scene.settled(cmdBar)
         await scene.connectionEstablished()
-
-        // Run electron snippet to find the Menu!
-        await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
-        await tronApp.electron.evaluate(async ({ app }) => {
-          if (!app || !app.applicationMenu) {
-            throw new Error('app or app.applicationMenu is missing')
-          }
-          const menu = app.applicationMenu.getMenuItemById(
-            'Design.Create an offset plane'
-          )
-          if (!menu) {
-            throw new Error('menu missing')
-          }
-          menu.click()
-        })
-        // Check that the command bar is opened
-        await expect(cmdBar.cmdBarElement).toBeVisible()
-        // Check the placeholder project name exists
-        const actual = await cmdBar.cmdBarElement
-          .getByTestId('command-name')
-          .textContent()
-        const expected = 'Offset plane'
-        expect(actual).toBe(expected)
+        await scene.isNativeFileMenuCreated()
+        await clickElectronNativeMenuById(
+          tronApp,
+          'Design.Create an offset plane'
+        )
+        await cmdBar.toBeOpened()
+        await cmdBar.expectCommandName('Offset plane')
       })
       test('Modeling.Design.Create a helix', async ({
         tronApp,
@@ -1090,30 +1074,12 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
           return
         }
         await homePage.goToModelingScene()
+        await scene.settled(cmdBar)
         await scene.connectionEstablished()
-
-        // Run electron snippet to find the Menu!
-        await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
-        await tronApp.electron.evaluate(async ({ app }) => {
-          if (!app || !app.applicationMenu) {
-            throw new Error('app or app.applicationMenu is missing')
-          }
-          const menu = app.applicationMenu.getMenuItemById(
-            'Design.Create a helix'
-          )
-          if (!menu) {
-            throw new Error('menu missing')
-          }
-          menu.click()
-        })
-        // Check that the command bar is opened
-        await expect(cmdBar.cmdBarElement).toBeVisible()
-        // Check the placeholder project name exists
-        const actual = await cmdBar.cmdBarElement
-          .getByTestId('command-name')
-          .textContent()
-        const expected = 'Helix'
-        expect(actual).toBe(expected)
+        await scene.isNativeFileMenuCreated()
+        await clickElectronNativeMenuById(tronApp, 'Design.Create a helix')
+        await cmdBar.toBeOpened()
+        await cmdBar.expectCommandName('Helix')
       })
       test('Modeling.Design.Create a parameter', async ({
         tronApp,
@@ -1127,30 +1093,12 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
           return
         }
         await homePage.goToModelingScene()
+        await scene.settled(cmdBar)
         await scene.connectionEstablished()
-
-        // Run electron snippet to find the Menu!
-        await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
-        await tronApp.electron.evaluate(async ({ app }) => {
-          if (!app || !app.applicationMenu) {
-            throw new Error('app or app.applicationMenu is missing')
-          }
-          const menu = app.applicationMenu.getMenuItemById(
-            'Design.Create a parameter'
-          )
-          if (!menu) {
-            throw new Error('menu missing')
-          }
-          menu.click()
-        })
-        // Check that the command bar is opened
-        await expect(cmdBar.cmdBarElement).toBeVisible()
-        // Check the placeholder project name exists
-        const actual = await cmdBar.cmdBarElement
-          .getByTestId('command-name')
-          .textContent()
-        const expected = 'Create parameter'
-        expect(actual).toBe(expected)
+        await scene.isNativeFileMenuCreated()
+        await clickElectronNativeMenuById(tronApp, 'Design.Create a parameter')
+        await cmdBar.toBeOpened()
+        await cmdBar.expectCommandName('Create parameter')
       })
 
       test('Modeling.Design.Create an additive feature.Extrude', async ({
@@ -1165,30 +1113,15 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
           return
         }
         await homePage.goToModelingScene()
+        await scene.settled(cmdBar)
         await scene.connectionEstablished()
-
-        // Run electron snippet to find the Menu!
-        await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
-        await tronApp.electron.evaluate(async ({ app }) => {
-          if (!app || !app.applicationMenu) {
-            throw new Error('app or app.applicationMenu is missing')
-          }
-          const menu = app.applicationMenu.getMenuItemById(
-            'Design.Create an additive feature.Extrude'
-          )
-          if (!menu) {
-            throw new Error('menu missing')
-          }
-          menu.click()
-        })
-        // Check that the command bar is opened
-        await expect(cmdBar.cmdBarElement).toBeVisible()
-        // Check the placeholder project name exists
-        const actual = await cmdBar.cmdBarElement
-          .getByTestId('command-name')
-          .textContent()
-        const expected = 'Extrude'
-        expect(actual).toBe(expected)
+        await scene.isNativeFileMenuCreated()
+        await clickElectronNativeMenuById(
+          tronApp,
+          'Design.Create an additive feature.Extrude'
+        )
+        await cmdBar.toBeOpened()
+        await cmdBar.expectCommandName('Extrude')
       })
       test('Modeling.Design.Create an additive feature.Revolve', async ({
         tronApp,
@@ -1202,30 +1135,15 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
           return
         }
         await homePage.goToModelingScene()
+        await scene.settled(cmdBar)
         await scene.connectionEstablished()
-
-        // Run electron snippet to find the Menu!
-        await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
-        await tronApp.electron.evaluate(async ({ app }) => {
-          if (!app || !app.applicationMenu) {
-            throw new Error('app or app.applicationMenu is missing')
-          }
-          const menu = app.applicationMenu.getMenuItemById(
-            'Design.Create an additive feature.Revolve'
-          )
-          if (!menu) {
-            throw new Error('menu missing')
-          }
-          menu.click()
-        })
-        // Check that the command bar is opened
-        await expect(cmdBar.cmdBarElement).toBeVisible()
-        // Check the placeholder project name exists
-        const actual = await cmdBar.cmdBarElement
-          .getByTestId('command-name')
-          .textContent()
-        const expected = 'Revolve'
-        expect(actual).toBe(expected)
+        await scene.isNativeFileMenuCreated()
+        await clickElectronNativeMenuById(
+          tronApp,
+          'Design.Create an additive feature.Revolve'
+        )
+        await cmdBar.toBeOpened()
+        await cmdBar.expectCommandName('Revolve')
       })
       test('Modeling.Design.Create an additive feature.Sweep', async ({
         tronApp,
@@ -1239,30 +1157,15 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
           return
         }
         await homePage.goToModelingScene()
+        await scene.settled(cmdBar)
         await scene.connectionEstablished()
-
-        // Run electron snippet to find the Menu!
-        await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
-        await tronApp.electron.evaluate(async ({ app }) => {
-          if (!app || !app.applicationMenu) {
-            throw new Error('app or app.applicationMenu is missing')
-          }
-          const menu = app.applicationMenu.getMenuItemById(
-            'Design.Create an additive feature.Sweep'
-          )
-          if (!menu) {
-            throw new Error('menu missing')
-          }
-          menu.click()
-        })
-        // Check that the command bar is opened
-        await expect(cmdBar.cmdBarElement).toBeVisible()
-        // Check the placeholder project name exists
-        const actual = await cmdBar.cmdBarElement
-          .getByTestId('command-name')
-          .textContent()
-        const expected = 'Sweep'
-        expect(actual).toBe(expected)
+        await scene.isNativeFileMenuCreated()
+        await clickElectronNativeMenuById(
+          tronApp,
+          'Design.Create an additive feature.Sweep'
+        )
+        await cmdBar.toBeOpened()
+        await cmdBar.expectCommandName('Sweep')
       })
       test('Modeling.Design.Create an additive feature.Loft', async ({
         tronApp,
@@ -1276,30 +1179,15 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
           return
         }
         await homePage.goToModelingScene()
+        await scene.settled(cmdBar)
         await scene.connectionEstablished()
-
-        // Run electron snippet to find the Menu!
-        await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
-        await tronApp.electron.evaluate(async ({ app }) => {
-          if (!app || !app.applicationMenu) {
-            throw new Error('app or app.applicationMenu is missing')
-          }
-          const menu = app.applicationMenu.getMenuItemById(
-            'Design.Create an additive feature.Loft'
-          )
-          if (!menu) {
-            throw new Error('menu missing')
-          }
-          menu.click()
-        })
-        // Check that the command bar is opened
-        await expect(cmdBar.cmdBarElement).toBeVisible()
-        // Check the placeholder project name exists
-        const actual = await cmdBar.cmdBarElement
-          .getByTestId('command-name')
-          .textContent()
-        const expected = 'Loft'
-        expect(actual).toBe(expected)
+        await scene.isNativeFileMenuCreated()
+        await clickElectronNativeMenuById(
+          tronApp,
+          'Design.Create an additive feature.Loft'
+        )
+        await cmdBar.toBeOpened()
+        await cmdBar.expectCommandName('Loft')
       })
       test('Modeling.Design.Apply modification feature.Fillet', async ({
         tronApp,
@@ -1313,30 +1201,15 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
           return
         }
         await homePage.goToModelingScene()
+        await scene.settled(cmdBar)
         await scene.connectionEstablished()
-
-        // Run electron snippet to find the Menu!
-        await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
-        await tronApp.electron.evaluate(async ({ app }) => {
-          if (!app || !app.applicationMenu) {
-            throw new Error('app or app.applicationMenu is missing')
-          }
-          const menu = app.applicationMenu.getMenuItemById(
-            'Design.Apply modification feature.Fillet'
-          )
-          if (!menu) {
-            throw new Error('menu missing')
-          }
-          menu.click()
-        })
-        // Check that the command bar is opened
-        await expect(cmdBar.cmdBarElement).toBeVisible()
-        // Check the placeholder project name exists
-        const actual = await cmdBar.cmdBarElement
-          .getByTestId('command-name')
-          .textContent()
-        const expected = 'Fillet'
-        expect(actual).toBe(expected)
+        await scene.isNativeFileMenuCreated()
+        await clickElectronNativeMenuById(
+          tronApp,
+          'Design.Apply modification feature.Fillet'
+        )
+        await cmdBar.toBeOpened()
+        await cmdBar.expectCommandName('Fillet')
       })
       test('Modeling.Design.Apply modification feature.Chamfer', async ({
         tronApp,
@@ -1350,30 +1223,15 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
           return
         }
         await homePage.goToModelingScene()
+        await scene.settled(cmdBar)
         await scene.connectionEstablished()
-
-        // Run electron snippet to find the Menu!
-        await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
-        await tronApp.electron.evaluate(async ({ app }) => {
-          if (!app || !app.applicationMenu) {
-            throw new Error('app or app.applicationMenu is missing')
-          }
-          const menu = app.applicationMenu.getMenuItemById(
-            'Design.Apply modification feature.Chamfer'
-          )
-          if (!menu) {
-            throw new Error('menu missing')
-          }
-          menu.click()
-        })
-        // Check that the command bar is opened
-        await expect(cmdBar.cmdBarElement).toBeVisible()
-        // Check the placeholder project name exists
-        const actual = await cmdBar.cmdBarElement
-          .getByTestId('command-name')
-          .textContent()
-        const expected = 'Chamfer'
-        expect(actual).toBe(expected)
+        await scene.isNativeFileMenuCreated()
+        await clickElectronNativeMenuById(
+          tronApp,
+          'Design.Apply modification feature.Chamfer'
+        )
+        await cmdBar.toBeOpened()
+        await cmdBar.expectCommandName('Chamfer')
       })
 
       test('Modeling.Design.Apply modification feature.Shell', async ({
@@ -1388,30 +1246,15 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
           return
         }
         await homePage.goToModelingScene()
+        await scene.settled(cmdBar)
         await scene.connectionEstablished()
-
-        // Run electron snippet to find the Menu!
-        await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
-        await tronApp.electron.evaluate(async ({ app }) => {
-          if (!app || !app.applicationMenu) {
-            throw new Error('app or app.applicationMenu is missing')
-          }
-          const menu = app.applicationMenu.getMenuItemById(
-            'Design.Apply modification feature.Shell'
-          )
-          if (!menu) {
-            throw new Error('menu missing')
-          }
-          menu.click()
-        })
-        // Check that the command bar is opened
-        await expect(cmdBar.cmdBarElement).toBeVisible()
-        // Check the placeholder project name exists
-        const actual = await cmdBar.cmdBarElement
-          .getByTestId('command-name')
-          .textContent()
-        const expected = 'Shell'
-        expect(actual).toBe(expected)
+        await scene.isNativeFileMenuCreated()
+        await clickElectronNativeMenuById(
+          tronApp,
+          'Design.Apply modification feature.Shell'
+        )
+        await cmdBar.toBeOpened()
+        await cmdBar.expectCommandName('Shell')
       })
 
       test('Modeling.Design.Create with Zoo Text-To-CAD', async ({
@@ -1426,30 +1269,15 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
           return
         }
         await homePage.goToModelingScene()
+        await scene.settled(cmdBar)
         await scene.connectionEstablished()
-
-        // Run electron snippet to find the Menu!
-        await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
-        await tronApp.electron.evaluate(async ({ app }) => {
-          if (!app || !app.applicationMenu) {
-            throw new Error('app or app.applicationMenu is missing')
-          }
-          const menu = app.applicationMenu.getMenuItemById(
-            'Design.Create with Zoo Text-To-CAD'
-          )
-          if (!menu) {
-            throw new Error('menu missing')
-          }
-          menu.click()
-        })
-        // Check that the command bar is opened
-        await expect(cmdBar.cmdBarElement).toBeVisible()
-        // Check the placeholder project name exists
-        const actual = await cmdBar.cmdBarElement
-          .getByTestId('command-name')
-          .textContent()
-        const expected = 'Text-to-CAD'
-        expect(actual).toBe(expected)
+        await scene.isNativeFileMenuCreated()
+        await clickElectronNativeMenuById(
+          tronApp,
+          'Design.Create with Zoo Text-To-CAD'
+        )
+        await cmdBar.toBeOpened()
+        await cmdBar.expectCommandName('Text-to-CAD')
       })
 
       test('Modeling.Design.Modify with Zoo Text-To-CAD', async ({
@@ -1464,30 +1292,15 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
           return
         }
         await homePage.goToModelingScene()
+        await scene.settled(cmdBar)
         await scene.connectionEstablished()
-
-        // Run electron snippet to find the Menu!
-        await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
-        await tronApp.electron.evaluate(async ({ app }) => {
-          if (!app || !app.applicationMenu) {
-            throw new Error('app or app.applicationMenu is missing')
-          }
-          const menu = app.applicationMenu.getMenuItemById(
-            'Design.Modify with Zoo Text-To-CAD'
-          )
-          if (!menu) {
-            throw new Error('menu missing')
-          }
-          menu.click()
-        })
-        // Check that the command bar is opened
-        await expect(cmdBar.cmdBarElement).toBeVisible()
-        // Check the placeholder project name exists
-        const actual = await cmdBar.cmdBarElement
-          .getByTestId('command-name')
-          .textContent()
-        const expected = 'Prompt-to-edit'
-        expect(actual).toBe(expected)
+        await scene.isNativeFileMenuCreated()
+        await clickElectronNativeMenuById(
+          tronApp,
+          'Design.Modify with Zoo Text-To-CAD'
+        )
+        await cmdBar.toBeOpened()
+        await cmdBar.expectCommandName('Prompt-to-edit')
       })
     })
     test.describe('Help role', () => {
@@ -1503,18 +1316,10 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
           return
         }
         await homePage.goToModelingScene()
+        await scene.settled(cmdBar)
         await scene.connectionEstablished()
-
-        // Run electron snippet to find the Menu!
-        await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
-        await tronApp.electron.evaluate(async ({ app }) => {
-          if (!app || !app.applicationMenu) fail()
-          const menu = app.applicationMenu.getMenuItemById(
-            'Help.Show all commands'
-          )
-          if (!menu) fail()
-          menu.click()
-        })
+        await scene.isNativeFileMenuCreated()
+        await clickElectronNativeMenuById(tronApp, 'Help.Show all commands')
         // Check the placeholder project name exists
         const actual = cmdBar.cmdBarElement.getByTestId('cmd-bar-search')
         await expect(actual).toBeVisible()
@@ -1531,17 +1336,10 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
           return
         }
         await homePage.goToModelingScene()
+        await scene.settled(cmdBar)
         await scene.connectionEstablished()
-
-        // Run electron snippet to find the Menu!
-        await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
-        await tronApp.electron.evaluate(async ({ app }) => {
-          if (!app || !app.applicationMenu) fail()
-          const menu = app.applicationMenu.getMenuItemById(
-            'Help.KCL code samples'
-          )
-          if (!menu) fail()
-        })
+        await scene.isNativeFileMenuCreated()
+        await findElectronNativeMenuById(tronApp, 'Help.KCL code samples')
       })
       test('Modeling.Help.Refresh and report a bug', async ({
         tronApp,
@@ -1551,34 +1349,18 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         scene,
         toolbar,
       }) => {
-        // TODO: this test has been dead dead on the idle stream branch
-        test.fixme(orRunWhenFullSuiteEnabled())
         if (!tronApp) {
           throwTronAppMissing()
           return
         }
         await homePage.goToModelingScene()
+        await scene.settled(cmdBar)
         await scene.connectionEstablished()
-
-        // Run electron snippet to find the Menu!
-        await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
-        await expect
-          .poll(
-            async () =>
-              await tronApp.electron.evaluate(async ({ app }) => {
-                if (!app || !app.applicationMenu) return false
-                const menu = app.applicationMenu.getMenuItemById(
-                  'Help.Refresh and report a bug'
-                )
-                if (!menu) return false
-                menu.click()
-                return true
-              })
-          )
-          .toBe(true)
-        // Core dump and refresh magic number timeout
-        await scene.connectionEstablished()
-        await expect(toolbar.startSketchBtn).toBeVisible()
+        await scene.isNativeFileMenuCreated()
+        await findElectronNativeMenuById(
+          tronApp,
+          'Help.Refresh and report a bug'
+        )
       })
       test('Modeling.Help.Reset onboarding', async ({
         tronApp,
@@ -1593,18 +1375,8 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         }
         await homePage.goToModelingScene()
         await scene.connectionEstablished()
-
-        // Run electron snippet to find the Menu!
-        await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
-        await tronApp.electron.evaluate(async ({ app }) => {
-          if (!app || !app.applicationMenu) fail()
-          const menu = app.applicationMenu.getMenuItemById(
-            'Help.Reset onboarding'
-          )
-          if (!menu) fail()
-          menu.click()
-        })
-
+        await scene.isNativeFileMenuCreated()
+        await clickElectronNativeMenuById(tronApp, 'Help.Reset onboarding')
         const actual = page.getByText(
           `This is a hardware design tool that lets you edit visually, with code, or both. It's powered by the KittyCAD Design API, the first API created for anyone to build hardware design tools.`
         )
