@@ -29,6 +29,7 @@ class MyAPIReporter implements Reporter {
       GITHUB_REF: process.env.GITHUB_REF || null,
       GITHUB_SHA: process.env.GITHUB_SHA || null,
       GITHUB_WORKFLOW: process.env.GITHUB_WORKFLOW || null,
+      PR_NUMBER: process.env.PR_NUMBER || null,
       RUNNER_ARCH: process.env.RUNNER_ARCH || null,
     }
 
