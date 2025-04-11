@@ -1,10 +1,10 @@
 // Fan Housing
 // The plastic housing that contains the fan and the motor
 
-// Set Units
+// Set units
 @settings(defaultLengthUnit = mm)
 
-// Import Parameters
+// Import parameters
 import * from "parameters.kcl"
 
 // Model the housing which holds the motor, the fan, and the mounting provisions
@@ -12,15 +12,9 @@ import * from "parameters.kcl"
 // Bottom mounting face
 bottomFaceSketch = startSketchOn(XY)
   |> startProfileAt([-fanSize / 2, -fanSize / 2], %)
-  |> angledLine([0, fanSize], %, $rectangleSegmentA001)
-  |> angledLine([
-       segAng(rectangleSegmentA001) + 90,
-       fanSize
-     ], %, $rectangleSegmentB001)
-  |> angledLine([
-       segAng(rectangleSegmentA001),
-       -segLen(rectangleSegmentA001)
-     ], %, $rectangleSegmentC001)
+  |> angledLine(angle = 0, length = fanSize, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) + 90, length = fanSize, tag = $rectangleSegmentB001)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $rectangleSegmentC001)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $rectangleSegmentD001)
   |> close()
   |> hole(circle(center = [0, 0], radius = 4), %)
@@ -57,17 +51,17 @@ bottomFaceSketch = startSketchOn(XY)
 // Add large openings to the bottom face to allow airflow through the fan
 airflowPattern = startSketchOn(bottomFaceSketch, 'END')
   |> startProfileAt([fanSize * 7 / 25, -fanSize * 9 / 25], %)
-  |> angledLine([140, fanSize * 12 / 25], %, $seg01)
+  |> angledLine(angle = 140, length = fanSize * 12 / 25, tag = $seg01)
   |> tangentialArc({
        radius = fanSize * 1 / 50,
        offset = 90
      }, %)
-  |> angledLine([-130, fanSize * 8 / 25], %)
+  |> angledLine(angle = -130, length = fanSize * 8 / 25)
   |> tangentialArc({
        radius = fanSize * 1 / 50,
        offset = 90
      }, %)
-  |> angledLine([segAng(seg01) + 180, fanSize * 2 / 25], %)
+  |> angledLine(angle = segAng(seg01) + 180, length = fanSize * 2 / 25)
   |> tangentialArc({
        radius = fanSize * 8 / 25,
        offset = 40
@@ -92,13 +86,13 @@ bodyCenter = startSketchOn(bottomFaceSketch, 'END')
        -octLen / 2 - (octDiag * cos(toRadians(45)))
      ], %)
   |> xLine(length = octLen, tag = $seg02)
-  |> angledLine([45, octDiag], %, $seg03)
+  |> angledLine(angle = 45, length = octDiag, tag = $seg03)
   |> yLine(length = segLen(seg02), tag = $seg05)
-  |> angledLine([135, segLen(seg03)], %, $seg06)
+  |> angledLine(angle = 135, length = segLen(seg03), tag = $seg06)
   |> xLine(length = -segLen(seg02), tag = $seg07)
-  |> angledLine([-135, segLen(seg03)], %, $seg08)
+  |> angledLine(angle = -135, length = segLen(seg03), tag = $seg08)
   |> yLine(length = -segLen(seg02), tag = $seg09)
-  |> angledLine([-45, segLen(seg03)], %, $seg10)
+  |> angledLine(angle = -45, length = segLen(seg03), tag = $seg10)
   |> close()
   |> extrude(length = fanHeight - 4 - 4)
 
@@ -110,15 +104,9 @@ bodyFanHole = startSketchOn(bodyCenter, 'END')
 // Top mounting face. Cut a hole in the face to accommodate the fan
 topFaceSketch = startSketchOn(bodyCenter, 'END')
 topHoles = startProfileAt([-fanSize / 2, -fanSize / 2], topFaceSketch)
-  |> angledLine([0, fanSize], %, $rectangleSegmentA002)
-  |> angledLine([
-       segAng(rectangleSegmentA002) + 90,
-       fanSize
-     ], %, $rectangleSegmentB002)
-  |> angledLine([
-       segAng(rectangleSegmentA002),
-       -segLen(rectangleSegmentA002)
-     ], %, $rectangleSegmentC002)
+  |> angledLine(angle = 0, length = fanSize, tag = $rectangleSegmentA002)
+  |> angledLine(angle = segAng(rectangleSegmentA002) + 90, length = fanSize, tag = $rectangleSegmentB002)
+  |> angledLine(angle = segAng(rectangleSegmentA002), length = -segLen(rectangleSegmentA002), tag = $rectangleSegmentC002)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $rectangleSegmentD002)
   |> close()
   |> hole(circle(center = [0, 0], radius = fanSize * 23 / 50), %)

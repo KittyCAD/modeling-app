@@ -1,10 +1,10 @@
 // Fan
 // Spinning axial fan that moves airflow
 
-// Set Units
+// Set units
 @settings(defaultLengthUnit = mm)
 
-// Import Parameters
+// Import parameters
 import * from "parameters.kcl"
 
 // Model the center of the fan

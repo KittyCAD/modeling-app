@@ -1,7 +1,7 @@
 // PC Fan
 // A small axial fan, used to push or draw airflow over components to remove excess heat
 
-// set units
+// Set units
 @settings(defaultLengthUnit = mm)
 
 // Import all parts into assembly file
