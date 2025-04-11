@@ -62,7 +62,7 @@ jobs:
       - name: Run tests
         run: |
           cd rust/kcl-language-server
-          npm build
+          npm run build
           npm run test-compile
           ls -la dist
           xvfb-run -a npm run test

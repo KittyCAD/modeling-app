@@ -225,6 +225,7 @@
     "husky": "^9.1.7",
     "kill-port": "^2.0.1",
     "node-fetch": "^3.3.2",
+    "openapi-typescript": "^7.6.1",
     "pixelmatch": "^5.3.0",
     "pngjs": "^7.0.0",
     "postcss": "^8.4.43",
