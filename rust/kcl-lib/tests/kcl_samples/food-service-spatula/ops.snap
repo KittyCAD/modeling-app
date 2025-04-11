@@ -39,8 +39,8 @@ description: Operations executed food-service-spatula.kcl
       "type": "FunctionCall",
       "name": "toDegrees",
       "functionSourceRange": [
-        18380,
-        18429,
+        12033,
+        12082,
         1
       ],
       "unlabeledArg": null,
@@ -57,8 +57,8 @@ description: Operations executed food-service-spatula.kcl
       "type": "FunctionCall",
       "name": "toRadians",
       "functionSourceRange": [
-        17950,
-        17999,
+        11603,
+        11652,
         1
       ],
       "unlabeledArg": null,
@@ -93,8 +93,8 @@ description: Operations executed food-service-spatula.kcl
       "type": "FunctionCall",
       "name": "toRadians",
       "functionSourceRange": [
-        17950,
-        17999,
+        11603,
+        11652,
         1
       ],
       "unlabeledArg": null,
@@ -147,8 +147,8 @@ description: Operations executed food-service-spatula.kcl
       "type": "FunctionCall",
       "name": "toDegrees",
       "functionSourceRange": [
-        18380,
-        18429,
+        12033,
+        12082,
         1
       ],
       "unlabeledArg": null,
@@ -165,8 +165,8 @@ description: Operations executed food-service-spatula.kcl
       "type": "FunctionCall",
       "name": "toRadians",
       "functionSourceRange": [
-        17950,
-        17999,
+        11603,
+        11652,
         1
       ],
       "unlabeledArg": null,
@@ -201,8 +201,8 @@ description: Operations executed food-service-spatula.kcl
       "type": "FunctionCall",
       "name": "toRadians",
       "functionSourceRange": [
-        17950,
-        17999,
+        11603,
+        11652,
         1
       ],
       "unlabeledArg": null,
@@ -255,8 +255,8 @@ description: Operations executed food-service-spatula.kcl
       "type": "FunctionCall",
       "name": "toDegrees",
       "functionSourceRange": [
-        18380,
-        18429,
+        12033,
+        12082,
         1
       ],
       "unlabeledArg": null,
@@ -273,8 +273,8 @@ description: Operations executed food-service-spatula.kcl
       "type": "FunctionCall",
       "name": "toRadians",
       "functionSourceRange": [
-        17950,
-        17999,
+        11603,
+        11652,
         1
       ],
       "unlabeledArg": null,
@@ -309,8 +309,8 @@ description: Operations executed food-service-spatula.kcl
       "type": "FunctionCall",
       "name": "toRadians",
       "functionSourceRange": [
-        17950,
-        17999,
+        11603,
+        11652,
         1
       ],
       "unlabeledArg": null,
@@ -894,8 +894,8 @@ description: Operations executed food-service-spatula.kcl
       "type": "FunctionCall",
       "name": "toRadians",
       "functionSourceRange": [
-        17950,
-        17999,
+        11603,
+        11652,
         1
       ],
       "unlabeledArg": null,
@@ -930,8 +930,8 @@ description: Operations executed food-service-spatula.kcl
       "type": "FunctionCall",
       "name": "toRadians",
       "functionSourceRange": [
-        17950,
-        17999,
+        11603,
+        11652,
         1
       ],
       "unlabeledArg": null,

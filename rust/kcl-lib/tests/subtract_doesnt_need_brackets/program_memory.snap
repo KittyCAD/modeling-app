@@ -159,9 +159,6 @@ description: Variables in memory after executing subtract_doesnt_need_brackets.k
             "units": {
               "type": "Mm"
             }
-          },
-          "units": {
-            "type": "Mm"
           }
         },
         "start": {
@@ -349,9 +346,6 @@ description: Variables in memory after executing subtract_doesnt_need_brackets.k
             "units": {
               "type": "Mm"
             }
-          },
-          "units": {
-            "type": "Mm"
           }
         },
         "start": {
@@ -539,9 +533,6 @@ description: Variables in memory after executing subtract_doesnt_need_brackets.k
             "units": {
               "type": "Mm"
             }
-          },
-          "units": {
-            "type": "Mm"
           }
         },
         "start": {
