@@ -5,7 +5,6 @@ on:
   push:
     branches:
       - main
-      - pierremtb/issue6256-Updater-on-Nightly-on-Windows-failed
     tags:
       - 'v[0-9]+.[0-9]+.[0-9]+'
       - 'nightly-v[0-9]+.[0-9]+.[0-9]+'
@@ -31,8 +30,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
-          # Forget cache for now
-          # cache: 'yarn'
+          cache: 'yarn'
 
       - run: yarn install
 
@@ -46,7 +44,7 @@ jobs:
 
       - name: Download Wasm Cache
         id: download-wasm
-        # if: ${{ github.event_name == 'pull_request' && steps.filter.outputs.rust == 'false' }}
+        if: ${{ github.event_name == 'pull_request' && steps.filter.outputs.rust == 'false' }}
         uses: dawidd6/action-download-artifact@v7
         continue-on-error: true
         with:
@@ -62,8 +60,7 @@ jobs:
           set -euox pipefail
           # Build wasm if this is a push to main or tag, there are Rust changes, or
           # downloading from the wasm cache failed.
-          # if [[ ${{github.event_name}} == 'push' || ${{steps.filter.outputs.rust}} == 'true' || ${{steps.download-wasm.outcome}} == 'failure' ]]; then
-          if [[ ${{steps.filter.outputs.rust}} == 'true' || ${{steps.download-wasm.outcome}} == 'failure' ]]; then
+          if [[ ${{github.event_name}} == 'push' || ${{steps.filter.outputs.rust}} == 'true' || ${{steps.download-wasm.outcome}} == 'failure' ]]; then
             echo "should-build-wasm=true" >> $GITHUB_OUTPUT
           else
             echo "should-build-wasm=false" >> $GITHUB_OUTPUT
@@ -176,8 +173,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
-          # Forget cache for now
-          # cache: 'yarn' # Set this to npm, yarn or pnpm.
+          cache: 'yarn' # Set this to npm, yarn or pnpm.
 
       - name: yarn install
         # Windows is picky sometimes and fails on fetch. Step takes about ~30s
@@ -216,13 +212,6 @@ jobs:
           smctl windows certsync
         shell: cmd
 
-      # This is what electron-builder seems to want
-      - name: List certs
-        if: ${{ (env.IS_RELEASE == 'true' || env.IS_NIGHTLY == 'true') && matrix.os == 'windows-2022' }}
-        shell: pwsh
-        run: |
-          Get-ChildItem -Recurse Cert: -CodeSigningCert | Select-Object -Property Subject,PSParentPath,Thumbprint
-
       - name: Build the app (debug)
         if: ${{ env.IS_RELEASE == 'false' && env.IS_NIGHTLY == 'false' }}
         # electron-builder doesn't have a concept of release vs debug,
@@ -236,10 +225,10 @@ jobs:
           APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
           APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
-          # CSC_LINK: ${{ secrets.APPLE_CERTIFICATE }}
-          # CSC_KEY_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
-          # CSC_KEYCHAIN: ${{ secrets.APPLE_SIGNING_IDENTITY }}
-          # WINDOWS_CERTIFICATE_THUMBPRINT: ${{ secrets.WINDOWS_CERTIFICATE_THUMBPRINT }}
+          CSC_LINK: ${{ secrets.APPLE_CERTIFICATE }}
+          CSC_KEY_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          CSC_KEYCHAIN: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+          # DEBUG: "electron-notarize*"
           DEBUG: electron-builder
         # TODO: Fix electron-notarize flakes. The logs above should help gather more data on failures
         uses: nick-fields/retry@v3.0.2
