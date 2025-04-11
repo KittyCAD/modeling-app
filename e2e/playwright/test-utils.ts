@@ -1167,6 +1167,21 @@ export async function clickElectronNativeMenuById(
   expect(clickWasTriggered).toBe(true)
 }
 
+export async function findElectronNativeMenuById(
+  tronApp: ElectronZoo,
+  menuId: string
+) {
+  const found = await tronApp.electron.evaluate(async ({ app }, menuId) => {
+    if (!app || !app.applicationMenu) {
+      return false
+    }
+    const menu = app.applicationMenu.getMenuItemById(menuId)
+    if (!menu) return false
+    return true
+  }, menuId)
+  expect(found).toBe(true)
+}
+
 export async function openSettingsExpectText(page: Page, text: string) {
   const settings = page.getByTestId('settings-dialog-panel')
   await expect(settings).toBeVisible()
