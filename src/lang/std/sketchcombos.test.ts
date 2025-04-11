@@ -19,7 +19,8 @@ import {
 } from '@src/lang/std/sketchcombos'
 import { findKwArg, topLevelRange } from '@src/lang/util'
 import type { Expr, Program } from '@src/lang/wasm'
-import { assertParse, initPromise, recast } from '@src/lang/wasm'
+import { assertParse, recast } from '@src/lang/wasm'
+import { initPromise } from '@src/lang/wasmUtils'
 import type { Selection, Selections } from '@src/lib/selections'
 import { enginelessExecutor } from '@src/lib/testHelpers'
 import { err } from '@src/lib/trap'
@@ -624,7 +625,7 @@ async function helperThing(
 }
 
 describe('testing getConstraintLevelFromSourceRange', () => {
-  it('should divide up lines into free, partial and fully contrained', () => {
+  it('should divide up lines into free, partial and fully constrained', () => {
     const code = `baseLength = 3
 baseThick = 1
 armThick = 0.5

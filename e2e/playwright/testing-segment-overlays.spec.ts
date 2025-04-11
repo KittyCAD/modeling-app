@@ -229,7 +229,7 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
         intersectTag = a,
         offset = 9
       }, %)
-        |> tangentialArcTo([5 + 3.14 + 13, 20 + 3.14], %)
+        |> tangentialArc(endAbsolute = [5 + 3.14 + 13, 20 + 3.14])
       `
         )
       })
@@ -477,7 +477,7 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
         intersectTag = a,
         offset = 9
       }, %)
-        |> tangentialArcTo([3.14 + 13, 3.14], %)
+        |> tangentialArc(endAbsolute = [3.14 + 13, 3.14])
       `
         )
         localStorage.setItem('disableAxis', 'true')
@@ -602,7 +602,7 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
         intersectTag = a,
         offset = 9
       }, %)
-        |> tangentialArcTo([3.14 + 13, 1.14], %)
+        |> tangentialArc(endAbsolute = [3.14 + 13, 1.14])
       `
         )
         localStorage.setItem('disableAxis', 'true')
@@ -735,11 +735,7 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
         locator: '[data-overlay-toolbar-index="11"]',
       })
     })
-    test('for segment [tangentialArcTo]', async ({
-      page,
-      editor,
-      homePage,
-    }) => {
+    test('for segment [tangentialArc]', async ({ page, editor, homePage }) => {
       await page.addInitScript(async () => {
         localStorage.setItem(
           'persistCode',
@@ -762,7 +758,7 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
         intersectTag = a,
         offset = 9
       }, %)
-        |> tangentialArcTo([3.14 + 13, -3.14], %)
+        |> tangentialArc(endAbsolute = [3.14 + 13, -3.14])
       `
         )
         localStorage.setItem('disableAxis', 'true')
@@ -787,28 +783,29 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
       const clickUnconstrained = _clickUnconstrained(page, editor)
       const clickConstrained = _clickConstrained(page, editor)
 
-      const tangentialArcTo = await u.getBoundingBox(
-        '[data-overlay-index="12"]'
-      )
+      const tangentialArc = await u.getBoundingBox('[data-overlay-index="12"]')
       let ang = await u.getAngle('[data-overlay-index="12"]')
-      console.log('tangentialArcTo')
+      console.log('tangentialArc')
       await clickConstrained({
-        hoverPos: { x: tangentialArcTo.x, y: tangentialArcTo.y },
+        hoverPos: { x: tangentialArc.x, y: tangentialArc.y },
         constraintType: 'xAbsolute',
-        expectBeforeUnconstrained: 'tangentialArcTo([3.14 + 13, -3.14], %)',
-        expectAfterUnconstrained: 'tangentialArcTo([16.14, -3.14], %)',
-        expectFinal: 'tangentialArcTo([xAbs001, -3.14], %)',
+        expectBeforeUnconstrained:
+          'tangentialArc(endAbsolute = [3.14 + 13, -3.14])',
+        expectAfterUnconstrained: 'tangentialArc(endAbsolute = [16.14, -3.14])',
+        expectFinal: 'tangentialArc(endAbsolute = [xAbs001, -3.14])',
         ang: ang + 180,
         steps: 6,
         locator: '[data-overlay-toolbar-index="12"]',
       })
-      console.log('tangentialArcTo2')
+      console.log('tangentialArc2')
       await clickUnconstrained({
-        hoverPos: { x: tangentialArcTo.x, y: tangentialArcTo.y },
+        hoverPos: { x: tangentialArc.x, y: tangentialArc.y },
         constraintType: 'yAbsolute',
-        expectBeforeUnconstrained: 'tangentialArcTo([xAbs001, -3.14], %)',
-        expectAfterUnconstrained: 'tangentialArcTo([xAbs001, yAbs001], %)',
-        expectFinal: 'tangentialArcTo([xAbs001, -3.14], %)',
+        expectBeforeUnconstrained:
+          'tangentialArc(endAbsolute = [xAbs001, -3.14])',
+        expectAfterUnconstrained:
+          'tangentialArc(endAbsolute = [xAbs001, yAbs001])',
+        expectFinal: 'tangentialArc(endAbsolute = [xAbs001, -3.14])',
         ang: ang + 180,
         steps: 10,
         locator: '[data-overlay-toolbar-index="12"]',
@@ -1091,7 +1088,7 @@ part001 = startSketchOn(XZ)
        intersectTag = a,
        offset = 9
      }, %)
-  |> tangentialArcTo([3.14 + 13, 1.14], %)
+  |> tangentialArc(endAbsolute = [3.14 + 13, 1.14])
   |> arcTo({
        interior = [16.25, 5.12],
        end = [21.61, 4.15]
@@ -1161,8 +1158,8 @@ part001 = startSketchOn(XZ)
       ang = await u.getAngle('[data-overlay-index="12"]')
       await deleteSegmentSequence({
         hoverPos: { x: segmentToDelete.x, y: segmentToDelete.y },
-        codeToBeDeleted: 'tangentialArcTo([3.14 + 13, 1.14], %)',
-        stdLibFnName: 'tangentialArcTo',
+        codeToBeDeleted: 'tangentialArc(endAbsolute = [3.14 + 13, 1.14])',
+        stdLibFnName: 'tangentialArc',
         ang: ang + 180,
         steps: 6,
         locator: '[data-overlay-toolbar-index="12"]',

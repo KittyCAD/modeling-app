@@ -27,7 +27,8 @@ import type {
   SourceRange,
   VariableDeclarator,
 } from '@src/lang/wasm'
-import { assertParse, initPromise, recast } from '@src/lang/wasm'
+import { assertParse, recast } from '@src/lang/wasm'
+import { initPromise } from '@src/lang/wasmUtils'
 import type { Selection, Selections } from '@src/lib/selections'
 import {
   codeManager,

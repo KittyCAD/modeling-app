@@ -20,7 +20,7 @@ import type {
 } from '@src/editor/plugins/lsp/types'
 import { LspWorker } from '@src/editor/plugins/lsp/types'
 import Worker from '@src/editor/plugins/lsp/worker.ts?worker'
-import { wasmUrl } from '@src/lang/wasm'
+import { wasmUrl } from '@src/lang/wasmUtils'
 import { PROJECT_ENTRYPOINT } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'

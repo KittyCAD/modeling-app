@@ -45,9 +45,9 @@ translate(
 sweepPath = startSketchOn(XZ)
   |> startProfileAt([0.05, 0.05], %)
   |> line(end = [0, 7])
-  |> tangentialArc({ offset = 90, radius = 5 }, %)
+  |> tangentialArc(angle = 90, radius = 5)
   |> line(end = [-3, 0])
-  |> tangentialArc({ offset = -90, radius = 5 }, %)
+  |> tangentialArc(angle = -90, radius = 5)
   |> line(end = [0, 7])
 
 // Create a hole for the pipe.
@@ -97,7 +97,7 @@ circleSketch = circle(sketch001, center = [200, -30.29], radius = 32.63)
 sketch002 = startSketchOn(YZ)
 sweepPath = startProfileAt([0, 0], sketch002)
   |> yLine(length = 231.81)
-  |> tangentialArc({ radius = 80, offset = -90 }, %)
+  |> tangentialArc(radius = 80, angle = -90)
   |> xLine(length = 384.93)
 
 parts = sweep([rectangleSketch, circleSketch], path = sweepPath)

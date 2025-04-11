@@ -1,4 +1,5 @@
-import { assertParse, initPromise } from '@src/lang/wasm'
+import { assertParse } from '@src/lang/wasm'
+import { initPromise } from '@src/lang/wasmUtils'
 import { enginelessExecutor } from '@src/lib/testHelpers'
 
 beforeAll(async () => {

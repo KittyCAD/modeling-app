@@ -36,9 +36,9 @@ fn slot(sketch1, start, end, width) {
   ystart = width / 2 * sin(toRadians(angle - 90)) + start[1]
   slotSketch = startProfileAt([xstart, ystart], sketch1)
     |> angledLine(angle = angle, length = dist)
-    |> tangentialArc({ radius = width / 2, offset = 180 }, %)
+    |> tangentialArc(radius = width / 2, angle = 180)
     |> angledLine(angle = angle, length = -dist)
-    |> tangentialArcTo([profileStartX(%), profileStartY(%)], %)
+    |> tangentialArc(endAbsolute = [profileStartX(%), profileStartY(%)])
     |> close()
   return slotSketch
 }

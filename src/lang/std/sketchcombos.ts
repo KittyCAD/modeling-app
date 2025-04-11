@@ -74,7 +74,7 @@ import type {
 } from '@src/lang/wasm'
 import { sketchFromKclValue } from '@src/lang/wasm'
 import type { Selections } from '@src/lib/selections'
-import { cleanErrs, err, isNotErr } from '@src/lib/trap'
+import { cleanErrs, err, isErr, isNotErr } from '@src/lib/trap'
 import {
   allLabels,
   getAngle,
@@ -1502,7 +1502,7 @@ export function removeSingleConstraint({
         const toReplace = inputToReplace.key
         let argsPreFilter = inputs.map((arg) => {
           if (arg.type !== 'labeledArg') {
-            return undefined
+            return new Error(`arg isn't a labeled arg: ${arg.type}`)
           }
           const k = arg.key
           if (k !== toReplace) {
@@ -1519,12 +1519,11 @@ export function removeSingleConstraint({
             return createLabeledArg(k, rawArgVersion.expr)
           }
         })
-        const args = argsPreFilter
-          .filter((arg) => arg !== undefined)
-          .filter(isNotErr)
-        if (args.length !== argsPreFilter.length) {
+        const args = argsPreFilter.filter(isNotErr)
+        const errorArgs = argsPreFilter.filter(isErr)
+        if (errorArgs.length > 0) {
           return new Error('Error while trying to remove constraint', {
-            cause: argsPreFilter,
+            cause: errorArgs,
           })
         }
         const noncode = callExp.node.nonCodeMeta
