@@ -37,7 +37,7 @@ pow(
 ```js
 exampleSketch = startSketchOn(XZ)
   |> startProfileAt([0, 0], %)
-  |> angledLine({ angle = 50, length = pow(5, 2) }, %)
+  |> angledLine(angle = 50, length = pow(5, 2))
   |> yLine(endAbsolute = 0)
   |> close()
 

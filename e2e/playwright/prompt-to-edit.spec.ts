@@ -22,15 +22,9 @@ sketch002 = startSketchOn(XZ)
 extrude002 = extrude(sketch002, length = 50)
 sketch003 = startSketchOn(XY)
   |> startProfileAt([52.92, 157.81], %)
-  |> angledLine([0, 176.4], %, $rectangleSegmentA001)
-  |> angledLine([
-       segAng(rectangleSegmentA001) - 90,
-       53.4
-     ], %, $rectangleSegmentB001)
-  |> angledLine([
-       segAng(rectangleSegmentA001),
-       -segLen(rectangleSegmentA001)
-     ], %, $rectangleSegmentC001)
+  |> angledLine(angle = 0, length = 176.4, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 53.4, tag = $rectangleSegmentB001)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $rectangleSegmentC001)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 extrude003 = extrude(sketch003, length = 20)
@@ -57,6 +51,7 @@ test.describe('Prompt-to-edit tests', { tag: '@skipWin' }, () => {
         page,
         scene,
       }) => {
+        test.fixme(orRunWhenFullSuiteEnabled())
         await context.addInitScript((file) => {
           localStorage.setItem('persistCode', file)
         }, file)
@@ -265,6 +260,7 @@ test.describe('Prompt-to-edit tests', { tag: '@skipWin' }, () => {
     page,
     scene,
   }) => {
+    test.fixme(orRunWhenFullSuiteEnabled())
     const body1CapCoords = { x: 571, y: 311 }
     const body2WallCoords = { x: 620, y: 152 }
     const [clickBody1Cap] = scene.makeMouseHelpers(
