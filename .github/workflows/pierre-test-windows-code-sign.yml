@@ -37,3 +37,8 @@ jobs:
           msiexec /i Keylockertools-windows-x64.msi /quiet /qn
           smksp_cert_sync.exe
         shell: cmd
+
+      - name: List certs
+        shell: pwsh
+        run: |
+          Get-ChildItem -Recurse Cert: -CodeSigningCert | Select-Object -Property Subject,PSParentPath,Thumbprint
