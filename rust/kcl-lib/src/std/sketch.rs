@@ -1705,6 +1705,127 @@ pub(crate) async fn inner_arc_to(
     Ok(new_sketch)
 }
 
+/// Draw a tangential arc to a specific point.
+pub async fn tangential_arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let sketch =
+        args.get_unlabeled_kw_arg_typed("sketch", &RuntimeType::Primitive(PrimitiveType::Sketch), exec_state)?;
+    let end = args.get_kw_arg_opt("end")?;
+    let end_absolute = args.get_kw_arg_opt("endAbsolute")?;
+    let radius = args.get_kw_arg_opt("radius")?;
+    let angle = args.get_kw_arg_opt("angle")?;
+    let tag = args.get_kw_arg_opt(NEW_TAG_KW)?;
+
+    let new_sketch = inner_tangential_arc(sketch, end_absolute, end, radius, angle, tag, exec_state, args).await?;
+    Ok(KclValue::Sketch {
+        value: Box::new(new_sketch),
+    })
+}
+
+/// Starting at the current sketch's origin, draw a curved line segment along
+/// some part of an imaginary circle until it reaches the desired (x, y)
+/// coordinates.
+///
+/// When using radius and angle, draw a curved line segment along part of an
+/// imaginary circle. The arc is constructed such that the last line segment is
+/// placed tangent to the imaginary circle of the specified radius. The
+/// resulting arc is the segment of the imaginary circle from that tangent point
+/// for 'angle' degrees along the imaginary circle.
+///
+/// ```no_run
+/// exampleSketch = startSketchOn(XZ)
+///   |> startProfileAt([0, 0], %)
+///   |> angledLine(
+///     angle = 45,
+///     length = 10,
+///   )
+///   |> tangentialArc(end = [0, -10])
+///   |> line(end = [-10, 0])
+///   |> close()
+///
+/// example = extrude(exampleSketch, length = 10)
+/// ```
+///
+/// ```no_run
+/// exampleSketch = startSketchOn(XZ)
+///   |> startProfileAt([0, 0], %)
+///   |> angledLine(
+///     angle = 60,
+///     length = 10,
+///   )
+///   |> tangentialArc(endAbsolute = [15, 15])
+///   |> line(end = [10, -15])
+///   |> close()
+///
+/// example = extrude(exampleSketch, length = 10)
+/// ```
+///
+/// ```no_run
+/// exampleSketch = startSketchOn(XZ)
+///   |> startProfileAt([0, 0], %)
+///   |> angledLine(
+///     angle = 60,
+///     length = 10,
+///   )
+///   |> tangentialArc(radius = 10, angle = -120)
+///   |> angledLine(
+///     angle = -60,
+///     length = 10,
+///   )
+///   |> close()
+///
+/// example = extrude(exampleSketch, length = 10)
+/// ```
+#[stdlib {
+    name = "tangentialArc",
+    keywords = true,
+    unlabeled_first = true,
+    args = {
+        sketch = { docs = "Which sketch should this path be added to?"},
+        end_absolute = { docs = "Which absolute point should this arc go to? Incompatible with `end`, `radius`, and `offset`."},
+        end = { docs = "How far away (along the X and Y axes) should this arc go? Incompatible with `endAbsolute`, `radius`, and `offset`.", include_in_snippet = true },
+        radius = { docs = "Radius of the imaginary circle. `angle` must be given. Incompatible with `end` and `endAbsolute`."},
+        angle = { docs = "Offset of the arc in degrees. `radius` must be given. Incompatible with `end` and `endAbsolute`."},
+        tag = { docs = "Create a new tag which refers to this arc"},
+    }
+}]
+#[allow(clippy::too_many_arguments)]
+async fn inner_tangential_arc(
+    sketch: Sketch,
+    end_absolute: Option<[f64; 2]>,
+    end: Option<[f64; 2]>,
+    radius: Option<f64>,
+    angle: Option<f64>,
+    tag: Option<TagNode>,
+    exec_state: &mut ExecState,
+    args: Args,
+) -> Result<Sketch, KclError> {
+    match (end_absolute, end, radius, angle) {
+        (Some(point), None, None, None) => {
+            inner_tangential_arc_to_point(sketch, point, true, tag, exec_state, args).await
+        }
+        (None, Some(point), None, None) => {
+            inner_tangential_arc_to_point(sketch, point, false, tag, exec_state, args).await
+        }
+        (None, None, Some(radius), Some(angle)) => {
+            let data = TangentialArcData::RadiusAndOffset { radius, offset: angle };
+            inner_tangential_arc_radius_angle(data, sketch, tag, exec_state, args).await
+        }
+        (Some(_), Some(_), None, None) => Err(KclError::Semantic(KclErrorDetails {
+            source_ranges: vec![args.source_range],
+            message: "You cannot give both `end` and `endAbsolute` params, you have to choose one or the other"
+                .to_owned(),
+        })),
+        (None, None, Some(_), None) | (None, None, None, Some(_)) => Err(KclError::Semantic(KclErrorDetails {
+            source_ranges: vec![args.source_range],
+            message: "You must supply both `radius` and `angle` arguments".to_owned(),
+        })),
+        (_, _, _, _) => Err(KclError::Semantic(KclErrorDetails {
+            source_ranges: vec![args.source_range],
+            message: "You must supply `end`, `endAbsolute`, or both `radius` and `angle` arguments".to_owned(),
+        })),
+    }
+}
+
 /// Data to draw a tangential arc.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, JsonSchema, ts_rs::TS)]
 #[ts(export)]
@@ -1719,44 +1840,13 @@ pub enum TangentialArcData {
     },
 }
 
-/// Draw a tangential arc.
-pub async fn tangential_arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (data, sketch, tag): (TangentialArcData, Sketch, Option<TagNode>) =
-        args.get_data_and_sketch_and_tag(exec_state)?;
-
-    let new_sketch = inner_tangential_arc(data, sketch, tag, exec_state, args).await?;
-    Ok(KclValue::Sketch {
-        value: Box::new(new_sketch),
-    })
-}
-
 /// Draw a curved line segment along part of an imaginary circle.
 ///
 /// The arc is constructed such that the last line segment is placed tangent
 /// to the imaginary circle of the specified radius. The resulting arc is the
-/// segment of the imaginary circle from that tangent point for 'offset'
+/// segment of the imaginary circle from that tangent point for 'angle'
 /// degrees along the imaginary circle.
-///
-/// ```no_run
-/// exampleSketch = startSketchOn(XZ)
-///   |> startProfileAt([0, 0], %)
-///   |> angledLine(
-///     angle = 60,
-///     length = 10,
-///   )
-///   |> tangentialArc({ radius = 10, offset = -120 }, %)
-///   |> angledLine(
-///     angle = -60,
-///     length = 10,
-///   )
-///   |> close()
-///
-/// example = extrude(exampleSketch, length = 10)
-/// ```
-#[stdlib {
-    name = "tangentialArc",
-}]
-async fn inner_tangential_arc(
+async fn inner_tangential_arc_radius_angle(
     data: TangentialArcData,
     sketch: Sketch,
     tag: Option<TagNode>,
@@ -1847,49 +1937,10 @@ fn tan_arc_to(sketch: &Sketch, to: &[f64; 2]) -> ModelingCmd {
     })
 }
 
-/// Draw a tangential arc to a specific point.
-pub async fn tangential_arc_to(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (to, sketch, tag): ([f64; 2], Sketch, Option<TagNode>) = args.get_data_and_sketch_and_tag(exec_state)?;
-
-    let new_sketch = inner_tangential_arc_to(to, sketch, tag, exec_state, args).await?;
-    Ok(KclValue::Sketch {
-        value: Box::new(new_sketch),
-    })
-}
-
-/// Draw a tangential arc to point some distance away..
-pub async fn tangential_arc_to_relative(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (delta, sketch, tag): ([f64; 2], Sketch, Option<TagNode>) = args.get_data_and_sketch_and_tag(exec_state)?;
-
-    let new_sketch = inner_tangential_arc_to_relative(delta, sketch, tag, exec_state, args).await?;
-    Ok(KclValue::Sketch {
-        value: Box::new(new_sketch),
-    })
-}
-
-/// Starting at the current sketch's origin, draw a curved line segment along
-/// some part of an imaginary circle until it reaches the desired (x, y)
-/// coordinates.
-///
-/// ```no_run
-/// exampleSketch = startSketchOn(XZ)
-///   |> startProfileAt([0, 0], %)
-///   |> angledLine(
-///     angle = 60,
-///     length = 10,
-///   )
-///   |> tangentialArcTo([15, 15], %)
-///   |> line(end = [10, -15])
-///   |> close()
-///
-/// example = extrude(exampleSketch, length = 10)
-/// ```
-#[stdlib {
-    name = "tangentialArcTo",
-}]
-async fn inner_tangential_arc_to(
-    to: [f64; 2],
+async fn inner_tangential_arc_to_point(
     sketch: Sketch,
+    point: [f64; 2],
+    is_absolute: bool,
     tag: Option<TagNode>,
     exec_state: &mut ExecState,
     args: Args,
@@ -1897,79 +1948,16 @@ async fn inner_tangential_arc_to(
     let from: Point2d = sketch.current_pen_position()?;
     let tangent_info = sketch.get_tangential_info_from_paths();
     let tan_previous_point = tangent_info.tan_previous_point(from.into());
+
+    let to = if is_absolute {
+        point
+    } else {
+        [from.x + point[0], from.y + point[1]]
+    };
     let [to_x, to_y] = to;
     let result = get_tangential_arc_to_info(TangentialArcInfoInput {
         arc_start_point: [from.x, from.y],
         arc_end_point: to,
-        tan_previous_point,
-        obtuse: true,
-    });
-
-    let delta = [to_x - from.x, to_y - from.y];
-    let id = exec_state.next_uuid();
-    args.batch_modeling_cmd(id, tan_arc_to(&sketch, &delta)).await?;
-
-    let current_path = Path::TangentialArcTo {
-        base: BasePath {
-            from: from.into(),
-            to,
-            tag: tag.clone(),
-            units: sketch.units,
-            geo_meta: GeoMeta {
-                id,
-                metadata: args.source_range.into(),
-            },
-        },
-        center: result.center,
-        ccw: result.ccw > 0,
-    };
-
-    let mut new_sketch = sketch.clone();
-    if let Some(tag) = &tag {
-        new_sketch.add_tag(tag, &current_path, exec_state);
-    }
-
-    new_sketch.paths.push(current_path);
-
-    Ok(new_sketch)
-}
-
-/// Starting at the current sketch's origin, draw a curved line segment along
-/// some part of an imaginary circle until it reaches a point the given (x, y)
-/// distance away.
-///
-/// ```no_run
-/// exampleSketch = startSketchOn(XZ)
-///   |> startProfileAt([0, 0], %)
-///   |> angledLine(
-///     angle = 45,
-///     length = 10,
-///   )
-///   |> tangentialArcToRelative([0, -10], %)
-///   |> line(end = [-10, 0])
-///   |> close()
-///
-/// example = extrude(exampleSketch, length = 10)
-/// ```
-#[stdlib {
-    name = "tangentialArcToRelative",
-}]
-async fn inner_tangential_arc_to_relative(
-    delta: [f64; 2],
-    sketch: Sketch,
-    tag: Option<TagNode>,
-    exec_state: &mut ExecState,
-    args: Args,
-) -> Result<Sketch, KclError> {
-    let from: Point2d = sketch.current_pen_position()?;
-    let to = [from.x + delta[0], from.y + delta[1]];
-    let tangent_info = sketch.get_tangential_info_from_paths();
-    let tan_previous_point = tangent_info.tan_previous_point(from.into());
-
-    let [dx, dy] = delta;
-    let result = get_tangential_arc_to_info(TangentialArcInfoInput {
-        arc_start_point: [from.x, from.y],
-        arc_end_point: [from.x + dx, from.y + dy],
         tan_previous_point,
         obtuse: true,
     });
@@ -1990,6 +1978,11 @@ async fn inner_tangential_arc_to_relative(
         }));
     }
 
+    let delta = if is_absolute {
+        [to_x - from.x, to_y - from.y]
+    } else {
+        point
+    };
     let id = exec_state.next_uuid();
     args.batch_modeling_cmd(id, tan_arc_to(&sketch, &delta)).await?;
 

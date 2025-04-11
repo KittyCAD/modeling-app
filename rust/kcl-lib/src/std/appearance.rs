@@ -241,15 +241,9 @@ pub async fn appearance(exec_state: &mut ExecState, args: Args) -> Result<KclVal
 /// sweepPath = startSketchOn(XZ)
 ///     |> startProfileAt([0.05, 0.05], %)
 ///     |> line(end = [0, 7])
-///     |> tangentialArc({
-///         offset: 90,
-///         radius: 5
-///     }, %)
+///     |> tangentialArc(angle = 90, radius = 5)
 ///     |> line(end = [-3, 0])
-///     |> tangentialArc({
-///         offset: -90,
-///         radius: 5
-///     }, %)
+///     |> tangentialArc(angle = -90, radius = 5)
 ///     |> line(end = [0, 7])
 ///
 /// pipeHole = startSketchOn(XY)

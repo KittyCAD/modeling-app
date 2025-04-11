@@ -824,7 +824,7 @@ pub async fn pattern_linear_3d(exec_state: &mut ExecState, args: Args) -> Result
 ///     |> startProfileAt([-size, -size], %)
 ///     |> line(end = [2 * size, 0])
 ///     |> line(end = [0, 2 * size])
-///     |> tangentialArcTo([-size, size], %)
+///     |> tangentialArc(endAbsolute = [-size, size])
 ///     |> close(%)
 ///     |> extrude(length = 65)
 ///
@@ -852,7 +852,7 @@ pub async fn pattern_linear_3d(exec_state: &mut ExecState, args: Args) -> Result
 ///     |> startProfileAt([-size, -size], %)
 ///     |> line(end = [2 * size, 0])
 ///     |> line(end = [0, 2 * size])
-///     |> tangentialArcTo([-size, size], %)
+///     |> tangentialArc(endAbsolute = [-size, size])
 ///     |> close(%)
 ///     |> extrude(length = 65)
 ///
