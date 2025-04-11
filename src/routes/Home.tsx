@@ -35,7 +35,7 @@ import type { WebContentSendPayload } from '@src/menu/channels'
 // as defined in Router.tsx, so we can use the desktop APIs and types.
 const Home = () => {
   const { state, send } = useProjectsContext()
-  const [ nativeFileMenuCreated, setNativeFileMenuCreated] = useState(false)
+  const [nativeFileMenuCreated, setNativeFileMenuCreated] = useState(false)
   const [readWriteProjectDir, setReadWriteProjectDir] = useState<{
     value: boolean
     error: unknown
@@ -47,9 +47,12 @@ const Home = () => {
   // Only create the native file menus on desktop
   useEffect(() => {
     if (isDesktop()) {
-      window.electron.createHomePageMenu().then(()=>{
-        setNativeFileMenuCreated(true)
-      }).catch(reportRejection)
+      window.electron
+        .createHomePageMenu()
+        .then(() => {
+          setNativeFileMenuCreated(true)
+        })
+        .catch(reportRejection)
     }
   }, [])
 
@@ -235,7 +238,10 @@ const Home = () => {
 
   return (
     <div className="relative flex flex-col h-screen overflow-hidden" ref={ref}>
-      <AppHeader nativeFileMenuCreated={nativeFileMenuCreated} showToolbar={false} />
+      <AppHeader
+        nativeFileMenuCreated={nativeFileMenuCreated}
+        showToolbar={false}
+      />
       <div className="w-full flex flex-col overflow-hidden max-w-5xl px-4 mx-auto mt-24 lg:px-2">
         <section>
           <div className="flex justify-between items-center select-none">

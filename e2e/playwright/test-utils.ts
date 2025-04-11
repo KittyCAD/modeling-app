@@ -24,7 +24,7 @@ import {
   TEST_SETTINGS_KEY,
 } from '@e2e/playwright/storageStates'
 import { test } from '@e2e/playwright/zoo-test'
-import { ElectronZoo } from './fixtures/fixtureSetup'
+import type { ElectronZoo } from './fixtures/fixtureSetup'
 
 const toNormalizedCode = (text: string) => {
   return text.replace(/\s+/g, '')
@@ -1148,26 +1148,37 @@ export function perProjectsettingsToToml(
   return TOML.stringify(settings as any)
 }
 
-export async function clickElectronNativeMenuById (tronApp: ElectronZoo, menuId:string) {
-  const clickWasTriggered = await tronApp.electron.evaluate(async ({ app }, menuId) => {
-    if (!app || !app.applicationMenu) {
-      return false
-    }
-    const menu =
-      app.applicationMenu.getMenuItemById(menuId)
-    if (!menu) return false
-    menu.click()
-    return true
-  }, menuId)
+export async function clickElectronNativeMenuById(
+  tronApp: ElectronZoo,
+  menuId: string
+) {
+  const clickWasTriggered = await tronApp.electron.evaluate(
+    async ({ app }, menuId) => {
+      if (!app || !app.applicationMenu) {
+        return false
+      }
+      const menu = app.applicationMenu.getMenuItemById(menuId)
+      if (!menu) return false
+      menu.click()
+      return true
+    },
+    menuId
+  )
   expect(clickWasTriggered).toBe(true)
 }
 
-export async function openSettingsExpectText (page: Page, text: string) {
+export async function openSettingsExpectText(page: Page, text: string) {
   const settings = page.getByTestId('settings-dialog-panel')
   await expect(settings).toBeVisible()
   // You are viewing the user tab
-  const actualText = settings.getByText(
-    text
-  )
+  const actualText = settings.getByText(text)
   await expect(actualText).toBeVisible()
+}
+
+export async function openSettingsExpectLocator(page: Page, selector: string) {
+  const settings = page.getByTestId('settings-dialog-panel')
+  await expect(settings).toBeVisible()
+  // You are viewing the keybindings tab
+  const settingsLocator = settings.locator(selector)
+  await expect(settingsLocator).toBeVisible()
 }

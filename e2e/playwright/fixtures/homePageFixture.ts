@@ -119,7 +119,10 @@ export class HomePageFixture {
     await this.createAndGoToProject(name)
   }
 
-  isNativeFileMenuCreated = async () => {    
-    await expect(this.appHeader).toHaveAttribute('data-native-file-menu', 'true');
+  isNativeFileMenuCreated = async () => {
+    await expect(this.appHeader).toHaveAttribute(
+      'data-native-file-menu',
+      'true'
+    )
   }
 }

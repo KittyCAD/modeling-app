@@ -25,7 +25,7 @@ export const AppHeader = ({
   className = '',
   style,
   enableMenu = false,
-  nativeFileMenuCreated
+  nativeFileMenuCreated,
 }: AppHeaderProps) => {
   const user = useUser()
 
