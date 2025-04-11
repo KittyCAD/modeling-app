@@ -27,6 +27,7 @@ export class ToolbarFixture {
   offsetPlaneButton!: Locator
   helixButton!: Locator
   startSketchBtn!: Locator
+  insertButton!: Locator
   lineBtn!: Locator
   tangentialArcBtn!: Locator
   circleBtn!: Locator
@@ -44,7 +45,7 @@ export class ToolbarFixture {
   featureTreePane!: Locator
   gizmo!: Locator
   gizmoDisabled!: Locator
-  insertButton!: Locator
+  loadButton!: Locator
 
   constructor(page: Page) {
     this.page = page
@@ -59,6 +60,7 @@ export class ToolbarFixture {
     this.offsetPlaneButton = page.getByTestId('plane-offset')
     this.helixButton = page.getByTestId('helix')
     this.startSketchBtn = page.getByTestId('sketch')
+    this.insertButton = page.getByTestId('insert')
     this.lineBtn = page.getByTestId('line')
     this.tangentialArcBtn = page.getByTestId('tangential-arc')
     this.circleBtn = page.getByTestId('circle-center')
@@ -68,6 +70,7 @@ export class ToolbarFixture {
     this.fileTreeBtn = page.locator('[id="files-button-holder"]')
     this.createFileBtn = page.getByTestId('create-file-button')
     this.treeInputField = page.getByTestId('tree-input-field')
+    this.loadButton = page.getByTestId('load-external-model-pane-button')
 
     this.filePane = page.locator('#files-pane')
     this.featureTreePane = page.locator('#feature-tree-pane')
@@ -79,8 +82,6 @@ export class ToolbarFixture {
     // element or two different elements can represent these states.
     this.gizmo = page.getByTestId('gizmo')
     this.gizmoDisabled = page.getByTestId('gizmo-disabled')
-
-    this.insertButton = page.getByTestId('insert-pane-button')
   }
 
   get logoLink() {

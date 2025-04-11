@@ -232,9 +232,12 @@ export const FileMachineProvider = ({
               entryName: input.targetPathToClone
                 ? window.electron.path.basename(input.targetPathToClone)
                 : createdName,
-              baseDir: input.targetPathToClone
-                ? window.electron.path.dirname(input.targetPathToClone)
-                : input.selectedDirectory.path,
+              baseDir: input.selectedDirectory.path,
+              // TODO: figure out how to reconcile with below
+              // Changing this is to the above broke nested clones :'(
+              // baseDir: input.targetPathToClone
+              //   ? window.electron.path.dirname(input.targetPathToClone)
+              //   : input.selectedDirectory.path,
             })
             createdName = name
             createdPath = path
@@ -437,19 +440,20 @@ export const FileMachineProvider = ({
             settings.modeling.defaultUnit.current ??
             DEFAULT_DEFAULT_LENGTH_UNIT,
         },
-        specialPropsForSampleCommand: {
+        specialPropsForLoadCommand: {
           onSubmit: async (data) => {
-            if (data.method === 'overwrite') {
-              codeManager.updateCodeStateEditor(data.code)
+            console.log('data in load command def', data)
+            if (data.method === 'overwrite' && data.content) {
+              codeManager.updateCodeStateEditor(data.content)
               await kclManager.executeCode()
               await codeManager.writeToFile()
             } else if (data.method === 'newFile' && isDesktop()) {
               send({
                 type: 'Create file',
                 data: {
-                  name: data.sampleName,
-                  content: data.code,
+                  ...data,
                   makeDir: false,
+                  shouldSetToRename: false,
                 },
               })
             }
@@ -480,7 +484,7 @@ export const FileMachineProvider = ({
           }),
         },
       }).filter(
-        (command) => kclSamples.length || command.name !== 'open-kcl-example'
+        (command) => kclSamples.length || command.name !== 'load-external-model'
       ),
     [codeManager, kclManager, send, kclSamples, project, file]
   )

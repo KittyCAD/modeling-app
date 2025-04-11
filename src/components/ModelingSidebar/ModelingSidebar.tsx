@@ -77,16 +77,16 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
 
   const sidebarActions: SidebarAction[] = [
     {
-      id: 'insert',
-      title: 'Insert from project file',
-      sidebarName: 'Insert from project file',
-      icon: 'import',
+      id: 'load-external-model',
+      title: 'Load external model',
+      sidebarName: 'Load external model',
+      icon: 'importFile',
       keybinding: 'Ctrl + Shift + I',
       hide: (a) => a.platform === 'web' || !(DEV || IS_NIGHTLY_OR_DEBUG),
       action: () =>
         commandBarActor.send({
           type: 'Find and select command',
-          data: { name: 'Insert', groupId: 'code' },
+          data: { name: 'load-external-model', groupId: 'code' },
         }),
     },
     {
