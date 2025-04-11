@@ -221,7 +221,8 @@ async fn inner_sweep(
             object_id: trajectory.into(),
             hidden: true,
         }),
-    );
+    )
+    .await?;
 
     Ok(solids)
 }
