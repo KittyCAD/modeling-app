@@ -223,6 +223,9 @@ export function addSketchTo(
 Set the keyword argument to the given value.
 Returns true if it overwrote an existing argument.
 Returns false if no argument with the label existed before.
+Also do some checks to see if it's actually trying to set a constraint on
+a sketch line that's already fully constrained, and if so, duplicates the arg.
+WILL BE FIXED SOON.
 */
 export function mutateKwArg(
   label: string,
@@ -247,6 +250,27 @@ export function mutateKwArg(
         })
         return true
       }
+    }
+  }
+  node.arguments.push(createLabeledArg(label, val))
+  return false
+}
+
+/**
+Set the keyword argument to the given value.
+Returns true if it overwrote an existing argument.
+Returns false if no argument with the label existed before.
+*/
+export function mutateKwArgOnly(
+  label: string,
+  node: CallExpressionKw,
+  val: Expr
+): boolean {
+  for (let i = 0; i < node.arguments.length; i++) {
+    const arg = node.arguments[i]
+    if (arg.label.name === label) {
+      node.arguments[i].arg = val
+      return true
     }
   }
   node.arguments.push(createLabeledArg(label, val))

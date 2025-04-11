@@ -40,7 +40,7 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
       "name": "face",
       "functionSourceRange": [
         869,
-        1183,
+        1153,
         0
       ],
       "unlabeledArg": null,
@@ -274,7 +274,7 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
       "name": "face",
       "functionSourceRange": [
         869,
-        1183,
+        1153,
         0
       ],
       "unlabeledArg": null,
@@ -1087,8 +1087,8 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
       "type": "FunctionCall",
       "name": "magnetBase",
       "functionSourceRange": [
-        4349,
-        4691,
+        4319,
+        4661,
         0
       ],
       "unlabeledArg": null,
@@ -1117,8 +1117,8 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
       "type": "FunctionCall",
       "name": "magnetCenterCutout",
       "functionSourceRange": [
-        2698,
-        4289,
+        2668,
+        4259,
         0
       ],
       "unlabeledArg": null,
@@ -1346,8 +1346,8 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
       "type": "FunctionCall",
       "name": "magnetBase",
       "functionSourceRange": [
-        4349,
-        4691,
+        4319,
+        4661,
         0
       ],
       "unlabeledArg": null,
@@ -1376,8 +1376,8 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
       "type": "FunctionCall",
       "name": "magnetCenterCutout",
       "functionSourceRange": [
-        2698,
-        4289,
+        2668,
+        4259,
         0
       ],
       "unlabeledArg": null,

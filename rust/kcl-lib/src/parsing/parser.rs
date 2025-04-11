@@ -35,7 +35,7 @@ use crate::{
         token::{Token, TokenSlice, TokenType},
         PIPE_OPERATOR, PIPE_SUBSTITUTION_OPERATOR,
     },
-    SourceRange,
+    SourceRange, IMPORT_FILE_EXTENSIONS,
 };
 
 thread_local! {
@@ -1843,8 +1843,6 @@ fn import_stmt(i: &mut TokenSlice) -> PResult<BoxNode<ImportStatement>> {
     ))
 }
 
-const FOREIGN_IMPORT_EXTENSIONS: [&str; 8] = ["fbx", "gltf", "glb", "obj", "ply", "sldprt", "step", "stl"];
-
 /// Validates the path string in an `import` statement.
 ///
 /// `var_name` is `true` if the path will be used as a variable name.
@@ -1909,12 +1907,11 @@ fn validate_path_string(path_string: String, var_name: bool, path_range: SourceR
 
         ImportPath::Std { path: segments }
     } else if path_string.contains('.') {
-        // TODO should allow other extensions if there is a format attribute.
-        let extn = &path_string[path_string.rfind('.').unwrap() + 1..];
-        if !FOREIGN_IMPORT_EXTENSIONS.contains(&extn) {
+        let extn = std::path::Path::new(&path_string).extension().unwrap_or_default();
+        if !IMPORT_FILE_EXTENSIONS.contains(&extn.to_string_lossy().to_string()) {
             ParseContext::warn(CompilationError::err(
                 path_range,
-                format!("unsupported import path format. KCL files can be imported from the current project, CAD files with the following formats are supported: {}", FOREIGN_IMPORT_EXTENSIONS.join(", ")),
+                format!("unsupported import path format. KCL files can be imported from the current project, CAD files with the following formats are supported: {}", IMPORT_FILE_EXTENSIONS.join(", ")),
             ))
         }
         ImportPath::Foreign { path: path_string }
@@ -1922,7 +1919,7 @@ fn validate_path_string(path_string: String, var_name: bool, path_range: SourceR
         return Err(ErrMode::Cut(
             CompilationError::fatal(
                 path_range,
-                format!("unsupported import path format. KCL files can be imported from the current project, CAD files with the following formats are supported: {}", FOREIGN_IMPORT_EXTENSIONS.join(", ")),
+                format!("unsupported import path format. KCL files can be imported from the current project, CAD files with the following formats are supported: {}", IMPORT_FILE_EXTENSIONS.join(", ")),
             )
             .into(),
         ));
@@ -4482,10 +4479,10 @@ e
 /// ```
 /// exampleSketch = startSketchOn("XZ")
 ///   |> startProfileAt([0, 0], %)
-///   |> angledLine({
-///     angle = 30,
-///     length = 3 / cos(toRadians(30)),
-///   }, %)
+///   |> angledLine(
+///        angle = 30,
+///        length = 3 / cos(toRadians(30)),
+///      )
 ///   |> yLine(endAbsolute = 0)
 ///   |> close(%)
 ///  

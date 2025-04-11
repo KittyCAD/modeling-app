@@ -42,15 +42,17 @@ export type string
 /// ```norun,inline
 /// startSketchOn('XZ')
 ///   |> startProfileAt(origin, %)
-///   |> angledLine({angle = 0, length = 191.26}, %, $rectangleSegmentA001)
-///   |> angledLine({
+///   |> angledLine(angle = 0, length = 191.26, tag = $rectangleSegmentA001)
+///   |> angledLine(
 ///        angle = segAng(rectangleSegmentA001) - 90,
 ///        length = 196.99,
-///      }, %, $rectangleSegmentB001)
-///   |> angledLine({
+///        tag = $rectangleSegmentB001,
+///      )
+///   |> angledLine(
 ///        angle = segAng(rectangleSegmentA001),
 ///        length = -segLen(rectangleSegmentA001),
-///      }, %, $rectangleSegmentC001)
+///        tag = $rectangleSegmentC001,
+///      )
 ///   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
 ///   |> close()
 /// ```
@@ -74,15 +76,16 @@ export type string
 /// fn rect(origin) {
 ///   return startSketchOn('XZ')
 ///     |> startProfileAt(origin, %)
-///     |> angledLine({angle = 0, length = 191.26}, %, $rectangleSegmentA001)
-///     |> angledLine({
+///     |> angledLine(angle = 0, length = 191.26, tag = $rectangleSegmentA001)
+///     |> angledLine(
 ///          angle = segAng(rectangleSegmentA001) - 90,
-///          length = 196.99
-///        }, %, $rectangleSegmentB001)
-///     |> angledLine({
+///          length = 196.99,
+///          tag = $rectangleSegmentB001)
+///     |> angledLine(
 ///          angle = segAng(rectangleSegmentA001),
-///          length = -segLen(rectangleSegmentA001)
-///        }, %, $rectangleSegmentC001)
+///          length = -segLen(rectangleSegmentA001),
+///          tag = $rectangleSegmentC001
+///        )
 ///     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
 ///     |> close()
 /// }
@@ -102,15 +105,15 @@ export type string
 /// fn rect(origin) {
 ///   return startSketchOn('XZ')
 ///     |> startProfileAt(origin, %)
-///     |> angledLine({angle = 0, length = 191.26}, %, $rectangleSegmentA001)
-///     |> angledLine({
+///     |> angledLine(angle = 0, length = 191.26, tag = $rectangleSegmentA001)
+///     |> angledLine(
 ///          angle = segAng(rectangleSegmentA001) - 90,
 ///          length = 196.99
-///        }, %, $rectangleSegmentB001)
-///     |> angledLine({
+///        , %, $rectangleSegmentB001)
+///     |> angledLine(
 ///          angle = segAng(rectangleSegmentA001),
 ///          length = -segLen(rectangleSegmentA001)
-///        }, %, $rectangleSegmentC001)
+///        , %, $rectangleSegmentC001)
 ///     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
 ///     |> close()
 /// }
@@ -582,6 +585,32 @@ export fn helix(
 ///     |> circle(center = [-10, 10], radius = 4)
 ///     |> revolve(angle = 90, axis = revolveAxis)
 /// ```
+///
+/// ```
+/// // Symmetrically revolve around a path.
+///
+/// profile001 = startSketchOn(XY)
+///     |> startProfileAt([0, 0], %)
+///     |> line(end = [0, 20], tag = $revolveAxis)
+///     |> line(end = [20, 0])
+///
+/// sketch001 = startSketchOn(XY)
+///     |> circle(center = [-10, 10], radius = 4)
+///     |> revolve(angle = 90, axis = revolveAxis, symmetric = true)
+/// ```
+///
+/// ```
+/// // Bidirectional revolve around a path.
+///
+/// profile001 = startSketchOn(XY)
+///     |> startProfileAt([0, 0], %)
+///     |> line(end = [0, 20], tag = $revolveAxis)
+///     |> line(end = [20, 0])
+///
+/// sketch001 = startSketchOn(XY)
+///     |> circle(center = [-10, 10], radius = 4)
+///     |> revolve(angle = 90, axis = revolveAxis, bidirectionalAngle = 50)
+/// ```
 @(impl = std_rust)
 export fn revolve(
   /// The sketch or set of sketches that should be revolved
@@ -592,6 +621,10 @@ export fn revolve(
   angle?: number(deg),
   /// Tolerance for the revolve operation.
   tolerance?: number(mm),
+  /// If true, the extrusion will happen symmetrically around the sketch. Otherwise, the extrusion will happen on only one side of the sketch.
+  symmetric?: bool,
+  /// If specified, will also revolve in the opposite direction to 'angle' to the specified angle. If 'symmetric' is true, this value is ignored.
+  bidirectionalAngle?: number(deg),
   /// A named tag for the face at the start of the revolve, i.e. the original sketch.
   tagStart?: tag,
   /// A named tag for the face at the end of the revolve.

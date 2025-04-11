@@ -2,11 +2,18 @@ import type { Binary as BSONBinary } from 'bson'
 import { v4 } from 'uuid'
 import type { AnyMachineSnapshot } from 'xstate'
 
-import type { SourceRange } from '@src/lang/wasm'
+import type { CallExpressionKw, SourceRange } from '@src/lang/wasm'
 import { isDesktop } from '@src/lib/isDesktop'
 import type { AsyncFn } from '@src/lib/types'
 
 export const uuidv4 = v4
+
+/**
+ * Get all labels for a keyword call expression.
+ */
+export function allLabels(callExpression: CallExpressionKw): string[] {
+  return callExpression.arguments.map((a) => a.label.name)
+}
 
 /**
  * A safer type guard for arrays since the built-in Array.isArray() asserts `any[]`.

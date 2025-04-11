@@ -14,13 +14,13 @@ extrude005 = extrude(sketch005, length = 1.5 - 0.1)
 
 sketch006 = startSketchOn(plane002)
   |> startProfileAt([3.5, baseHeight], %)
-  |> angledLine({ angle = 60, length = 1.75 }, %)
+  |> angledLine(angle = 60, length = 1.75)
   |> arc({
        angleStart = -30,
        angleEnd = -30 + 180,
        radius = 3
      }, %)
-  |> angledLineToY({ angle = 60, to = baseHeight }, %)
+  |> angledLine(angle = 60, endAbsoluteY = baseHeight)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 
