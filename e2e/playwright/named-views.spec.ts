@@ -7,6 +7,7 @@ import type { NamedView } from '@rust/kcl-lib/bindings/NamedView'
 import {
   createProject,
   perProjectSettingsToToml,
+  runningOnWindows,
   tomlToPerProjectSettings,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
@@ -61,6 +62,7 @@ function tomlStringOverWriteNamedViewUuids(toml: string): string {
 }
 
 test.describe('Named view tests', () => {
+  test.skip(runningOnWindows(), 'Windows line endings break snapshot matching')
   test('Verify project.toml is not created', async ({ page }, testInfo) => {
     // Create project and load it
     const projectName = 'named-views'
