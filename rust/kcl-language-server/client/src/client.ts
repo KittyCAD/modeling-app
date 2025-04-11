@@ -9,7 +9,7 @@ export async function createClient(
   serverOptions: lc.ServerOptions
 ): Promise<lc.LanguageClient> {
   const clientOptions: lc.LanguageClientOptions = {
-    documentSelector: [{ scheme: 'file', language: 'kcl' }],
+    documentSelector: [{ scheme: 'file', language: 'kcl' }, { scheme: 'untitled', language: 'kcl' }],
     initializationOptions,
     traceOutputChannel,
     outputChannel,
