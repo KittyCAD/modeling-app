@@ -34,6 +34,7 @@ import type { WebContentSendPayload } from '@src/menu/channels'
 // This route only opens in the desktop context for now,
 // as defined in Router.tsx, so we can use the desktop APIs and types.
 const Home = () => {
+  const navigate = useNavigate()
   const { state, send } = useProjectsContext()
   const [nativeFileMenuCreated, setNativeFileMenuCreated] = useState(false)
   const [readWriteProjectDir, setReadWriteProjectDir] = useState<{
@@ -68,7 +69,6 @@ const Home = () => {
     })
   })
 
-  const navigate = useNavigate()
   const settings = useSettings()
 
   // Menu listeners
