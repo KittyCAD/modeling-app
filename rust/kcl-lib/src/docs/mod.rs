@@ -501,6 +501,12 @@ pub trait StdLibFn: std::fmt::Debug + Send + Sync {
     fn to_autocomplete_snippet(&self) -> Result<String> {
         if self.name() == "loft" {
             return Ok("loft([${0:sketch000}, ${1:sketch001}])".to_string());
+        } else if self.name() == "union" {
+            return Ok("union([${0:extrude001}, ${1:extrude002}])".to_string());
+        } else if self.name() == "subtract" {
+            return Ok("subtract([${0:extrude001}], tools = [${1:extrude002}])".to_string());
+        } else if self.name() == "intersect" {
+            return Ok("intersect([${0:extrude001}, ${1:extrude002}])".to_string());
         } else if self.name() == "hole" {
             return Ok("hole(${0:holeSketch}, ${1:%})".to_string());
         }
@@ -1030,21 +1036,21 @@ mod tests {
     fn get_autocomplete_snippet_union() {
         let union_fn: Box<dyn StdLibFn> = Box::new(crate::std::csg::Union);
         let snippet = union_fn.to_autocomplete_snippet().unwrap();
-        assert_eq!(snippet, r#"union(${0:%})"#);
+        assert_eq!(snippet, r#"union([${0:extrude001}, ${1:extrude002}])"#);
     }
 
     #[test]
     fn get_autocomplete_snippet_subtract() {
         let subtract_fn: Box<dyn StdLibFn> = Box::new(crate::std::csg::Subtract);
         let snippet = subtract_fn.to_autocomplete_snippet().unwrap();
-        assert_eq!(snippet, r#"subtract(${0:%}, tools = ${1:%})"#);
+        assert_eq!(snippet, r#"subtract([${0:extrude001}], tools = [${1:extrude002}])"#);
     }
 
     #[test]
     fn get_autocomplete_snippet_intersect() {
         let intersect_fn: Box<dyn StdLibFn> = Box::new(crate::std::csg::Intersect);
         let snippet = intersect_fn.to_autocomplete_snippet().unwrap();
-        assert_eq!(snippet, r#"intersect(${0:%})"#);
+        assert_eq!(snippet, r#"intersect([${0:extrude001}, ${1:extrude002}])"#);
     }
 
     #[test]
