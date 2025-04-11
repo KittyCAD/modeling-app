@@ -1,5 +1,5 @@
+import { bracket } from '@e2e/playwright/fixtures/bracket'
 import { FILE_EXT } from '@src/lib/constants'
-import { bracket } from '@src/lib/exampleKcl'
 import * as fsp from 'fs/promises'
 import { join } from 'path'
 
@@ -7,6 +7,8 @@ import type { ElectronZoo } from '@e2e/playwright/fixtures/fixtureSetup'
 import {
   executorInputPath,
   getUtils,
+  orRunWhenFullSuiteEnabled,
+  runningOnWindows,
   testsInputPath,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
@@ -85,6 +87,9 @@ test.describe('Testing loading external models', () => {
     'Desktop: should create new file by default, optionally overwrite',
     { tag: '@electron' },
     async ({ editor, context, page, scene, cmdBar, toolbar }, testInfo) => {
+      if (runningOnWindows()) {
+        test.fixme(orRunWhenFullSuiteEnabled())
+      }
       const { dir } = await context.folderSetupFn(async (dir) => {
         const bracketDir = join(dir, 'bracket')
         await fsp.mkdir(bracketDir, { recursive: true })
