@@ -1,6 +1,5 @@
 import { perpendicularDistance } from 'sketch-helpers'
 
-import type { Name } from '@rust/kcl-lib/bindings/Name'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { TagDeclarator } from '@rust/kcl-lib/bindings/TagDeclarator'
 
@@ -12,9 +11,11 @@ import {
   ARG_END_ABSOLUTE,
   ARG_END_ABSOLUTE_X,
   ARG_END_ABSOLUTE_Y,
+  ARG_INTERSECT_TAG,
   ARG_LENGTH,
   ARG_LENGTH_X,
   ARG_LENGTH_Y,
+  ARG_OFFSET,
   ARG_TAG,
   DETERMINING_ARGS,
 } from '@src/lang/constants'
@@ -128,15 +129,10 @@ export function createFirstArg(
         'angledLineOfYLength',
         'angledLineToX',
         'angledLineToY',
+        'angledLineThatIntersects',
       ].includes(sketchFn)
     )
       return createArrayExpression(val)
-    if (['angledLineThatIntersects'].includes(sketchFn) && val[2])
-      return createObjectExpression({
-        angle: val[0],
-        offset: val[1],
-        intersectTag: val[2],
-      })
   } else {
     if (['xLine', 'xLineTo', 'yLine', 'yLineTo'].includes(sketchFn)) return val
   }
@@ -2819,7 +2815,7 @@ export const angledLineToY: SketchLineHelperKw = {
     ),
 }
 
-export const angledLineThatIntersects: SketchLineHelper = {
+export const angledLineThatIntersects: SketchLineHelperKw = {
   add: ({
     node,
     pathToNode,
@@ -2886,18 +2882,18 @@ export const angledLineThatIntersects: SketchLineHelper = {
     if (input.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR
     const { to, from } = input
     const _node = { ...node }
-    const nodeMeta = getNodeFromPath<CallExpression>(_node, pathToNode)
+    const nodeMeta = getNodeFromPath<CallExpressionKw>(_node, pathToNode)
     if (err(nodeMeta)) return nodeMeta
 
     const { node: callExpression } = nodeMeta
     const angle = roundOff(getAngle(from, to), 0)
 
-    const firstArg = callExpression.arguments?.[0]
-    const intersectTag =
-      firstArg.type === 'ObjectExpression'
-        ? firstArg.properties.find((p) => p.key.name === 'intersectTag')
-            ?.value || createLiteral('')
-        : createLiteral('')
+    const intersectTag = findKwArg(ARG_INTERSECT_TAG, callExpression)
+    if (intersectTag === undefined) {
+      return new Error(
+        `no ${ARG_INTERSECT_TAG} argument found in angledLineThatIntersect call, which requires it`
+      )
+    }
     const intersectTagName =
       intersectTag.type === 'Name' ? intersectTag.name.name : ''
     const nodeMeta2 = getNodeFromPath<VariableDeclaration>(
@@ -2924,41 +2920,33 @@ export const angledLineThatIntersects: SketchLineHelper = {
 
     const angleLit = createLiteral(angle)
 
-    mutateObjExpProp(firstArg, angleLit, 'angle')
-    mutateObjExpProp(firstArg, createLiteral(offset), 'offset')
+    // mutateObjExpProp(firstArg, angleLit, 'angle')
+    // mutateObjExpProp(firstArg, createLiteral(offset), 'offset')
+    mutateKwArg(ARG_ANGLE, callExpression, createLiteral(angle))
+    mutateKwArg(ARG_OFFSET, callExpression, createLiteral(offset))
     return {
       modifiedAst: _node,
       pathToNode,
     }
   },
-  getTag: getTag(),
-  addTag: addTag(),
-  getConstraintInfo: (callExp: CallExpression, code, pathToNode) => {
-    if (callExp.type !== 'CallExpression') return []
+  getTag: getTagKwArg(),
+  addTag: addTagKw(),
+  getConstraintInfo: (callExp: CallExpressionKw, code, pathToNode) => {
+    if (callExp.type !== 'CallExpressionKw') return []
     const firstArg = callExp.arguments?.[0]
-    if (firstArg.type !== 'ObjectExpression') return []
-    const angleIndex = firstArg.properties.findIndex(
-      (p) => p.key.name === 'angle'
-    )
-    const offsetIndex = firstArg.properties.findIndex(
-      (p) => p.key.name === 'offset'
-    )
-    const intersectTag = firstArg.properties.findIndex(
-      (p) => p.key.name === 'intersectTag'
-    )
+    const angle = findKwArgWithIndex(ARG_ANGLE, callExp)
+    const offset = findKwArgWithIndex(ARG_OFFSET, callExp)
+    const intersectTag = findKwArgWithIndex(ARG_INTERSECT_TAG, callExp)
     const returnVal = []
-    const pathToObjectExp: PathToNode = [
+    const pathToBase: PathToNode = [
       ...pathToNode,
-      ['arguments', 'CallExpression'],
-      [0, 'index'],
-      ['properties', 'ObjectExpression'],
+      ['arguments', 'CallExpressionKw'],
     ]
-    if (angleIndex !== -1) {
-      const angle = firstArg.properties[angleIndex]?.value
+    if (angle !== undefined) {
       const pathToAngleProp: PathToNode = [
-        ...pathToObjectExp,
-        [angleIndex, 'index'],
-        ['value', 'Property'],
+        ...pathToBase,
+        [angle.argIndex, ARG_INDEX_FIELD],
+        ['arg', LABELED_ARG_FIELD],
       ]
       returnVal.push(
         constrainInfo(
@@ -2972,12 +2960,11 @@ export const angledLineThatIntersects: SketchLineHelper = {
         )
       )
     }
-    if (offsetIndex !== -1) {
-      const offset = firstArg.properties[offsetIndex]?.value
+    if (offset !== undefined) {
       const pathToOffsetProp: PathToNode = [
-        ...pathToObjectExp,
-        [offsetIndex, 'index'],
-        ['value', 'Property'],
+        ...pathToBase,
+        [offset.argIndex, ARG_INDEX_FIELD],
+        ['arg', LABELED_ARG_FIELD],
       ]
       returnVal.push(
         constrainInfo(
@@ -2991,12 +2978,11 @@ export const angledLineThatIntersects: SketchLineHelper = {
         )
       )
     }
-    if (intersectTag !== -1) {
-      const tag = firstArg.properties[intersectTag]?.value as Node<Name>
+    if (intersectTag !== undefined) {
       const pathToTagProp: PathToNode = [
-        ...pathToObjectExp,
-        [intersectTag, 'index'],
-        ['value', 'Property'],
+        ...pathToBase,
+        [intersectTag.argIndex, ARG_INDEX_FIELD],
+        ['arg', LABELED_ARG_FIELD],
       ]
       const info = constrainInfo(
         'intersectionTag',

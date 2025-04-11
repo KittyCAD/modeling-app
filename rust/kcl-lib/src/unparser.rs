@@ -2141,11 +2141,11 @@ mySk1 = startSketchOn(XY)
   |> startProfileAt([-0.01, -0.08], %)
   |> line([0.62, 4.15], %, $seg01)
   |> line([2.77, -1.24], %)
-  |> angledLineThatIntersects({
+  |> angledLineThatIntersects(
        angle = 201,
        offset = -1.35,
        intersectTag = seg01
-     }, %)
+     )
   |> line([-0.42, -1.72], %)"#;
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
 
