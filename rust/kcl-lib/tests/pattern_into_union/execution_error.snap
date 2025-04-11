@@ -2,13 +2,13 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Error from executing pattern_into_union.kcl
 ---
-KCL Semantic error
+[31mKCL Engine error[0m
 
-  × semantic: This function expected the input argument to be one or more
-  │ Solids but it's actually of type array (list)
-    ╭─[67:7]
- 66 │ 
- 67 │ union([base,endTabs])
-    ·       ───────┬──────
-    ·              ╰── tests/pattern_into_union/input.kcl
+  [31m×[0m engine: Modeling command failed: [ApiError { error_code: InternalEngine, message: "More than
+  [31m│[0m 2 solids were passed to the low-level CSG method" }]
+    ╭─[67:1]
+ [2m66[0m │ 
+ [2m67[0m │ union([base,endTabs])
+    · [35;1m──────────┬──────────[0m
+    ·           [35;1m╰── [35;1mtests/pattern_into_union/input.kcl[0m[0m
     ╰────
