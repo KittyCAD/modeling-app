@@ -147,6 +147,7 @@
     "importOrder": [
       "<THIRD_PARTY_MODULES>",
       "^@rust/(.*)$",
+      "^@public/(.*)$",
       "^@e2e/(.*)$",
       "^@src/(.*)$",
       "^[./]"
