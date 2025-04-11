@@ -76,7 +76,14 @@ export const settingsMachine = setup({
           level: SettingsLevel
         }
       | { type: 'Set all settings'; settings: typeof settings }
-      | { type: 'set.app.namedViews'; value: NamedView }
+      | {
+          type: 'set.app.namedViews'
+          data: {
+            value: NamedView
+            toastCallback: () => void
+            level: SettingsLevel
+          }
+        }
       | { type: 'load.project'; project?: Project }
       | { type: 'clear.project' }
     ) & { doNotPersist?: boolean },
@@ -84,7 +91,11 @@ export const settingsMachine = setup({
   actors: {
     persistSettings: fromPromise<
       void,
-      { doNotPersist: boolean; context: SettingsMachineContext }
+      {
+        doNotPersist: boolean
+        context: SettingsMachineContext
+        toastCallback?: () => void
+      }
     >(async ({ input }) => {
       // Without this, when a user changes the file, it'd
       // create a detection loop with the file-system watcher.
@@ -93,7 +104,12 @@ export const settingsMachine = setup({
       codeManager.writeCausedByAppCheckedInFileTreeFileSystemWatcher = true
       const { currentProject, ...settings } = input.context
 
-      return saveSettings(settings, currentProject?.path)
+      const val = await saveSettings(settings, currentProject?.path)
+
+      if (input.toastCallback) {
+        input.toastCallback()
+      }
+      return val
     }),
     loadUserSettings: fromPromise<SettingsMachineContext, void>(async () => {
       const { settings } = await loadAndValidateSettings()
@@ -517,6 +533,17 @@ export const settingsMachine = setup({
           },
         },
         input: ({ context, event }) => {
+          if (
+            event.type === 'set.app.namedViews' &&
+            'toastCallback' in event.data
+          ) {
+            return {
+              doNotPersist: event.doNotPersist ?? false,
+              context,
+              toastCallback: event.data.toastCallback,
+            }
+          }
+
           return {
             doNotPersist: event.doNotPersist ?? false,
             context,
