@@ -101,7 +101,7 @@ jobs:
 
       - name: Install dependencies
         if: needs.conditions.outputs.should-run == 'true'
-        run: yarn
+        run: npm install
 
       - name: Download Wasm Cache
         id: download-wasm
@@ -202,7 +202,7 @@ jobs:
       - name: Install dependencies
         id: deps-install
         if: needs.conditions.outputs.should-run == 'true'
-        run: yarn
+        run: npm install
 
       - name: Cache Playwright Browsers
         if: needs.conditions.outputs.should-run == 'true'
@@ -321,7 +321,7 @@ jobs:
       - name: Install dependencies
         id: deps-install
         if: needs.conditions.outputs.should-run == 'true'
-        run: yarn
+        run: npm install
 
       - name: Cache Playwright Browsers
         if: needs.conditions.outputs.should-run == 'true'
