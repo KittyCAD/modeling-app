@@ -20,7 +20,7 @@ description: Operations executed pattern_linear_in_module.kcl
   },
   {
     "labeledArgs": {
-      "data": {
+      "planeOrSolid": {
         "value": {
           "type": "Plane",
           "artifact_id": "[uuid]"

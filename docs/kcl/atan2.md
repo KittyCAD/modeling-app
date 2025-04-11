@@ -24,8 +24,8 @@ atan2(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `y` | [`number`](/docs/kcl/types/number) |  | Yes |
-| `x` | [`number`](/docs/kcl/types/number) |  | Yes |
+| `y` | [`number`](/docs/kcl/types/number) | Y | Yes |
+| `x` | [`number`](/docs/kcl/types/number) | X | Yes |
 
 ### Returns
 
@@ -37,7 +37,7 @@ atan2(
 ```js
 sketch001 = startSketchOn(XZ)
   |> startProfileAt([0, 0], %)
-  |> angledLine(angle = toDegrees(atan2(1.25, 2)), length = 20)
+  |> angledLine(angle = toDegrees(atan2(y = 1.25, x = 2)), length = 20)
   |> yLine(endAbsolute = 0)
   |> close()
 

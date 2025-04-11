@@ -9,7 +9,7 @@ Compute the tangent of a number (in radians).
 
 
 ```js
-tan(@num: number(rad)): number(_)
+tan(@num: number(Angle)): number(_)
 ```
 
 
@@ -17,7 +17,7 @@ tan(@num: number(rad)): number(_)
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `num` | `number(rad)` |  | Yes |
+| `num` | `number(Angle)` |  | Yes |
 
 ### Returns
 

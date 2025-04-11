@@ -4,18 +4,18 @@ use kcl_derive_docs::stdlib;
 use kcmc::{each_cmd as mcmd, length_unit::LengthUnit, shared::Color, ModelingCmd};
 use kittycad_modeling_cmds as kcmc;
 
-use super::sketch::PlaneData;
+use super::{args::TyF64, sketch::PlaneData};
 use crate::{
     errors::KclError,
-    execution::{ExecState, KclValue, Plane, PlaneType},
+    execution::{types::RuntimeType, ExecState, KclValue, Plane, PlaneType},
     std::Args,
 };
 
 /// Offset a plane by a distance along its normal.
 pub async fn offset_plane(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let std_plane = args.get_unlabeled_kw_arg("plane")?;
-    let offset = args.get_kw_arg("offset")?;
-    let plane = inner_offset_plane(std_plane, offset, exec_state).await?;
+    let offset: TyF64 = args.get_kw_arg_typed("offset", &RuntimeType::length(), exec_state)?;
+    let plane = inner_offset_plane(std_plane, offset.n, exec_state).await?;
     make_offset_plane_in_engine(&plane, exec_state, &args).await?;
     Ok(KclValue::Plane { value: Box::new(plane) })
 }
@@ -108,7 +108,7 @@ pub async fn offset_plane(exec_state: &mut ExecState, args: Args) -> Result<KclV
     keywords = true,
     unlabeled_first = true,
     args = {
-        plane = { docs = "The plane (e.g. 'XY') which this new plane is created from." },
+        plane = { docs = "The plane (e.g. XY) which this new plane is created from." },
         offset = { docs = "Distance from the standard plane this new plane will be created at." },
     }
 }]

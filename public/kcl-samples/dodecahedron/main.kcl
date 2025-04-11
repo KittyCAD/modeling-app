@@ -26,16 +26,14 @@ pentR = edgeL / 2 / sin(toRadians(36))
 
 // Define a plane for the bottom angled face
 plane = {
-  plane = {
-    origin = [
-      -inscR * cos(toRadians(toDegrees(dihedral) - 90)),
-      0,
-      inscR - (inscR * sin(toRadians(toDegrees(dihedral) - 90)))
-    ],
-    xAxis = [cos(dihedral), 0.0, sin(dihedral)],
-    yAxis = [0, 1, 0],
-    zAxis = [sin(dihedral), 0, -cos(dihedral)]
-  }
+  origin = [
+    -inscR * cos(toRadians(toDegrees(dihedral) - 90)),
+    0,
+    inscR - (inscR * sin(toRadians(toDegrees(dihedral) - 90)))
+  ],
+  xAxis = [cos(dihedral), 0.0, sin(dihedral)],
+  yAxis = [0, 1, 0],
+  zAxis = [sin(dihedral), 0, -cos(dihedral)]
 }
 
 // Create a regular pentagon inscribed in a circle of radius pentR

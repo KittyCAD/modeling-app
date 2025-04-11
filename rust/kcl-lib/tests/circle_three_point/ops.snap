@@ -5,7 +5,7 @@ description: Operations executed circle_three_point.kcl
 [
   {
     "labeledArgs": {
-      "data": {
+      "planeOrSolid": {
         "value": {
           "type": "String",
           "value": "XY"

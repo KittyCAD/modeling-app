@@ -11,7 +11,7 @@ const part001 = cube([0,0], 20)
     |> close()
     |> extrude(length = 20)
 
-const part002 = startSketchOn(part001, "start")
+const part002 = startSketchOn(part001, face = "start")
   |> startProfileAt([0, 0], %)
   |> line(end = [0, 10])
   |> line(end = [10, 0])

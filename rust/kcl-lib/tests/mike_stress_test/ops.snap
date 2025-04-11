@@ -5,7 +5,7 @@ description: Operations executed mike_stress_test.kcl
 [
   {
     "labeledArgs": {
-      "data": {
+      "planeOrSolid": {
         "value": {
           "type": "String",
           "value": "XY"

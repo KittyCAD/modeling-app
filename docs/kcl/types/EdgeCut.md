@@ -26,7 +26,7 @@ A fillet.
 |----------|------|-------------|----------|
 | `type` |enum: `fillet`|  | No |
 | `id` |[`string`](/docs/kcl/types/string)| The id of the engine command that called this fillet. | No |
-| `radius` |[`number`](/docs/kcl/types/number)|  | No |
+| `radius` |`TyF64`|  | No |
 | `edgeId` |[`string`](/docs/kcl/types/string)| The engine id of the edge to fillet. | No |
 | [`tag`](/docs/kcl/types/tag) |[`TagDeclarator`](/docs/kcl/types#tag-declaration)|  | No |
 
@@ -46,7 +46,7 @@ A chamfer.
 |----------|------|-------------|----------|
 | `type` |enum: `chamfer`|  | No |
 | `id` |[`string`](/docs/kcl/types/string)| The id of the engine command that called this chamfer. | No |
-| `length` |[`number`](/docs/kcl/types/number)|  | No |
+| `length` |`TyF64`|  | No |
 | `edgeId` |[`string`](/docs/kcl/types/string)| The engine id of the edge to chamfer. | No |
 | [`tag`](/docs/kcl/types/tag) |[`TagDeclarator`](/docs/kcl/types#tag-declaration)|  | No |
 
