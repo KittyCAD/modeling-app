@@ -4,23 +4,15 @@ import fsPromises from 'fs/promises'
 import path from 'path'
 
 export const wasmUrlNode = () => {
-  // Get the wasm module from public/kcl_wasm_lib_bg.wasm
-  const localPath = path.join(
-    __dirname,
-    '..',
-    '..',
-    'public',
-    'kcl_wasm_lib_bg.wasm'
-  )
+  // In prod the file will be right next to the compiled js file.
+  const prodPath = path.join(__dirname, 'kcl_wasm_lib_bg.wasm')
   // Check if the file exists.
-  if (fs.existsSync(localPath)) {
-    console.log('Found local wasm file', localPath)
-    return localPath
+  if (fs.existsSync(prodPath)) {
+    return prodPath
   }
 
-  // We are in production and I think the file is right next to the compiled
-  // js file.
-  return path.join(__dirname, 'kcl_wasm_lib_bg.wasm')
+  // Get the wasm module from public/kcl_wasm_lib_bg.wasm
+  return path.join(__dirname, '..', '..', 'public', 'kcl_wasm_lib_bg.wasm')
 }
 
 // Initialise the wasm module.
