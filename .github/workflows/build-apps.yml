@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - main
+      - pierremtb/issue6256-another-test
     tags:
       - 'v[0-9]+.[0-9]+.[0-9]+'
       - 'nightly-v[0-9]+.[0-9]+.[0-9]+'
@@ -207,6 +208,7 @@ jobs:
           smctl.exe keypair ls
           C:\Windows\System32\certutil.exe -csp "DigiCert Signing Manager KSP" -key -user
           smksp_cert_sync.exe
+          smctl windows certsync
         shell: cmd
 
       - name: Build the app (debug)
