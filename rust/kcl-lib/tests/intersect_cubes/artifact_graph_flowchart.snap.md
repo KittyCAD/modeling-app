@@ -48,6 +48,7 @@ flowchart LR
   42["SweepEdge Adjacent"]
   43["SweepEdge Opposite"]
   44["SweepEdge Adjacent"]
+  45["CompositeSolid Intersect<br>[448, 477, 0]"]
   1 --- 2
   2 --- 3
   2 --- 4
@@ -114,4 +115,6 @@ flowchart LR
   30 --- 42
   30 --- 43
   30 --- 44
+  2 <--x 45
+  24 <--x 45
 ```
