@@ -113,7 +113,7 @@
     "files:flip-to-nightly:windows": "powershell -ExecutionPolicy Bypass -File ./scripts/flip-files-to-nightly.ps1",
     "files:invalidate-bucket": "./scripts/invalidate-files-bucket.sh",
     "files:invalidate-bucket:nightly": "./scripts/invalidate-files-bucket.sh --nightly",
-    "postinstall": "npm --cwd ./rust/kcl-language-server --modules-folder node_modules install && ./node_modules/.bin/electron-rebuild",
+    "postinstall": "npm --cwd ./rust/kcl-language-server --modules-folder node_modules install && electron-rebuild",
     "make:dev": "make dev",
     "generate:machine-api": "npx openapi-typescript ./openapi/machine-api.json -o src/lib/machine-api.d.ts",
     "generate:samples-manifest": "cd public/kcl-samples && node generate-manifest.js",
