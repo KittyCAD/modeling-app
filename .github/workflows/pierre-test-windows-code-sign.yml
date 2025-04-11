@@ -46,6 +46,7 @@ jobs:
           smctl.exe keypair ls
           C:\Windows\System32\certutil.exe -csp "DigiCert Signing Manager KSP" -key -user
           smksp_cert_sync.exe
+          smctl windows certsync
         shell: cmd
 
       # This is what electron-builder seems to want
