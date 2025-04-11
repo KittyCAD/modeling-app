@@ -128,8 +128,6 @@ layout: manual
   * [`sweep`](kcl/sweep)
   * [`tangentToEnd`](kcl/tangentToEnd)
   * [`tangentialArc`](kcl/tangentialArc)
-  * [`tangentialArcTo`](kcl/tangentialArcTo)
-  * [`tangentialArcToRelative`](kcl/tangentialArcToRelative)
   * [`toDegrees`](kcl/toDegrees)
   * [`toRadians`](kcl/toRadians)
   * [`translate`](kcl/translate)

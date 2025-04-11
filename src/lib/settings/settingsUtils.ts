@@ -7,12 +7,12 @@ import { TEST } from '@src/env'
 import {
   defaultAppSettings,
   defaultProjectSettings,
-  initPromise,
   parseAppSettings,
   parseProjectSettings,
   serializeConfiguration,
   serializeProjectConfiguration,
 } from '@src/lang/wasm'
+import { initPromise } from '@src/lang/wasmUtils'
 import { mouseControlsToCameraSystem } from '@src/lib/cameraControls'
 import { BROWSER_PROJECT_NAME } from '@src/lib/constants'
 import {

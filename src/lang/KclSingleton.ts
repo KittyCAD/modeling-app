@@ -30,13 +30,8 @@ import type {
   SourceRange,
   VariableMap,
 } from '@src/lang/wasm'
-import {
-  emptyExecState,
-  getKclVersion,
-  initPromise,
-  parse,
-  recast,
-} from '@src/lang/wasm'
+import { emptyExecState, getKclVersion, parse, recast } from '@src/lang/wasm'
+import { initPromise } from '@src/lang/wasmUtils'
 import type { ArtifactIndex } from '@src/lib/artifactIndex'
 import { buildArtifactIndex } from '@src/lib/artifactIndex'
 import {
