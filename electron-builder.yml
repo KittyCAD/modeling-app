@@ -37,7 +37,8 @@ win:
     signingHashAlgorithms:
       - sha1
       - sha256
-    publisherName: "KittyCAD Inc" # needs to be exactly like on Digicert
+    publisherName: "KittyCAD, Inc."
+    certificateSubjectName: "KittyCAD Inc"
   icon: "assets/icon.ico"
   fileAssociations:
     - ext: kcl
