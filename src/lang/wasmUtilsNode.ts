@@ -8,11 +8,21 @@ export const wasmUrlNode = () => {
   const prodPath = path.join(__dirname, 'kcl_wasm_lib_bg.wasm')
   // Check if the file exists.
   if (fs.existsSync(prodPath)) {
+    console.log('Found wasm file in prod', prodPath)
     return prodPath
   }
 
   // Get the wasm module from public/kcl_wasm_lib_bg.wasm
-  return path.join(__dirname, '..', '..', 'public', 'kcl_wasm_lib_bg.wasm')
+  console.log('Using dev wasm file')
+  const devPath = path.join(
+    __dirname,
+    '..',
+    '..',
+    'public',
+    'kcl_wasm_lib_bg.wasm'
+  )
+  console.log('Using dev wasm file', devPath)
+  return devPath
 }
 
 // Initialise the wasm module.
