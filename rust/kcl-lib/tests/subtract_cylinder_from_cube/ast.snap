@@ -876,24 +876,24 @@ description: Result of parsing subtract_cylinder_from_cube.kcl
                         {
                           "commentStart": 0,
                           "end": 0,
-                          "raw": "0",
+                          "raw": "2",
                           "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
-                            "value": 0.0,
+                            "value": 2.0,
                             "suffix": "None"
                           }
                         },
                         {
                           "commentStart": 0,
                           "end": 0,
-                          "raw": "0",
+                          "raw": "2",
                           "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
-                            "value": 0.0,
+                            "value": 2.0,
                             "suffix": "None"
                           }
                         }
@@ -963,12 +963,12 @@ description: Result of parsing subtract_cylinder_from_cube.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
-                      "raw": "10",
+                      "raw": "5",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
-                        "value": 10.0,
+                        "value": 5.0,
                         "suffix": "None"
                       }
                     }

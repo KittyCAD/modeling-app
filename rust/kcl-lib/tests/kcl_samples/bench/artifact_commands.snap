@@ -476,7 +476,8 @@ description: Artifact commands bench.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 2.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -1342,7 +1343,8 @@ description: Artifact commands bench.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -2.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -2248,7 +2250,8 @@ description: Artifact commands bench.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 2.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -3089,7 +3092,8 @@ description: Artifact commands bench.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -2.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -3995,7 +3999,8 @@ description: Artifact commands bench.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 2.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -4836,7 +4841,8 @@ description: Artifact commands bench.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -2.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -5547,7 +5553,8 @@ description: Artifact commands bench.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 56.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -5913,7 +5920,8 @@ description: Artifact commands bench.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 56.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -6344,7 +6352,8 @@ description: Artifact commands bench.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 60.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -6514,7 +6523,8 @@ description: Artifact commands bench.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 60.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -6684,7 +6694,8 @@ description: Artifact commands bench.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 60.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -7086,7 +7097,8 @@ description: Artifact commands bench.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 60.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -7256,7 +7268,8 @@ description: Artifact commands bench.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 60.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {

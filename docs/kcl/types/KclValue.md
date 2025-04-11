@@ -252,7 +252,7 @@ Data for an imported geometry.
 
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
-| `type` |enum: [`ImportedGeometry`](/docs/kcl/types/ImportedGeometry)|  | No |
+| `type` |enum: `ImportedGeometry`|  | No |
 | `id` |[`string`](/docs/kcl/types/string)| The ID of the imported geometry. | No |
 | `value` |`[` [`string`](/docs/kcl/types/string) `]`| The original file paths. | No |
 

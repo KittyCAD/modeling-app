@@ -16,10 +16,7 @@ sketch011 = startSketchOn(plane003)
        angleEnd = 270 + axisJ2,
        radius = axisJ2ArmWidth / 2
      }, %)
-  |> angledLine({
-       angle = axisJ2,
-       length = axisJ2ArmLength
-     }, %)
+  |> angledLine(angle = axisJ2, length = axisJ2ArmLength)
   |> arc({
        angleStart = -90 + axisJ2,
        angleEnd = 90 + axisJ2,

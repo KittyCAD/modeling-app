@@ -17128,7 +17128,8 @@ description: Artifact commands mike_stress_test.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 5.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {

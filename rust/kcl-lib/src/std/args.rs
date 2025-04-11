@@ -664,10 +664,6 @@ impl Args {
         FromArgs::from_args(self, 0)
     }
 
-    pub(crate) fn get_import_data(&self) -> Result<(String, Option<crate::std::import::ImportFormat>), KclError> {
-        FromArgs::from_args(self, 0)
-    }
-
     pub(crate) fn get_sketch_data_and_optional_tag(
         &self,
     ) -> Result<(super::sketch::SketchData, Option<FaceTag>), KclError> {
@@ -1077,35 +1073,6 @@ macro_rules! let_field_of {
     };
 }
 
-impl<'a> FromKclValue<'a> for crate::std::import::ImportFormat {
-    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        let obj = arg.as_object()?;
-        let_field_of!(obj, typ "format");
-        match typ {
-            "fbx" => Some(Self::Fbx {}),
-            "gltf" => Some(Self::Gltf {}),
-            "sldprt" => Some(Self::Sldprt {}),
-            "step" => Some(Self::Step {}),
-            "stl" => {
-                let_field_of!(obj, coords?);
-                let_field_of!(obj, units);
-                Some(Self::Stl { coords, units })
-            }
-            "obj" => {
-                let_field_of!(obj, coords?);
-                let_field_of!(obj, units);
-                Some(Self::Obj { coords, units })
-            }
-            "ply" => {
-                let_field_of!(obj, coords?);
-                let_field_of!(obj, units);
-                Some(Self::Ply { coords, units })
-            }
-            _ => None,
-        }
-    }
-}
-
 impl<'a> FromKclValue<'a> for super::sketch::AngledLineThatIntersectsData {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let obj = arg.as_object()?;
@@ -1238,24 +1205,6 @@ impl<'a> FromKclValue<'a> for FaceTag {
         let case2 = || {
             let tag = TagIdentifier::from_kcl_val(arg)?;
             Some(Self::Tag(Box::new(tag)))
-        };
-        case1().or_else(case2)
-    }
-}
-
-impl<'a> FromKclValue<'a> for super::sketch::AngledLineToData {
-    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        // Deserialize from an {angle, to} object.
-        let case1 = || {
-            let obj = arg.as_object()?;
-            let_field_of!(obj, to);
-            let_field_of!(obj, angle);
-            Some(Self { angle, to })
-        };
-        // Deserialize from an [angle, to] array.
-        let case2 = || {
-            let [angle, to] = arg.as_point2d()?;
-            Some(Self { angle, to })
         };
         case1().or_else(case2)
     }
@@ -1577,24 +1526,6 @@ impl<'a> FromKclValue<'a> for super::axis_or_reference::Axis3dOrEdgeReference {
         };
         let case2 = super::fillet::EdgeReference::from_kcl_val;
         case1(arg).or_else(|| case2(arg).map(Self::Edge))
-    }
-}
-
-impl<'a> FromKclValue<'a> for super::sketch::AngledLineData {
-    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        let case1 = |arg: &KclValue| {
-            let obj = arg.as_object()?;
-            let_field_of!(obj, angle);
-            let_field_of!(obj, length);
-            Some(Self::AngleAndLengthNamed { angle, length })
-        };
-        let case2 = |arg: &KclValue| {
-            let array = arg.as_array()?;
-            let ang = array.first()?.as_f64()?;
-            let len = array.get(1)?.as_f64()?;
-            Some(Self::AngleAndLengthPair([ang, len]))
-        };
-        case1(arg).or_else(|| case2(arg))
     }
 }
 
