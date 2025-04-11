@@ -1,5 +1,6 @@
 import { getTagDeclaratorsInProgram } from '@src/lang/queryAst/getTagDeclaratorsInProgram'
-import { assertParse, initPromise } from '@src/lang/wasm'
+import { assertParse } from '@src/lang/wasm'
+import { initPromise } from '@src/lang/wasmUtils'
 
 function tagDeclaratorWithIndex(
   value: string,

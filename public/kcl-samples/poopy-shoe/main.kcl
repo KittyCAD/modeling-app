@@ -69,7 +69,7 @@ customPlane = {
 }
 sketch003 = startSketchOn(customPlane)
   |> startProfileAt([0, 0], %)
-  |> tangentialArc({ offset = 60, radius = height }, %)
+  |> tangentialArc(angle = 60, radius = height)
   |> angledLine(angle = 60, endAbsoluteY = 0)
   |> close()
   |> extrude(length = wallThickness)
@@ -85,11 +85,11 @@ sketch004 = startSketchOn(sketch002, 'END')
   |> angledLine(angle = 60, endAbsoluteY = segEndY(seg01))
   |> yLine(endAbsolute = height)
   |> xLine(length = wallThickness)
-  |> tangentialArcTo([
+  |> tangentialArc(endAbsolute = [
        (frontLength - wallsWidth) / 2 + wallsWidth,
        height - ((height - exitHeight) / 2)
-     ], %)
-  |> tangentialArcTo([frontLength, exitHeight], %)
+     ])
+  |> tangentialArc(endAbsolute = [frontLength, exitHeight])
   |> yLine(endAbsolute = 0)
   |> close(tag = $seg04)
   |> extrude(length = wallThickness)
@@ -110,11 +110,11 @@ sketch005 = startSketchOn(customPlane2)
   |> startProfileAt([0, 0], %)
   |> yLine(endAbsolute = height)
   |> xLine(endAbsolute = wallsWidth)
-  |> tangentialArcTo([
+  |> tangentialArc(endAbsolute = [
        (frontLength - wallsWidth) / 2 + wallsWidth,
        height - ((height - exitHeight) / 2)
-     ], %)
-  |> tangentialArcTo([frontLength, exitHeight], %)
+     ])
+  |> tangentialArc(endAbsolute = [frontLength, exitHeight])
   |> yLine(endAbsolute = 0, tag = $seg03)
   |> close()
   |> extrude(length = wallThickness)

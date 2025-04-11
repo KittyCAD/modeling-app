@@ -760,7 +760,8 @@ export const ModelingMachineProvider = ({
 
               // remove body item at varDecIndex
               newAst.body = newAst.body.filter((_, i) => i !== varDecIndex)
-              await kclManager.executeAstMock(newAst)
+              const didReParse = await kclManager.executeAstMock(newAst)
+              if (err(didReParse)) return reject(didReParse)
               await codeManager.updateEditorWithAstAndWriteToFile(newAst)
             }
             sceneInfra.setCallbacks({
@@ -773,6 +774,7 @@ export const ModelingMachineProvider = ({
         'animate-to-face': fromPromise(async ({ input }) => {
           if (!input) return null
           if (input.type === 'extrudeFace' || input.type === 'offsetPlane') {
+            const originalCode = codeManager.code
             const sketched =
               input.type === 'extrudeFace'
                 ? sketchOnExtrudedFace(
@@ -791,7 +793,13 @@ export const ModelingMachineProvider = ({
             }
             const { modifiedAst, pathToNode: pathToNewSketchNode } = sketched
 
-            await kclManager.executeAstMock(modifiedAst)
+            const didReParse = await kclManager.executeAstMock(modifiedAst)
+            if (err(didReParse)) {
+              // there was a problem, restore the original code
+              codeManager.code = originalCode
+              await kclManager.executeCode()
+              return reject(didReParse)
+            }
 
             const id =
               input.type === 'extrudeFace' ? input.faceId : input.planeId

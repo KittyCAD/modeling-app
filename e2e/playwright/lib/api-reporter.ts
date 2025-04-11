@@ -9,7 +9,7 @@ class MyAPIReporter implements Reporter {
     const payload = {
       // Required information
       project: 'https://github.com/KittyCAD/modeling-app',
-      branch: process.env.GITHUB_HEAD_REF || process.env.GITHUB_REF || '',
+      branch: process.env.GITHUB_HEAD_REF || process.env.GITHUB_REF_NAME || '',
       commit: process.env.CI_COMMIT_SHA || process.env.GITHUB_SHA || '',
       test: test.titlePath().slice(2).join(' › '),
       status: result.status,

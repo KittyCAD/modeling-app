@@ -6,11 +6,10 @@ import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfigu
 import { newKclFile } from '@src/lang/project'
 import {
   defaultAppSettings,
-  initPromise,
   parseAppSettings,
   parseProjectSettings,
 } from '@src/lang/wasm'
-import { relevantFileExtensions } from '@src/lang/wasmUtils'
+import { initPromise, relevantFileExtensions } from '@src/lang/wasmUtils'
 import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
   PROJECT_ENTRYPOINT,

@@ -9,8 +9,7 @@ use kcmc::{
     length_unit::LengthUnit,
     ok_response::OkModelingCmdResponse,
     output::ExtrusionFaceInfo,
-    shared::ExtrusionFaceCapType,
-    shared::Opposite,
+    shared::{ExtrusionFaceCapType, Opposite},
     websocket::{ModelingCmdReq, OkWebSocketResponseData},
     ModelingCmd,
 };
