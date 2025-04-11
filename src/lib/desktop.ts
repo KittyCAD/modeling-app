@@ -704,7 +704,7 @@ export const getUser = async (
         Authorization: `Bearer ${token}`,
       }),
     })
-    return user
+    return user.json()
   } catch (e) {
     console.error(e)
   }
