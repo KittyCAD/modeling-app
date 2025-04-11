@@ -16,6 +16,7 @@ import { PNG } from 'pngjs'
 
 import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
 
+import type { ElectronZoo } from '@e2e/playwright/fixtures/fixtureSetup'
 import { isErrorWhitelisted } from '@e2e/playwright/lib/console-error-whitelist'
 import { secrets } from '@e2e/playwright/secrets'
 import {
@@ -1145,4 +1146,54 @@ export function perProjectSettingsToToml(
 ) {
   // eslint-disable-next-line no-restricted-syntax
   return TOML.stringify(settings as any)
+}
+
+export async function clickElectronNativeMenuById(
+  tronApp: ElectronZoo,
+  menuId: string
+) {
+  const clickWasTriggered = await tronApp.electron.evaluate(
+    async ({ app }, menuId) => {
+      if (!app || !app.applicationMenu) {
+        return false
+      }
+      const menu = app.applicationMenu.getMenuItemById(menuId)
+      if (!menu) return false
+      menu.click()
+      return true
+    },
+    menuId
+  )
+  expect(clickWasTriggered).toBe(true)
+}
+
+export async function findElectronNativeMenuById(
+  tronApp: ElectronZoo,
+  menuId: string
+) {
+  const found = await tronApp.electron.evaluate(async ({ app }, menuId) => {
+    if (!app || !app.applicationMenu) {
+      return false
+    }
+    const menu = app.applicationMenu.getMenuItemById(menuId)
+    if (!menu) return false
+    return true
+  }, menuId)
+  expect(found).toBe(true)
+}
+
+export async function openSettingsExpectText(page: Page, text: string) {
+  const settings = page.getByTestId('settings-dialog-panel')
+  await expect(settings).toBeVisible()
+  // You are viewing the user tab
+  const actualText = settings.getByText(text)
+  await expect(actualText).toBeVisible()
+}
+
+export async function openSettingsExpectLocator(page: Page, selector: string) {
+  const settings = page.getByTestId('settings-dialog-panel')
+  await expect(settings).toBeVisible()
+  // You are viewing the keybindings tab
+  const settingsLocator = settings.locator(selector)
+  await expect(settingsLocator).toBeVisible()
 }

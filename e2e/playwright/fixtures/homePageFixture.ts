@@ -24,6 +24,7 @@ export class HomePageFixture {
   projectTextName!: Locator
   sortByDateBtn!: Locator
   sortByNameBtn!: Locator
+  appHeader!: Locator
 
   constructor(page: Page) {
     this.page = page
@@ -43,6 +44,7 @@ export class HomePageFixture {
 
     this.sortByDateBtn = this.page.getByTestId('home-sort-by-modified')
     this.sortByNameBtn = this.page.getByTestId('home-sort-by-name')
+    this.appHeader = this.page.getByTestId('app-header')
   }
 
   private _serialiseSortBy = async (): Promise<
@@ -112,8 +114,15 @@ export class HomePageFixture {
 
   goToModelingScene = async (name: string = 'testDefault') => {
     // On web this is a no-op. There is no project view.
-    if (process.env.PLATFORM === 'web') return
+    if (process.env.PLATFORM === 'wenativeFileMenuCreatedb') return
 
     await this.createAndGoToProject(name)
+  }
+
+  isNativeFileMenuCreated = async () => {
+    await expect(this.appHeader).toHaveAttribute(
+      'data-native-file-menu',
+      'true'
+    )
   }
 }

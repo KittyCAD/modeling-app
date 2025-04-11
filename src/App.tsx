@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useHotkeys } from 'react-hotkeys-hook'
 import ModalContainer from 'react-modal-promise'
@@ -34,6 +34,7 @@ import {
   sceneInfra,
 } from '@src/lib/singletons'
 import { maybeWriteToDisk } from '@src/lib/telemetry'
+import { reportRejection } from '@src/lib/trap'
 import { type IndexLoaderData } from '@src/lib/types'
 import {
   engineStreamActor,
@@ -53,6 +54,7 @@ maybeWriteToDisk()
 
 export function App() {
   const { project, file } = useLoaderData() as IndexLoaderData
+  const [nativeFileMenuCreated, setNativeFileMenuCreated] = useState(false)
 
   // Keep a lookout for a URL query string that invokes the 'import file from URL' command
   useCreateFileLinkQuery((argDefaultValues) => {
@@ -160,12 +162,25 @@ export function App() {
     }
   }, [])
 
+  // Only create the native file menus on desktop
+  useEffect(() => {
+    if (isDesktop()) {
+      window.electron
+        .createModelingPageMenu()
+        .then(() => {
+          setNativeFileMenuCreated(true)
+        })
+        .catch(reportRejection)
+    }
+  }, [])
+
   return (
     <div className="relative h-full flex flex-col" ref={ref}>
       <AppHeader
         className={'transition-opacity transition-duration-75 ' + paneOpacity}
         project={{ project, file }}
         enableMenu={true}
+        nativeFileMenuCreated={nativeFileMenuCreated}
       />
       <ModalContainer />
       <ModelingSidebar paneOpacity={paneOpacity} />
