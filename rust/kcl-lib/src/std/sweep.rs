@@ -214,5 +214,14 @@ async fn inner_sweep(
         );
     }
 
+    // Hide the artifact from the sketch or helix.
+    args.batch_modeling_cmd(
+        exec_state.next_uuid(),
+        ModelingCmd::from(mcmd::ObjectVisible {
+            object_id: trajectory.into(),
+            hidden: true,
+        }),
+    );
+
     Ok(solids)
 }
