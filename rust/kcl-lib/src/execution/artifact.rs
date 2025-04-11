@@ -1145,6 +1145,9 @@ fn artifacts_to_update(
             }
             let return_arr = new_solid_ids
                 .into_iter()
+                // Extra solid IDs may include the command's ID.  Make sure we
+                // don't create a duplicate.
+                .filter(|solid_id| *solid_id != id)
                 .map(|solid_id| {
                     Artifact::CompositeSolid(CompositeSolid {
                         id: solid_id,
