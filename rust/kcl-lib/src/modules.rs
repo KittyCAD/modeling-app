@@ -6,6 +6,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     errors::{KclError, KclErrorDetails},
+    exec::KclValue,
     execution::{EnvironmentRef, PreImportedGeometry},
     fs::{FileManager, FileSystem},
     parsing::ast::types::{ImportPath, Node, Program},
@@ -94,7 +95,7 @@ pub(crate) fn read_std(mod_name: &str) -> Option<&'static str> {
 }
 
 /// Info about a module.
-#[derive(Debug, Clone, PartialEq, Deserialize, Serialize)]
+#[derive(Debug, Clone, PartialEq, Serialize)]
 pub struct ModuleInfo {
     /// The ID of the module.
     pub(crate) id: ModuleId,
@@ -117,11 +118,11 @@ impl ModuleInfo {
 }
 
 #[allow(clippy::large_enum_variant)]
-#[derive(Debug, Clone, PartialEq, Deserialize, Serialize)]
+#[derive(Debug, Clone, PartialEq, Serialize)]
 pub enum ModuleRepr {
     Root,
     // AST, memory, exported names
-    Kcl(Node<Program>, Option<(EnvironmentRef, Vec<String>)>),
+    Kcl(Node<Program>, Option<(Option<KclValue>, EnvironmentRef, Vec<String>)>),
     Foreign(PreImportedGeometry),
     Dummy,
 }

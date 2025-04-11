@@ -47,23 +47,6 @@ lazy_static::lazy_static! {
     pub static ref GRID_SCALE_TEXT_OBJECT_ID: uuid::Uuid = uuid::Uuid::parse_str("10782f33-f588-4668-8bcd-040502d26590").unwrap();
 }
 
-/// The mode of execution.  When isolated, like during an import, attempting to
-/// send a command results in an error.
-#[derive(Debug, Default, Clone, Copy, Deserialize, Serialize, PartialEq, Eq, ts_rs::TS, JsonSchema)]
-#[ts(export)]
-#[serde(rename_all = "camelCase")]
-pub enum ExecutionKind {
-    #[default]
-    Normal,
-    Isolated,
-}
-
-impl ExecutionKind {
-    pub fn is_isolated(&self) -> bool {
-        matches!(self, ExecutionKind::Isolated)
-    }
-}
-
 #[derive(Default, Debug)]
 pub struct EngineStats {
     pub commands_batched: AtomicUsize,
@@ -117,13 +100,6 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
     async fn take_responses(&self) -> IndexMap<Uuid, WebSocketResponse> {
         std::mem::take(&mut *self.responses().write().await)
     }
-
-    /// Get the current execution kind.
-    async fn execution_kind(&self) -> ExecutionKind;
-
-    /// Replace the current execution kind with a new value and return the
-    /// existing value.
-    async fn replace_execution_kind(&self, execution_kind: ExecutionKind) -> ExecutionKind;
 
     /// Get the default planes.
     fn get_default_planes(&self) -> Arc<RwLock<Option<DefaultPlanes>>>;
@@ -289,11 +265,6 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         source_range: SourceRange,
         cmd: &ModelingCmd,
     ) -> Result<(), crate::errors::KclError> {
-        // In isolated mode, we don't send the command to the engine.
-        if self.execution_kind().await.is_isolated() {
-            return Ok(());
-        }
-
         let req = WebSocketRequest::ModelingCmdReq(ModelingCmdReq {
             cmd: cmd.clone(),
             cmd_id: id.into(),
@@ -315,11 +286,6 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         source_range: SourceRange,
         cmds: &[ModelingCmdReq],
     ) -> Result<(), crate::errors::KclError> {
-        // In isolated mode, we don't send the command to the engine.
-        if self.execution_kind().await.is_isolated() {
-            return Ok(());
-        }
-
         // Add cmds to the batch.
         let mut extended_cmds = Vec::with_capacity(cmds.len());
         for cmd in cmds {
@@ -342,11 +308,6 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         source_range: SourceRange,
         cmd: &ModelingCmd,
     ) -> Result<(), crate::errors::KclError> {
-        // In isolated mode, we don't send the command to the engine.
-        if self.execution_kind().await.is_isolated() {
-            return Ok(());
-        }
-
         let req = WebSocketRequest::ModelingCmdReq(ModelingCmdReq {
             cmd: cmd.clone(),
             cmd_id: id.into(),
@@ -365,36 +326,36 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         source_range: SourceRange,
         cmd: &ModelingCmd,
     ) -> Result<OkWebSocketResponseData, crate::errors::KclError> {
-        self.batch_modeling_cmd(id, source_range, cmd).await?;
+        let mut requests = self.take_batch().await.clone();
+
+        // Add the command to the batch.
+        requests.push((
+            WebSocketRequest::ModelingCmdReq(ModelingCmdReq {
+                cmd: cmd.clone(),
+                cmd_id: id.into(),
+            }),
+            source_range,
+        ));
+        self.stats().commands_batched.fetch_add(1, Ordering::Relaxed);
 
         // Flush the batch queue.
-        self.flush_batch(false, source_range).await
+        self.run_batch(requests, source_range).await
     }
 
-    /// Force flush the batch queue.
-    async fn flush_batch(
+    /// Run the batch for the specific commands.
+    async fn run_batch(
         &self,
-        // Whether or not to flush the end commands as well.
-        // We only do this at the very end of the file.
-        batch_end: bool,
+        orig_requests: Vec<(WebSocketRequest, SourceRange)>,
         source_range: SourceRange,
     ) -> Result<OkWebSocketResponseData, crate::errors::KclError> {
-        let all_requests = if batch_end {
-            let mut requests = self.take_batch().await.clone();
-            requests.extend(self.take_batch_end().await.values().cloned());
-            requests
-        } else {
-            self.take_batch().await.clone()
-        };
-
         // Return early if we have no commands to send.
-        if all_requests.is_empty() {
+        if orig_requests.is_empty() {
             return Ok(OkWebSocketResponseData::Modeling {
                 modeling_response: OkModelingCmdResponse::Empty {},
             });
         }
 
-        let requests: Vec<ModelingCmdReq> = all_requests
+        let requests: Vec<ModelingCmdReq> = orig_requests
             .iter()
             .filter_map(|(val, _)| match val {
                 WebSocketRequest::ModelingCmdReq(ModelingCmdReq { cmd, cmd_id }) => Some(ModelingCmdReq {
@@ -411,9 +372,9 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
             responses: true,
         });
 
-        let final_req = if all_requests.len() == 1 {
+        let final_req = if orig_requests.len() == 1 {
             // We can unwrap here because we know the batch has only one element.
-            all_requests.first().unwrap().0.clone()
+            orig_requests.first().unwrap().0.clone()
         } else {
             batched_requests
         };
@@ -421,7 +382,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         // Create the map of original command IDs to source range.
         // This is for the wasm side, kurt needs it for selections.
         let mut id_to_source_range = HashMap::new();
-        for (req, range) in all_requests.iter() {
+        for (req, range) in orig_requests.iter() {
             match req {
                 WebSocketRequest::ModelingCmdReq(ModelingCmdReq { cmd: _, cmd_id }) => {
                     id_to_source_range.insert(Uuid::from(*cmd_id), *range);
@@ -436,7 +397,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         }
 
         // Do the artifact commands.
-        for (req, _) in all_requests.iter() {
+        for (req, _) in orig_requests.iter() {
             match &req {
                 WebSocketRequest::ModelingCmdBatchReq(ModelingBatch { requests, .. }) => {
                     for request in requests {
@@ -504,6 +465,25 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
                 source_ranges: vec![source_range],
             })),
         }
+    }
+
+    /// Force flush the batch queue.
+    async fn flush_batch(
+        &self,
+        // Whether or not to flush the end commands as well.
+        // We only do this at the very end of the file.
+        batch_end: bool,
+        source_range: SourceRange,
+    ) -> Result<OkWebSocketResponseData, crate::errors::KclError> {
+        let all_requests = if batch_end {
+            let mut requests = self.take_batch().await.clone();
+            requests.extend(self.take_batch_end().await.values().cloned());
+            requests
+        } else {
+            self.take_batch().await.clone()
+        };
+
+        self.run_batch(all_requests, source_range).await
     }
 
     async fn make_default_plane(
