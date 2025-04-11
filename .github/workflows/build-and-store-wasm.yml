@@ -15,7 +15,7 @@ jobs:
           node-version-file: '.nvmrc'
           cache: 'yarn'
       - name: Install dependencies
-        run: npm install
+        run: yarn
       - name: Use correct Rust toolchain
         shell: bash
         run: |

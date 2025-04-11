@@ -5,14 +5,12 @@ on:
   push:
     branches:
       - main
-      - pierremtb/issue6256-another-test
     tags:
       - 'v[0-9]+.[0-9]+.[0-9]+'
       - 'nightly-v[0-9]+.[0-9]+.[0-9]+'
 
 env:
-  # IS_RELEASE: ${{ github.ref_type == 'tag' && startsWith(github.ref_name, 'v') }}
-  IS_RELEASE: true
+  IS_RELEASE: ${{ github.ref_type == 'tag' && startsWith(github.ref_name, 'v') }}
   IS_NIGHTLY: ${{ github.ref_type == 'tag' && startsWith(github.ref_name, 'nightly-v') }}
 
 concurrency:
@@ -101,11 +99,11 @@ jobs:
           yarn files:set-version
           yarn files:flip-to-nightly
 
-      # - name: Set release version
-      #   if: ${{ env.IS_RELEASE == 'true' }}
-      #   run: |
-      #     export VERSION=${GITHUB_REF_NAME#v}
-      #     yarn files:set-version
+      - name: Set release version
+        if: ${{ env.IS_RELEASE == 'true' }}
+        run: |
+          export VERSION=${GITHUB_REF_NAME#v}
+          yarn files:set-version
 
       - uses: actions/upload-artifact@v4
         with:
@@ -210,6 +208,12 @@ jobs:
           C:\Windows\System32\certutil.exe -csp "DigiCert Signing Manager KSP" -key -user
           smksp_cert_sync.exe
           smctl windows certsync
+        # This last line `smctl windows certsync` was added after windows codesign failures started happening
+        # with nightly-v25.4.10. It looks like `smksp_cert_sync.exe` used to do the sync to the local cert store,
+        # but stopped doing it overnight. This extra call that I randomly got from this azure-related doc page
+        # https://docs.digicert.com/en/digicert-keylocker/code-signing/sign-with-third-party-signing-tools/windows-applications/sign-azure-apps-with-signtool-using-ksp-library.html#sync-certificates--windows-only--618365
+        # seems to be doing that extra sync that we need for scripts/sign-win.js to work.
+        # TODO: we still need to make sign-win.js errors fail the workflow, see issue #6276
         shell: cmd
 
       - name: Build the app (debug)
