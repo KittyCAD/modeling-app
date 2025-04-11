@@ -3427,7 +3427,7 @@ async fn test_kcl_lsp_on_hover_untitled_file_scheme() {
     server
         .did_open(tower_lsp::lsp_types::DidOpenTextDocumentParams {
             text_document: tower_lsp::lsp_types::TextDocumentItem {
-                uri: "file:///test.kcl".try_into().unwrap(),
+                uri: "untitled:Untitled-1".try_into().unwrap(),
                 language_id: "kcl".to_string(),
                 version: 1,
                 text: r#"startSketchOn(XY)
@@ -3455,7 +3455,7 @@ startSketchOn(XY)
         .hover(tower_lsp::lsp_types::HoverParams {
             text_document_position_params: tower_lsp::lsp_types::TextDocumentPositionParams {
                 text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
-                    uri: "file:///test.kcl".try_into().unwrap(),
+                    uri: "untitled:Untitled-1".try_into().unwrap(),
                 },
                 position: tower_lsp::lsp_types::Position { line: 0, character: 2 },
             },
@@ -3478,7 +3478,7 @@ startSketchOn(XY)
         .hover(tower_lsp::lsp_types::HoverParams {
             text_document_position_params: tower_lsp::lsp_types::TextDocumentPositionParams {
                 text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
-                    uri: "file:///test.kcl".try_into().unwrap(),
+                    uri: "untitled:Untitled-1".try_into().unwrap(),
                 },
                 position: tower_lsp::lsp_types::Position { line: 2, character: 1 },
             },
@@ -3499,7 +3499,7 @@ startSketchOn(XY)
         .hover(tower_lsp::lsp_types::HoverParams {
             text_document_position_params: tower_lsp::lsp_types::TextDocumentPositionParams {
                 text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
-                    uri: "file:///test.kcl".try_into().unwrap(),
+                    uri: "untitled:Untitled-1".try_into().unwrap(),
                 },
                 position: tower_lsp::lsp_types::Position { line: 8, character: 1 },
             },
@@ -3520,7 +3520,7 @@ startSketchOn(XY)
         .hover(tower_lsp::lsp_types::HoverParams {
             text_document_position_params: tower_lsp::lsp_types::TextDocumentPositionParams {
                 text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
-                    uri: "file:///test.kcl".try_into().unwrap(),
+                    uri: "untitled:Untitled-1".try_into().unwrap(),
                 },
                 position: tower_lsp::lsp_types::Position { line: 5, character: 9 },
             },
@@ -3541,7 +3541,7 @@ startSketchOn(XY)
         .hover(tower_lsp::lsp_types::HoverParams {
             text_document_position_params: tower_lsp::lsp_types::TextDocumentPositionParams {
                 text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
-                    uri: "file:///test.kcl".try_into().unwrap(),
+                    uri: "untitled:Untitled-1".try_into().unwrap(),
                 },
                 position: tower_lsp::lsp_types::Position {
                     line: 12,
