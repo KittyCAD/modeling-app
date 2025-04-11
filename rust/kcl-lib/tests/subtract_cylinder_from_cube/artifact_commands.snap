@@ -342,8 +342,8 @@ description: Artifact commands subtract_cylinder_from_cube.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 2.0,
-        "y": 0.0,
+        "x": 4.0,
+        "y": 2.0,
         "z": 0.0
       }
     }
@@ -364,8 +364,8 @@ description: Artifact commands subtract_cylinder_from_cube.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": 0.0,
-          "y": 0.0
+          "x": 2.0,
+          "y": 2.0
         },
         "radius": 2.0,
         "start": {
@@ -410,7 +410,7 @@ description: Artifact commands subtract_cylinder_from_cube.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 10.0,
+      "distance": 5.0,
       "faces": null,
       "opposite": "None"
     }
@@ -457,6 +457,20 @@ description: Artifact commands subtract_cylinder_from_cube.kcl
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "boolean_subtract",
+      "target_ids": [
+        "[uuid]"
+      ],
+      "tool_ids": [
+        "[uuid]"
+      ],
+      "tolerance": 0.0000001
     }
   }
 ]

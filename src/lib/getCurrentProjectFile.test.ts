@@ -3,7 +3,12 @@ import os from 'os'
 import path from 'path'
 import { v4 as uuidv4 } from 'uuid'
 
+import { initPromise } from '@src/lang/wasm'
 import getCurrentProjectFile from '@src/lib/getCurrentProjectFile'
+
+beforeAll(async () => {
+  await initPromise
+})
 
 describe('getCurrentProjectFile', () => {
   test('with explicit open file with space (URL encoded)', async () => {
