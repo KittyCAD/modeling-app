@@ -1090,28 +1090,77 @@ fn artifacts_to_update(
         ModelingCmd::BooleanIntersection(_) | ModelingCmd::BooleanSubtract(_) | ModelingCmd::BooleanUnion(_) => {
             let (sub_type, solid_ids, tool_ids) = match cmd {
                 ModelingCmd::BooleanIntersection(intersection) => {
-                    let solid_ids = intersection.solid_ids.iter().copied().map(ArtifactId::new).collect();
+                    let solid_ids = intersection
+                        .solid_ids
+                        .iter()
+                        .copied()
+                        .map(ArtifactId::new)
+                        .collect::<Vec<_>>();
                     (CompositeSolidSubType::Intersect, solid_ids, Vec::new())
                 }
                 ModelingCmd::BooleanSubtract(subtract) => {
-                    let solid_ids = subtract.target_ids.iter().copied().map(ArtifactId::new).collect();
-                    let tool_ids = subtract.tool_ids.iter().copied().map(ArtifactId::new).collect();
+                    let solid_ids = subtract
+                        .target_ids
+                        .iter()
+                        .copied()
+                        .map(ArtifactId::new)
+                        .collect::<Vec<_>>();
+                    let tool_ids = subtract
+                        .tool_ids
+                        .iter()
+                        .copied()
+                        .map(ArtifactId::new)
+                        .collect::<Vec<_>>();
                     (CompositeSolidSubType::Subtract, solid_ids, tool_ids)
                 }
                 ModelingCmd::BooleanUnion(union) => {
-                    let solid_ids = union.solid_ids.iter().copied().map(ArtifactId::new).collect();
+                    let solid_ids = union.solid_ids.iter().copied().map(ArtifactId::new).collect::<Vec<_>>();
                     (CompositeSolidSubType::Union, solid_ids, Vec::new())
                 }
                 _ => unreachable!(),
             };
-            let return_arr = vec![Artifact::CompositeSolid(CompositeSolid {
-                id,
-                sub_type,
-                solid_ids,
-                tool_ids,
-                code_ref: CodeRef { range, path_to_node },
-            })];
+
+            let mut new_solid_ids = vec![id];
+
+            match response {
+                OkModelingCmdResponse::BooleanIntersection(intersection) => intersection
+                    .extra_solid_ids
+                    .iter()
+                    .copied()
+                    .map(ArtifactId::new)
+                    .for_each(|id| new_solid_ids.push(id)),
+                OkModelingCmdResponse::BooleanSubtract(subtract) => subtract
+                    .extra_solid_ids
+                    .iter()
+                    .copied()
+                    .map(ArtifactId::new)
+                    .for_each(|id| new_solid_ids.push(id)),
+                OkModelingCmdResponse::BooleanUnion(union) => union
+                    .extra_solid_ids
+                    .iter()
+                    .copied()
+                    .map(ArtifactId::new)
+                    .for_each(|id| new_solid_ids.push(id)),
+                _ => {}
+            }
+            let return_arr = new_solid_ids
+                .into_iter()
+                .map(|solid_id| {
+                    Artifact::CompositeSolid(CompositeSolid {
+                        id: solid_id,
+                        sub_type,
+                        solid_ids: solid_ids.clone(),
+                        tool_ids: tool_ids.clone(),
+                        code_ref: CodeRef {
+                            range,
+                            path_to_node: path_to_node.clone(),
+                        },
+                    })
+                })
+                .collect::<Vec<_>>();
+
             // TODO: Should we add the reverse graph edges?
+
             return Ok(return_arr);
         }
         _ => {}
