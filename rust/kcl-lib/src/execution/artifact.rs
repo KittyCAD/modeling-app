@@ -126,7 +126,7 @@ pub struct CompositeSolid {
     pub solid_ids: Vec<ArtifactId>,
     /// Tool solids used for asymmetric operations like subtract.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub tool_solid_ids: Vec<ArtifactId>,
+    pub tool_ids: Vec<ArtifactId>,
     pub code_ref: CodeRef,
 }
 
@@ -426,7 +426,7 @@ impl CompositeSolid {
             return Some(new);
         };
         merge_ids(&mut self.solid_ids, new.solid_ids);
-        merge_ids(&mut self.tool_solid_ids, new.tool_solid_ids);
+        merge_ids(&mut self.tool_ids, new.tool_ids);
 
         None
     }
@@ -1087,15 +1087,15 @@ fn artifacts_to_update(
             // the helix here, but it's not useful right now.
             return Ok(return_arr);
         }
-        ModelingCmd::BooleanIntersect(_) | ModelingCmd::BooleanSubtract(_) | ModelingCmd::BooleanUnion(_) => {
-            let (sub_type, solid_ids, tool_solid_ids) = match cmd {
-                ModelingCmd::BooleanIntersect(intersect) => {
-                    let solid_ids = intersect.solid_ids.iter().copied().map(ArtifactId::new).collect();
+        ModelingCmd::BooleanIntersection(_) | ModelingCmd::BooleanSubtract(_) | ModelingCmd::BooleanUnion(_) => {
+            let (sub_type, solid_ids, tool_ids) = match cmd {
+                ModelingCmd::BooleanIntersection(intersection) => {
+                    let solid_ids = intersection.solid_ids.iter().copied().map(ArtifactId::new).collect();
                     (CompositeSolidSubType::Intersect, solid_ids, Vec::new())
                 }
                 ModelingCmd::BooleanSubtract(subtract) => {
-                    let solid_ids = subtract.target_solid_ids.iter().copied().map(ArtifactId::new).collect();
-                    let tool_ids = subtract.tool_solid_ids.iter().copied().map(ArtifactId::new).collect();
+                    let solid_ids = subtract.target_ids.iter().copied().map(ArtifactId::new).collect();
+                    let tool_ids = subtract.tool_ids.iter().copied().map(ArtifactId::new).collect();
                     (CompositeSolidSubType::Subtract, solid_ids, tool_ids)
                 }
                 ModelingCmd::BooleanUnion(union) => {
@@ -1108,7 +1108,7 @@ fn artifacts_to_update(
                 id,
                 sub_type,
                 solid_ids,
-                tool_solid_ids,
+                tool_ids,
                 code_ref: CodeRef { range, path_to_node },
             })];
             // TODO: Should we add the reverse graph edges?

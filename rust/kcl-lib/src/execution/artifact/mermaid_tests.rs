@@ -69,7 +69,7 @@ impl Artifact {
         match self {
             Artifact::CompositeSolid(a) => {
                 let mut ids = a.solid_ids.clone();
-                ids.extend(a.tool_solid_ids.iter());
+                ids.extend(a.tool_ids.iter());
                 ids
             }
             Artifact::Plane(_) => Vec::new(),
@@ -94,7 +94,7 @@ impl Artifact {
         match self {
             Artifact::CompositeSolid(_) => {
                 // Note: Don't include these since they're parents: solid_ids,
-                // tool_solid_ids.
+                // tool_ids.
                 Vec::new()
             }
             Artifact::Plane(a) => a.path_ids.clone(),
