@@ -71,6 +71,7 @@ export type {
   ArtifactId,
   Cap as CapArtifact,
   CodeRef,
+  CompositeSolid as CompositeSolidArtifact,
   EdgeCut,
   Path as PathArtifact,
   Plane as PlaneArtifact,
@@ -84,7 +85,6 @@ export type { BinaryExpression } from '@rust/kcl-lib/bindings/BinaryExpression'
 export type { BinaryPart } from '@rust/kcl-lib/bindings/BinaryPart'
 export type { CallExpression } from '@rust/kcl-lib/bindings/CallExpression'
 export type { CallExpressionKw } from '@rust/kcl-lib/bindings/CallExpressionKw'
-export type { CompositeSolid as CompositeSolidArtifact } from '@rust/kcl-lib/bindings/Artifact'
 export type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 export type { Expr } from '@rust/kcl-lib/bindings/Expr'
 export type { ExpressionStatement } from '@rust/kcl-lib/bindings/ExpressionStatement'
