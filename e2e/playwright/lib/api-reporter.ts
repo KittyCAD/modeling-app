@@ -10,7 +10,7 @@ class MyAPIReporter implements Reporter {
       // Required information
       project: 'https://github.com/KittyCAD/modeling-app',
       branch: process.env.GITHUB_HEAD_REF || process.env.GITHUB_REF || '',
-      commit: process.env.PR_COMMIT_SHA || process.env.GITHUB_SHA || '',
+      commit: process.env.CI_COMMIT_SHA || process.env.GITHUB_SHA || '',
       test: test.titlePath().slice(2).join(' › '),
       status: result.status,
       // Optional information
@@ -22,6 +22,8 @@ class MyAPIReporter implements Reporter {
       annotations: test.annotations.map((a) => a.type),
       retries: result.retry,
       // Extra environment variables
+      CI_COMMIT_SHA: process.env.CI_COMMIT_SHA || null,
+      CI_PR_NUMBER: process.env.CI_PR_NUMBER || null,
       GITHUB_BASE_REF: process.env.GITHUB_BASE_REF || null,
       GITHUB_EVENT_NAME: process.env.GITHUB_EVENT_NAME || null,
       GITHUB_HEAD_REF: process.env.GITHUB_HEAD_REF || null,
@@ -29,7 +31,6 @@ class MyAPIReporter implements Reporter {
       GITHUB_REF: process.env.GITHUB_REF || null,
       GITHUB_SHA: process.env.GITHUB_SHA || null,
       GITHUB_WORKFLOW: process.env.GITHUB_WORKFLOW || null,
-      PR_NUMBER: process.env.PR_NUMBER || null,
       RUNNER_ARCH: process.env.RUNNER_ARCH || null,
     }
 
