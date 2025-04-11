@@ -14,7 +14,8 @@ import {
 } from '@src/lang/std/sketch'
 import { topLevelRange } from '@src/lang/util'
 import type { CallExpression, CallExpressionKw } from '@src/lang/wasm'
-import { assertParse, initPromise, recast } from '@src/lang/wasm'
+import { assertParse, recast } from '@src/lang/wasm'
+import { initPromise } from '@src/lang/wasmUtils'
 import { enginelessExecutor } from '@src/lib/testHelpers'
 import { err } from '@src/lib/trap'
 

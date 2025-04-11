@@ -28,7 +28,7 @@ import {
   getPathOrUrlFromArgs,
   parseCLIArgs,
 } from '@src/commandLineArgs'
-import { initPromise } from '@src/lang/wasm'
+import { initPromise } from '@src/lang/wasmUtils'
 import { ZOO_STUDIO_PROTOCOL } from '@src/lib/constants'
 import getCurrentProjectFile from '@src/lib/getCurrentProjectFile'
 import { reportRejection } from '@src/lib/trap'
