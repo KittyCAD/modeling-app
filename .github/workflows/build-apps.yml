@@ -218,6 +218,7 @@ jobs:
 
       # This is what electron-builder seems to want
       - name: List certs
+        if: ${{ (env.IS_RELEASE == 'true' || env.IS_NIGHTLY == 'true') && matrix.os == 'windows-2022' }}
         shell: pwsh
         run: |
           Get-ChildItem -Recurse Cert: -CodeSigningCert | Select-Object -Property Subject,PSParentPath,Thumbprint
