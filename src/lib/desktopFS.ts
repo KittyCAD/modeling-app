@@ -1,3 +1,4 @@
+import { relevantFileExtensions } from '@src/lang/wasmUtils'
 import {
   FILE_EXT,
   INDEX_IDENTIFIER,
@@ -200,7 +201,10 @@ export function getNextFileName({
   entryName: string
   baseDir: string
 }) {
-  const extension = window.electron.path.extname(entryName) ?? FILE_EXT
+  let extension = window.electron.path.extname(entryName).replace('.', '')
+  if (!extension || !relevantFileExtensions().includes(extension)) {
+    extension = FILE_EXT
+  }
   // Remove any existing index from the name before adding a new one
   let createdName = entryName.replace(extension, '') + extension
   let createdPath = window.electron.path.join(baseDir, createdName)
