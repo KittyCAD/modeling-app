@@ -3,7 +3,11 @@ import { FILE_EXT } from '@src/lib/constants'
 import * as fsp from 'fs/promises'
 import { join } from 'path'
 
-import { getUtils } from '@e2e/playwright/test-utils'
+import {
+  getUtils,
+  orRunWhenFullSuiteEnabled,
+  runningOnWindows,
+} from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
 test.describe('Testing in-app sample loading', () => {
@@ -80,6 +84,9 @@ test.describe('Testing in-app sample loading', () => {
     'Desktop: should create new file by default, optionally overwrite',
     { tag: '@electron' },
     async ({ editor, context, page, scene, cmdBar }, testInfo) => {
+      if (runningOnWindows()) {
+        test.fixme(orRunWhenFullSuiteEnabled())
+      }
       const { dir } = await context.folderSetupFn(async (dir) => {
         const bracketDir = join(dir, 'bracket')
         await fsp.mkdir(bracketDir, { recursive: true })

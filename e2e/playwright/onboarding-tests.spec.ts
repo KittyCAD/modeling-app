@@ -15,6 +15,7 @@ import {
   executorInputPath,
   getUtils,
   orRunWhenFullSuiteEnabled,
+  runningOnWindows,
   settingsToToml,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
@@ -278,6 +279,9 @@ test.describe('Onboarding tests', () => {
   }) => {
     if (!tronApp) {
       fail()
+    }
+    if (runningOnWindows()) {
+      test.fixme(orRunWhenFullSuiteEnabled())
     }
     await tronApp.cleanProjectDir({
       app: {
