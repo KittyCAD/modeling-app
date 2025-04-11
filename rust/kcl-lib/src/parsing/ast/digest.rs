@@ -1,7 +1,7 @@
 use sha2::{Digest as DigestTrait, Sha256};
 
 use crate::parsing::ast::types::{
-    Annotation, ArrayExpression, ArrayRangeExpression, Ascription, BinaryExpression, BinaryPart, BodyItem,
+    Annotation, ArrayExpression, ArrayRangeExpression, AscribedExpression, BinaryExpression, BinaryPart, BodyItem,
     CallExpression, CallExpressionKw, DefaultParamVal, ElseIf, Expr, ExpressionStatement, FunctionExpression,
     Identifier, IfExpression, ImportItem, ImportSelector, ImportStatement, ItemVisibility, KclNone, LabelledExpression,
     Literal, LiteralIdentifier, LiteralValue, MemberExpression, MemberObject, Name, ObjectExpression, ObjectProperty,
@@ -464,7 +464,7 @@ impl LabelledExpression {
     });
 }
 
-impl Ascription {
+impl AscribedExpression {
     compute_digest!(|slf, hasher| {
         hasher.update(slf.expr.compute_digest());
         hasher.update(slf.ty.compute_digest());

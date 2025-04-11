@@ -174,9 +174,6 @@ description: Variables in memory after executing artifact_graph_example_code_no_
           "units": {
             "type": "Mm"
           }
-        },
-        "units": {
-          "type": "Mm"
         }
       },
       "start": {
@@ -328,9 +325,6 @@ description: Variables in memory after executing artifact_graph_example_code_no_
           "units": {
             "type": "Mm"
           }
-        },
-        "units": {
-          "type": "Mm"
         }
       },
       "start": {

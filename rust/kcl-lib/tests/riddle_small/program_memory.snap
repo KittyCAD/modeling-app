@@ -195,9 +195,6 @@ description: Variables in memory after executing riddle_small.kcl
             "units": {
               "type": "Mm"
             }
-          },
-          "units": {
-            "type": "Mm"
           }
         },
         "start": {

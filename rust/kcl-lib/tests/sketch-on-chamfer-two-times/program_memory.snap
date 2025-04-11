@@ -237,9 +237,6 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
             "units": {
               "type": "Mm"
             }
-          },
-          "units": {
-            "type": "Mm"
           }
         },
         "start": {
@@ -797,9 +794,6 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                   "units": {
                     "type": "Mm"
                   }
-                },
-                "units": {
-                  "type": "Mm"
                 }
               },
               "start": {
@@ -1184,9 +1178,6 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
           "units": {
             "type": "Mm"
           }
-        },
-        "units": {
-          "type": "Mm"
         }
       },
       "start": {
@@ -1617,9 +1608,6 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -2167,9 +2155,6 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {

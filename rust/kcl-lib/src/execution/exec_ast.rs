@@ -60,14 +60,6 @@ impl ExecutorContext {
                     if exec_state.mod_local.settings.update_from_annotation(annotation)? {
                         exec_state.mod_local.explicit_length_units = true;
                     }
-                    let new_units = exec_state.length_unit();
-                    self.engine
-                        .set_units(
-                            new_units.into(),
-                            annotation.as_source_range(),
-                            exec_state.id_generator(),
-                        )
-                        .await?;
                 } else {
                     exec_state.err(CompilationError::err(
                         annotation.as_source_range(),

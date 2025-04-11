@@ -220,9 +220,6 @@ description: Variables in memory after executing angled_line.kcl
             "units": {
               "type": "Mm"
             }
-          },
-          "units": {
-            "type": "Mm"
           }
         },
         "start": {

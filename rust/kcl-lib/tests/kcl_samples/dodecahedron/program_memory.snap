@@ -182,9 +182,6 @@ description: Variables in memory after executing dodecahedron.kcl
             "units": {
               "type": "Mm"
             }
-          },
-          "units": {
-            "type": "Inches"
           }
         },
         "start": {
@@ -401,9 +398,6 @@ description: Variables in memory after executing dodecahedron.kcl
                 "units": {
                   "type": "Unknown"
                 }
-              },
-              "units": {
-                "type": "Inches"
               }
             },
             "start": {
@@ -617,9 +611,6 @@ description: Variables in memory after executing dodecahedron.kcl
                 "units": {
                   "type": "Unknown"
                 }
-              },
-              "units": {
-                "type": "Inches"
               }
             },
             "start": {
@@ -833,9 +824,6 @@ description: Variables in memory after executing dodecahedron.kcl
                 "units": {
                   "type": "Unknown"
                 }
-              },
-              "units": {
-                "type": "Inches"
               }
             },
             "start": {
@@ -1049,9 +1037,6 @@ description: Variables in memory after executing dodecahedron.kcl
                 "units": {
                   "type": "Unknown"
                 }
-              },
-              "units": {
-                "type": "Inches"
               }
             },
             "start": {
@@ -1265,9 +1250,6 @@ description: Variables in memory after executing dodecahedron.kcl
                 "units": {
                   "type": "Unknown"
                 }
-              },
-              "units": {
-                "type": "Inches"
               }
             },
             "start": {
@@ -1442,9 +1424,6 @@ description: Variables in memory after executing dodecahedron.kcl
           "units": {
             "type": "Mm"
           }
-        },
-        "units": {
-          "type": "Inches"
         }
       },
       "start": {
@@ -1651,9 +1630,6 @@ description: Variables in memory after executing dodecahedron.kcl
             "units": {
               "type": "Unknown"
             }
-          },
-          "units": {
-            "type": "Inches"
           }
         },
         "start": {
@@ -1826,9 +1802,6 @@ description: Variables in memory after executing dodecahedron.kcl
           "units": {
             "type": "Unknown"
           }
-        },
-        "units": {
-          "type": "Inches"
         }
       },
       "start": {

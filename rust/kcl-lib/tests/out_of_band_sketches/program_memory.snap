@@ -84,9 +84,6 @@ description: Variables in memory after executing out_of_band_sketches.kcl
           "units": {
             "type": "Mm"
           }
-        },
-        "units": {
-          "type": "Mm"
         }
       },
       "start": {
@@ -233,9 +230,6 @@ description: Variables in memory after executing out_of_band_sketches.kcl
           "units": {
             "type": "Mm"
           }
-        },
-        "units": {
-          "type": "Mm"
         }
       },
       "start": {
@@ -344,9 +338,6 @@ description: Variables in memory after executing out_of_band_sketches.kcl
           "units": {
             "type": "Mm"
           }
-        },
-        "units": {
-          "type": "Mm"
         }
       },
       "start": {
@@ -493,9 +484,6 @@ description: Variables in memory after executing out_of_band_sketches.kcl
           "units": {
             "type": "Mm"
           }
-        },
-        "units": {
-          "type": "Mm"
         }
       },
       "start": {
@@ -560,9 +548,6 @@ description: Variables in memory after executing out_of_band_sketches.kcl
         "units": {
           "type": "Mm"
         }
-      },
-      "units": {
-        "type": "Mm"
       }
     }
   },
@@ -603,9 +588,6 @@ description: Variables in memory after executing out_of_band_sketches.kcl
         "units": {
           "type": "Mm"
         }
-      },
-      "units": {
-        "type": "Mm"
       }
     }
   }

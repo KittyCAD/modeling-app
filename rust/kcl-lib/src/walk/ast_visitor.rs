@@ -131,7 +131,7 @@ impl<'tree> Visitable<'tree> for Node<'tree> {
             Node::LabelledExpression(e) => {
                 vec![(&e.expr).into(), (&e.label).into()]
             }
-            Node::Ascription(e) => {
+            Node::AscribedExpression(e) => {
                 vec![(&e.expr).into()]
             }
             Node::Name(n) => Some((&n.name).into())

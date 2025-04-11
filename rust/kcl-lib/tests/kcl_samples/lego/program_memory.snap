@@ -156,9 +156,6 @@ description: Variables in memory after executing lego.kcl
             "units": {
               "type": "Mm"
             }
-          },
-          "units": {
-            "type": "Inches"
           }
         },
         "start": {
@@ -499,9 +496,6 @@ description: Variables in memory after executing lego.kcl
                       "units": {
                         "type": "Mm"
                       }
-                    },
-                    "units": {
-                      "type": "Inches"
                     }
                   },
                   "start": {
@@ -796,9 +790,6 @@ description: Variables in memory after executing lego.kcl
                       "units": {
                         "type": "Mm"
                       }
-                    },
-                    "units": {
-                      "type": "Inches"
                     }
                   },
                   "start": {
@@ -1093,9 +1084,6 @@ description: Variables in memory after executing lego.kcl
                       "units": {
                         "type": "Mm"
                       }
-                    },
-                    "units": {
-                      "type": "Inches"
                     }
                   },
                   "start": {
@@ -1390,9 +1378,6 @@ description: Variables in memory after executing lego.kcl
                       "units": {
                         "type": "Mm"
                       }
-                    },
-                    "units": {
-                      "type": "Inches"
                     }
                   },
                   "start": {
@@ -1687,9 +1672,6 @@ description: Variables in memory after executing lego.kcl
                       "units": {
                         "type": "Mm"
                       }
-                    },
-                    "units": {
-                      "type": "Inches"
                     }
                   },
                   "start": {
@@ -1984,9 +1966,6 @@ description: Variables in memory after executing lego.kcl
                       "units": {
                         "type": "Mm"
                       }
-                    },
-                    "units": {
-                      "type": "Inches"
                     }
                   },
                   "start": {
@@ -2381,9 +2360,6 @@ description: Variables in memory after executing lego.kcl
                   "units": {
                     "type": "Mm"
                   }
-                },
-                "units": {
-                  "type": "Inches"
                 }
               },
               "start": {
@@ -2864,9 +2840,6 @@ description: Variables in memory after executing lego.kcl
                             "units": {
                               "type": "Mm"
                             }
-                          },
-                          "units": {
-                            "type": "Inches"
                           }
                         },
                         "start": {
@@ -3340,9 +3313,6 @@ description: Variables in memory after executing lego.kcl
                             "units": {
                               "type": "Mm"
                             }
-                          },
-                          "units": {
-                            "type": "Inches"
                           }
                         },
                         "start": {

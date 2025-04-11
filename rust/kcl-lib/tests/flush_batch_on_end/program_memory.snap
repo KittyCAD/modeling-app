@@ -100,9 +100,6 @@ description: Variables in memory after executing flush_batch_on_end.kcl
           "units": {
             "type": "Mm"
           }
-        },
-        "units": {
-          "type": "Inches"
         }
       },
       "start": {
@@ -236,9 +233,6 @@ description: Variables in memory after executing flush_batch_on_end.kcl
           "units": {
             "type": "Mm"
           }
-        },
-        "units": {
-          "type": "Inches"
         }
       },
       "start": {
@@ -365,9 +359,6 @@ description: Variables in memory after executing flush_batch_on_end.kcl
             "units": {
               "type": "Mm"
             }
-          },
-          "units": {
-            "type": "Inches"
           }
         },
         "start": {
@@ -482,9 +473,6 @@ description: Variables in memory after executing flush_batch_on_end.kcl
           "units": {
             "type": "Mm"
           }
-        },
-        "units": {
-          "type": "Inches"
         }
       },
       "start": {
@@ -555,9 +543,6 @@ description: Variables in memory after executing flush_batch_on_end.kcl
         "units": {
           "type": "Mm"
         }
-      },
-      "units": {
-        "type": "Inches"
       }
     }
   }

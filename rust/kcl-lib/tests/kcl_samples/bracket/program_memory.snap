@@ -312,9 +312,6 @@ description: Variables in memory after executing bracket.kcl
             "units": {
               "type": "Mm"
             }
-          },
-          "units": {
-            "type": "Inches"
           }
         },
         "start": {
@@ -893,9 +890,6 @@ description: Variables in memory after executing bracket.kcl
                       "units": {
                         "type": "Mm"
                       }
-                    },
-                    "units": {
-                      "type": "Inches"
                     }
                   },
                   "start": {
@@ -1359,9 +1353,6 @@ description: Variables in memory after executing bracket.kcl
                       "units": {
                         "type": "Mm"
                       }
-                    },
-                    "units": {
-                      "type": "Inches"
                     }
                   },
                   "start": {
@@ -1825,9 +1816,6 @@ description: Variables in memory after executing bracket.kcl
                       "units": {
                         "type": "Mm"
                       }
-                    },
-                    "units": {
-                      "type": "Inches"
                     }
                   },
                   "start": {
@@ -2291,9 +2279,6 @@ description: Variables in memory after executing bracket.kcl
                       "units": {
                         "type": "Mm"
                       }
-                    },
-                    "units": {
-                      "type": "Inches"
                     }
                   },
                   "start": {
@@ -2827,9 +2812,6 @@ description: Variables in memory after executing bracket.kcl
                       "units": {
                         "type": "Mm"
                       }
-                    },
-                    "units": {
-                      "type": "Inches"
                     }
                   },
                   "start": {
@@ -3293,9 +3275,6 @@ description: Variables in memory after executing bracket.kcl
                       "units": {
                         "type": "Mm"
                       }
-                    },
-                    "units": {
-                      "type": "Inches"
                     }
                   },
                   "start": {

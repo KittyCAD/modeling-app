@@ -15,7 +15,6 @@ use crate::{
     std::{args::TyF64, sketch::PlaneData},
 };
 
-type Point2D = kcmc::shared::Point2d<f64>;
 type Point3D = kcmc::shared::Point3d<f64>;
 
 /// A geometry.
@@ -177,7 +176,6 @@ pub struct Plane {
     pub y_axis: Point3d,
     /// The z-axis (normal).
     pub z_axis: Point3d,
-    pub units: UnitLen,
     #[serde(skip)]
     pub meta: Vec<Metadata>,
 }
@@ -199,6 +197,8 @@ impl Plane {
                             x: 1.0,
                             y: 0.0,
                             z: 0.0,
+                            // TODO axes must be normalized, so maybe these should all be count
+                            // rather than mm?
                             units: UnitLen::Mm,
                         },
                     y_axis:
@@ -395,7 +395,6 @@ impl Plane {
                 y_axis: Point3d::new(0.0, 1.0, 0.0, UnitLen::Mm),
                 z_axis: Point3d::new(0.0, 0.0, 1.0, UnitLen::Mm),
                 value: PlaneType::XY,
-                units: exec_state.length_unit(),
                 meta: vec![],
             },
             PlaneData::NegXY => Plane {
@@ -406,7 +405,6 @@ impl Plane {
                 y_axis: Point3d::new(0.0, 1.0, 0.0, UnitLen::Mm),
                 z_axis: Point3d::new(0.0, 0.0, -1.0, UnitLen::Mm),
                 value: PlaneType::XY,
-                units: exec_state.length_unit(),
                 meta: vec![],
             },
             PlaneData::XZ => Plane {
@@ -417,7 +415,6 @@ impl Plane {
                 y_axis: Point3d::new(0.0, 0.0, 1.0, UnitLen::Mm),
                 z_axis: Point3d::new(0.0, -1.0, 0.0, UnitLen::Mm),
                 value: PlaneType::XZ,
-                units: exec_state.length_unit(),
                 meta: vec![],
             },
             PlaneData::NegXZ => Plane {
@@ -428,7 +425,6 @@ impl Plane {
                 y_axis: Point3d::new(0.0, 0.0, 1.0, UnitLen::Mm),
                 z_axis: Point3d::new(0.0, 1.0, 0.0, UnitLen::Mm),
                 value: PlaneType::XZ,
-                units: exec_state.length_unit(),
                 meta: vec![],
             },
             PlaneData::YZ => Plane {
@@ -439,7 +435,6 @@ impl Plane {
                 y_axis: Point3d::new(0.0, 0.0, 1.0, UnitLen::Mm),
                 z_axis: Point3d::new(1.0, 0.0, 0.0, UnitLen::Mm),
                 value: PlaneType::YZ,
-                units: exec_state.length_unit(),
                 meta: vec![],
             },
             PlaneData::NegYZ => Plane {
@@ -450,7 +445,6 @@ impl Plane {
                 y_axis: Point3d::new(0.0, 0.0, 1.0, UnitLen::Mm),
                 z_axis: Point3d::new(-1.0, 0.0, 0.0, UnitLen::Mm),
                 value: PlaneType::YZ,
-                units: exec_state.length_unit(),
                 meta: vec![],
             },
             PlaneData::Plane {
@@ -468,7 +462,6 @@ impl Plane {
                     y_axis,
                     z_axis,
                     value: PlaneType::Custom,
-                    units: exec_state.length_unit(),
                     meta: vec![],
                 }
             }
@@ -625,12 +618,6 @@ impl SketchSurface {
             SketchSurface::Face(face) => face.z_axis,
         }
     }
-    pub(crate) fn units(&self) -> UnitLen {
-        match self {
-            SketchSurface::Plane(plane) => plane.units,
-            SketchSurface::Face(face) => face.units,
-        }
-    }
 }
 
 #[derive(Debug, Clone)]
@@ -699,7 +686,8 @@ impl Sketch {
             return Ok(Point2d::new(self.start.to[0], self.start.to[1], self.start.units));
         };
 
-        Ok(path.get_to().into())
+        let to = path.get_base().to;
+        Ok(Point2d::new(to[0], to[1], path.get_base().units))
     }
 
     pub(crate) fn get_tangential_info_from_paths(&self) -> GetTangentialInfoFromPathsResult {
@@ -740,6 +728,10 @@ pub struct Solid {
 impl Solid {
     pub(crate) fn get_all_edge_cut_ids(&self) -> impl Iterator<Item = uuid::Uuid> + '_ {
         self.edge_cuts.iter().map(|foc| foc.id())
+    }
+
+    pub(crate) fn height_in_mm(&self) -> f64 {
+        self.units.adjust_to(self.height, UnitLen::Mm).0
     }
 }
 
@@ -801,28 +793,6 @@ pub struct Point2d {
     pub units: UnitLen,
 }
 
-impl From<[TyF64; 2]> for Point2d {
-    fn from(p: [TyF64; 2]) -> Self {
-        Self {
-            x: p[0].n,
-            y: p[1].n,
-            units: p[0].ty.expect_length(),
-        }
-    }
-}
-
-impl From<Point2d> for [f64; 2] {
-    fn from(p: Point2d) -> Self {
-        [p.x, p.y]
-    }
-}
-
-impl From<Point2d> for Point2D {
-    fn from(p: Point2d) -> Self {
-        Self { x: p.x, y: p.y }
-    }
-}
-
 impl Point2d {
     pub const ZERO: Self = Self {
         x: 0.0,
@@ -832,6 +802,18 @@ impl Point2d {
 
     pub fn new(x: f64, y: f64, units: UnitLen) -> Self {
         Self { x, y, units }
+    }
+
+    pub fn into_x(self) -> TyF64 {
+        TyF64::new(self.x, self.units.into())
+    }
+
+    pub fn into_y(self) -> TyF64 {
+        TyF64::new(self.y, self.units.into())
+    }
+
+    pub fn ignore_units(self) -> [f64; 2] {
+        [self.x, self.y]
     }
 }
 
@@ -880,9 +862,9 @@ impl From<Point3d> for Point3D {
 impl From<Point3d> for kittycad_modeling_cmds::shared::Point3d<LengthUnit> {
     fn from(p: Point3d) -> Self {
         Self {
-            x: LengthUnit(p.x),
-            y: LengthUnit(p.y),
-            z: LengthUnit(p.z),
+            x: LengthUnit(p.units.adjust_to(p.x, UnitLen::Mm).0),
+            y: LengthUnit(p.units.adjust_to(p.y, UnitLen::Mm).0),
+            z: LengthUnit(p.units.adjust_to(p.z, UnitLen::Mm).0),
         }
     }
 }
@@ -1230,9 +1212,9 @@ impl Path {
                 ccw: *ccw,
             },
             Path::ArcThreePoint { p1, p2, p3, .. } => {
-                let circle_center = crate::std::utils::calculate_circle_from_3_points([*p1, *p2, *p3]);
+                let circle = crate::std::utils::calculate_circle_from_3_points([*p1, *p2, *p3]);
                 GetTangentialInfoFromPathsResult::Arc {
-                    center: circle_center.center,
+                    center: circle.center,
                     ccw: crate::std::utils::is_points_ccw(&[*p1, *p2, *p3]) > 0,
                 }
             }
@@ -1244,14 +1226,13 @@ impl Path {
                 radius: *radius,
             },
             Path::CircleThreePoint { p1, p2, p3, .. } => {
-                let circle_center = crate::std::utils::calculate_circle_from_3_points([*p1, *p2, *p3]);
-                let radius = linear_distance(&[circle_center.center[0], circle_center.center[1]], p1);
-                let center_point = [circle_center.center[0], circle_center.center[1]];
+                let circle = crate::std::utils::calculate_circle_from_3_points([*p1, *p2, *p3]);
+                let center_point = [circle.center[0], circle.center[1]];
                 GetTangentialInfoFromPathsResult::Circle {
                     center: center_point,
                     // Note: a circle is always ccw regardless of the order of points
                     ccw: true,
-                    radius,
+                    radius: circle.radius,
                 }
             }
             Path::ToPoint { .. } | Path::Horizontal { .. } | Path::AngledLineTo { .. } | Path::Base { .. } => {

@@ -40,9 +40,6 @@ description: Variables in memory after executing artifact_graph_example_code_off
         "units": {
           "type": "Mm"
         }
-      },
-      "units": {
-        "type": "Mm"
       }
     }
   },
@@ -83,9 +80,6 @@ description: Variables in memory after executing artifact_graph_example_code_off
         "units": {
           "type": "Mm"
         }
-      },
-      "units": {
-        "type": "Mm"
       }
     }
   },
@@ -126,9 +120,6 @@ description: Variables in memory after executing artifact_graph_example_code_off
         "units": {
           "type": "Mm"
         }
-      },
-      "units": {
-        "type": "Mm"
       }
     }
   },
@@ -194,9 +185,6 @@ description: Variables in memory after executing artifact_graph_example_code_off
           "units": {
             "type": "Mm"
           }
-        },
-        "units": {
-          "type": "Mm"
         }
       },
       "start": {

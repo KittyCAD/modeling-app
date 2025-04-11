@@ -173,9 +173,6 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             "units": {
               "type": "Mm"
             }
-          },
-          "units": {
-            "type": "Mm"
           }
         },
         "start": {
@@ -527,9 +524,6 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                   "units": {
                     "type": "Mm"
                   }
-                },
-                "units": {
-                  "type": "Mm"
                 }
               },
               "start": {
@@ -793,9 +787,6 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             "units": {
               "type": "Mm"
             }
-          },
-          "units": {
-            "type": "Mm"
           }
         },
         "start": {
@@ -967,9 +958,6 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           "units": {
             "type": "Mm"
           }
-        },
-        "units": {
-          "type": "Mm"
         }
       },
       "start": {
@@ -1249,9 +1237,6 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -1629,9 +1614,6 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -1990,9 +1972,6 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -2294,9 +2273,6 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -2649,9 +2625,6 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -2805,9 +2778,6 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           "units": {
             "type": "Mm"
           }
-        },
-        "units": {
-          "type": "Mm"
         }
       },
       "start": {
@@ -2954,9 +2924,6 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           "units": {
             "type": "Mm"
           }
-        },
-        "units": {
-          "type": "Mm"
         }
       },
       "start": {
@@ -3103,9 +3070,6 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           "units": {
             "type": "Mm"
           }
-        },
-        "units": {
-          "type": "Mm"
         }
       },
       "start": {
@@ -3201,9 +3165,6 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           "units": {
             "type": "Mm"
           }
-        },
-        "units": {
-          "type": "Mm"
         }
       },
       "start": {
@@ -3375,9 +3336,6 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           "units": {
             "type": "Mm"
           }
-        },
-        "units": {
-          "type": "Mm"
         }
       },
       "start": {
@@ -3706,9 +3664,6 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                   "units": {
                     "type": "Mm"
                   }
-                },
-                "units": {
-                  "type": "Mm"
                 }
               },
               "start": {
@@ -3934,9 +3889,6 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             "units": {
               "type": "Mm"
             }
-          },
-          "units": {
-            "type": "Mm"
           }
         },
         "start": {
@@ -4018,9 +3970,6 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         "units": {
           "type": "Mm"
         }
-      },
-      "units": {
-        "type": "Mm"
       }
     }
   },
@@ -4222,9 +4171,6 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               "units": {
                 "type": "Mm"
               }
-            },
-            "units": {
-              "type": "Mm"
             }
           },
           "start": {
@@ -4310,9 +4256,6 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         "units": {
           "type": "Mm"
         }
-      },
-      "units": {
-        "type": "Mm"
       }
     }
   }

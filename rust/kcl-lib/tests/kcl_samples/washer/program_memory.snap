@@ -149,9 +149,6 @@ description: Variables in memory after executing washer.kcl
             "units": {
               "type": "Mm"
             }
-          },
-          "units": {
-            "type": "Inches"
           }
         },
         "start": {
@@ -254,9 +251,6 @@ description: Variables in memory after executing washer.kcl
           "units": {
             "type": "Mm"
           }
-        },
-        "units": {
-          "type": "Inches"
         }
       },
       "start": {

@@ -8,7 +8,7 @@ layout: manual
 
 Converts a number from yards to the current default unit.
 
-*DEPRECATED* prefer using explicit numberic suffixes (e.g., `42yd`) or the `to...` conversion functions.
+*DEPRECATED* prefer using explicit numeric suffixes (e.g., `42yd`) or the `to...` conversion functions.
 
 No matter what units the current file uses, this function will always return a number equivalent to the input in yards.
 

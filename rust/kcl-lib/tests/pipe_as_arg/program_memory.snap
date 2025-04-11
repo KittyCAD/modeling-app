@@ -181,9 +181,6 @@ description: Variables in memory after executing pipe_as_arg.kcl
             "units": {
               "type": "Mm"
             }
-          },
-          "units": {
-            "type": "Mm"
           }
         },
         "start": {

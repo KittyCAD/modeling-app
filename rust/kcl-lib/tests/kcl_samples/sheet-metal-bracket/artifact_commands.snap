@@ -33,14 +33,6 @@ description: Artifact commands sheet-metal-bracket.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "set_scene_units",
-      "unit": "in"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
       "type": "make_plane",
       "origin": {
         "x": 0.0,
@@ -92,7 +84,7 @@ description: Artifact commands sheet-metal-bracket.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": -4.25,
+        "x": -107.94999999999999,
         "y": 0.0,
         "z": 0.0
       }
@@ -114,7 +106,7 @@ description: Artifact commands sheet-metal-bracket.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 1.5,
+          "x": 38.1,
           "y": 0.0,
           "z": 0.0
         },
@@ -130,7 +122,7 @@ description: Artifact commands sheet-metal-bracket.kcl
       "path": "[uuid]",
       "segment": {
         "type": "tangential_arc",
-        "radius": 0.25,
+        "radius": 6.35,
         "offset": {
           "unit": "degrees",
           "value": 75.0
@@ -147,8 +139,8 @@ description: Artifact commands sheet-metal-bracket.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -1.9218,
-          "y": 2.375,
+          "x": -48.8134,
+          "y": 60.325,
           "z": 0.0
         },
         "relative": false
@@ -163,7 +155,7 @@ description: Artifact commands sheet-metal-bracket.kcl
       "path": "[uuid]",
       "segment": {
         "type": "tangential_arc",
-        "radius": 0.125,
+        "radius": 3.175,
         "offset": {
           "unit": "degrees",
           "value": -75.0
@@ -181,7 +173,7 @@ description: Artifact commands sheet-metal-bracket.kcl
         "type": "line",
         "end": {
           "x": 0.0,
-          "y": 2.4676,
+          "y": 62.6782,
           "z": 0.0
         },
         "relative": false
@@ -197,7 +189,7 @@ description: Artifact commands sheet-metal-bracket.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 1.801,
+          "x": 45.7466,
           "y": 0.0,
           "z": 0.0
         },
@@ -213,7 +205,7 @@ description: Artifact commands sheet-metal-bracket.kcl
       "path": "[uuid]",
       "segment": {
         "type": "tangential_arc",
-        "radius": 0.125,
+        "radius": 3.175,
         "offset": {
           "unit": "degrees",
           "value": -75.0
@@ -230,8 +222,8 @@ description: Artifact commands sheet-metal-bracket.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 0.5867,
-          "y": -2.1897,
+          "x": 14.9029,
+          "y": -55.6185,
           "z": 0.0
         },
         "relative": true
@@ -246,7 +238,7 @@ description: Artifact commands sheet-metal-bracket.kcl
       "path": "[uuid]",
       "segment": {
         "type": "tangential_arc",
-        "radius": 0.25,
+        "radius": 6.35,
         "offset": {
           "unit": "degrees",
           "value": 75.0
@@ -263,7 +255,7 @@ description: Artifact commands sheet-metal-bracket.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 1.5,
+          "x": 38.1,
           "y": 0.0,
           "z": 0.0
         },
@@ -281,7 +273,7 @@ description: Artifact commands sheet-metal-bracket.kcl
         "type": "line",
         "end": {
           "x": 0.0,
-          "y": 0.125,
+          "y": 3.175,
           "z": 0.0
         },
         "relative": true
@@ -297,7 +289,7 @@ description: Artifact commands sheet-metal-bracket.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -1.5,
+          "x": -38.1,
           "y": 0.0,
           "z": 0.0
         },
@@ -313,7 +305,7 @@ description: Artifact commands sheet-metal-bracket.kcl
       "path": "[uuid]",
       "segment": {
         "type": "tangential_arc",
-        "radius": 0.125,
+        "radius": 3.175,
         "offset": {
           "unit": "degrees",
           "value": -75.0
@@ -330,8 +322,8 @@ description: Artifact commands sheet-metal-bracket.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -0.5867,
-          "y": 2.1897,
+          "x": -14.9029,
+          "y": 55.6185,
           "z": 0.0
         },
         "relative": true
@@ -346,7 +338,7 @@ description: Artifact commands sheet-metal-bracket.kcl
       "path": "[uuid]",
       "segment": {
         "type": "tangential_arc",
-        "radius": 0.25,
+        "radius": 6.35,
         "offset": {
           "unit": "degrees",
           "value": 75.0
@@ -364,7 +356,7 @@ description: Artifact commands sheet-metal-bracket.kcl
         "type": "line",
         "end": {
           "x": 0.0,
-          "y": 2.5926,
+          "y": 65.8532,
           "z": 0.0
         },
         "relative": false
@@ -380,7 +372,7 @@ description: Artifact commands sheet-metal-bracket.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -1.801,
+          "x": -45.7466,
           "y": 0.0,
           "z": 0.0
         },
@@ -396,7 +388,7 @@ description: Artifact commands sheet-metal-bracket.kcl
       "path": "[uuid]",
       "segment": {
         "type": "tangential_arc",
-        "radius": 0.25,
+        "radius": 6.35,
         "offset": {
           "unit": "degrees",
           "value": 75.0
@@ -413,8 +405,8 @@ description: Artifact commands sheet-metal-bracket.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -0.5867,
-          "y": -2.1897,
+          "x": -14.9029,
+          "y": -55.6185,
           "z": 0.0
         },
         "relative": true
@@ -429,7 +421,7 @@ description: Artifact commands sheet-metal-bracket.kcl
       "path": "[uuid]",
       "segment": {
         "type": "tangential_arc",
-        "radius": 0.125,
+        "radius": 3.175,
         "offset": {
           "unit": "degrees",
           "value": -75.0
@@ -446,7 +438,7 @@ description: Artifact commands sheet-metal-bracket.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -1.5,
+          "x": -38.1,
           "y": 0.0,
           "z": 0.0
         },
@@ -463,7 +455,7 @@ description: Artifact commands sheet-metal-bracket.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -4.25,
+          "x": -107.95,
           "y": 0.0,
           "z": 0.0
         },
@@ -501,7 +493,7 @@ description: Artifact commands sheet-metal-bracket.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 5.5,
+      "distance": 139.7,
       "faces": null,
       "opposite": "None"
     }
@@ -957,7 +949,7 @@ description: Artifact commands sheet-metal-bracket.kcl
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
-      "radius": 0.5,
+      "radius": 12.7,
       "tolerance": 0.0000001,
       "cut_type": "fillet"
     }
@@ -969,7 +961,7 @@ description: Artifact commands sheet-metal-bracket.kcl
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
-      "radius": 0.5,
+      "radius": 12.7,
       "tolerance": 0.0000001,
       "cut_type": "fillet"
     }
@@ -981,7 +973,7 @@ description: Artifact commands sheet-metal-bracket.kcl
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
-      "radius": 0.5,
+      "radius": 12.7,
       "tolerance": 0.0000001,
       "cut_type": "fillet"
     }
@@ -993,7 +985,7 @@ description: Artifact commands sheet-metal-bracket.kcl
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
-      "radius": 0.5,
+      "radius": 12.7,
       "tolerance": 0.0000001,
       "cut_type": "fillet"
     }
@@ -1024,8 +1016,8 @@ description: Artifact commands sheet-metal-bracket.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": -3.375,
-        "y": 0.75,
+        "x": -85.725,
+        "y": 19.049999999999997,
         "z": 0.0
       }
     }
@@ -1046,10 +1038,10 @@ description: Artifact commands sheet-metal-bracket.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": -3.5,
-          "y": 0.75
+          "x": -88.9,
+          "y": 19.05
         },
-        "radius": 0.125,
+        "radius": 3.175,
         "start": {
           "unit": "degrees",
           "value": 0.0
@@ -1082,7 +1074,7 @@ description: Artifact commands sheet-metal-bracket.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": 4.0,
+              "y": 101.6,
               "z": 0.0
             },
             "scale": {
@@ -1128,7 +1120,7 @@ description: Artifact commands sheet-metal-bracket.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": -0.125,
+      "distance": -3.175,
       "faces": null,
       "opposite": "None"
     }
@@ -1195,7 +1187,7 @@ description: Artifact commands sheet-metal-bracket.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": -0.125,
+      "distance": -3.175,
       "faces": null,
       "opposite": "None"
     }
@@ -1270,8 +1262,8 @@ description: Artifact commands sheet-metal-bracket.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 3.625,
-        "y": 0.75,
+        "x": 92.07499999999999,
+        "y": 19.049999999999997,
         "z": 0.0
       }
     }
@@ -1292,10 +1284,10 @@ description: Artifact commands sheet-metal-bracket.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": 3.5,
-          "y": 0.75
+          "x": 88.9,
+          "y": 19.05
         },
-        "radius": 0.125,
+        "radius": 3.175,
         "start": {
           "unit": "degrees",
           "value": 0.0
@@ -1328,7 +1320,7 @@ description: Artifact commands sheet-metal-bracket.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": 4.0,
+              "y": 101.6,
               "z": 0.0
             },
             "scale": {
@@ -1374,7 +1366,7 @@ description: Artifact commands sheet-metal-bracket.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": -0.125,
+      "distance": -3.175,
       "faces": null,
       "opposite": "None"
     }
@@ -1441,7 +1433,7 @@ description: Artifact commands sheet-metal-bracket.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": -0.125,
+      "distance": -3.175,
       "faces": null,
       "opposite": "None"
     }
@@ -1516,8 +1508,8 @@ description: Artifact commands sheet-metal-bracket.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": -0.90625,
-        "y": 1.25,
+        "x": -23.018749999999997,
+        "y": 31.75,
         "z": 0.0
       }
     }
@@ -1538,10 +1530,10 @@ description: Artifact commands sheet-metal-bracket.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": -1.0,
-          "y": 1.25
+          "x": -25.4,
+          "y": 31.75
         },
-        "radius": 0.09375,
+        "radius": 2.3812499999999996,
         "start": {
           "unit": "degrees",
           "value": 0.0
@@ -1573,7 +1565,7 @@ description: Artifact commands sheet-metal-bracket.kcl
         [
           {
             "translate": {
-              "x": 2.0,
+              "x": 50.8,
               "y": 0.0,
               "z": 0.0
             },
@@ -1614,7 +1606,7 @@ description: Artifact commands sheet-metal-bracket.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": 3.0,
+              "y": 76.19999999999999,
               "z": 0.0
             },
             "scale": {
@@ -1654,7 +1646,7 @@ description: Artifact commands sheet-metal-bracket.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": 3.0,
+              "y": 76.19999999999999,
               "z": 0.0
             },
             "scale": {
@@ -1700,7 +1692,7 @@ description: Artifact commands sheet-metal-bracket.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": -0.125,
+      "distance": -3.175,
       "faces": null,
       "opposite": "None"
     }
@@ -1767,7 +1759,7 @@ description: Artifact commands sheet-metal-bracket.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": -0.125,
+      "distance": -3.175,
       "faces": null,
       "opposite": "None"
     }
@@ -1834,7 +1826,7 @@ description: Artifact commands sheet-metal-bracket.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": -0.125,
+      "distance": -3.175,
       "faces": null,
       "opposite": "None"
     }
@@ -1901,7 +1893,7 @@ description: Artifact commands sheet-metal-bracket.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": -0.125,
+      "distance": -3.175,
       "faces": null,
       "opposite": "None"
     }
@@ -1976,8 +1968,8 @@ description: Artifact commands sheet-metal-bracket.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 0.75,
-        "y": 2.75,
+        "x": 19.049999999999997,
+        "y": 69.85,
         "z": 0.0
       }
     }
@@ -1999,9 +1991,9 @@ description: Artifact commands sheet-metal-bracket.kcl
         "type": "arc",
         "center": {
           "x": 0.0,
-          "y": 2.75
+          "y": 69.85
         },
-        "radius": 0.75,
+        "radius": 19.049999999999997,
         "start": {
           "unit": "degrees",
           "value": 0.0
@@ -2040,7 +2032,7 @@ description: Artifact commands sheet-metal-bracket.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": -0.125,
+      "distance": -3.175,
       "faces": null,
       "opposite": "None"
     }
