@@ -28,7 +28,7 @@ import {
   getPathOrUrlFromArgs,
   parseCLIArgs,
 } from '@src/commandLineArgs'
-import { initPromise } from '@src/lang/wasmUtils'
+import { initPromiseNode } from '@src/lang/wasmUtilsNode'
 import { ZOO_STUDIO_PROTOCOL } from '@src/lib/constants'
 import getCurrentProjectFile from '@src/lib/getCurrentProjectFile'
 import { reportRejection } from '@src/lib/trap'
@@ -513,7 +513,7 @@ app.on('ready', () => {
 const getProjectPathAtStartup = async (
   filePath?: string
 ): Promise<string | null> => {
-  await initPromise
+  await initPromiseNode
   // If we are in development mode, we don't want to load a project at
   // startup.
   // Since the args passed are always '.'
