@@ -25,7 +25,7 @@ pub async fn from_mm(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 
 /// Converts a number from mm to the current default unit.
 ///
-/// *DEPRECATED* prefer using explicit numberic suffixes (e.g., `42mm`) or the `to...` conversion functions.
+/// *DEPRECATED* prefer using explicit numeric suffixes (e.g., `42mm`) or the `to...` conversion functions.
 ///
 /// No matter what units the current file uses, this function will always return a number equivalent
 /// to the input in millimeters.
@@ -74,7 +74,7 @@ pub async fn from_inches(exec_state: &mut ExecState, args: Args) -> Result<KclVa
 
 /// Converts a number from inches to the current default unit.
 ///
-/// *DEPRECATED* prefer using explicit numberic suffixes (e.g., `42inch`) or the `to...` conversion functions.
+/// *DEPRECATED* prefer using explicit numeric suffixes (e.g., `42inch`) or the `to...` conversion functions.
 ///
 /// No matter what units the current file uses, this function will always return a number equivalent
 /// to the input in inches.
@@ -123,7 +123,7 @@ pub async fn from_ft(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 
 /// Converts a number from feet to the current default unit.
 ///
-/// *DEPRECATED* prefer using explicit numberic suffixes (e.g., `42ft`) or the `to...` conversion functions.
+/// *DEPRECATED* prefer using explicit numeric suffixes (e.g., `42ft`) or the `to...` conversion functions.
 ///
 /// No matter what units the current file uses, this function will always return a number equivalent
 /// to the input in feet.
@@ -173,7 +173,7 @@ pub async fn from_m(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 
 /// Converts a number from meters to the current default unit.
 ///
-/// *DEPRECATED* prefer using explicit numberic suffixes (e.g., `42m`) or the `to...` conversion functions.
+/// *DEPRECATED* prefer using explicit numeric suffixes (e.g., `42m`) or the `to...` conversion functions.
 ///
 /// No matter what units the current file uses, this function will always return a number equivalent
 /// to the input in meters.
@@ -223,7 +223,7 @@ pub async fn from_cm(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 
 /// Converts a number from centimeters to the current default unit.
 ///
-/// *DEPRECATED* prefer using explicit numberic suffixes (e.g., `42cm`) or the `to...` conversion functions.
+/// *DEPRECATED* prefer using explicit numeric suffixes (e.g., `42cm`) or the `to...` conversion functions.
 ///
 /// No matter what units the current file uses, this function will always return a number equivalent
 /// to the input in centimeters.
@@ -273,7 +273,7 @@ pub async fn from_yd(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 
 /// Converts a number from yards to the current default unit.
 ///
-/// *DEPRECATED* prefer using explicit numberic suffixes (e.g., `42yd`) or the `to...` conversion functions.
+/// *DEPRECATED* prefer using explicit numeric suffixes (e.g., `42yd`) or the `to...` conversion functions.
 ///
 /// No matter what units the current file uses, this function will always return a number equivalent
 /// to the input in yards.

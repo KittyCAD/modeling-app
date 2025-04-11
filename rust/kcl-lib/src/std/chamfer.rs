@@ -137,7 +137,7 @@ async fn inner_chamfer(
             ModelingCmd::from(mcmd::Solid3dFilletEdge {
                 edge_id,
                 object_id: solid.id,
-                radius: LengthUnit(length.n),
+                radius: LengthUnit(length.to_mm()),
                 tolerance: LengthUnit(DEFAULT_TOLERANCE), // We can let the user set this in the future.
                 cut_type: CutType::Chamfer,
             }),

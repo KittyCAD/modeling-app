@@ -13,12 +13,12 @@ use kittycad_modeling_cmds::{
     shared::{Angle, OriginType, Rotation},
 };
 use schemars::JsonSchema;
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 use uuid::Uuid;
 
 use super::{
     args::Arg,
-    utils::{untype_point, untype_point_3d},
+    utils::{point_3d_to_mm, point_to_mm},
 };
 use crate::{
     errors::{KclError, KclErrorDetails},
@@ -34,7 +34,7 @@ use crate::{
 const MUST_HAVE_ONE_INSTANCE: &str = "There must be at least 1 instance of your geometry";
 
 /// Data for a linear pattern on a 3D model.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct LinearPattern3dData {
@@ -44,9 +44,9 @@ pub struct LinearPattern3dData {
     /// If instances is 1, this has no effect.
     pub instances: u32,
     /// The distance between each repetition. This can also be referred to as spacing.
-    pub distance: f64,
+    pub distance: TyF64,
     /// The axis of the pattern.
-    pub axis: [f64; 3],
+    pub axis: [TyF64; 3],
 }
 
 /// Repeat some 3D solid, changing each repetition slightly.
@@ -498,15 +498,13 @@ fn transform_from_obj_fields<T: GeometryTrait>(
     };
 
     let scale = match transform.get("scale") {
-        Some(x) => untype_point_3d(T::array_to_point3d(x, source_ranges.clone(), exec_state)?)
-            .0
-            .into(),
+        Some(x) => point_3d_to_mm(T::array_to_point3d(x, source_ranges.clone(), exec_state)?).into(),
         None => kcmc::shared::Point3d { x: 1.0, y: 1.0, z: 1.0 },
     };
 
     let translate = match transform.get("translate") {
         Some(x) => {
-            let (arr, _) = untype_point_3d(T::array_to_point3d(x, source_ranges.clone(), exec_state)?);
+            let arr = point_3d_to_mm(T::array_to_point3d(x, source_ranges.clone(), exec_state)?);
             kcmc::shared::Point3d::<LengthUnit> {
                 x: LengthUnit(arr[0]),
                 y: LengthUnit(arr[1]),
@@ -530,9 +528,7 @@ fn transform_from_obj_fields<T: GeometryTrait>(
             }));
         };
         if let Some(axis) = rot.get("axis") {
-            rotation.axis = untype_point_3d(T::array_to_point3d(axis, source_ranges.clone(), exec_state)?)
-                .0
-                .into();
+            rotation.axis = point_3d_to_mm(T::array_to_point3d(axis, source_ranges.clone(), exec_state)?).into();
         }
         if let Some(angle) = rot.get("angle") {
             match angle {
@@ -552,9 +548,7 @@ fn transform_from_obj_fields<T: GeometryTrait>(
                 KclValue::String { value: s, meta: _ } if s == "local" => OriginType::Local,
                 KclValue::String { value: s, meta: _ } if s == "global" => OriginType::Global,
                 other => {
-                    let origin = untype_point_3d(T::array_to_point3d(other, source_ranges.clone(), exec_state)?)
-                        .0
-                        .into();
+                    let origin = point_3d_to_mm(T::array_to_point3d(other, source_ranges.clone(), exec_state)?).into();
                     OriginType::Custom { origin }
                 }
             };
@@ -721,8 +715,7 @@ pub async fn pattern_linear_2d(exec_state: &mut ExecState, args: Args) -> Result
     let axis: [TyF64; 2] = args.get_kw_arg_typed("axis", &RuntimeType::point2d(), exec_state)?;
     let use_original: Option<bool> = args.get_kw_arg_opt("useOriginal")?;
 
-    let axis = untype_point(axis).0;
-    if axis == [0.0, 0.0] {
+    if axis[0].n == 0.0 && axis[1].n == 0.0 {
         return Err(KclError::Semantic(KclErrorDetails {
             message:
                 "The axis of the linear pattern cannot be the zero vector. Otherwise they will just duplicate in place."
@@ -731,8 +724,7 @@ pub async fn pattern_linear_2d(exec_state: &mut ExecState, args: Args) -> Result
         }));
     }
 
-    let sketches =
-        inner_pattern_linear_2d(sketches, instances, distance.n, axis, use_original, exec_state, args).await?;
+    let sketches = inner_pattern_linear_2d(sketches, instances, distance, axis, use_original, exec_state, args).await?;
     Ok(sketches.into())
 }
 
@@ -765,18 +757,18 @@ pub async fn pattern_linear_2d(exec_state: &mut ExecState, args: Args) -> Result
 async fn inner_pattern_linear_2d(
     sketches: Vec<Sketch>,
     instances: u32,
-    distance: f64,
-    axis: [f64; 2],
+    distance: TyF64,
+    axis: [TyF64; 2],
     use_original: Option<bool>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Vec<Sketch>, KclError> {
-    let [x, y] = axis;
+    let [x, y] = point_to_mm(axis);
     let axis_len = f64::sqrt(x * x + y * y);
     let normalized_axis = kcmc::shared::Point2d::from([x / axis_len, y / axis_len]);
     let transforms: Vec<_> = (1..instances)
         .map(|i| {
-            let d = distance * (i as f64);
+            let d = distance.to_mm() * (i as f64);
             let translate = (normalized_axis * d).with_z(0.0).map(LengthUnit);
             vec![Transform {
                 translate,
@@ -802,8 +794,7 @@ pub async fn pattern_linear_3d(exec_state: &mut ExecState, args: Args) -> Result
     let axis: [TyF64; 3] = args.get_kw_arg_typed("axis", &RuntimeType::point3d(), exec_state)?;
     let use_original: Option<bool> = args.get_kw_arg_opt("useOriginal")?;
 
-    let (axis, _) = untype_point_3d(axis);
-    if axis == [0.0, 0.0, 0.0] {
+    if axis[0].n == 0.0 && axis[1].n == 0.0 && axis[2].n == 0.0 {
         return Err(KclError::Semantic(KclErrorDetails {
             message:
                 "The axis of the linear pattern cannot be the zero vector. Otherwise they will just duplicate in place."
@@ -812,7 +803,7 @@ pub async fn pattern_linear_3d(exec_state: &mut ExecState, args: Args) -> Result
         }));
     }
 
-    let solids = inner_pattern_linear_3d(solids, instances, distance.n, axis, use_original, exec_state, args).await?;
+    let solids = inner_pattern_linear_3d(solids, instances, distance, axis, use_original, exec_state, args).await?;
     Ok(solids.into())
 }
 
@@ -903,18 +894,18 @@ pub async fn pattern_linear_3d(exec_state: &mut ExecState, args: Args) -> Result
 async fn inner_pattern_linear_3d(
     solids: Vec<Solid>,
     instances: u32,
-    distance: f64,
-    axis: [f64; 3],
+    distance: TyF64,
+    axis: [TyF64; 3],
     use_original: Option<bool>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Vec<Solid>, KclError> {
-    let [x, y, z] = axis;
+    let [x, y, z] = point_3d_to_mm(axis);
     let axis_len = f64::sqrt(x * x + y * y + z * z);
     let normalized_axis = kcmc::shared::Point3d::from([x / axis_len, y / axis_len, z / axis_len]);
     let transforms: Vec<_> = (1..instances)
         .map(|i| {
-            let d = distance * (i as f64);
+            let d = distance.to_mm() * (i as f64);
             let translate = (normalized_axis * d).map(LengthUnit);
             vec![Transform {
                 translate,
@@ -926,7 +917,7 @@ async fn inner_pattern_linear_3d(
 }
 
 /// Data for a circular pattern on a 2D sketch.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 struct CircularPattern2dData {
@@ -936,7 +927,7 @@ struct CircularPattern2dData {
     /// If instances is 1, this has no effect.
     pub instances: u32,
     /// The center about which to make the pattern. This is a 2D vector.
-    pub center: [f64; 2],
+    pub center: [TyF64; 2],
     /// The arc angle (in degrees) to place the repetitions. Must be greater than 0.
     pub arc_degrees: f64,
     /// Whether or not to rotate the duplicates as they are copied.
@@ -948,7 +939,7 @@ struct CircularPattern2dData {
 }
 
 /// Data for a circular pattern on a 3D model.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct CircularPattern3dData {
@@ -958,9 +949,10 @@ pub struct CircularPattern3dData {
     /// If instances is 1, this has no effect.
     pub instances: u32,
     /// The axis around which to make the pattern. This is a 3D vector.
+    // Only the direction should matter, not the magnitude so don't adjust units to avoid normalisation issues.
     pub axis: [f64; 3],
     /// The center about which to make the pattern. This is a 3D vector.
-    pub center: [f64; 3],
+    pub center: [TyF64; 3],
     /// The arc angle (in degrees) to place the repetitions. Must be greater than 0.
     pub arc_degrees: f64,
     /// Whether or not to rotate the duplicates as they are copied.
@@ -971,6 +963,7 @@ pub struct CircularPattern3dData {
     pub use_original: Option<bool>,
 }
 
+#[allow(clippy::large_enum_variant)]
 enum CircularPattern {
     ThreeD(CircularPattern3dData),
     TwoD(CircularPattern2dData),
@@ -999,14 +992,14 @@ impl CircularPattern {
     pub fn axis(&self) -> [f64; 3] {
         match self {
             CircularPattern::TwoD(_lp) => [0.0, 0.0, 0.0],
-            CircularPattern::ThreeD(lp) => lp.axis,
+            CircularPattern::ThreeD(lp) => [lp.axis[0], lp.axis[1], lp.axis[2]],
         }
     }
 
-    pub fn center(&self) -> [f64; 3] {
+    pub fn center_mm(&self) -> [f64; 3] {
         match self {
-            CircularPattern::TwoD(lp) => [lp.center[0], lp.center[1], 0.0],
-            CircularPattern::ThreeD(lp) => lp.center,
+            CircularPattern::TwoD(lp) => [lp.center[0].to_mm(), lp.center[1].to_mm(), 0.0],
+            CircularPattern::ThreeD(lp) => [lp.center[0].to_mm(), lp.center[1].to_mm(), lp.center[2].to_mm()],
         }
     }
 
@@ -1052,7 +1045,7 @@ pub async fn pattern_circular_2d(exec_state: &mut ExecState, args: Args) -> Resu
     let sketches = inner_pattern_circular_2d(
         sketches,
         instances,
-        untype_point(center).0,
+        center,
         arc_degrees.n,
         rotate_duplicates,
         use_original,
@@ -1101,7 +1094,7 @@ pub async fn pattern_circular_2d(exec_state: &mut ExecState, args: Args) -> Resu
 async fn inner_pattern_circular_2d(
     sketch_set: Vec<Sketch>,
     instances: u32,
-    center: [f64; 2],
+    center: [TyF64; 2],
     arc_degrees: f64,
     rotate_duplicates: bool,
     use_original: Option<bool>,
@@ -1151,7 +1144,7 @@ pub async fn pattern_circular_3d(exec_state: &mut ExecState, args: Args) -> Resu
     // This includes the original entity. For example, if instances is 2,
     // there will be two copies -- the original, and one new copy.
     // If instances is 1, this has no effect.
-    let instances: u32 = args.get_kw_arg("instances")?;
+    let instances: u32 = args.get_kw_arg_typed("instances", &RuntimeType::count(), exec_state)?;
     // The axis around which to make the pattern. This is a 3D vector.
     let axis: [TyF64; 3] = args.get_kw_arg_typed("axis", &RuntimeType::point3d(), exec_state)?;
     // The center about which to make the pattern. This is a 3D vector.
@@ -1167,8 +1160,8 @@ pub async fn pattern_circular_3d(exec_state: &mut ExecState, args: Args) -> Resu
     let solids = inner_pattern_circular_3d(
         solids,
         instances,
-        untype_point_3d(axis).0,
-        untype_point_3d(center).0,
+        [axis[0].n, axis[1].n, axis[2].n],
+        center,
         arc_degrees.n,
         rotate_duplicates,
         use_original,
@@ -1217,7 +1210,7 @@ async fn inner_pattern_circular_3d(
     solids: Vec<Solid>,
     instances: u32,
     axis: [f64; 3],
-    center: [f64; 3],
+    center: [TyF64; 3],
     arc_degrees: f64,
     rotate_duplicates: bool,
     use_original: Option<bool>,
@@ -1286,7 +1279,7 @@ async fn pattern_circular(
         }
     };
 
-    let center = data.center();
+    let center = data.center_mm();
     let resp = args
         .send_modeling_cmd(
             id,

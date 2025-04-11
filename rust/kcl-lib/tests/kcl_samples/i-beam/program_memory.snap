@@ -199,9 +199,6 @@ description: Variables in memory after executing i-beam.kcl
             "units": {
               "type": "Mm"
             }
-          },
-          "units": {
-            "type": "Inches"
           }
         },
         "start": {

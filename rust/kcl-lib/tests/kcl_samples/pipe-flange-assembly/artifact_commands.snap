@@ -33,14 +33,6 @@ description: Artifact commands pipe-flange-assembly.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "set_scene_units",
-      "unit": "in"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
       "type": "set_object_transform",
       "object_id": "[uuid]",
       "transforms": [
@@ -74,7 +66,7 @@ description: Artifact commands pipe-flange-assembly.kcl
             "property": {
               "x": 0.0,
               "y": 0.0,
-              "z": 0.151
+              "z": 3.8353999999999995
             },
             "set": false,
             "is_local": true
@@ -98,7 +90,7 @@ description: Artifact commands pipe-flange-assembly.kcl
             "property": {
               "x": 0.0,
               "y": 0.0,
-              "z": -0.091
+              "z": -2.3114
             },
             "set": false,
             "is_local": true
@@ -120,9 +112,9 @@ description: Artifact commands pipe-flange-assembly.kcl
         {
           "translate": {
             "property": {
-              "x": 2.375,
+              "x": 60.324999999999996,
               "y": 0.0,
-              "z": 0.69
+              "z": 17.525999999999996
             },
             "set": false,
             "is_local": true
@@ -168,7 +160,7 @@ description: Artifact commands pipe-flange-assembly.kcl
             "translate": {
               "x": -0.0,
               "y": -0.0,
-              "z": -1.563
+              "z": -39.700199999999995
             },
             "scale": {
               "x": 1.0,
@@ -208,7 +200,7 @@ description: Artifact commands pipe-flange-assembly.kcl
             "translate": {
               "x": -0.0,
               "y": -0.0,
-              "z": -1.563
+              "z": -39.700199999999995
             },
             "scale": {
               "x": 1.0,
@@ -248,7 +240,7 @@ description: Artifact commands pipe-flange-assembly.kcl
             "translate": {
               "x": -0.0,
               "y": -0.0,
-              "z": -1.563
+              "z": -39.700199999999995
             },
             "scale": {
               "x": 1.0,
@@ -288,7 +280,7 @@ description: Artifact commands pipe-flange-assembly.kcl
             "translate": {
               "x": -0.0,
               "y": -0.0,
-              "z": -1.563
+              "z": -39.700199999999995
             },
             "scale": {
               "x": 1.0,
@@ -325,9 +317,9 @@ description: Artifact commands pipe-flange-assembly.kcl
         {
           "translate": {
             "property": {
-              "x": 2.375,
+              "x": 60.324999999999996,
               "y": 0.0,
-              "z": 0.722
+              "z": 18.3388
             },
             "set": false,
             "is_local": true
@@ -394,9 +386,9 @@ description: Artifact commands pipe-flange-assembly.kcl
         {
           "translate": {
             "property": {
-              "x": 2.375,
+              "x": 60.324999999999996,
               "y": 0.0,
-              "z": -1.419875
+              "z": -36.064825
             },
             "set": false,
             "is_local": true
@@ -465,7 +457,7 @@ description: Artifact commands pipe-flange-assembly.kcl
             "property": {
               "x": 0.0,
               "y": 0.0,
-              "z": 0.43999999999999995
+              "z": 11.175999999999998
             },
             "set": false,
             "is_local": false
@@ -513,7 +505,7 @@ description: Artifact commands pipe-flange-assembly.kcl
             "property": {
               "x": 0.0,
               "y": 0.0,
-              "z": -0.591
+              "z": -15.011399999999998
             },
             "set": false,
             "is_local": false
@@ -523,54 +515,6 @@ description: Artifact commands pipe-flange-assembly.kcl
           "scale": null
         }
       ]
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "set_scene_units",
-      "unit": "mm"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "set_scene_units",
-      "unit": "mm"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "set_scene_units",
-      "unit": "mm"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "set_scene_units",
-      "unit": "mm"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "set_scene_units",
-      "unit": "in"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "set_scene_units",
-      "unit": "in"
     }
   },
   {
@@ -628,7 +572,7 @@ description: Artifact commands pipe-flange-assembly.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 2.0625,
+        "x": 52.387499999999996,
         "y": 0.0,
         "z": 0.0
       }
@@ -653,7 +597,7 @@ description: Artifact commands pipe-flange-assembly.kcl
           "x": 0.0,
           "y": 0.0
         },
-        "radius": 2.0625,
+        "radius": 52.387499999999996,
         "start": {
           "unit": "degrees",
           "value": 0.0
@@ -696,7 +640,7 @@ description: Artifact commands pipe-flange-assembly.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 0.031,
+      "distance": 0.7874,
       "faces": null,
       "opposite": "None"
     }
@@ -771,7 +715,7 @@ description: Artifact commands pipe-flange-assembly.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 1.1875,
+        "x": 30.162499999999998,
         "y": 0.0,
         "z": 0.0
       }
@@ -796,7 +740,7 @@ description: Artifact commands pipe-flange-assembly.kcl
           "x": 0.0,
           "y": 0.0
         },
-        "radius": 1.1875,
+        "radius": 30.162499999999998,
         "start": {
           "unit": "degrees",
           "value": 0.0
@@ -835,7 +779,7 @@ description: Artifact commands pipe-flange-assembly.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": -0.031,
+      "distance": -0.7874,
       "faces": null,
       "opposite": "None"
     }
@@ -905,14 +849,6 @@ description: Artifact commands pipe-flange-assembly.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "set_scene_units",
-      "unit": "in"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
       "type": "make_plane",
       "origin": {
         "x": 0.0,
@@ -964,8 +900,8 @@ description: Artifact commands pipe-flange-assembly.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 0.375,
-        "y": 2.375,
+        "x": 9.524999999999999,
+        "y": 60.324999999999996,
         "z": 0.0
       }
     }
@@ -987,9 +923,9 @@ description: Artifact commands pipe-flange-assembly.kcl
         "type": "arc",
         "center": {
           "x": 0.0,
-          "y": 2.375
+          "y": 60.325
         },
-        "radius": 0.375,
+        "radius": 9.524999999999999,
         "start": {
           "unit": "degrees",
           "value": 0.0
@@ -1086,7 +1022,7 @@ description: Artifact commands pipe-flange-assembly.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 3.0,
+        "x": 76.19999999999999,
         "y": 0.0,
         "z": 0.0
       }
@@ -1111,7 +1047,7 @@ description: Artifact commands pipe-flange-assembly.kcl
           "x": 0.0,
           "y": 0.0
         },
-        "radius": 3.0,
+        "radius": 76.19999999999999,
         "start": {
           "unit": "degrees",
           "value": 0.0
@@ -1226,7 +1162,7 @@ description: Artifact commands pipe-flange-assembly.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 0.69,
+      "distance": 17.525999999999996,
       "faces": null,
       "opposite": "None"
     }
@@ -1381,7 +1317,7 @@ description: Artifact commands pipe-flange-assembly.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 1.81,
+        "x": 45.974,
         "y": 0.0,
         "z": 0.0
       }
@@ -1406,7 +1342,7 @@ description: Artifact commands pipe-flange-assembly.kcl
           "x": 0.0,
           "y": 0.0
         },
-        "radius": 1.81,
+        "radius": 45.974,
         "start": {
           "unit": "degrees",
           "value": 0.0
@@ -1445,7 +1381,7 @@ description: Artifact commands pipe-flange-assembly.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 0.06,
+      "distance": 1.5239999999999998,
       "faces": null,
       "opposite": "None"
     }
@@ -1520,7 +1456,7 @@ description: Artifact commands pipe-flange-assembly.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 1.53,
+        "x": 38.862,
         "y": 0.0,
         "z": 0.0
       }
@@ -1545,7 +1481,7 @@ description: Artifact commands pipe-flange-assembly.kcl
           "x": 0.0,
           "y": 0.0
         },
-        "radius": 1.53,
+        "radius": 38.862,
         "start": {
           "unit": "degrees",
           "value": 0.0
@@ -1584,7 +1520,7 @@ description: Artifact commands pipe-flange-assembly.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 0.25,
+      "distance": 6.35,
       "faces": null,
       "opposite": "None"
     }
@@ -1659,7 +1595,7 @@ description: Artifact commands pipe-flange-assembly.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 1.22,
+        "x": 30.987999999999996,
         "y": 0.0,
         "z": 0.0
       }
@@ -1684,7 +1620,7 @@ description: Artifact commands pipe-flange-assembly.kcl
           "x": 0.0,
           "y": 0.0
         },
-        "radius": 1.22,
+        "radius": 30.987999999999996,
         "start": {
           "unit": "degrees",
           "value": 0.0
@@ -1723,7 +1659,7 @@ description: Artifact commands pipe-flange-assembly.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": -1.0,
+      "distance": -25.4,
       "faces": null,
       "opposite": "None"
     }
@@ -1844,8 +1780,8 @@ description: Artifact commands pipe-flange-assembly.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 0.375,
-        "y": 2.375,
+        "x": 9.524999999999999,
+        "y": 60.324999999999996,
         "z": 0.0
       }
     }
@@ -1867,9 +1803,9 @@ description: Artifact commands pipe-flange-assembly.kcl
         "type": "arc",
         "center": {
           "x": 0.0,
-          "y": 2.375
+          "y": 60.325
         },
-        "radius": 0.375,
+        "radius": 9.524999999999999,
         "start": {
           "unit": "degrees",
           "value": 0.0
@@ -1966,7 +1902,7 @@ description: Artifact commands pipe-flange-assembly.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 3.0,
+        "x": 76.19999999999999,
         "y": 0.0,
         "z": 0.0
       }
@@ -1991,7 +1927,7 @@ description: Artifact commands pipe-flange-assembly.kcl
           "x": 0.0,
           "y": 0.0
         },
-        "radius": 3.0,
+        "radius": 76.19999999999999,
         "start": {
           "unit": "degrees",
           "value": 0.0
@@ -2106,7 +2042,7 @@ description: Artifact commands pipe-flange-assembly.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 0.69,
+      "distance": 17.525999999999996,
       "faces": null,
       "opposite": "None"
     }
@@ -2261,7 +2197,7 @@ description: Artifact commands pipe-flange-assembly.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 1.81,
+        "x": 45.974,
         "y": 0.0,
         "z": 0.0
       }
@@ -2286,7 +2222,7 @@ description: Artifact commands pipe-flange-assembly.kcl
           "x": 0.0,
           "y": 0.0
         },
-        "radius": 1.81,
+        "radius": 45.974,
         "start": {
           "unit": "degrees",
           "value": 0.0
@@ -2325,7 +2261,7 @@ description: Artifact commands pipe-flange-assembly.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 0.06,
+      "distance": 1.5239999999999998,
       "faces": null,
       "opposite": "None"
     }
@@ -2400,7 +2336,7 @@ description: Artifact commands pipe-flange-assembly.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 1.53,
+        "x": 38.862,
         "y": 0.0,
         "z": 0.0
       }
@@ -2425,7 +2361,7 @@ description: Artifact commands pipe-flange-assembly.kcl
           "x": 0.0,
           "y": 0.0
         },
-        "radius": 1.53,
+        "radius": 38.862,
         "start": {
           "unit": "degrees",
           "value": 0.0
@@ -2464,7 +2400,7 @@ description: Artifact commands pipe-flange-assembly.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 0.25,
+      "distance": 6.35,
       "faces": null,
       "opposite": "None"
     }
@@ -2539,7 +2475,7 @@ description: Artifact commands pipe-flange-assembly.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 1.22,
+        "x": 30.987999999999996,
         "y": 0.0,
         "z": 0.0
       }
@@ -2564,7 +2500,7 @@ description: Artifact commands pipe-flange-assembly.kcl
           "x": 0.0,
           "y": 0.0
         },
-        "radius": 1.22,
+        "radius": 30.987999999999996,
         "start": {
           "unit": "degrees",
           "value": 0.0
@@ -2603,7 +2539,7 @@ description: Artifact commands pipe-flange-assembly.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": -1.0,
+      "distance": -25.4,
       "faces": null,
       "opposite": "None"
     }
@@ -2673,14 +2609,6 @@ description: Artifact commands pipe-flange-assembly.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "set_scene_units",
-      "unit": "in"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
       "type": "make_plane",
       "origin": {
         "x": 0.0,
@@ -2732,7 +2660,7 @@ description: Artifact commands pipe-flange-assembly.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 0.594,
+        "x": 15.087599999999998,
         "y": 0.0,
         "z": 0.0
       }
@@ -2757,7 +2685,7 @@ description: Artifact commands pipe-flange-assembly.kcl
           "x": 0.0,
           "y": 0.0
         },
-        "radius": 0.594,
+        "radius": 15.087599999999998,
         "start": {
           "unit": "degrees",
           "value": 0.0
@@ -2800,7 +2728,7 @@ description: Artifact commands pipe-flange-assembly.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 0.032,
+      "distance": 0.8128,
       "faces": null,
       "opposite": "None"
     }
@@ -2875,7 +2803,7 @@ description: Artifact commands pipe-flange-assembly.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 0.32,
+        "x": 8.128,
         "y": 0.0,
         "z": 0.0
       }
@@ -2900,7 +2828,7 @@ description: Artifact commands pipe-flange-assembly.kcl
           "x": 0.0,
           "y": 0.0
         },
-        "radius": 0.32,
+        "radius": 8.128,
         "start": {
           "unit": "degrees",
           "value": 0.0
@@ -2939,7 +2867,7 @@ description: Artifact commands pipe-flange-assembly.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": -0.032,
+      "distance": -0.8128,
       "faces": null,
       "opposite": "None"
     }
@@ -3009,14 +2937,6 @@ description: Artifact commands pipe-flange-assembly.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "set_scene_units",
-      "unit": "in"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
       "type": "make_plane",
       "origin": {
         "x": 0.0,
@@ -3068,7 +2988,7 @@ description: Artifact commands pipe-flange-assembly.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 0.469,
+        "x": 11.9126,
         "y": 0.0,
         "z": 0.0
       }
@@ -3093,7 +3013,7 @@ description: Artifact commands pipe-flange-assembly.kcl
           "x": 0.0,
           "y": 0.0
         },
-        "radius": 0.469,
+        "radius": 11.9126,
         "start": {
           "unit": "degrees",
           "value": 0.0
@@ -3136,7 +3056,7 @@ description: Artifact commands pipe-flange-assembly.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": -0.625,
+      "distance": -15.875,
       "faces": null,
       "opposite": "None"
     }
@@ -3202,7 +3122,7 @@ description: Artifact commands pipe-flange-assembly.kcl
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
-      "radius": 0.02,
+      "radius": 0.508,
       "tolerance": 0.0000001,
       "cut_type": "fillet"
     }
@@ -3214,7 +3134,7 @@ description: Artifact commands pipe-flange-assembly.kcl
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
-      "radius": 0.02,
+      "radius": 0.508,
       "tolerance": 0.0000001,
       "cut_type": "fillet"
     }
@@ -3245,8 +3165,8 @@ description: Artifact commands pipe-flange-assembly.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 0.25,
-        "y": 0.14433756729740643,
+        "x": 6.35,
+        "y": 3.666174209354123,
         "z": 0.0
       }
     }
@@ -3268,7 +3188,7 @@ description: Artifact commands pipe-flange-assembly.kcl
         "type": "line",
         "end": {
           "x": -0.0,
-          "y": -0.2887,
+          "y": -7.3323,
           "z": 0.0
         },
         "relative": true
@@ -3284,8 +3204,8 @@ description: Artifact commands pipe-flange-assembly.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -0.25,
-          "y": -0.1443,
+          "x": -6.35,
+          "y": -3.6662,
           "z": 0.0
         },
         "relative": true
@@ -3301,8 +3221,8 @@ description: Artifact commands pipe-flange-assembly.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -0.25,
-          "y": 0.1443,
+          "x": -6.35,
+          "y": 3.6662,
           "z": 0.0
         },
         "relative": true
@@ -3319,7 +3239,7 @@ description: Artifact commands pipe-flange-assembly.kcl
         "type": "line",
         "end": {
           "x": 0.0,
-          "y": 0.2887,
+          "y": 7.3323,
           "z": 0.0
         },
         "relative": true
@@ -3335,8 +3255,8 @@ description: Artifact commands pipe-flange-assembly.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 0.25,
-          "y": 0.1443,
+          "x": 6.35,
+          "y": 3.6662,
           "z": 0.0
         },
         "relative": true
@@ -3369,7 +3289,7 @@ description: Artifact commands pipe-flange-assembly.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": -0.46875,
+      "distance": -11.90625,
       "faces": null,
       "opposite": "None"
     }
@@ -3544,7 +3464,7 @@ description: Artifact commands pipe-flange-assembly.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 0.3125,
+        "x": 7.9375,
         "y": 0.0,
         "z": 0.0
       }
@@ -3569,7 +3489,7 @@ description: Artifact commands pipe-flange-assembly.kcl
           "x": 0.0,
           "y": 0.0
         },
-        "radius": 0.3125,
+        "radius": 7.9375,
         "start": {
           "unit": "degrees",
           "value": 0.0
@@ -3608,7 +3528,7 @@ description: Artifact commands pipe-flange-assembly.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 2.5,
+      "distance": 63.5,
       "faces": null,
       "opposite": "None"
     }
@@ -3678,14 +3598,6 @@ description: Artifact commands pipe-flange-assembly.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "set_scene_units",
-      "unit": "in"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
       "type": "make_plane",
       "origin": {
         "x": 0.0,
@@ -3737,8 +3649,8 @@ description: Artifact commands pipe-flange-assembly.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 0.46875,
-        "y": 0.27063293868263705,
+        "x": 11.90625,
+        "y": 6.874076642538981,
         "z": 0.0
       }
     }
@@ -3760,7 +3672,7 @@ description: Artifact commands pipe-flange-assembly.kcl
         "type": "line",
         "end": {
           "x": -0.0,
-          "y": -0.5413,
+          "y": -13.7482,
           "z": 0.0
         },
         "relative": true
@@ -3776,8 +3688,8 @@ description: Artifact commands pipe-flange-assembly.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -0.4687,
-          "y": -0.2706,
+          "x": -11.9062,
+          "y": -6.8741,
           "z": 0.0
         },
         "relative": true
@@ -3793,8 +3705,8 @@ description: Artifact commands pipe-flange-assembly.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -0.4688,
-          "y": 0.2706,
+          "x": -11.9063,
+          "y": 6.8741,
           "z": 0.0
         },
         "relative": true
@@ -3811,7 +3723,7 @@ description: Artifact commands pipe-flange-assembly.kcl
         "type": "line",
         "end": {
           "x": 0.0,
-          "y": 0.5413,
+          "y": 13.7482,
           "z": 0.0
         },
         "relative": true
@@ -3827,8 +3739,8 @@ description: Artifact commands pipe-flange-assembly.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 0.4688,
-          "y": 0.2706,
+          "x": 11.9063,
+          "y": 6.8741,
           "z": 0.0
         },
         "relative": true
@@ -3865,7 +3777,7 @@ description: Artifact commands pipe-flange-assembly.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 0.546875,
+      "distance": 13.890625,
       "faces": null,
       "opposite": "None"
     }
@@ -4040,7 +3952,7 @@ description: Artifact commands pipe-flange-assembly.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 0.3125,
+        "x": 7.9375,
         "y": 0.0,
         "z": 0.0
       }
@@ -4065,7 +3977,7 @@ description: Artifact commands pipe-flange-assembly.kcl
           "x": 0.0,
           "y": 0.0
         },
-        "radius": 0.3125,
+        "radius": 7.9375,
         "start": {
           "unit": "degrees",
           "value": 0.0
@@ -4104,7 +4016,7 @@ description: Artifact commands pipe-flange-assembly.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": -0.546875,
+      "distance": -13.890625,
       "faces": null,
       "opposite": "None"
     }
@@ -4174,14 +4086,6 @@ description: Artifact commands pipe-flange-assembly.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "set_scene_units",
-      "unit": "in"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
       "type": "make_plane",
       "origin": {
         "x": 0.0,
@@ -4233,7 +4137,7 @@ description: Artifact commands pipe-flange-assembly.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 1.1875,
+        "x": 30.162499999999998,
         "y": 0.0,
         "z": 0.0
       }
@@ -4258,7 +4162,7 @@ description: Artifact commands pipe-flange-assembly.kcl
           "x": 0.0,
           "y": 0.0
         },
-        "radius": 1.1875,
+        "radius": 30.162499999999998,
         "start": {
           "unit": "degrees",
           "value": 0.0
@@ -4301,7 +4205,7 @@ description: Artifact commands pipe-flange-assembly.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 6.0,
+      "distance": 152.39999999999998,
       "faces": null,
       "opposite": "None"
     }
@@ -4376,7 +4280,7 @@ description: Artifact commands pipe-flange-assembly.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 1.0,
+        "x": 25.4,
         "y": 0.0,
         "z": 0.0
       }
@@ -4401,7 +4305,7 @@ description: Artifact commands pipe-flange-assembly.kcl
           "x": 0.0,
           "y": 0.0
         },
-        "radius": 1.0,
+        "radius": 25.4,
         "start": {
           "unit": "degrees",
           "value": 0.0
@@ -4440,7 +4344,7 @@ description: Artifact commands pipe-flange-assembly.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": -6.0,
+      "distance": -152.39999999999998,
       "faces": null,
       "opposite": "None"
     }
@@ -4561,7 +4465,7 @@ description: Artifact commands pipe-flange-assembly.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 1.1875,
+        "x": 30.162499999999998,
         "y": 0.0,
         "z": 0.0
       }
@@ -4586,7 +4490,7 @@ description: Artifact commands pipe-flange-assembly.kcl
           "x": 0.0,
           "y": 0.0
         },
-        "radius": 1.1875,
+        "radius": 30.162499999999998,
         "start": {
           "unit": "degrees",
           "value": 0.0
@@ -4629,7 +4533,7 @@ description: Artifact commands pipe-flange-assembly.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 6.0,
+      "distance": 152.39999999999998,
       "faces": null,
       "opposite": "None"
     }
@@ -4704,7 +4608,7 @@ description: Artifact commands pipe-flange-assembly.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 1.0,
+        "x": 25.4,
         "y": 0.0,
         "z": 0.0
       }
@@ -4729,7 +4633,7 @@ description: Artifact commands pipe-flange-assembly.kcl
           "x": 0.0,
           "y": 0.0
         },
-        "radius": 1.0,
+        "radius": 25.4,
         "start": {
           "unit": "degrees",
           "value": 0.0
@@ -4768,7 +4672,7 @@ description: Artifact commands pipe-flange-assembly.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": -6.0,
+      "distance": -152.39999999999998,
       "faces": null,
       "opposite": "None"
     }
