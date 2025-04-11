@@ -449,11 +449,11 @@ pub async fn angled_line(exec_state: &mut ExecState, args: Args) -> Result<KclVa
     args = {
         sketch = { docs = "Which sketch should this path be added to?"},
     angle = { docs = "Which angle should the line be drawn at?" },
-    length = { docs = "Draw the line this distance along the given angle. Only one of `length`, `lengthX`, `lengthY`, `lengthAbsoluteEndX`, `lengthAbsoluteEndY` can be given."},
-    length_x = { docs = "Draw the line this distance along the X axis. Only one of `length`, `lengthX`, `lengthY`, `lengthAbsoluteEndX`, `lengthAbsoluteEndY` can be given."},
-    length_y = { docs = "Draw the line this distance along the Y axis. Only one of `length`, `lengthX`, `lengthY`, `lengthAbsoluteEndX`, `lengthAbsoluteEndY` can be given."},
-    end_absolute_x = { docs = "Draw the line along the given angle until it reaches this point along the X axis. Only one of `length`, `lengthX`, `lengthY`, `lengthAbsoluteEndX`, `lengthAbsoluteEndY` can be given."},
-    end_absolute_y = { docs = "Draw the line along the given angle until it reaches this point along the Y axis. Only one of `length`, `lengthX`, `lengthY`, `lengthAbsoluteEndX`, `lengthAbsoluteEndY` can be given."},
+    length = { docs = "Draw the line this distance along the given angle. Only one of `length`, `lengthX`, `lengthY`, `endAbsoluteX`, `endAbsoluteY` can be given."},
+    length_x = { docs = "Draw the line this distance along the X axis. Only one of `length`, `lengthX`, `lengthY`, `endAbsoluteX`, `endAbsoluteY` can be given."},
+    length_y = { docs = "Draw the line this distance along the Y axis. Only one of `length`, `lengthX`, `lengthY`, `endAbsoluteX`, `endAbsoluteY` can be given."},
+    end_absolute_x = { docs = "Draw the line along the given angle until it reaches this point along the X axis. Only one of `length`, `lengthX`, `lengthY`, `endAbsoluteX`, `endAbsoluteY` can be given."},
+    end_absolute_y = { docs = "Draw the line along the given angle until it reaches this point along the Y axis. Only one of `length`, `lengthX`, `lengthY`, `endAbsoluteX`, `endAbsoluteY` can be given."},
         tag = { docs = "Create a new tag which refers to this line"},
     }
 }]
@@ -476,8 +476,7 @@ async fn inner_angled_line(
         .count();
     if options_given > 1 {
         return Err(KclError::Type(KclErrorDetails {
-            message: " one of `length`, `lengthX`, `lengthY`, `lengthAbsoluteEndX`, `lengthAbsoluteEndY` can be given"
-                .to_string(),
+            message: " one of `length`, `lengthX`, `lengthY`, `endAbsoluteX`, `endAbsoluteY` can be given".to_string(),
             source_ranges: vec![args.source_range],
         }));
     }
@@ -505,14 +504,12 @@ async fn inner_angled_line(
             inner_angled_line_to_y(angle_degrees, end_absolute_y, sketch, tag, exec_state, args).await
         }
         (None, None, None, None, None) => Err(KclError::Type(KclErrorDetails {
-            message: "One of `length`, `lengthX`, `lengthY`, `lengthAbsoluteEndX`, `lengthAbsoluteEndY` must be given"
-                .to_string(),
+            message: "One of `length`, `lengthX`, `lengthY`, `endAbsoluteX`, `endAbsoluteY` must be given".to_string(),
             source_ranges: vec![args.source_range],
         })),
         _ => Err(KclError::Type(KclErrorDetails {
-            message:
-                "Only One of `length`, `lengthX`, `lengthY`, `lengthAbsoluteEndX`, `lengthAbsoluteEndY` can be given"
-                    .to_string(),
+            message: "Only One of `length`, `lengthX`, `lengthY`, `endAbsoluteX`, `endAbsoluteY` can be given"
+                .to_string(),
             source_ranges: vec![args.source_range],
         })),
     }
