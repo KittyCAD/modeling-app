@@ -56,6 +56,7 @@ jobs:
           node-version-file: ".nvmrc"
       - name: Install dependencies
         run: |
+          npm install
           npm install --workspace rust/kcl-language-server
       - name: Run tests
         run: |
@@ -180,6 +181,7 @@ jobs:
 
       - name: Install dependencies
         run: |
+          npm install
           npm install --workspace rust/kcl-language-server
 
       - name: Package Extension (release)
@@ -267,6 +269,7 @@ jobs:
 
       - name: Install dependencies
         run: |
+          npm install
           npm install --workspace rust/kcl-language-server
 
       - name: Package Extension (release)
