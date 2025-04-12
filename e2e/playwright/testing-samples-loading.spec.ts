@@ -255,7 +255,7 @@ test.describe('Testing loading external models', () => {
             commandName: 'Load external model',
             headerArguments: {
               Source: 'local',
-              Path: modelPath,
+              Path: modelName,
             },
             stage: 'review',
           })
