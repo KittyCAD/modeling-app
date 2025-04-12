@@ -49,6 +49,7 @@ bottomFaceSketch = startSketchOn(XY)
   |> extrude(length = 4)
 
 // Add large openings to the bottom face to allow airflow through the fan
+
 airflowPattern = startSketchOn(bottomFaceSketch, 'END')
   |> startProfileAt([fanSize * 7 / 25, -fanSize * 9 / 25], %)
   |> angledLine(angle = 140, length = fanSize * 12 / 25, tag = $seg01)
@@ -68,32 +69,28 @@ airflowPattern = startSketchOn(bottomFaceSketch, 'END')
      )
   |> extrude(length = -4)
 
-// Scribe an octagon with 4 equal sides and 4 equal diagonals that scales with fan size. Calculate the start point to center it about the fan location. This will be the middle of the fan housing body
-octLen = fanSize * 13 / 25
-octDiag = fanSize * 8 / 25
-bodyCenter = startSketchOn(bottomFaceSketch, 'END')
-  |> startProfileAt([
-       -octLen / 2,
-       -octLen / 2 - (octDiag * cos(toRadians(45)))
-     ], %)
-  |> xLine(length = octLen, tag = $seg02)
-  |> angledLine(angle = 45, length = octDiag, tag = $seg03)
-  |> yLine(length = segLen(seg02), tag = $seg05)
-  |> angledLine(angle = 135, length = segLen(seg03), tag = $seg06)
-  |> xLine(length = -segLen(seg02), tag = $seg07)
-  |> angledLine(angle = -135, length = segLen(seg03), tag = $seg08)
-  |> yLine(length = -segLen(seg02), tag = $seg09)
-  |> angledLine(angle = -45, length = segLen(seg03), tag = $seg10)
-  |> close()
+// Create the middle segment of the fan housing body
+housingMiddleLength = fanSize / 3
+housingMiddleRadius = fanSize / 3 - 1
+bodyMiddle = startSketchOn(bottomFaceSketch, 'END')
+  |> startProfileAt([housingMiddleLength/2, -housingMiddleLength/2 - housingMiddleRadius], %)
+  |> tangentialArc(radius = housingMiddleRadius, angle = 90)
+  |> yLine(length = housingMiddleLength)
+  |> tangentialArc(radius = housingMiddleRadius, angle = 90)
+  |> xLine(length = -housingMiddleLength)
+  |> tangentialArc(radius = housingMiddleRadius, angle = 90)
+  |> yLine(length = -housingMiddleLength)
+  |> tangentialArc(radius = housingMiddleRadius, angle = 90)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> extrude(length = fanHeight - 4 - 4)
 
 // Cut a hole in the body to accommodate the fan
-bodyFanHole = startSketchOn(bodyCenter, 'END')
+bodyFanHole = startSketchOn(bodyMiddle, 'END')
   |> circle(center = [0, 0], radius = fanSize * 23 / 50)
   |> extrude(length = -(fanHeight - 4 - 4))
 
 // Top mounting face. Cut a hole in the face to accommodate the fan
-topFaceSketch = startSketchOn(bodyCenter, 'END')
+topFaceSketch = startSketchOn(bodyMiddle, 'END')
 topHoles = startProfileAt([-fanSize / 2, -fanSize / 2], topFaceSketch)
   |> angledLine(angle = 0, length = fanSize, tag = $rectangleSegmentA002)
   |> angledLine(angle = segAng(rectangleSegmentA002) + 90, length = fanSize, tag = $rectangleSegmentB002)
@@ -139,7 +136,7 @@ motorHousing = startSketchOn(bottomFaceSketch, 'END')
 startSketchOn(motorHousing, 'END')
   |> circle(center = [0, 0], radius = 10)
   |> extrude(length = -16)
-  |> appearance(color = "#854f29")
+  |> appearance(color = "#a55e2c")
   |> fillet(
        radius = abs(fanSize - mountingHoleSpacing) / 2,
        tags = [
