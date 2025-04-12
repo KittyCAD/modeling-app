@@ -20,10 +20,10 @@ WASM_PACK ?= ~/.cargo/bin/wasm-pack
 endif
 
 .PHONY: install
-install: node_modules/.yarn-integrity $(CARGO) $(WASM_PACK) ## Install dependencies
+install: node_modules/.package-lock.json $(CARGO) $(WASM_PACK) ## Install dependencies
 
-node_modules/.yarn-integrity: package.json yarn.lock
-	yarn install
+node_modules/.package-lock.json: package.json package-lock.json
+	npm install
 ifdef POWERSHELL
 	@ type nul > $@
 else
@@ -32,16 +32,16 @@ endif
 
 $(CARGO):
 ifdef WINDOWS
-	yarn install:rust:windows
+	npm run install:rust:windows
 else
-	yarn install:rust
+	npm run install:rust
 endif
 
 $(WASM_PACK):
 ifdef WINDOWS
-	yarn install:wasm-pack:cargo
+	npm run install:wasm-pack:cargo
 else
-	yarn install:wasm-pack:sh
+	npm run install:wasm-pack:sh
 endif
 
 ###############################################################################
@@ -65,16 +65,16 @@ build-desktop: install public/kcl_wasm_lib_bg.wasm .vite/build/main.js
 
 public/kcl_wasm_lib_bg.wasm: $(CARGO_SOURCES) $(RUST_SOURCES)
 ifdef WINDOWS
-	yarn build:wasm:dev:windows
+	npm run build:wasm:dev:windows
 else
-	yarn build:wasm:dev
+	npm run build:wasm:dev
 endif
 
 build/index.html: $(REACT_SOURCES) $(TYPESCRIPT_SOURCES) $(VITE_SOURCES)
-	yarn build:local
+	npm run build:local
 
 .vite/build/main.js: $(REACT_SOURCES) $(TYPESCRIPT_SOURCES) $(VITE_SOURCES)
-	yarn tronb:vite:dev
+	npm run tronb:vite:dev
 
 ###############################################################################
 # CHECK
@@ -84,12 +84,12 @@ check: format lint
 
 .PHONY: format
 format: install ## Format the code
-	yarn fmt
+	npm run fmt
 
 .PHONY: lint
 lint: install ## Lint the code
-	yarn tsc
-	yarn lint
+	npm run tsc
+	npm run lint
 
 ###############################################################################
 # RUN
@@ -101,11 +101,11 @@ run: run-$(TARGET)
 
 .PHONY: run-web
 run-web: install build-web ## Start the web app
-	yarn start
+	npm run start
 
 .PHONY: run-desktop
 run-desktop: install build-desktop ## Start the desktop app
-	yarn tron:start
+	npm run tron:start
 
 ###############################################################################
 # TEST
@@ -120,7 +120,7 @@ test: test-unit test-e2e
 .PHONY: test-unit
 test-unit: install ## Run the unit tests
 	@ curl -fs localhost:3000 >/dev/null || ( echo "Error: localhost:3000 not available, 'make run-web' first" && exit 1 )
-	yarn test:unit
+	npm run test:unit
 
 .PHONY: test-e2e
 test-e2e: test-e2e-$(TARGET)
@@ -129,17 +129,17 @@ test-e2e: test-e2e-$(TARGET)
 test-e2e-web: install build-web ## Run the web e2e tests
 	@ curl -fs localhost:3000 >/dev/null || ( echo "Error: localhost:3000 not available, 'make run-web' first" && exit 1 )
 ifdef E2E_GREP
-	yarn chrome:test --headed --grep="$(E2E_GREP)" --max-failures=$(E2E_FAILURES)
+	npm run chrome:test --headed --grep="$(E2E_GREP)" --max-failures=$(E2E_FAILURES)
 else
-	yarn chrome:test --headed --workers='100%'
+	npm run chrome:test --headed --workers='100%'
 endif
 
 .PHONY: test-e2e-desktop
 test-e2e-desktop: install build-desktop ## Run the desktop e2e tests
 ifdef E2E_GREP
-	yarn test:playwright:electron --grep="$(E2E_GREP)" --max-failures=$(E2E_FAILURES)
+	npm run test:playwright:electron --grep="$(E2E_GREP)" --max-failures=$(E2E_FAILURES)
 else
-	yarn test:playwright:electron --workers='100%'
+	npm run test:playwright:electron --workers='100%'
 endif
 
 ###############################################################################
@@ -174,5 +174,5 @@ endif
 # It should work for you other Linux users.
 lee-electron-test:
 	Xephyr -br -ac -noreset -screen 1200x500 :2 &
-	DISPLAY=:2 NODE_ENV=development PW_TEST_CONNECT_WS_ENDPOINT=ws://127.0.0.1:4444/ yarn tron:test -g "when using the file tree"
+	DISPLAY=:2 NODE_ENV=development PW_TEST_CONNECT_WS_ENDPOINT=ws://127.0.0.1:4444/ npm run tron:test -g "when using the file tree"
 	killall Xephyr

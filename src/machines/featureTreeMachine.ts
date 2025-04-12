@@ -58,6 +58,8 @@ type FeatureTreeContext = {
   currentOperation?: Operation
 }
 
+export const featureTreeMachineDefaultContext: FeatureTreeContext = {}
+
 export const featureTreeMachine = setup({
   types: {
     input: {} as FeatureTreeContext,
