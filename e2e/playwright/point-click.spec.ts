@@ -210,7 +210,7 @@ test.describe('Point-and-click tests', () => {
         clickCoords: { x: 570, y: 220 },
         cameraPos: { x: 16020, y: -2000, z: 10500 },
         cameraTarget: { x: -150, y: -4500, z: -80 },
-        beforeChamferSnippet: `angledLine([segAng(rectangleSegmentA001)-90,217.26],%,$seg01)
+        beforeChamferSnippet: `angledLine(angle=segAng(rectangleSegmentA001)-90,length=217.26,tag=$seg01)
       chamfer(length = 30,tags = [
       seg01,
       getNextAdjacentEdge(yo),
@@ -223,9 +223,9 @@ test.describe('Point-and-click tests', () => {
           'sketch002 = startSketchOn(extrude001, seg03)',
         afterRectangle1stClickSnippet:
           'startProfileAt([205.96, 254.59], sketch002)',
-        afterRectangle2ndClickSnippet: `angledLine([0,11.39],%,$rectangleSegmentA002)
-        |>angledLine([segAng(rectangleSegmentA002)-90,105.26],%)
-        |>angledLine([segAng(rectangleSegmentA002),-segLen(rectangleSegmentA002)],%)
+        afterRectangle2ndClickSnippet: `angledLine(angle=0,length=11.39,tag=$rectangleSegmentA002)
+        |>angledLine(angle=segAng(rectangleSegmentA002)-90,length=105.26)
+        |>angledLine(angle=segAng(rectangleSegmentA002),length=-segLen(rectangleSegmentA002))
         |>line(endAbsolute=[profileStartX(%),profileStartY(%)])
         |>close()`,
       })
@@ -234,10 +234,7 @@ test.describe('Point-and-click tests', () => {
         clickCoords: { x: 690, y: 250 },
         cameraPos: { x: 16020, y: -2000, z: 10500 },
         cameraTarget: { x: -150, y: -4500, z: -80 },
-        beforeChamferSnippet: `angledLine([
-         segAng(rectangleSegmentA001) - 90,
-         217.26
-       ], %, $seg01)chamfer(
+        beforeChamferSnippet: `angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 217.26, tag = $seg01)chamfer(
          length = 30,
          tags = [
            seg01,
@@ -250,9 +247,9 @@ test.describe('Point-and-click tests', () => {
           'sketch003 = startSketchOn(extrude001, seg04)',
         afterRectangle1stClickSnippet:
           'startProfileAt([-209.64, 255.28], sketch003)',
-        afterRectangle2ndClickSnippet: `angledLine([0,11.56],%,$rectangleSegmentA003)
-        |>angledLine([segAng(rectangleSegmentA003)-90,106.84],%)
-        |>angledLine([segAng(rectangleSegmentA003),-segLen(rectangleSegmentA003)],%)
+        afterRectangle2ndClickSnippet: `angledLine(angle=0,length=11.56,tag=$rectangleSegmentA003)
+        |>angledLine(angle=segAng(rectangleSegmentA003)-90,length=106.84)
+        |>angledLine(angle=segAng(rectangleSegmentA003),length=-segLen(rectangleSegmentA003))
         |>line(endAbsolute=[profileStartX(%),profileStartY(%)])
         |>close()`,
       })
@@ -261,7 +258,7 @@ test.describe('Point-and-click tests', () => {
         clickCoords: { x: 677, y: 87 },
         cameraPos: { x: -6200, y: 1500, z: 6200 },
         cameraTarget: { x: 8300, y: 1100, z: 4800 },
-        beforeChamferSnippet: `angledLine([0, 268.43], %, $rectangleSegmentA001)chamfer(
+        beforeChamferSnippet: `angledLine(angle = 0, length = 268.43, tag = $rectangleSegmentA001)chamfer(
          length = 30,
          tags = [
            getNextAdjacentEdge(yo),
@@ -272,9 +269,9 @@ test.describe('Point-and-click tests', () => {
           'sketch004 = startSketchOn(extrude001, seg05)',
         afterRectangle1stClickSnippet:
           'startProfileAt([82.57, 322.96], sketch004)',
-        afterRectangle2ndClickSnippet: `angledLine([0,11.16],%,$rectangleSegmentA004)
-        |>angledLine([segAng(rectangleSegmentA004)-90,103.07],%)
-        |>angledLine([segAng(rectangleSegmentA004),-segLen(rectangleSegmentA004)],%)
+        afterRectangle2ndClickSnippet: `angledLine(angle=0,length=11.16,tag=$rectangleSegmentA004)
+        |>angledLine(angle=segAng(rectangleSegmentA004)-90,length=103.07)
+        |>angledLine(angle=segAng(rectangleSegmentA004),length=-segLen(rectangleSegmentA004))
         |>line(endAbsolute=[profileStartX(%),profileStartY(%)])
         |>close()`,
       })
@@ -290,9 +287,9 @@ test.describe('Point-and-click tests', () => {
           'sketch005 = startSketchOn(extrude001, seg06)',
         afterRectangle1stClickSnippet:
           'startProfileAt([-23.43, 19.69], sketch005)',
-        afterRectangle2ndClickSnippet: `angledLine([0,9.1],%,$rectangleSegmentA005)
-        |>angledLine([segAng(rectangleSegmentA005)-90,84.07],%)
-        |>angledLine([segAng(rectangleSegmentA005),-segLen(rectangleSegmentA005)],%)
+        afterRectangle2ndClickSnippet: `angledLine(angle=0,length=9.1,tag=$rectangleSegmentA005)
+        |>angledLine(angle=segAng(rectangleSegmentA005)-90,length=84.07)
+        |>angledLine(angle=segAng(rectangleSegmentA005),length=-segLen(rectangleSegmentA005))
         |>line(endAbsolute=[profileStartX(%),profileStartY(%)])
         |>close()`,
       })
@@ -302,15 +299,9 @@ test.describe('Point-and-click tests', () => {
           `@settings(defaultLengthUnit = in)
 sketch001 = startSketchOn(XZ)
   |> startProfileAt([75.8, 317.2], %) // [$startCapTag, $EndCapTag]
-  |> angledLine([0, 268.43], %, $rectangleSegmentA001)
-  |> angledLine([
-       segAng(rectangleSegmentA001) - 90,
-       217.26
-     ], %, $seg01)
-  |> angledLine([
-       segAng(rectangleSegmentA001),
-       -segLen(rectangleSegmentA001)
-     ], %, $yo)
+  |> angledLine(angle = 0, length = 268.43, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 217.26, tag = $seg01)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $yo)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg02)
   |> close()
 extrude001 = extrude(sketch001, length = 100)
@@ -320,48 +311,30 @@ extrude001 = extrude(sketch001, length = 100)
   |> chamfer(length = 30, tags = [getNextAdjacentEdge(yo)], tag = $seg06)
 sketch005 = startSketchOn(extrude001, seg06)
 profile004=startProfileAt([-23.43,19.69], sketch005)
-  |> angledLine([0, 9.1], %, $rectangleSegmentA005)
-  |> angledLine([segAng(rectangleSegmentA005) - 90, 84.07], %)
-  |> angledLine([segAng(rectangleSegmentA005), -segLen(rectangleSegmentA005)], %)
+  |> angledLine(angle = 0, length = 9.1, tag = $rectangleSegmentA005)
+  |> angledLine(angle = segAng(rectangleSegmentA005) - 90, length = 84.07)
+  |> angledLine(angle = segAng(rectangleSegmentA005), length = -segLen(rectangleSegmentA005))
   |> line(endAbsolute=[profileStartX(%), profileStartY(%)])
   |> close()
 sketch004 = startSketchOn(extrude001, seg05)
 profile003 = startProfileAt([82.57, 322.96], sketch004)
-  |> angledLine([0, 11.16], %, $rectangleSegmentA004)
-  |> angledLine([
-       segAng(rectangleSegmentA004) - 90,
-       103.07
-     ], %)
-  |> angledLine([
-       segAng(rectangleSegmentA004),
-       -segLen(rectangleSegmentA004)
-     ], %)
+  |> angledLine(angle = 0, length = 11.16, tag = $rectangleSegmentA004)
+  |> angledLine(angle = segAng(rectangleSegmentA004) - 90, length = 103.07)
+  |> angledLine(angle = segAng(rectangleSegmentA004), length = -segLen(rectangleSegmentA004))
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 sketch003 = startSketchOn(extrude001, seg04)
 profile002 = startProfileAt([-209.64, 255.28], sketch003)
-  |> angledLine([0, 11.56], %, $rectangleSegmentA003)
-  |> angledLine([
-       segAng(rectangleSegmentA003) - 90,
-       106.84
-     ], %)
-  |> angledLine([
-       segAng(rectangleSegmentA003),
-       -segLen(rectangleSegmentA003)
-     ], %)
+  |> angledLine(angle = 0, length = 11.56, tag = $rectangleSegmentA003)
+  |> angledLine(angle = segAng(rectangleSegmentA003) - 90, length = 106.84)
+  |> angledLine(angle = segAng(rectangleSegmentA003), length = -segLen(rectangleSegmentA003))
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 sketch002 = startSketchOn(extrude001, seg03)
 profile001 = startProfileAt([205.96, 254.59], sketch002)
-  |> angledLine([0, 11.39], %, $rectangleSegmentA002)
-  |> angledLine([
-       segAng(rectangleSegmentA002) - 90,
-       105.26
-     ], %)
-  |> angledLine([
-       segAng(rectangleSegmentA002),
-       -segLen(rectangleSegmentA002)
-     ], %)
+  |> angledLine(angle = 0, length = 11.39, tag = $rectangleSegmentA002)
+  |> angledLine(angle = segAng(rectangleSegmentA002) - 90, length = 105.26)
+  |> angledLine(angle = segAng(rectangleSegmentA002), length = -segLen(rectangleSegmentA002))
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 `,
@@ -401,7 +374,7 @@ profile001 = startProfileAt([205.96, 254.59], sketch002)
         clickCoords: { x: 570, y: 220 },
         cameraPos: { x: 16020, y: -2000, z: 10500 },
         cameraTarget: { x: -150, y: -4500, z: -80 },
-        beforeChamferSnippet: `angledLine([segAng(rectangleSegmentA001)-90,217.26],%,$seg01)
+        beforeChamferSnippet: `angledLine(angle=segAng(rectangleSegmentA001)-90,length=217.26,tag=$seg01)
       chamfer(extrude001,length=30,tags=[
       seg01,
       getNextAdjacentEdge(yo),
@@ -413,9 +386,9 @@ profile001 = startProfileAt([205.96, 254.59], sketch002)
           'sketch002 = startSketchOn(extrude001, seg03)',
         afterRectangle1stClickSnippet:
           'startProfileAt([205.96, 254.59], sketch002)',
-        afterRectangle2ndClickSnippet: `angledLine([0,11.39],%,$rectangleSegmentA002)
-        |>angledLine([segAng(rectangleSegmentA002)-90,105.26],%)
-        |>angledLine([segAng(rectangleSegmentA002),-segLen(rectangleSegmentA002)],%)
+        afterRectangle2ndClickSnippet: `angledLine(angle=0,length=11.39,tag=$rectangleSegmentA002)
+        |>angledLine(angle=segAng(rectangleSegmentA002)-90,length=105.26)
+        |>angledLine(angle=segAng(rectangleSegmentA002),length=-segLen(rectangleSegmentA002))
         |>line(endAbsolute=[profileStartX(%),profileStartY(%)])
         |>close()`,
       })
@@ -423,15 +396,9 @@ profile001 = startProfileAt([205.96, 254.59], sketch002)
         `@settings(defaultLengthUnit = in)
 sketch001 = startSketchOn(XZ)
   |> startProfileAt([75.8, 317.2], %)
-  |> angledLine([0, 268.43], %, $rectangleSegmentA001)
-  |> angledLine([
-       segAng(rectangleSegmentA001) - 90,
-       217.26
-     ], %, $seg01)
-  |> angledLine([
-       segAng(rectangleSegmentA001),
-       -segLen(rectangleSegmentA001)
-     ], %, $yo)
+  |> angledLine(angle = 0, length = 268.43, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 217.26, tag = $seg01)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $yo)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg02)
   |> close()
 extrude001 = extrude(sketch001, length = 100)
@@ -451,15 +418,9 @@ chamf = chamfer(
      )
 sketch002 = startSketchOn(extrude001, seg03)
 profile001 = startProfileAt([205.96, 254.59], sketch002)
-  |> angledLine([0, 11.39], %, $rectangleSegmentA002)
-  |> angledLine([
-       segAng(rectangleSegmentA002) - 90,
-       105.26
-     ], %)
-  |> angledLine([
-       segAng(rectangleSegmentA002),
-       -segLen(rectangleSegmentA002)
-     ], %)
+  |> angledLine(angle = 0, length = 11.39, tag = $rectangleSegmentA002)
+  |> angledLine(angle = segAng(rectangleSegmentA002) - 90, length = 105.26)
+  |> angledLine(angle = segAng(rectangleSegmentA002), length = -segLen(rectangleSegmentA002))
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 `,
@@ -589,7 +550,7 @@ openSketch = startSketchOn(XY)
   |> startProfileAt([-5, 0], %)
   |> line(endAbsolute = [0, 5])
   |> xLine(length = 5)
-  |> tangentialArcTo([10, 0], %)
+  |> tangentialArc(endAbsolute = [10, 0])
 `
     const viewPortSize = { width: 1000, height: 500 }
     await page.setBodyDimensions(viewPortSize)
@@ -673,8 +634,8 @@ openSketch = startSketchOn(XY)
       // Wait for enter sketch mode to complete
       await page.waitForTimeout(500)
       await editor.expectState({
-        activeLines: [`|>tangentialArcTo([10,0],%)`],
-        highlightedCode: 'tangentialArcTo([10,0],%)',
+        activeLines: [`|>tangentialArc(endAbsolute=[10,0])`],
+        highlightedCode: 'tangentialArc(endAbsolute=[10,0])',
         diagnostics: [],
       })
     })
@@ -1663,7 +1624,7 @@ profile001 = circle(sketch001, center = [0, 0], radius = 500)
 sketch002 = startSketchOn(XZ)
   |> startProfileAt([0, 0], %)
   |> xLine(length = -500)
-  |> tangentialArcTo([-2000, 500], %)`,
+  |> tangentialArc(endAbsolute = [-2000, 500])`,
     },
     {
       targetType: 'rectangle',
@@ -1671,21 +1632,15 @@ sketch002 = startSketchOn(XZ)
       initialCode: `@settings(defaultLengthUnit = in)
 sketch001 = startSketchOn(YZ)
 profile001 = startProfileAt([-400, -400], sketch001)
-  |> angledLine([0, 800], %, $rectangleSegmentA001)
-  |> angledLine([
-       segAng(rectangleSegmentA001) + 90,
-       800
-     ], %)
-  |> angledLine([
-       segAng(rectangleSegmentA001),
-       -segLen(rectangleSegmentA001)
-     ], %)
+  |> angledLine(angle = 0, length = 800, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) + 90, length = 800)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 sketch002 = startSketchOn(XZ)
   |> startProfileAt([0, 0], %)
   |> xLine(length = -500)
-  |> tangentialArcTo([-2000, 500], %)`,
+  |> tangentialArc(endAbsolute = [-2000, 500])`,
     },
   ]
   sweepCases.map(({ initialCode, targetType, testPoint }) => {
@@ -3482,26 +3437,29 @@ sweep001 = sweep(sketch001, path = sketch002)
       const initialCode = `
 sketch001 = startSketchOn(XZ)
 |> startProfileAt([-100.0, 100.0], %)
-|> angledLine([0, 200.0], %, $rectangleSegmentA001)
-|> angledLine([segAng(rectangleSegmentA001) - 90, 200], %, $rectangleSegmentB001)
-|> angledLine([
-segAng(rectangleSegmentA001),
--segLen(rectangleSegmentA001)
-], %, $rectangleSegmentC001)
+|> angledLine(angle = 0, length = 200.0, tag = $rectangleSegmentA001)
+|> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 200, tag = $rectangleSegmentB001)
+|> angledLine(
+angle=segAng(rectangleSegmentA001),
+length=-segLen(rectangleSegmentA001),
+tag=$rectangleSegmentC001,
+)
 |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
 |> close()
 extrude001 = extrude(sketch001, length = 200)
 sketch002 = startSketchOn(extrude001, rectangleSegmentA001)
 |> startProfileAt([-66.77, 84.81], %)
-|> angledLine([180, 27.08], %, $rectangleSegmentA002)
-|> angledLine([
-segAng(rectangleSegmentA002) - 90,
-27.8
-], %, $rectangleSegmentB002)
-|> angledLine([
-segAng(rectangleSegmentA002),
--segLen(rectangleSegmentA002)
-], %, $rectangleSegmentC002)
+|> angledLine(angle = 180, length = 27.08, tag = $rectangleSegmentA002)
+|> angledLine(
+angle=segAng(rectangleSegmentA002) - 90,
+length=27.8,
+tag=$rectangleSegmentB002,
+)
+|> angledLine(
+angle=segAng(rectangleSegmentA002),
+length=-segLen(rectangleSegmentA002),
+tag=$rectangleSegmentC002,
+)
 |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
 |> close()
 `
@@ -3571,20 +3529,15 @@ segAng(rectangleSegmentA002),
     }) => {
       const initialCode = `sketch001 = startSketchOn(XZ)
   |> startProfileAt([-102.57, 101.72], %)
-  |> angledLine([0, 202.6], %, $rectangleSegmentA001)
-  |> angledLine([
-       segAng(rectangleSegmentA001) - 90,
-       202.6
-     ], %, $rectangleSegmentB001)
-  |> angledLine([
-       segAng(rectangleSegmentA001),
-       -segLen(rectangleSegmentA001)
-     ], %, $rectangleSegmentC001)
+  |> angledLine(angle = 0, length = 202.6, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 202.6, tag = $rectangleSegmentB001)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $rectangleSegmentC001)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 extrude001 = extrude(sketch001, length = 50)
 sketch002 = startSketchOn(extrude001, rectangleSegmentA001)
   |> circle(center = [-11.34, 10.0], radius = 8.69)
+
 `
       await context.addInitScript((initialCode) => {
         localStorage.setItem('persistCode', initialCode)
@@ -3601,7 +3554,7 @@ sketch002 = startSketchOn(extrude001, rectangleSegmentA001)
       await page.getByText(codeToSelection).click()
       await toolbar.revolveButton.click()
       await page.getByText('Edge', { exact: true }).click()
-      const lineCodeToSelection = `angledLine([0, 202.6], %, $rectangleSegmentA001)`
+      const lineCodeToSelection = `angledLine(angle = 0, length = 202.6, tag = $rectangleSegmentA001)`
       await page.getByText(lineCodeToSelection).click()
       await cmdBar.progressCmdBar()
       await cmdBar.progressCmdBar()
@@ -3658,22 +3611,23 @@ sketch002 = startSketchOn(extrude001, rectangleSegmentA001)
       toolbar,
       cmdBar,
     }) => {
-      const initialCode = `sketch002 = startSketchOn(XY)
-  |> startProfileAt([-2.02, 1.79], %)
-  |> xLine(length = 2.6)
-sketch001 = startSketchOn(-XY)
-  |> startProfileAt([-0.48, 1.25], %)
-  |> angledLine([0, 2.38], %, $rectangleSegmentA001)
-  |> angledLine([segAng(rectangleSegmentA001) - 90, 2.4], %, $rectangleSegmentB001)
-  |> angledLine([
-       segAng(rectangleSegmentA001),
-       -segLen(rectangleSegmentA001)
-     ], %, $rectangleSegmentC001)
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> close()
-extrude001 = extrude(sketch001, length = 5)
-sketch003 = startSketchOn(extrude001, 'START')
-  |> circle(center = [-0.69, 0.56], radius = 0.28)
+      const initialCode = `
+    sketch002 = startSketchOn(XY)
+      |> startProfileAt([-2.02, 1.79], %)
+      |> xLine(length = 2.6)
+    sketch001 = startSketchOn('-XY')
+      |> startProfileAt([-0.48, 1.25], %)
+      |> angledLine(angle = 0, length = 2.38, tag = $rectangleSegmentA001)
+      |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 2.4, tag = $rectangleSegmentB001)
+      |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $rectangleSegmentC001)
+      |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+      |> close()
+    extrude001 = extrude(sketch001, length = 5)
+    sketch003 = startSketchOn(extrude001, 'START')
+      |> circle(
+        center = [-0.69, 0.56],
+        radius = 0.28
+      )
 `
 
       await context.addInitScript((initialCode) => {

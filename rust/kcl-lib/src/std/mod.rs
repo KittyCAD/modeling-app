@@ -12,7 +12,6 @@ pub mod edge;
 pub mod extrude;
 pub mod fillet;
 pub mod helix;
-pub mod import;
 pub mod loft;
 pub mod math;
 pub mod mirror;
@@ -75,11 +74,7 @@ lazy_static! {
         Box::new(crate::std::sketch::Line),
         Box::new(crate::std::sketch::XLine),
         Box::new(crate::std::sketch::YLine),
-        Box::new(crate::std::sketch::AngledLineToX),
-        Box::new(crate::std::sketch::AngledLineToY),
         Box::new(crate::std::sketch::AngledLine),
-        Box::new(crate::std::sketch::AngledLineOfXLength),
-        Box::new(crate::std::sketch::AngledLineOfYLength),
         Box::new(crate::std::sketch::AngledLineThatIntersects),
         Box::new(crate::std::sketch::StartSketchOn),
         Box::new(crate::std::sketch::StartProfileAt),
@@ -90,8 +85,6 @@ lazy_static! {
         Box::new(crate::std::sketch::Arc),
         Box::new(crate::std::sketch::ArcTo),
         Box::new(crate::std::sketch::TangentialArc),
-        Box::new(crate::std::sketch::TangentialArcTo),
-        Box::new(crate::std::sketch::TangentialArcToRelative),
         Box::new(crate::std::sketch::BezierCurve),
         Box::new(crate::std::sketch::Hole),
         Box::new(crate::std::patterns::PatternLinear2D),
@@ -115,7 +108,6 @@ lazy_static! {
         Box::new(crate::std::sweep::Sweep),
         Box::new(crate::std::loft::Loft),
         Box::new(crate::std::planes::OffsetPlane),
-        Box::new(crate::std::import::Import),
         Box::new(crate::std::math::Acos),
         Box::new(crate::std::math::Asin),
         Box::new(crate::std::math::Atan),

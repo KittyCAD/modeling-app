@@ -39,9 +39,9 @@ fn face(plane) {
     |> startProfileAt([binBaseLength + binTol, 0], %)
     |> yLine(length = height)
     |> xLine(length = -binBaseLength)
-    |> angledLineOfYLength({ angle = -45, length = thirdStep }, %)
+    |> angledLine(angle = -45, lengthY = thirdStep)
     |> yLine(length = -secondStep)
-    |> angledLineOfYLength({ angle = -45, length = firstStep }, %)
+    |> angledLine(angle = -45, lengthY = firstStep)
     |> close()
   return faceSketch
 }
@@ -184,12 +184,12 @@ fn lipFace(plane) {
          angleEnd = 45.0,
          radius = 0.500000
        }, %, $arc000)
-    // |> angledLineOfYLength({ angle: -45, length: lipStep5 }, %)
+    // |> angledLine(angle = -45, lengthY = lipStep5 )
     |> line(end = [1.046447, -1.046447], tag = $line001)
     |> yLine(length = -lipStep4)
-    |> angledLineOfYLength({ angle = -45, length = lipStep3 }, %)
+    |> angledLine(angle = -45, lengthY = lipStep3)
     |> yLine(length = -lipStep2)
-    |> angledLineOfYLength({ angle = -135, length = lipStep1 }, %)
+    |> angledLine(angle = -135, lengthY = lipStep1)
     |> close()
   return faceSketch
 }

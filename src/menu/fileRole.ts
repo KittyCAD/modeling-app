@@ -148,24 +148,14 @@ export const modelingFileRole = (
       // Appears to be only Windows and Mac OS specific. Linux does not have support
       { type: 'separator' },
       {
-        label: 'Load a sample model',
-        id: 'File.Load a sample model',
+        label: 'Load external model',
+        id: 'File.Load external model',
         click: () => {
           typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-            menuLabel: 'File.Load a sample model',
+            menuLabel: 'File.Load external model',
           })
         },
       },
-      {
-        label: 'Load external file',
-        id: 'File.Load external file',
-        click: () => {
-          typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-            menuLabel: 'File.Load external file',
-          })
-        },
-      },
-      { type: 'separator' },
       {
         label: 'Export current part',
         id: 'File.Export current part',

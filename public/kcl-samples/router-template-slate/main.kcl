@@ -54,14 +54,8 @@ sketch002 = startSketchOn(extrude001, 'START')
        -templateGap * 2 - (templateDiameter / 2)
      ], %)
   |> xLine(length = -7, tag = $rectangleSegmentA001)
-  |> angledLine([
-       segAng(rectangleSegmentA001) + 90,
-       minClampingDistance
-     ], %, $rectangleSegmentB001)
-  |> angledLine([
-       segAng(rectangleSegmentA001),
-       -segLen(rectangleSegmentA001)
-     ], %, $rectangleSegmentC001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) + 90, length = minClampingDistance, tag = $rectangleSegmentB001)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $rectangleSegmentC001)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 
@@ -75,14 +69,8 @@ sketch003 = startSketchOn(extrude001, 'START')
        -templateGap * 2 - (templateDiameter / 2)
      ], %)
   |> xLine(length = 7, tag = $rectangleSegmentA002)
-  |> angledLine([
-       segAng(rectangleSegmentA002) - 90,
-       minClampingDistance
-     ], %)
-  |> angledLine([
-       segAng(rectangleSegmentA002),
-       -segLen(rectangleSegmentA002)
-     ], %)
+  |> angledLine(angle = segAng(rectangleSegmentA002) - 90, length = minClampingDistance)
+  |> angledLine(angle = segAng(rectangleSegmentA002), length = -segLen(rectangleSegmentA002))
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 

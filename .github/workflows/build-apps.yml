@@ -207,6 +207,13 @@ jobs:
           smctl.exe keypair ls
           C:\Windows\System32\certutil.exe -csp "DigiCert Signing Manager KSP" -key -user
           smksp_cert_sync.exe
+          smctl windows certsync
+        # This last line `smctl windows certsync` was added after windows codesign failures started happening
+        # with nightly-v25.4.10. It looks like `smksp_cert_sync.exe` used to do the sync to the local cert store,
+        # but stopped doing it overnight. This extra call that I randomly got from this azure-related doc page
+        # https://docs.digicert.com/en/digicert-keylocker/code-signing/sign-with-third-party-signing-tools/windows-applications/sign-azure-apps-with-signtool-using-ksp-library.html#sync-certificates--windows-only--618365
+        # seems to be doing that extra sync that we need for scripts/sign-win.js to work.
+        # TODO: we still need to make sign-win.js errors fail the workflow, see issue #6276
         shell: cmd
 
       - name: Build the app (debug)
@@ -378,7 +385,7 @@ jobs:
           NOTES: ${{ needs.prepare-files.outputs.notes }}
           PUB_DATE: ${{ github.event.repository.updated_at }}
           WEBSITE_DIR: ${{ env.IS_NIGHTLY == 'true' && 'dl.zoo.dev/releases/modeling-app/nightly' || 'dl.zoo.dev/releases/modeling-app' }}
-          URL_CODED_NAME: ${{ env.IS_NIGHTLY == 'true' && 'Zoo%20Modeling%20App%20%28Nightly%29' || 'Zoo%20Modeling%20App' }}
+          URL_CODED_NAME: ${{ env.IS_NIGHTLY == 'true' && 'Zoo%20Design%20Studio%20%28Nightly%29' || 'Zoo%20Design%20Studio' }}
         run: |
           RELEASE_DIR=https://${WEBSITE_DIR}
           jq --null-input \

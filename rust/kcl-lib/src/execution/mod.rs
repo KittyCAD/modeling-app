@@ -11,9 +11,7 @@ pub use cache::{bust_cache, clear_mem_cache};
 pub use cad_op::Operation;
 pub use geometry::*;
 pub use id_generator::IdGenerator;
-pub(crate) use import::{
-    import_foreign, send_to_engine as send_import_to_engine, PreImportedGeometry, ZOO_COORD_SYSTEM,
-};
+pub(crate) use import::PreImportedGeometry;
 use indexmap::IndexMap;
 pub use kcl_value::{KclObjectFields, KclValue};
 use kcmc::{
@@ -1048,11 +1046,11 @@ identifierGuy = 5
 part001 = startSketchOn(XY)
 |> startProfileAt([-1.2, 4.83], %)
 |> line(end = [2.8, 0])
-|> angledLine([100 + 100, 3.01], %)
-|> angledLine([abc, 3.02], %)
-|> angledLine([def(yo), 3.03], %)
-|> angledLine([ghi(2), 3.04], %)
-|> angledLine([jkl(yo) + 2, 3.05], %)
+|> angledLine(angle = 100 + 100, length = 3.01)
+|> angledLine(angle = abc, length = 3.02)
+|> angledLine(angle = def(yo), length = 3.03)
+|> angledLine(angle = ghi(2), length = 3.04)
+|> angledLine(angle = jkl(yo) + 2, length = 3.05)
 |> close()
 yo2 = hmm([identifierGuy + 5])"#;
 
@@ -2031,10 +2029,10 @@ let w = f() + f()
         let ast = r#"fn bar(t) {
   return startSketchOn(XY)
     |> startProfileAt([0,0], %)
-    |> angledLine({
+    |> angledLine(
         angle = -60,
         length = segLen(t),
-    }, %)
+    )
     |> line(end = [0, 0])
     |> close()
 }

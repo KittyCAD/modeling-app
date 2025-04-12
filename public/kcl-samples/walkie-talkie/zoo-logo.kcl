@@ -9,24 +9,15 @@ export fn zLogo(surface, origin, scale) {
        ], %)
     |> yLine(length = -0.15 * scale)
     |> xLine(length = 0.15 * scale)
-    |> angledLineToX({
-         angle = 47.15,
-         to = 0.3 * scale + origin[0]
-       }, %, $seg1)
+    |> angledLine(angle = 47.15, endAbsoluteX = 0.3 * scale + origin[0], tag = $seg1)
     |> yLine(endAbsolute = 0 + origin[1], tag = $seg3)
     |> xLine(length = 0.63 * scale)
     |> yLine(length = 0.225 * scale)
     |> xLine(length = -0.57 * scale)
-    |> angledLineToX({
-         angle = 47.15,
-         to = 0.93 * scale + origin[0]
-       }, %)
+    |> angledLine(angle = 47.15, endAbsoluteX = 0.93 * scale + origin[0])
     |> yLine(length = 0.15 * scale)
     |> xLine(length = -0.15 * scale)
-    |> angledLine({
-         angle = 47.15,
-         length = -segLen(seg1)
-       }, %, $seg2)
+    |> angledLine(angle = 47.15, length = -segLen(seg1), tag = $seg2)
     |> yLine(length = segLen(seg3))
     |> xLine(endAbsolute = 0 + origin[0])
     |> yLine(length = -0.225 * scale)
@@ -51,7 +42,7 @@ export fn oLogo(surface, origin, scale) {
          angleEnd = 47.15 - 6 + 180,
          radius = .525 * scale
        }, %)
-    |> angledLine({ angle = 47.15, length = .24 * scale }, %)
+    |> angledLine(angle = 47.15, length = .24 * scale)
     |> arc({
          angleStart = 47.15 - 11 + 180,
          angleEnd = 47.15 + 11,
@@ -72,7 +63,7 @@ export fn oLogo2(surface, origin, scale) {
          angleEnd = 47.15 - 6,
          radius = .525 * scale
        }, %)
-    |> angledLine({ angle = 47.15, length = -.24 * scale }, %)
+    |> angledLine(angle = 47.15, length = -.24 * scale)
     |> arc({
          angleStart = 47.15 - 11,
          angleEnd = 47.15 + 11 - 180,

@@ -1,10 +1,11 @@
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 
-import { ActionButton } from '@src/components/ActionButton'
+import { CustomIcon } from '@src/components/CustomIcon'
+import Tooltip from '@src/components/Tooltip'
 import type { CommandArgument } from '@src/lib/commandTypes'
-import { isDesktop } from '@src/lib/isDesktop'
 import { reportRejection } from '@src/lib/trap'
+import { isArray, toSync } from '@src/lib/utils'
 import {
   commandBarActor,
   useCommandBarState,
@@ -31,51 +32,13 @@ function CommandBarPathDialogInput({
       | undefined) || (arg.defaultValue as string)
   )
 
-  useEffect(() => {
-    if (inputRef.current) {
-      inputRef.current.focus()
-      inputRef.current.select()
-    }
-  }, [arg, inputRef])
-
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     onSubmit(inputRef.current?.value)
   }
 
-  function onPickFile() {
-    if (!isDesktop()) {
-      return
-    }
-
-    window.electron
-      .open({
-        properties: ['openFile'],
-        title: 'Pick a file to load into the current project',
-      })
-      .then((newPath) => {
-        if (newPath.canceled || !newPath.filePaths[0]) {
-          return
-        }
-        setValue(newPath.filePaths[0])
-      })
-      .catch(reportRejection)
-  }
-
   return (
     <form id="arg-form" onSubmit={handleSubmit}>
-      <ActionButton
-        className="mx-4 my-4"
-        Element="button"
-        iconStart={{
-          icon: 'file',
-        }}
-        name="insert"
-        onClick={onPickFile}
-        autoFocus
-      >
-        Pick a file
-      </ActionButton>
       <label
         data-testid="cmd-bar-arg-name"
         className="flex items-center mx-4 my-4"
@@ -98,6 +61,30 @@ function CommandBarPathDialogInput({
           }}
           value={value}
         />
+        <button
+          autoFocus
+          onClick={toSync(async () => {
+            // TODO: unify with src/lib/settings/initialSettings.tsx
+            // In desktop end-to-end tests we can't control the file picker,
+            // so we seed the new directory value in the element's dataset
+            const inputRefVal = inputRef.current?.dataset.testValue
+            if (inputRef.current && inputRefVal && !isArray(inputRefVal)) {
+              setValue(inputRefVal)
+            } else {
+              const newPath = await window.electron.open({
+                properties: ['openFile'],
+                title: 'Pick a file to load into the current project',
+              })
+              if (newPath.canceled) return
+              setValue(newPath.filePaths[0])
+            }
+          }, reportRejection)}
+          className="p-0 m-0 border-none hover:bg-primary/10 focus:bg-primary/10 dark:hover:bg-primary/20 dark:focus::bg-primary/20"
+          data-testid="cmd-bar-arg-file-button"
+        >
+          <CustomIcon name="file" className="w-5 h-5" />
+          <Tooltip position="top-right">Choose a file</Tooltip>
+        </button>
       </label>
     </form>
   )

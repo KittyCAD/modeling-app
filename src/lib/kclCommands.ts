@@ -28,21 +28,19 @@ import type { CommandBarContext } from '@src/machines/commandBarMachine'
 import { IS_NIGHTLY_OR_DEBUG } from '@src/routes/utils'
 
 interface OnSubmitProps {
-  sampleName: string
-  code: string
-  sampleUnits?: UnitLength_type
+  name: string
+  content?: string
+  targetPathToClone?: string
   method: 'overwrite' | 'newFile'
+  source: 'kcl-samples' | 'local'
 }
 
 interface KclCommandConfig {
   // TODO: find a different approach that doesn't require
   // special props for a single command
-  specialPropsForSampleCommand: {
+  specialPropsForLoadCommand: {
     onSubmit: (p: OnSubmitProps) => Promise<void>
     providedOptions: CommandArgumentOption<string>[]
-  }
-  specialPropsForLoadCommand: {
-    onSubmit: (path: string) => Promise<void>
   }
   specialPropsForInsertCommand: {
     providedOptions: CommandArgumentOption<string>[]
@@ -173,95 +171,62 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
       },
     },
     {
-      name: 'load-external-file',
-      displayName: 'Load external file',
-      description:
-        'Loads a file from your local disk into the current project.',
+      name: 'load-external-model',
+      displayName: 'Load external model',
+      description: 'Loads an external from a source into the current project.',
       needsReview: true,
       icon: 'importFile',
-      groupId: 'code',
-      hide: DEV || IS_NIGHTLY_OR_DEBUG ? 'web' : 'both',
-      args: {
-        path: {
-          inputType: 'pathDialog',
-          required: true,
-        },
-      },
-      onSubmit(data) {
-        if (!data?.path) {
-          return
-        }
-
-        console.log('path', data.path)
-        commandProps.specialPropsForLoadCommand
-          .onSubmit(data.path)
-          .catch(reportError)
-      },
-    },
-    {
-      name: 'open-kcl-example',
-      displayName: 'Open sample',
-      description: 'Imports an example KCL program into the editor.',
-      needsReview: true,
-      icon: 'code',
       reviewMessage: ({ argumentsToSubmit }) =>
         CommandBarOverwriteWarning({
           heading:
+            'source' in argumentsToSubmit &&
             'method' in argumentsToSubmit &&
             argumentsToSubmit.method === 'newFile'
-              ? 'Create a new file from sample?'
-              : 'Overwrite current file with sample?',
+              ? `Create a new file from ${argumentsToSubmit.source}?`
+              : `Overwrite current file from ${argumentsToSubmit.source}?`,
           message:
-            'method' in argumentsToSubmit &&
             argumentsToSubmit.method === 'newFile'
               ? 'This will create a new file in the current project and open it.'
               : 'This will erase your current file and load the sample part.',
         }),
       groupId: 'code',
-      onSubmit(data) {
-        if (!data?.sample) {
-          return
-        }
-        const pathParts = data.sample.split('/')
-        const projectPathPart = pathParts[0]
-        const primaryKclFile = pathParts[1]
-        // local only
-        const sampleCodeUrl =
-          (isDesktop() ? '.' : '') +
-          `/kcl-samples/${encodeURIComponent(
-            projectPathPart
-          )}/${encodeURIComponent(primaryKclFile)}`
-
-        fetch(sampleCodeUrl)
-          .then(async (codeResponse): Promise<OnSubmitProps> => {
-            if (!codeResponse.ok) {
-              console.error(
-                'Failed to fetch sample code:',
-                codeResponse.statusText
-              )
-              return Promise.reject(new Error('Failed to fetch sample code'))
-            }
-            const code = await codeResponse.text()
-            return {
-              sampleName: data.sample.split('/')[0] + FILE_EXT,
-              code,
-              method: data.method,
-            }
-          })
-          .then((props) => {
-            if (props?.code) {
-              commandProps.specialPropsForSampleCommand
-                .onSubmit(props)
-                .catch(reportError)
-            }
-          })
-          .catch(reportError)
-      },
       args: {
-        method: {
+        source: {
           inputType: 'options',
           required: true,
+          skip: false,
+          defaultValue: 'local',
+          hidden: !isDesktop(),
+          options() {
+            return [
+              {
+                value: 'kcl-samples',
+                name: 'KCL Samples',
+                isCurrent: true,
+              },
+              ...(isDesktop()
+                ? [
+                    {
+                      value: 'local',
+                      name: 'Local Drive',
+                      isCurrent: false,
+                    },
+                  ]
+                : []),
+            ]
+          },
+        },
+        method: {
+          inputType: 'options',
           skip: true,
+          required: (commandContext) =>
+            !['local'].includes(
+              commandContext.argumentsToSubmit.source as string
+            ),
+          hidden: (commandContext) =>
+            ['local'].includes(
+              commandContext.argumentsToSubmit.source as string
+            ),
           defaultValue: isDesktop() ? 'newFile' : 'overwrite',
           options() {
             return [
@@ -284,7 +249,14 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
         },
         sample: {
           inputType: 'options',
-          required: true,
+          required: (commandContext) =>
+            !['local'].includes(
+              commandContext.argumentsToSubmit.source as string
+            ),
+          hidden: (commandContext) =>
+            ['local'].includes(
+              commandContext.argumentsToSubmit.source as string
+            ),
           valueSummary(value) {
             const MAX_LENGTH = 12
             if (typeof value === 'string') {
@@ -294,8 +266,71 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
             }
             return value
           },
-          options: commandProps.specialPropsForSampleCommand.providedOptions,
+          options: commandProps.specialPropsForLoadCommand.providedOptions,
         },
+        path: {
+          inputType: 'pathDialog',
+          required: (commandContext) =>
+            ['local'].includes(
+              commandContext.argumentsToSubmit.source as string
+            ),
+          hidden: (commandContext) =>
+            !['local'].includes(
+              commandContext.argumentsToSubmit.source as string
+            ),
+        },
+      },
+      onSubmit(data) {
+        console.log('data', data)
+        if (!data) {
+          return new Error('No input data')
+        }
+
+        const { method, source, sample, path } = data
+        console.log(method, source, sample, path)
+        if (source === 'local' && path) {
+          commandProps.specialPropsForLoadCommand
+            .onSubmit({
+              name: '',
+              targetPathToClone: path,
+              method,
+              source,
+            })
+            .catch(reportError)
+        } else if (source === 'kcl-samples' && sample) {
+          const pathParts = sample.split('/')
+          const projectPathPart = pathParts[0]
+          const primaryKclFile = pathParts[1]
+          // local only
+          const sampleCodeUrl =
+            (isDesktop() ? '.' : '') +
+            `/kcl-samples/${encodeURIComponent(
+              projectPathPart
+            )}/${encodeURIComponent(primaryKclFile)}`
+
+          fetch(sampleCodeUrl)
+            .then(async (codeResponse) => {
+              if (!codeResponse.ok) {
+                console.error(
+                  'Failed to fetch sample code:',
+                  codeResponse.statusText
+                )
+                return Promise.reject(new Error('Failed to fetch sample code'))
+              }
+              const code = await codeResponse.text()
+              commandProps.specialPropsForLoadCommand
+                .onSubmit({
+                  name: data.sample.split('/')[0] + FILE_EXT,
+                  content: code,
+                  source,
+                  method,
+                })
+                .catch(reportError)
+            })
+            .catch(reportError)
+        } else {
+          toast.error("The command couldn't be submitted, check the arguments.")
+        }
       },
     },
     {

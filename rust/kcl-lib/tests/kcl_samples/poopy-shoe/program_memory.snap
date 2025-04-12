@@ -640,9 +640,9 @@ description: Variables in memory after executing poopy-shoe.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 495,
-            "end": 501,
-            "start": 495,
+            "commentStart": 501,
+            "end": 507,
+            "start": 501,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -759,9 +759,9 @@ description: Variables in memory after executing poopy-shoe.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 495,
-              "end": 501,
-              "start": 495,
+              "commentStart": 501,
+              "end": 507,
+              "start": 501,
               "type": "TagDeclarator",
               "value": "seg01"
             },
@@ -1106,9 +1106,9 @@ description: Variables in memory after executing poopy-shoe.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 495,
-            "end": 501,
-            "start": 495,
+            "commentStart": 501,
+            "end": 507,
+            "start": 501,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -1410,9 +1410,9 @@ description: Variables in memory after executing poopy-shoe.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1275,
-            "end": 1281,
-            "start": 1275,
+            "commentStart": 1268,
+            "end": 1274,
+            "start": 1268,
             "type": "TagDeclarator",
             "value": "seg02"
           },
@@ -1529,9 +1529,9 @@ description: Variables in memory after executing poopy-shoe.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 1275,
-              "end": 1281,
-              "start": 1275,
+              "commentStart": 1268,
+              "end": 1274,
+              "start": 1268,
               "type": "TagDeclarator",
               "value": "seg02"
             },
@@ -2067,9 +2067,9 @@ description: Variables in memory after executing poopy-shoe.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2992,
-            "end": 2998,
-            "start": 2992,
+            "commentStart": 2957,
+            "end": 2963,
+            "start": 2957,
             "type": "TagDeclarator",
             "value": "seg04"
           },
@@ -2309,9 +2309,9 @@ description: Variables in memory after executing poopy-shoe.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 2992,
-              "end": 2998,
-              "start": 2992,
+              "commentStart": 2957,
+              "end": 2963,
+              "start": 2957,
               "type": "TagDeclarator",
               "value": "seg04"
             },
@@ -2362,9 +2362,9 @@ description: Variables in memory after executing poopy-shoe.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 1275,
-                  "end": 1281,
-                  "start": 1275,
+                  "commentStart": 1268,
+                  "end": 1274,
+                  "start": 1268,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -2481,9 +2481,9 @@ description: Variables in memory after executing poopy-shoe.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 1275,
-                    "end": 1281,
-                    "start": 1275,
+                    "commentStart": 1268,
+                    "end": 1274,
+                    "start": 1268,
                     "type": "TagDeclarator",
                     "value": "seg02"
                   },
@@ -2854,9 +2854,9 @@ description: Variables in memory after executing poopy-shoe.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3638,
-            "end": 3644,
-            "start": 3638,
+            "commentStart": 3621,
+            "end": 3627,
+            "start": 3621,
             "type": "TagDeclarator",
             "value": "seg03"
           },
@@ -2970,9 +2970,9 @@ description: Variables in memory after executing poopy-shoe.kcl
               1.0
             ],
             "tag": {
-              "commentStart": 3638,
-              "end": 3644,
-              "start": 3638,
+              "commentStart": 3621,
+              "end": 3627,
+              "start": 3621,
               "type": "TagDeclarator",
               "value": "seg03"
             },
@@ -3247,9 +3247,9 @@ description: Variables in memory after executing poopy-shoe.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 3638,
-                  "end": 3644,
-                  "start": 3638,
+                  "commentStart": 3621,
+                  "end": 3627,
+                  "start": 3621,
                   "type": "TagDeclarator",
                   "value": "seg03"
                 },
@@ -3363,9 +3363,9 @@ description: Variables in memory after executing poopy-shoe.kcl
                     1.0
                   ],
                   "tag": {
-                    "commentStart": 3638,
-                    "end": 3644,
-                    "start": 3638,
+                    "commentStart": 3621,
+                    "end": 3627,
+                    "start": 3621,
                     "type": "TagDeclarator",
                     "value": "seg03"
                   },
@@ -3724,9 +3724,9 @@ description: Variables in memory after executing poopy-shoe.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 2992,
-                  "end": 2998,
-                  "start": 2992,
+                  "commentStart": 2957,
+                  "end": 2963,
+                  "start": 2957,
                   "type": "TagDeclarator",
                   "value": "seg04"
                 },
@@ -3966,9 +3966,9 @@ description: Variables in memory after executing poopy-shoe.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 2992,
-                    "end": 2998,
-                    "start": 2992,
+                    "commentStart": 2957,
+                    "end": 2963,
+                    "start": 2957,
                     "type": "TagDeclarator",
                     "value": "seg04"
                   },
@@ -4019,9 +4019,9 @@ description: Variables in memory after executing poopy-shoe.kcl
                       "id": "[uuid]",
                       "sourceRange": [],
                       "tag": {
-                        "commentStart": 1275,
-                        "end": 1281,
-                        "start": 1275,
+                        "commentStart": 1268,
+                        "end": 1274,
+                        "start": 1268,
                         "type": "TagDeclarator",
                         "value": "seg02"
                       },
@@ -4138,9 +4138,9 @@ description: Variables in memory after executing poopy-shoe.kcl
                           0.0
                         ],
                         "tag": {
-                          "commentStart": 1275,
-                          "end": 1281,
-                          "start": 1275,
+                          "commentStart": 1268,
+                          "end": 1274,
+                          "start": 1268,
                           "type": "TagDeclarator",
                           "value": "seg02"
                         },

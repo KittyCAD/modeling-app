@@ -104,7 +104,7 @@ pub async fn shell(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///     |> startProfileAt([-size, -size], %)
 ///     |> line(end = [2 * size, 0])
 ///     |> line(end = [0, 2 * size])
-///     |> tangentialArcTo([-size, size], %)
+///     |> tangentialArc(endAbsolute = [-size, size])
 ///     |> close()
 ///     |> extrude(length = 65)
 ///
@@ -127,7 +127,7 @@ pub async fn shell(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///     |> startProfileAt([-size, -size], %)
 ///     |> line(end = [2 * size, 0])
 ///     |> line(end = [0, 2 * size])
-///     |> tangentialArcTo([-size, size], %)
+///     |> tangentialArc(endAbsolute = [-size, size])
 ///     |> close()
 ///     |> extrude(length = 65)
 ///
@@ -152,7 +152,7 @@ pub async fn shell(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///     |> startProfileAt([-size, -size], %)
 ///     |> line(end = [2 * size, 0])
 ///     |> line(end = [0, 2 * size])
-///     |> tangentialArcTo([-size, size], %)
+///     |> tangentialArc(endAbsolute = [-size, size])
 ///     |> close()
 ///     |> extrude(length = 65)
 ///
@@ -287,7 +287,7 @@ pub async fn hollow(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 ///     |> startProfileAt([-size, -size], %)
 ///     |> line(end = [2 * size, 0])
 ///     |> line(end = [0, 2 * size])
-///     |> tangentialArcTo([-size, size], %)
+///     |> tangentialArc(endAbsolute = [-size, size])
 ///     |> close()
 ///     |> extrude(length = 65)
 ///

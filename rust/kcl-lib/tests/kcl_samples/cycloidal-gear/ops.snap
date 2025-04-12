@@ -10,7 +10,7 @@ description: Operations executed cycloidal-gear.kcl
       "name": "cycloidalGear",
       "functionSourceRange": [
         265,
-        1729,
+        1644,
         0
       ],
       "unlabeledArg": null,
@@ -25,7 +25,7 @@ description: Operations executed cycloidal-gear.kcl
       "name": "gearSketch",
       "functionSourceRange": [
         491,
-        1520,
+        1435,
         0
       ],
       "unlabeledArg": null,
@@ -186,7 +186,7 @@ description: Operations executed cycloidal-gear.kcl
       "name": "gearSketch",
       "functionSourceRange": [
         491,
-        1520,
+        1435,
         0
       ],
       "unlabeledArg": null,
@@ -342,7 +342,7 @@ description: Operations executed cycloidal-gear.kcl
       "name": "gearSketch",
       "functionSourceRange": [
         491,
-        1520,
+        1435,
         0
       ],
       "unlabeledArg": null,

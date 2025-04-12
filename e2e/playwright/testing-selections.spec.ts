@@ -308,21 +308,15 @@ part009 = startSketchOn(XY)
   |> startProfileAt([pipeLargeDia - (thickness / 2), 38], %)
   |> line(end = [thickness, 0])
   |> line(end = [0, -1])
-  |> angledLineToX({
-       angle = 60,
-       to = pipeSmallDia + thickness
-     }, %)
+  |> angledLine(angle = 60, endAbsoluteX = pipeSmallDia + thickness)
   |> line(end = [0, -pipeLength])
-  |> angledLineToX({
-       angle = -60,
-       to = pipeLargeDia + thickness
-     }, %)
+  |> angledLine(angle = -60, endAbsoluteX = pipeLargeDia + thickness)
   |> line(end = [0, -1])
   |> line(end = [-thickness, 0])
   |> line(end = [0, 1])
-  |> angledLineToX({ angle = 120, to = pipeSmallDia }, %)
+  |> angledLine(angle = 120, endAbsoluteX =  pipeSmallDia)
   |> line(end = [0, pipeLength])
-  |> angledLineToX({ angle = 60, to = pipeLargeDia }, %)
+  |> angledLine(angle = 60, endAbsoluteX =  pipeLargeDia)
   |> close()
 rev = revolve(part009, axis = Y)
 sketch006 = startSketchOn(XY)
@@ -332,15 +326,9 @@ profile001 = circle(
   radius = 17.96
 )
 profile002 = startProfileAt([86.92, -63.81], sketch006)
-  |> angledLine([0, 63.81], %, $rectangleSegmentA001)
-  |> angledLine([
-       segAng(rectangleSegmentA001) - 90,
-       17.05
-     ], %)
-  |> angledLine([
-       segAng(rectangleSegmentA001),
-       -segLen(rectangleSegmentA001)
-     ], %)
+  |> angledLine(angle = 0, length = 63.81, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 17.05)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 profile003 = startProfileAt([40.16, -120.48], sketch006)
@@ -471,7 +459,7 @@ yo = startProfileAt([4.83, 12.56], part001)
   |> line(end = [15.1, 2.48])
   |> line(end = [3.15, -9.85], tag = $seg01)
   |> line(end = [-15.17, -4.1])
-  |> angledLine([segAng(seg01), 12.35], %, $seg02)
+  |> angledLine(angle = segAng(seg01), length = 12.35, tag = $seg02)
   |> line(end = [-13.02, 10.03])
   |> close()
 yoo = extrude(yo, length = 4)
@@ -484,15 +472,9 @@ profile002 = startProfileAt([-11.08, 2.39], sketch002)
   |> close()
 extrude001 = extrude(profile002, length = 15)
 profile001 = startProfileAt([7.49, 9.96], sketch001)
-  |> angledLine([0, 5.05], %, $rectangleSegmentA001)
-  |> angledLine([
-       segAng(rectangleSegmentA001) - 90,
-       4.81
-     ], %)
-  |> angledLine([
-       segAng(rectangleSegmentA001),
-       -segLen(rectangleSegmentA001)
-     ], %)
+  |> angledLine(angle = 0, length = 5.05, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 4.81)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 
@@ -539,21 +521,21 @@ profile001 = startProfileAt([7.49, 9.96], sketch001)
 part001 = startSketchOn(XZ)
   |> startProfileAt([20, 0], %)
   |> line(end = [7.13, 4 + 0])
-  |> angledLine({ angle = 3 + 0, length = 3.14 + 0 }, %)
+  |> angledLine(angle = 3 + 0, length = 3.14 + 0 )
   |> line(endAbsolute = [20.14 + 0, -0.14 + 0])
   |> xLine(endAbsolute = 29 + 0)
   |> yLine(length = -3.14 + 0, tag = $a)
   |> xLine(length = 1.63)
-  |> angledLineOfXLength({ angle = 3 + 0, length = 3.14 }, %)
-  |> angledLineOfYLength({ angle = 30, length = 3 + 0 }, %)
-  |> angledLineToX({ angle = 22.14 + 0, to = 12 }, %)
-  |> angledLineToY({ angle = 30, to = 11.14 }, %)
+  |> angledLine(angle = 3 + 0, lengthX = 3.14)
+  |> angledLine(angle = 30, lengthY = 3 + 0)
+  |> angledLine(angle = 22.14 + 0, endAbsoluteX =  12)
+  |> angledLine(angle = 30, endAbsoluteY =  11.14)
   |> angledLineThatIntersects({
         angle = 3.14,
         intersectTag = a,
         offset = 0
       }, %)
-  |> tangentialArcTo([13.14 + 0, 13.14], %)
+  |> tangentialArc(endAbsolute = [13.14 + 0, 13.14])
   |> close()
   |> extrude(length = 5 + 7)
     `
@@ -592,7 +574,7 @@ part001 = startSketchOn(XZ)
 
     const extrusionTopCap: Coords2d = [800, 240]
     const flatExtrusionFace: Coords2d = [960, 160]
-    const tangentialArcTo: Coords2d = [840, 160]
+    const tangentialArc: Coords2d = [840, 160]
     const close: Coords2d = [720, 200]
     const nothing: Coords2d = [600, 200]
     const closeEdge: Coords2d = [744, 233]
@@ -689,28 +671,28 @@ part001 = startSketchOn(XZ)
     )
 
     await checkCodeAtHoverPosition(
-      'tangentialArcTo',
-      tangentialArcTo,
-      'tangentialArcTo([13.14+0,13.14],%)extrude(length=5+7)',
-      'tangentialArcTo([13.14 + 0, 13.14], %)'
+      'tangentialArc',
+      tangentialArc,
+      'tangentialArc(endAbsolute=[13.14+0,13.14])extrude(length=5+7)',
+      'tangentialArc(endAbsolute = [13.14 + 0, 13.14])'
     )
     await checkCodeAtHoverPosition(
       'tangentialArcEdge',
       tangentialArcEdge,
-      `tangentialArcTo([13.14+0,13.14],%)`,
-      'tangentialArcTo([13.14 + 0, 13.14], %)'
+      `tangentialArc(endAbsolute=[13.14+0,13.14])`,
+      'tangentialArc(endAbsolute = [13.14 + 0, 13.14])'
     )
     await checkCodeAtHoverPosition(
       'tangentialArcOppositeEdge',
       tangentialArcOppositeEdge,
-      `tangentialArcTo([13.14+0,13.14],%)`,
-      'tangentialArcTo([13.14 + 0, 13.14], %)'
+      `tangentialArc(endAbsolute=[13.14+0,13.14])`,
+      'tangentialArc(endAbsolute = [13.14 + 0, 13.14])'
     )
     await checkCodeAtHoverPosition(
       'tangentialArcAdjacentEdge',
       tangentialArcAdjacentEdge,
-      `tangentialArcTo([13.14+0,13.14],%)`,
-      'tangentialArcTo([13.14 + 0, 13.14], %)'
+      `tangentialArc(endAbsolute=[13.14+0,13.14])`,
+      'tangentialArc(endAbsolute = [13.14 + 0, 13.14])'
     )
 
     await checkCodeAtHoverPosition(
@@ -736,14 +718,14 @@ part001 = startSketchOn(XZ)
     await checkCodeAtHoverPosition(
       'straightSegmentEdge',
       straightSegmentEdge,
-      `angledLineToY({angle=30,to=11.14},%)`,
-      'angledLineToY({ angle = 30, to = 11.14 }, %)'
+      `angledLine(angle=30,endAbsoluteY=11.14)`,
+      'angledLine(angle = 30, endAbsoluteY =  11.14)'
     )
     await checkCodeAtHoverPosition(
       'straightSegmentOppositeEdge',
       straightSegmentOppositeEdge,
-      `angledLineToY({angle=30,to=11.14},%)`,
-      'angledLineToY({ angle = 30, to = 11.14 }, %)'
+      `angledLine(angle=30,endAbsoluteY=11.14)`,
+      'angledLine(angle = 30, endAbsoluteY =  11.14)'
     )
     await checkCodeAtHoverPosition(
       'straightSegmentAdjacentEdge',
@@ -758,15 +740,9 @@ part001 = startSketchOn(XZ)
     await u.codeLocator.fill(`@settings(defaultLengthUnit = in)
     sketch001 = startSketchOn(XZ)
     |> startProfileAt([75.8, 317.2], %) // [$startCapTag, $EndCapTag]
-    |> angledLine([0, 268.43], %, $rectangleSegmentA001)
-    |> angledLine([
-     segAng(rectangleSegmentA001) - 90,
-     217.26
-   ], %, $seg01)
-    |> angledLine([
-     segAng(rectangleSegmentA001),
-     -segLen(rectangleSegmentA001)
-   ], %, $yo)
+    |> angledLine(angle = 0, length = 268.43, tag = $rectangleSegmentA001)
+    |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 217.26, tag = $seg01)
+    |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $yo)
     |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg02)
     |> close()
   extrude001 = extrude(sketch001, length = 100)
@@ -815,14 +791,14 @@ part001 = startSketchOn(XZ)
     await checkCodeAtHoverPosition(
       'oppositeChamfer',
       oppositeChamfer,
-      `angledLine([segAng(rectangleSegmentA001)-90,217.26],%,$seg01)chamfer(length=30,tags=[seg01,getNextAdjacentEdge(yo),getNextAdjacentEdge(seg02),getOppositeEdge(seg01)],)`,
+      `angledLine(angle=segAng(rectangleSegmentA001)-90,length=217.26,tag=$seg01)chamfer(length=30,tags=[seg01,getNextAdjacentEdge(yo),getNextAdjacentEdge(seg02),getOppositeEdge(seg01)],)`,
       '   )'
     )
 
     await checkCodeAtHoverPosition(
       'baseChamfer',
       baseChamfer,
-      `angledLine([segAng(rectangleSegmentA001)-90,217.26],%,$seg01)chamfer(length=30,tags=[seg01,getNextAdjacentEdge(yo),getNextAdjacentEdge(seg02),getOppositeEdge(seg01)],)`,
+      `angledLine(angle=segAng(rectangleSegmentA001)-90,length=217.26,tag=$seg01)chamfer(length=30,tags=[seg01,getNextAdjacentEdge(yo),getNextAdjacentEdge(seg02),getOppositeEdge(seg01)],)`,
       '   )'
     )
 
@@ -860,7 +836,7 @@ part001 = startSketchOn(XZ)
     await checkCodeAtHoverPosition(
       'adjacentChamfer2',
       adjacentChamfer2,
-      `angledLine([segAng(rectangleSegmentA001),-segLen(rectangleSegmentA001)],%,$yo)chamfer(length=30,tags=[seg01,getNextAdjacentEdge(yo),getNextAdjacentEdge(seg02),getOppositeEdge(seg01)],)`,
+      `angledLine(angle=segAng(rectangleSegmentA001),length=-segLen(rectangleSegmentA001),tag=$yo)chamfer(length=30,tags=[seg01,getNextAdjacentEdge(yo),getNextAdjacentEdge(seg02),getOppositeEdge(seg01)],)`,
       '   )'
     )
   })
@@ -960,11 +936,11 @@ part001 = startSketchOn(XZ)
       },
       {
         pos: [816, 244],
-        expectedCode: 'angledLine([segAng(seg01), yo], %)',
+        expectedCode: 'angledLine(angle = segAng(seg01), length = yo)',
       },
       {
         pos: [1107, 161],
-        expectedCode: 'tangentialArcTo([167.95, -28.85], %)',
+        expectedCode: 'tangentialArc(endAbsolute = [167.95, -28.85])',
       },
     ] as const
     await page.addInitScript(
