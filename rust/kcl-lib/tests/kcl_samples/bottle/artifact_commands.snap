@@ -220,7 +220,8 @@ description: Artifact commands bottle.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 202.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -438,7 +439,8 @@ description: Artifact commands bottle.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 18.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
