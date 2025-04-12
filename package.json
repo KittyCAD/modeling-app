@@ -11,6 +11,7 @@
   "description": "Zoo Design Studio",
   "main": ".vite/build/main.js",
   "license": "MIT",
+  "workspaces": ["packages/codemirror-lang-kcl", "packages/codemirror-lsp-client", "rust/kcl-language-server"],
   "dependencies": {
     "@codemirror/autocomplete": "^6.18.6",
     "@codemirror/commands": "^6.8.1",
@@ -114,7 +115,7 @@
     "files:flip-to-nightly:windows": "powershell -ExecutionPolicy Bypass -File ./scripts/flip-files-to-nightly.ps1",
     "files:invalidate-bucket": "./scripts/invalidate-files-bucket.sh",
     "files:invalidate-bucket:nightly": "./scripts/invalidate-files-bucket.sh --nightly",
-    "postinstall": "npm --cwd ./rust/kcl-language-server --modules-folder node_modules install && electron-rebuild",
+    "postinstall": "electron-rebuild",
     "make:dev": "make dev",
     "generate:machine-api": "npx openapi-typescript ./openapi/machine-api.json -o src/lib/machine-api.d.ts",
     "generate:samples-manifest": "cd public/kcl-samples && node generate-manifest.js",
