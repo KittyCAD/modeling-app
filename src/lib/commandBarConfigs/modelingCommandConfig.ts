@@ -799,7 +799,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     displayName: 'Create parameter',
     description: 'Add a named constant to use in geometry',
     icon: 'make-variable',
-    status: 'development',
     needsReview: false,
     args: {
       value: {
@@ -815,7 +814,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     displayName: 'Edit parameter',
     description: 'Edit the value of a named constant',
     icon: 'make-variable',
-    status: 'development',
     needsReview: false,
     args: {
       nodeToEdit: {
