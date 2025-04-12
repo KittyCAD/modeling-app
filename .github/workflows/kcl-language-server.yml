@@ -183,7 +183,7 @@ jobs:
           npm install
           cd rust/kcl-language-server
           rm -rf node_modules
-          cp -r ../node_modules .
+          cp -r ../../node_modules .
 
       - name: Package Extension (release)
         if: startsWith(github.event.ref, 'refs/tags/')
@@ -273,7 +273,7 @@ jobs:
           npm install
           cd rust/kcl-language-server
           rm -rf node_modules
-          cp -r ../node_modules .
+          cp -r ../../node_modules .
 
       - name: Package Extension (release)
         if: startsWith(github.event.ref, 'refs/tags/')
