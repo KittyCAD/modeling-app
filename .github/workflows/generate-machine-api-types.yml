@@ -24,7 +24,7 @@ jobs:
           cache: 'npm'
       - run: npm install
       - run: npm run generate:machine-api
-      - run: npm run fmt
+      - run: npm run fmt || true
       - name: check for changes
         id: git-check
         run: |
