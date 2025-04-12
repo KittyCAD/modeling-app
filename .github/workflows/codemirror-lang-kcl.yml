@@ -22,11 +22,8 @@ jobs:
           cache: 'npm'
 
       - run: npm install
-        working-directory: packages/codemirror-lang-kcl
 
-      - run: npm run tsc
-        working-directory: packages/codemirror-lang-kcl
+      - run: npm run tsc --workspace=packages/codemirror-lang-kcl
 
       - name: run unit tests
-        run: npm run test
-        working-directory: packages/codemirror-lang-kcl
+        run: npm run test --workspace=packages/codemirror-lang-kcl
