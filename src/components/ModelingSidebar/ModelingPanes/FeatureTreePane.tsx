@@ -24,7 +24,7 @@ import {
   stdLibMap,
 } from '@src/lib/operations'
 import { editorManager, kclManager } from '@src/lib/singletons'
-import { featureTreeMachine } from '@src/machines/featureTreeMachine'
+import { featureTreeMachine, featureTreeMachineDefaultContext } from '@src/machines/featureTreeMachine'
 import {
   editorIsMountedSelector,
   kclEditorActor,
@@ -101,7 +101,13 @@ export const FeatureTreePane = () => {
           }
         },
       },
-    })
+    }),
+    {
+      input: {
+        ...featureTreeMachineDefaultContext,
+      },
+      // devTools: true,
+    }
   )
   // If there are parse errors we show the last successful operations
   // and overlay a message on top of the pane
