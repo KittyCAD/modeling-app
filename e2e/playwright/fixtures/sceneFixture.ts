@@ -49,7 +49,9 @@ export class SceneFixture {
   constructor(page: Page) {
     this.page = page
     this.streamWrapper = page.getByTestId('stream')
-    this.networkToggleConnected = page.getByTestId('network-toggle-ok')
+    this.networkToggleConnected = page
+      .getByTestId('network-toggle-ok')
+      .or(page.getByTestId('network-toggle-other'))
     this.startEditSketchBtn = page
       .getByRole('button', { name: 'Start Sketch' })
       .or(page.getByRole('button', { name: 'Edit Sketch' }))
@@ -231,7 +233,7 @@ export class SceneFixture {
   settled = async (cmdBar: CmdBarFixture) => {
     const u = await getUtils(this.page)
 
-    await expect(this.startEditSketchBtn).not.toBeDisabled()
+    await expect(this.startEditSketchBtn).not.toBeDisabled({ timeout: 15_000 })
     await expect(this.startEditSketchBtn).toBeVisible()
 
     await cmdBar.openCmdBar()

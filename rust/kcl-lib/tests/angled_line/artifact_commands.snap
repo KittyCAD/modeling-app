@@ -213,7 +213,8 @@ description: Artifact commands angled_line.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 4.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {

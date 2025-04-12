@@ -6,18 +6,31 @@ use kcl_derive_docs::stdlib;
 use super::args::FromArgs;
 use crate::{
     errors::{KclError, KclErrorDetails},
-    execution::{types::NumericType, ExecState, KclValue},
+    execution::{
+        types::{self, NumericType},
+        ExecState, KclValue,
+    },
     std::args::{Args, TyF64},
+    CompilationError,
 };
 
 /// Compute the remainder after dividing `num` by `div`.
 /// If `num` is negative, the result will be too.
-pub async fn rem(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let n = args.get_unlabeled_kw_arg("number to divide")?;
-    let d = args.get_kw_arg("divisor")?;
+pub async fn rem(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let n: TyF64 = args.get_unlabeled_kw_arg("number to divide")?;
+    let d: TyF64 = args.get_kw_arg("divisor")?;
+
+    let (n, d, ty) = NumericType::combine_div(n, d);
+    if *types::CHECK_NUMERIC_TYPES && ty == NumericType::Unknown {
+        // TODO suggest how to fix this
+        exec_state.warn(CompilationError::err(
+            args.source_range,
+            "Remainder of numbers which have unknown or incompatible units.",
+        ));
+    }
     let remainder = inner_rem(n, d);
 
-    Ok(args.make_user_val_from_f64(remainder))
+    Ok(args.make_user_val_from_f64_with_type(TyF64::new(remainder, ty)))
 }
 
 /// Compute the remainder after dividing `num` by `div`.
@@ -104,10 +117,10 @@ pub async fn sqrt(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// ```no_run
 /// exampleSketch = startSketchOn("XZ")
 ///   |> startProfileAt([0, 0], %)
-///   |> angledLine({
+///   |> angledLine(
 ///     angle = 50,
 ///     length = sqrt(2500),
-///   }, %)
+///   )
 ///   |> yLine(endAbsolute = 0)
 ///   |> close()
 ///
@@ -137,15 +150,15 @@ pub async fn abs(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 /// sketch001 = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> line(end = [8, 0])
-///   |> angledLine({
+///   |> angledLine(
 ///     angle = abs(myAngle),
 ///     length = 5,
-///   }, %)
+///   )
 ///   |> line(end = [-5, 0])
-///   |> angledLine({
+///   |> angledLine(
 ///     angle = myAngle,
 ///     length = 5,
-///   }, %)
+///   )
 ///   |> close()
 ///
 /// baseExtrusion = extrude(sketch001, length = 5)
@@ -243,11 +256,19 @@ fn inner_ceil(num: f64) -> Result<f64, KclError> {
 }
 
 /// Compute the minimum of the given arguments.
-pub async fn min(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let nums = args.get_number_array()?;
+pub async fn min(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let nums = args.get_number_array_with_types()?;
+    let (nums, ty) = NumericType::combine_eq_array(&nums);
+    if *types::CHECK_NUMERIC_TYPES && ty == NumericType::Unknown {
+        // TODO suggest how to fix this
+        exec_state.warn(CompilationError::err(
+            args.source_range,
+            "Calling `min` on numbers which have unknown or incompatible units.",
+        ));
+    }
     let result = inner_min(nums);
 
-    Ok(args.make_user_val_from_f64(result))
+    Ok(args.make_user_val_from_f64_with_type(TyF64::new(result, ty)))
 }
 
 /// Compute the minimum of the given arguments.
@@ -255,10 +276,10 @@ pub async fn min(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 /// ```no_run
 /// exampleSketch = startSketchOn("XZ")
 ///   |> startProfileAt([0, 0], %)
-///   |> angledLine({
+///   |> angledLine(
 ///     angle = 70,
 ///     length = min(15, 31, 4, 13, 22)
-///   }, %)
+///   )
 ///   |> line(end = [20, 0])
 ///   |> close()
 ///
@@ -280,11 +301,19 @@ fn inner_min(args: Vec<f64>) -> f64 {
 }
 
 /// Compute the maximum of the given arguments.
-pub async fn max(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let nums = args.get_number_array()?;
+pub async fn max(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let nums = args.get_number_array_with_types()?;
+    let (nums, ty) = NumericType::combine_eq_array(&nums);
+    if *types::CHECK_NUMERIC_TYPES && ty == NumericType::Unknown {
+        // TODO suggest how to fix this
+        exec_state.warn(CompilationError::err(
+            args.source_range,
+            "Calling `max` on numbers which have unknown or incompatible units.",
+        ));
+    }
     let result = inner_max(nums);
 
-    Ok(args.make_user_val_from_f64(result))
+    Ok(args.make_user_val_from_f64_with_type(TyF64::new(result, ty)))
 }
 
 /// Compute the maximum of the given arguments.
@@ -292,10 +321,10 @@ pub async fn max(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 /// ```no_run
 /// exampleSketch = startSketchOn("XZ")
 ///   |> startProfileAt([0, 0], %)
-///   |> angledLine({
+///   |> angledLine(
 ///     angle = 70,
 ///     length = max(15, 31, 4, 13, 22)
-///   }, %)
+///   )
 ///   |> line(end = [20, 0])
 ///   |> close()
 ///
@@ -343,10 +372,10 @@ pub async fn pow(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 /// ```no_run
 /// exampleSketch = startSketchOn("XZ")
 ///   |> startProfileAt([0, 0], %)
-///   |> angledLine({
+///   |> angledLine(
 ///     angle = 50,
 ///     length = pow(5, 2),
-///   }, %)
+///   )
 ///   |> yLine(endAbsolute = 0)
 ///   |> close()
 ///
@@ -373,10 +402,10 @@ pub async fn acos(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// ```no_run
 /// sketch001 = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
-///   |> angledLine({
+///   |> angledLine(
 ///     angle = toDegrees(acos(0.5)),
 ///     length = 10,
-///   }, %)
+///   )
 ///   |> line(end = [5, 0])
 ///   |> line(endAbsolute = [12, 0])
 ///   |> close()
@@ -404,10 +433,10 @@ pub async fn asin(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// ```no_run
 /// sketch001 = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
-///   |> angledLine({
+///   |> angledLine(
 ///     angle = toDegrees(asin(0.5)),
 ///     length = 20,
-///   }, %)
+///   )
 ///   |> yLine(endAbsolute = 0)
 ///   |> close()
 ///
@@ -434,10 +463,10 @@ pub async fn atan(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// ```no_run
 /// sketch001 = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
-///   |> angledLine({
+///   |> angledLine(
 ///     angle = toDegrees(atan(1.25)),
 ///     length = 20,
-///   }, %)
+///   )
 ///   |> yLine(endAbsolute = 0)
 ///   |> close()
 ///
@@ -464,10 +493,10 @@ pub async fn atan2(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// ```no_run
 /// sketch001 = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
-///   |> angledLine({
+///   |> angledLine(
 ///     angle = toDegrees(atan2(1.25, 2)),
 ///     length = 20,
-///   }, %)
+///   )
 ///   |> yLine(endAbsolute = 0)
 ///   |> close()
 ///
@@ -628,10 +657,10 @@ pub async fn e(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclE
 /// ```no_run
 /// exampleSketch = startSketchOn("XZ")
 ///   |> startProfileAt([0, 0], %)
-///   |> angledLine({
+///   |> angledLine(
 ///     angle = 30,
 ///     length = 2 * e() ^ 2,
-///   }, %)
+///   )
 ///   |> yLine(endAbsolute = 0)
 ///   |> close()
 ///  
@@ -660,10 +689,10 @@ pub async fn tau(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 /// ```no_run
 /// exampleSketch = startSketchOn("XZ")
 ///   |> startProfileAt([0, 0], %)
-///   |> angledLine({
+///   |> angledLine(
 ///     angle = 50,
 ///     length = 10 * tau(),
-///   }, %)
+///   )
 ///   |> yLine(endAbsolute = 0)
 ///   |> close()
 ///
@@ -691,10 +720,10 @@ pub async fn to_radians(_exec_state: &mut ExecState, args: Args) -> Result<KclVa
 /// ```no_run
 /// exampleSketch = startSketchOn("XZ")
 ///   |> startProfileAt([0, 0], %)
-///   |> angledLine({
+///   |> angledLine(
 ///     angle = 50,
 ///     length = 70 * cos(toRadians(45)),
-///   }, %)
+///   )
 ///   |> yLine(endAbsolute = 0)
 ///   |> close()
 ///
@@ -721,10 +750,10 @@ pub async fn to_degrees(_exec_state: &mut ExecState, args: Args) -> Result<KclVa
 /// ```no_run
 /// exampleSketch = startSketchOn("XZ")
 ///   |> startProfileAt([0, 0], %)
-///   |> angledLine({
+///   |> angledLine(
 ///     angle = 50,
 ///     length = 70 * cos(toDegrees(pi()/4)),
-///   }, %)
+///   )
 ///   |> yLine(endAbsolute = 0)
 ///   |> close()
 ///

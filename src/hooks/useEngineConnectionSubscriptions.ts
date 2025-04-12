@@ -12,6 +12,7 @@ import {
   getSweepFromSuspectedSweepSurface,
   getWallCodeRef,
 } from '@src/lang/std/artifactGraph'
+import { isTopLevelModule } from '@src/lang/util'
 import type { CallExpression, CallExpressionKw } from '@src/lang/wasm'
 import { defaultSourceRange } from '@src/lang/wasm'
 import type { DefaultPlaneStr } from '@src/lib/planes'
@@ -198,8 +199,8 @@ export function useEngineConnectionSubscriptions() {
                 kclManager.artifactGraph
               )
               if (!err(extrusion)) {
-                const fileIndex = getModuleId(extrusion.codeRef.range)
-                if (fileIndex !== 0) {
+                if (!isTopLevelModule(extrusion.codeRef.range)) {
+                  const fileIndex = getModuleId(extrusion.codeRef.range)
                   const importDetails =
                     kclManager.execState.filenames[fileIndex]
                   if (!importDetails) {

@@ -35,18 +35,6 @@ export const PROJECT_IMAGE_NAME = `thumbnail.png`
 export const FILE_PERSIST_KEY = `${PROJECT_FOLDER}-last-opened` as const
 /** The default name given to new kcl files in a project */
 export const DEFAULT_FILE_NAME = 'Untitled'
-/** The file endings that will appear in
- * the file explorer if found in a project directory */
-export const RELEVANT_FILE_TYPES = [
-  'kcl',
-  'fbx',
-  'gltf',
-  'glb',
-  'obj',
-  'ply',
-  'step',
-  'stl',
-] as const
 /** The default name for a tutorial project */
 export const ONBOARDING_PROJECT_NAME = 'Tutorial Project $nn'
 /**
@@ -130,6 +118,9 @@ export const CREATE_FILE_URL_PARAM = 'create-file'
 
 /** Toast id for the app auto-updater toast */
 export const AUTO_UPDATER_TOAST_ID = 'auto-updater-toast'
+
+/** Toast id for the insert foreign part toast */
+export const INSERT_FOREIGN_TOAST_ID = 'insert-foreign-toast'
 
 /** Local sketch axis values in KCL for operations, it could either be 'X' or 'Y' */
 export const KCL_AXIS_X = 'X'

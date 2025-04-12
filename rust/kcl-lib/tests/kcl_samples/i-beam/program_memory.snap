@@ -220,7 +220,7 @@ description: Variables in memory after executing i-beam.kcl
           "type": "Inches"
         }
       },
-      "height": 72.00000000000001,
+      "height": 72.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {

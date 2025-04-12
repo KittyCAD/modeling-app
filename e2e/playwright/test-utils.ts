@@ -1021,6 +1021,10 @@ export function executorInputPath(fileName: string): string {
   return path.join('rust', 'kcl-lib', 'e2e', 'executor', 'inputs', fileName)
 }
 
+export function testsInputPath(fileName: string): string {
+  return path.join('rust', 'kcl-lib', 'tests', 'inputs', fileName)
+}
+
 export async function doAndWaitForImageDiff(
   page: Page,
   fn: () => Promise<unknown>,
@@ -1136,7 +1140,7 @@ export function tomlToPerProjectSettings(
   return TOML.parse(toml)
 }
 
-export function perProjectsettingsToToml(
+export function perProjectSettingsToToml(
   settings: DeepPartial<ProjectConfiguration>
 ) {
   // eslint-disable-next-line no-restricted-syntax

@@ -176,7 +176,7 @@ description: Variables in memory after executing intersect_cubes.kcl
           "type": "Mm"
         }
       },
-      "height": 10.0,
+      "height": 20.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
@@ -354,7 +354,7 @@ description: Variables in memory after executing intersect_cubes.kcl
           "type": "Mm"
         }
       },
-      "height": 10.0,
+      "height": 20.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
@@ -408,12 +408,12 @@ description: Variables in memory after executing intersect_cubes.kcl
               "sourceRange": []
             },
             "from": [
-              -2.0,
+              2.0,
               -2.0
             ],
             "tag": null,
             "to": [
-              18.0,
+              12.0,
               -2.0
             ],
             "type": "ToPoint",
@@ -427,13 +427,13 @@ description: Variables in memory after executing intersect_cubes.kcl
               "sourceRange": []
             },
             "from": [
-              18.0,
+              12.0,
               -2.0
             ],
             "tag": null,
             "to": [
-              18.0,
-              18.0
+              12.0,
+              8.0
             ],
             "type": "ToPoint",
             "units": {
@@ -446,13 +446,13 @@ description: Variables in memory after executing intersect_cubes.kcl
               "sourceRange": []
             },
             "from": [
-              18.0,
-              18.0
+              12.0,
+              8.0
             ],
             "tag": null,
             "to": [
-              -2.0,
-              18.0
+              2.0,
+              8.0
             ],
             "type": "ToPoint",
             "units": {
@@ -465,12 +465,12 @@ description: Variables in memory after executing intersect_cubes.kcl
               "sourceRange": []
             },
             "from": [
-              -2.0,
-              18.0
+              2.0,
+              8.0
             ],
             "tag": null,
             "to": [
-              -2.0,
+              2.0,
               -2.0
             ],
             "type": "ToPoint",
@@ -510,11 +510,11 @@ description: Variables in memory after executing intersect_cubes.kcl
         },
         "start": {
           "from": [
-            -2.0,
+            2.0,
             -2.0
           ],
           "to": [
-            -2.0,
+            2.0,
             -2.0
           ],
           "units": {

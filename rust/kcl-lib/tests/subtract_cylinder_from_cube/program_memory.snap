@@ -388,18 +388,18 @@ description: Variables in memory after executing subtract_cylinder_from_cube.kcl
             },
             "ccw": true,
             "center": [
-              0.0,
-              0.0
+              2.0,
+              2.0
             ],
             "from": [
-              2.0,
-              0.0
+              4.0,
+              2.0
             ],
             "radius": 2.0,
             "tag": null,
             "to": [
-              2.0,
-              0.0
+              4.0,
+              2.0
             ],
             "type": "Circle",
             "units": {
@@ -438,12 +438,12 @@ description: Variables in memory after executing subtract_cylinder_from_cube.kcl
         },
         "start": {
           "from": [
-            2.0,
-            0.0
+            4.0,
+            2.0
           ],
           "to": [
-            2.0,
-            0.0
+            4.0,
+            2.0
           ],
           "units": {
             "type": "Mm"
@@ -460,7 +460,7 @@ description: Variables in memory after executing subtract_cylinder_from_cube.kcl
           "type": "Mm"
         }
       },
-      "height": 10.0,
+      "height": 5.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {

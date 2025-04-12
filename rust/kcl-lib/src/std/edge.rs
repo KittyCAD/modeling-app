@@ -29,19 +29,20 @@ pub async fn get_opposite_edge(exec_state: &mut ExecState, args: Args) -> Result
 /// exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> line(end = [10, 0])
-///   |> angledLine({
-///     angle = 60,
-///     length = 10,
-///   }, %)
-///   |> angledLine({
-///     angle = 120,
-///     length = 10,
-///   }, %)
+///   |> angledLine(
+///        angle = 60,
+///        length = 10,
+///      )
+///   |> angledLine(
+///        angle = 120,
+///        length = 10,
+///      )
 ///   |> line(end = [-10, 0])
-///   |> angledLine({
-///     angle = 240,
-///     length = 10,
-///   }, %, $referenceEdge)
+///   |> angledLine(
+///        angle = 240,
+///        length = 10,
+///        tag = $referenceEdge,
+///      )
 ///   |> close()
 ///
 /// example = extrude(exampleSketch, length = 5)
@@ -102,19 +103,20 @@ pub async fn get_next_adjacent_edge(exec_state: &mut ExecState, args: Args) -> R
 /// exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> line(end = [10, 0])
-///   |> angledLine({
-///     angle = 60,
-///     length = 10,
-///   }, %)
-///   |> angledLine({
-///     angle = 120,
-///     length = 10,
-///   }, %)
+///   |> angledLine(
+///        angle = 60,
+///        length = 10,
+///      )
+///   |> angledLine(
+///        angle = 120,
+///        length = 10,
+///      )
 ///   |> line(end = [-10, 0])
-///   |> angledLine({
-///     angle = 240,
-///     length = 10,
-///   }, %, $referenceEdge)
+///   |> angledLine(
+///        angle = 240,
+///        length = 10,
+///        tag = $referenceEdge,
+///      )
 ///   |> close()
 ///
 /// example = extrude(exampleSketch, length = 5)
@@ -188,19 +190,20 @@ pub async fn get_previous_adjacent_edge(exec_state: &mut ExecState, args: Args) 
 /// exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> line(end = [10, 0])
-///   |> angledLine({
-///     angle = 60,
-///     length = 10,
-///   }, %)
-///   |> angledLine({
-///     angle = 120,
-///     length = 10,
-///   }, %)
+///   |> angledLine(
+///        angle = 60,
+///        length = 10,
+///      )
+///   |> angledLine(
+///        angle = 120,
+///        length = 10,
+///      )
 ///   |> line(end = [-10, 0])
-///   |> angledLine({
-///     angle = 240,
-///     length = 10,
-///   }, %, $referenceEdge)
+///   |> angledLine(
+///        angle = 240,
+///        length = 10,
+///        tag = $referenceEdge,
+///      )
 ///   |> close()
 ///
 /// example = extrude(exampleSketch, length = 5)

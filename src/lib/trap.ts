@@ -19,10 +19,13 @@ export class Reason {
   }
 }
 
-/**
- * This is intentionally *not* exported due to misuse.  We'd like to add a lint.
- */
-function isErr<T>(value: ExcludeErr<T> | Error): value is Error {
+export function isNotErr<T>(
+  value: ExcludeErr<T> | Error
+): value is ExcludeErr<T> {
+  return !(value instanceof Error)
+}
+
+export function isErr<T>(value: ExcludeErr<T> | Error): value is Error {
   return value instanceof Error
 }
 

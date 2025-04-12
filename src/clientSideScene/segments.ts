@@ -505,19 +505,19 @@ class TangentialArcToSegment implements SegmentUtils {
       extraSegmentGroup.visible = isHandlesVisible
     }
 
-    const tangentialArcToSegmentBody = group.children.find(
+    const tangentialArcSegmentBody = group.children.find(
       (child) => child.userData.type === TANGENTIAL_ARC_TO_SEGMENT_BODY
     ) as Mesh
 
-    if (tangentialArcToSegmentBody) {
+    if (tangentialArcSegmentBody) {
       const newGeo = createArcGeometry({ ...arcInfo, scale })
-      tangentialArcToSegmentBody.geometry = newGeo
+      tangentialArcSegmentBody.geometry = newGeo
     }
-    const tangentialArcToSegmentBodyDashed = group.getObjectByName(
+    const tangentialArcSegmentBodyDashed = group.getObjectByName(
       TANGENTIAL_ARC_TO__SEGMENT_DASH
     )
-    if (tangentialArcToSegmentBodyDashed instanceof Mesh) {
-      tangentialArcToSegmentBodyDashed.geometry = createArcGeometry({
+    if (tangentialArcSegmentBodyDashed instanceof Mesh) {
+      tangentialArcSegmentBodyDashed.geometry = createArcGeometry({
         ...arcInfo,
         isDashed: true,
         scale,
@@ -1705,6 +1705,10 @@ function createLengthIndicator({
   lengthIndicatorText.innerText = roundOff(length).toString()
   const lengthIndicatorWrapper = document.createElement('div')
 
+  lengthIndicatorWrapper.addEventListener('wheel', (e) => {
+    // dispatch to cameraControls, without this mouse wheel wouldn't work when hovering this segment label
+    sceneInfra.camControls.onMouseWheel(e)
+  })
   // Double click workflow
   lengthIndicatorWrapper.ondblclick = () => {
     const selection = lengthIndicatorGroup.parent?.userData.selection
@@ -2087,7 +2091,7 @@ function updateAngleIndicator(
 
 export const segmentUtils = {
   straight: new StraightSegment(),
-  tangentialArcTo: new TangentialArcToSegment(),
+  tangentialArc: new TangentialArcToSegment(),
   circle: new CircleSegment(),
   circleThreePoint: new CircleThreePointSegment(),
   arc: new ArcSegment(),

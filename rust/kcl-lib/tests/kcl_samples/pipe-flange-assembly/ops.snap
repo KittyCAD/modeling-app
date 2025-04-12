@@ -1107,7 +1107,7 @@ description: Operations executed pipe-flange-assembly.kcl
       "name": "bolt",
       "functionSourceRange": [
         358,
-        1657,
+        1497,
         9
       ],
       "unlabeledArg": null,
@@ -1482,7 +1482,7 @@ description: Operations executed pipe-flange-assembly.kcl
       "name": "hexNut",
       "functionSourceRange": [
         344,
-        1278,
+        1118,
         10
       ],
       "unlabeledArg": null,

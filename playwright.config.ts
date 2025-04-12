@@ -45,6 +45,7 @@ export default defineConfig({
     [process.env.CI ? 'dot' : 'list'],
     ['json', { outputFile: './test-results/report.json' }],
     ['html'],
+    ['./e2e/playwright/lib/api-reporter.ts'],
   ],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
@@ -113,7 +114,7 @@ export default defineConfig({
 
   /* Run your local dev server before starting the tests */
   webServer: {
-    command: 'yarn start',
+    command: 'npm start',
     // url: 'http://127.0.0.1:3000',
     reuseExistingServer: !process.env.CI,
   },

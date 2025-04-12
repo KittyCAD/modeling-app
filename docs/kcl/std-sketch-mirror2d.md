@@ -11,7 +11,10 @@ Only works on unclosed sketches for now.
 Mirror occurs around a local sketch axis rather than a global axis.
 
 ```js
-mirror2d(@sketches: [Sketch; 1+], axis: Axis2d | Edge): Sketch
+mirror2d(
+  @sketches: [Sketch; 1+],
+  axis: Axis2d | Edge,
+): Sketch
 ```
 
 
@@ -100,9 +103,9 @@ example = extrude(sketch001, length = 10)
 sketch0011 = startSketchOn(XY)
      |> startProfileAt([6.77, 0], %)
      |> yLine(length = 1.27)
-     |> tangentialArcTo([5.96, 2.37], %)
-     |> tangentialArcTo([-6.2, 2.44], %)
-     |> tangentialArcTo([-6.6, 1.82], %)
+     |> tangentialArc(endAbsolute = [5.96, 2.37])
+     |> tangentialArc(endAbsolute = [-6.2, 2.44])
+     |> tangentialArc(endAbsolute = [-6.6, 1.82])
      |> yLine(length = -1.82)
      |> mirror2d( axis = X )
      |> extrude(length = 10)

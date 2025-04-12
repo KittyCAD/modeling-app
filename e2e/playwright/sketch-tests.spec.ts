@@ -63,7 +63,7 @@ test.describe('Sketch tests', { tag: ['@skipWin'] }, () => {
   part002 = startSketchOn(-XZ)
   ${startProfileAt3}
   |> xLine(length = width / 4)
-  |> tangentialArcTo([width / 2, 0], %)
+  |> tangentialArc(endAbsolute = [width / 2, 0])
   |> xLine(length = -width / 4 + wireRadius)
   |> yLine(length = wireOffset)
   |> arc({
@@ -119,7 +119,7 @@ test.describe('Sketch tests', { tag: ['@skipWin'] }, () => {
 sketch001 = startSketchOn(XZ)
   |> startProfileAt([2.61, -4.01], %)
   |> xLine(length = 8.73)
-  |> tangentialArcTo([8.33, -1.31], %)`
+  |> tangentialArc(endAbsolute = [8.33, -1.31])`
       )
     })
 
@@ -130,7 +130,7 @@ sketch001 = startSketchOn(XZ)
 
     await expect(async () => {
       await page.mouse.click(700, 200)
-      await page.getByText('tangentialArcTo([8.33, -1.31], %)').click()
+      await page.getByText('tangentialArc(endAbsolute = [8.33, -1.31])').click()
       await expect(
         page.getByRole('button', { name: 'Edit Sketch' })
       ).toBeEnabled({ timeout: 2000 })
@@ -139,7 +139,7 @@ sketch001 = startSketchOn(XZ)
 
     await page.waitForTimeout(600) // wait for animation
 
-    await page.getByText('tangentialArcTo([8.33, -1.31], %)').click()
+    await page.getByText('tangentialArc(endAbsolute = [8.33, -1.31])').click()
     await page.keyboard.press('End')
     await page.keyboard.down('Shift')
     await page.keyboard.press('ArrowUp')
@@ -212,7 +212,7 @@ sketch001 = startProfileAt([12.34, -12.34], sketch002)
           `sketch001 = startSketchOn(XZ)
       |> startProfileAt([4.61, -14.01], %)
       |> line(end = [12.73, -0.09])
-      |> tangentialArcTo([24.95, -5.38], %)
+      |> tangentialArc(endAbsolute = [24.95, -5.38])
       |> arcTo({
           interior = [20.18, -1.7],
           end = [11.82, -1.16]
@@ -262,7 +262,7 @@ sketch001 = startProfileAt([12.34, -12.34], sketch002)
         await expect(u.codeLocator).toHaveText(`sketch001 = startSketchOn(XZ)
       |> startProfileAt([4.61, -14.01], %)
       |> line(end = [12.73, -0.09])
-      |> tangentialArcTo([24.95, -5.38], %)
+      |> tangentialArc(endAbsolute = [24.95, -5.38])
       |> arcTo({
           interior = [20.18, -1.7],
           end = [11.82, -1.16]
@@ -326,7 +326,7 @@ sketch001 = startProfileAt([12.34, -12.34], sketch002)
         prevContent = await page.locator('.cm-content').innerText()
       }
 
-      // drag tangentialArcTo handle
+      // drag tangentialArc handle
       const tangentEnd = await u.getBoundingBox('[data-overlay-index="1"]')
       await page.mouse.move(tangentEnd.x, tangentEnd.y - 5)
       await page.mouse.down()
@@ -407,7 +407,7 @@ sketch001 = startProfileAt([12.34, -12.34], sketch002)
         .toHaveText(`sketch001 = startSketchOn(XZ)
   |> startProfileAt([6.44, -12.07], %)
   |> line(end = [14.72, 1.97])
-  |> tangentialArcTo([26.92, -3.32], %)
+  |> tangentialArc(endAbsolute = [26.92, -3.32])
   |> arcTo({
        interior = [18.11, -3.73],
        end = [9.77, -3.19]
@@ -577,7 +577,7 @@ sketch001 = startSketchOn(XZ)
 sketch001 = startSketchOn(XZ)
   |> startProfileAt([4.61, -10.01], %)
   |> line(end = [12.73, -0.09])
-  |> tangentialArcTo([24.95, -0.38], %)
+  |> tangentialArc(endAbsolute = [24.95, -0.38])
   |> close()
   |> extrude(length = 5)`
       )
@@ -646,7 +646,7 @@ sketch001 = startSketchOn(XZ)
     await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
     prevContent = await page.locator('.cm-content').innerText()
 
-    // drag tangentialArcTo handle
+    // drag tangentialArc handle
     const tangentEnd = await u.getBoundingBox('[data-overlay-index="1"]')
     await page.dragAndDrop('#stream', '#stream', {
       sourcePosition: { x: tangentEnd.x + 10, y: tangentEnd.y - 5 },
@@ -663,7 +663,7 @@ sketch001 = startSketchOn(XZ)
       `sketch001 = startSketchOn(XZ)
     |> startProfileAt([7.12, -12.68], %)
     |> line(end = [12.68, -1.09])
-    |> tangentialArcTo([24.89, 0.68], %)
+    |> tangentialArc(endAbsolute = [24.89, 0.68])
     |> close()
     |> extrude(length = 5)`,
       { shouldNormalise: true }
@@ -685,7 +685,7 @@ sketch001 = startSketchOn(XZ)
 sketch001 = startSketchOn(XZ)
   |> startProfileAt([4.61, -14.01], %)
   |> line(end = [12.73, -0.09])
-  |> tangentialArcTo([24.95, -5.38], %)
+  |> tangentialArc(endAbsolute = [24.95, -5.38])
   |> close()
   |> revolve(axis = X)`
       )
@@ -757,7 +757,7 @@ sketch001 = startSketchOn(XZ)
     await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
     prevContent = await page.locator('.cm-content').innerText()
 
-    // drag tangentialArcTo handle
+    // drag tangentialArc handle
     const tangentEnd = await u.getBoundingBox('[data-overlay-index="1"]')
     await page.mouse.move(tangentEnd.x, tangentEnd.y - 5)
     await page.mouse.down()
@@ -771,7 +771,7 @@ sketch001 = startSketchOn(XZ)
       `sketch001 = startSketchOn(XZ)
   |> startProfileAt([6.44, -12.07], %)
   |> line(end = [14.72, 1.97])
-  |> tangentialArcTo([24.95, -5.38], %)
+  |> tangentialArc(endAbsolute = [24.95, -5.38])
   |> line(end = [1.97, 2.06])
   |> close()
   |> revolve(axis = X)`,
@@ -1222,7 +1222,7 @@ profile001 = startProfileAt([${roundOff(scale * 69.6)}, ${roundOff(
       fn lug = (origin, length, diameter, plane) => {
         lugSketch = startSketchOn(plane)
           |> startProfileAt([origin[0] + lugDiameter / 2, origin[1]], %)
-          |> angledLineOfYLength({ angle = 60, length = lugHeadLength }, %)
+          |> angledLine(angle = 60, lengthY = lugHeadLength)
           |> xLine(endAbsolute = 0 + .001)
           |> yLine(endAbsolute = 0)
           |> close()
@@ -1653,7 +1653,7 @@ profile003 = startProfileAt([206.63, -56.73], sketch001)
         await page.waitForTimeout(600)
       })
 
-      const codeFromTangentialArc = `  |> tangentialArcTo([39.49, 88.22], %)`
+      const codeFromTangentialArc = `  |> tangentialArc(endAbsolute = [39.49, 88.22])`
       await test.step('check that tangential tool does not snap to other profile starts', async () => {
         await toolbar.tangentialArcBtn.click()
         await page.waitForTimeout(1000)
@@ -1675,7 +1675,7 @@ profile003 = startProfileAt([206.63, -56.73], sketch001)
         // check pixel is now gray at tanArcLocation to verify code has executed
         await scene.expectPixelColor([26, 26, 26], tanArcLocation, 15)
         await editor.expectEditor.not.toContain(
-          `tangentialArcTo([39.49, 88.22], %)`
+          `tangentialArc(endAbsolute = [39.49, 88.22])`
         )
       })
 
@@ -1876,7 +1876,7 @@ profile003 = startProfileAt([206.63, -56.73], sketch001)
 
       await endArcStartLine()
       await editor.expectEditor.toContain(
-        `|> tangentialArcTo([16.61, 4.14], %)`
+        `|> tangentialArc(endAbsolute = [16.61, 4.14])`
       )
 
       // Add a three-point arc segment
@@ -1977,12 +1977,9 @@ profile003 = startProfileAt([206.63, -56.73], sketch001)
       )
       await crnRect1point2()
       await editor.expectEditor.toContain(
-        `|> angledLine([0, 2.37], %, $rectangleSegmentA001)
-  |> angledLine([segAng(rectangleSegmentA001) - 90, 7.8], %)
-  |> angledLine([
-       segAng(rectangleSegmentA001),
-       -segLen(rectangleSegmentA001)
-     ], %)
+        `|> angledLine(angle = 0, length = 2.37, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 7.8)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()`.replaceAll('\n', '')
       )
@@ -1995,15 +1992,9 @@ profile003 = startProfileAt([206.63, -56.73], sketch001)
       await crnRect2point2()
       await page.waitForTimeout(300)
       await editor.expectEditor.toContain(
-        `|> angledLine([0, 5.49], %, $rectangleSegmentA002)
-  |> angledLine([
-       segAng(rectangleSegmentA002) - 90,
-       4.14
-     ], %)
-  |> angledLine([
-       segAng(rectangleSegmentA002),
-       -segLen(rectangleSegmentA002)
-     ], %)
+        `|> angledLine(angle = 0, length = 5.49, tag = $rectangleSegmentA002)
+  |> angledLine(angle = segAng(rectangleSegmentA002) - 90, length = 4.14)
+  |> angledLine(angle = segAng(rectangleSegmentA002), length = -segLen(rectangleSegmentA002))
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()`.replaceAll('\n', '')
       )
@@ -2020,15 +2011,9 @@ profile003 = startProfileAt([206.63, -56.73], sketch001)
       await cntrRect1point2()
       await page.waitForTimeout(300)
       await editor.expectEditor.toContain(
-        `|> angledLine([0, 7.06], %, $rectangleSegmentA003)
-  |> angledLine([
-       segAng(rectangleSegmentA003) + 90,
-       4.34
-     ], %)
-  |> angledLine([
-       segAng(rectangleSegmentA003),
-       -segLen(rectangleSegmentA003)
-     ], %)
+        `|> angledLine(angle = 0, length = 7.06, tag = $rectangleSegmentA003)
+  |> angledLine(angle = segAng(rectangleSegmentA003) + 90, length = 4.34)
+  |> angledLine(angle = segAng(rectangleSegmentA003), length = -segLen(rectangleSegmentA003))
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()`.replaceAll('\n', '')
       )
@@ -2042,15 +2027,9 @@ profile003 = startProfileAt([206.63, -56.73], sketch001)
       await cntrRect2point2()
       await page.waitForTimeout(300)
       await editor.expectEditor.toContain(
-        `|> angledLine([0, 3.12], %, $rectangleSegmentA004)
-  |> angledLine([
-       segAng(rectangleSegmentA004) + 90,
-       6.24
-     ], %)
-  |> angledLine([
-       segAng(rectangleSegmentA004),
-       -segLen(rectangleSegmentA004)
-     ], %)
+        `|> angledLine(angle = 0, length = 3.12, tag = $rectangleSegmentA004)
+  |> angledLine(angle = segAng(rectangleSegmentA004) + 90, length = 6.24)
+  |> angledLine(angle = segAng(rectangleSegmentA004), length = -segLen(rectangleSegmentA004))
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()`.replaceAll('\n', '')
       )
@@ -2204,15 +2183,9 @@ profile001 = startProfileAt([6.24, 4.54], sketch001)
   |> line(end = [8.61, 0.74])
   |> line(end = [10.99, -5.22])
 profile002 = startProfileAt([11.19, 5.02], sketch001)
-  |> angledLine([0, 10.78], %, $rectangleSegmentA001)
-  |> angledLine([
-       segAng(rectangleSegmentA001) - 90,
-       4.14
-     ], %)
-  |> angledLine([
-       segAng(rectangleSegmentA001),
-       -segLen(rectangleSegmentA001)
-     ], %)
+  |> angledLine(angle = 0, length = 10.78, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 4.14)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 profile003 = circle(sketch001, center = [6.92, -4.2], radius = 3.16)
@@ -2282,7 +2255,7 @@ profile004 = circleThreePoint(sketch001, p1 = [13.44, -6.8], p2 = [13.39, -2.07]
         await rectDragTo()
         await page.mouse.up()
         await editor.expectEditor.toContain(
-          `angledLine([-7, 10.27], %, $rectangleSegmentA001)`
+          `angledLine(angle = -7, length = 10.27, tag = $rectangleSegmentA001)`
         )
       })
 
@@ -2322,15 +2295,9 @@ profile004 = circleThreePoint(sketch001, p1 = [13.44, -6.8], p2 = [13.39, -2.07]
         await page.waitForTimeout(100)
         await rectEnd()
         await editor.expectEditor.toContain(
-          `|> angledLine([180, 1.97], %, $rectangleSegmentA002)
-  |> angledLine([
-       segAng(rectangleSegmentA002) + 90,
-       3.89
-     ], %)
-  |> angledLine([
-       segAng(rectangleSegmentA002),
-       -segLen(rectangleSegmentA002)
-     ], %)
+          `|> angledLine(angle = 180, length = 1.97, tag = $rectangleSegmentA002)
+  |> angledLine(angle = segAng(rectangleSegmentA002) + 90, length = 3.89)
+  |> angledLine(angle = segAng(rectangleSegmentA002), length = -segLen(rectangleSegmentA002))
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()`.replaceAll('\n', '')
         )
@@ -2351,15 +2318,9 @@ profile001 = startProfileAt([6.24, 4.54], sketch001)
   |> line(end = [8.61, 0.74])
   |> line(end = [10.99, -5.22])
 profile002 = startProfileAt([11.19, 5.02], sketch001)
-  |> angledLine([0, 10.78], %, $rectangleSegmentA001)
-  |> angledLine([
-       segAng(rectangleSegmentA001) - 90,
-       4.14
-     ], %)
-  |> angledLine([
-       segAng(rectangleSegmentA001),
-       -segLen(rectangleSegmentA001)
-     ], %)
+  |> angledLine(angle = 0, length = 10.78, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 4.14)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 profile003 = circle(sketch001, center = [6.92, -4.2], radius = 3.16)
@@ -2455,20 +2416,14 @@ sketch001 = startSketchOn(XZ)
 profile001 = startProfileAt([-63.43, 193.08], sketch001)
   |> line(end = [168.52, 149.87])
   |> line(end = [190.29, -39.18])
-  |> tangentialArcTo([319.63, 129.65], %)
+  |> tangentialArc(endAbsolute = [319.63, 129.65])
   |> line(end = [-217.65, -21.76])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 profile003 = startProfileAt([16.79, 38.24], sketch001)
-  |> angledLine([0, 182.82], %, $rectangleSegmentA001)
-  |> angledLine([
-       segAng(rectangleSegmentA001) - 90,
-       105.71
-     ], %)
-  |> angledLine([
-       segAng(rectangleSegmentA001),
-       -segLen(rectangleSegmentA001)
-     ], %)
+  |> angledLine(angle = 0, length = 182.82, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 105.71)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 profile004 = circle(
@@ -2684,15 +2639,9 @@ profile002 = startProfileAt([0.75, 13.46], sketch002)
   |> line(end = [4.52, 3.79])
   |> line(end = [5.98, -2.81])
 profile003 = startProfileAt([3.19, 13.3], sketch002)
-  |> angledLine([0, 6.64], %, $rectangleSegmentA001)
-  |> angledLine([
-       segAng(rectangleSegmentA001) - 90,
-       2.81
-     ], %)
-  |> angledLine([
-       segAng(rectangleSegmentA001),
-       -segLen(rectangleSegmentA001)
-     ], %)
+  |> angledLine(angle = 0, length = 6.64, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 2.81)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 profile004 = startProfileAt([3.15, 9.39], sketch002)
@@ -2732,15 +2681,9 @@ profile010 = circle(
   radius = 2.67
 )
 profile011 = startProfileAt([5.07, -6.39], sketch003)
-  |> angledLine([0, 4.54], %, $rectangleSegmentA002)
-  |> angledLine([
-       segAng(rectangleSegmentA002) - 90,
-       4.17
-     ], %)
-  |> angledLine([
-       segAng(rectangleSegmentA002),
-       -segLen(rectangleSegmentA002)
-     ], %)
+  |> angledLine(angle = 0, length = 4.54, tag = $rectangleSegmentA002)
+  |> angledLine(angle = segAng(rectangleSegmentA002) - 90, length = 4.17)
+  |> angledLine(angle = segAng(rectangleSegmentA002), length = -segLen(rectangleSegmentA002))
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 extrude003 = extrude(profile011, length = 2.5)
@@ -2889,7 +2832,7 @@ loft([profile001, profile002])
       )
       await rect1Crn2()
       await editor.expectEditor.toContain(
-        `angledLine([0, 113.01], %, $rectangleSegmentA001)`
+        `angledLine(angle = 0, length = 113.01, tag = $rectangleSegmentA001)`
       )
     }
   )
@@ -2960,7 +2903,7 @@ loft([profile001, profile002])
     )
     await rect1Crn2()
     await editor.expectEditor.toContain(
-      `angledLine([0, 106.42], %, $rectangleSegmentA001)`
+      `angledLine(angle = 0, length = 106.42], tag = $rectangleSegmentA001)`
     )
     await page.waitForTimeout(100)
   })

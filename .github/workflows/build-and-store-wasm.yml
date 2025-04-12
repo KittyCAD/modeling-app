@@ -13,9 +13,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
-          cache: 'yarn'
+          cache: 'npm'
       - name: Install dependencies
-        run: yarn
+        run: npm install
       - name: Use correct Rust toolchain
         shell: bash
         run: |
@@ -24,7 +24,7 @@ jobs:
         uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
           cache: false # Configured below.
-      - uses: taiki-e/install-action@37bdc826eaedac215f638a96472df572feab0f9b
+      - uses: taiki-e/install-action@d4635f2de61c8b8104d59cd4aede2060638378cc
         with:
           tool: wasm-pack
       - name: Rust Cache
@@ -32,7 +32,7 @@ jobs:
         with:
           workspaces: rust
       - name: build wasm
-        run: yarn build:wasm
+        run: npm run build:wasm
 
 
       # Upload the WASM bundle as an artifact

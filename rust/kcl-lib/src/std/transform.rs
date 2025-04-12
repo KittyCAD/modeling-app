@@ -67,15 +67,9 @@ pub async fn scale(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// sweepPath = startSketchOn('XZ')
 ///     |> startProfileAt([0.05, 0.05], %)
 ///     |> line(end = [0, 7])
-///     |> tangentialArc({
-///         offset: 90,
-///         radius: 5
-///     }, %)
+///     |> tangentialArc(angle = 90, radius = 5)
 ///     |> line(end = [-3, 0])
-///     |> tangentialArc({
-///         offset: -90,
-///         radius: 5
-///     }, %)
+///     |> tangentialArc(angle = -90, radius = 5)
 ///     |> line(end = [0, 7])
 ///
 /// // Create a hole for the pipe.
@@ -113,15 +107,15 @@ pub async fn scale(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///
 /// sketch001 = startSketchOn('XY')
 /// rectangleSketch = startProfileAt([-200, 23.86], sketch001)
-///     |> angledLine([0, 73.47], %, $rectangleSegmentA001)
-///     |> angledLine([
-///         segAng(rectangleSegmentA001) - 90,
-///         50.61
-///     ], %)
-///     |> angledLine([
-///         segAng(rectangleSegmentA001),
-///         -segLen(rectangleSegmentA001)
-///     ], %)
+///     |> angledLine(angle = 0, length = 73.47, tag = $rectangleSegmentA001)
+///     |> angledLine(
+///         angle = segAng(rectangleSegmentA001) - 90,
+///         length = 50.61,
+///     )
+///     |> angledLine(
+///         angle = segAng(rectangleSegmentA001),
+///         length = -segLen(rectangleSegmentA001),
+///     )
 ///     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
 ///     |> close()
 ///
@@ -130,10 +124,7 @@ pub async fn scale(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// sketch002 = startSketchOn('YZ')
 /// sweepPath = startProfileAt([0, 0], sketch002)
 ///     |> yLine(length = 231.81)
-///     |> tangentialArc({
-///         radius = 80,
-///         offset = -90,
-///     }, %)
+///     |> tangentialArc(radius = 80, angle = -90)
 ///     |> xLine(length = 384.93)
 ///
 /// parts = sweep([rectangleSketch, circleSketch], path = sweepPath)
@@ -241,15 +232,9 @@ pub async fn translate(exec_state: &mut ExecState, args: Args) -> Result<KclValu
 /// sweepPath = startSketchOn('XZ')
 ///     |> startProfileAt([0.05, 0.05], %)
 ///     |> line(end = [0, 7])
-///     |> tangentialArc({
-///         offset: 90,
-///         radius: 5
-///     }, %)
+///     |> tangentialArc(angle = 90, radius = 5)
 ///     |> line(end = [-3, 0])
-///     |> tangentialArc({
-///         offset: -90,
-///         radius: 5
-///     }, %)
+///     |> tangentialArc(angle = -90, radius = 5)
 ///     |> line(end = [0, 7])
 ///
 /// // Create a hole for the pipe.
@@ -301,15 +286,15 @@ pub async fn translate(exec_state: &mut ExecState, args: Args) -> Result<KclValu
 ///
 /// sketch001 = startSketchOn('XY')
 /// rectangleSketch = startProfileAt([-200, 23.86], sketch001)
-///     |> angledLine([0, 73.47], %, $rectangleSegmentA001)
-///     |> angledLine([
-///         segAng(rectangleSegmentA001) - 90,
-///         50.61
-///     ], %)
-///     |> angledLine([
-///         segAng(rectangleSegmentA001),
-///         -segLen(rectangleSegmentA001)
-///     ], %)
+///     |> angledLine(angle = 0, length = 73.47, tag = $rectangleSegmentA001)
+///     |> angledLine(
+///         angle = segAng(rectangleSegmentA001) - 90,
+///         length = 50.61,
+///     )
+///     |> angledLine(
+///         angle = segAng(rectangleSegmentA001),
+///         length = -segLen(rectangleSegmentA001),
+///     )
 ///     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
 ///     |> close()
 ///
@@ -318,10 +303,7 @@ pub async fn translate(exec_state: &mut ExecState, args: Args) -> Result<KclValu
 /// sketch002 = startSketchOn('YZ')
 /// sweepPath = startProfileAt([0, 0], sketch002)
 ///     |> yLine(length = 231.81)
-///     |> tangentialArc({
-///         radius = 80,
-///         offset = -90,
-///     }, %)
+///     |> tangentialArc(radius = 80, angle = -90)
 ///     |> xLine(length = 384.93)
 ///
 /// parts = sweep([rectangleSketch, circleSketch], path = sweepPath)
@@ -575,15 +557,9 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// sweepPath = startSketchOn('XZ')
 ///     |> startProfileAt([0.05, 0.05], %)
 ///     |> line(end = [0, 7])
-///     |> tangentialArc({
-///         offset: 90,
-///         radius: 5
-///     }, %)
+///     |> tangentialArc(angle = 90, radius = 5)
 ///     |> line(end = [-3, 0])
-///     |> tangentialArc({
-///         offset: -90,
-///         radius: 5
-///     }, %)
+///     |> tangentialArc(angle = -90, radius = 5)
 ///     |> line(end = [0, 7])
 ///
 /// // Create a hole for the pipe.
@@ -614,15 +590,9 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// sweepPath = startSketchOn('XZ')
 ///     |> startProfileAt([0.05, 0.05], %)
 ///     |> line(end = [0, 7])
-///     |> tangentialArc({
-///         offset: 90,
-///         radius: 5
-///     }, %)
+///     |> tangentialArc(angle = 90, radius = 5)
 ///     |> line(end = [-3, 0])
-///     |> tangentialArc({
-///         offset: -90,
-///         radius: 5
-///     }, %)
+///     |> tangentialArc(angle = -90, radius = 5)
 ///     |> line(end = [0, 7])
 ///
 /// // Create a hole for the pipe.
@@ -651,15 +621,9 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// sweepPath = startSketchOn('XZ')
 ///     |> startProfileAt([0.05, 0.05], %)
 ///     |> line(end = [0, 7])
-///     |> tangentialArc({
-///         offset: 90,
-///         radius: 5
-///     }, %)
+///     |> tangentialArc(angle = 90, radius = 5)
 ///     |> line(end = [-3, 0])
-///     |> tangentialArc({
-///         offset: -90,
-///         radius: 5
-///     }, %)
+///     |> tangentialArc(angle = -90, radius = 5)
 ///     |> line(end = [0, 7])
 ///
 /// // Create a hole for the pipe.
@@ -699,15 +663,15 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 ///
 /// sketch001 = startSketchOn('XY')
 /// rectangleSketch = startProfileAt([-200, 23.86], sketch001)
-///     |> angledLine([0, 73.47], %, $rectangleSegmentA001)
-///     |> angledLine([
-///         segAng(rectangleSegmentA001) - 90,
-///         50.61
-///     ], %)
-///     |> angledLine([
-///         segAng(rectangleSegmentA001),
-///         -segLen(rectangleSegmentA001)
-///     ], %)
+///     |> angledLine(angle = 0, length = 73.47, tag = $rectangleSegmentA001)
+///     |> angledLine(
+///         angle = segAng(rectangleSegmentA001) - 90,
+///         length = 50.61,
+///     )
+///     |> angledLine(
+///         angle = segAng(rectangleSegmentA001),
+///         length = -segLen(rectangleSegmentA001),
+///     )
 ///     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
 ///     |> close()
 ///
@@ -716,10 +680,7 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// sketch002 = startSketchOn('YZ')
 /// sweepPath = startProfileAt([0, 0], sketch002)
 ///     |> yLine(length = 231.81)
-///     |> tangentialArc({
-///         radius = 80,
-///         offset = -90,
-///     }, %)
+///     |> tangentialArc(radius = 80, angle = -90)
 ///     |> xLine(length = 384.93)
 ///
 /// parts = sweep([rectangleSketch, circleSketch], path = sweepPath)
@@ -846,15 +807,9 @@ mod tests {
     const PIPE: &str = r#"sweepPath = startSketchOn('XZ')
     |> startProfileAt([0.05, 0.05], %)
     |> line(end = [0, 7])
-    |> tangentialArc({
-        offset: 90,
-        radius: 5
-    }, %)
+    |> tangentialArc(angle = 90, radius = 5)
     |> line(end = [-3, 0])
-    |> tangentialArc({
-        offset: -90,
-        radius: 5
-    }, %)
+    |> tangentialArc(angle = -90, radius = 5)
     |> line(end = [0, 7])
 
 // Create a hole for the pipe.
