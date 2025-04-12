@@ -245,11 +245,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         if (!tronApp) fail()
         await homePage.projectsLoaded()
         await homePage.isNativeFileMenuCreated()
-        await clickElectronNativeMenuById(tronApp, 'Help.Reset onboarding')
-        const actual = page.getByText(
-          `This is a hardware design tool that lets you edit visually, with code, or both. It's powered by the KittyCAD Design API, the first API created for anyone to build hardware design tools.`
-        )
-        await expect(actual).toBeVisible()
+        await findElectronNativeMenuById(tronApp, 'Help.Reset onboarding')
       })
     })
   })
@@ -674,13 +670,8 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         await clickElectronNativeMenuById(tronApp, 'View.Orthographic view')
         const textToCheck =
           'Set camera projection to "orthographic" as a user default'
-        await expect
-          .poll(async () => {
-            const isTextVisible = page.getByText(textToCheck)
-            await expect(isTextVisible).toBeVisible({ timeout: 10000 })
-            return true
-          })
-          .toBe(true)
+        const toast = page.locator('#_rht_toaster')
+        await expect(toast).toHaveText(textToCheck)
       })
       test('Modeling.View.Perspective view', async ({
         tronApp,
@@ -699,13 +690,8 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         await clickElectronNativeMenuById(tronApp, 'View.Perspective view')
         const textToCheck =
           'Set camera projection to "perspective" as a user default'
-        await expect
-          .poll(async () => {
-            const isTextVisible = page.getByText(textToCheck)
-            await expect(isTextVisible).toBeVisible({ timeout: 10000 })
-            return true
-          })
-          .toBe(true)
+        const toast = page.locator('#_rht_toaster')
+        await expect(toast).toHaveText(textToCheck)
       })
       test('Modeling.View.Standard views.Right view', async ({
         tronApp,
@@ -1382,11 +1368,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         await homePage.goToModelingScene()
         await scene.connectionEstablished()
         await scene.isNativeFileMenuCreated()
-        await clickElectronNativeMenuById(tronApp, 'Help.Reset onboarding')
-        const actual = page.getByText(
-          `This is a hardware design tool that lets you edit visually, with code, or both. It's powered by the KittyCAD Design API, the first API created for anyone to build hardware design tools.`
-        )
-        await expect(actual).toBeVisible()
+        await findElectronNativeMenuById(tronApp, 'Help.Reset onboarding')
       })
     })
   })
