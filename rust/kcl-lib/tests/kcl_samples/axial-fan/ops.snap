@@ -293,24 +293,6 @@ description: Operations executed axial-fan.kcl
     "unlabeledArg": null
   },
   {
-    "type": "GroupBegin",
-    "group": {
-      "type": "FunctionCall",
-      "name": "cos",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
-      "unlabeledArg": null,
-      "labeledArgs": {}
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "GroupEnd"
-  },
-  {
     "labeledArgs": {
       "length": {
         "value": {

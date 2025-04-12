@@ -1945,8 +1945,8 @@ description: Artifact commands axial-fan.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": -31.2,
-        "y": -58.352900397563424,
+        "x": 20.0,
+        "y": -59.0,
         "z": 0.0
       }
     }
@@ -1965,9 +1965,58 @@ description: Artifact commands axial-fan.kcl
       "type": "extend_path",
       "path": "[uuid]",
       "segment": {
+        "type": "tangential_arc",
+        "radius": 39.0,
+        "offset": {
+          "unit": "degrees",
+          "value": 90.0
+        }
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
         "type": "line",
         "end": {
-          "x": 62.4,
+          "x": 0.0,
+          "y": 40.0,
+          "z": 0.0
+        },
+        "relative": true
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "tangential_arc",
+        "radius": 39.0,
+        "offset": {
+          "unit": "degrees",
+          "value": 90.0
+        }
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "line",
+        "end": {
+          "x": -40.0,
           "y": 0.0,
           "z": 0.0
         },
@@ -1982,13 +2031,12 @@ description: Artifact commands axial-fan.kcl
       "type": "extend_path",
       "path": "[uuid]",
       "segment": {
-        "type": "line",
-        "end": {
-          "x": 27.1529,
-          "y": 27.1529,
-          "z": 0.0
-        },
-        "relative": true
+        "type": "tangential_arc",
+        "radius": 39.0,
+        "offset": {
+          "unit": "degrees",
+          "value": 90.0
+        }
       }
     }
   },
@@ -2002,7 +2050,7 @@ description: Artifact commands axial-fan.kcl
         "type": "line",
         "end": {
           "x": 0.0,
-          "y": 62.4,
+          "y": -40.0,
           "z": 0.0
         },
         "relative": true
@@ -2016,13 +2064,12 @@ description: Artifact commands axial-fan.kcl
       "type": "extend_path",
       "path": "[uuid]",
       "segment": {
-        "type": "line",
-        "end": {
-          "x": -27.1529,
-          "y": 27.1529,
-          "z": 0.0
-        },
-        "relative": true
+        "type": "tangential_arc",
+        "radius": 39.0,
+        "offset": {
+          "unit": "degrees",
+          "value": 90.0
+        }
       }
     }
   },
@@ -2035,71 +2082,12 @@ description: Artifact commands axial-fan.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -62.4,
-          "y": 0.0,
+          "x": 20.0,
+          "y": -59.0,
           "z": 0.0
         },
-        "relative": true
+        "relative": false
       }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extend_path",
-      "path": "[uuid]",
-      "segment": {
-        "type": "line",
-        "end": {
-          "x": -27.1529,
-          "y": -27.1529,
-          "z": 0.0
-        },
-        "relative": true
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extend_path",
-      "path": "[uuid]",
-      "segment": {
-        "type": "line",
-        "end": {
-          "x": 0.0,
-          "y": -62.4,
-          "z": 0.0
-        },
-        "relative": true
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extend_path",
-      "path": "[uuid]",
-      "segment": {
-        "type": "line",
-        "end": {
-          "x": 27.1529,
-          "y": -27.1529,
-          "z": 0.0
-        },
-        "relative": true
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "close_path",
-      "path_id": "[uuid]"
     }
   },
   {
@@ -3525,9 +3513,9 @@ description: Artifact commands axial-fan.kcl
       "type": "object_set_material_params_pbr",
       "object_id": "[uuid]",
       "color": {
-        "r": 0.52156866,
-        "g": 0.30980393,
-        "b": 0.16078432,
+        "r": 0.64705884,
+        "g": 0.36862746,
+        "b": 0.17254902,
         "a": 100.0
       },
       "metalness": 0.0,
