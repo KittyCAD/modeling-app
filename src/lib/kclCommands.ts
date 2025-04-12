@@ -270,6 +270,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
         },
         path: {
           inputType: 'pathDialog',
+          valueSummary: (value) => window.electron.path.basename(value),
           required: (commandContext) =>
             ['local'].includes(
               commandContext.argumentsToSubmit.source as string
