@@ -52,22 +52,13 @@ bottomFaceSketch = startSketchOn(XY)
 airflowPattern = startSketchOn(bottomFaceSketch, 'END')
   |> startProfileAt([fanSize * 7 / 25, -fanSize * 9 / 25], %)
   |> angledLine(angle = 140, length = fanSize * 12 / 25, tag = $seg01)
-  |> tangentialArc({
-       radius = fanSize * 1 / 50,
-       offset = 90
-     }, %)
+  |> tangentialArc(radius = fanSize * 1 / 50, angle = 90)
   |> angledLine(angle = -130, length = fanSize * 8 / 25)
-  |> tangentialArc({
-       radius = fanSize * 1 / 50,
-       offset = 90
-     }, %)
+  |> tangentialArc(radius = fanSize * 1 / 50, angle = 90)
   |> angledLine(angle = segAng(seg01) + 180, length = fanSize * 2 / 25)
-  |> tangentialArc({
-       radius = fanSize * 8 / 25,
-       offset = 40
-     }, %)
+  |> tangentialArc(radius = fanSize * 8 / 25, angle = 40)
   |> xLine(length = fanSize * 3 / 25)
-  |> tangentialArcTo([profileStartX(%), profileStartY(%)], %)
+  |> tangentialArc(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
   |> patternCircular2d(
        instances = 4,
