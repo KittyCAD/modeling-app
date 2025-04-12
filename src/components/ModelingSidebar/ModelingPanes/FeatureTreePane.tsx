@@ -24,7 +24,10 @@ import {
   stdLibMap,
 } from '@src/lib/operations'
 import { editorManager, kclManager } from '@src/lib/singletons'
-import { featureTreeMachine, featureTreeMachineDefaultContext } from '@src/machines/featureTreeMachine'
+import {
+  featureTreeMachine,
+  featureTreeMachineDefaultContext,
+} from '@src/machines/featureTreeMachine'
 import {
   editorIsMountedSelector,
   kclEditorActor,
