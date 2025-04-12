@@ -20,9 +20,9 @@ WASM_PACK ?= ~/.cargo/bin/wasm-pack
 endif
 
 .PHONY: install
-install: node_modules/.npm-integrity $(CARGO) $(WASM_PACK) ## Install dependencies
+install: node_modules/.package-lock.json $(CARGO) $(WASM_PACK) ## Install dependencies
 
-node_modules/.npm-integrity: package.json package-lock.json
+node_modules/.package-lock.json: package.json package-lock.json
 	npm install
 ifdef POWERSHELL
 	@ type nul > $@
