@@ -17,7 +17,7 @@ flowchart LR
     29[Solid2d]
   end
   1["Plane<br>[33, 50, 0]"]
-  8["Sweep Extrusion<br>[328, 354, 0]"]
+  8["Sweep Extrusion<br>[328, 348, 0]"]
   9[Wall]
   10[Wall]
   11[Wall]
@@ -33,7 +33,7 @@ flowchart LR
   21["SweepEdge Opposite"]
   22["SweepEdge Adjacent"]
   23["Plane<br>[33, 50, 0]"]
-  30["Sweep Extrusion<br>[328, 354, 0]"]
+  30["Sweep Extrusion<br>[328, 348, 0]"]
   31[Wall]
   32[Wall]
   33[Wall]

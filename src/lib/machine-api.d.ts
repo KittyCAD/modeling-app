@@ -155,7 +155,7 @@ export interface components {
       color?: string | null
       /** @description The material that the filament is made of. */
       material: components['schemas']['FilamentMaterial']
-      /** @description The name of the filament, this is likely specific to the manufacturer. */
+      /** @description The name of the filament, this is likely specfic to the manufacturer. */
       name?: string | null
     }
     /** @description The material that the filament is made of. */
