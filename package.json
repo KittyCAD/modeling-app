@@ -11,7 +11,11 @@
   "description": "Zoo Design Studio",
   "main": ".vite/build/main.js",
   "license": "MIT",
-  "workspaces": ["packages/codemirror-lang-kcl", "packages/codemirror-lsp-client", "rust/kcl-language-server"],
+  "workspaces": [
+    "packages/codemirror-lang-kcl",
+    "packages/codemirror-lsp-client",
+    "rust/kcl-language-server"
+  ],
   "dependencies": {
     "@codemirror/autocomplete": "^6.18.6",
     "@codemirror/commands": "^6.8.1",
