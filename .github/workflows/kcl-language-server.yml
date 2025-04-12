@@ -57,8 +57,6 @@ jobs:
       - name: Install dependencies
         run: |
           npm install
-          cd rust/kcl-language-server
-          npm install
       - name: Run tests
         run: |
           cd rust/kcl-language-server
@@ -182,7 +180,6 @@ jobs:
 
       - name: Install dependencies
         run: |
-          cd rust/kcl-language-server
           npm install
 
       - name: Package Extension (release)
@@ -270,7 +267,6 @@ jobs:
 
       - name: Install dependencies
         run: |
-          cd rust/kcl-language-server
           npm install
 
       - name: Package Extension (release)
