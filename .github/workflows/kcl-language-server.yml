@@ -57,7 +57,6 @@ jobs:
       - name: Install dependencies
         run: |
           npm install
-          npm install --workspace rust/kcl-language-server
       - name: Run tests
         run: |
           cd rust/kcl-language-server
@@ -182,7 +181,9 @@ jobs:
       - name: Install dependencies
         run: |
           npm install
-          npm install --workspace rust/kcl-language-server
+          cd rust/kcl-language-server
+          rm -rf node_modules
+          cp -r ../node_modules .
 
       - name: Package Extension (release)
         if: startsWith(github.event.ref, 'refs/tags/')
@@ -270,7 +271,9 @@ jobs:
       - name: Install dependencies
         run: |
           npm install
-          npm install --workspace rust/kcl-language-server
+          cd rust/kcl-language-server
+          rm -rf node_modules
+          cp -r ../node_modules .
 
       - name: Package Extension (release)
         if: startsWith(github.event.ref, 'refs/tags/')
