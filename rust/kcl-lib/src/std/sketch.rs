@@ -4,6 +4,7 @@ use anyhow::Result;
 use indexmap::IndexMap;
 use kcl_derive_docs::stdlib;
 use kcmc::shared::Point2d as KPoint2d; // Point2d is already defined in this pkg, to impl ts_rs traits.
+use kcmc::shared::Point3d as KPoint3d; // Point3d is already defined in this pkg, to impl ts_rs traits.
 use kcmc::{each_cmd as mcmd, length_unit::LengthUnit, shared::Angle, websocket::ModelingCmdReq, ModelingCmd};
 use kittycad_modeling_cmds as kcmc;
 use kittycad_modeling_cmds::shared::PathSegment;
@@ -93,6 +94,143 @@ pub enum StartOrEnd {
 }
 
 pub const NEW_TAG_KW: &str = "tag";
+
+pub async fn involute_circular(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let sketch =
+        args.get_unlabeled_kw_arg_typed("sketch", &RuntimeType::Primitive(PrimitiveType::Sketch), exec_state)?;
+
+    /*
+     */
+    let start_radius = args.get_kw_arg("startRadius")?;
+    let end_radius = args.get_kw_arg("endRadius")?;
+    let angle = args.get_kw_arg("angle")?;
+    let reverse = args.get_kw_arg_opt("reverse")?;
+    let tag = args.get_kw_arg_opt("tag")?;
+    let new_sketch =
+        inner_involute_circular(sketch, start_radius, end_radius, angle, reverse, tag, exec_state, args).await?;
+    Ok(KclValue::Sketch {
+        value: Box::new(new_sketch),
+    })
+}
+
+fn involute_curve(radius: f64, angle: f64) -> (f64, f64) {
+    (
+        radius * (angle.cos() + angle * angle.sin()),
+        radius * (angle.sin() - angle * angle.cos()),
+    )
+}
+
+/// Extend the current sketch with a new involute circular curve.
+///
+/// ```no_run
+/// a = 10
+/// b = 14
+/// startSketchOn(XZ)
+///   |> startProfileAt([0, 0], %)
+///   |> involuteCircular(startRadius = a, endRadius = b, angle = 60)
+///   |> involuteCircular(startRadius = a, endRadius = b, angle = 60, reverse = true)
+///
+/// ```
+#[stdlib {
+    name = "involuteCircular",
+    keywords = true,
+    unlabeled_first = true,
+    args = {
+        sketch = { docs = "Which sketch should this path be added to?"},
+        start_radius  = { docs = "The involute is described between two circles, start_radius is the radius of the inner circle."},
+        end_radius  = { docs = "The involute is described between two circles, end_radius is the radius of the outer circle."},
+        angle  = { docs = "The angle to rotate the involute by. A value of zero will produce a curve with a tangent along the x-axis at the start point of the curve."},
+        reverse  = { docs = "If reverse is true, the segment will start from the end of the involute, otherwise it will start from that start. Defaults to false."},
+        tag = { docs = "Create a new tag which refers to this line"},
+    }
+}]
+#[allow(clippy::too_many_arguments)]
+async fn inner_involute_circular(
+    sketch: Sketch,
+    start_radius: f64,
+    end_radius: f64,
+    angle: f64,
+    reverse: Option<bool>,
+    tag: Option<TagNode>,
+    exec_state: &mut ExecState,
+    args: Args,
+) -> Result<Sketch, KclError> {
+    let id = exec_state.next_uuid();
+    let angle = Angle::from_degrees(angle);
+    let segment = PathSegment::CircularInvolute {
+        start_radius: LengthUnit(start_radius),
+        end_radius: LengthUnit(end_radius),
+        angle,
+        reverse: reverse.unwrap_or_default(),
+    };
+
+    args.batch_modeling_cmd(
+        id,
+        ModelingCmd::from(mcmd::ExtendPath {
+            path: sketch.id.into(),
+            segment,
+        }),
+    )
+    .await?;
+
+    let from = sketch.current_pen_position()?;
+    let mut end: KPoint3d<f64> = Default::default(); // ADAM: TODO impl this below.
+    let theta = f64::sqrt(end_radius * end_radius - start_radius * start_radius) / start_radius;
+    let (x, y) = involute_curve(start_radius, theta);
+
+    end.x = x * angle.to_radians().cos() - y * angle.to_radians().sin();
+    end.y = x * angle.to_radians().sin() + y * angle.to_radians().cos();
+
+    end.x -= start_radius * angle.to_radians().cos();
+    end.y -= start_radius * angle.to_radians().sin();
+
+    if reverse.unwrap_or_default() {
+        end.x = -end.x;
+    }
+
+    end.x += from.x;
+    end.y += from.y;
+
+    // let path_json = path_to_json();
+    // let end = args
+    //     .send_modeling_cmd(
+    //         exec_state.next_uuid(),
+    //         ModelingCmd::EngineUtilEvaluatePath(mcmd::EngineUtilEvaluatePath { path_json, t: 1.0 }),
+    //     )
+    //     .await?;
+
+    // let end = match end {
+    //     kittycad_modeling_cmds::websocket::OkWebSocketResponseData::Modeling {
+    //         modeling_response: OkModelingCmdResponse::EngineUtilEvaluatePath(eval_path),
+    //     } => eval_path.pos,
+    //     other => {
+    //         return Err(KclError::Engine(KclErrorDetails {
+    //             source_ranges: vec![args.source_range],
+    //             message: format!("Expected EngineUtilEvaluatePath response but found {other:?}"),
+    //         }))
+    //     }
+    // };
+
+    let current_path = Path::ToPoint {
+        base: BasePath {
+            from: from.into(),
+            to: [end.x, end.y],
+            tag: tag.clone(),
+            units: sketch.units,
+            geo_meta: GeoMeta {
+                id,
+                metadata: args.source_range.into(),
+            },
+        },
+    };
+
+    let mut new_sketch = sketch.clone();
+    if let Some(tag) = &tag {
+        new_sketch.add_tag(tag, &current_path, exec_state);
+    }
+    new_sketch.paths.push(current_path);
+    Ok(new_sketch)
+}
 
 /// Draw a line to a point.
 pub async fn line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
@@ -449,11 +587,11 @@ pub async fn angled_line(exec_state: &mut ExecState, args: Args) -> Result<KclVa
     args = {
         sketch = { docs = "Which sketch should this path be added to?"},
     angle = { docs = "Which angle should the line be drawn at?" },
-    length = { docs = "Draw the line this distance along the given angle. Only one of `length`, `lengthX`, `lengthY`, `lengthAbsoluteEndX`, `lengthAbsoluteEndY` can be given."},
-    length_x = { docs = "Draw the line this distance along the X axis. Only one of `length`, `lengthX`, `lengthY`, `lengthAbsoluteEndX`, `lengthAbsoluteEndY` can be given."},
-    length_y = { docs = "Draw the line this distance along the Y axis. Only one of `length`, `lengthX`, `lengthY`, `lengthAbsoluteEndX`, `lengthAbsoluteEndY` can be given."},
-    end_absolute_x = { docs = "Draw the line along the given angle until it reaches this point along the X axis. Only one of `length`, `lengthX`, `lengthY`, `lengthAbsoluteEndX`, `lengthAbsoluteEndY` can be given."},
-    end_absolute_y = { docs = "Draw the line along the given angle until it reaches this point along the Y axis. Only one of `length`, `lengthX`, `lengthY`, `lengthAbsoluteEndX`, `lengthAbsoluteEndY` can be given."},
+    length = { docs = "Draw the line this distance along the given angle. Only one of `length`, `lengthX`, `lengthY`, `endAbsoluteX`, `endAbsoluteY` can be given."},
+    length_x = { docs = "Draw the line this distance along the X axis. Only one of `length`, `lengthX`, `lengthY`, `endAbsoluteX`, `endAbsoluteY` can be given."},
+    length_y = { docs = "Draw the line this distance along the Y axis. Only one of `length`, `lengthX`, `lengthY`, `endAbsoluteX`, `endAbsoluteY` can be given."},
+    end_absolute_x = { docs = "Draw the line along the given angle until it reaches this point along the X axis. Only one of `length`, `lengthX`, `lengthY`, `endAbsoluteX`, `endAbsoluteY` can be given."},
+    end_absolute_y = { docs = "Draw the line along the given angle until it reaches this point along the Y axis. Only one of `length`, `lengthX`, `lengthY`, `endAbsoluteX`, `endAbsoluteY` can be given."},
         tag = { docs = "Create a new tag which refers to this line"},
     }
 }]
@@ -476,8 +614,7 @@ async fn inner_angled_line(
         .count();
     if options_given > 1 {
         return Err(KclError::Type(KclErrorDetails {
-            message: " one of `length`, `lengthX`, `lengthY`, `lengthAbsoluteEndX`, `lengthAbsoluteEndY` can be given"
-                .to_string(),
+            message: " one of `length`, `lengthX`, `lengthY`, `endAbsoluteX`, `endAbsoluteY` can be given".to_string(),
             source_ranges: vec![args.source_range],
         }));
     }
@@ -505,14 +642,12 @@ async fn inner_angled_line(
             inner_angled_line_to_y(angle_degrees, end_absolute_y, sketch, tag, exec_state, args).await
         }
         (None, None, None, None, None) => Err(KclError::Type(KclErrorDetails {
-            message: "One of `length`, `lengthX`, `lengthY`, `lengthAbsoluteEndX`, `lengthAbsoluteEndY` must be given"
-                .to_string(),
+            message: "One of `length`, `lengthX`, `lengthY`, `endAbsoluteX`, `endAbsoluteY` must be given".to_string(),
             source_ranges: vec![args.source_range],
         })),
         _ => Err(KclError::Type(KclErrorDetails {
-            message:
-                "Only One of `length`, `lengthX`, `lengthY`, `lengthAbsoluteEndX`, `lengthAbsoluteEndY` can be given"
-                    .to_string(),
+            message: "Only One of `length`, `lengthX`, `lengthY`, `endAbsoluteX`, `endAbsoluteY` can be given"
+                .to_string(),
             source_ranges: vec![args.source_range],
         })),
     }
