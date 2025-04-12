@@ -181,6 +181,7 @@ jobs:
       - name: Install dependencies
         run: |
           cd rust/kcl-language-server
+          # npm will symlink which will cause issues w tarballing later
           yarn install
 
       - name: Package Extension (release)
@@ -270,6 +271,7 @@ jobs:
       - name: Install dependencies
         run: |
           cd rust/kcl-language-server
+          # npm will symlink which will cause issues w tarballing later
           yarn install
 
       - name: Package Extension (release)
