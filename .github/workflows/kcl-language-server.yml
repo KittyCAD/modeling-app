@@ -180,10 +180,8 @@ jobs:
 
       - name: Install dependencies
         run: |
-          npm install
           cd rust/kcl-language-server
-          rm -rf node_modules
-          cp -r ../../node_modules .
+          yarn install
 
       - name: Package Extension (release)
         if: startsWith(github.event.ref, 'refs/tags/')
@@ -244,7 +242,8 @@ jobs:
             lld \
             musl-dev \
             nodejs \
-            npm
+            npm \
+            yarn
 
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -270,10 +269,8 @@ jobs:
 
       - name: Install dependencies
         run: |
-          npm install
           cd rust/kcl-language-server
-          rm -rf node_modules
-          cp -r ../../node_modules .
+          yarn install
 
       - name: Package Extension (release)
         if: startsWith(github.event.ref, 'refs/tags/')
