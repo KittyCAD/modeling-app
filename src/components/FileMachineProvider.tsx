@@ -453,7 +453,6 @@ export const FileMachineProvider = ({
         },
         specialPropsForLoadCommand: {
           onSubmit: async (data) => {
-            console.log('data in load command def', data)
             if (data.method === 'overwrite' && data.content) {
               codeManager.updateCodeStateEditor(data.content)
               await kclManager.executeCode()
