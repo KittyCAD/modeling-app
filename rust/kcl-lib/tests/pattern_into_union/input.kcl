@@ -1,0 +1,67 @@
+nPlates = 20
+buildPlateThickness = 1 / 25.4 // 1mm w/ two stickers
+buildPlateWidth = 10.125
+widthTolerance = 0.2
+thicknessTolerance = 0.020
+endWidth = 0.5
+endTabWidth = 2
+endTabHeight = 1
+endTabThickness = 0.1
+width = buildPlateWidth + 2 * (widthTolerance + endWidth)
+depth = nPlates * (buildPlateThickness + thicknessTolerance) + (nPlates + 1) * endTabThickness
+baseHeight = 0.25
+
+base = startSketchOn(XZ)
+  |> startProfileAt([0, 0], %)
+  |> xLine(endAbsolute =  width, tag = $seg01)
+  |> yLine(endAbsolute = baseHeight + endTabHeight)
+  |> xLine(length = -endWidth)
+  |> yLine(endAbsolute = baseHeight)
+  |> xLine(endAbsolute = endWidth)
+  |> yLine(endAbsolute = baseHeight + endTabHeight)
+  |> xLine(endAbsolute = 0,tag = $seg02)
+  |> close()
+  |> extrude(length = -depth)
+
+endTabs = startSketchOn(XZ)
+  |> startProfileAt([endWidth, baseHeight], %)
+  |> xLine(endAbsolute = endWidth + endTabWidth)
+  |> angledLine(
+       angle = 135,
+       endAbsoluteY = baseHeight + endTabHeight
+     ,tag=$toFillet)
+  |> xLine(endAbsolute = endWidth)
+  |> close()
+  |> extrude(length = -1 * endTabThickness)
+  |> fillet(
+       radius = 0.1,
+       tags = [getNextAdjacentEdge(toFillet)]
+     )
+  |> patternLinear3d(
+       axis = [0, 1, 0],
+       distance = buildPlateThickness + thicknessTolerance + endTabThickness,
+       instances = nPlates + 1
+     )
+
+endTabs2 = startSketchOn(XZ)
+  |> startProfileAt([width - endWidth, baseHeight], %)
+  |> xLine(endAbsolute = width - endTabWidth)
+  |> angledLine(
+       angle = 45,
+       endAbsoluteY = baseHeight + endTabHeight
+     ,tag=$toFillet2)
+  |> xLine(endAbsolute = width - endWidth)
+  |> close()
+  |> extrude(length = -1 * endTabThickness)
+  |> fillet(
+       radius = 0.1,
+       tags = [getNextAdjacentEdge(toFillet2)]
+     )
+  |> patternLinear3d(
+       axis = [0, 1, 0],
+       distance = buildPlateThickness + thicknessTolerance + endTabThickness,
+       instances = nPlates + 1
+     )
+
+
+union([base,endTabs])

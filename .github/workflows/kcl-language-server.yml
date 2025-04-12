@@ -56,21 +56,19 @@ jobs:
           node-version-file: ".nvmrc"
       - name: Install dependencies
         run: |
-          yarn install
-          cd rust/kcl-language-server
-          yarn install
+          npm install
       - name: Run tests
         run: |
           cd rust/kcl-language-server
-          yarn build
-          yarn test-compile
+          npm run build
+          npm run test-compile
           ls -la dist
-          xvfb-run -a yarn test
+          xvfb-run -a npm run test
         if: runner.os == 'Linux'
       - name: Run tests
         run: |
           cd rust/kcl-language-server
-          yarn test
+          npm run test
         if: runner.os != 'Linux'
   build-release:
     strategy:
@@ -183,19 +181,20 @@ jobs:
       - name: Install dependencies
         run: |
           cd rust/kcl-language-server
+          # npm will symlink which will cause issues w tarballing later
           yarn install
 
       - name: Package Extension (release)
         if: startsWith(github.event.ref, 'refs/tags/')
         run: |
           cd rust/kcl-language-server
-          npx vsce package -o "../build/kcl-language-server-${{ matrix.code-target }}.vsix" --target ${{ matrix.code-target }}
+          npx vsce package --yarn -o "../build/kcl-language-server-${{ matrix.code-target }}.vsix" --target ${{ matrix.code-target }}
 
       - name: Package Extension (nightly)
         if: startsWith(github.event.ref, 'refs/tags/') == false
         run: |
           cd rust/kcl-language-server
-          npx vsce package -o "../build/kcl-language-server-${{ matrix.code-target }}.vsix" --target ${{ matrix.code-target }} --pre-release
+          npx vsce package --yarn -o "../build/kcl-language-server-${{ matrix.code-target }}.vsix" --target ${{ matrix.code-target }} --pre-release
 
       - name: remove server
         if: matrix.target == 'x86_64-unknown-linux-gnu'
@@ -207,13 +206,13 @@ jobs:
         if: matrix.target == 'x86_64-unknown-linux-gnu' && startsWith(github.event.ref, 'refs/tags/')
         run: |
           cd rust/kcl-language-server
-          npx vsce package -o ../build/kcl-language-server-no-server.vsix
+          npx vsce package --yarn -o ../build/kcl-language-server-no-server.vsix
 
       - name: Package Extension (no server, nightly)
         if: matrix.target == 'x86_64-unknown-linux-gnu' && startsWith(github.event.ref, 'refs/tags/') == false
         run: |
           cd rust/kcl-language-server
-          npx vsce package -o ../build/kcl-language-server-no-server.vsix --pre-release
+          npx vsce package --yarn -o ../build/kcl-language-server-no-server.vsix --pre-release
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
@@ -244,8 +243,8 @@ jobs:
             lld \
             musl-dev \
             nodejs \
-            yarn \
-            npm
+            npm \
+            yarn
 
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -272,19 +271,20 @@ jobs:
       - name: Install dependencies
         run: |
           cd rust/kcl-language-server
+          # npm will symlink which will cause issues w tarballing later
           yarn install
 
       - name: Package Extension (release)
         if: startsWith(github.event.ref, 'refs/tags/')
         run: |
           cd rust/kcl-language-server
-          npx vsce package -o "../build/kcl-language-server-alpine-x64.vsix" --target alpine-x64
+          npx vsce package --yarn -o "../build/kcl-language-server-alpine-x64.vsix" --target alpine-x64
 
       - name: Package Extension (release)
         if: startsWith(github.event.ref, 'refs/tags/') == false
         run: |
           cd rust/kcl-language-server
-          npx vsce package -o "../build/kcl-language-server-alpine-x64.vsix" --target alpine-x64 --pre-release
+          npx vsce package --yarn -o "../build/kcl-language-server-alpine-x64.vsix" --target alpine-x64 --pre-release
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4

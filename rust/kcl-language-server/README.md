@@ -85,7 +85,7 @@ args = ["server", "--stdio"]
 ## Development
 
 ```bash
-$ yarn install
+$ npm install
 $ cargo build
 $ code .
 ```

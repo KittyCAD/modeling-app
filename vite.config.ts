@@ -65,6 +65,7 @@ const config = defineConfig({
       '@rust': '/rust',
       '@e2e': '/e2e',
       '@src': '/src',
+      '@public': '/public',
       '@root': '/',
     },
   },

@@ -11,7 +11,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  yarn-unit-test:
+  npm-unit-test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -19,14 +19,11 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
-          cache: 'yarn'
+          cache: 'npm'
 
-      - run: yarn install
-        working-directory: packages/codemirror-lang-kcl
+      - run: npm install
 
-      - run: yarn tsc
-        working-directory: packages/codemirror-lang-kcl
+      - run: npm run tsc --workspace=packages/codemirror-lang-kcl
 
       - name: run unit tests
-        run: yarn test
-        working-directory: packages/codemirror-lang-kcl
+        run: npm run test --workspace=packages/codemirror-lang-kcl
