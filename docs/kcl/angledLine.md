@@ -28,11 +28,11 @@ angledLine(
 |----------|------|-------------|----------|
 | `sketch` | [`Sketch`](/docs/kcl/types/Sketch) | Which sketch should this path be added to? | Yes |
 | `angle` | [`number`](/docs/kcl/types/number) | Which angle should the line be drawn at? | Yes |
-| `length` | [`number`](/docs/kcl/types/number) | Draw the line this distance along the given angle. Only one of `length`, `lengthX`, `lengthY`, `lengthAbsoluteEndX`, `lengthAbsoluteEndY` can be given. | No |
-| `lengthX` | [`number`](/docs/kcl/types/number) | Draw the line this distance along the X axis. Only one of `length`, `lengthX`, `lengthY`, `lengthAbsoluteEndX`, `lengthAbsoluteEndY` can be given. | No |
-| `lengthY` | [`number`](/docs/kcl/types/number) | Draw the line this distance along the Y axis. Only one of `length`, `lengthX`, `lengthY`, `lengthAbsoluteEndX`, `lengthAbsoluteEndY` can be given. | No |
-| `endAbsoluteX` | [`number`](/docs/kcl/types/number) | Draw the line along the given angle until it reaches this point along the X axis. Only one of `length`, `lengthX`, `lengthY`, `lengthAbsoluteEndX`, `lengthAbsoluteEndY` can be given. | No |
-| `endAbsoluteY` | [`number`](/docs/kcl/types/number) | Draw the line along the given angle until it reaches this point along the Y axis. Only one of `length`, `lengthX`, `lengthY`, `lengthAbsoluteEndX`, `lengthAbsoluteEndY` can be given. | No |
+| `length` | [`number`](/docs/kcl/types/number) | Draw the line this distance along the given angle. Only one of `length`, `lengthX`, `lengthY`, `endAbsoluteX`, `endAbsoluteY` can be given. | No |
+| `lengthX` | [`number`](/docs/kcl/types/number) | Draw the line this distance along the X axis. Only one of `length`, `lengthX`, `lengthY`, `endAbsoluteX`, `endAbsoluteY` can be given. | No |
+| `lengthY` | [`number`](/docs/kcl/types/number) | Draw the line this distance along the Y axis. Only one of `length`, `lengthX`, `lengthY`, `endAbsoluteX`, `endAbsoluteY` can be given. | No |
+| `endAbsoluteX` | [`number`](/docs/kcl/types/number) | Draw the line along the given angle until it reaches this point along the X axis. Only one of `length`, `lengthX`, `lengthY`, `endAbsoluteX`, `endAbsoluteY` can be given. | No |
+| `endAbsoluteY` | [`number`](/docs/kcl/types/number) | Draw the line along the given angle until it reaches this point along the Y axis. Only one of `length`, `lengthX`, `lengthY`, `endAbsoluteX`, `endAbsoluteY` can be given. | No |
 | [`tag`](/docs/kcl/types/tag) | [`TagDeclarator`](/docs/kcl/types#tag-declaration) | Create a new tag which refers to this line | No |
 
 ### Returns

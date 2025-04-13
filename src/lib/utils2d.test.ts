@@ -1,5 +1,6 @@
 import type { Coords2d } from '@src/lang/std/sketch'
-import { initPromise, isPointsCCW } from '@src/lang/wasm'
+import { isPointsCCW } from '@src/lang/wasm'
+import { initPromise } from '@src/lang/wasmUtils'
 import { closestPointOnRay } from '@src/lib/utils2d'
 
 beforeAll(async () => {

@@ -1,5 +1,5 @@
+import { bracket } from '@e2e/playwright/fixtures/bracket'
 import type { Page } from '@playwright/test'
-import { bracket } from '@src/lib/exampleKcl'
 import { reportRejection } from '@src/lib/trap'
 import * as fsp from 'fs/promises'
 import path from 'path'

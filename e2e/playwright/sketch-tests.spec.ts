@@ -63,7 +63,7 @@ test.describe('Sketch tests', { tag: ['@skipWin'] }, () => {
   part002 = startSketchOn(-XZ)
   ${startProfileAt3}
   |> xLine(length = width / 4)
-  |> tangentialArcTo([width / 2, 0], %)
+  |> tangentialArc(endAbsolute = [width / 2, 0])
   |> xLine(length = -width / 4 + wireRadius)
   |> yLine(length = wireOffset)
   |> arc({
@@ -119,7 +119,7 @@ test.describe('Sketch tests', { tag: ['@skipWin'] }, () => {
 sketch001 = startSketchOn(XZ)
   |> startProfileAt([2.61, -4.01], %)
   |> xLine(length = 8.73)
-  |> tangentialArcTo([8.33, -1.31], %)`
+  |> tangentialArc(endAbsolute = [8.33, -1.31])`
       )
     })
 
@@ -130,7 +130,7 @@ sketch001 = startSketchOn(XZ)
 
     await expect(async () => {
       await page.mouse.click(700, 200)
-      await page.getByText('tangentialArcTo([8.33, -1.31], %)').click()
+      await page.getByText('tangentialArc(endAbsolute = [8.33, -1.31])').click()
       await expect(
         page.getByRole('button', { name: 'Edit Sketch' })
       ).toBeEnabled({ timeout: 2000 })
@@ -139,7 +139,7 @@ sketch001 = startSketchOn(XZ)
 
     await page.waitForTimeout(600) // wait for animation
 
-    await page.getByText('tangentialArcTo([8.33, -1.31], %)').click()
+    await page.getByText('tangentialArc(endAbsolute = [8.33, -1.31])').click()
     await page.keyboard.press('End')
     await page.keyboard.down('Shift')
     await page.keyboard.press('ArrowUp')
@@ -212,7 +212,7 @@ sketch001 = startProfileAt([12.34, -12.34], sketch002)
           `sketch001 = startSketchOn(XZ)
       |> startProfileAt([4.61, -14.01], %)
       |> line(end = [12.73, -0.09])
-      |> tangentialArcTo([24.95, -5.38], %)
+      |> tangentialArc(endAbsolute = [24.95, -5.38])
       |> arcTo({
           interior = [20.18, -1.7],
           end = [11.82, -1.16]
@@ -262,7 +262,7 @@ sketch001 = startProfileAt([12.34, -12.34], sketch002)
         await expect(u.codeLocator).toHaveText(`sketch001 = startSketchOn(XZ)
       |> startProfileAt([4.61, -14.01], %)
       |> line(end = [12.73, -0.09])
-      |> tangentialArcTo([24.95, -5.38], %)
+      |> tangentialArc(endAbsolute = [24.95, -5.38])
       |> arcTo({
           interior = [20.18, -1.7],
           end = [11.82, -1.16]
@@ -326,7 +326,7 @@ sketch001 = startProfileAt([12.34, -12.34], sketch002)
         prevContent = await page.locator('.cm-content').innerText()
       }
 
-      // drag tangentialArcTo handle
+      // drag tangentialArc handle
       const tangentEnd = await u.getBoundingBox('[data-overlay-index="1"]')
       await page.mouse.move(tangentEnd.x, tangentEnd.y - 5)
       await page.mouse.down()
@@ -407,7 +407,7 @@ sketch001 = startProfileAt([12.34, -12.34], sketch002)
         .toHaveText(`sketch001 = startSketchOn(XZ)
   |> startProfileAt([6.44, -12.07], %)
   |> line(end = [14.72, 1.97])
-  |> tangentialArcTo([26.92, -3.32], %)
+  |> tangentialArc(endAbsolute = [26.92, -3.32])
   |> arcTo({
        interior = [18.11, -3.73],
        end = [9.77, -3.19]
@@ -577,7 +577,7 @@ sketch001 = startSketchOn(XZ)
 sketch001 = startSketchOn(XZ)
   |> startProfileAt([4.61, -10.01], %)
   |> line(end = [12.73, -0.09])
-  |> tangentialArcTo([24.95, -0.38], %)
+  |> tangentialArc(endAbsolute = [24.95, -0.38])
   |> close()
   |> extrude(length = 5)`
       )
@@ -646,7 +646,7 @@ sketch001 = startSketchOn(XZ)
     await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
     prevContent = await page.locator('.cm-content').innerText()
 
-    // drag tangentialArcTo handle
+    // drag tangentialArc handle
     const tangentEnd = await u.getBoundingBox('[data-overlay-index="1"]')
     await page.dragAndDrop('#stream', '#stream', {
       sourcePosition: { x: tangentEnd.x + 10, y: tangentEnd.y - 5 },
@@ -663,7 +663,7 @@ sketch001 = startSketchOn(XZ)
       `sketch001 = startSketchOn(XZ)
     |> startProfileAt([7.12, -12.68], %)
     |> line(end = [12.68, -1.09])
-    |> tangentialArcTo([24.89, 0.68], %)
+    |> tangentialArc(endAbsolute = [24.89, 0.68])
     |> close()
     |> extrude(length = 5)`,
       { shouldNormalise: true }
@@ -685,7 +685,7 @@ sketch001 = startSketchOn(XZ)
 sketch001 = startSketchOn(XZ)
   |> startProfileAt([4.61, -14.01], %)
   |> line(end = [12.73, -0.09])
-  |> tangentialArcTo([24.95, -5.38], %)
+  |> tangentialArc(endAbsolute = [24.95, -5.38])
   |> close()
   |> revolve(axis = X)`
       )
@@ -757,7 +757,7 @@ sketch001 = startSketchOn(XZ)
     await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
     prevContent = await page.locator('.cm-content').innerText()
 
-    // drag tangentialArcTo handle
+    // drag tangentialArc handle
     const tangentEnd = await u.getBoundingBox('[data-overlay-index="1"]')
     await page.mouse.move(tangentEnd.x, tangentEnd.y - 5)
     await page.mouse.down()
@@ -771,7 +771,7 @@ sketch001 = startSketchOn(XZ)
       `sketch001 = startSketchOn(XZ)
   |> startProfileAt([6.44, -12.07], %)
   |> line(end = [14.72, 1.97])
-  |> tangentialArcTo([24.95, -5.38], %)
+  |> tangentialArc(endAbsolute = [24.95, -5.38])
   |> line(end = [1.97, 2.06])
   |> close()
   |> revolve(axis = X)`,
@@ -1653,7 +1653,7 @@ profile003 = startProfileAt([206.63, -56.73], sketch001)
         await page.waitForTimeout(600)
       })
 
-      const codeFromTangentialArc = `  |> tangentialArcTo([39.49, 88.22], %)`
+      const codeFromTangentialArc = `  |> tangentialArc(endAbsolute = [39.49, 88.22])`
       await test.step('check that tangential tool does not snap to other profile starts', async () => {
         await toolbar.tangentialArcBtn.click()
         await page.waitForTimeout(1000)
@@ -1675,7 +1675,7 @@ profile003 = startProfileAt([206.63, -56.73], sketch001)
         // check pixel is now gray at tanArcLocation to verify code has executed
         await scene.expectPixelColor([26, 26, 26], tanArcLocation, 15)
         await editor.expectEditor.not.toContain(
-          `tangentialArcTo([39.49, 88.22], %)`
+          `tangentialArc(endAbsolute = [39.49, 88.22])`
         )
       })
 
@@ -1876,7 +1876,7 @@ profile003 = startProfileAt([206.63, -56.73], sketch001)
 
       await endArcStartLine()
       await editor.expectEditor.toContain(
-        `|> tangentialArcTo([16.61, 4.14], %)`
+        `|> tangentialArc(endAbsolute = [16.61, 4.14])`
       )
 
       // Add a three-point arc segment
@@ -2418,7 +2418,7 @@ sketch001 = startSketchOn(XZ)
 profile001 = startProfileAt([-63.43, 193.08], sketch001)
   |> line(end = [168.52, 149.87])
   |> line(end = [190.29, -39.18])
-  |> tangentialArcTo([319.63, 129.65], %)
+  |> tangentialArc(endAbsolute = [319.63, 129.65])
   |> line(end = [-217.65, -21.76])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()

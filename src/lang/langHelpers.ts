@@ -22,7 +22,7 @@ export type ToolTip =
   | 'xLineTo'
   | 'yLineTo'
   | 'angledLineThatIntersects'
-  | 'tangentialArcTo'
+  | 'tangentialArc'
   | 'circle'
   | 'circleThreePoint'
   | 'arcTo'
@@ -41,7 +41,7 @@ export const toolTips: Array<ToolTip> = [
   'xLineTo',
   'yLineTo',
   'angledLineThatIntersects',
-  'tangentialArcTo',
+  'tangentialArc',
   'circleThreePoint',
   'arc',
   'arcTo',

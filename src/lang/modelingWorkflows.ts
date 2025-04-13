@@ -18,6 +18,7 @@ import {
   EXECUTION_TYPE_REAL,
 } from '@src/lib/constants'
 import type { Selections } from '@src/lib/selections'
+import { err, reject } from '@src/lib/trap'
 
 /**
  * Updates the complete modeling state:
@@ -89,7 +90,10 @@ export async function updateModelingState(
         ast: updatedAst.newAst,
       })
     } else if (executionType === EXECUTION_TYPE_MOCK) {
-      await dependencies.kclManager.executeAstMock(updatedAst.newAst)
+      const didReParse = await dependencies.kclManager.executeAstMock(
+        updatedAst.newAst
+      )
+      if (err(didReParse)) return reject(didReParse)
     } else if (executionType === EXECUTION_TYPE_NONE) {
       // No execution.
     }

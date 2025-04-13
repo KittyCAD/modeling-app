@@ -100,7 +100,7 @@ import {
 } from '@src/clientSideScene/segments'
 import type EditorManager from '@src/editor/manager'
 import type CodeManager from '@src/lang/codeManager'
-import { ARG_END_ABSOLUTE } from '@src/lang/constants'
+import { ARG_END, ARG_END_ABSOLUTE } from '@src/lang/constants'
 import {
   createArrayExpression,
   createCallExpressionStdLib,
@@ -173,7 +173,7 @@ import type {
 } from '@src/machines/modelingMachine'
 import { calculateIntersectionOfTwoLines } from 'sketch-helpers'
 
-type DraftSegment = 'line' | 'tangentialArcTo'
+type DraftSegment = 'line' | 'tangentialArc'
 
 type Vec3Array = [number, number, number]
 
@@ -192,6 +192,7 @@ export class SceneEntities {
   axisGroup: Group | null = null
   draftPointGroups: Group[] = []
   currentSketchQuaternion: Quaternion | null = null
+
   constructor(
     engineCommandManager: EngineCommandManager,
     sceneInfra: SceneInfra,
@@ -244,7 +245,7 @@ export class SceneEntities {
         segment.userData.prevSegment &&
         segment.userData.type === TANGENTIAL_ARC_TO_SEGMENT
       ) {
-        update = segmentUtils.tangentialArcTo.update
+        update = segmentUtils.tangentialArc.update
       }
       if (
         segment.userData &&
@@ -353,6 +354,7 @@ export class SceneEntities {
     sceneInfra.scene.add(intersectionPlane)
     return intersectionPlane
   }
+
   createSketchAxis(
     sketchPathToNode: PathToNode,
     forward: [number, number, number],
@@ -432,9 +434,11 @@ export class SceneEntities {
     sketchPosition && this.axisGroup.position.set(...sketchPosition)
     this.sceneInfra.scene.add(this.axisGroup)
   }
+
   getDraftPoint() {
     return this.sceneInfra.scene.getObjectByName(DRAFT_POINT)
   }
+
   createDraftPoint({
     point,
     origin,
@@ -767,7 +771,7 @@ export class SceneEntities {
 
         const initSegment =
           segment.type === 'TangentialArcTo'
-            ? segmentUtils.tangentialArcTo.init
+            ? segmentUtils.tangentialArc.init
             : segment.type === 'Circle'
               ? segmentUtils.circle.init
               : segment.type === 'Arc'
@@ -866,6 +870,7 @@ export class SceneEntities {
       variableDeclarationName,
     }
   }
+
   updateAstAndRejigSketch = async (
     sketchEntryNodePath: PathToNode,
     sketchNodePaths: PathToNode[],
@@ -912,7 +917,7 @@ export class SceneEntities {
     forward: [number, number, number],
     up: [number, number, number],
     origin: [number, number, number],
-    segmentName: 'line' | 'tangentialArcTo' = 'line',
+    segmentName: 'line' | 'tangentialArc' = 'line',
     shouldTearDown = true
   ) => {
     const _ast = structuredClone(this.kclManager.ast)
@@ -1008,10 +1013,9 @@ export class SceneEntities {
             variables: this.kclManager.variables,
             pathToNode: sketchEntryNodePath,
             expressions: [
-              segmentName === 'tangentialArcTo'
-                ? createCallExpressionStdLib('tangentialArcTo', [
-                    originCoords,
-                    createPipeSubstitution(),
+              segmentName === 'tangentialArc'
+                ? createCallExpressionStdLibKw('tangentialArc', null, [
+                    createLabeledArg(ARG_END_ABSOLUTE, originCoords),
                   ])
                 : createCallExpressionStdLibKw('line', null, [
                     createLabeledArg(ARG_END_ABSOLUTE, originCoords),
@@ -1066,11 +1070,10 @@ export class SceneEntities {
           // This might need to become its own function if we want more
           // case-based logic for different segment types
           if (
-            (lastSegment.type === 'TangentialArcTo' &&
-              segmentName !== 'line') ||
-            segmentName === 'tangentialArcTo'
+            (lastSegment.type === 'TangentialArc' && segmentName !== 'line') ||
+            segmentName === 'tangentialArc'
           ) {
-            resolvedFunctionName = 'tangentialArcTo'
+            resolvedFunctionName = 'tangentialArc'
           } else if (snappedToTangent) {
             // Generate tag for previous arc segment and use it for the angle of angledLine:
             //   |> tangentialArcTo([5, -10], %, $arc001)
@@ -1217,7 +1220,8 @@ export class SceneEntities {
     _ast = pResult.program
 
     // do a quick mock execution to get the program memory up-to-date
-    await this.kclManager.executeAstMock(_ast)
+    const didReParse = await this.kclManager.executeAstMock(_ast)
+    if (err(didReParse)) return didReParse
 
     const justCreatedNode = getNodeFromPath<VariableDeclaration>(
       _ast,
@@ -1618,7 +1622,8 @@ export class SceneEntities {
     _ast = pResult.program
 
     // do a quick mock execution to get the program memory up-to-date
-    await this.kclManager.executeAstMock(_ast)
+    const didReParse = await this.kclManager.executeAstMock(_ast)
+    if (err(didReParse)) return didReParse
 
     const { truncatedAst } = await this.setupSketch({
       sketchEntryNodePath: updatedEntryNodePath,
@@ -1813,7 +1818,8 @@ export class SceneEntities {
     _ast = pResult.program
 
     // do a quick mock execution to get the program memory up-to-date
-    await this.kclManager.executeAstMock(_ast)
+    const didReParse = await this.kclManager.executeAstMock(_ast)
+    if (err(didReParse)) return didReParse
 
     const index = sg.paths.length // because we've added a new segment that's not in the memory yet
     const draftExpressionsIndices = { start: index, end: index }
@@ -2040,7 +2046,8 @@ export class SceneEntities {
     _ast = pResult.program
 
     // do a quick mock execution to get the program memory up-to-date
-    await this.kclManager.executeAstMock(_ast)
+    const didReParse = await this.kclManager.executeAstMock(_ast)
+    if (err(didReParse)) return didReParse
 
     const index = sg.paths.length // because we've added a new segment that's not in the memory yet
     const draftExpressionsIndices = { start: index, end: index }
@@ -2307,7 +2314,8 @@ export class SceneEntities {
     _ast = pResult.program
 
     // do a quick mock execution to get the program memory up-to-date
-    await this.kclManager.executeAstMock(_ast)
+    const didReParse = await this.kclManager.executeAstMock(_ast)
+    if (err(didReParse)) return didReParse
 
     const { truncatedAst } = await this.setupSketch({
       sketchEntryNodePath: updatedEntryNodePath,
@@ -2540,7 +2548,10 @@ export class SceneEntities {
             addingNewSegmentStatus = 'pending'
             if (trap(mod)) return
 
-            await this.kclManager.executeAstMock(mod.modifiedAst)
+            const didReParse = await this.kclManager.executeAstMock(
+              mod.modifiedAst
+            )
+            if (err(didReParse)) return
             this.tearDownSketch({ removeAxis: false })
             // eslint-disable-next-line @typescript-eslint/no-floating-promises
             this.setupSketch({
@@ -2612,6 +2623,7 @@ export class SceneEntities {
       this.kclManager.lastSuccessfulVariables,
       draftSegment
     )
+
   getSnappedDragPoint(
     pos: Vector2,
     intersects: Intersection<Object3D<Object3DEventMap>>[],
@@ -2731,6 +2743,7 @@ export class SceneEntities {
       intersectsYAxis,
     }
   }
+
   positionDraftPoint({
     origin,
     yAxis,
@@ -2763,6 +2776,7 @@ export class SceneEntities {
       draftPoint.position.set(snappedPoint.x, snappedPoint.y, 0)
     }
   }
+
   maybeSnapProfileStartIntersect2d({
     sketchEntryNodePath,
     intersects,
@@ -2783,6 +2797,7 @@ export class SceneEntities {
       : _intersection2d
     return intersection2d
   }
+
   onDragSegment({
     object,
     intersection2d: _intersection2d,
@@ -3137,7 +3152,7 @@ export class SceneEntities {
     }
     let update: SegmentUtils['update'] | null = null
     if (type === TANGENTIAL_ARC_TO_SEGMENT) {
-      update = segmentUtils.tangentialArcTo.update
+      update = segmentUtils.tangentialArc.update
     } else if (type === STRAIGHT_SEGMENT) {
       update = segmentUtils.straight.update
     } else if (
@@ -3231,9 +3246,11 @@ export class SceneEntities {
       })
     })
   }
+
   removeSketchGrid() {
     if (this.axisGroup) this.sceneInfra.scene.remove(this.axisGroup)
   }
+
   tearDownSketch({ removeAxis = true }: { removeAxis?: boolean }) {
     // Remove all draft groups
     this.draftPointGroups.forEach((draftPointGroup) => {
@@ -3261,6 +3278,7 @@ export class SceneEntities {
     this.sceneInfra.camControls.enableRotate = true
     this.activeSegments = {}
   }
+
   mouseEnterLeaveCallbacks() {
     return {
       onMouseEnter: ({ selected, dragSelected }: OnMouseEnterLeaveArgs) => {
@@ -3316,7 +3334,7 @@ export class SceneEntities {
           if (parent.name === STRAIGHT_SEGMENT) {
             update = segmentUtils.straight.update
           } else if (parent.name === TANGENTIAL_ARC_TO_SEGMENT) {
-            update = segmentUtils.tangentialArcTo.update
+            update = segmentUtils.tangentialArc.update
             input = {
               type: 'arc-segment',
               from: parent.userData.from,
@@ -3393,7 +3411,7 @@ export class SceneEntities {
           if (parent.name === STRAIGHT_SEGMENT) {
             update = segmentUtils.straight.update
           } else if (parent.name === TANGENTIAL_ARC_TO_SEGMENT) {
-            update = segmentUtils.tangentialArcTo.update
+            update = segmentUtils.tangentialArc.update
             input = {
               type: 'arc-segment',
               from: parent.userData.from,
@@ -3469,6 +3487,7 @@ export class SceneEntities {
       },
     }
   }
+
   resetOverlays() {
     this.sceneInfra.modelingSend({
       type: 'Set Segment Overlays',
@@ -3667,17 +3686,19 @@ function prepareTruncatedAst(
     if (draftSegment === 'line') {
       newSegment = createCallExpressionStdLibKw('line', null, [
         createLabeledArg(
-          'end',
+          ARG_END,
           createArrayExpression([createLiteral(0), createLiteral(0)])
         ),
       ])
     } else {
-      newSegment = createCallExpressionStdLib('tangentialArcTo', [
-        createArrayExpression([
-          createLiteral(lastSeg.to[0]),
-          createLiteral(lastSeg.to[1]),
-        ]),
-        createPipeSubstitution(),
+      newSegment = createCallExpressionStdLibKw('tangentialArc', null, [
+        createLabeledArg(
+          ARG_END_ABSOLUTE,
+          createArrayExpression([
+            createLiteral(lastSeg.to[0]),
+            createLiteral(lastSeg.to[1]),
+          ])
+        ),
       ])
     }
     ;(
@@ -3847,6 +3868,7 @@ function getSketchesInfo({
   }
   return sketchesInfo
 }
+
 /**
  * Given a SourceRange [x,y,boolean] create a Selections object which contains
  * graphSelections with the artifact and codeRef.

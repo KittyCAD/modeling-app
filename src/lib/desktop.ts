@@ -6,11 +6,10 @@ import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfigu
 import { newKclFile } from '@src/lang/project'
 import {
   defaultAppSettings,
-  initPromise,
   parseAppSettings,
   parseProjectSettings,
 } from '@src/lang/wasm'
-import { relevantFileExtensions } from '@src/lang/wasmUtils'
+import { initPromise, relevantFileExtensions } from '@src/lang/wasmUtils'
 import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
   PROJECT_ENTRYPOINT,
@@ -700,10 +699,12 @@ export const getUser = async (
   hostname: string
 ): Promise<Models['User_type']> => {
   try {
-    const user = await window.electron.kittycad('users.get_user_self', {
-      client: { token },
+    const user = await fetch(`${hostname}/users/me`, {
+      headers: new Headers({
+        Authorization: `Bearer ${token}`,
+      }),
     })
-    return user
+    return user.json()
   } catch (e) {
     console.error(e)
   }
