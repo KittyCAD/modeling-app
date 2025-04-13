@@ -1088,8 +1088,8 @@ impl Path {
                 let center_point = [circle_center.center.x, circle_center.center.y];
                 GetTangentialInfoFromPathsResult::Circle {
                     center: center_point,
-                    // Note should a circle always be ccw regardless  of the order of points?
-                    ccw: crate::std::utils::is_points_ccw(&[*p1, *p2, *p3]) > 0,
+                    // Note: a circle is always ccw regardless of the order of points
+                    ccw: true,
                     radius,
                 }
             }
