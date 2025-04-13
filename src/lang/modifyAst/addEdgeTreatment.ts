@@ -17,8 +17,6 @@ import {
   createPipeExpression,
   createCallExpressionStdLibKw,
   createLabeledArg,
-  findUniqueName,
-  createTagDeclarator,
 } from '../modifyAst'
 import {
   getNodeFromPath,
@@ -36,13 +34,8 @@ import {
 import { err } from 'lib/trap'
 import { Selection, Selections } from 'lib/selections'
 import { KclCommandValue } from 'lib/commandTypes'
-import { capitaliseFC, isArray } from 'lib/utils'
-import {
-  Artifact,
-  getArtifactOfTypes,
-  getCommonFacesForEdge,
-  getSweepArtifactFromSelection,
-} from 'lang/std/artifactGraph'
+import { isArray } from 'lib/utils'
+import { Artifact, getSweepArtifactFromSelection } from 'lang/std/artifactGraph'
 import { Node } from '@rust/kcl-lib/bindings/Node'
 import { findKwArg } from 'lang/util'
 import { KclManager } from 'lang/KclSingleton'
@@ -52,6 +45,10 @@ import EditorManager from 'editor/manager'
 import CodeManager from 'lang/codeManager'
 import { updateModelingState } from 'lang/modelingWorkflows'
 import { Name } from '@rust/kcl-lib/bindings/Name'
+import {
+  createTagExpressions,
+  modifyAstWithTagsForSelection,
+} from './tagManagement'
 
 // Edge Treatment Types
 export enum EdgeTreatmentType {
@@ -141,65 +138,21 @@ export function modifyAstWithEdgeTreatmentAndTag(
       artifactGraph
     )
     if (err(result)) return result
-    const { commonFaceArtifacts, pathToExtrudeNode } = result
+    const { pathToExtrudeNode } = result
 
     const tags: Array<string> = []
 
-    for (const faceArtifact of commonFaceArtifacts) {
-      if (faceArtifact.type === 'wall') {
-        const segment = getArtifactOfTypes(
-          { key: faceArtifact.segId, types: ['segment'] },
-          artifactGraph
-        )
-        if (err(segment)) return segment
-        const pathToSegmentNode = getNodePathFromSourceRange(
-          clonedAst,
-          segment.codeRef.range
-        )
-        const tagResult = mutateAstWithTagForSketchSegment(
-          clonedAst,
-          pathToSegmentNode
-        )
+    const tagResult = modifyAstWithTagsForSelection(
+      clonedAst,
+      selection,
+      artifactGraph
+      // ['oppositeAndAdjacentEdges']
+    )
 
-        if (err(tagResult)) return tagResult
-        clonedAst = tagResult.modifiedAst
-        tags.push(tagResult.tag)
-      } else if (faceArtifact.type === 'cap') {
-        const sweepArtifact = getArtifactOfTypes(
-          { key: faceArtifact.sweepId, types: ['sweep'] },
-          artifactGraph
-        )
-        if (err(sweepArtifact)) return sweepArtifact
-        if (sweepArtifact.subType !== 'extrusion') {
-          return new Error('TODO: Handle sweep other than extrusion')
-        }
-        const pathToSweepNode = getNodePathFromSourceRange(
-          clonedAst,
-          sweepArtifact.codeRef.range
-        )
-        const callExp = getNodeFromPath<CallExpressionKw>(
-          clonedAst,
-          pathToSweepNode,
-          ['CallExpressionKw']
-        )
-        if (err(callExp)) return callExp
-        const getExistingTag = callExp.node.arguments.find(
-          (arg) => arg.label.name === 'tag'
-        )
-        if (getExistingTag && getExistingTag.arg.type === 'TagDeclarator') {
-          tags.push(getExistingTag.arg.value)
-        } else {
-          const capType = capitaliseFC(faceArtifact.subType)
-          const newTag = findUniqueName(clonedAst, `cap${capType}`)
-          const tagCall = createLabeledArg(
-            `tag${capType}`,
-            createTagDeclarator(newTag)
-          )
-          callExp.node.arguments.push(tagCall)
-          tags.push(newTag)
-        }
-      }
-    }
+    if (err(tagResult)) return tagResult
+
+    clonedAst = tagResult.modifiedAst
+    tags.push(...tagResult.tags)
 
     // Group tags by their corresponding extrude node
     const extrudeKey = JSON.stringify(pathToExtrudeNode)
@@ -239,13 +192,18 @@ export function modifyAstWithEdgeTreatmentAndTag(
     })
     const firstTag = tagCalls[0] // can be Identifier or CallExpression (for opposite and adjacent edges)
 
+    const tagExpressions = createTagExpressions(
+      tagInfos
+      // ['oppositeAndAdjacentEdges']
+    )
+
     // edge treatment call
     const edgeTreatmentCall = createCallExpressionStdLibKw(
       parameters.type,
       null,
       [
         createLabeledArg(parameterName, parameterValue),
-        createLabeledArg('tags', createArrayExpression(tagCalls)),
+        createLabeledArg('tags', createArrayExpression(tagExpressions)),
       ]
     )
 
@@ -352,23 +310,11 @@ export function getPathToExtrudeForSegmentSelection(
   ast: Program,
   selection: Selection,
   artifactGraph: ArtifactGraph
-):
-  | {
-      commonFaceArtifacts: Extract<Artifact, { type: 'wall' | 'cap' }>[]
-      pathToExtrudeNode: PathToNode
-    }
-  | Error {
-  if (!selection.artifact) {
-    return new Error('Selection does not have an artifact')
-  }
-  if (
-    selection.artifact.type !== 'sweepEdge' &&
-    selection.artifact.type !== 'segment'
-  ) {
-    return new Error('Selection is not a sweep edge')
-  }
-
-  console.log('selection', selection)
+): { pathToSegmentNode: PathToNode; pathToExtrudeNode: PathToNode } | Error {
+  const pathToSegmentNode = getNodePathFromSourceRange(
+    ast,
+    selection.codeRef?.range
+  )
   const sweepArtifact = getSweepArtifactFromSelection(selection, artifactGraph)
   if (err(sweepArtifact)) return sweepArtifact
 
@@ -378,16 +324,7 @@ export function getPathToExtrudeForSegmentSelection(
   )
   if (err(pathToExtrudeNode)) return pathToExtrudeNode
 
-  const commonFaceArtifacts = getCommonFacesForEdge(
-    selection.artifact,
-    artifactGraph
-  )
-  if (err(commonFaceArtifacts)) return commonFaceArtifacts
-
-  return {
-    commonFaceArtifacts,
-    pathToExtrudeNode,
-  }
+  return { pathToSegmentNode, pathToExtrudeNode }
 }
 
 export function mutateAstWithTagForSketchSegment(
