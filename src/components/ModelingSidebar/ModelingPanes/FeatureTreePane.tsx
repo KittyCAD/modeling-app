@@ -450,6 +450,16 @@ const OperationItem = (props: {
 }
 
 const DefaultPlanes = () => {
+  const handleVisibilityChange = useCallback(
+    async (planeId: string, isCurrentlyVisible: boolean) => {
+      await kclManager.engineCommandManager.setPlaneHidden(
+        planeId,
+        isCurrentlyVisible
+      )
+    },
+    []
+  )
+
   const defaultPlanes = rustContext.defaultPlanes
   if (!defaultPlanes) return null
 
@@ -458,16 +468,6 @@ const DefaultPlanes = () => {
     { name: 'Top plane', id: defaultPlanes.xy },
     { name: 'Side plane', id: defaultPlanes.yz },
   ]
-
-  const handleVisibilityChange = useCallback(
-    (planeId: string, isCurrentlyVisible: boolean) => {
-      kclManager.engineCommandManager.setPlaneHidden(
-        planeId,
-        isCurrentlyVisible
-      )
-    },
-    []
-  )
 
   return (
     <div className="mb-2">
@@ -479,11 +479,12 @@ const DefaultPlanes = () => {
           visibilityToggle={{
             entityId: plane.id,
             initialVisibility: true,
-            onVisibilityChange: () =>
-              handleVisibilityChange(
+            onVisibilityChange: async () => {
+              await handleVisibilityChange(
                 plane.id,
                 !(visibilityMap.get(plane.id) ?? true)
-              ),
+              )
+            },
           }}
         />
       ))}
