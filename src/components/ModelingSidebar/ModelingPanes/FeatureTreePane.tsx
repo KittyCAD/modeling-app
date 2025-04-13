@@ -151,7 +151,7 @@ export const FeatureTreePane = () => {
           <Loading className="h-full">Building feature tree...</Loading>
         ) : (
           <>
-            <DefaultPlanes />
+            {!modelingState.matches('Sketch') && <DefaultPlanes />}
             {parseErrors.length > 0 && (
               <div
                 className={`absolute inset-0 rounded-lg p-2 ${
