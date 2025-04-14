@@ -8,7 +8,7 @@ description: Operations executed assembly_non_default_units.kcl
     "group": {
       "type": "ModuleInstance",
       "name": "other1",
-      "moduleId": 5
+      "moduleId": 6
     },
     "sourceRange": []
   },
@@ -35,7 +35,7 @@ description: Operations executed assembly_non_default_units.kcl
     "group": {
       "type": "ModuleInstance",
       "name": "other2",
-      "moduleId": 6
+      "moduleId": 7
     },
     "sourceRange": []
   },

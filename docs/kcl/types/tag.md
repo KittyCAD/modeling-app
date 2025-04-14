@@ -12,7 +12,7 @@ The syntax for declaring a tag is `$myTag` you would use it in the following
 way:
 
 ```js
-startSketchOn('XZ')
+startSketchOn(XZ)
   |> startProfileAt(origin, %)
   |> angledLine(angle = 0, length = 191.26, tag = $rectangleSegmentA001)
   |> angledLine(
@@ -46,7 +46,7 @@ However if the code was written like this:
 
 ```js
 fn rect(origin) {
-  return startSketchOn('XZ')
+  return startSketchOn(XZ)
     |> startProfileAt(origin, %)
     |> angledLine(angle = 0, length = 191.26, tag = $rectangleSegmentA001)
     |> angledLine(
@@ -75,7 +75,7 @@ For example the following code works.
 
 ```js
 fn rect(origin) {
-  return startSketchOn('XZ')
+  return startSketchOn(XZ)
     |> startProfileAt(origin, %)
     |> angledLine(angle = 0, length = 191.26, tag = $rectangleSegmentA001)
     |> angledLine(

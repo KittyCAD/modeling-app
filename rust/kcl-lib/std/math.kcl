@@ -1,6 +1,8 @@
 @no_std
 @settings(defaultLengthUnit = mm)
 
+import Point2d from "std::types"
+
 /// The value of `pi`, Archimedes’ constant (π).
 ///
 /// ```
