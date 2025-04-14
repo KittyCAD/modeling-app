@@ -214,12 +214,12 @@ flowchart LR
     217[Solid2d]
   end
   subgraph path219 [Path]
-    219["Path<br>[2569, 2669, 0]"]
-    220["Segment<br>[2675, 2702, 0]"]
-    221["Segment<br>[2708, 2736, 0]"]
-    222["Segment<br>[2742, 2770, 0]"]
-    223["Segment<br>[2776, 2915, 0]"]
-    224["Segment<br>[2921, 2928, 0]"]
+    219["Path<br>[2574, 2674, 0]"]
+    220["Segment<br>[2680, 2707, 0]"]
+    221["Segment<br>[2713, 2741, 0]"]
+    222["Segment<br>[2747, 2775, 0]"]
+    223["Segment<br>[2781, 2920, 0]"]
+    224["Segment<br>[2926, 2933, 0]"]
     225[Solid2d]
   end
   1["Plane<br>[1299, 1316, 0]"]
@@ -231,7 +231,7 @@ flowchart LR
   10["SweepEdge Adjacent"]
   11["Plane<br>[1826, 1843, 0]"]
   218["Sweep Extrusion<br>[2099, 2127, 0]"]
-  226["Sweep Extrusion<br>[2934, 2963, 0]"]
+  226["Sweep Extrusion<br>[2939, 2968, 0]"]
   227[Wall]
   228[Wall]
   229[Wall]
@@ -244,7 +244,7 @@ flowchart LR
   236["SweepEdge Adjacent"]
   237["SweepEdge Opposite"]
   238["SweepEdge Adjacent"]
-  239["StartSketchOnFace<br>[2537, 2563, 0]"]
+  239["StartSketchOnFace<br>[2537, 2568, 0]"]
   1 --- 2
   2 --- 3
   2 ---- 5
