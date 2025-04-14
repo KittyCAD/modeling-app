@@ -1512,7 +1512,7 @@ description: Operations executed walkie-talkie.kcl
       "name": "zLogo",
       "functionSourceRange": [
         69,
-        1014,
+        977,
         12
       ],
       "unlabeledArg": null,
@@ -1570,8 +1570,8 @@ description: Operations executed walkie-talkie.kcl
       "type": "FunctionCall",
       "name": "oLogo",
       "functionSourceRange": [
-        1072,
-        1575,
+        1035,
+        1538,
         12
       ],
       "unlabeledArg": null,
@@ -1629,8 +1629,8 @@ description: Operations executed walkie-talkie.kcl
       "type": "FunctionCall",
       "name": "oLogo2",
       "functionSourceRange": [
-        1593,
-        2096,
+        1556,
+        2059,
         12
       ],
       "unlabeledArg": null,
@@ -1688,8 +1688,8 @@ description: Operations executed walkie-talkie.kcl
       "type": "FunctionCall",
       "name": "oLogo",
       "functionSourceRange": [
-        1072,
-        1575,
+        1035,
+        1538,
         12
       ],
       "unlabeledArg": null,
@@ -1747,8 +1747,8 @@ description: Operations executed walkie-talkie.kcl
       "type": "FunctionCall",
       "name": "oLogo2",
       "functionSourceRange": [
-        1593,
-        2096,
+        1556,
+        2059,
         12
       ],
       "unlabeledArg": null,

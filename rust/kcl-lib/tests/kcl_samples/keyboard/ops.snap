@@ -7202,7 +7202,7 @@ description: Operations executed keyboard.kcl
       "name": "z",
       "functionSourceRange": [
         4893,
-        5909,
+        5872,
         0
       ],
       "unlabeledArg": null,
@@ -7438,8 +7438,8 @@ description: Operations executed keyboard.kcl
       "type": "FunctionCall",
       "name": "o",
       "functionSourceRange": [
-        5956,
-        7065,
+        5919,
+        7028,
         0
       ],
       "unlabeledArg": null,
@@ -7894,8 +7894,8 @@ description: Operations executed keyboard.kcl
       "type": "FunctionCall",
       "name": "o",
       "functionSourceRange": [
-        5956,
-        7065,
+        5919,
+        7028,
         0
       ],
       "unlabeledArg": null,
