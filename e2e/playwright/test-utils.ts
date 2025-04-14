@@ -1140,7 +1140,7 @@ export function tomlToPerProjectSettings(
   return TOML.parse(toml)
 }
 
-export function perProjectsettingsToToml(
+export function perProjectSettingsToToml(
   settings: DeepPartial<ProjectConfiguration>
 ) {
   // eslint-disable-next-line no-restricted-syntax

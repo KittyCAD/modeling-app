@@ -5,7 +5,7 @@ description: Operations executed angled_line.kcl
 [
   {
     "labeledArgs": {
-      "data": {
+      "planeOrSolid": {
         "value": {
           "type": "String",
           "value": "XY"

@@ -37,49 +37,25 @@ bracketProfile = startSketchOn(XZ)
        0
      ], %)
   |> xLine(length = flangeLength)
-  |> tangentialArc({
-       radius = exteriorBendRadius,
-       offset = bendAngle
-     }, %)
-  |> angledLineToY([bendAngle, hatHeight - thickness], %, $seg01)
-  |> tangentialArc({
-       radius = interiorBendRadius,
-       offset = -bendAngle
-     }, %)
+  |> tangentialArc(radius = exteriorBendRadius, angle = bendAngle)
+  |> angledLine(angle = bendAngle, endAbsoluteY = hatHeight - thickness, tag = $seg01)
+  |> tangentialArc(radius = interiorBendRadius, angle = -bendAngle)
   |> xLine(endAbsolute = 0, tag = $seg02)
   |> xLine(length = segLen(seg02))
-  |> tangentialArc({
-       radius = interiorBendRadius,
-       offset = -bendAngle
-     }, %)
-  |> angledLine([-bendAngle, segLen(seg01)], %)
-  |> tangentialArc({
-       radius = exteriorBendRadius,
-       offset = bendAngle
-     }, %)
+  |> tangentialArc(radius = interiorBendRadius, angle = -bendAngle)
+  |> angledLine(angle = -bendAngle, length = segLen(seg01))
+  |> tangentialArc(radius = exteriorBendRadius, angle = bendAngle)
   |> xLine(length = flangeLength)
   |> yLine(length = thickness, tag = $seg03)
   |> xLine(length = -flangeLength, tag = $seg04)
-  |> tangentialArc({
-       radius = interiorBendRadius,
-       offset = -bendAngle
-     }, %)
-  |> angledLine([180 - bendAngle, segLen(seg01)], %)
-  |> tangentialArc({
-       radius = exteriorBendRadius,
-       offset = bendAngle
-     }, %)
+  |> tangentialArc(radius = interiorBendRadius, angle = -bendAngle)
+  |> angledLine(angle = 180 - bendAngle, length = segLen(seg01))
+  |> tangentialArc(radius = exteriorBendRadius, angle = bendAngle)
   |> xLine(endAbsolute = 0, tag = $seg05)
   |> xLine(length = -segLen(seg05))
-  |> tangentialArc({
-       radius = exteriorBendRadius,
-       offset = bendAngle
-     }, %)
-  |> angledLine([bendAngle - 180, segLen(seg01)], %)
-  |> tangentialArc({
-       radius = interiorBendRadius,
-       offset = -bendAngle
-     }, %)
+  |> tangentialArc(radius = exteriorBendRadius, angle = bendAngle)
+  |> angledLine(angle = bendAngle - 180, length = segLen(seg01))
+  |> tangentialArc(radius = interiorBendRadius, angle = -bendAngle)
   |> xLine(length = -flangeLength, tag = $seg06)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg07)
   |> close()
@@ -95,7 +71,7 @@ bracketProfile = startSketchOn(XZ)
      )
 
 // Cut the bolt pattern in the left base flange
-leftFlangeBoltPattern = startSketchOn(bracketProfile, seg04)
+leftFlangeBoltPattern = startSketchOn(bracketProfile, face = seg04)
   |> circle(center = [-mountingBoltPatternX / 2, overhang], radius = mountingBoltDiameter / 2)
   |> patternLinear2d(
        %,
@@ -106,7 +82,7 @@ leftFlangeBoltPattern = startSketchOn(bracketProfile, seg04)
   |> extrude(length = -thickness)
 
 // Cut the bolt pattern in the right base flange
-rightFlangeBoltPattern = startSketchOn(bracketProfile, seg06)
+rightFlangeBoltPattern = startSketchOn(bracketProfile, face = seg06)
   |> circle(center = [mountingBoltPatternX / 2, overhang], radius = mountingBoltDiameter / 2)
   |> patternLinear2d(
        %,
@@ -117,7 +93,7 @@ rightFlangeBoltPattern = startSketchOn(bracketProfile, seg06)
   |> extrude(length = -thickness)
 
 // Provision the top flange with holes to mount an object
-topFlangeBoltPattern = startSketchOn(bracketProfile, seg05)
+topFlangeBoltPattern = startSketchOn(bracketProfile, face = seg05)
   |> circle(
        center = [
          -componentBoltPatternX / 2,
@@ -140,6 +116,6 @@ topFlangeBoltPattern = startSketchOn(bracketProfile, seg05)
   |> extrude(length = -thickness)
 
 // Place a hole at the center of the component bolt pattern to reduce mass
-centeredHole = startSketchOn(bracketProfile, seg05)
+centeredHole = startSketchOn(bracketProfile, face = seg05)
   |> circle(center = [0, flangeExtrusion / 2], radius = 0.75)
   |> extrude(length = -thickness)

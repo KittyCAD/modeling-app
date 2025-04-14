@@ -187,7 +187,8 @@ description: Artifact commands lego.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 3.2,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -411,7 +412,8 @@ description: Artifact commands lego.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -1.7000000000000002,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -787,7 +789,8 @@ description: Artifact commands lego.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 1.8,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -853,7 +856,8 @@ description: Artifact commands lego.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 1.8,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -919,7 +923,8 @@ description: Artifact commands lego.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 1.8,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -985,7 +990,8 @@ description: Artifact commands lego.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 1.8,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -1051,7 +1057,8 @@ description: Artifact commands lego.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 1.8,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -1117,7 +1124,8 @@ description: Artifact commands lego.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 1.8,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -1305,7 +1313,8 @@ description: Artifact commands lego.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 1.8,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -1371,7 +1380,8 @@ description: Artifact commands lego.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 1.8,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {

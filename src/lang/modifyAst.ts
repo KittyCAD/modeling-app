@@ -98,9 +98,11 @@ export function startSketchOnDefault(
   const _name =
     name || findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.SKETCH)
 
-  const startSketchOn = createCallExpressionStdLib('startSketchOn', [
+  const startSketchOn = createCallExpressionStdLibKw(
+    'startSketchOn',
     createLiteral(axis),
-  ])
+    []
+  )
 
   const variableDeclaration = createVariableDeclaration(_name, startSketchOn)
   _node.body = [...node.body, variableDeclaration]
@@ -180,9 +182,11 @@ export function addSketchTo(
   const _name =
     name || findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.SKETCH)
 
-  const startSketchOn = createCallExpressionStdLib('startSketchOn', [
+  const startSketchOn = createCallExpressionStdLibKw(
+    'startSketchOn',
     createLiteral(axis.toUpperCase()),
-  ])
+    []
+  )
   const startProfileAt = createCallExpressionStdLib('startProfileAt', [
     createLiteral('default'),
     createPipeSubstitution(),
@@ -223,6 +227,9 @@ export function addSketchTo(
 Set the keyword argument to the given value.
 Returns true if it overwrote an existing argument.
 Returns false if no argument with the label existed before.
+Also do some checks to see if it's actually trying to set a constraint on
+a sketch line that's already fully constrained, and if so, duplicates the arg.
+WILL BE FIXED SOON.
 */
 export function mutateKwArg(
   label: string,
@@ -247,6 +254,27 @@ export function mutateKwArg(
         })
         return true
       }
+    }
+  }
+  node.arguments.push(createLabeledArg(label, val))
+  return false
+}
+
+/**
+Set the keyword argument to the given value.
+Returns true if it overwrote an existing argument.
+Returns false if no argument with the label existed before.
+*/
+export function mutateKwArgOnly(
+  label: string,
+  node: CallExpressionKw,
+  val: Expr
+): boolean {
+  for (let i = 0; i < node.arguments.length; i++) {
+    const arg = node.arguments[i]
+    if (arg.label.name === label) {
+      node.arguments[i].arg = val
+      return true
     }
   }
   node.arguments.push(createLabeledArg(label, val))
@@ -703,10 +731,11 @@ export function sketchOnExtrudedFace(
   }
   const newSketch = createVariableDeclaration(
     newSketchName,
-    createCallExpressionStdLib('startSketchOn', [
+    createCallExpressionStdLibKw(
+      'startSketchOn',
       createLocalName(extrudeName ? extrudeName : oldSketchName),
-      _tag,
-    ]),
+      [createLabeledArg('face', _tag)]
+    ),
     undefined,
     'const'
   )
@@ -963,9 +992,11 @@ export function sketchOnOffsetPlane(
   )
   const newSketch = createVariableDeclaration(
     newSketchName,
-    createCallExpressionStdLib('startSketchOn', [
+    createCallExpressionStdLibKw(
+      'startSketchOn',
       createLocalName(offsetPlaneName),
-    ]),
+      []
+    ),
     undefined,
     'const'
   )
@@ -1511,32 +1542,32 @@ export async function deleteFromSelection(
             ) {
               continue
             }
-            const expression = createCallExpressionStdLib('startSketchOn', [
+            const expression = createCallExpressionStdLibKw(
+              'startSketchOn',
               createObjectExpression({
-                plane: createObjectExpression({
-                  origin: createObjectExpression({
-                    x: roundLiteral(faceDetails.origin.x),
-                    y: roundLiteral(faceDetails.origin.y),
-                    z: roundLiteral(faceDetails.origin.z),
-                  }),
-                  xAxis: createObjectExpression({
-                    x: roundLiteral(faceDetails.x_axis.x),
-                    y: roundLiteral(faceDetails.x_axis.y),
-                    z: roundLiteral(faceDetails.x_axis.z),
-                  }),
-                  yAxis: createObjectExpression({
-                    x: roundLiteral(faceDetails.y_axis.x),
-                    y: roundLiteral(faceDetails.y_axis.y),
-                    z: roundLiteral(faceDetails.y_axis.z),
-                  }),
-                  zAxis: createObjectExpression({
-                    x: roundLiteral(faceDetails.z_axis.x),
-                    y: roundLiteral(faceDetails.z_axis.y),
-                    z: roundLiteral(faceDetails.z_axis.z),
-                  }),
+                origin: createObjectExpression({
+                  x: roundLiteral(faceDetails.origin.x),
+                  y: roundLiteral(faceDetails.origin.y),
+                  z: roundLiteral(faceDetails.origin.z),
+                }),
+                xAxis: createObjectExpression({
+                  x: roundLiteral(faceDetails.x_axis.x),
+                  y: roundLiteral(faceDetails.x_axis.y),
+                  z: roundLiteral(faceDetails.x_axis.z),
+                }),
+                yAxis: createObjectExpression({
+                  x: roundLiteral(faceDetails.y_axis.x),
+                  y: roundLiteral(faceDetails.y_axis.y),
+                  z: roundLiteral(faceDetails.y_axis.z),
+                }),
+                zAxis: createObjectExpression({
+                  x: roundLiteral(faceDetails.z_axis.x),
+                  y: roundLiteral(faceDetails.z_axis.y),
+                  z: roundLiteral(faceDetails.z_axis.z),
                 }),
               }),
-            ])
+              []
+            )
             if (
               parentInit.type === 'VariableDeclarator' &&
               lastKey === 'init'
@@ -1560,7 +1591,8 @@ export async function deleteFromSelection(
       selection?.artifact?.type === 'segment' && selection?.artifact?.surfaceId
     )
     if (
-      pipeBody[0].type === 'CallExpression' &&
+      (pipeBody[0].type === 'CallExpression' ||
+        pipeBody[0].type === 'CallExpressionKw') &&
       doNotDeleteProfileIfItHasBeenExtruded &&
       (pipeBody[0].callee.name.name === 'startSketchOn' ||
         pipeBody[0].callee.name.name === 'startProfileAt')

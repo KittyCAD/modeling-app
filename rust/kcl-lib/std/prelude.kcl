@@ -42,15 +42,17 @@ export type string
 /// ```norun,inline
 /// startSketchOn('XZ')
 ///   |> startProfileAt(origin, %)
-///   |> angledLine({angle = 0, length = 191.26}, %, $rectangleSegmentA001)
-///   |> angledLine({
+///   |> angledLine(angle = 0, length = 191.26, tag = $rectangleSegmentA001)
+///   |> angledLine(
 ///        angle = segAng(rectangleSegmentA001) - 90,
 ///        length = 196.99,
-///      }, %, $rectangleSegmentB001)
-///   |> angledLine({
+///        tag = $rectangleSegmentB001,
+///      )
+///   |> angledLine(
 ///        angle = segAng(rectangleSegmentA001),
 ///        length = -segLen(rectangleSegmentA001),
-///      }, %, $rectangleSegmentC001)
+///        tag = $rectangleSegmentC001,
+///      )
 ///   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
 ///   |> close()
 /// ```
@@ -74,15 +76,16 @@ export type string
 /// fn rect(origin) {
 ///   return startSketchOn('XZ')
 ///     |> startProfileAt(origin, %)
-///     |> angledLine({angle = 0, length = 191.26}, %, $rectangleSegmentA001)
-///     |> angledLine({
+///     |> angledLine(angle = 0, length = 191.26, tag = $rectangleSegmentA001)
+///     |> angledLine(
 ///          angle = segAng(rectangleSegmentA001) - 90,
-///          length = 196.99
-///        }, %, $rectangleSegmentB001)
-///     |> angledLine({
+///          length = 196.99,
+///          tag = $rectangleSegmentB001)
+///     |> angledLine(
 ///          angle = segAng(rectangleSegmentA001),
-///          length = -segLen(rectangleSegmentA001)
-///        }, %, $rectangleSegmentC001)
+///          length = -segLen(rectangleSegmentA001),
+///          tag = $rectangleSegmentC001
+///        )
 ///     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
 ///     |> close()
 /// }
@@ -102,15 +105,15 @@ export type string
 /// fn rect(origin) {
 ///   return startSketchOn('XZ')
 ///     |> startProfileAt(origin, %)
-///     |> angledLine({angle = 0, length = 191.26}, %, $rectangleSegmentA001)
-///     |> angledLine({
+///     |> angledLine(angle = 0, length = 191.26, tag = $rectangleSegmentA001)
+///     |> angledLine(
 ///          angle = segAng(rectangleSegmentA001) - 90,
 ///          length = 196.99
-///        }, %, $rectangleSegmentB001)
-///     |> angledLine({
+///        , %, $rectangleSegmentB001)
+///     |> angledLine(
 ///          angle = segAng(rectangleSegmentA001),
 ///          length = -segLen(rectangleSegmentA001)
-///        }, %, $rectangleSegmentC001)
+///        , %, $rectangleSegmentC001)
 ///     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
 ///     |> close()
 /// }
@@ -242,13 +245,13 @@ export type Edge
 ///
 /// `Point2d` is an alias for a two-element array of [number](/docs/kcl/types/number)s. To write a value
 /// with type `Point2d`, use an array, e.g., `[0, 0]` or `[5.0, 3.14]`.
-export type Point2d = [number; 2]
+export type Point2d = [number(Length); 2]
 
 /// A point in three dimensional space.
 ///
 /// `Point3d` is an alias for a three-element array of [number](/docs/kcl/types/number)s. To write a value
 /// with type `Point3d`, use an array, e.g., `[0, 0, 0]` or `[5.0, 3.14, 6.8]`.
-export type Point3d = [number; 3]
+export type Point3d = [number(Length); 3]
 
 export XY = {
   origin = { x = 0, y = 0, z = 0 },
@@ -293,6 +296,12 @@ export Z = {
   origin = [0, 0, 0],
   direction = [0, 0, 1],
 }: Axis3d
+
+/// Identifies the starting face of an extrusion. I.e., the face which is extruded.
+export START = 'start'
+
+/// Identifies the ending face of an extrusion. I.e., the new face created by an extrusion.
+export END = 'end'
 
 /// Create a helix.
 ///
@@ -373,18 +382,18 @@ export fn helix(
   /// Number of revolutions.
   revolutions: number(_),
   /// Start angle (in degrees).
-  angleStart: number(deg),
+  angleStart: number(Angle),
   /// Is the helix rotation counter clockwise? The default is `false`.
   ccw?: bool,
   /// Radius of the helix.
   @(include_in_snippet = true)
-  radius?: number(mm),
+  radius?: number(Length),
   /// Axis to use for the helix.
   @(include_in_snippet = true)
   axis?: Axis3d | Edge,
   /// Length of the helix. This is not necessary if the helix is created around an edge. If not given the length of the edge is used.
   @(include_in_snippet = true)
-  length?: number(mm),
+  length?: number(Length),
   /// Cylinder to create the helix on.
   cylinder?: Solid,
 ): Helix {}
@@ -453,7 +462,7 @@ export fn helix(
 ///     |> close()
 ///     |> revolve(axis = Y, angle = 180)
 ///
-/// part002 = startSketchOn(part001, 'end')
+/// part002 = startSketchOn(part001, face = END)
 ///     |> startProfileAt([4.5, -5], %)
 ///     |> line(end = [0, 5])
 ///     |> line(end = [5, 0])
@@ -471,7 +480,7 @@ export fn helix(
 ///     |> close()
 ///     |> extrude(length = 20)
 ///
-/// sketch001 = startSketchOn(box, "END")
+/// sketch001 = startSketchOn(box, face = END)
 ///     |> circle( center = [10,10], radius = 4 )
 ///     |> revolve(
 ///         angle = -90,
@@ -488,7 +497,7 @@ export fn helix(
 ///     |> close()
 ///     |> extrude(length = 20)
 ///
-/// sketch001 = startSketchOn(box, "END")
+/// sketch001 = startSketchOn(box, face = END)
 ///     |> circle( center = [10,10], radius = 4 )
 ///     |> revolve(
 ///         angle = 90,
@@ -505,7 +514,7 @@ export fn helix(
 ///     |> close()
 ///     |> extrude(length = 20)
 ///
-/// sketch001 = startSketchOn(box, "END")
+/// sketch001 = startSketchOn(box, face = END)
 ///     |> circle( center = [10,10], radius = 4 )
 ///     |> revolve(
 ///         angle = 90,
@@ -582,6 +591,32 @@ export fn helix(
 ///     |> circle(center = [-10, 10], radius = 4)
 ///     |> revolve(angle = 90, axis = revolveAxis)
 /// ```
+///
+/// ```
+/// // Symmetrically revolve around a path.
+///
+/// profile001 = startSketchOn(XY)
+///     |> startProfileAt([0, 0], %)
+///     |> line(end = [0, 20], tag = $revolveAxis)
+///     |> line(end = [20, 0])
+///
+/// sketch001 = startSketchOn(XY)
+///     |> circle(center = [-10, 10], radius = 4)
+///     |> revolve(angle = 90, axis = revolveAxis, symmetric = true)
+/// ```
+///
+/// ```
+/// // Bidirectional revolve around a path.
+///
+/// profile001 = startSketchOn(XY)
+///     |> startProfileAt([0, 0], %)
+///     |> line(end = [0, 20], tag = $revolveAxis)
+///     |> line(end = [20, 0])
+///
+/// sketch001 = startSketchOn(XY)
+///     |> circle(center = [-10, 10], radius = 4)
+///     |> revolve(angle = 90, axis = revolveAxis, bidirectionalAngle = 50)
+/// ```
 @(impl = std_rust)
 export fn revolve(
   /// The sketch or set of sketches that should be revolved
@@ -589,9 +624,13 @@ export fn revolve(
   /// Axis of revolution.
   axis: Axis2d | Edge,
   /// Angle to revolve (in degrees). Default is 360.
-  angle?: number(deg),
+  angle?: number(Angle),
   /// Tolerance for the revolve operation.
-  tolerance?: number(mm),
+  tolerance?: number(Length),
+  /// If true, the extrusion will happen symmetrically around the sketch. Otherwise, the extrusion will happen on only one side of the sketch.
+  symmetric?: bool,
+  /// If specified, will also revolve in the opposite direction to 'angle' to the specified angle. If 'symmetric' is true, this value is ignored.
+  bidirectionalAngle?: number(Angle),
   /// A named tag for the face at the start of the revolve, i.e. the original sketch.
   tagStart?: tag,
   /// A named tag for the face at the end of the revolve.

@@ -4,19 +4,13 @@ description: Result of unparsing artifact_graph_example_code_no_3d.kcl
 ---
 sketch003 = startSketchOn(YZ)
   |> startProfileAt([5.82, 0], %)
-  |> angledLine([180, 11.54], %, $rectangleSegmentA001)
-  |> angledLine([
-       segAng(rectangleSegmentA001) - 90,
-       8.21
-     ], %, $rectangleSegmentB001)
-  |> angledLine([
-       segAng(rectangleSegmentA001),
-       -segLen(rectangleSegmentA001)
-     ], %, $rectangleSegmentC001)
+  |> angledLine(angle = 180, length = 11.54, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 8.21, tag = $rectangleSegmentB001)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $rectangleSegmentC001)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 sketch004 = startSketchOn(-XZ)
   |> startProfileAt([0, 14.36], %)
   |> line(end = [15.49, 0.05])
-  |> tangentialArcTo([0, 0], %)
-  |> tangentialArcTo([-6.8, 8.17], %)
+  |> tangentialArc(endAbsolute = [0, 0])
+  |> tangentialArc(endAbsolute = [-6.8, 8.17])
