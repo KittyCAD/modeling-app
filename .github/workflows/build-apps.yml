@@ -174,14 +174,7 @@ jobs:
           node-version-file: '.nvmrc'
           cache: 'npm' # Set this to npm, npm or pnpm.
 
-      - name: npm install
-        # Windows is picky sometimes and fails on fetch. Step takes about ~30s
-        uses: nick-fields/retry@v3.0.2
-        with:
-          shell: bash
-          timeout_minutes: 2
-          max_attempts: 3
-          command: npm install
+      - run: npm install
 
       - name: Prepare certificate and variables (Windows only)
         if: ${{ (env.IS_RELEASE == 'true' || env.IS_NIGHTLY == 'true') && matrix.os == 'windows-2022' }}
@@ -233,14 +226,7 @@ jobs:
           CSC_KEY_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
           CSC_KEYCHAIN: ${{ secrets.APPLE_SIGNING_IDENTITY }}
           WINDOWS_CERTIFICATE_THUMBPRINT: ${{ secrets.WINDOWS_CERTIFICATE_THUMBPRINT }}
-          DEBUG: "electron-notarize*"
-        # TODO: Fix electron-notarize flakes. The logs above should help gather more data on failures
-        uses: nick-fields/retry@v3.0.2
-        with:
-          shell: bash
-          timeout_minutes: 10
-          max_attempts: 3
-          command: npm run tronb:package:prod
+        run: npm run tronb:package:prod
 
       - name: List artifacts in out/
         run: ls -R out
@@ -295,14 +281,7 @@ jobs:
           CSC_KEY_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
           CSC_KEYCHAIN: ${{ secrets.APPLE_SIGNING_IDENTITY }}
           WINDOWS_CERTIFICATE_THUMBPRINT: ${{ secrets.WINDOWS_CERTIFICATE_THUMBPRINT }}
-          DEBUG: "electron-notarize*"
-        # TODO: Fix electron-notarize flakes. The logs above should help gather more data on failures
-        uses: nick-fields/retry@v3.0.2
-        with:
-          shell: bash
-          timeout_minutes: 10
-          max_attempts: 3
-          command: npm run tronb:package:prod
+        run: npm run tronb:package:prod
 
       - uses: actions/upload-artifact@v4
         if: ${{ env.IS_RELEASE == 'true' }}
