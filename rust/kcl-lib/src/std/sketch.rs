@@ -942,8 +942,7 @@ pub async fn inner_angled_line_that_intersects(
         from.into(),
     );
 
-    let new_sketch = straight_line(StraightLineParams::absolute(to, sketch, tag), exec_state, args).await?;
-    Ok(new_sketch)
+    straight_line(StraightLineParams::absolute(to, sketch, tag), exec_state, args).await
 }
 
 /// Data for start sketch on.
