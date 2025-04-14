@@ -71,7 +71,7 @@ bracketProfile = startSketchOn(XZ)
      )
 
 // Cut the bolt pattern in the left base flange
-leftFlangeBoltPattern = startSketchOn(bracketProfile, seg04)
+leftFlangeBoltPattern = startSketchOn(bracketProfile, face = seg04)
   |> circle(center = [-mountingBoltPatternX / 2, overhang], radius = mountingBoltDiameter / 2)
   |> patternLinear2d(
        %,
@@ -82,7 +82,7 @@ leftFlangeBoltPattern = startSketchOn(bracketProfile, seg04)
   |> extrude(length = -thickness)
 
 // Cut the bolt pattern in the right base flange
-rightFlangeBoltPattern = startSketchOn(bracketProfile, seg06)
+rightFlangeBoltPattern = startSketchOn(bracketProfile, face = seg06)
   |> circle(center = [mountingBoltPatternX / 2, overhang], radius = mountingBoltDiameter / 2)
   |> patternLinear2d(
        %,
@@ -93,7 +93,7 @@ rightFlangeBoltPattern = startSketchOn(bracketProfile, seg06)
   |> extrude(length = -thickness)
 
 // Provision the top flange with holes to mount an object
-topFlangeBoltPattern = startSketchOn(bracketProfile, seg05)
+topFlangeBoltPattern = startSketchOn(bracketProfile, face = seg05)
   |> circle(
        center = [
          -componentBoltPatternX / 2,
@@ -116,6 +116,6 @@ topFlangeBoltPattern = startSketchOn(bracketProfile, seg05)
   |> extrude(length = -thickness)
 
 // Place a hole at the center of the component bolt pattern to reduce mass
-centeredHole = startSketchOn(bracketProfile, seg05)
+centeredHole = startSketchOn(bracketProfile, face = seg05)
   |> circle(center = [0, flangeExtrusion / 2], radius = 0.75)
   |> extrude(length = -thickness)

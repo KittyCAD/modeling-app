@@ -102,7 +102,7 @@ singleBinFill = startSketchOn(XY)
        ],
      )
 
-magCutout000 = startSketchOn(singleBinFill, "start")
+magCutout000 = startSketchOn(singleBinFill, face = START)
   |> circle(
        center = [
          -magOffset - binBaseLength - binTol,
@@ -165,4 +165,4 @@ binTop = startSketchOn(offsetPlane(XY, offset = height))
          getPreviousAdjacentEdge(line012)
        ],
      )
-  |> shell(faces = ["end"], thickness = binThk)
+  |> shell(faces = [END], thickness = binThk)

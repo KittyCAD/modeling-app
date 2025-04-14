@@ -61,13 +61,13 @@ async fn inner_mirror_2d(
                 ModelingCmd::from(mcmd::EntityMirror {
                     ids: starting_sketches.iter().map(|sketch| sketch.id).collect(),
                     axis: Point3d {
-                        x: direction[0],
-                        y: direction[1],
+                        x: direction[0].n,
+                        y: direction[1].n,
                         z: 0.0,
                     },
                     point: Point3d {
-                        x: LengthUnit(origin[0]),
-                        y: LengthUnit(origin[1]),
+                        x: LengthUnit(origin[0].n),
+                        y: LengthUnit(origin[1].n),
                         z: LengthUnit(0.0),
                     },
                 }),

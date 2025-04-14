@@ -3,7 +3,7 @@
 
 // Pixel box function
 fn pixelBox(kitExtrude, extrudeTag, positionY, positionZ, width, height, depth) {
-  pixelBoxBody = startSketchOn(kitExtrude, extrudeTag)
+  pixelBoxBody = startSketchOn(kitExtrude, face = extrudeTag)
     |> startProfileAt([positionY, positionZ], %)
     |> line(end = [0, height])
     |> line(end = [width, 0])
@@ -37,7 +37,7 @@ kitHeadElevation = kitBodyElevation + kitBodyHeight - kitHeadOffset - kitHeadHei
 
 kitHeadWidth = kitBodyWidth - (kitHeadOffset * 2)
 kitHeadDepth = 3
-kitHead = pixelBox(kitBody, 'END', -kitHeadWidth / 2, kitHeadElevation, kitHeadWidth, kitHeadHeight, kitHeadDepth)
+kitHead = pixelBox(kitBody, END, -kitHeadWidth / 2, kitHeadElevation, kitHeadWidth, kitHeadHeight, kitHeadDepth)
 kitFaceElevation = kitHeadElevation + 2
 
 // 3. Kitty Face
@@ -45,7 +45,7 @@ kitFaceWidth = kitHeadWidth - 4
 kitFaceHeight = kitHeadElevation + kitHeadHeight - kitFaceElevation - 3
 kitFaceDepth = 2
 
-kitFace = startSketchOn(kitHead, 'END')
+kitFace = startSketchOn(kitHead, face = END)
   |> startProfileAt([-kitFaceWidth / 2, kitFaceElevation], %)
   |> line(end = [0, 1]) // left lower corner up
   |> line(end = [-1, 0]) // left lower corner left
@@ -71,14 +71,14 @@ kitEyeHeihgt = kitFaceElevation + 7
 kitEyeOffset = 7
 
 // 3.1.2 Kitty Right Eye
-kitLeftEye1 = pixelBox(kitFace, 'START', -kitEyeOffset, kitEyeHeihgt, 1, 1, kitEyeDepth)
+kitLeftEye1 = pixelBox(kitFace, START, -kitEyeOffset, kitEyeHeihgt, 1, 1, kitEyeDepth)
 
 // 3.2 Kitty Nose
-kitLeftEye2 = pixelBox(kitFace, 'START', -kitEyeOffset + 1, kitEyeHeihgt + 1, 3, 1, kitEyeDepth)
-kitLeftEye3 = pixelBox(kitFace, 'START', -kitEyeOffset + 4, kitEyeHeihgt, 1, 1, kitEyeDepth)
-kitRightEye = pixelBox(kitFace, 'START', kitEyeOffset - 3, kitEyeHeihgt - 1, 2, 4, kitEyeDepth)
+kitLeftEye2 = pixelBox(kitFace, START, -kitEyeOffset + 1, kitEyeHeihgt + 1, 3, 1, kitEyeDepth)
+kitLeftEye3 = pixelBox(kitFace, START, -kitEyeOffset + 4, kitEyeHeihgt, 1, 1, kitEyeDepth)
+kitRightEye = pixelBox(kitFace, START, kitEyeOffset - 3, kitEyeHeihgt - 1, 2, 4, kitEyeDepth)
 kitNoseElevation = kitEyeHeihgt - 5
-kitNose = startSketchOn(kitFace, 'START')
+kitNose = startSketchOn(kitFace, face = START)
   |> startProfileAt([-2, kitNoseElevation], %) // H V
   |> line(end = [0, 1]) // lower-left up
   |> line(end = [2, 0]) // lower-left right
@@ -98,12 +98,12 @@ kitNose = startSketchOn(kitFace, 'START')
 // 3.3 Kitty Mouth
 kitMouthOffset = 4
 kitMouthHeight = kitEyeHeihgt - 3
-kitMouthUpLeft = pixelBox(kitFace, 'START', -kitMouthOffset, kitMouthHeight, 1, 1, kitEyeDepth)
+kitMouthUpLeft = pixelBox(kitFace, START, -kitMouthOffset, kitMouthHeight, 1, 1, kitEyeDepth)
 
 // 4. Kitty Belly
-kitMouthDownLeft = pixelBox(kitFace, 'START', -kitMouthOffset + 1, kitMouthHeight - 1, 1, 1, kitEyeDepth)
-kitMouthUpRight = pixelBox(kitFace, 'START', kitMouthOffset, kitMouthHeight, 1, 1, kitEyeDepth)
-kitMouthDownRight = pixelBox(kitFace, 'START', kitMouthOffset - 1, kitMouthHeight - 1, 1, 1, kitEyeDepth)
+kitMouthDownLeft = pixelBox(kitFace, START, -kitMouthOffset + 1, kitMouthHeight - 1, 1, 1, kitEyeDepth)
+kitMouthUpRight = pixelBox(kitFace, START, kitMouthOffset, kitMouthHeight, 1, 1, kitEyeDepth)
+kitMouthDownRight = pixelBox(kitFace, START, kitMouthOffset - 1, kitMouthHeight - 1, 1, 1, kitEyeDepth)
 kitBellyElevation = kitBodyElevation + 1
 
 kitBellyHeight = kitHeadElevation - kitBellyElevation - 1
@@ -111,7 +111,7 @@ kitBellyHeight = kitHeadElevation - kitBellyElevation - 1
 // 4.1 Kitty VHS
 kitBellyWidth = kitHeadWidth
 kitBellyDepth = kitHeadDepth
-kitBelly = pixelBox(kitBody, 'END', -kitBellyWidth / 2, kitBellyElevation, kitBellyWidth, kitBellyHeight, kitBellyDepth)
+kitBelly = pixelBox(kitBody, END, -kitBellyWidth / 2, kitBellyElevation, kitBellyWidth, kitBellyHeight, kitBellyDepth)
 kitVHSelevation = kitBellyElevation + 1
 
 kitVHSheight = 2
@@ -119,7 +119,7 @@ kitVHSheight = 2
 // 4.2 Kitty Floppy
 kitVHSwidth = 8
 kitVHSdepth = 1
-kitVHS = pixelBox(kitBelly, 'END', -kitVHSwidth / 2, kitVHSelevation, kitVHSwidth, kitVHSheight, kitVHSdepth)
+kitVHS = pixelBox(kitBelly, END, -kitVHSwidth / 2, kitVHSelevation, kitVHSwidth, kitVHSheight, kitVHSdepth)
 kitFloppyElevation = kitBellyElevation + 1
 kitFloppyHeight = 1
 
@@ -128,9 +128,9 @@ kitFloppyOffset = kitBellyWidth / 2 - 1
 kitFloppyDepth = 2
 
 // 4.3 Kitty Belly Button
-kitFloppy1 = pixelBox(kitBelly, 'END', -kitFloppyOffset, kitFloppyElevation, kitFloppyWidth, kitFloppyHeight, -kitFloppyDepth)
-kitFloppy2 = pixelBox(kitBelly, 'END', -kitFloppyOffset, kitFloppyElevation + 2, kitFloppyWidth, kitFloppyHeight, -kitFloppyDepth)
-kitFloppy3 = pixelBox(kitBelly, 'END', kitFloppyOffset, kitFloppyElevation, -kitFloppyWidth, kitFloppyHeight, -kitFloppyDepth)
+kitFloppy1 = pixelBox(kitBelly, END, -kitFloppyOffset, kitFloppyElevation, kitFloppyWidth, kitFloppyHeight, -kitFloppyDepth)
+kitFloppy2 = pixelBox(kitBelly, END, -kitFloppyOffset, kitFloppyElevation + 2, kitFloppyWidth, kitFloppyHeight, -kitFloppyDepth)
+kitFloppy3 = pixelBox(kitBelly, END, kitFloppyOffset, kitFloppyElevation, -kitFloppyWidth, kitFloppyHeight, -kitFloppyDepth)
 kitBellyButtonOffset = kitHeadWidth / 2 - 3
 kitBellyButtonElevation = kitHeadElevation - 1
 
@@ -139,18 +139,18 @@ kitBellyButtonWidth = 2
 // 4.4 Kitty Buttons
 kitBellyButtonHeight = 1
 kitBellyButtonDepth = kitHeadDepth + 1
-kitBellyButton = pixelBox(kitBody, 'END', -kitBellyButtonOffset, kitBellyButtonElevation, kitBellyButtonWidth, kitBellyButtonHeight, kitBellyButtonDepth)
+kitBellyButton = pixelBox(kitBody, END, -kitBellyButtonOffset, kitBellyButtonElevation, kitBellyButtonWidth, kitBellyButtonHeight, kitBellyButtonDepth)
 
 kitButtonWidth = 1
 kitButtonHeight = 2
 kitButtonDepth = kitFloppyDepth
 kitButtonElevation = kitFloppyElevation + 2
 
-kitButton1 = pixelBox(kitBelly, 'END', kitFloppyOffset, kitFloppyElevation + 2, -kitButtonWidth, kitButtonHeight, -kitButtonDepth)
+kitButton1 = pixelBox(kitBelly, END, kitFloppyOffset, kitFloppyElevation + 2, -kitButtonWidth, kitButtonHeight, -kitButtonDepth)
 
 // 5. Kitty Legs
-kitButton2 = pixelBox(kitBelly, 'END', kitFloppyOffset - kitButtonWidth - 1, kitFloppyElevation + 2, -kitButtonWidth, kitButtonHeight, -kitButtonDepth)
-kitButton3 = pixelBox(kitBelly, 'END', kitFloppyOffset - (2 * (kitButtonWidth + 1)), kitFloppyElevation + 2, -kitButtonWidth, kitButtonHeight, -kitButtonDepth)
+kitButton2 = pixelBox(kitBelly, END, kitFloppyOffset - kitButtonWidth - 1, kitFloppyElevation + 2, -kitButtonWidth, kitButtonHeight, -kitButtonDepth)
+kitButton3 = pixelBox(kitBelly, END, kitFloppyOffset - (2 * (kitButtonWidth + 1)), kitFloppyElevation + 2, -kitButtonWidth, kitButtonHeight, -kitButtonDepth)
 
 kitShoeWidth = 7
 kitShoeLength = 10
@@ -175,7 +175,7 @@ fn kitLeg(offsetFront, offsetSide) {
   kitPantsFrontWidth = kitPantsWidth
   kitPantsHeight = kitBodyElevation - kitShoeHeight
 
-  kitPants = pixelBox(kitShoe, 'END', kitPantsOffsetSide, kitPantsOffsetFront, kitPantsFrontWidth, kitPantsWidth, kitPantsHeight)
+  kitPants = pixelBox(kitShoe, END, kitPantsOffsetSide, kitPantsOffsetFront, kitPantsFrontWidth, kitPantsWidth, kitPantsHeight)
 
   return kitShoe
 }
@@ -195,13 +195,13 @@ fn kitEar(earOffsetFront, earOffsetSide) {
   baseVolume = pixelBox(kitBody, seg01, kitNewEarOffsetSide, kitNewEarOffsetFront, kitEarWidth, -kitEarDepth, kitEarHeight)
 
   secondOffset = 1
-  secondLevel = pixelBox(baseVolume, 'END', kitNewEarOffsetSide + secondOffset, kitNewEarOffsetFront - 0.01, kitEarWidth - (secondOffset * 2), -kitEarDepth + secondOffset * 2, kitEarHeight)
+  secondLevel = pixelBox(baseVolume, END, kitNewEarOffsetSide + secondOffset, kitNewEarOffsetFront - 0.01, kitEarWidth - (secondOffset * 2), -kitEarDepth + secondOffset * 2, kitEarHeight)
 
   thirdOffset = 2
-  thirdLevel = pixelBox(secondLevel, 'END', kitNewEarOffsetSide + thirdOffset, kitNewEarOffsetFront - 0.02, kitEarWidth - (thirdOffset * 2), -kitEarDepth + thirdOffset * 2, kitEarHeight)
+  thirdLevel = pixelBox(secondLevel, END, kitNewEarOffsetSide + thirdOffset, kitNewEarOffsetFront - 0.02, kitEarWidth - (thirdOffset * 2), -kitEarDepth + thirdOffset * 2, kitEarHeight)
 
   fourthOffset = 3
-  fourthLevel = pixelBox(thirdLevel, 'END', kitNewEarOffsetSide + fourthOffset, kitNewEarOffsetFront - 0.03, kitEarWidth - (fourthOffset * 2), -kitEarDepth + fourthOffset * 2, kitEarHeight)
+  fourthLevel = pixelBox(thirdLevel, END, kitNewEarOffsetSide + fourthOffset, kitNewEarOffsetFront - 0.03, kitEarWidth - (fourthOffset * 2), -kitEarDepth + fourthOffset * 2, kitEarHeight)
 
   return baseVolume
 }

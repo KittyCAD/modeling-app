@@ -2050,7 +2050,7 @@ fn foo() {
 
 solid = sketch |> extrude(length = 10)
 // tag0 tags a face
-sketch2 = startSketchOn(solid, tag0)
+sketch2 = startSketchOn(solid, face = tag0)
   |> startProfileAt([0,0], %)
   |> line(end = [0, 1])
   |> line(end = [1, 0])

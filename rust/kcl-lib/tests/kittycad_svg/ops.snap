@@ -5,7 +5,7 @@ description: Operations executed kittycad_svg.kcl
 [
   {
     "labeledArgs": {
-      "data": {
+      "planeOrSolid": {
         "value": {
           "type": "String",
           "value": "XY"

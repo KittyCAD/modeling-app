@@ -26,16 +26,16 @@ extrude001 = extrude(sketch001, length = basePlateThickness)
      )
 
 // Base Motor for actuating first joint
-sketch002 = startSketchOn(extrude001, 'END')
+sketch002 = startSketchOn(extrude001, face = END)
   |> circle(center = [0, 0], radius = 4, tag = $referenceEdge)
 extrude002 = extrude(sketch002, length = baseHeight - basePlateThickness - 1.5)
   |> fillet(radius = 0.1, tags = [getOppositeEdge(referenceEdge)])
-sketch003 = startSketchOn(extrude002, 'END')
+sketch003 = startSketchOn(extrude002, face = END)
   |> circle(center = [0, 0], radius = 0.5)
 extrude003 = extrude(sketch003, length = 1)
 
 // Pattern M8 mounting bolts in base
-sketch4A = startSketchOn(extrude001, 'END')
+sketch4A = startSketchOn(extrude001, face = END)
   |> circle(
        center = [
          -basePlateRadius + 1,
@@ -52,7 +52,7 @@ sketch4A = startSketchOn(extrude001, 'END')
 
 extrude4A = extrude(sketch4A, length = -basePlateThickness)
 
-sketch4B = startSketchOn(extrude001, 'END')
+sketch4B = startSketchOn(extrude001, face = END)
   |> circle(
        center = [
          -basePlateRadius + 0.5 + baseChamfer,

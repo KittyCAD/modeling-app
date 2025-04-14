@@ -220,7 +220,7 @@ test.describe('Point-and-click tests', () => {
     )`,
 
         afterChamferSelectSnippet:
-          'sketch002 = startSketchOn(extrude001, seg03)',
+          'sketch002 = startSketchOn(extrude001, face = seg03)',
         afterRectangle1stClickSnippet:
           'startProfileAt([205.96, 254.59], sketch002)',
         afterRectangle2ndClickSnippet: `angledLine(angle=0,length=11.39,tag=$rectangleSegmentA002)
@@ -244,7 +244,7 @@ test.describe('Point-and-click tests', () => {
        )`,
 
         afterChamferSelectSnippet:
-          'sketch003 = startSketchOn(extrude001, seg04)',
+          'sketch003 = startSketchOn(extrude001, face = seg04)',
         afterRectangle1stClickSnippet:
           'startProfileAt([-209.64, 255.28], sketch003)',
         afterRectangle2ndClickSnippet: `angledLine(angle=0,length=11.56,tag=$rectangleSegmentA003)
@@ -266,7 +266,7 @@ test.describe('Point-and-click tests', () => {
          ]
        )`,
         afterChamferSelectSnippet:
-          'sketch004 = startSketchOn(extrude001, seg05)',
+          'sketch004 = startSketchOn(extrude001, face = seg05)',
         afterRectangle1stClickSnippet:
           'startProfileAt([82.57, 322.96], sketch004)',
         afterRectangle2ndClickSnippet: `angledLine(angle=0,length=11.16,tag=$rectangleSegmentA004)
@@ -284,7 +284,7 @@ test.describe('Point-and-click tests', () => {
         beforeChamferSnippetEnd:
           '|> chamfer(length = 30, tags = [getNextAdjacentEdge(yo)])',
         afterChamferSelectSnippet:
-          'sketch005 = startSketchOn(extrude001, seg06)',
+          'sketch005 = startSketchOn(extrude001, face = seg06)',
         afterRectangle1stClickSnippet:
           'startProfileAt([-23.43, 19.69], sketch005)',
         afterRectangle2ndClickSnippet: `angledLine(angle=0,length=9.1,tag=$rectangleSegmentA005)
@@ -309,28 +309,28 @@ extrude001 = extrude(sketch001, length = 100)
   |> chamfer(length = 30, tags = [seg01], tag = $seg04)
   |> chamfer(length = 30, tags = [getNextAdjacentEdge(seg02)], tag = $seg05)
   |> chamfer(length = 30, tags = [getNextAdjacentEdge(yo)], tag = $seg06)
-sketch005 = startSketchOn(extrude001, seg06)
+sketch005 = startSketchOn(extrude001, face = seg06)
 profile004=startProfileAt([-23.43,19.69], sketch005)
   |> angledLine(angle = 0, length = 9.1, tag = $rectangleSegmentA005)
   |> angledLine(angle = segAng(rectangleSegmentA005) - 90, length = 84.07)
   |> angledLine(angle = segAng(rectangleSegmentA005), length = -segLen(rectangleSegmentA005))
   |> line(endAbsolute=[profileStartX(%), profileStartY(%)])
   |> close()
-sketch004 = startSketchOn(extrude001, seg05)
+sketch004 = startSketchOn(extrude001, face = seg05)
 profile003 = startProfileAt([82.57, 322.96], sketch004)
   |> angledLine(angle = 0, length = 11.16, tag = $rectangleSegmentA004)
   |> angledLine(angle = segAng(rectangleSegmentA004) - 90, length = 103.07)
   |> angledLine(angle = segAng(rectangleSegmentA004), length = -segLen(rectangleSegmentA004))
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-sketch003 = startSketchOn(extrude001, seg04)
+sketch003 = startSketchOn(extrude001, face = seg04)
 profile002 = startProfileAt([-209.64, 255.28], sketch003)
   |> angledLine(angle = 0, length = 11.56, tag = $rectangleSegmentA003)
   |> angledLine(angle = segAng(rectangleSegmentA003) - 90, length = 106.84)
   |> angledLine(angle = segAng(rectangleSegmentA003), length = -segLen(rectangleSegmentA003))
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-sketch002 = startSketchOn(extrude001, seg03)
+sketch002 = startSketchOn(extrude001, face = seg03)
 profile001 = startProfileAt([205.96, 254.59], sketch002)
   |> angledLine(angle = 0, length = 11.39, tag = $rectangleSegmentA002)
   |> angledLine(angle = segAng(rectangleSegmentA002) - 90, length = 105.26)
@@ -383,7 +383,7 @@ profile001 = startProfileAt([205.96, 254.59], sketch002)
     ])`,
         beforeChamferSnippetEnd: ')',
         afterChamferSelectSnippet:
-          'sketch002 = startSketchOn(extrude001, seg03)',
+          'sketch002 = startSketchOn(extrude001, face = seg03)',
         afterRectangle1stClickSnippet:
           'startProfileAt([205.96, 254.59], sketch002)',
         afterRectangle2ndClickSnippet: `angledLine(angle=0,length=11.39,tag=$rectangleSegmentA002)
@@ -416,7 +416,7 @@ chamf = chamfer(
          getNextAdjacentEdge(seg02)
        ],
      )
-sketch002 = startSketchOn(extrude001, seg03)
+sketch002 = startSketchOn(extrude001, face = seg03)
 profile001 = startProfileAt([205.96, 254.59], sketch002)
   |> angledLine(angle = 0, length = 11.39, tag = $rectangleSegmentA002)
   |> angledLine(angle = segAng(rectangleSegmentA002) - 90, length = 105.26)
@@ -2935,9 +2935,9 @@ extrude001 = extrude(sketch001, length = 30)
       const testPoint = { x: 575, y: 200 }
       const [clickOnCap] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
       const shellDeclaration =
-        "shell001 = shell(extrude001, faces = ['end'], thickness = 5)"
+        'shell001 = shell(extrude001, faces = [END], thickness = 5)'
       const editedShellDeclaration =
-        "shell001 = shell(extrude001, faces = ['end'], thickness = 2)"
+        'shell001 = shell(extrude001, faces = [END], thickness = 2)'
 
       await test.step(`Look for the grey of the shape`, async () => {
         await scene.expectPixelColor([127, 127, 127], testPoint, 15)
@@ -3079,9 +3079,9 @@ extrude001 = extrude(sketch001, length = 40)
     const [clickOnWall] = scene.makeMouseHelpers(testPoint.x, testPoint.y + 70)
     const mutatedCode = 'xLine(length = -40, tag = $seg01)'
     const shellDeclaration =
-      "shell001 = shell(extrude001, faces = ['end', seg01], thickness = 5)"
+      'shell001 = shell(extrude001, faces = [END, seg01], thickness = 5)'
     const editedShellDeclaration =
-      "shell001 = shell(extrude001, faces = ['end', seg01], thickness = 1)"
+      'shell001 = shell(extrude001, faces = [END, seg01], thickness = 1)'
 
     await test.step(`Look for the grey of the shape`, async () => {
       await scene.expectPixelColor([99, 99, 99], testPoint, 15)
@@ -3188,7 +3188,7 @@ sketch001 = startSketchOn(XZ)
   |> circle(center = [0, 0], radius = 100)
   |> extrude(length = 100)
 
-sketch002 = startSketchOn(sketch001, 'END')
+sketch002 = startSketchOn(sketch001, face = 'END')
   |> circle(center = [0, 0], radius = 50)
   |> extrude(length = 50)
   `,
@@ -3197,7 +3197,7 @@ sketch001 = startSketchOn(XZ)
   |> circle(center = [0, 0], radius = 100)
 extrude001 = extrude(sketch001, length = 100)
 
-sketch002 = startSketchOn(extrude001, 'END')
+sketch002 = startSketchOn(extrude001, face = 'END')
   |> circle(center = [0, 0], radius = 50)
 extrude002 = extrude(sketch002, length = 50)
   `,
@@ -3224,7 +3224,7 @@ extrude002 = extrude(sketch002, length = 50)
       const testPoint = { x: 580, y: 320 }
       const [clickOnCap] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
       const shellTarget = hasExtrudesInPipe ? 'sketch002' : 'extrude002'
-      const shellDeclaration = `shell001 = shell(${shellTarget}, faces = ['end'], thickness = 5)`
+      const shellDeclaration = `shell001 = shell(${shellTarget}, faces = [END], thickness = 5)`
 
       await test.step(`Look for the grey of the shape`, async () => {
         await scene.expectPixelColor([113, 113, 113], testPoint, 15)
@@ -3299,7 +3299,7 @@ profile001 = startProfileAt([-20, 20], sketch001)
 `
       const extrudeCode = `extrude001 = extrude(profile001, length = 40)
 `
-      const shellCode = `shell001 = shell(extrude001, faces = ['end'], thickness = 5)
+      const shellCode = `shell001 = shell(extrude001, faces = [END], thickness = 5)
 `
       const initialCode = sketchCode + extrudeCode + shellCode
       await context.addInitScript((initialCode) => {
@@ -3447,7 +3447,7 @@ tag=$rectangleSegmentC001,
 |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
 |> close()
 extrude001 = extrude(sketch001, length = 200)
-sketch002 = startSketchOn(extrude001, rectangleSegmentA001)
+sketch002 = startSketchOn(extrude001, face = rectangleSegmentA001)
 |> startProfileAt([-66.77, 84.81], %)
 |> angledLine(angle = 180, length = 27.08, tag = $rectangleSegmentA002)
 |> angledLine(
@@ -3535,7 +3535,7 @@ tag=$rectangleSegmentC002,
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 extrude001 = extrude(sketch001, length = 50)
-sketch002 = startSketchOn(extrude001, rectangleSegmentA001)
+sketch002 = startSketchOn(extrude001, face = rectangleSegmentA001)
   |> circle(center = [-11.34, 10.0], radius = 8.69)
 
 `
@@ -3623,7 +3623,7 @@ sketch002 = startSketchOn(extrude001, rectangleSegmentA001)
       |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
       |> close()
     extrude001 = extrude(sketch001, length = 5)
-    sketch003 = startSketchOn(extrude001, 'START')
+    sketch003 = startSketchOn(extrude001, face = 'START')
       |> circle(
         center = [-0.69, 0.56],
         radius = 0.28

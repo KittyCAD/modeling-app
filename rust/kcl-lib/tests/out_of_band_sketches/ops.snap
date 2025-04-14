@@ -5,7 +5,7 @@ description: Operations executed out_of_band_sketches.kcl
 [
   {
     "labeledArgs": {
-      "data": {
+      "planeOrSolid": {
         "value": {
           "type": "String",
           "value": "XZ"
@@ -20,7 +20,7 @@ description: Operations executed out_of_band_sketches.kcl
   },
   {
     "labeledArgs": {
-      "data": {
+      "planeOrSolid": {
         "value": {
           "type": "String",
           "value": "XY"

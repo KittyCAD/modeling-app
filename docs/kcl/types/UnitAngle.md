@@ -43,6 +43,21 @@ A unit of angle.
 
 ----
 
+**Type:** `object`
+
+
+
+
+
+## Properties
+
+| Property | Type | Description | Required |
+|----------|------|-------------|----------|
+| `type` |enum: `Unknown`|  | No |
+
+
+----
+
 
 
 

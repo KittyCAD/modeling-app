@@ -934,10 +934,13 @@ export function getBodyIndex(pathToNode: PathToNode): number | Error {
 }
 
 export function isCallExprWithName(
-  expr: Expr | CallExpression,
+  expr: Expr | CallExpression | CallExpressionKw,
   name: string
-): expr is CallExpression {
-  if (expr.type === 'CallExpression' && expr.callee.type === 'Name') {
+): expr is CallExpression | CallExpressionKw {
+  if (
+    (expr.type === 'CallExpression' || expr.type === 'CallExpressionKw') &&
+    expr.callee.type === 'Name'
+  ) {
     return expr.callee.name.name === name
   }
   return false

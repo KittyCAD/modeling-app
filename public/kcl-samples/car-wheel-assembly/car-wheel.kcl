@@ -14,13 +14,13 @@ lugBase = startSketchOn(XZ)
   |> extrude(length = wheelWidth / 20)
 
 // Extend the wheel center and bore holes to accomidate the lug heads
-lugExtrusion = startSketchOn(lugBase, 'END')
+lugExtrusion = startSketchOn(lugBase, face = END)
   |> circle(center = [0, 0], radius = (lugSpacing + 1.5) / 2)
   |> hole(circle(center = [0, 0], radius = (lugSpacing - 1.5) / 2), %)
   |> extrude(length = wheelWidth / 10)
 
 // Create the circular pattern for the lugs
-lugClearance = startSketchOn(lugExtrusion, 'END')
+lugClearance = startSketchOn(lugExtrusion, face = END)
   |> circle(center = [lugSpacing / 2, 0], radius = 1.2 / 2)
   |> patternCircular2d(
        arcDegrees = 360,
@@ -31,7 +31,7 @@ lugClearance = startSketchOn(lugExtrusion, 'END')
   |> extrude(length = -wheelWidth / 10)
 
 // Create the circular pattern for the lug holes
-lugHoles = startSketchOn(lugBase, 'END')
+lugHoles = startSketchOn(lugBase, face = END)
   |> circle(center = [lugSpacing / 2, 0], radius = fromMm(16) / 2)
   |> patternCircular2d(
        arcDegrees = 360,
@@ -75,12 +75,10 @@ wheelCenterOuter = startSketchOn(XY)
 fn spoke(spokeGap, spokeAngle, spokeThickness) {
   // Seperating the spoke base planes
   plane001 = {
-    plane = {
-      origin = [0.0, 0.0, spokeGap / 2],
-      xAxis = [1.0, 0.0, spokeAngle],
-      yAxis = [0.0, 1.0, 0.0],
-      zAxis = [0.0, 0.0, 1.0]
-    }
+    origin = [0.0, 0.0, spokeGap / 2],
+    xAxis = [1.0, 0.0, spokeAngle],
+    yAxis = [0.0, 1.0, 0.0],
+    zAxis = [0.0, 0.0, 1.0]
   }
 
   // Spoke cross sections

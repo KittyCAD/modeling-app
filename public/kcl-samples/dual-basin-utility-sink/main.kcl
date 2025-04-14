@@ -117,7 +117,7 @@ sinkOffsetFront = 40
 sinkOffsetLeft = 350
 sinkSpacing = tableWidth - sinkWidth - (sinkOffsetLeft * 2)
 
-sinkPlaneOutside = startSketchOn(tableTopBody, 'START')
+sinkPlaneOutside = startSketchOn(tableTopBody, face = START)
 sinkBodyOutside = startProfileAt([-sinkOffsetLeft, sinkOffsetFront], sinkPlaneOutside)
   |> yLine(length = sinkLength)
   |> xLine(length = -sinkWidth)
@@ -127,7 +127,7 @@ sinkBodyOutside = startProfileAt([-sinkOffsetLeft, sinkOffsetFront], sinkPlaneOu
   |> patternLinear2d(axis = [-1, 0], instances = sinkCount, distance = sinkSpacing)
   |> extrude(length = sinkDepth)
 
-sinkPlaneInside = startSketchOn(tableTopBody, 'END')
+sinkPlaneInside = startSketchOn(tableTopBody, face = END)
 sinkBodyInside = startProfileAt([
        sinkOffsetLeft + metalThickness,
        sinkOffsetFront + metalThickness

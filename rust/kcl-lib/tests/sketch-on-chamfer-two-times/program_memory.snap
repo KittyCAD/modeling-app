@@ -209,22 +209,34 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
           "origin": {
             "x": 0.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
+            "z": 1.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "units": {
             "type": "Mm"
@@ -283,14 +295,36 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
         {
           "type": "fillet",
           "id": "[uuid]",
-          "radius": 20.0,
+          "radius": {
+            "n": 20.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
           "edgeId": "[uuid]",
           "tag": null
         },
         {
           "type": "chamfer",
           "id": "[uuid]",
-          "length": 50.0,
+          "length": {
+            "n": 50.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
           "edgeId": "[uuid]",
           "tag": {
             "commentStart": 582,
@@ -303,7 +337,18 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
         {
           "type": "chamfer",
           "id": "[uuid]",
-          "length": 50.0,
+          "length": {
+            "n": 50.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
           "edgeId": "[uuid]",
           "tag": {
             "commentStart": 655,
@@ -331,9 +376,9 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1259,
-            "end": 1280,
-            "start": 1259,
+            "commentStart": 1273,
+            "end": 1294,
+            "start": 1273,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA002"
           },
@@ -344,9 +389,9 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1364,
-            "end": 1385,
-            "start": 1364,
+            "commentStart": 1378,
+            "end": 1399,
+            "start": 1378,
             "type": "TagDeclarator",
             "value": "rectangleSegmentB001"
           },
@@ -357,9 +402,9 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1487,
-            "end": 1508,
-            "start": 1487,
+            "commentStart": 1501,
+            "end": 1522,
+            "start": 1501,
             "type": "TagDeclarator",
             "value": "rectangleSegmentC001"
           },
@@ -387,9 +432,9 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               278.35
             ],
             "tag": {
-              "commentStart": 1259,
-              "end": 1280,
-              "start": 1259,
+              "commentStart": 1273,
+              "end": 1294,
+              "start": 1273,
               "type": "TagDeclarator",
               "value": "rectangleSegmentA002"
             },
@@ -412,9 +457,9 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               278.35
             ],
             "tag": {
-              "commentStart": 1364,
-              "end": 1385,
-              "start": 1364,
+              "commentStart": 1378,
+              "end": 1399,
+              "start": 1378,
               "type": "TagDeclarator",
               "value": "rectangleSegmentB001"
             },
@@ -437,9 +482,9 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               146.08
             ],
             "tag": {
-              "commentStart": 1487,
-              "end": 1508,
-              "start": 1487,
+              "commentStart": 1501,
+              "end": 1522,
+              "start": 1501,
               "type": "TagDeclarator",
               "value": "rectangleSegmentC001"
             },
@@ -499,17 +544,26 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
+            "z": 1.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "solid": {
             "type": "Solid",
@@ -715,22 +769,34 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "yAxis": {
                   "x": 0.0,
                   "y": 0.0,
-                  "z": 1.0
+                  "z": 1.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "zAxis": {
                   "x": 0.0,
                   "y": -1.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "units": {
                   "type": "Mm"
@@ -789,14 +855,36 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               {
                 "type": "fillet",
                 "id": "[uuid]",
-                "radius": 20.0,
+                "radius": {
+                  "n": 20.0,
+                  "ty": {
+                    "type": "Default",
+                    "len": {
+                      "type": "Mm"
+                    },
+                    "angle": {
+                      "type": "Degrees"
+                    }
+                  }
+                },
                 "edgeId": "[uuid]",
                 "tag": null
               },
               {
                 "type": "chamfer",
                 "id": "[uuid]",
-                "length": 50.0,
+                "length": {
+                  "n": 50.0,
+                  "ty": {
+                    "type": "Default",
+                    "len": {
+                      "type": "Mm"
+                    },
+                    "angle": {
+                      "type": "Degrees"
+                    }
+                  }
+                },
                 "edgeId": "[uuid]",
                 "tag": {
                   "commentStart": 582,
@@ -809,7 +897,18 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               {
                 "type": "chamfer",
                 "id": "[uuid]",
-                "length": 50.0,
+                "length": {
+                  "n": 50.0,
+                  "ty": {
+                    "type": "Default",
+                    "len": {
+                      "type": "Mm"
+                    },
+                    "angle": {
+                      "type": "Degrees"
+                    }
+                  }
+                },
                 "edgeId": "[uuid]",
                 "tag": {
                   "commentStart": 655,
@@ -1057,22 +1156,34 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
         "origin": {
           "x": 0.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": {
+            "type": "Mm"
+          }
         },
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": {
+            "type": "Mm"
+          }
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
-          "z": 1.0
+          "z": 1.0,
+          "units": {
+            "type": "Mm"
+          }
         },
         "zAxis": {
           "x": 0.0,
           "y": -1.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": {
+            "type": "Mm"
+          }
         },
         "units": {
           "type": "Mm"
@@ -1141,9 +1252,9 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
             278.35
           ],
           "tag": {
-            "commentStart": 1259,
-            "end": 1280,
-            "start": 1259,
+            "commentStart": 1273,
+            "end": 1294,
+            "start": 1273,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA002"
           },
@@ -1166,9 +1277,9 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
             278.35
           ],
           "tag": {
-            "commentStart": 1364,
-            "end": 1385,
-            "start": 1364,
+            "commentStart": 1378,
+            "end": 1399,
+            "start": 1378,
             "type": "TagDeclarator",
             "value": "rectangleSegmentB001"
           },
@@ -1191,9 +1302,9 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
             146.08
           ],
           "tag": {
-            "commentStart": 1487,
-            "end": 1508,
-            "start": 1487,
+            "commentStart": 1501,
+            "end": 1522,
+            "start": 1501,
             "type": "TagDeclarator",
             "value": "rectangleSegmentC001"
           },
@@ -1253,17 +1364,26 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": {
+            "type": "Mm"
+          }
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
-          "z": 1.0
+          "z": 1.0,
+          "units": {
+            "type": "Mm"
+          }
         },
         "zAxis": {
           "x": 0.0,
           "y": -1.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": {
+            "type": "Mm"
+          }
         },
         "solid": {
           "type": "Solid",
@@ -1469,22 +1589,34 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Mm"
@@ -1543,14 +1675,36 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": 20.0,
+              "radius": {
+                "n": 20.0,
+                "ty": {
+                  "type": "Default",
+                  "len": {
+                    "type": "Mm"
+                  },
+                  "angle": {
+                    "type": "Degrees"
+                  }
+                }
+              },
               "edgeId": "[uuid]",
               "tag": null
             },
             {
               "type": "chamfer",
               "id": "[uuid]",
-              "length": 50.0,
+              "length": {
+                "n": 50.0,
+                "ty": {
+                  "type": "Default",
+                  "len": {
+                    "type": "Mm"
+                  },
+                  "angle": {
+                    "type": "Degrees"
+                  }
+                }
+              },
               "edgeId": "[uuid]",
               "tag": {
                 "commentStart": 582,
@@ -1563,7 +1717,18 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
             {
               "type": "chamfer",
               "id": "[uuid]",
-              "length": 50.0,
+              "length": {
+                "n": 50.0,
+                "ty": {
+                  "type": "Default",
+                  "len": {
+                    "type": "Mm"
+                  },
+                  "angle": {
+                    "type": "Degrees"
+                  }
+                }
+              },
               "edgeId": "[uuid]",
               "tag": {
                 "commentStart": 655,
@@ -1637,9 +1802,9 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
             277.34
           ],
           "tag": {
-            "commentStart": 798,
-            "end": 819,
-            "start": 798,
+            "commentStart": 805,
+            "end": 826,
+            "start": 805,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA003"
           },
@@ -1662,9 +1827,9 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
             277.34
           ],
           "tag": {
-            "commentStart": 902,
-            "end": 923,
-            "start": 902,
+            "commentStart": 909,
+            "end": 930,
+            "start": 909,
             "type": "TagDeclarator",
             "value": "rectangleSegmentB002"
           },
@@ -1687,9 +1852,9 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
             172.54
           ],
           "tag": {
-            "commentStart": 1025,
-            "end": 1046,
-            "start": 1025,
+            "commentStart": 1032,
+            "end": 1053,
+            "start": 1032,
             "type": "TagDeclarator",
             "value": "rectangleSegmentC002"
           },
@@ -1749,17 +1914,26 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": {
+            "type": "Mm"
+          }
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
-          "z": 1.0
+          "z": 1.0,
+          "units": {
+            "type": "Mm"
+          }
         },
         "zAxis": {
           "x": 0.0,
           "y": -1.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": {
+            "type": "Mm"
+          }
         },
         "solid": {
           "type": "Solid",
@@ -1965,22 +2139,34 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Mm"
@@ -2039,14 +2225,36 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": 20.0,
+              "radius": {
+                "n": 20.0,
+                "ty": {
+                  "type": "Default",
+                  "len": {
+                    "type": "Mm"
+                  },
+                  "angle": {
+                    "type": "Degrees"
+                  }
+                }
+              },
               "edgeId": "[uuid]",
               "tag": null
             },
             {
               "type": "chamfer",
               "id": "[uuid]",
-              "length": 50.0,
+              "length": {
+                "n": 50.0,
+                "ty": {
+                  "type": "Default",
+                  "len": {
+                    "type": "Mm"
+                  },
+                  "angle": {
+                    "type": "Degrees"
+                  }
+                }
+              },
               "edgeId": "[uuid]",
               "tag": {
                 "commentStart": 582,
@@ -2059,7 +2267,18 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
             {
               "type": "chamfer",
               "id": "[uuid]",
-              "length": 50.0,
+              "length": {
+                "n": 50.0,
+                "ty": {
+                  "type": "Default",
+                  "len": {
+                    "type": "Mm"
+                  },
+                  "angle": {
+                    "type": "Degrees"
+                  }
+                }
+              },
               "edgeId": "[uuid]",
               "tag": {
                 "commentStart": 655,

@@ -11,8 +11,8 @@ use crate::{
 
 /// Millimeters conversion factor for current files units.
 pub async fn from_mm(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let input = args.get_number()?;
-    let result = inner_from_mm(input, exec_state)?;
+    let input = args.get_number_with_type()?;
+    let result = inner_from_mm(input.n, exec_state)?;
 
     Ok(args.make_user_val_from_f64_with_type(TyF64::new(result, exec_state.current_default_units())))
 }
@@ -48,13 +48,14 @@ fn inner_from_mm(input: f64, exec_state: &ExecState) -> Result<f64, KclError> {
         UnitLen::M => measurements::Length::from_millimeters(input).as_meters(),
         UnitLen::Cm => measurements::Length::from_millimeters(input).as_centimeters(),
         UnitLen::Yards => measurements::Length::from_millimeters(input).as_yards(),
+        UnitLen::Unknown => unreachable!(),
     })
 }
 
 /// Inches conversion factor for current files units.
 pub async fn from_inches(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let input = args.get_number()?;
-    let result = inner_from_inches(input, exec_state)?;
+    let input = args.get_number_with_type()?;
+    let result = inner_from_inches(input.n, exec_state)?;
 
     Ok(args.make_user_val_from_f64_with_type(TyF64::new(result, exec_state.current_default_units())))
 }
@@ -90,13 +91,14 @@ fn inner_from_inches(input: f64, exec_state: &ExecState) -> Result<f64, KclError
         UnitLen::M => Ok(measurements::Length::from_inches(input).as_meters()),
         UnitLen::Cm => Ok(measurements::Length::from_inches(input).as_centimeters()),
         UnitLen::Yards => Ok(measurements::Length::from_inches(input).as_yards()),
+        UnitLen::Unknown => unreachable!(),
     }
 }
 
 /// Feet conversion factor for current files units.
 pub async fn from_ft(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let input = args.get_number()?;
-    let result = inner_from_ft(input, exec_state)?;
+    let input = args.get_number_with_type()?;
+    let result = inner_from_ft(input.n, exec_state)?;
 
     Ok(args.make_user_val_from_f64_with_type(TyF64::new(result, exec_state.current_default_units())))
 }
@@ -133,13 +135,14 @@ fn inner_from_ft(input: f64, exec_state: &ExecState) -> Result<f64, KclError> {
         UnitLen::M => Ok(measurements::Length::from_feet(input).as_meters()),
         UnitLen::Cm => Ok(measurements::Length::from_feet(input).as_centimeters()),
         UnitLen::Yards => Ok(measurements::Length::from_feet(input).as_yards()),
+        UnitLen::Unknown => unreachable!(),
     }
 }
 
 /// Meters conversion factor for current files units.
 pub async fn from_m(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let input = args.get_number()?;
-    let result = inner_from_m(input, exec_state)?;
+    let input = args.get_number_with_type()?;
+    let result = inner_from_m(input.n, exec_state)?;
 
     Ok(args.make_user_val_from_f64_with_type(TyF64::new(result, exec_state.current_default_units())))
 }
@@ -176,13 +179,14 @@ fn inner_from_m(input: f64, exec_state: &ExecState) -> Result<f64, KclError> {
         UnitLen::M => Ok(input),
         UnitLen::Cm => Ok(measurements::Length::from_meters(input).as_centimeters()),
         UnitLen::Yards => Ok(measurements::Length::from_meters(input).as_yards()),
+        UnitLen::Unknown => unreachable!(),
     }
 }
 
 /// Centimeters conversion factor for current files units.
 pub async fn from_cm(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let input = args.get_number()?;
-    let result = inner_from_cm(input, exec_state)?;
+    let input = args.get_number_with_type()?;
+    let result = inner_from_cm(input.n, exec_state)?;
 
     Ok(args.make_user_val_from_f64_with_type(TyF64::new(result, exec_state.current_default_units())))
 }
@@ -219,13 +223,14 @@ fn inner_from_cm(input: f64, exec_state: &ExecState) -> Result<f64, KclError> {
         UnitLen::M => Ok(measurements::Length::from_centimeters(input).as_meters()),
         UnitLen::Cm => Ok(input),
         UnitLen::Yards => Ok(measurements::Length::from_centimeters(input).as_yards()),
+        UnitLen::Unknown => unreachable!(),
     }
 }
 
 /// Yards conversion factor for current files units.
 pub async fn from_yd(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let input = args.get_number()?;
-    let result = inner_from_yd(input, exec_state)?;
+    let input = args.get_number_with_type()?;
+    let result = inner_from_yd(input.n, exec_state)?;
 
     Ok(args.make_user_val_from_f64_with_type(TyF64::new(result, exec_state.current_default_units())))
 }
@@ -262,5 +267,6 @@ fn inner_from_yd(input: f64, exec_state: &ExecState) -> Result<f64, KclError> {
         UnitLen::M => Ok(measurements::Length::from_yards(input).as_meters()),
         UnitLen::Cm => Ok(measurements::Length::from_yards(input).as_centimeters()),
         UnitLen::Yards => Ok(input),
+        UnitLen::Unknown => unreachable!(),
     }
 }

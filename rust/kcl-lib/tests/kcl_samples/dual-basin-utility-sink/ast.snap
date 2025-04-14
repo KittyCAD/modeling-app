@@ -6160,29 +6160,30 @@ description: Result of parsing dual-basin-utility-sink.kcl
           "init": {
             "arguments": [
               {
-                "abs_path": false,
-                "commentStart": 0,
-                "end": 0,
-                "name": {
+                "type": "LabeledArg",
+                "label": {
                   "commentStart": 0,
                   "end": 0,
-                  "name": "tableTopBody",
+                  "name": "face",
                   "start": 0,
                   "type": "Identifier"
                 },
-                "path": [],
-                "start": 0,
-                "type": "Name",
-                "type": "Name"
-              },
-              {
-                "commentStart": 0,
-                "end": 0,
-                "raw": "'START'",
-                "start": 0,
-                "type": "Literal",
-                "type": "Literal",
-                "value": "START"
+                "arg": {
+                  "abs_path": false,
+                  "commentStart": 0,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "name": "START",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name",
+                  "type": "Name"
+                }
               }
             ],
             "callee": {
@@ -6203,8 +6204,24 @@ description: Result of parsing dual-basin-utility-sink.kcl
             "commentStart": 0,
             "end": 0,
             "start": 0,
-            "type": "CallExpression",
-            "type": "CallExpression"
+            "type": "CallExpressionKw",
+            "type": "CallExpressionKw",
+            "unlabeled": {
+              "abs_path": false,
+              "commentStart": 0,
+              "end": 0,
+              "name": {
+                "commentStart": 0,
+                "end": 0,
+                "name": "tableTopBody",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name",
+              "type": "Name"
+            }
           },
           "start": 0,
           "type": "VariableDeclarator"
@@ -6826,29 +6843,30 @@ description: Result of parsing dual-basin-utility-sink.kcl
           "init": {
             "arguments": [
               {
-                "abs_path": false,
-                "commentStart": 0,
-                "end": 0,
-                "name": {
+                "type": "LabeledArg",
+                "label": {
                   "commentStart": 0,
                   "end": 0,
-                  "name": "tableTopBody",
+                  "name": "face",
                   "start": 0,
                   "type": "Identifier"
                 },
-                "path": [],
-                "start": 0,
-                "type": "Name",
-                "type": "Name"
-              },
-              {
-                "commentStart": 0,
-                "end": 0,
-                "raw": "'END'",
-                "start": 0,
-                "type": "Literal",
-                "type": "Literal",
-                "value": "END"
+                "arg": {
+                  "abs_path": false,
+                  "commentStart": 0,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "name": "END",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name",
+                  "type": "Name"
+                }
               }
             ],
             "callee": {
@@ -6869,8 +6887,24 @@ description: Result of parsing dual-basin-utility-sink.kcl
             "commentStart": 0,
             "end": 0,
             "start": 0,
-            "type": "CallExpression",
-            "type": "CallExpression"
+            "type": "CallExpressionKw",
+            "type": "CallExpressionKw",
+            "unlabeled": {
+              "abs_path": false,
+              "commentStart": 0,
+              "end": 0,
+              "name": {
+                "commentStart": 0,
+                "end": 0,
+                "name": "tableTopBody",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name",
+              "type": "Name"
+            }
           },
           "start": 0,
           "type": "VariableDeclarator"

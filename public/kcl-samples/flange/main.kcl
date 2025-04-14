@@ -37,16 +37,16 @@ flangeBase = startSketchOn(XY)
   |> extrude(length = baseThickness)
 
 // Create the extrusion on the top of the flange base
-topExtrusion = startSketchOn(flangeBase, 'end')
+topExtrusion = startSketchOn(flangeBase, face = END)
   |> circle(center = [0, 0], radius = topTotalDiameter / 2)
   |> extrude(length = topTotalThickness)
 
 // Create the extrusion on the bottom of the flange base
-bottomExtrusion = startSketchOn(flangeBase, 'start')
+bottomExtrusion = startSketchOn(flangeBase, face = START)
   |> circle(center = [0, 0], radius = bottomTotalDiameter / 2)
   |> extrude(length = bottomThickness)
 
 // Cut a hole through the entire body
-pipeHole = startSketchOn(topExtrusion, 'end')
+pipeHole = startSketchOn(topExtrusion, face = END)
   |> circle(center = [0, 0], radius = pipeDia / 2)
   |> extrude(%, length = -(topTotalThickness + baseThickness + bottomThickness))

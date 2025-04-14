@@ -13,7 +13,7 @@ gasketBase = startSketchOn(XY)
   |> extrude(%, length = gasketThickness)
 
 // Extrude a circular hole through the gasket base
-startSketchOn(gasketBase, 'end')
+startSketchOn(gasketBase, face = END)
   |> circle(%, center = [0, 0], radius = gasketInnerDiameter / 2)
   |> extrude(%, length = -gasketThickness)
   |> appearance(%, color = "#d0cb3e")

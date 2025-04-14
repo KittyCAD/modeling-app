@@ -39,7 +39,7 @@ sketch001 = startSketchOn(YZ)
      )
 
 // Create a short cylindrical foot at each corner of the keyboard
-sketch003 = startSketchOn(sketch001, seg04)
+sketch003 = startSketchOn(sketch001, face = seg04)
 profile001 = circle(sketch003, center = [0.75, 0.75], radius = 0.4)
 profile003 = circle(sketch003, center = [4.4, 0.75], radius = 0.4)
 profile004 = circle(sketch003, center = [0.73, 13.6 - .75], radius = 0.4)
@@ -56,12 +56,10 @@ extrude(
 
 // Define the plane to sketch keyboard keys on
 plane001 = {
-  plane = {
-    origin = [0.0, 0.0, 0.7],
-    xAxis = [1.0, 0.0, 0.0],
-    yAxis = [0.0, 1.0, sin(toRadians(7))],
-    zAxis = [0.0, 0.0, 1.0]
-  }
+  origin = [0.0, 0.0, 0.7],
+  xAxis = [1.0, 0.0, 0.0],
+  yAxis = [0.0, 1.0, sin(toRadians(7))],
+  zAxis = [0.0, 0.0, 1.0]
 }
 
 // Create a function to build a key. Parameterize for position, width, height, number of instances, and appearance color.
@@ -128,12 +126,10 @@ keyFn([spacing * 3 + 12, row6], 1, keyHeight * .6, 0, highlightColor2)
 
 // Create a plane to sketch ZOO brand letters on
 plane002 = {
-  plane = {
-    origin = [0.0, 0.0, .81],
-    xAxis = [1.0, 0.0, 0.0],
-    yAxis = [0.0, 1.0, sin(toRadians(7))],
-    zAxis = [0.0, 0.0, 1.0]
-  }
+  origin = [0.0, 0.0, .81],
+  xAxis = [1.0, 0.0, 0.0],
+  yAxis = [0.0, 1.0, sin(toRadians(7))],
+  zAxis = [0.0, 0.0, 1.0]
 }
 
 // Define a function to draw the ZOO 'Z'

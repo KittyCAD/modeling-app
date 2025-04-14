@@ -37,7 +37,7 @@ use uuid::Uuid;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    execution::{ArtifactCommand, DefaultPlanes, IdGenerator, Point3d},
+    execution::{types::UnitLen, ArtifactCommand, DefaultPlanes, IdGenerator, Point3d},
     SourceRange,
 };
 
@@ -517,7 +517,13 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
     ) -> Result<uuid::Uuid, KclError> {
         // Create new default planes.
         let default_size = 100.0;
-        let default_origin = Point3d { x: 0.0, y: 0.0, z: 0.0 }.into();
+        let default_origin = Point3d {
+            x: 0.0,
+            y: 0.0,
+            z: 0.0,
+            units: UnitLen::Mm,
+        }
+        .into();
 
         self.batch_modeling_cmd(
             plane_id,
@@ -555,8 +561,18 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
             (
                 PlaneName::Xy,
                 id_generator.next_uuid(),
-                Point3d { x: 1.0, y: 0.0, z: 0.0 },
-                Point3d { x: 0.0, y: 1.0, z: 0.0 },
+                Point3d {
+                    x: 1.0,
+                    y: 0.0,
+                    z: 0.0,
+                    units: UnitLen::Mm,
+                },
+                Point3d {
+                    x: 0.0,
+                    y: 1.0,
+                    z: 0.0,
+                    units: UnitLen::Mm,
+                },
                 Some(Color {
                     r: 0.7,
                     g: 0.28,
@@ -567,8 +583,18 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
             (
                 PlaneName::Yz,
                 id_generator.next_uuid(),
-                Point3d { x: 0.0, y: 1.0, z: 0.0 },
-                Point3d { x: 0.0, y: 0.0, z: 1.0 },
+                Point3d {
+                    x: 0.0,
+                    y: 1.0,
+                    z: 0.,
+                    units: UnitLen::Mm,
+                },
+                Point3d {
+                    x: 0.0,
+                    y: 0.0,
+                    z: 1.0,
+                    units: UnitLen::Mm,
+                },
                 Some(Color {
                     r: 0.28,
                     g: 0.7,
@@ -579,8 +605,18 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
             (
                 PlaneName::Xz,
                 id_generator.next_uuid(),
-                Point3d { x: 1.0, y: 0.0, z: 0.0 },
-                Point3d { x: 0.0, y: 0.0, z: 1.0 },
+                Point3d {
+                    x: 1.0,
+                    y: 0.0,
+                    z: 0.0,
+                    units: UnitLen::Mm,
+                },
+                Point3d {
+                    x: 0.0,
+                    y: 0.0,
+                    z: 1.0,
+                    units: UnitLen::Mm,
+                },
                 Some(Color {
                     r: 0.28,
                     g: 0.28,
@@ -595,8 +631,14 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
                     x: -1.0,
                     y: 0.0,
                     z: 0.0,
+                    units: UnitLen::Mm,
                 },
-                Point3d { x: 0.0, y: 1.0, z: 0.0 },
+                Point3d {
+                    x: 0.0,
+                    y: 1.0,
+                    z: 0.0,
+                    units: UnitLen::Mm,
+                },
                 None,
             ),
             (
@@ -606,8 +648,14 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
                     x: 0.0,
                     y: -1.0,
                     z: 0.0,
+                    units: UnitLen::Mm,
                 },
-                Point3d { x: 0.0, y: 0.0, z: 1.0 },
+                Point3d {
+                    x: 0.0,
+                    y: 0.0,
+                    z: 1.0,
+                    units: UnitLen::Mm,
+                },
                 None,
             ),
             (
@@ -617,8 +665,14 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
                     x: -1.0,
                     y: 0.0,
                     z: 0.0,
+                    units: UnitLen::Mm,
                 },
-                Point3d { x: 0.0, y: 0.0, z: 1.0 },
+                Point3d {
+                    x: 0.0,
+                    y: 0.0,
+                    z: 1.0,
+                    units: UnitLen::Mm,
+                },
                 None,
             ),
         ];

@@ -5,7 +5,7 @@ description: Operations executed helix_ccw.kcl
 [
   {
     "labeledArgs": {
-      "data": {
+      "planeOrSolid": {
         "value": {
           "type": "String",
           "value": "XY"

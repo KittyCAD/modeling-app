@@ -109,7 +109,7 @@ singleBinFill = startSketchOn(XY)
        ],
      )
 
-magCutout000 = startSketchOn(singleBinFill, "start")
+magCutout000 = startSketchOn(singleBinFill, face = START)
   |> circle(
        center = [
          -magOffset - binBaseLength - binTol,
@@ -171,7 +171,7 @@ binTop = startSketchOn(offsetPlane(XY, offset = height))
          getPreviousAdjacentEdge(line012)
        ],
      )
-  |> shell(faces = ["end"], thickness = binThk)
+  |> shell(faces = [END], thickness = binThk)
 
 // Define a function which builds the profile of the baseplate bin
 fn lipFace(plane) {
@@ -195,42 +195,36 @@ fn lipFace(plane) {
 }
 
 plane000 = {
-  plane = {
-    origin = [
-      cornerRadius,
-      0.0,
-      height + binHeight * countBinHeight
-    ],
-    xAxis = [0.0, 1.0, 0.0],
-    yAxis = [0.0, 0.0, 1.0],
-    zAxis = [1.0, 0.0, 0.0]
-  }
+  origin = [
+    cornerRadius,
+    0.0,
+    height + binHeight * countBinHeight
+  ],
+  xAxis = [0.0, 1.0, 0.0],
+  yAxis = [0.0, 0.0, 1.0],
+  zAxis = [1.0, 0.0, 0.0]
 }
 
 plane001 = {
-  plane = {
-    origin = [
-      0.0,
-      cornerRadius,
-      height + binHeight * countBinHeight
-    ],
-    xAxis = [1.0, 0.0, 0.0],
-    yAxis = [0.0, 0.0, 1.0],
-    zAxis = [0.0, 1.0, 0.0]
-  }
+  origin = [
+    0.0,
+    cornerRadius,
+    height + binHeight * countBinHeight
+  ],
+  xAxis = [1.0, 0.0, 0.0],
+  yAxis = [0.0, 0.0, 1.0],
+  zAxis = [0.0, 1.0, 0.0]
 }
 
 plane002 = {
-  plane = {
-    origin = [
-      countBinWidth * (binLength + 2 * binTol) - cornerRadius,
-      0.0,
-      height + binHeight * countBinHeight
-    ],
-    xAxis = [0.0, 1.0, 0.0],
-    yAxis = [0.0, 0.0, 1.0],
-    zAxis = [1.0, 0.0, 0.0]
-  }
+  origin = [
+    countBinWidth * (binLength + 2 * binTol) - cornerRadius,
+    0.0,
+    height + binHeight * countBinHeight
+  ],
+  xAxis = [0.0, 1.0, 0.0],
+  yAxis = [0.0, 0.0, 1.0],
+  zAxis = [1.0, 0.0, 0.0]
 }
 
 // Extrude a single side of the lip of the bin

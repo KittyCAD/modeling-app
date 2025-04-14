@@ -80,7 +80,7 @@ part001 = cube([0, 0], 20)
   // We tag the chamfer to reference it later.
   |> chamfer(length = 10, tags = [getOppositeEdge(line1)], tag = $chamfer1)
 
-sketch001 = startSketchOn(part001, chamfer1)
+sketch001 = startSketchOn(part001, face = chamfer1)
   |> startProfileAt([10, 10], %)
   |> line(end = [2, 0])
   |> line(end = [0, 2])

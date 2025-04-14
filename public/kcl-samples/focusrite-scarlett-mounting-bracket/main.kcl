@@ -17,7 +17,7 @@ tabThk = 4
 
 // Define a rectangular shape func
 fn rectShape(pos, w, l) {
-  rr = startSketchOn('xy')
+  rr = startSketchOn(XY)
     |> startProfileAt([pos[0] - (w / 2), pos[1] - (l / 2)], %)
     |> line(endAbsolute = [pos[0] + w / 2, pos[1] - (l / 2)], tag = $edge01)
     |> line(endAbsolute = [pos[0] + w / 2, pos[1] + l / 2], tag = $edge02)
@@ -28,12 +28,10 @@ fn rectShape(pos, w, l) {
 
 // Define the bracket plane
 bracketPlane = {
-  plane = {
-    origin = { x = 0, y = length / 2 + thk, z = 0 },
-    xAxis = { x = 1, y = 0, z = 0 },
-    yAxis = { x = 0, y = 0, z = 1 },
-    zAxis = { x = 0, y = -1, z = 0 }
-  }
+  origin = { x = 0, y = length / 2 + thk, z = 0 },
+  xAxis = { x = 1, y = 0, z = 0 },
+  yAxis = { x = 0, y = 0, z = 1 },
+  zAxis = { x = 0, y = -1, z = 0 }
 }
 
 // Build the bracket sketch around the body
@@ -67,12 +65,10 @@ bracketBody = bs
 
 // Define the tab plane
 tabPlane = {
-  plane = {
-    origin = { x = 0, y = 0, z = depth + thk },
-    xAxis = { x = 1, y = 0, z = 0 },
-    yAxis = { x = 0, y = 1, z = 0 },
-    zAxis = { x = 0, y = 0, z = 1 }
-  }
+  origin = { x = 0, y = 0, z = depth + thk },
+  xAxis = { x = 1, y = 0, z = 0 },
+  yAxis = { x = 0, y = 1, z = 0 },
+  zAxis = { x = 0, y = 0, z = 1 }
 }
 
 // Build the tabs of the mounting bracket (right side)
@@ -125,12 +121,10 @@ tabsL = startSketchOn(tabPlane)
 
 // Define a plane for retention bumps
 retPlane = {
-  plane = {
-    origin = { x = -width / 2 + 20, y = 0, z = 0 },
-    xAxis = { x = 0, y = 1, z = 0 },
-    yAxis = { x = 0, y = 0, z = 1 },
-    zAxis = { x = 1, y = 0, z = 0 }
-  }
+  origin = { x = -width / 2 + 20, y = 0, z = 0 },
+  xAxis = { x = 0, y = 1, z = 0 },
+  yAxis = { x = 0, y = 0, z = 1 },
+  zAxis = { x = 1, y = 0, z = 0 }
 }
 
 // Build the retention bump in the front
