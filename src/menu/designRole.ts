@@ -123,6 +123,16 @@ export const modelingDesignRole = (
       },
       { type: 'separator' },
       {
+        label: 'Insert from project file',
+        id: 'Design.Insert from project file',
+        click: () => {
+          typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
+            menuLabel: 'Design.Insert from project file',
+          })
+        },
+      },
+      { type: 'separator' },
+      {
         label: 'Create with Zoo Text-To-CAD',
         id: 'Design.Create with Zoo Text-To-CAD',
         click: () => {
