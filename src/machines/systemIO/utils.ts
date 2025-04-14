@@ -4,7 +4,8 @@ export enum SystemIOMachineActors {
   readFoldersFromProjectDirectory = 'read folders from project directory',
   setProjectDirectoryPath = 'set project directory path',
   createProject = 'create project',
-  renameProject = 'rename project'
+  renameProject = 'rename project',
+  deleteProject = 'delete project'
 }
 
 export enum SystemIOMachineStates {
@@ -12,7 +13,8 @@ export enum SystemIOMachineStates {
   readingFolders = 'readingFolders',
   settingProjectDirectoryPath = 'settingProjectDirectoryPath',
   creatingProject = 'creatingProject',
-  renamingProject = 'renamingProject'
+  renamingProject = 'renamingProject',
+  deletingProject = 'deletingProject'
 }
 
 const donePrefix = 'xstate.done.actor.'
@@ -25,7 +27,8 @@ export enum SystemIOMachineEvents {
   navigateToProject = 'navigate to project',
   navigateToFile = 'navigate to file',
   createProject = 'create project',
-  renameProject = 'rename project'
+  renameProject = 'rename project',
+  deleteProject = 'delete project'
 }
 
 export enum SystemIOMachineActions {

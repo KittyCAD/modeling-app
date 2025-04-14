@@ -48,6 +48,10 @@ export const systemIOMachine = setup({
       | {
           type: SystemIOMachineEvents.renameProject
         data: { requestedProjectName: string, projectName: string }
+      }
+      | {
+          type: SystemIOMachineEvents.deleteProject
+        data: { requestedProjectName: string}
         }
   },
   actions: {
@@ -95,6 +99,13 @@ export const systemIOMachine = setup({
         input: { context: SystemIOContext; requestProjectName: string }
       }) => {}
     ),
+    [SystemIOMachineActors.deleteProject]: fromPromise(
+      async ({
+        input: context,
+      }: {
+        input: { context: SystemIOContext; requestProjectName: string }
+      }) => {}
+    ),
   },
 }).createMachine({
   initial: SystemIOMachineStates.idle,
@@ -133,6 +144,9 @@ export const systemIOMachine = setup({
         },
         [SystemIOMachineEvents.renameProject]: {
           target: SystemIOMachineStates.renamingProject,
+        },
+        [SystemIOMachineEvents.deleteProject]: {
+          target: SystemIOMachineStates.deletingProject,
         },
       },
     },
@@ -181,6 +195,25 @@ export const systemIOMachine = setup({
             context,
             requestedProjectName: event.data.requestedProjectName,
             projectName: event.data.projectName
+          }
+        },
+        onDone: {
+          target: SystemIOMachineStates.readingFolders,
+        },
+        onError: {
+          target: SystemIOMachineStates.idle,
+        },
+      },
+    },
+    [SystemIOMachineStates.deletingProject]: {
+      invoke: {
+        id: SystemIOMachineActors.deleteProject,
+        src: SystemIOMachineActors.deleteProject,
+        input: ({ context, event }) => {
+          assertEvent(event, SystemIOMachineEvents.deleteProject)
+          return {
+            context,
+            requestedProjectName: event.data.requestedProjectName,
           }
         },
         onDone: {

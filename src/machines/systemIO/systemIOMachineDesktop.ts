@@ -100,5 +100,19 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
         // DONE
       }
     ),
+    [SystemIOMachineActors.deleteProject]: fromPromise(
+      async ({
+        input,
+      }: {
+        input: { context: SystemIOContext; requestedProjectName: string}
+      }) => {
+        await window.electron.rm(
+            window.electron.path.join(input.context.projectDirectoryPath, input.requestedProjectName),
+            {
+              recursive: true,
+            }
+          )
+      }
+    ),
   },
 })
