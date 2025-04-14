@@ -44,7 +44,7 @@ const FEATURE_TREE_SKETCH_CODE = `sketch001 = startSketchOn(XZ)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close(%)
 extrude001 = extrude(sketch001, length = 10)
-sketch002 = startSketchOn(extrude001, rectangleSegmentB001)
+sketch002 = startSketchOn(extrude001, face = rectangleSegmentB001)
   |> circle(
        center = [-1, 2],
        radius = .5
@@ -194,7 +194,7 @@ test.describe('Feature Tree pane', () => {
           highlightedCode: '',
           diagnostics: [],
           activeLines: [
-            'sketch002=startSketchOn(extrude001,rectangleSegmentB001)',
+            'sketch002=startSketchOn(extrude001,face=rectangleSegmentB001)',
           ],
         })
         await toolbar.exitSketchBtn.click()

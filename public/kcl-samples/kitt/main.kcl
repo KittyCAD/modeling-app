@@ -3,7 +3,7 @@
 
 // Pixel box function
 fn pixelBox(kitExtrude, extrudeTag, positionY, positionZ, width, height, depth) {
-  pixelBoxBody = startSketchOn(kitExtrude, extrudeTag)
+  pixelBoxBody = startSketchOn(kitExtrude, face = extrudeTag)
     |> startProfileAt([positionY, positionZ], %)
     |> line(end = [0, height])
     |> line(end = [width, 0])
@@ -45,7 +45,7 @@ kitFaceWidth = kitHeadWidth - 4
 kitFaceHeight = kitHeadElevation + kitHeadHeight - kitFaceElevation - 3
 kitFaceDepth = 2
 
-kitFace = startSketchOn(kitHead, END)
+kitFace = startSketchOn(kitHead, face = END)
   |> startProfileAt([-kitFaceWidth / 2, kitFaceElevation], %)
   |> line(end = [0, 1]) // left lower corner up
   |> line(end = [-1, 0]) // left lower corner left
@@ -78,7 +78,7 @@ kitLeftEye2 = pixelBox(kitFace, START, -kitEyeOffset + 1, kitEyeHeihgt + 1, 3, 1
 kitLeftEye3 = pixelBox(kitFace, START, -kitEyeOffset + 4, kitEyeHeihgt, 1, 1, kitEyeDepth)
 kitRightEye = pixelBox(kitFace, START, kitEyeOffset - 3, kitEyeHeihgt - 1, 2, 4, kitEyeDepth)
 kitNoseElevation = kitEyeHeihgt - 5
-kitNose = startSketchOn(kitFace, START)
+kitNose = startSketchOn(kitFace, face = START)
   |> startProfileAt([-2, kitNoseElevation], %) // H V
   |> line(end = [0, 1]) // lower-left up
   |> line(end = [2, 0]) // lower-left right

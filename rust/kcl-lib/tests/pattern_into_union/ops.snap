@@ -5,7 +5,7 @@ description: Operations executed pattern_into_union.kcl
 [
   {
     "labeledArgs": {
-      "data": {
+      "planeOrSolid": {
         "value": {
           "type": "Plane",
           "artifact_id": "[uuid]"
@@ -25,8 +25,13 @@ description: Operations executed pattern_into_union.kcl
           "type": "Number",
           "value": -3.28740157480315,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -47,7 +52,7 @@ description: Operations executed pattern_into_union.kcl
   },
   {
     "labeledArgs": {
-      "data": {
+      "planeOrSolid": {
         "value": {
           "type": "Plane",
           "artifact_id": "[uuid]"
@@ -190,8 +195,13 @@ description: Operations executed pattern_into_union.kcl
           "type": "Number",
           "value": 0.1593700787401575,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -228,7 +238,7 @@ description: Operations executed pattern_into_union.kcl
   },
   {
     "labeledArgs": {
-      "data": {
+      "planeOrSolid": {
         "value": {
           "type": "Plane",
           "artifact_id": "[uuid]"
@@ -371,8 +381,13 @@ description: Operations executed pattern_into_union.kcl
           "type": "Number",
           "value": 0.1593700787401575,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
