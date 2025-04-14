@@ -12,8 +12,8 @@ flowchart LR
   subgraph path10 [Path]
     10["Path<br>[479, 508, 0]"]
     11["Segment<br>[514, 539, 0]"]
-    12["Segment<br>[545, 571, 0]"]
-    13["Segment<br>[577, 609, 0]"]
+    12["Segment<br>[545, 580, 0]"]
+    13["Segment<br>[586, 627, 0]"]
   end
   1["Plane<br>[12, 31, 0]"]
   9["Plane<br>[453, 473, 0]"]

@@ -87,7 +87,7 @@ holeRadius = 1
 startAngle = asin(keywayWidth / 2 / holeRadius)
 
 // Sketch the keyway and center hole and extrude
-keyWay = startSketchOn(body, 'END')
+keyWay = startSketchOn(body, face = END)
   |> startProfileAt([
        holeRadius * cos(startAngle),
        holeRadius * sin(startAngle)

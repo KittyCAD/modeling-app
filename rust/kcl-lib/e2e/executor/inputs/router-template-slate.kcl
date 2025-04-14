@@ -33,7 +33,7 @@ const sketch001 = startSketchOn(XZ)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 const extrude001 = extrude(sketch001, length = 5)
-const sketch002 = startSketchOn(extrude001, 'START')
+const sketch002 = startSketchOn(extrude001, face = 'START')
   |> startProfileAt([
        -slateWidthHalf,
        -templateGap * 2 - (templateDiameter / 2)
@@ -44,7 +44,7 @@ const sketch002 = startSketchOn(extrude001, 'START')
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 const extrude002 = extrude(sketch002, length = 7.5)
-const sketch003 = startSketchOn(extrude001, 'START')
+const sketch003 = startSketchOn(extrude001, face = 'START')
   |> startProfileAt([
        slateWidthHalf,
        -templateGap * 2 - (templateDiameter / 2)

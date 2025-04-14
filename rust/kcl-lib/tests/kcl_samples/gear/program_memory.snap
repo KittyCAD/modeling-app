@@ -943,8 +943,13 @@ description: Variables in memory after executing gear.kcl
     "type": "Number",
     "value": 9.8668,
     "ty": {
-      "type": "Known",
-      "type": "Count"
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
     }
   },
   "body": {
@@ -1000,22 +1005,34 @@ description: Variables in memory after executing gear.kcl
           "origin": {
             "x": 0.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
+            "z": 1.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "units": {
             "type": "Inches"
@@ -1987,17 +2004,26 @@ description: Variables in memory after executing gear.kcl
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
+            "z": 1.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "solid": {
             "type": "Solid",
@@ -2050,22 +2076,34 @@ description: Variables in memory after executing gear.kcl
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "yAxis": {
                   "x": 0.0,
                   "y": 1.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "zAxis": {
                   "x": 0.0,
                   "y": 0.0,
-                  "z": 1.0
+                  "z": 1.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "units": {
                   "type": "Inches"
@@ -2142,8 +2180,13 @@ description: Variables in memory after executing gear.kcl
     "type": "Number",
     "value": 0.125,
     "ty": {
-      "type": "Known",
-      "type": "Count"
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
     }
   },
   "keywayWidth": {
@@ -2224,816 +2267,1326 @@ description: Variables in memory after executing gear.kcl
         "type": "Number",
         "value": 4.9334,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 4.9415,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 4.9496,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 4.9576,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 4.9657,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 4.9738,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 4.9819,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 4.99,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 4.9981,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.0062,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.0142,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.0223,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.0304,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.0385,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.0466,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.0547,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.0628,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.0708,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.0789,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.087,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.0951,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.1032,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.1113,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.1193,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.1274,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.1355,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.1436,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.1517,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.1598,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.1679,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.1759,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.184,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.1921,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.2002,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.2083,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.2164,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.2245,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.2325,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.2406,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.2487,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.2568,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.2649,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.273,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.2811,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.2891,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.2972,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.3053,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.3134,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.3215,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.3296,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.3377,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.3457,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.3538,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.3619,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.37,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.3781,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.3862,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.3942,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.4023,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.4104,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.4185,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.4266,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.4347,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.4428,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.4508,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.4589,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.467,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.4751,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.4832,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.4913,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.4994,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.5074,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.5155,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.5236,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.5317,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.5398,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.5479,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.556,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.564,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.5721,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.5802,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.5883,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.5964,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.6045,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.6126,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.6206,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.6287,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.6368,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.6449,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.653,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.6611,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.6691,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.6772,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.6853,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.6934,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.7015,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.7096,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.7177,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.7257,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.7338,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.7419,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.75,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       }
     ]
@@ -3052,22 +3605,34 @@ description: Variables in memory after executing gear.kcl
         "origin": {
           "x": 0.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": {
+            "type": "Mm"
+          }
         },
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": {
+            "type": "Mm"
+          }
         },
         "yAxis": {
           "x": 0.0,
           "y": 1.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": {
+            "type": "Mm"
+          }
         },
         "zAxis": {
           "x": 0.0,
           "y": 0.0,
-          "z": 1.0
+          "z": 1.0,
+          "units": {
+            "type": "Mm"
+          }
         },
         "units": {
           "type": "Inches"
@@ -7012,22 +7577,34 @@ description: Variables in memory after executing gear.kcl
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Inches"
@@ -10967,22 +11544,34 @@ description: Variables in memory after executing gear.kcl
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Inches"
@@ -14922,22 +15511,34 @@ description: Variables in memory after executing gear.kcl
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Inches"
@@ -18877,22 +19478,34 @@ description: Variables in memory after executing gear.kcl
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Inches"
@@ -22832,22 +23445,34 @@ description: Variables in memory after executing gear.kcl
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Inches"
@@ -26787,22 +27412,34 @@ description: Variables in memory after executing gear.kcl
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Inches"
@@ -30742,22 +31379,34 @@ description: Variables in memory after executing gear.kcl
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Inches"
@@ -34697,22 +35346,34 @@ description: Variables in memory after executing gear.kcl
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Inches"
@@ -38652,22 +39313,34 @@ description: Variables in memory after executing gear.kcl
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Inches"
@@ -42607,22 +43280,34 @@ description: Variables in memory after executing gear.kcl
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Inches"
@@ -46562,22 +47247,34 @@ description: Variables in memory after executing gear.kcl
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Inches"
@@ -50517,22 +51214,34 @@ description: Variables in memory after executing gear.kcl
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Inches"
@@ -54472,22 +55181,34 @@ description: Variables in memory after executing gear.kcl
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Inches"
@@ -58427,22 +59148,34 @@ description: Variables in memory after executing gear.kcl
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Inches"
@@ -62382,22 +63115,34 @@ description: Variables in memory after executing gear.kcl
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Inches"
@@ -66337,22 +67082,34 @@ description: Variables in memory after executing gear.kcl
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Inches"
@@ -70292,22 +71049,34 @@ description: Variables in memory after executing gear.kcl
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Inches"
@@ -74247,22 +75016,34 @@ description: Variables in memory after executing gear.kcl
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Inches"
@@ -78202,22 +78983,34 @@ description: Variables in memory after executing gear.kcl
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Inches"
@@ -82157,22 +82950,34 @@ description: Variables in memory after executing gear.kcl
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Inches"
@@ -86112,22 +86917,34 @@ description: Variables in memory after executing gear.kcl
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Inches"
@@ -86184,8 +87001,13 @@ description: Variables in memory after executing gear.kcl
     "type": "Number",
     "value": 11.4286,
     "ty": {
-      "type": "Known",
-      "type": "Count"
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
     }
   },
   "xs": {
@@ -86195,816 +87017,1326 @@ description: Variables in memory after executing gear.kcl
         "type": "Number",
         "value": 4.9334,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 4.9415,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 4.9496,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 4.9576,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 4.9657,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 4.9738,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 4.9819,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 4.99,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 4.9981,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.0061,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.0142,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.0223,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.0304,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.0385,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.0466,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.0546,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.0627,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.0708,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.0789,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.0869,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.095,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.1031,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.1112,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.1192,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.1273,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.1354,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.1434,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.1515,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.1596,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.1676,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.1757,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.1837,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.1918,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.1999,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.2079,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.216,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.224,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.2321,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.2401,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.2481,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.2562,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.2642,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.2722,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.2803,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.2883,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.2963,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.3044,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.3124,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.3204,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.3284,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.3364,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.3444,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.3525,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.3605,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.3685,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.3765,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.3845,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.3924,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.4004,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.4084,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.4164,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.4244,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.4324,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.4403,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.4483,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.4563,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.4642,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.4722,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.4801,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.4881,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.496,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.504,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.5119,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.5198,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.5277,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.5357,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.5436,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.5515,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.5594,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.5673,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.5752,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.5831,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.591,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.5989,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.6068,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.6146,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.6225,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.6304,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.6382,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.6461,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.6539,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.6618,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.6696,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.6775,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.6853,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.6931,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.7009,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.7087,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.7165,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.7243,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.7321,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.7399,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       }
     ]
@@ -87016,816 +88348,1326 @@ description: Variables in memory after executing gear.kcl
         "type": "Number",
         "value": 0.0,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.0003,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.0009,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.0016,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.0025,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.0035,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.0046,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.0058,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.007,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.0084,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.0098,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.0114,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.013,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.0146,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.0164,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.0182,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.02,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.022,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.0239,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.026,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.0281,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.0303,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.0325,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.0347,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.0371,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.0394,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.0419,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.0443,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.0469,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.0494,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.0521,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.0547,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.0575,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.0602,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.063,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.0659,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.0688,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.0717,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.0747,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.0778,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.0808,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.084,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.0871,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.0903,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.0936,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.0969,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.1002,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.1036,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.107,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.1104,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.1139,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.1174,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.121,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.1246,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.1283,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.132,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.1357,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.1395,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.1433,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.1471,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.151,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.1549,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.1588,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.1628,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.1669,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.1709,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.175,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.1792,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.1833,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.1875,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.1918,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.1961,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.2004,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.2047,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.2091,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.2135,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.218,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.2225,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.227,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.2316,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.2362,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.2408,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.2455,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.2502,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.2549,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.2597,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.2644,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.2693,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.2741,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.279,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.284,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.289,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.294,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.299,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.3041,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.3091,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.3143,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.3194,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.3246,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.3299,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.3351,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.3404,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Inches"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       }
     ]

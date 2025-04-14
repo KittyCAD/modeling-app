@@ -13,7 +13,9 @@ redo-kcl-stdlib-docs-no-imgs:
 # Then run the stdlib docs generation
 redo-kcl-stdlib-docs:
     TWENTY_TWENTY=overwrite {{cnr}} -p kcl-lib --no-fail-fast -- kcl_test_example
+    TWENTY_TWENTY=overwrite {{cnr}} --workspace --no-fail-fast docs::kcl_doc::test::test_examples
     EXPECTORATE=overwrite {{cnr}} -p kcl-lib --no-fail-fast -- docs::gen_std_tests::test_generate_stdlib
+    EXPECTORATE=overwrite {{cnr}} -p kcl-lib --no-fail-fast -- generate_settings_docs
 
 # Copy a test KCL file from executor tests into a new simulation test.
 copy-exec-test-into-sim-test test_name:
@@ -49,7 +51,7 @@ bump-kcl-crate-versions bump='patch':
     ./target/debug/kcl-bumper --bump {{bump}}
 
 publish-kcl version:
-    git tag kcl-{{version}}
+    git tag kcl-{{version}} -m "Release kcl-{{version}}"
     cargo publish -p kcl-derive-docs
     cargo publish -p kcl-directory-test-macro
     cargo publish -p kcl-lib

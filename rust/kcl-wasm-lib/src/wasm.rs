@@ -1,7 +1,7 @@
 //! Wasm bindings for `kcl`.
 
 use gloo_utils::format::JsValueSerdeExt;
-use kcl_lib::{pretty::NumericSuffix, CoreDump, Point2d, Program};
+use kcl_lib::{pretty::NumericSuffix, CoreDump, Program};
 use wasm_bindgen::prelude::*;
 
 // wasm_bindgen wrapper for execute
@@ -234,15 +234,11 @@ pub struct WasmCircleParams {
 /// Calculate a circle from 3 points.
 #[wasm_bindgen]
 pub fn calculate_circle_from_3_points(ax: f64, ay: f64, bx: f64, by: f64, cx: f64, cy: f64) -> WasmCircleParams {
-    let result = kcl_lib::std::utils::calculate_circle_from_3_points([
-        Point2d { x: ax, y: ay },
-        Point2d { x: bx, y: by },
-        Point2d { x: cx, y: cy },
-    ]);
+    let result = kcl_lib::std::utils::calculate_circle_from_3_points([[ax, ay], [bx, by], [cx, cy]]);
 
     WasmCircleParams {
-        center_x: result.center.x,
-        center_y: result.center.y,
+        center_x: result.center[0],
+        center_y: result.center[1],
         radius: result.radius,
     }
 }
@@ -291,4 +287,23 @@ pub fn get_kcl_version() -> String {
     console_error_panic_hook::set_once();
 
     kcl_lib::version().to_string()
+}
+
+/// Get the allowed import file extensions.
+#[wasm_bindgen]
+pub fn import_file_extensions() -> Result<Vec<String>, String> {
+    console_error_panic_hook::set_once();
+
+    Ok(kcl_lib::IMPORT_FILE_EXTENSIONS.iter().map(|s| s.to_string()).collect())
+}
+
+/// Get the allowed relevant file extensions (imports + kcl).
+#[wasm_bindgen]
+pub fn relevant_file_extensions() -> Result<Vec<String>, String> {
+    console_error_panic_hook::set_once();
+
+    Ok(kcl_lib::RELEVANT_FILE_EXTENSIONS
+        .iter()
+        .map(|s| s.to_string())
+        .collect::<Vec<String>>())
 }

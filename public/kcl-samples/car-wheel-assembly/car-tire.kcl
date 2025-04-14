@@ -17,7 +17,7 @@ tireSketch = startSketchOn(XY)
        ],
        tag = $edge1,
      )
-  |> tangentialArc({ offset = -90, radius = bendRadius }, %)
+  |> tangentialArc(angle = -90, radius = bendRadius)
   |> line(endAbsolute = [
        tireOuterDiameter / 2,
        tireDepth / 2 - tireTreadOffset
@@ -36,7 +36,7 @@ tireSketch = startSketchOn(XY)
        tireOuterDiameter / 2,
        -tireDepth / 2 + bendRadius
      ])
-  |> tangentialArc({ offset = -90, radius = bendRadius }, %)
+  |> tangentialArc(angle = -90, radius = bendRadius)
   |> line(endAbsolute = [tireInnerDiameter / 2, -tireDepth / 2], tag = $edge2)
   |> close()
 

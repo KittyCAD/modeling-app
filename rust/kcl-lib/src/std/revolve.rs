@@ -1,10 +1,15 @@
 //! Standard library revolution surfaces.
 
 use anyhow::Result;
-use kcmc::{each_cmd as mcmd, length_unit::LengthUnit, shared::Angle, ModelingCmd};
+use kcmc::{
+    each_cmd as mcmd,
+    length_unit::LengthUnit,
+    shared::{Angle, Opposite},
+    ModelingCmd,
+};
 use kittycad_modeling_cmds::{self as kcmc, shared::Point3d};
 
-use super::DEFAULT_TOLERANCE;
+use super::{args::TyF64, DEFAULT_TOLERANCE};
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
@@ -26,12 +31,27 @@ pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
         ]),
         exec_state,
     )?;
-    let angle = args.get_kw_arg_opt("angle")?;
-    let tolerance = args.get_kw_arg_opt("tolerance")?;
+    let angle: Option<TyF64> = args.get_kw_arg_opt_typed("angle", &RuntimeType::angle(), exec_state)?;
+    let tolerance: Option<TyF64> = args.get_kw_arg_opt_typed("tolerance", &RuntimeType::count(), exec_state)?;
     let tag_start = args.get_kw_arg_opt("tagStart")?;
     let tag_end = args.get_kw_arg_opt("tagEnd")?;
+    let symmetric = args.get_kw_arg_opt("symmetric")?;
+    let bidirectional_angle: Option<TyF64> =
+        args.get_kw_arg_opt_typed("bidirectionalAngle", &RuntimeType::angle(), exec_state)?;
 
-    let value = inner_revolve(sketches, axis, angle, tolerance, tag_start, tag_end, exec_state, args).await?;
+    let value = inner_revolve(
+        sketches,
+        axis,
+        angle.map(|t| t.n),
+        tolerance.map(|t| t.n),
+        tag_start,
+        tag_end,
+        symmetric,
+        bidirectional_angle.map(|t| t.n),
+        exec_state,
+        args,
+    )
+    .await?;
     Ok(value.into())
 }
 
@@ -43,6 +63,8 @@ async fn inner_revolve(
     tolerance: Option<f64>,
     tag_start: Option<TagNode>,
     tag_end: Option<TagNode>,
+    symmetric: Option<bool>,
+    bidirectional_angle: Option<f64>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Vec<Solid>, KclError> {
@@ -58,7 +80,53 @@ async fn inner_revolve(
         }
     }
 
+    if let Some(bidirectional_angle) = bidirectional_angle {
+        // Return an error if the angle is zero.
+        // We don't use validate() here because we want to return a specific error message that is
+        // nice and we use the other data in the docs, so we still need use the derive above for the json schema.
+        if !(-360.0..=360.0).contains(&bidirectional_angle) || bidirectional_angle == 0.0 {
+            return Err(KclError::Semantic(KclErrorDetails {
+                message: format!(
+                    "Expected bidirectional angle to be between -360 and 360 and not 0, found `{}`",
+                    bidirectional_angle
+                ),
+                source_ranges: vec![args.source_range],
+            }));
+        }
+
+        if let Some(angle) = angle {
+            let ang = angle.signum() * bidirectional_angle + angle;
+            if !(-360.0..=360.0).contains(&ang) {
+                return Err(KclError::Semantic(KclErrorDetails {
+                    message: format!(
+                        "Combined angle and bidirectional must be between -360 and 360, found '{}'",
+                        ang
+                    ),
+                    source_ranges: vec![args.source_range],
+                }));
+            }
+        }
+    }
+
+    if symmetric.unwrap_or(false) && bidirectional_angle.is_some() {
+        return Err(KclError::Semantic(KclErrorDetails {
+            source_ranges: vec![args.source_range],
+            message: "You cannot give both `symmetric` and `bidirectional` params, you have to choose one or the other"
+                .to_owned(),
+        }));
+    }
+
     let angle = Angle::from_degrees(angle.unwrap_or(360.0));
+
+    let bidirectional_angle = bidirectional_angle.map(Angle::from_degrees);
+
+    let opposite = match (symmetric, bidirectional_angle) {
+        (Some(true), _) => Opposite::Symmetric,
+        (None, None) => Opposite::None,
+        (Some(false), None) => Opposite::None,
+        (None, Some(angle)) => Opposite::Other(angle),
+        (Some(false), Some(angle)) => Opposite::Other(angle),
+    };
 
     let mut solids = Vec::new();
     for sketch in &sketches {
@@ -72,17 +140,18 @@ async fn inner_revolve(
                         angle,
                         target: sketch.id.into(),
                         axis: Point3d {
-                            x: direction[0],
-                            y: direction[1],
+                            x: direction[0].n,
+                            y: direction[1].n,
                             z: 0.0,
                         },
                         origin: Point3d {
-                            x: LengthUnit(origin[0]),
-                            y: LengthUnit(origin[1]),
+                            x: LengthUnit(origin[0].n),
+                            y: LengthUnit(origin[1].n),
                             z: LengthUnit(0.0),
                         },
                         tolerance: LengthUnit(tolerance.unwrap_or(DEFAULT_TOLERANCE)),
                         axis_is_2d: true,
+                        opposite: opposite.clone(),
                     }),
                 )
                 .await?;
@@ -96,6 +165,7 @@ async fn inner_revolve(
                         target: sketch.id.into(),
                         edge_id,
                         tolerance: LengthUnit(tolerance.unwrap_or(DEFAULT_TOLERANCE)),
+                        opposite: opposite.clone(),
                     }),
                 )
                 .await?;

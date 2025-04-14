@@ -272,27 +272,27 @@ sketch001 = startSketchOn(XZ)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 extrude001 = extrude(sketch001, length = 50)
-sketch005 = startSketchOn(extrude001, 'END')
+sketch005 = startSketchOn(extrude001, face = 'END')
   |> startProfileAt([23.24, 136.52], %)
   |> line(end = [-8.44, 36.61])
   |> line(end = [49.4, 2.05])
   |> line(end = [29.69, -46.95])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-sketch003 = startSketchOn(extrude001, seg01)
+sketch003 = startSketchOn(extrude001, face = seg01)
   |> startProfileAt([21.23, 17.81], %)
   |> line(end = [51.97, 21.32])
   |> line(end = [4.07, -22.75])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-sketch002 = startSketchOn(extrude001, seg02)
+sketch002 = startSketchOn(extrude001, face = seg02)
   |> startProfileAt([-100.54, 16.99], %)
   |> line(end = [0, 20.03])
   |> line(end = [62.61, 0], tag = $seg03)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 extrude002 = extrude(sketch002, length = 50)
-sketch004 = startSketchOn(extrude002, seg03)
+sketch004 = startSketchOn(extrude002, face = seg03)
   |> startProfileAt([57.07, 134.77], %)
   |> line(end = [-4.72, 22.84])
   |> line(end = [28.8, 6.71])
@@ -391,28 +391,22 @@ profile003 = startProfileAt([40.16, -120.48], sketch006)
     //     `extrude001 = extrude(sketch001, length = 50)`
     //   )
     //   await expect(u.codeLocator).toContainText(`sketch005 = startSketchOn({
-    //    plane = {
     //      origin = { x = 0, y = -50, z = 0 },
     //      xAxis = { x = 1, y = 0, z = 0 },
     //      yAxis = { x = 0, y = 0, z = 1 },
     //      zAxis = { x = 0, y = -1, z = 0 }
-    //    }
     //  })`)
     //   await expect(u.codeLocator).toContainText(`sketch003 = startSketchOn({
-    //    plane = {
     //      origin = { x = 116.53, y = 0, z = 163.25 },
     //      xAxis = { x = -0.81, y = 0, z = 0.58 },
     //      yAxis = { x = 0, y = -1, z = 0 },
     //      zAxis = { x = 0.58, y = 0, z = 0.81 }
-    //    }
     //  })`)
     //   await expect(u.codeLocator).toContainText(`sketch002 = startSketchOn({
-    //    plane = {
     //      origin = { x = -91.74, y = 0, z = 80.89 },
     //      xAxis = { x = -0.66, y = 0, z = -0.75 },
     //      yAxis = { x = 0, y = -1, z = 0 },
     //      zAxis = { x = -0.75, y = 0, z = 0.66 }
-    //    }
     //  })`)
 
     // DELETE SOLID 2D
@@ -463,8 +457,8 @@ yo = startProfileAt([4.83, 12.56], part001)
   |> line(end = [-13.02, 10.03])
   |> close()
 yoo = extrude(yo, length = 4)
-sketch002 = startSketchOn(yoo, seg02)
-sketch001 = startSketchOn(yoo, 'END')
+sketch002 = startSketchOn(yoo, face = seg02)
+sketch001 = startSketchOn(yoo, face = 'END')
 profile002 = startProfileAt([-11.08, 2.39], sketch002)
   |> line(end = [4.89, 0.9])
   |> line(end = [-0.61, -2.41])
@@ -535,7 +529,7 @@ part001 = startSketchOn(XZ)
         intersectTag = a,
         offset = 0
       }, %)
-  |> tangentialArcTo([13.14 + 0, 13.14], %)
+  |> tangentialArc(endAbsolute = [13.14 + 0, 13.14])
   |> close()
   |> extrude(length = 5 + 7)
     `
@@ -574,7 +568,7 @@ part001 = startSketchOn(XZ)
 
     const extrusionTopCap: Coords2d = [800, 240]
     const flatExtrusionFace: Coords2d = [960, 160]
-    const tangentialArcTo: Coords2d = [840, 160]
+    const tangentialArc: Coords2d = [840, 160]
     const close: Coords2d = [720, 200]
     const nothing: Coords2d = [600, 200]
     const closeEdge: Coords2d = [744, 233]
@@ -671,28 +665,28 @@ part001 = startSketchOn(XZ)
     )
 
     await checkCodeAtHoverPosition(
-      'tangentialArcTo',
-      tangentialArcTo,
-      'tangentialArcTo([13.14+0,13.14],%)extrude(length=5+7)',
-      'tangentialArcTo([13.14 + 0, 13.14], %)'
+      'tangentialArc',
+      tangentialArc,
+      'tangentialArc(endAbsolute=[13.14+0,13.14])extrude(length=5+7)',
+      'tangentialArc(endAbsolute = [13.14 + 0, 13.14])'
     )
     await checkCodeAtHoverPosition(
       'tangentialArcEdge',
       tangentialArcEdge,
-      `tangentialArcTo([13.14+0,13.14],%)`,
-      'tangentialArcTo([13.14 + 0, 13.14], %)'
+      `tangentialArc(endAbsolute=[13.14+0,13.14])`,
+      'tangentialArc(endAbsolute = [13.14 + 0, 13.14])'
     )
     await checkCodeAtHoverPosition(
       'tangentialArcOppositeEdge',
       tangentialArcOppositeEdge,
-      `tangentialArcTo([13.14+0,13.14],%)`,
-      'tangentialArcTo([13.14 + 0, 13.14], %)'
+      `tangentialArc(endAbsolute=[13.14+0,13.14])`,
+      'tangentialArc(endAbsolute = [13.14 + 0, 13.14])'
     )
     await checkCodeAtHoverPosition(
       'tangentialArcAdjacentEdge',
       tangentialArcAdjacentEdge,
-      `tangentialArcTo([13.14+0,13.14],%)`,
-      'tangentialArcTo([13.14 + 0, 13.14], %)'
+      `tangentialArc(endAbsolute=[13.14+0,13.14])`,
+      'tangentialArc(endAbsolute = [13.14 + 0, 13.14])'
     )
 
     await checkCodeAtHoverPosition(
@@ -893,7 +887,7 @@ part001 = startSketchOn(XZ)
     await expect(page.locator('.cm-activeLine')).toHaveText('')
 
     const codeToAdd = `${await u.codeLocator.allInnerTexts()}
-  sketch002 = startSketchOn(extrude001, $seg01)
+  sketch002 = startSketchOn(extrude001, face = $seg01)
     |> startProfileAt([-12.94, 6.6], %)
     |> line(end = [2.45, -0.2])
     |> line(end = [-2, -1.25])
@@ -940,7 +934,7 @@ part001 = startSketchOn(XZ)
       },
       {
         pos: [1107, 161],
-        expectedCode: 'tangentialArcTo([167.95, -28.85], %)',
+        expectedCode: 'tangentialArc(endAbsolute = [167.95, -28.85])',
       },
     ] as const
     await page.addInitScript(

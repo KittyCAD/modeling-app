@@ -117,7 +117,7 @@ sinkOffsetFront = 40
 sinkOffsetLeft = 350
 sinkSpacing = tableWidth - sinkWidth - (sinkOffsetLeft * 2)
 
-sinkPlaneOutside = startSketchOn(tableTopBody, 'START')
+sinkPlaneOutside = startSketchOn(tableTopBody, face = START)
 sinkBodyOutside = startProfileAt([-sinkOffsetLeft, sinkOffsetFront], sinkPlaneOutside)
   |> yLine(length = sinkLength)
   |> xLine(length = -sinkWidth)
@@ -127,7 +127,7 @@ sinkBodyOutside = startProfileAt([-sinkOffsetLeft, sinkOffsetFront], sinkPlaneOu
   |> patternLinear2d(axis = [-1, 0], instances = sinkCount, distance = sinkSpacing)
   |> extrude(length = sinkDepth)
 
-sinkPlaneInside = startSketchOn(tableTopBody, 'END')
+sinkPlaneInside = startSketchOn(tableTopBody, face = END)
 sinkBodyInside = startProfileAt([
        sinkOffsetLeft + metalThickness,
        sinkOffsetFront + metalThickness
@@ -184,15 +184,15 @@ handlePlane = startSketchOn(offsetPlane(XY, offset = handleHeightAboveTheFloor))
 
 handleProfilePath = startProfileAt([0 + handleOffset, 0], handlePlane)
   |> yLine(length = -handleLengthSegmentA)
-  |> tangentialArcTo([
+  |> tangentialArc(endAbsolute = [
        handleFillet + handleOffset,
        -handleDepth
-     ], %)
+     ])
   |> xLine(length = handleLengthSegmentB)
-  |> tangentialArcTo([
+  |> tangentialArc(endAbsolute = [
        handleOffset + handleWidth,
        -handleLengthSegmentA
-     ], %)
+     ])
   |> yLine(length = handleLengthSegmentA)
 handleSectionPlane = startSketchOn(XZ)
 handleProfileSection = circle(

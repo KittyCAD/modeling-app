@@ -14,9 +14,9 @@ import type { ExecState } from '@src/lang/wasm'
 import {
   errFromErrWithOutputs,
   execStateFromRust,
-  initPromise,
   mockExecStateFromRust,
 } from '@src/lang/wasm'
+import { initPromise } from '@src/lang/wasmUtils'
 import type ModelingAppFile from '@src/lib/modelingAppFile'
 import type { DefaultPlaneStr } from '@src/lib/planes'
 import { defaultPlaneStrToKey } from '@src/lib/planes'

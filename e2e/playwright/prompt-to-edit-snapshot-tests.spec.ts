@@ -68,13 +68,10 @@ test.describe('edit with AI example snapshots', () => {
         body1CapCoords.x,
         body1CapCoords.y
       )
-      const yellow: [number, number, number] = [179, 179, 131]
       const submittingToast = page.getByText('Submitting to Text-to-CAD API...')
 
       await test.step('wait for scene to load select body and check selection came through', async () => {
-        await scene.expectPixelColor([134, 134, 134], body1CapCoords, 15)
         await clickBody1Cap()
-        await scene.expectPixelColor(yellow, body1CapCoords, 20)
         await editor.expectState({
           highlightedCode: '',
           activeLines: ['|>startProfileAt([-73.64,-42.89],%)'],

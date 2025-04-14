@@ -12,6 +12,7 @@ import {
   getSweepFromSuspectedSweepSurface,
   getWallCodeRef,
 } from '@src/lang/std/artifactGraph'
+import { isTopLevelModule } from '@src/lang/util'
 import type { CallExpression, CallExpressionKw } from '@src/lang/wasm'
 import { defaultSourceRange } from '@src/lang/wasm'
 import type { DefaultPlaneStr } from '@src/lib/planes'
@@ -26,6 +27,8 @@ import {
 } from '@src/lib/singletons'
 import { err, reportRejection } from '@src/lib/trap'
 import { getModuleId } from '@src/lib/utils'
+import { engineStreamActor } from '@src/machines/appMachine'
+import { EngineStreamState } from '@src/machines/engineStreamMachine'
 import type {
   EdgeCutInfo,
   ExtrudeFacePlane,
@@ -37,8 +40,11 @@ export function useEngineConnectionSubscriptions() {
   const stateRef = useRef(state)
   stateRef.current = state
 
+  const engineStreamState = engineStreamActor.getSnapshot()
+
   useEffect(() => {
     if (!engineCommandManager) return
+    if (engineStreamState.value !== EngineStreamState.Playing) return
 
     const unSubHover = engineCommandManager.subscribeToUnreliable({
       // Note this is our hover logic, "highlight_set_entity" is the event that is fired when we hover over an entity
@@ -75,9 +81,12 @@ export function useEngineConnectionSubscriptions() {
       unSubHover()
       unSubClick()
     }
-  }, [engineCommandManager, context?.sketchEnginePathId])
+  }, [engineCommandManager, engineStreamState, context?.sketchEnginePathId])
 
   useEffect(() => {
+    if (!engineCommandManager) return
+    if (engineStreamState.value !== EngineStreamState.Playing) return
+
     const unSub = engineCommandManager.subscribeTo({
       event: 'select_with_point',
       callback: state.matches('Sketch no face')
@@ -190,8 +199,8 @@ export function useEngineConnectionSubscriptions() {
                 kclManager.artifactGraph
               )
               if (!err(extrusion)) {
-                const fileIndex = getModuleId(extrusion.codeRef.range)
-                if (fileIndex !== 0) {
+                if (!isTopLevelModule(extrusion.codeRef.range)) {
+                  const fileIndex = getModuleId(extrusion.codeRef.range)
                   const importDetails =
                     kclManager.execState.filenames[fileIndex]
                   if (!importDetails) {
@@ -341,5 +350,5 @@ export function useEngineConnectionSubscriptions() {
         : () => {},
     })
     return unSub
-  }, [state])
+  }, [engineCommandManager, engineStreamState, state])
 }

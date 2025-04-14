@@ -98,7 +98,7 @@ part001 = startSketchOn(XZ)
   intersectTag: a,
   offset: 0
 }, %)
-|> tangentialArcTo([13.14 + 0, 13.14], %)
+|> tangentialArc(endAbsolute = [13.14 + 0, 13.14])
 |> close()
 |> extrude(length = 5 + 7)
 `
@@ -140,7 +140,7 @@ box = startSketchOn(XY)
   |> close()
   |> extrude(length = 10)
 
-sketch001 = startSketchOn(box, revolveAxis)
+sketch001 = startSketchOn(box, face = revolveAxis)
   |> startProfileAt([5, 10], %)
   |> line(end = [0, -10])
   |> line(end = [2, 0])

@@ -131,22 +131,34 @@ description: Variables in memory after executing intersect_cubes.kcl
           "origin": {
             "x": 0.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
+            "z": 1.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "units": {
             "type": "Mm"
@@ -176,7 +188,7 @@ description: Variables in memory after executing intersect_cubes.kcl
           "type": "Mm"
         }
       },
-      "height": 10.0,
+      "height": 20.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
@@ -309,22 +321,34 @@ description: Variables in memory after executing intersect_cubes.kcl
           "origin": {
             "x": 0.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
+            "z": 1.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "units": {
             "type": "Mm"
@@ -354,7 +378,7 @@ description: Variables in memory after executing intersect_cubes.kcl
           "type": "Mm"
         }
       },
-      "height": 10.0,
+      "height": 20.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
@@ -408,12 +432,12 @@ description: Variables in memory after executing intersect_cubes.kcl
               "sourceRange": []
             },
             "from": [
-              -2.0,
+              2.0,
               -2.0
             ],
             "tag": null,
             "to": [
-              18.0,
+              12.0,
               -2.0
             ],
             "type": "ToPoint",
@@ -427,13 +451,13 @@ description: Variables in memory after executing intersect_cubes.kcl
               "sourceRange": []
             },
             "from": [
-              18.0,
+              12.0,
               -2.0
             ],
             "tag": null,
             "to": [
-              18.0,
-              18.0
+              12.0,
+              8.0
             ],
             "type": "ToPoint",
             "units": {
@@ -446,13 +470,13 @@ description: Variables in memory after executing intersect_cubes.kcl
               "sourceRange": []
             },
             "from": [
-              18.0,
-              18.0
+              12.0,
+              8.0
             ],
             "tag": null,
             "to": [
-              -2.0,
-              18.0
+              2.0,
+              8.0
             ],
             "type": "ToPoint",
             "units": {
@@ -465,12 +489,12 @@ description: Variables in memory after executing intersect_cubes.kcl
               "sourceRange": []
             },
             "from": [
-              -2.0,
-              18.0
+              2.0,
+              8.0
             ],
             "tag": null,
             "to": [
-              -2.0,
+              2.0,
               -2.0
             ],
             "type": "ToPoint",
@@ -487,22 +511,34 @@ description: Variables in memory after executing intersect_cubes.kcl
           "origin": {
             "x": 0.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
+            "z": 1.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "units": {
             "type": "Mm"
@@ -510,11 +546,11 @@ description: Variables in memory after executing intersect_cubes.kcl
         },
         "start": {
           "from": [
-            -2.0,
+            2.0,
             -2.0
           ],
           "to": [
-            -2.0,
+            2.0,
             -2.0
           ],
           "units": {

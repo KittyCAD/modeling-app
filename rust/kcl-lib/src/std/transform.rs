@@ -17,6 +17,8 @@ use crate::{
     std::Args,
 };
 
+use super::args::TyF64;
+
 /// Scale a solid or a sketch.
 pub async fn scale(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let objects = args.get_unlabeled_kw_arg_typed(
@@ -28,9 +30,9 @@ pub async fn scale(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
         ]),
         exec_state,
     )?;
-    let scale_x = args.get_kw_arg_opt("x")?;
-    let scale_y = args.get_kw_arg_opt("y")?;
-    let scale_z = args.get_kw_arg_opt("z")?;
+    let scale_x: Option<TyF64> = args.get_kw_arg_opt_typed("x", &RuntimeType::count(), exec_state)?;
+    let scale_y: Option<TyF64> = args.get_kw_arg_opt_typed("y", &RuntimeType::count(), exec_state)?;
+    let scale_z: Option<TyF64> = args.get_kw_arg_opt_typed("z", &RuntimeType::count(), exec_state)?;
     let global = args.get_kw_arg_opt("global")?;
 
     // Ensure at least one scale value is provided.
@@ -41,7 +43,16 @@ pub async fn scale(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
         }));
     }
 
-    let objects = inner_scale(objects, scale_x, scale_y, scale_z, global, exec_state, args).await?;
+    let objects = inner_scale(
+        objects,
+        scale_x.map(|t| t.n),
+        scale_y.map(|t| t.n),
+        scale_z.map(|t| t.n),
+        global,
+        exec_state,
+        args,
+    )
+    .await?;
     Ok(objects.into())
 }
 
@@ -67,15 +78,9 @@ pub async fn scale(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// sweepPath = startSketchOn('XZ')
 ///     |> startProfileAt([0.05, 0.05], %)
 ///     |> line(end = [0, 7])
-///     |> tangentialArc({
-///         offset: 90,
-///         radius: 5
-///     }, %)
+///     |> tangentialArc(angle = 90, radius = 5)
 ///     |> line(end = [-3, 0])
-///     |> tangentialArc({
-///         offset: -90,
-///         radius: 5
-///     }, %)
+///     |> tangentialArc(angle = -90, radius = 5)
 ///     |> line(end = [0, 7])
 ///
 /// // Create a hole for the pipe.
@@ -130,10 +135,7 @@ pub async fn scale(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// sketch002 = startSketchOn('YZ')
 /// sweepPath = startProfileAt([0, 0], sketch002)
 ///     |> yLine(length = 231.81)
-///     |> tangentialArc({
-///         radius = 80,
-///         offset = -90,
-///     }, %)
+///     |> tangentialArc(radius = 80, angle = -90)
 ///     |> xLine(length = 384.93)
 ///
 /// parts = sweep([rectangleSketch, circleSketch], path = sweepPath)
@@ -209,9 +211,9 @@ pub async fn translate(exec_state: &mut ExecState, args: Args) -> Result<KclValu
         ]),
         exec_state,
     )?;
-    let translate_x = args.get_kw_arg_opt("x")?;
-    let translate_y = args.get_kw_arg_opt("y")?;
-    let translate_z = args.get_kw_arg_opt("z")?;
+    let translate_x: Option<TyF64> = args.get_kw_arg_opt_typed("x", &RuntimeType::length(), exec_state)?;
+    let translate_y: Option<TyF64> = args.get_kw_arg_opt_typed("y", &RuntimeType::length(), exec_state)?;
+    let translate_z: Option<TyF64> = args.get_kw_arg_opt_typed("z", &RuntimeType::length(), exec_state)?;
     let global = args.get_kw_arg_opt("global")?;
 
     // Ensure at least one translation value is provided.
@@ -222,7 +224,16 @@ pub async fn translate(exec_state: &mut ExecState, args: Args) -> Result<KclValu
         }));
     }
 
-    let objects = inner_translate(objects, translate_x, translate_y, translate_z, global, exec_state, args).await?;
+    let objects = inner_translate(
+        objects,
+        translate_x.map(|t| t.n),
+        translate_y.map(|t| t.n),
+        translate_z.map(|t| t.n),
+        global,
+        exec_state,
+        args,
+    )
+    .await?;
     Ok(objects.into())
 }
 
@@ -241,15 +252,9 @@ pub async fn translate(exec_state: &mut ExecState, args: Args) -> Result<KclValu
 /// sweepPath = startSketchOn('XZ')
 ///     |> startProfileAt([0.05, 0.05], %)
 ///     |> line(end = [0, 7])
-///     |> tangentialArc({
-///         offset: 90,
-///         radius: 5
-///     }, %)
+///     |> tangentialArc(angle = 90, radius = 5)
 ///     |> line(end = [-3, 0])
-///     |> tangentialArc({
-///         offset: -90,
-///         radius: 5
-///     }, %)
+///     |> tangentialArc(angle = -90, radius = 5)
 ///     |> line(end = [0, 7])
 ///
 /// // Create a hole for the pipe.
@@ -318,10 +323,7 @@ pub async fn translate(exec_state: &mut ExecState, args: Args) -> Result<KclValu
 /// sketch002 = startSketchOn('YZ')
 /// sweepPath = startProfileAt([0, 0], sketch002)
 ///     |> yLine(length = 231.81)
-///     |> tangentialArc({
-///         radius = 80,
-///         offset = -90,
-///     }, %)
+///     |> tangentialArc(radius = 80, angle = -90)
 ///     |> xLine(length = 384.93)
 ///
 /// parts = sweep([rectangleSketch, circleSketch], path = sweepPath)
@@ -447,11 +449,11 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
         ]),
         exec_state,
     )?;
-    let roll = args.get_kw_arg_opt("roll")?;
-    let pitch = args.get_kw_arg_opt("pitch")?;
-    let yaw = args.get_kw_arg_opt("yaw")?;
-    let axis = args.get_kw_arg_opt("axis")?;
-    let angle = args.get_kw_arg_opt("angle")?;
+    let roll: Option<TyF64> = args.get_kw_arg_opt_typed("roll", &RuntimeType::angle(), exec_state)?;
+    let pitch: Option<TyF64> = args.get_kw_arg_opt_typed("pitch", &RuntimeType::angle(), exec_state)?;
+    let yaw: Option<TyF64> = args.get_kw_arg_opt_typed("yaw", &RuntimeType::angle(), exec_state)?;
+    let axis: Option<[TyF64; 3]> = args.get_kw_arg_opt_typed("axis", &RuntimeType::point3d(), exec_state)?;
+    let angle: Option<TyF64> = args.get_kw_arg_opt_typed("angle", &RuntimeType::angle(), exec_state)?;
     let global = args.get_kw_arg_opt("global")?;
 
     // Check if no rotation values are provided.
@@ -500,42 +502,53 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
     }
 
     // Validate the roll, pitch, and yaw values.
-    if let Some(roll) = roll {
-        if !(-360.0..=360.0).contains(&roll) {
+    if let Some(roll) = &roll {
+        if !(-360.0..=360.0).contains(&roll.n) {
             return Err(KclError::Semantic(KclErrorDetails {
-                message: format!("Expected roll to be between -360 and 360, found `{}`", roll),
+                message: format!("Expected roll to be between -360 and 360, found `{}`", roll.n),
                 source_ranges: vec![args.source_range],
             }));
         }
     }
-    if let Some(pitch) = pitch {
-        if !(-360.0..=360.0).contains(&pitch) {
+    if let Some(pitch) = &pitch {
+        if !(-360.0..=360.0).contains(&pitch.n) {
             return Err(KclError::Semantic(KclErrorDetails {
-                message: format!("Expected pitch to be between -360 and 360, found `{}`", pitch),
+                message: format!("Expected pitch to be between -360 and 360, found `{}`", pitch.n),
                 source_ranges: vec![args.source_range],
             }));
         }
     }
-    if let Some(yaw) = yaw {
-        if !(-360.0..=360.0).contains(&yaw) {
+    if let Some(yaw) = &yaw {
+        if !(-360.0..=360.0).contains(&yaw.n) {
             return Err(KclError::Semantic(KclErrorDetails {
-                message: format!("Expected yaw to be between -360 and 360, found `{}`", yaw),
+                message: format!("Expected yaw to be between -360 and 360, found `{}`", yaw.n),
                 source_ranges: vec![args.source_range],
             }));
         }
     }
 
     // Validate the axis and angle values.
-    if let Some(angle) = angle {
-        if !(-360.0..=360.0).contains(&angle) {
+    if let Some(angle) = &angle {
+        if !(-360.0..=360.0).contains(&angle.n) {
             return Err(KclError::Semantic(KclErrorDetails {
-                message: format!("Expected angle to be between -360 and 360, found `{}`", angle),
+                message: format!("Expected angle to be between -360 and 360, found `{}`", angle.n),
                 source_ranges: vec![args.source_range],
             }));
         }
     }
 
-    let objects = inner_rotate(objects, roll, pitch, yaw, axis, angle, global, exec_state, args).await?;
+    let objects = inner_rotate(
+        objects,
+        roll.map(|t| t.n),
+        pitch.map(|t| t.n),
+        yaw.map(|t| t.n),
+        axis.map(|p| [p[0].n, p[1].n, p[2].n]),
+        angle.map(|t| t.n),
+        global,
+        exec_state,
+        args,
+    )
+    .await?;
     Ok(objects.into())
 }
 
@@ -575,15 +588,9 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// sweepPath = startSketchOn('XZ')
 ///     |> startProfileAt([0.05, 0.05], %)
 ///     |> line(end = [0, 7])
-///     |> tangentialArc({
-///         offset: 90,
-///         radius: 5
-///     }, %)
+///     |> tangentialArc(angle = 90, radius = 5)
 ///     |> line(end = [-3, 0])
-///     |> tangentialArc({
-///         offset: -90,
-///         radius: 5
-///     }, %)
+///     |> tangentialArc(angle = -90, radius = 5)
 ///     |> line(end = [0, 7])
 ///
 /// // Create a hole for the pipe.
@@ -614,15 +621,9 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// sweepPath = startSketchOn('XZ')
 ///     |> startProfileAt([0.05, 0.05], %)
 ///     |> line(end = [0, 7])
-///     |> tangentialArc({
-///         offset: 90,
-///         radius: 5
-///     }, %)
+///     |> tangentialArc(angle = 90, radius = 5)
 ///     |> line(end = [-3, 0])
-///     |> tangentialArc({
-///         offset: -90,
-///         radius: 5
-///     }, %)
+///     |> tangentialArc(angle = -90, radius = 5)
 ///     |> line(end = [0, 7])
 ///
 /// // Create a hole for the pipe.
@@ -651,15 +652,9 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// sweepPath = startSketchOn('XZ')
 ///     |> startProfileAt([0.05, 0.05], %)
 ///     |> line(end = [0, 7])
-///     |> tangentialArc({
-///         offset: 90,
-///         radius: 5
-///     }, %)
+///     |> tangentialArc(angle = 90, radius = 5)
 ///     |> line(end = [-3, 0])
-///     |> tangentialArc({
-///         offset: -90,
-///         radius: 5
-///     }, %)
+///     |> tangentialArc(angle = -90, radius = 5)
 ///     |> line(end = [0, 7])
 ///
 /// // Create a hole for the pipe.
@@ -716,10 +711,7 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// sketch002 = startSketchOn('YZ')
 /// sweepPath = startProfileAt([0, 0], sketch002)
 ///     |> yLine(length = 231.81)
-///     |> tangentialArc({
-///         radius = 80,
-///         offset = -90,
-///     }, %)
+///     |> tangentialArc(radius = 80, angle = -90)
 ///     |> xLine(length = 384.93)
 ///
 /// parts = sweep([rectangleSketch, circleSketch], path = sweepPath)
@@ -846,15 +838,9 @@ mod tests {
     const PIPE: &str = r#"sweepPath = startSketchOn('XZ')
     |> startProfileAt([0.05, 0.05], %)
     |> line(end = [0, 7])
-    |> tangentialArc({
-        offset: 90,
-        radius: 5
-    }, %)
+    |> tangentialArc(angle = 90, radius = 5)
     |> line(end = [-3, 0])
-    |> tangentialArc({
-        offset: -90,
-        radius: 5
-    }, %)
+    |> tangentialArc(angle = -90, radius = 5)
     |> line(end = [0, 7])
 
 // Create a hole for the pipe.
