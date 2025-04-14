@@ -212,17 +212,26 @@ description: Variables in memory after executing kitt.kcl
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
+            "z": 1.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "solid": {
             "type": "Solid",
@@ -241,9 +250,9 @@ description: Variables in memory after executing kitt.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 759,
-                  "end": 765,
-                  "start": 759,
+                  "commentStart": 766,
+                  "end": 772,
+                  "start": 766,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -254,9 +263,9 @@ description: Variables in memory after executing kitt.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 810,
-                  "end": 816,
-                  "start": 810,
+                  "commentStart": 817,
+                  "end": 823,
+                  "start": 817,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -303,9 +312,9 @@ description: Variables in memory after executing kitt.kcl
                     31.0
                   ],
                   "tag": {
-                    "commentStart": 759,
-                    "end": 765,
-                    "start": 759,
+                    "commentStart": 766,
+                    "end": 772,
+                    "start": 766,
                     "type": "TagDeclarator",
                     "value": "seg01"
                   },
@@ -328,9 +337,9 @@ description: Variables in memory after executing kitt.kcl
                     31.0
                   ],
                   "tag": {
-                    "commentStart": 810,
-                    "end": 816,
-                    "start": 810,
+                    "commentStart": 817,
+                    "end": 823,
+                    "start": 817,
                     "type": "TagDeclarator",
                     "value": "seg02"
                   },
@@ -390,22 +399,34 @@ description: Variables in memory after executing kitt.kcl
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "yAxis": {
                   "x": 0.0,
                   "y": 0.0,
-                  "z": 1.0
+                  "z": 1.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "zAxis": {
                   "x": 0.0,
                   "y": -1.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "units": {
                   "type": "Mm"
@@ -632,17 +653,26 @@ description: Variables in memory after executing kitt.kcl
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
+            "z": 1.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "solid": {
             "type": "Solid",
@@ -661,9 +691,9 @@ description: Variables in memory after executing kitt.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 759,
-                  "end": 765,
-                  "start": 759,
+                  "commentStart": 766,
+                  "end": 772,
+                  "start": 766,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -674,9 +704,9 @@ description: Variables in memory after executing kitt.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 810,
-                  "end": 816,
-                  "start": 810,
+                  "commentStart": 817,
+                  "end": 823,
+                  "start": 817,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -723,9 +753,9 @@ description: Variables in memory after executing kitt.kcl
                     31.0
                   ],
                   "tag": {
-                    "commentStart": 759,
-                    "end": 765,
-                    "start": 759,
+                    "commentStart": 766,
+                    "end": 772,
+                    "start": 766,
                     "type": "TagDeclarator",
                     "value": "seg01"
                   },
@@ -748,9 +778,9 @@ description: Variables in memory after executing kitt.kcl
                     31.0
                   ],
                   "tag": {
-                    "commentStart": 810,
-                    "end": 816,
-                    "start": 810,
+                    "commentStart": 817,
+                    "end": 823,
+                    "start": 817,
                     "type": "TagDeclarator",
                     "value": "seg02"
                   },
@@ -810,22 +840,34 @@ description: Variables in memory after executing kitt.kcl
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "yAxis": {
                   "x": 0.0,
                   "y": 0.0,
-                  "z": 1.0
+                  "z": 1.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "zAxis": {
                   "x": 0.0,
                   "y": -1.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "units": {
                   "type": "Mm"
@@ -1052,17 +1094,26 @@ description: Variables in memory after executing kitt.kcl
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
+            "z": 1.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "solid": {
             "type": "Solid",
@@ -1081,9 +1132,9 @@ description: Variables in memory after executing kitt.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 759,
-                  "end": 765,
-                  "start": 759,
+                  "commentStart": 766,
+                  "end": 772,
+                  "start": 766,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -1094,9 +1145,9 @@ description: Variables in memory after executing kitt.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 810,
-                  "end": 816,
-                  "start": 810,
+                  "commentStart": 817,
+                  "end": 823,
+                  "start": 817,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -1143,9 +1194,9 @@ description: Variables in memory after executing kitt.kcl
                     31.0
                   ],
                   "tag": {
-                    "commentStart": 759,
-                    "end": 765,
-                    "start": 759,
+                    "commentStart": 766,
+                    "end": 772,
+                    "start": 766,
                     "type": "TagDeclarator",
                     "value": "seg01"
                   },
@@ -1168,9 +1219,9 @@ description: Variables in memory after executing kitt.kcl
                     31.0
                   ],
                   "tag": {
-                    "commentStart": 810,
-                    "end": 816,
-                    "start": 810,
+                    "commentStart": 817,
+                    "end": 823,
+                    "start": 817,
                     "type": "TagDeclarator",
                     "value": "seg02"
                   },
@@ -1230,22 +1281,34 @@ description: Variables in memory after executing kitt.kcl
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "yAxis": {
                   "x": 0.0,
                   "y": 0.0,
-                  "z": 1.0
+                  "z": 1.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "zAxis": {
                   "x": 0.0,
                   "y": -1.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "units": {
                   "type": "Mm"
@@ -1472,17 +1535,26 @@ description: Variables in memory after executing kitt.kcl
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
+            "z": 1.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "solid": {
             "type": "Solid",
@@ -1501,9 +1573,9 @@ description: Variables in memory after executing kitt.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 759,
-                  "end": 765,
-                  "start": 759,
+                  "commentStart": 766,
+                  "end": 772,
+                  "start": 766,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -1514,9 +1586,9 @@ description: Variables in memory after executing kitt.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 810,
-                  "end": 816,
-                  "start": 810,
+                  "commentStart": 817,
+                  "end": 823,
+                  "start": 817,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -1563,9 +1635,9 @@ description: Variables in memory after executing kitt.kcl
                     31.0
                   ],
                   "tag": {
-                    "commentStart": 759,
-                    "end": 765,
-                    "start": 759,
+                    "commentStart": 766,
+                    "end": 772,
+                    "start": 766,
                     "type": "TagDeclarator",
                     "value": "seg01"
                   },
@@ -1588,9 +1660,9 @@ description: Variables in memory after executing kitt.kcl
                     31.0
                   ],
                   "tag": {
-                    "commentStart": 810,
-                    "end": 816,
-                    "start": 810,
+                    "commentStart": 817,
+                    "end": 823,
+                    "start": 817,
                     "type": "TagDeclarator",
                     "value": "seg02"
                   },
@@ -1650,22 +1722,34 @@ description: Variables in memory after executing kitt.kcl
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "yAxis": {
                   "x": 0.0,
                   "y": 0.0,
-                  "z": 1.0
+                  "z": 1.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "zAxis": {
                   "x": 0.0,
                   "y": -1.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "units": {
                   "type": "Mm"
@@ -1892,17 +1976,26 @@ description: Variables in memory after executing kitt.kcl
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
+            "z": 1.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "solid": {
             "type": "Solid",
@@ -1921,9 +2014,9 @@ description: Variables in memory after executing kitt.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 759,
-                  "end": 765,
-                  "start": 759,
+                  "commentStart": 766,
+                  "end": 772,
+                  "start": 766,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -1934,9 +2027,9 @@ description: Variables in memory after executing kitt.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 810,
-                  "end": 816,
-                  "start": 810,
+                  "commentStart": 817,
+                  "end": 823,
+                  "start": 817,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -1983,9 +2076,9 @@ description: Variables in memory after executing kitt.kcl
                     31.0
                   ],
                   "tag": {
-                    "commentStart": 759,
-                    "end": 765,
-                    "start": 759,
+                    "commentStart": 766,
+                    "end": 772,
+                    "start": 766,
                     "type": "TagDeclarator",
                     "value": "seg01"
                   },
@@ -2008,9 +2101,9 @@ description: Variables in memory after executing kitt.kcl
                     31.0
                   ],
                   "tag": {
-                    "commentStart": 810,
-                    "end": 816,
-                    "start": 810,
+                    "commentStart": 817,
+                    "end": 823,
+                    "start": 817,
                     "type": "TagDeclarator",
                     "value": "seg02"
                   },
@@ -2070,22 +2163,34 @@ description: Variables in memory after executing kitt.kcl
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "yAxis": {
                   "x": 0.0,
                   "y": 0.0,
-                  "z": 1.0
+                  "z": 1.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "zAxis": {
                   "x": 0.0,
                   "y": -1.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "units": {
                   "type": "Mm"
@@ -2312,17 +2417,26 @@ description: Variables in memory after executing kitt.kcl
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
+            "z": 1.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "solid": {
             "type": "Solid",
@@ -2341,9 +2455,9 @@ description: Variables in memory after executing kitt.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 759,
-                  "end": 765,
-                  "start": 759,
+                  "commentStart": 766,
+                  "end": 772,
+                  "start": 766,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -2354,9 +2468,9 @@ description: Variables in memory after executing kitt.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 810,
-                  "end": 816,
-                  "start": 810,
+                  "commentStart": 817,
+                  "end": 823,
+                  "start": 817,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -2403,9 +2517,9 @@ description: Variables in memory after executing kitt.kcl
                     31.0
                   ],
                   "tag": {
-                    "commentStart": 759,
-                    "end": 765,
-                    "start": 759,
+                    "commentStart": 766,
+                    "end": 772,
+                    "start": 766,
                     "type": "TagDeclarator",
                     "value": "seg01"
                   },
@@ -2428,9 +2542,9 @@ description: Variables in memory after executing kitt.kcl
                     31.0
                   ],
                   "tag": {
-                    "commentStart": 810,
-                    "end": 816,
-                    "start": 810,
+                    "commentStart": 817,
+                    "end": 823,
+                    "start": 817,
                     "type": "TagDeclarator",
                     "value": "seg02"
                   },
@@ -2490,22 +2604,34 @@ description: Variables in memory after executing kitt.kcl
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "yAxis": {
                   "x": 0.0,
                   "y": 0.0,
-                  "z": 1.0
+                  "z": 1.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "zAxis": {
                   "x": 0.0,
                   "y": -1.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "units": {
                   "type": "Mm"
@@ -2732,17 +2858,26 @@ description: Variables in memory after executing kitt.kcl
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
+            "z": 1.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "solid": {
             "type": "Solid",
@@ -2761,9 +2896,9 @@ description: Variables in memory after executing kitt.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 759,
-                  "end": 765,
-                  "start": 759,
+                  "commentStart": 766,
+                  "end": 772,
+                  "start": 766,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -2774,9 +2909,9 @@ description: Variables in memory after executing kitt.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 810,
-                  "end": 816,
-                  "start": 810,
+                  "commentStart": 817,
+                  "end": 823,
+                  "start": 817,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -2823,9 +2958,9 @@ description: Variables in memory after executing kitt.kcl
                     31.0
                   ],
                   "tag": {
-                    "commentStart": 759,
-                    "end": 765,
-                    "start": 759,
+                    "commentStart": 766,
+                    "end": 772,
+                    "start": 766,
                     "type": "TagDeclarator",
                     "value": "seg01"
                   },
@@ -2848,9 +2983,9 @@ description: Variables in memory after executing kitt.kcl
                     31.0
                   ],
                   "tag": {
-                    "commentStart": 810,
-                    "end": 816,
-                    "start": 810,
+                    "commentStart": 817,
+                    "end": 823,
+                    "start": 817,
                     "type": "TagDeclarator",
                     "value": "seg02"
                   },
@@ -2910,22 +3045,34 @@ description: Variables in memory after executing kitt.kcl
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "yAxis": {
                   "x": 0.0,
                   "y": 0.0,
-                  "z": 1.0
+                  "z": 1.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "zAxis": {
                   "x": 0.0,
                   "y": -1.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "units": {
                   "type": "Mm"
@@ -3230,17 +3377,26 @@ description: Variables in memory after executing kitt.kcl
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
+            "z": 1.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "solid": {
             "type": "Solid",
@@ -3259,9 +3415,9 @@ description: Variables in memory after executing kitt.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 759,
-                  "end": 765,
-                  "start": 759,
+                  "commentStart": 766,
+                  "end": 772,
+                  "start": 766,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -3272,9 +3428,9 @@ description: Variables in memory after executing kitt.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 810,
-                  "end": 816,
-                  "start": 810,
+                  "commentStart": 817,
+                  "end": 823,
+                  "start": 817,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -3321,9 +3477,9 @@ description: Variables in memory after executing kitt.kcl
                     31.0
                   ],
                   "tag": {
-                    "commentStart": 759,
-                    "end": 765,
-                    "start": 759,
+                    "commentStart": 766,
+                    "end": 772,
+                    "start": 766,
                     "type": "TagDeclarator",
                     "value": "seg01"
                   },
@@ -3346,9 +3502,9 @@ description: Variables in memory after executing kitt.kcl
                     31.0
                   ],
                   "tag": {
-                    "commentStart": 810,
-                    "end": 816,
-                    "start": 810,
+                    "commentStart": 817,
+                    "end": 823,
+                    "start": 817,
                     "type": "TagDeclarator",
                     "value": "seg02"
                   },
@@ -3408,22 +3564,34 @@ description: Variables in memory after executing kitt.kcl
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "yAxis": {
                   "x": 0.0,
                   "y": 0.0,
-                  "z": 1.0
+                  "z": 1.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "zAxis": {
                   "x": 0.0,
                   "y": -1.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "units": {
                   "type": "Mm"
@@ -3650,17 +3818,26 @@ description: Variables in memory after executing kitt.kcl
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
+            "z": 1.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "solid": {
             "type": "Solid",
@@ -3679,9 +3856,9 @@ description: Variables in memory after executing kitt.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 759,
-                  "end": 765,
-                  "start": 759,
+                  "commentStart": 766,
+                  "end": 772,
+                  "start": 766,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -3692,9 +3869,9 @@ description: Variables in memory after executing kitt.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 810,
-                  "end": 816,
-                  "start": 810,
+                  "commentStart": 817,
+                  "end": 823,
+                  "start": 817,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -3741,9 +3918,9 @@ description: Variables in memory after executing kitt.kcl
                     31.0
                   ],
                   "tag": {
-                    "commentStart": 759,
-                    "end": 765,
-                    "start": 759,
+                    "commentStart": 766,
+                    "end": 772,
+                    "start": 766,
                     "type": "TagDeclarator",
                     "value": "seg01"
                   },
@@ -3766,9 +3943,9 @@ description: Variables in memory after executing kitt.kcl
                     31.0
                   ],
                   "tag": {
-                    "commentStart": 810,
-                    "end": 816,
-                    "start": 810,
+                    "commentStart": 817,
+                    "end": 823,
+                    "start": 817,
                     "type": "TagDeclarator",
                     "value": "seg02"
                   },
@@ -3828,22 +4005,34 @@ description: Variables in memory after executing kitt.kcl
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "yAxis": {
                   "x": 0.0,
                   "y": 0.0,
-                  "z": 1.0
+                  "z": 1.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "zAxis": {
                   "x": 0.0,
                   "y": -1.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "units": {
                   "type": "Mm"
@@ -3969,8 +4158,13 @@ description: Variables in memory after executing kitt.kcl
     "type": "Number",
     "value": 9.0,
     "ty": {
-      "type": "Known",
-      "type": "Count"
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
     }
   },
   "kitBellyButtonWidth": {
@@ -4057,9 +4251,9 @@ description: Variables in memory after executing kitt.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 759,
-            "end": 765,
-            "start": 759,
+            "commentStart": 766,
+            "end": 772,
+            "start": 766,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -4070,9 +4264,9 @@ description: Variables in memory after executing kitt.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 810,
-            "end": 816,
-            "start": 810,
+            "commentStart": 817,
+            "end": 823,
+            "start": 817,
             "type": "TagDeclarator",
             "value": "seg02"
           },
@@ -4119,9 +4313,9 @@ description: Variables in memory after executing kitt.kcl
               31.0
             ],
             "tag": {
-              "commentStart": 759,
-              "end": 765,
-              "start": 759,
+              "commentStart": 766,
+              "end": 772,
+              "start": 766,
               "type": "TagDeclarator",
               "value": "seg01"
             },
@@ -4144,9 +4338,9 @@ description: Variables in memory after executing kitt.kcl
               31.0
             ],
             "tag": {
-              "commentStart": 810,
-              "end": 816,
-              "start": 810,
+              "commentStart": 817,
+              "end": 823,
+              "start": 817,
               "type": "TagDeclarator",
               "value": "seg02"
             },
@@ -4206,22 +4400,34 @@ description: Variables in memory after executing kitt.kcl
           "origin": {
             "x": 0.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
+            "z": 1.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "units": {
             "type": "Mm"
@@ -4465,17 +4671,26 @@ description: Variables in memory after executing kitt.kcl
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
+            "z": 1.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "solid": {
             "type": "Solid",
@@ -4619,17 +4834,26 @@ description: Variables in memory after executing kitt.kcl
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "yAxis": {
                   "x": 0.0,
                   "y": 0.0,
-                  "z": 1.0
+                  "z": 1.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "zAxis": {
                   "x": 0.0,
                   "y": -1.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "solid": {
                   "type": "Solid",
@@ -4648,9 +4872,9 @@ description: Variables in memory after executing kitt.kcl
                       "id": "[uuid]",
                       "sourceRange": [],
                       "tag": {
-                        "commentStart": 759,
-                        "end": 765,
-                        "start": 759,
+                        "commentStart": 766,
+                        "end": 772,
+                        "start": 766,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -4661,9 +4885,9 @@ description: Variables in memory after executing kitt.kcl
                       "id": "[uuid]",
                       "sourceRange": [],
                       "tag": {
-                        "commentStart": 810,
-                        "end": 816,
-                        "start": 810,
+                        "commentStart": 817,
+                        "end": 823,
+                        "start": 817,
                         "type": "TagDeclarator",
                         "value": "seg02"
                       },
@@ -4710,9 +4934,9 @@ description: Variables in memory after executing kitt.kcl
                           31.0
                         ],
                         "tag": {
-                          "commentStart": 759,
-                          "end": 765,
-                          "start": 759,
+                          "commentStart": 766,
+                          "end": 772,
+                          "start": 766,
                           "type": "TagDeclarator",
                           "value": "seg01"
                         },
@@ -4735,9 +4959,9 @@ description: Variables in memory after executing kitt.kcl
                           31.0
                         ],
                         "tag": {
-                          "commentStart": 810,
-                          "end": 816,
-                          "start": 810,
+                          "commentStart": 817,
+                          "end": 823,
+                          "start": 817,
                           "type": "TagDeclarator",
                           "value": "seg02"
                         },
@@ -4797,22 +5021,34 @@ description: Variables in memory after executing kitt.kcl
                       "origin": {
                         "x": 0.0,
                         "y": 0.0,
-                        "z": 0.0
+                        "z": 0.0,
+                        "units": {
+                          "type": "Mm"
+                        }
                       },
                       "xAxis": {
                         "x": 1.0,
                         "y": 0.0,
-                        "z": 0.0
+                        "z": 0.0,
+                        "units": {
+                          "type": "Mm"
+                        }
                       },
                       "yAxis": {
                         "x": 0.0,
                         "y": 0.0,
-                        "z": 1.0
+                        "z": 1.0,
+                        "units": {
+                          "type": "Mm"
+                        }
                       },
                       "zAxis": {
                         "x": 0.0,
                         "y": -1.0,
-                        "z": 0.0
+                        "z": 0.0,
+                        "units": {
+                          "type": "Mm"
+                        }
                       },
                       "units": {
                         "type": "Mm"
@@ -5074,17 +5310,26 @@ description: Variables in memory after executing kitt.kcl
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
+            "z": 1.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "solid": {
             "type": "Solid",
@@ -5228,17 +5473,26 @@ description: Variables in memory after executing kitt.kcl
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "yAxis": {
                   "x": 0.0,
                   "y": 0.0,
-                  "z": 1.0
+                  "z": 1.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "zAxis": {
                   "x": 0.0,
                   "y": -1.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "solid": {
                   "type": "Solid",
@@ -5257,9 +5511,9 @@ description: Variables in memory after executing kitt.kcl
                       "id": "[uuid]",
                       "sourceRange": [],
                       "tag": {
-                        "commentStart": 759,
-                        "end": 765,
-                        "start": 759,
+                        "commentStart": 766,
+                        "end": 772,
+                        "start": 766,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -5270,9 +5524,9 @@ description: Variables in memory after executing kitt.kcl
                       "id": "[uuid]",
                       "sourceRange": [],
                       "tag": {
-                        "commentStart": 810,
-                        "end": 816,
-                        "start": 810,
+                        "commentStart": 817,
+                        "end": 823,
+                        "start": 817,
                         "type": "TagDeclarator",
                         "value": "seg02"
                       },
@@ -5319,9 +5573,9 @@ description: Variables in memory after executing kitt.kcl
                           31.0
                         ],
                         "tag": {
-                          "commentStart": 759,
-                          "end": 765,
-                          "start": 759,
+                          "commentStart": 766,
+                          "end": 772,
+                          "start": 766,
                           "type": "TagDeclarator",
                           "value": "seg01"
                         },
@@ -5344,9 +5598,9 @@ description: Variables in memory after executing kitt.kcl
                           31.0
                         ],
                         "tag": {
-                          "commentStart": 810,
-                          "end": 816,
-                          "start": 810,
+                          "commentStart": 817,
+                          "end": 823,
+                          "start": 817,
                           "type": "TagDeclarator",
                           "value": "seg02"
                         },
@@ -5406,22 +5660,34 @@ description: Variables in memory after executing kitt.kcl
                       "origin": {
                         "x": 0.0,
                         "y": 0.0,
-                        "z": 0.0
+                        "z": 0.0,
+                        "units": {
+                          "type": "Mm"
+                        }
                       },
                       "xAxis": {
                         "x": 1.0,
                         "y": 0.0,
-                        "z": 0.0
+                        "z": 0.0,
+                        "units": {
+                          "type": "Mm"
+                        }
                       },
                       "yAxis": {
                         "x": 0.0,
                         "y": 0.0,
-                        "z": 1.0
+                        "z": 1.0,
+                        "units": {
+                          "type": "Mm"
+                        }
                       },
                       "zAxis": {
                         "x": 0.0,
                         "y": -1.0,
-                        "z": 0.0
+                        "z": 0.0,
+                        "units": {
+                          "type": "Mm"
+                        }
                       },
                       "units": {
                         "type": "Mm"
@@ -5683,17 +5949,26 @@ description: Variables in memory after executing kitt.kcl
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
+            "z": 1.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "solid": {
             "type": "Solid",
@@ -5837,17 +6112,26 @@ description: Variables in memory after executing kitt.kcl
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "yAxis": {
                   "x": 0.0,
                   "y": 0.0,
-                  "z": 1.0
+                  "z": 1.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "zAxis": {
                   "x": 0.0,
                   "y": -1.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "solid": {
                   "type": "Solid",
@@ -5866,9 +6150,9 @@ description: Variables in memory after executing kitt.kcl
                       "id": "[uuid]",
                       "sourceRange": [],
                       "tag": {
-                        "commentStart": 759,
-                        "end": 765,
-                        "start": 759,
+                        "commentStart": 766,
+                        "end": 772,
+                        "start": 766,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -5879,9 +6163,9 @@ description: Variables in memory after executing kitt.kcl
                       "id": "[uuid]",
                       "sourceRange": [],
                       "tag": {
-                        "commentStart": 810,
-                        "end": 816,
-                        "start": 810,
+                        "commentStart": 817,
+                        "end": 823,
+                        "start": 817,
                         "type": "TagDeclarator",
                         "value": "seg02"
                       },
@@ -5928,9 +6212,9 @@ description: Variables in memory after executing kitt.kcl
                           31.0
                         ],
                         "tag": {
-                          "commentStart": 759,
-                          "end": 765,
-                          "start": 759,
+                          "commentStart": 766,
+                          "end": 772,
+                          "start": 766,
                           "type": "TagDeclarator",
                           "value": "seg01"
                         },
@@ -5953,9 +6237,9 @@ description: Variables in memory after executing kitt.kcl
                           31.0
                         ],
                         "tag": {
-                          "commentStart": 810,
-                          "end": 816,
-                          "start": 810,
+                          "commentStart": 817,
+                          "end": 823,
+                          "start": 817,
                           "type": "TagDeclarator",
                           "value": "seg02"
                         },
@@ -6015,22 +6299,34 @@ description: Variables in memory after executing kitt.kcl
                       "origin": {
                         "x": 0.0,
                         "y": 0.0,
-                        "z": 0.0
+                        "z": 0.0,
+                        "units": {
+                          "type": "Mm"
+                        }
                       },
                       "xAxis": {
                         "x": 1.0,
                         "y": 0.0,
-                        "z": 0.0
+                        "z": 0.0,
+                        "units": {
+                          "type": "Mm"
+                        }
                       },
                       "yAxis": {
                         "x": 0.0,
                         "y": 0.0,
-                        "z": 1.0
+                        "z": 1.0,
+                        "units": {
+                          "type": "Mm"
+                        }
                       },
                       "zAxis": {
                         "x": 0.0,
                         "y": -1.0,
-                        "z": 0.0
+                        "z": 0.0,
+                        "units": {
+                          "type": "Mm"
+                        }
                       },
                       "units": {
                         "type": "Mm"
@@ -6659,17 +6955,26 @@ description: Variables in memory after executing kitt.kcl
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
+            "z": 1.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "solid": {
             "type": "Solid",
@@ -6813,17 +7118,26 @@ description: Variables in memory after executing kitt.kcl
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "yAxis": {
                   "x": 0.0,
                   "y": 0.0,
-                  "z": 1.0
+                  "z": 1.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "zAxis": {
                   "x": 0.0,
                   "y": -1.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "solid": {
                   "type": "Solid",
@@ -6842,9 +7156,9 @@ description: Variables in memory after executing kitt.kcl
                       "id": "[uuid]",
                       "sourceRange": [],
                       "tag": {
-                        "commentStart": 759,
-                        "end": 765,
-                        "start": 759,
+                        "commentStart": 766,
+                        "end": 772,
+                        "start": 766,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -6855,9 +7169,9 @@ description: Variables in memory after executing kitt.kcl
                       "id": "[uuid]",
                       "sourceRange": [],
                       "tag": {
-                        "commentStart": 810,
-                        "end": 816,
-                        "start": 810,
+                        "commentStart": 817,
+                        "end": 823,
+                        "start": 817,
                         "type": "TagDeclarator",
                         "value": "seg02"
                       },
@@ -6904,9 +7218,9 @@ description: Variables in memory after executing kitt.kcl
                           31.0
                         ],
                         "tag": {
-                          "commentStart": 759,
-                          "end": 765,
-                          "start": 759,
+                          "commentStart": 766,
+                          "end": 772,
+                          "start": 766,
                           "type": "TagDeclarator",
                           "value": "seg01"
                         },
@@ -6929,9 +7243,9 @@ description: Variables in memory after executing kitt.kcl
                           31.0
                         ],
                         "tag": {
-                          "commentStart": 810,
-                          "end": 816,
-                          "start": 810,
+                          "commentStart": 817,
+                          "end": 823,
+                          "start": 817,
                           "type": "TagDeclarator",
                           "value": "seg02"
                         },
@@ -6991,22 +7305,34 @@ description: Variables in memory after executing kitt.kcl
                       "origin": {
                         "x": 0.0,
                         "y": 0.0,
-                        "z": 0.0
+                        "z": 0.0,
+                        "units": {
+                          "type": "Mm"
+                        }
                       },
                       "xAxis": {
                         "x": 1.0,
                         "y": 0.0,
-                        "z": 0.0
+                        "z": 0.0,
+                        "units": {
+                          "type": "Mm"
+                        }
                       },
                       "yAxis": {
                         "x": 0.0,
                         "y": 0.0,
-                        "z": 1.0
+                        "z": 1.0,
+                        "units": {
+                          "type": "Mm"
+                        }
                       },
                       "zAxis": {
                         "x": 0.0,
                         "y": -1.0,
-                        "z": 0.0
+                        "z": 0.0,
+                        "units": {
+                          "type": "Mm"
+                        }
                       },
                       "units": {
                         "type": "Mm"
@@ -7320,17 +7646,26 @@ description: Variables in memory after executing kitt.kcl
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
+            "z": 1.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "solid": {
             "type": "Solid",
@@ -7474,17 +7809,26 @@ description: Variables in memory after executing kitt.kcl
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "yAxis": {
                   "x": 0.0,
                   "y": 0.0,
-                  "z": 1.0
+                  "z": 1.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "zAxis": {
                   "x": 0.0,
                   "y": -1.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "solid": {
                   "type": "Solid",
@@ -7503,9 +7847,9 @@ description: Variables in memory after executing kitt.kcl
                       "id": "[uuid]",
                       "sourceRange": [],
                       "tag": {
-                        "commentStart": 759,
-                        "end": 765,
-                        "start": 759,
+                        "commentStart": 766,
+                        "end": 772,
+                        "start": 766,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -7516,9 +7860,9 @@ description: Variables in memory after executing kitt.kcl
                       "id": "[uuid]",
                       "sourceRange": [],
                       "tag": {
-                        "commentStart": 810,
-                        "end": 816,
-                        "start": 810,
+                        "commentStart": 817,
+                        "end": 823,
+                        "start": 817,
                         "type": "TagDeclarator",
                         "value": "seg02"
                       },
@@ -7565,9 +7909,9 @@ description: Variables in memory after executing kitt.kcl
                           31.0
                         ],
                         "tag": {
-                          "commentStart": 759,
-                          "end": 765,
-                          "start": 759,
+                          "commentStart": 766,
+                          "end": 772,
+                          "start": 766,
                           "type": "TagDeclarator",
                           "value": "seg01"
                         },
@@ -7590,9 +7934,9 @@ description: Variables in memory after executing kitt.kcl
                           31.0
                         ],
                         "tag": {
-                          "commentStart": 810,
-                          "end": 816,
-                          "start": 810,
+                          "commentStart": 817,
+                          "end": 823,
+                          "start": 817,
                           "type": "TagDeclarator",
                           "value": "seg02"
                         },
@@ -7652,22 +7996,34 @@ description: Variables in memory after executing kitt.kcl
                       "origin": {
                         "x": 0.0,
                         "y": 0.0,
-                        "z": 0.0
+                        "z": 0.0,
+                        "units": {
+                          "type": "Mm"
+                        }
                       },
                       "xAxis": {
                         "x": 1.0,
                         "y": 0.0,
-                        "z": 0.0
+                        "z": 0.0,
+                        "units": {
+                          "type": "Mm"
+                        }
                       },
                       "yAxis": {
                         "x": 0.0,
                         "y": 0.0,
-                        "z": 1.0
+                        "z": 1.0,
+                        "units": {
+                          "type": "Mm"
+                        }
                       },
                       "zAxis": {
                         "x": 0.0,
                         "y": -1.0,
-                        "z": 0.0
+                        "z": 0.0,
+                        "units": {
+                          "type": "Mm"
+                        }
                       },
                       "units": {
                         "type": "Mm"
@@ -7929,17 +8285,26 @@ description: Variables in memory after executing kitt.kcl
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
+            "z": 1.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "solid": {
             "type": "Solid",
@@ -8083,17 +8448,26 @@ description: Variables in memory after executing kitt.kcl
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "yAxis": {
                   "x": 0.0,
                   "y": 0.0,
-                  "z": 1.0
+                  "z": 1.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "zAxis": {
                   "x": 0.0,
                   "y": -1.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "solid": {
                   "type": "Solid",
@@ -8112,9 +8486,9 @@ description: Variables in memory after executing kitt.kcl
                       "id": "[uuid]",
                       "sourceRange": [],
                       "tag": {
-                        "commentStart": 759,
-                        "end": 765,
-                        "start": 759,
+                        "commentStart": 766,
+                        "end": 772,
+                        "start": 766,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -8125,9 +8499,9 @@ description: Variables in memory after executing kitt.kcl
                       "id": "[uuid]",
                       "sourceRange": [],
                       "tag": {
-                        "commentStart": 810,
-                        "end": 816,
-                        "start": 810,
+                        "commentStart": 817,
+                        "end": 823,
+                        "start": 817,
                         "type": "TagDeclarator",
                         "value": "seg02"
                       },
@@ -8174,9 +8548,9 @@ description: Variables in memory after executing kitt.kcl
                           31.0
                         ],
                         "tag": {
-                          "commentStart": 759,
-                          "end": 765,
-                          "start": 759,
+                          "commentStart": 766,
+                          "end": 772,
+                          "start": 766,
                           "type": "TagDeclarator",
                           "value": "seg01"
                         },
@@ -8199,9 +8573,9 @@ description: Variables in memory after executing kitt.kcl
                           31.0
                         ],
                         "tag": {
-                          "commentStart": 810,
-                          "end": 816,
-                          "start": 810,
+                          "commentStart": 817,
+                          "end": 823,
+                          "start": 817,
                           "type": "TagDeclarator",
                           "value": "seg02"
                         },
@@ -8261,22 +8635,34 @@ description: Variables in memory after executing kitt.kcl
                       "origin": {
                         "x": 0.0,
                         "y": 0.0,
-                        "z": 0.0
+                        "z": 0.0,
+                        "units": {
+                          "type": "Mm"
+                        }
                       },
                       "xAxis": {
                         "x": 1.0,
                         "y": 0.0,
-                        "z": 0.0
+                        "z": 0.0,
+                        "units": {
+                          "type": "Mm"
+                        }
                       },
                       "yAxis": {
                         "x": 0.0,
                         "y": 0.0,
-                        "z": 1.0
+                        "z": 1.0,
+                        "units": {
+                          "type": "Mm"
+                        }
                       },
                       "zAxis": {
                         "x": 0.0,
                         "y": -1.0,
-                        "z": 0.0
+                        "z": 0.0,
+                        "units": {
+                          "type": "Mm"
+                        }
                       },
                       "units": {
                         "type": "Mm"
@@ -8538,17 +8924,26 @@ description: Variables in memory after executing kitt.kcl
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
+            "z": 1.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "solid": {
             "type": "Solid",
@@ -8692,17 +9087,26 @@ description: Variables in memory after executing kitt.kcl
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "yAxis": {
                   "x": 0.0,
                   "y": 0.0,
-                  "z": 1.0
+                  "z": 1.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "zAxis": {
                   "x": 0.0,
                   "y": -1.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "solid": {
                   "type": "Solid",
@@ -8721,9 +9125,9 @@ description: Variables in memory after executing kitt.kcl
                       "id": "[uuid]",
                       "sourceRange": [],
                       "tag": {
-                        "commentStart": 759,
-                        "end": 765,
-                        "start": 759,
+                        "commentStart": 766,
+                        "end": 772,
+                        "start": 766,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -8734,9 +9138,9 @@ description: Variables in memory after executing kitt.kcl
                       "id": "[uuid]",
                       "sourceRange": [],
                       "tag": {
-                        "commentStart": 810,
-                        "end": 816,
-                        "start": 810,
+                        "commentStart": 817,
+                        "end": 823,
+                        "start": 817,
                         "type": "TagDeclarator",
                         "value": "seg02"
                       },
@@ -8783,9 +9187,9 @@ description: Variables in memory after executing kitt.kcl
                           31.0
                         ],
                         "tag": {
-                          "commentStart": 759,
-                          "end": 765,
-                          "start": 759,
+                          "commentStart": 766,
+                          "end": 772,
+                          "start": 766,
                           "type": "TagDeclarator",
                           "value": "seg01"
                         },
@@ -8808,9 +9212,9 @@ description: Variables in memory after executing kitt.kcl
                           31.0
                         ],
                         "tag": {
-                          "commentStart": 810,
-                          "end": 816,
-                          "start": 810,
+                          "commentStart": 817,
+                          "end": 823,
+                          "start": 817,
                           "type": "TagDeclarator",
                           "value": "seg02"
                         },
@@ -8870,22 +9274,34 @@ description: Variables in memory after executing kitt.kcl
                       "origin": {
                         "x": 0.0,
                         "y": 0.0,
-                        "z": 0.0
+                        "z": 0.0,
+                        "units": {
+                          "type": "Mm"
+                        }
                       },
                       "xAxis": {
                         "x": 1.0,
                         "y": 0.0,
-                        "z": 0.0
+                        "z": 0.0,
+                        "units": {
+                          "type": "Mm"
+                        }
                       },
                       "yAxis": {
                         "x": 0.0,
                         "y": 0.0,
-                        "z": 1.0
+                        "z": 1.0,
+                        "units": {
+                          "type": "Mm"
+                        }
                       },
                       "zAxis": {
                         "x": 0.0,
                         "y": -1.0,
-                        "z": 0.0
+                        "z": 0.0,
+                        "units": {
+                          "type": "Mm"
+                        }
                       },
                       "units": {
                         "type": "Mm"
@@ -9046,8 +9462,13 @@ description: Variables in memory after executing kitt.kcl
     "type": "Number",
     "value": 11.0,
     "ty": {
-      "type": "Known",
-      "type": "Count"
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
     }
   },
   "kitFloppyWidth": {
@@ -9207,17 +9628,26 @@ description: Variables in memory after executing kitt.kcl
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
+            "z": 1.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "solid": {
             "type": "Solid",
@@ -9236,9 +9666,9 @@ description: Variables in memory after executing kitt.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 759,
-                  "end": 765,
-                  "start": 759,
+                  "commentStart": 766,
+                  "end": 772,
+                  "start": 766,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -9249,9 +9679,9 @@ description: Variables in memory after executing kitt.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 810,
-                  "end": 816,
-                  "start": 810,
+                  "commentStart": 817,
+                  "end": 823,
+                  "start": 817,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -9298,9 +9728,9 @@ description: Variables in memory after executing kitt.kcl
                     31.0
                   ],
                   "tag": {
-                    "commentStart": 759,
-                    "end": 765,
-                    "start": 759,
+                    "commentStart": 766,
+                    "end": 772,
+                    "start": 766,
                     "type": "TagDeclarator",
                     "value": "seg01"
                   },
@@ -9323,9 +9753,9 @@ description: Variables in memory after executing kitt.kcl
                     31.0
                   ],
                   "tag": {
-                    "commentStart": 810,
-                    "end": 816,
-                    "start": 810,
+                    "commentStart": 817,
+                    "end": 823,
+                    "start": 817,
                     "type": "TagDeclarator",
                     "value": "seg02"
                   },
@@ -9385,22 +9815,34 @@ description: Variables in memory after executing kitt.kcl
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "yAxis": {
                   "x": 0.0,
                   "y": 0.0,
-                  "z": 1.0
+                  "z": 1.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "zAxis": {
                   "x": 0.0,
                   "y": -1.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "units": {
                   "type": "Mm"
@@ -9692,17 +10134,26 @@ description: Variables in memory after executing kitt.kcl
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
+            "z": 1.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "solid": {
             "type": "Solid",
@@ -9721,9 +10172,9 @@ description: Variables in memory after executing kitt.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 759,
-                  "end": 765,
-                  "start": 759,
+                  "commentStart": 766,
+                  "end": 772,
+                  "start": 766,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -9734,9 +10185,9 @@ description: Variables in memory after executing kitt.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 810,
-                  "end": 816,
-                  "start": 810,
+                  "commentStart": 817,
+                  "end": 823,
+                  "start": 817,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -9783,9 +10234,9 @@ description: Variables in memory after executing kitt.kcl
                     31.0
                   ],
                   "tag": {
-                    "commentStart": 759,
-                    "end": 765,
-                    "start": 759,
+                    "commentStart": 766,
+                    "end": 772,
+                    "start": 766,
                     "type": "TagDeclarator",
                     "value": "seg01"
                   },
@@ -9808,9 +10259,9 @@ description: Variables in memory after executing kitt.kcl
                     31.0
                   ],
                   "tag": {
-                    "commentStart": 810,
-                    "end": 816,
-                    "start": 810,
+                    "commentStart": 817,
+                    "end": 823,
+                    "start": 817,
                     "type": "TagDeclarator",
                     "value": "seg02"
                   },
@@ -9870,22 +10321,34 @@ description: Variables in memory after executing kitt.kcl
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "yAxis": {
                   "x": 0.0,
                   "y": 0.0,
-                  "z": 1.0
+                  "z": 1.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "zAxis": {
                   "x": 0.0,
                   "y": -1.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "units": {
                   "type": "Mm"
@@ -10112,17 +10575,26 @@ description: Variables in memory after executing kitt.kcl
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
+            "z": 1.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "solid": {
             "type": "Solid",
@@ -10474,17 +10946,26 @@ description: Variables in memory after executing kitt.kcl
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "yAxis": {
                   "x": 0.0,
                   "y": 0.0,
-                  "z": 1.0
+                  "z": 1.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "zAxis": {
                   "x": 0.0,
                   "y": -1.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "solid": {
                   "type": "Solid",
@@ -10628,17 +11109,26 @@ description: Variables in memory after executing kitt.kcl
                       "xAxis": {
                         "x": 1.0,
                         "y": 0.0,
-                        "z": 0.0
+                        "z": 0.0,
+                        "units": {
+                          "type": "Mm"
+                        }
                       },
                       "yAxis": {
                         "x": 0.0,
                         "y": 0.0,
-                        "z": 1.0
+                        "z": 1.0,
+                        "units": {
+                          "type": "Mm"
+                        }
                       },
                       "zAxis": {
                         "x": 0.0,
                         "y": -1.0,
-                        "z": 0.0
+                        "z": 0.0,
+                        "units": {
+                          "type": "Mm"
+                        }
                       },
                       "solid": {
                         "type": "Solid",
@@ -10657,9 +11147,9 @@ description: Variables in memory after executing kitt.kcl
                             "id": "[uuid]",
                             "sourceRange": [],
                             "tag": {
-                              "commentStart": 759,
-                              "end": 765,
-                              "start": 759,
+                              "commentStart": 766,
+                              "end": 772,
+                              "start": 766,
                               "type": "TagDeclarator",
                               "value": "seg01"
                             },
@@ -10670,9 +11160,9 @@ description: Variables in memory after executing kitt.kcl
                             "id": "[uuid]",
                             "sourceRange": [],
                             "tag": {
-                              "commentStart": 810,
-                              "end": 816,
-                              "start": 810,
+                              "commentStart": 817,
+                              "end": 823,
+                              "start": 817,
                               "type": "TagDeclarator",
                               "value": "seg02"
                             },
@@ -10719,9 +11209,9 @@ description: Variables in memory after executing kitt.kcl
                                 31.0
                               ],
                               "tag": {
-                                "commentStart": 759,
-                                "end": 765,
-                                "start": 759,
+                                "commentStart": 766,
+                                "end": 772,
+                                "start": 766,
                                 "type": "TagDeclarator",
                                 "value": "seg01"
                               },
@@ -10744,9 +11234,9 @@ description: Variables in memory after executing kitt.kcl
                                 31.0
                               ],
                               "tag": {
-                                "commentStart": 810,
-                                "end": 816,
-                                "start": 810,
+                                "commentStart": 817,
+                                "end": 823,
+                                "start": 817,
                                 "type": "TagDeclarator",
                                 "value": "seg02"
                               },
@@ -10806,22 +11296,34 @@ description: Variables in memory after executing kitt.kcl
                             "origin": {
                               "x": 0.0,
                               "y": 0.0,
-                              "z": 0.0
+                              "z": 0.0,
+                              "units": {
+                                "type": "Mm"
+                              }
                             },
                             "xAxis": {
                               "x": 1.0,
                               "y": 0.0,
-                              "z": 0.0
+                              "z": 0.0,
+                              "units": {
+                                "type": "Mm"
+                              }
                             },
                             "yAxis": {
                               "x": 0.0,
                               "y": 0.0,
-                              "z": 1.0
+                              "z": 1.0,
+                              "units": {
+                                "type": "Mm"
+                              }
                             },
                             "zAxis": {
                               "x": 0.0,
                               "y": -1.0,
-                              "z": 0.0
+                              "z": 0.0,
+                              "units": {
+                                "type": "Mm"
+                              }
                             },
                             "units": {
                               "type": "Mm"
@@ -11118,17 +11620,26 @@ description: Variables in memory after executing kitt.kcl
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
+            "z": 1.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "solid": {
             "type": "Solid",
@@ -11480,17 +11991,26 @@ description: Variables in memory after executing kitt.kcl
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "yAxis": {
                   "x": 0.0,
                   "y": 0.0,
-                  "z": 1.0
+                  "z": 1.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "zAxis": {
                   "x": 0.0,
                   "y": -1.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "solid": {
                   "type": "Solid",
@@ -11634,17 +12154,26 @@ description: Variables in memory after executing kitt.kcl
                       "xAxis": {
                         "x": 1.0,
                         "y": 0.0,
-                        "z": 0.0
+                        "z": 0.0,
+                        "units": {
+                          "type": "Mm"
+                        }
                       },
                       "yAxis": {
                         "x": 0.0,
                         "y": 0.0,
-                        "z": 1.0
+                        "z": 1.0,
+                        "units": {
+                          "type": "Mm"
+                        }
                       },
                       "zAxis": {
                         "x": 0.0,
                         "y": -1.0,
-                        "z": 0.0
+                        "z": 0.0,
+                        "units": {
+                          "type": "Mm"
+                        }
                       },
                       "solid": {
                         "type": "Solid",
@@ -11663,9 +12192,9 @@ description: Variables in memory after executing kitt.kcl
                             "id": "[uuid]",
                             "sourceRange": [],
                             "tag": {
-                              "commentStart": 759,
-                              "end": 765,
-                              "start": 759,
+                              "commentStart": 766,
+                              "end": 772,
+                              "start": 766,
                               "type": "TagDeclarator",
                               "value": "seg01"
                             },
@@ -11676,9 +12205,9 @@ description: Variables in memory after executing kitt.kcl
                             "id": "[uuid]",
                             "sourceRange": [],
                             "tag": {
-                              "commentStart": 810,
-                              "end": 816,
-                              "start": 810,
+                              "commentStart": 817,
+                              "end": 823,
+                              "start": 817,
                               "type": "TagDeclarator",
                               "value": "seg02"
                             },
@@ -11725,9 +12254,9 @@ description: Variables in memory after executing kitt.kcl
                                 31.0
                               ],
                               "tag": {
-                                "commentStart": 759,
-                                "end": 765,
-                                "start": 759,
+                                "commentStart": 766,
+                                "end": 772,
+                                "start": 766,
                                 "type": "TagDeclarator",
                                 "value": "seg01"
                               },
@@ -11750,9 +12279,9 @@ description: Variables in memory after executing kitt.kcl
                                 31.0
                               ],
                               "tag": {
-                                "commentStart": 810,
-                                "end": 816,
-                                "start": 810,
+                                "commentStart": 817,
+                                "end": 823,
+                                "start": 817,
                                 "type": "TagDeclarator",
                                 "value": "seg02"
                               },
@@ -11812,22 +12341,34 @@ description: Variables in memory after executing kitt.kcl
                             "origin": {
                               "x": 0.0,
                               "y": 0.0,
-                              "z": 0.0
+                              "z": 0.0,
+                              "units": {
+                                "type": "Mm"
+                              }
                             },
                             "xAxis": {
                               "x": 1.0,
                               "y": 0.0,
-                              "z": 0.0
+                              "z": 0.0,
+                              "units": {
+                                "type": "Mm"
+                              }
                             },
                             "yAxis": {
                               "x": 0.0,
                               "y": 0.0,
-                              "z": 1.0
+                              "z": 1.0,
+                              "units": {
+                                "type": "Mm"
+                              }
                             },
                             "zAxis": {
                               "x": 0.0,
                               "y": -1.0,
-                              "z": 0.0
+                              "z": 0.0,
+                              "units": {
+                                "type": "Mm"
+                              }
                             },
                             "units": {
                               "type": "Mm"
@@ -12124,17 +12665,26 @@ description: Variables in memory after executing kitt.kcl
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
+            "z": 1.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "solid": {
             "type": "Solid",
@@ -12486,17 +13036,26 @@ description: Variables in memory after executing kitt.kcl
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "yAxis": {
                   "x": 0.0,
                   "y": 0.0,
-                  "z": 1.0
+                  "z": 1.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "zAxis": {
                   "x": 0.0,
                   "y": -1.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "solid": {
                   "type": "Solid",
@@ -12640,17 +13199,26 @@ description: Variables in memory after executing kitt.kcl
                       "xAxis": {
                         "x": 1.0,
                         "y": 0.0,
-                        "z": 0.0
+                        "z": 0.0,
+                        "units": {
+                          "type": "Mm"
+                        }
                       },
                       "yAxis": {
                         "x": 0.0,
                         "y": 0.0,
-                        "z": 1.0
+                        "z": 1.0,
+                        "units": {
+                          "type": "Mm"
+                        }
                       },
                       "zAxis": {
                         "x": 0.0,
                         "y": -1.0,
-                        "z": 0.0
+                        "z": 0.0,
+                        "units": {
+                          "type": "Mm"
+                        }
                       },
                       "solid": {
                         "type": "Solid",
@@ -12669,9 +13237,9 @@ description: Variables in memory after executing kitt.kcl
                             "id": "[uuid]",
                             "sourceRange": [],
                             "tag": {
-                              "commentStart": 759,
-                              "end": 765,
-                              "start": 759,
+                              "commentStart": 766,
+                              "end": 772,
+                              "start": 766,
                               "type": "TagDeclarator",
                               "value": "seg01"
                             },
@@ -12682,9 +13250,9 @@ description: Variables in memory after executing kitt.kcl
                             "id": "[uuid]",
                             "sourceRange": [],
                             "tag": {
-                              "commentStart": 810,
-                              "end": 816,
-                              "start": 810,
+                              "commentStart": 817,
+                              "end": 823,
+                              "start": 817,
                               "type": "TagDeclarator",
                               "value": "seg02"
                             },
@@ -12731,9 +13299,9 @@ description: Variables in memory after executing kitt.kcl
                                 31.0
                               ],
                               "tag": {
-                                "commentStart": 759,
-                                "end": 765,
-                                "start": 759,
+                                "commentStart": 766,
+                                "end": 772,
+                                "start": 766,
                                 "type": "TagDeclarator",
                                 "value": "seg01"
                               },
@@ -12756,9 +13324,9 @@ description: Variables in memory after executing kitt.kcl
                                 31.0
                               ],
                               "tag": {
-                                "commentStart": 810,
-                                "end": 816,
-                                "start": 810,
+                                "commentStart": 817,
+                                "end": 823,
+                                "start": 817,
                                 "type": "TagDeclarator",
                                 "value": "seg02"
                               },
@@ -12818,22 +13386,34 @@ description: Variables in memory after executing kitt.kcl
                             "origin": {
                               "x": 0.0,
                               "y": 0.0,
-                              "z": 0.0
+                              "z": 0.0,
+                              "units": {
+                                "type": "Mm"
+                              }
                             },
                             "xAxis": {
                               "x": 1.0,
                               "y": 0.0,
-                              "z": 0.0
+                              "z": 0.0,
+                              "units": {
+                                "type": "Mm"
+                              }
                             },
                             "yAxis": {
                               "x": 0.0,
                               "y": 0.0,
-                              "z": 1.0
+                              "z": 1.0,
+                              "units": {
+                                "type": "Mm"
+                              }
                             },
                             "zAxis": {
                               "x": 0.0,
                               "y": -1.0,
-                              "z": 0.0
+                              "z": 0.0,
+                              "units": {
+                                "type": "Mm"
+                              }
                             },
                             "units": {
                               "type": "Mm"
@@ -13130,22 +13710,34 @@ description: Variables in memory after executing kitt.kcl
           "origin": {
             "x": 0.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
+            "z": 1.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "units": {
             "type": "Mm"
@@ -13343,17 +13935,26 @@ description: Variables in memory after executing kitt.kcl
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
+            "z": 1.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "solid": {
             "type": "Solid",
@@ -13705,17 +14306,26 @@ description: Variables in memory after executing kitt.kcl
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "yAxis": {
                   "x": 0.0,
                   "y": 0.0,
-                  "z": 1.0
+                  "z": 1.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "zAxis": {
                   "x": 0.0,
                   "y": -1.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "solid": {
                   "type": "Solid",
@@ -13859,17 +14469,26 @@ description: Variables in memory after executing kitt.kcl
                       "xAxis": {
                         "x": 1.0,
                         "y": 0.0,
-                        "z": 0.0
+                        "z": 0.0,
+                        "units": {
+                          "type": "Mm"
+                        }
                       },
                       "yAxis": {
                         "x": 0.0,
                         "y": 0.0,
-                        "z": 1.0
+                        "z": 1.0,
+                        "units": {
+                          "type": "Mm"
+                        }
                       },
                       "zAxis": {
                         "x": 0.0,
                         "y": -1.0,
-                        "z": 0.0
+                        "z": 0.0,
+                        "units": {
+                          "type": "Mm"
+                        }
                       },
                       "solid": {
                         "type": "Solid",
@@ -13888,9 +14507,9 @@ description: Variables in memory after executing kitt.kcl
                             "id": "[uuid]",
                             "sourceRange": [],
                             "tag": {
-                              "commentStart": 759,
-                              "end": 765,
-                              "start": 759,
+                              "commentStart": 766,
+                              "end": 772,
+                              "start": 766,
                               "type": "TagDeclarator",
                               "value": "seg01"
                             },
@@ -13901,9 +14520,9 @@ description: Variables in memory after executing kitt.kcl
                             "id": "[uuid]",
                             "sourceRange": [],
                             "tag": {
-                              "commentStart": 810,
-                              "end": 816,
-                              "start": 810,
+                              "commentStart": 817,
+                              "end": 823,
+                              "start": 817,
                               "type": "TagDeclarator",
                               "value": "seg02"
                             },
@@ -13950,9 +14569,9 @@ description: Variables in memory after executing kitt.kcl
                                 31.0
                               ],
                               "tag": {
-                                "commentStart": 759,
-                                "end": 765,
-                                "start": 759,
+                                "commentStart": 766,
+                                "end": 772,
+                                "start": 766,
                                 "type": "TagDeclarator",
                                 "value": "seg01"
                               },
@@ -13975,9 +14594,9 @@ description: Variables in memory after executing kitt.kcl
                                 31.0
                               ],
                               "tag": {
-                                "commentStart": 810,
-                                "end": 816,
-                                "start": 810,
+                                "commentStart": 817,
+                                "end": 823,
+                                "start": 817,
                                 "type": "TagDeclarator",
                                 "value": "seg02"
                               },
@@ -14037,22 +14656,34 @@ description: Variables in memory after executing kitt.kcl
                             "origin": {
                               "x": 0.0,
                               "y": 0.0,
-                              "z": 0.0
+                              "z": 0.0,
+                              "units": {
+                                "type": "Mm"
+                              }
                             },
                             "xAxis": {
                               "x": 1.0,
                               "y": 0.0,
-                              "z": 0.0
+                              "z": 0.0,
+                              "units": {
+                                "type": "Mm"
+                              }
                             },
                             "yAxis": {
                               "x": 0.0,
                               "y": 0.0,
-                              "z": 1.0
+                              "z": 1.0,
+                              "units": {
+                                "type": "Mm"
+                              }
                             },
                             "zAxis": {
                               "x": 0.0,
                               "y": -1.0,
-                              "z": 0.0
+                              "z": 0.0,
+                              "units": {
+                                "type": "Mm"
+                              }
                             },
                             "units": {
                               "type": "Mm"
@@ -14349,17 +14980,26 @@ description: Variables in memory after executing kitt.kcl
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
+            "z": 1.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "solid": {
             "type": "Solid",
@@ -14711,17 +15351,26 @@ description: Variables in memory after executing kitt.kcl
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "yAxis": {
                   "x": 0.0,
                   "y": 0.0,
-                  "z": 1.0
+                  "z": 1.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "zAxis": {
                   "x": 0.0,
                   "y": -1.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "solid": {
                   "type": "Solid",
@@ -14865,17 +15514,26 @@ description: Variables in memory after executing kitt.kcl
                       "xAxis": {
                         "x": 1.0,
                         "y": 0.0,
-                        "z": 0.0
+                        "z": 0.0,
+                        "units": {
+                          "type": "Mm"
+                        }
                       },
                       "yAxis": {
                         "x": 0.0,
                         "y": 0.0,
-                        "z": 1.0
+                        "z": 1.0,
+                        "units": {
+                          "type": "Mm"
+                        }
                       },
                       "zAxis": {
                         "x": 0.0,
                         "y": -1.0,
-                        "z": 0.0
+                        "z": 0.0,
+                        "units": {
+                          "type": "Mm"
+                        }
                       },
                       "solid": {
                         "type": "Solid",
@@ -14894,9 +15552,9 @@ description: Variables in memory after executing kitt.kcl
                             "id": "[uuid]",
                             "sourceRange": [],
                             "tag": {
-                              "commentStart": 759,
-                              "end": 765,
-                              "start": 759,
+                              "commentStart": 766,
+                              "end": 772,
+                              "start": 766,
                               "type": "TagDeclarator",
                               "value": "seg01"
                             },
@@ -14907,9 +15565,9 @@ description: Variables in memory after executing kitt.kcl
                             "id": "[uuid]",
                             "sourceRange": [],
                             "tag": {
-                              "commentStart": 810,
-                              "end": 816,
-                              "start": 810,
+                              "commentStart": 817,
+                              "end": 823,
+                              "start": 817,
                               "type": "TagDeclarator",
                               "value": "seg02"
                             },
@@ -14956,9 +15614,9 @@ description: Variables in memory after executing kitt.kcl
                                 31.0
                               ],
                               "tag": {
-                                "commentStart": 759,
-                                "end": 765,
-                                "start": 759,
+                                "commentStart": 766,
+                                "end": 772,
+                                "start": 766,
                                 "type": "TagDeclarator",
                                 "value": "seg01"
                               },
@@ -14981,9 +15639,9 @@ description: Variables in memory after executing kitt.kcl
                                 31.0
                               ],
                               "tag": {
-                                "commentStart": 810,
-                                "end": 816,
-                                "start": 810,
+                                "commentStart": 817,
+                                "end": 823,
+                                "start": 817,
                                 "type": "TagDeclarator",
                                 "value": "seg02"
                               },
@@ -15043,22 +15701,34 @@ description: Variables in memory after executing kitt.kcl
                             "origin": {
                               "x": 0.0,
                               "y": 0.0,
-                              "z": 0.0
+                              "z": 0.0,
+                              "units": {
+                                "type": "Mm"
+                              }
                             },
                             "xAxis": {
                               "x": 1.0,
                               "y": 0.0,
-                              "z": 0.0
+                              "z": 0.0,
+                              "units": {
+                                "type": "Mm"
+                              }
                             },
                             "yAxis": {
                               "x": 0.0,
                               "y": 0.0,
-                              "z": 1.0
+                              "z": 1.0,
+                              "units": {
+                                "type": "Mm"
+                              }
                             },
                             "zAxis": {
                               "x": 0.0,
                               "y": -1.0,
-                              "z": 0.0
+                              "z": 0.0,
+                              "units": {
+                                "type": "Mm"
+                              }
                             },
                             "units": {
                               "type": "Mm"
@@ -15381,17 +16051,26 @@ description: Variables in memory after executing kitt.kcl
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
+            "z": 1.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "solid": {
             "type": "Solid",
@@ -15743,17 +16422,26 @@ description: Variables in memory after executing kitt.kcl
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "yAxis": {
                   "x": 0.0,
                   "y": 0.0,
-                  "z": 1.0
+                  "z": 1.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "zAxis": {
                   "x": 0.0,
                   "y": -1.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "solid": {
                   "type": "Solid",
@@ -15897,17 +16585,26 @@ description: Variables in memory after executing kitt.kcl
                       "xAxis": {
                         "x": 1.0,
                         "y": 0.0,
-                        "z": 0.0
+                        "z": 0.0,
+                        "units": {
+                          "type": "Mm"
+                        }
                       },
                       "yAxis": {
                         "x": 0.0,
                         "y": 0.0,
-                        "z": 1.0
+                        "z": 1.0,
+                        "units": {
+                          "type": "Mm"
+                        }
                       },
                       "zAxis": {
                         "x": 0.0,
                         "y": -1.0,
-                        "z": 0.0
+                        "z": 0.0,
+                        "units": {
+                          "type": "Mm"
+                        }
                       },
                       "solid": {
                         "type": "Solid",
@@ -15926,9 +16623,9 @@ description: Variables in memory after executing kitt.kcl
                             "id": "[uuid]",
                             "sourceRange": [],
                             "tag": {
-                              "commentStart": 759,
-                              "end": 765,
-                              "start": 759,
+                              "commentStart": 766,
+                              "end": 772,
+                              "start": 766,
                               "type": "TagDeclarator",
                               "value": "seg01"
                             },
@@ -15939,9 +16636,9 @@ description: Variables in memory after executing kitt.kcl
                             "id": "[uuid]",
                             "sourceRange": [],
                             "tag": {
-                              "commentStart": 810,
-                              "end": 816,
-                              "start": 810,
+                              "commentStart": 817,
+                              "end": 823,
+                              "start": 817,
                               "type": "TagDeclarator",
                               "value": "seg02"
                             },
@@ -15988,9 +16685,9 @@ description: Variables in memory after executing kitt.kcl
                                 31.0
                               ],
                               "tag": {
-                                "commentStart": 759,
-                                "end": 765,
-                                "start": 759,
+                                "commentStart": 766,
+                                "end": 772,
+                                "start": 766,
                                 "type": "TagDeclarator",
                                 "value": "seg01"
                               },
@@ -16013,9 +16710,9 @@ description: Variables in memory after executing kitt.kcl
                                 31.0
                               ],
                               "tag": {
-                                "commentStart": 810,
-                                "end": 816,
-                                "start": 810,
+                                "commentStart": 817,
+                                "end": 823,
+                                "start": 817,
                                 "type": "TagDeclarator",
                                 "value": "seg02"
                               },
@@ -16075,22 +16772,34 @@ description: Variables in memory after executing kitt.kcl
                             "origin": {
                               "x": 0.0,
                               "y": 0.0,
-                              "z": 0.0
+                              "z": 0.0,
+                              "units": {
+                                "type": "Mm"
+                              }
                             },
                             "xAxis": {
                               "x": 1.0,
                               "y": 0.0,
-                              "z": 0.0
+                              "z": 0.0,
+                              "units": {
+                                "type": "Mm"
+                              }
                             },
                             "yAxis": {
                               "x": 0.0,
                               "y": 0.0,
-                              "z": 1.0
+                              "z": 1.0,
+                              "units": {
+                                "type": "Mm"
+                              }
                             },
                             "zAxis": {
                               "x": 0.0,
                               "y": -1.0,
-                              "z": 0.0
+                              "z": 0.0,
+                              "units": {
+                                "type": "Mm"
+                              }
                             },
                             "units": {
                               "type": "Mm"
@@ -16387,17 +17096,26 @@ description: Variables in memory after executing kitt.kcl
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
+            "z": 1.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "solid": {
             "type": "Solid",
@@ -16749,17 +17467,26 @@ description: Variables in memory after executing kitt.kcl
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "yAxis": {
                   "x": 0.0,
                   "y": 0.0,
-                  "z": 1.0
+                  "z": 1.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "zAxis": {
                   "x": 0.0,
                   "y": -1.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "solid": {
                   "type": "Solid",
@@ -16903,17 +17630,26 @@ description: Variables in memory after executing kitt.kcl
                       "xAxis": {
                         "x": 1.0,
                         "y": 0.0,
-                        "z": 0.0
+                        "z": 0.0,
+                        "units": {
+                          "type": "Mm"
+                        }
                       },
                       "yAxis": {
                         "x": 0.0,
                         "y": 0.0,
-                        "z": 1.0
+                        "z": 1.0,
+                        "units": {
+                          "type": "Mm"
+                        }
                       },
                       "zAxis": {
                         "x": 0.0,
                         "y": -1.0,
-                        "z": 0.0
+                        "z": 0.0,
+                        "units": {
+                          "type": "Mm"
+                        }
                       },
                       "solid": {
                         "type": "Solid",
@@ -16932,9 +17668,9 @@ description: Variables in memory after executing kitt.kcl
                             "id": "[uuid]",
                             "sourceRange": [],
                             "tag": {
-                              "commentStart": 759,
-                              "end": 765,
-                              "start": 759,
+                              "commentStart": 766,
+                              "end": 772,
+                              "start": 766,
                               "type": "TagDeclarator",
                               "value": "seg01"
                             },
@@ -16945,9 +17681,9 @@ description: Variables in memory after executing kitt.kcl
                             "id": "[uuid]",
                             "sourceRange": [],
                             "tag": {
-                              "commentStart": 810,
-                              "end": 816,
-                              "start": 810,
+                              "commentStart": 817,
+                              "end": 823,
+                              "start": 817,
                               "type": "TagDeclarator",
                               "value": "seg02"
                             },
@@ -16994,9 +17730,9 @@ description: Variables in memory after executing kitt.kcl
                                 31.0
                               ],
                               "tag": {
-                                "commentStart": 759,
-                                "end": 765,
-                                "start": 759,
+                                "commentStart": 766,
+                                "end": 772,
+                                "start": 766,
                                 "type": "TagDeclarator",
                                 "value": "seg01"
                               },
@@ -17019,9 +17755,9 @@ description: Variables in memory after executing kitt.kcl
                                 31.0
                               ],
                               "tag": {
-                                "commentStart": 810,
-                                "end": 816,
-                                "start": 810,
+                                "commentStart": 817,
+                                "end": 823,
+                                "start": 817,
                                 "type": "TagDeclarator",
                                 "value": "seg02"
                               },
@@ -17081,22 +17817,34 @@ description: Variables in memory after executing kitt.kcl
                             "origin": {
                               "x": 0.0,
                               "y": 0.0,
-                              "z": 0.0
+                              "z": 0.0,
+                              "units": {
+                                "type": "Mm"
+                              }
                             },
                             "xAxis": {
                               "x": 1.0,
                               "y": 0.0,
-                              "z": 0.0
+                              "z": 0.0,
+                              "units": {
+                                "type": "Mm"
+                              }
                             },
                             "yAxis": {
                               "x": 0.0,
                               "y": 0.0,
-                              "z": 1.0
+                              "z": 1.0,
+                              "units": {
+                                "type": "Mm"
+                              }
                             },
                             "zAxis": {
                               "x": 0.0,
                               "y": -1.0,
-                              "z": 0.0
+                              "z": 0.0,
+                              "units": {
+                                "type": "Mm"
+                              }
                             },
                             "units": {
                               "type": "Mm"
@@ -17601,17 +18349,26 @@ description: Variables in memory after executing kitt.kcl
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
+            "z": 1.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "solid": {
             "type": "Solid",
@@ -17963,17 +18720,26 @@ description: Variables in memory after executing kitt.kcl
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "yAxis": {
                   "x": 0.0,
                   "y": 0.0,
-                  "z": 1.0
+                  "z": 1.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "zAxis": {
                   "x": 0.0,
                   "y": -1.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "solid": {
                   "type": "Solid",
@@ -18117,17 +18883,26 @@ description: Variables in memory after executing kitt.kcl
                       "xAxis": {
                         "x": 1.0,
                         "y": 0.0,
-                        "z": 0.0
+                        "z": 0.0,
+                        "units": {
+                          "type": "Mm"
+                        }
                       },
                       "yAxis": {
                         "x": 0.0,
                         "y": 0.0,
-                        "z": 1.0
+                        "z": 1.0,
+                        "units": {
+                          "type": "Mm"
+                        }
                       },
                       "zAxis": {
                         "x": 0.0,
                         "y": -1.0,
-                        "z": 0.0
+                        "z": 0.0,
+                        "units": {
+                          "type": "Mm"
+                        }
                       },
                       "solid": {
                         "type": "Solid",
@@ -18146,9 +18921,9 @@ description: Variables in memory after executing kitt.kcl
                             "id": "[uuid]",
                             "sourceRange": [],
                             "tag": {
-                              "commentStart": 759,
-                              "end": 765,
-                              "start": 759,
+                              "commentStart": 766,
+                              "end": 772,
+                              "start": 766,
                               "type": "TagDeclarator",
                               "value": "seg01"
                             },
@@ -18159,9 +18934,9 @@ description: Variables in memory after executing kitt.kcl
                             "id": "[uuid]",
                             "sourceRange": [],
                             "tag": {
-                              "commentStart": 810,
-                              "end": 816,
-                              "start": 810,
+                              "commentStart": 817,
+                              "end": 823,
+                              "start": 817,
                               "type": "TagDeclarator",
                               "value": "seg02"
                             },
@@ -18208,9 +18983,9 @@ description: Variables in memory after executing kitt.kcl
                                 31.0
                               ],
                               "tag": {
-                                "commentStart": 759,
-                                "end": 765,
-                                "start": 759,
+                                "commentStart": 766,
+                                "end": 772,
+                                "start": 766,
                                 "type": "TagDeclarator",
                                 "value": "seg01"
                               },
@@ -18233,9 +19008,9 @@ description: Variables in memory after executing kitt.kcl
                                 31.0
                               ],
                               "tag": {
-                                "commentStart": 810,
-                                "end": 816,
-                                "start": 810,
+                                "commentStart": 817,
+                                "end": 823,
+                                "start": 817,
                                 "type": "TagDeclarator",
                                 "value": "seg02"
                               },
@@ -18295,22 +19070,34 @@ description: Variables in memory after executing kitt.kcl
                             "origin": {
                               "x": 0.0,
                               "y": 0.0,
-                              "z": 0.0
+                              "z": 0.0,
+                              "units": {
+                                "type": "Mm"
+                              }
                             },
                             "xAxis": {
                               "x": 1.0,
                               "y": 0.0,
-                              "z": 0.0
+                              "z": 0.0,
+                              "units": {
+                                "type": "Mm"
+                              }
                             },
                             "yAxis": {
                               "x": 0.0,
                               "y": 0.0,
-                              "z": 1.0
+                              "z": 1.0,
+                              "units": {
+                                "type": "Mm"
+                              }
                             },
                             "zAxis": {
                               "x": 0.0,
                               "y": -1.0,
-                              "z": 0.0
+                              "z": 0.0,
+                              "units": {
+                                "type": "Mm"
+                              }
                             },
                             "units": {
                               "type": "Mm"
@@ -18620,17 +19407,26 @@ description: Variables in memory after executing kitt.kcl
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
+            "z": 1.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "solid": {
             "type": "Solid",
@@ -18649,9 +19445,9 @@ description: Variables in memory after executing kitt.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 759,
-                  "end": 765,
-                  "start": 759,
+                  "commentStart": 766,
+                  "end": 772,
+                  "start": 766,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -18662,9 +19458,9 @@ description: Variables in memory after executing kitt.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 810,
-                  "end": 816,
-                  "start": 810,
+                  "commentStart": 817,
+                  "end": 823,
+                  "start": 817,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -18711,9 +19507,9 @@ description: Variables in memory after executing kitt.kcl
                     31.0
                   ],
                   "tag": {
-                    "commentStart": 759,
-                    "end": 765,
-                    "start": 759,
+                    "commentStart": 766,
+                    "end": 772,
+                    "start": 766,
                     "type": "TagDeclarator",
                     "value": "seg01"
                   },
@@ -18736,9 +19532,9 @@ description: Variables in memory after executing kitt.kcl
                     31.0
                   ],
                   "tag": {
-                    "commentStart": 810,
-                    "end": 816,
-                    "start": 810,
+                    "commentStart": 817,
+                    "end": 823,
+                    "start": 817,
                     "type": "TagDeclarator",
                     "value": "seg02"
                   },
@@ -18798,22 +19594,34 @@ description: Variables in memory after executing kitt.kcl
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "yAxis": {
                   "x": 0.0,
                   "y": 0.0,
-                  "z": 1.0
+                  "z": 1.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "zAxis": {
                   "x": 0.0,
                   "y": -1.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "units": {
                   "type": "Mm"
@@ -19040,17 +19848,26 @@ description: Variables in memory after executing kitt.kcl
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
+            "z": 1.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "solid": {
             "type": "Solid",
@@ -19402,17 +20219,26 @@ description: Variables in memory after executing kitt.kcl
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "yAxis": {
                   "x": 0.0,
                   "y": 0.0,
-                  "z": 1.0
+                  "z": 1.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "zAxis": {
                   "x": 0.0,
                   "y": -1.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "solid": {
                   "type": "Solid",
@@ -19556,17 +20382,26 @@ description: Variables in memory after executing kitt.kcl
                       "xAxis": {
                         "x": 1.0,
                         "y": 0.0,
-                        "z": 0.0
+                        "z": 0.0,
+                        "units": {
+                          "type": "Mm"
+                        }
                       },
                       "yAxis": {
                         "x": 0.0,
                         "y": 0.0,
-                        "z": 1.0
+                        "z": 1.0,
+                        "units": {
+                          "type": "Mm"
+                        }
                       },
                       "zAxis": {
                         "x": 0.0,
                         "y": -1.0,
-                        "z": 0.0
+                        "z": 0.0,
+                        "units": {
+                          "type": "Mm"
+                        }
                       },
                       "solid": {
                         "type": "Solid",
@@ -19585,9 +20420,9 @@ description: Variables in memory after executing kitt.kcl
                             "id": "[uuid]",
                             "sourceRange": [],
                             "tag": {
-                              "commentStart": 759,
-                              "end": 765,
-                              "start": 759,
+                              "commentStart": 766,
+                              "end": 772,
+                              "start": 766,
                               "type": "TagDeclarator",
                               "value": "seg01"
                             },
@@ -19598,9 +20433,9 @@ description: Variables in memory after executing kitt.kcl
                             "id": "[uuid]",
                             "sourceRange": [],
                             "tag": {
-                              "commentStart": 810,
-                              "end": 816,
-                              "start": 810,
+                              "commentStart": 817,
+                              "end": 823,
+                              "start": 817,
                               "type": "TagDeclarator",
                               "value": "seg02"
                             },
@@ -19647,9 +20482,9 @@ description: Variables in memory after executing kitt.kcl
                                 31.0
                               ],
                               "tag": {
-                                "commentStart": 759,
-                                "end": 765,
-                                "start": 759,
+                                "commentStart": 766,
+                                "end": 772,
+                                "start": 766,
                                 "type": "TagDeclarator",
                                 "value": "seg01"
                               },
@@ -19672,9 +20507,9 @@ description: Variables in memory after executing kitt.kcl
                                 31.0
                               ],
                               "tag": {
-                                "commentStart": 810,
-                                "end": 816,
-                                "start": 810,
+                                "commentStart": 817,
+                                "end": 823,
+                                "start": 817,
                                 "type": "TagDeclarator",
                                 "value": "seg02"
                               },
@@ -19734,22 +20569,34 @@ description: Variables in memory after executing kitt.kcl
                             "origin": {
                               "x": 0.0,
                               "y": 0.0,
-                              "z": 0.0
+                              "z": 0.0,
+                              "units": {
+                                "type": "Mm"
+                              }
                             },
                             "xAxis": {
                               "x": 1.0,
                               "y": 0.0,
-                              "z": 0.0
+                              "z": 0.0,
+                              "units": {
+                                "type": "Mm"
+                              }
                             },
                             "yAxis": {
                               "x": 0.0,
                               "y": 0.0,
-                              "z": 1.0
+                              "z": 1.0,
+                              "units": {
+                                "type": "Mm"
+                              }
                             },
                             "zAxis": {
                               "x": 0.0,
                               "y": -1.0,
-                              "z": 0.0
+                              "z": 0.0,
+                              "units": {
+                                "type": "Mm"
+                              }
                             },
                             "units": {
                               "type": "Mm"
@@ -20046,22 +20893,34 @@ description: Variables in memory after executing kitt.kcl
           "origin": {
             "x": 0.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
+            "z": 1.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "units": {
             "type": "Mm"
@@ -20282,17 +21141,26 @@ description: Variables in memory after executing kitt.kcl
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
+            "z": 1.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "solid": {
             "type": "Solid",
@@ -20436,17 +21304,26 @@ description: Variables in memory after executing kitt.kcl
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "yAxis": {
                   "x": 0.0,
                   "y": 0.0,
-                  "z": 1.0
+                  "z": 1.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "zAxis": {
                   "x": 0.0,
                   "y": -1.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "solid": {
                   "type": "Solid",
@@ -20465,9 +21342,9 @@ description: Variables in memory after executing kitt.kcl
                       "id": "[uuid]",
                       "sourceRange": [],
                       "tag": {
-                        "commentStart": 759,
-                        "end": 765,
-                        "start": 759,
+                        "commentStart": 766,
+                        "end": 772,
+                        "start": 766,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -20478,9 +21355,9 @@ description: Variables in memory after executing kitt.kcl
                       "id": "[uuid]",
                       "sourceRange": [],
                       "tag": {
-                        "commentStart": 810,
-                        "end": 816,
-                        "start": 810,
+                        "commentStart": 817,
+                        "end": 823,
+                        "start": 817,
                         "type": "TagDeclarator",
                         "value": "seg02"
                       },
@@ -20527,9 +21404,9 @@ description: Variables in memory after executing kitt.kcl
                           31.0
                         ],
                         "tag": {
-                          "commentStart": 759,
-                          "end": 765,
-                          "start": 759,
+                          "commentStart": 766,
+                          "end": 772,
+                          "start": 766,
                           "type": "TagDeclarator",
                           "value": "seg01"
                         },
@@ -20552,9 +21429,9 @@ description: Variables in memory after executing kitt.kcl
                           31.0
                         ],
                         "tag": {
-                          "commentStart": 810,
-                          "end": 816,
-                          "start": 810,
+                          "commentStart": 817,
+                          "end": 823,
+                          "start": 817,
                           "type": "TagDeclarator",
                           "value": "seg02"
                         },
@@ -20614,22 +21491,34 @@ description: Variables in memory after executing kitt.kcl
                       "origin": {
                         "x": 0.0,
                         "y": 0.0,
-                        "z": 0.0
+                        "z": 0.0,
+                        "units": {
+                          "type": "Mm"
+                        }
                       },
                       "xAxis": {
                         "x": 1.0,
                         "y": 0.0,
-                        "z": 0.0
+                        "z": 0.0,
+                        "units": {
+                          "type": "Mm"
+                        }
                       },
                       "yAxis": {
                         "x": 0.0,
                         "y": 0.0,
-                        "z": 1.0
+                        "z": 1.0,
+                        "units": {
+                          "type": "Mm"
+                        }
                       },
                       "zAxis": {
                         "x": 0.0,
                         "y": -1.0,
-                        "z": 0.0
+                        "z": 0.0,
+                        "units": {
+                          "type": "Mm"
+                        }
                       },
                       "units": {
                         "type": "Mm"
@@ -20943,17 +21832,26 @@ description: Variables in memory after executing kitt.kcl
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
+            "z": 1.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "solid": {
             "type": "Solid",
@@ -20972,9 +21870,9 @@ description: Variables in memory after executing kitt.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 759,
-                  "end": 765,
-                  "start": 759,
+                  "commentStart": 766,
+                  "end": 772,
+                  "start": 766,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -20985,9 +21883,9 @@ description: Variables in memory after executing kitt.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 810,
-                  "end": 816,
-                  "start": 810,
+                  "commentStart": 817,
+                  "end": 823,
+                  "start": 817,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -21034,9 +21932,9 @@ description: Variables in memory after executing kitt.kcl
                     31.0
                   ],
                   "tag": {
-                    "commentStart": 759,
-                    "end": 765,
-                    "start": 759,
+                    "commentStart": 766,
+                    "end": 772,
+                    "start": 766,
                     "type": "TagDeclarator",
                     "value": "seg01"
                   },
@@ -21059,9 +21957,9 @@ description: Variables in memory after executing kitt.kcl
                     31.0
                   ],
                   "tag": {
-                    "commentStart": 810,
-                    "end": 816,
-                    "start": 810,
+                    "commentStart": 817,
+                    "end": 823,
+                    "start": 817,
                     "type": "TagDeclarator",
                     "value": "seg02"
                   },
@@ -21121,22 +22019,34 @@ description: Variables in memory after executing kitt.kcl
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "yAxis": {
                   "x": 0.0,
                   "y": 0.0,
-                  "z": 1.0
+                  "z": 1.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "zAxis": {
                   "x": 0.0,
                   "y": -1.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "units": {
                   "type": "Mm"
@@ -21363,17 +22273,26 @@ description: Variables in memory after executing kitt.kcl
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
+            "z": 1.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "solid": {
             "type": "Solid",
@@ -21392,9 +22311,9 @@ description: Variables in memory after executing kitt.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 759,
-                  "end": 765,
-                  "start": 759,
+                  "commentStart": 766,
+                  "end": 772,
+                  "start": 766,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -21405,9 +22324,9 @@ description: Variables in memory after executing kitt.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 810,
-                  "end": 816,
-                  "start": 810,
+                  "commentStart": 817,
+                  "end": 823,
+                  "start": 817,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -21454,9 +22373,9 @@ description: Variables in memory after executing kitt.kcl
                     31.0
                   ],
                   "tag": {
-                    "commentStart": 759,
-                    "end": 765,
-                    "start": 759,
+                    "commentStart": 766,
+                    "end": 772,
+                    "start": 766,
                     "type": "TagDeclarator",
                     "value": "seg01"
                   },
@@ -21479,9 +22398,9 @@ description: Variables in memory after executing kitt.kcl
                     31.0
                   ],
                   "tag": {
-                    "commentStart": 810,
-                    "end": 816,
-                    "start": 810,
+                    "commentStart": 817,
+                    "end": 823,
+                    "start": 817,
                     "type": "TagDeclarator",
                     "value": "seg02"
                   },
@@ -21541,22 +22460,34 @@ description: Variables in memory after executing kitt.kcl
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "yAxis": {
                   "x": 0.0,
                   "y": 0.0,
-                  "z": 1.0
+                  "z": 1.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "zAxis": {
                   "x": 0.0,
                   "y": -1.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "units": {
                   "type": "Mm"
@@ -21783,17 +22714,26 @@ description: Variables in memory after executing kitt.kcl
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
+            "z": 1.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "solid": {
             "type": "Solid",
@@ -21812,9 +22752,9 @@ description: Variables in memory after executing kitt.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 759,
-                  "end": 765,
-                  "start": 759,
+                  "commentStart": 766,
+                  "end": 772,
+                  "start": 766,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -21825,9 +22765,9 @@ description: Variables in memory after executing kitt.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 810,
-                  "end": 816,
-                  "start": 810,
+                  "commentStart": 817,
+                  "end": 823,
+                  "start": 817,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -21874,9 +22814,9 @@ description: Variables in memory after executing kitt.kcl
                     31.0
                   ],
                   "tag": {
-                    "commentStart": 759,
-                    "end": 765,
-                    "start": 759,
+                    "commentStart": 766,
+                    "end": 772,
+                    "start": 766,
                     "type": "TagDeclarator",
                     "value": "seg01"
                   },
@@ -21899,9 +22839,9 @@ description: Variables in memory after executing kitt.kcl
                     31.0
                   ],
                   "tag": {
-                    "commentStart": 810,
-                    "end": 816,
-                    "start": 810,
+                    "commentStart": 817,
+                    "end": 823,
+                    "start": 817,
                     "type": "TagDeclarator",
                     "value": "seg02"
                   },
@@ -21961,22 +22901,34 @@ description: Variables in memory after executing kitt.kcl
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "yAxis": {
                   "x": 0.0,
                   "y": 0.0,
-                  "z": 1.0
+                  "z": 1.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "zAxis": {
                   "x": 0.0,
                   "y": -1.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "units": {
                   "type": "Mm"

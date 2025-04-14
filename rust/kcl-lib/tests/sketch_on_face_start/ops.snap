@@ -10,7 +10,7 @@ description: Operations executed sketch_on_face_start.kcl
       "name": "cube",
       "functionSourceRange": [
         7,
-        184,
+        182,
         0
       ],
       "unlabeledArg": null,
@@ -20,10 +20,10 @@ description: Operations executed sketch_on_face_start.kcl
   },
   {
     "labeledArgs": {
-      "data": {
+      "planeOrSolid": {
         "value": {
-          "type": "String",
-          "value": "XY"
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       }
@@ -70,16 +70,7 @@ description: Operations executed sketch_on_face_start.kcl
   },
   {
     "labeledArgs": {
-      "data": {
-        "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "tag": {
+      "face": {
         "value": {
           "type": "String",
           "value": "start"
@@ -90,7 +81,15 @@ description: Operations executed sketch_on_face_start.kcl
     "name": "startSketchOn",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
   },
   {
     "labeledArgs": {
