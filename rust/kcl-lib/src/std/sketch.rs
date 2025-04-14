@@ -914,7 +914,6 @@ pub async fn angled_line_that_intersects(exec_state: &mut ExecState, args: Args)
         angle = { docs = "Which angle should the line be drawn at?" },
         intersect_tag = { docs = "The tag of the line to intersect with" },
         offset = { docs = "The offset from the intersecting line. Defaults to 0." },
-        end_absolute_y = { docs = "Draw the line along the given angle until it reaches this point along the Y axis. Only one of `length`, `lengthX`, `lengthY`, `lengthAbsoluteEndX`, `lengthAbsoluteEndY` can be given."},
         tag = { docs = "Create a new tag which refers to this line"},
     }
 }]
