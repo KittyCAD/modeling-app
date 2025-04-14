@@ -1,15 +1,20 @@
 import type { Models } from '@kittycad/lib'
 import { VITE_KC_API_WS_MODELING_URL, VITE_KC_DEV_TOKEN } from '@src/env'
+import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { BSON } from 'bson'
 
 import type { MachineManager } from '@src/components/MachineManagerProvider'
 import type { useModelingContext } from '@src/hooks/useModelingContext'
+import type CodeManager from '@src/lang/codeManager'
 import type { KclManager } from '@src/lang/KclSingleton'
 import type { EngineCommand, ResponseMap } from '@src/lang/std/artifactGraph'
+import type { CommandLog } from '@src/lang/std/commandLog'
+import { CommandLogType } from '@src/lang/std/commandLog'
 import type { SourceRange } from '@src/lang/wasm'
 import { defaultSourceRange } from '@src/lang/wasm'
 import { EXECUTE_AST_INTERRUPT_ERROR_MESSAGE } from '@src/lib/constants'
 import { markOnce } from '@src/lib/performance'
+import type RustContext from '@src/lib/rustContext'
 import type { SettingsViaQueryString } from '@src/lib/settings/settingsTypes'
 import {
   Themes,
@@ -27,8 +32,6 @@ function isHighlightSetEntity_type(
 ): data is Models['HighlightSetEntity_type'] {
   return data.entity_id && data.sequence
 }
-
-type OkWebSocketResponseData = Models['OkWebSocketResponseData_type']
 
 interface NewTrackArgs {
   conn: EngineConnection
@@ -658,6 +661,22 @@ class EngineConnection extends EventTarget {
                   detail: { conn: this, mediaStream: this.mediaStream! },
                 })
               )
+
+              setTimeout(() => {
+                // Everything is now connected.
+                this.state = {
+                  type: EngineConnectionStateType.ConnectionEstablished,
+                }
+
+                this.engineCommandManager.inSequence = 1
+
+                this.dispatchEvent(
+                  new CustomEvent(EngineConnectionEvents.Opened, {
+                    detail: this,
+                  })
+                )
+                markOnce('code/endInitialEngineConnect')
+              }, 2000)
               break
             case 'connecting':
               break
@@ -785,18 +804,6 @@ class EngineConnection extends EventTarget {
                 type: ConnectingType.DataChannelEstablished,
               },
             }
-
-            // Everything is now connected.
-            this.state = {
-              type: EngineConnectionStateType.ConnectionEstablished,
-            }
-
-            this.engineCommandManager.inSequence = 1
-
-            this.dispatchEvent(
-              new CustomEvent(EngineConnectionEvents.Opened, { detail: this })
-            )
-            markOnce('code/endInitialEngineConnect')
           }
           this.unreliableDataChannel?.addEventListener(
             'open',
@@ -1269,35 +1276,6 @@ export interface Subscription<T extends ModelTypes> {
   ) => void
 }
 
-export enum CommandLogType {
-  SendModeling = 'send-modeling',
-  SendScene = 'send-scene',
-  ReceiveReliable = 'receive-reliable',
-  ExecutionDone = 'execution-done',
-  ExportDone = 'export-done',
-  SetDefaultSystemProperties = 'set_default_system_properties',
-}
-
-export type CommandLog =
-  | {
-      type: CommandLogType.SendModeling
-      data: EngineCommand
-    }
-  | {
-      type: CommandLogType.SendScene
-      data: EngineCommand
-    }
-  | {
-      type: CommandLogType.ReceiveReliable
-      data: OkWebSocketResponseData
-      id: string
-      cmd_type?: string
-    }
-  | {
-      type: CommandLogType.ExecutionDone
-      data: null
-    }
-
 export enum EngineCommandManagerEvents {
   // engineConnection is available but scene setup may not have run
   EngineAvailable = 'engine-available',
@@ -1398,6 +1376,7 @@ export class EngineCommandManager extends EventTarget {
 
   private onEngineConnectionOpened = () => {}
   private onEngineConnectionClosed = () => {}
+  private onVideoTrackMute = () => {}
   private onDarkThemeMediaQueryChange = (e: MediaQueryListEvent) => {
     this.setTheme(e.matches ? Themes.Dark : Themes.Light).catch(reportRejection)
   }
@@ -1408,6 +1387,8 @@ export class EngineCommandManager extends EventTarget {
   modelingSend: ReturnType<typeof useModelingContext>['send'] =
     (() => {}) as any
   kclManager: null | KclManager = null
+  codeManager?: CodeManager
+  rustContext?: RustContext
 
   // The current "manufacturing machine" aka 3D printer, CNC, etc.
   public machineManager: MachineManager | null = null
@@ -1480,6 +1461,11 @@ export class EngineCommandManager extends EventTarget {
 
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
     this.onEngineConnectionOpened = async () => {
+      await this.rustContext?.clearSceneAndBustCache(
+        { settings: await jsAppSettings() },
+        this.codeManager?.currentFilePath || undefined
+      )
+
       // Set the stream's camera projection type
       // We don't send a command to the engine if in perspective mode because
       // for now it's the engine's default.
@@ -1695,15 +1681,17 @@ export class EngineCommandManager extends EventTarget {
         delete this.pendingCommands[message.request_id || '']
       }) as EventListener)
 
+      this.onVideoTrackMute = () => {
+        console.error('video track mute: check webrtc internals -> inbound rtp')
+      }
+
       this.onEngineConnectionNewTrack = ({
         detail: { mediaStream },
       }: CustomEvent<NewTrackArgs>) => {
-        mediaStream.getVideoTracks()[0].addEventListener('mute', () => {
-          console.error(
-            'video track mute: check webrtc internals -> inbound rtp'
-          )
-        })
-
+        // Engine side had an oopsie (client sent trickle_ice, engine no happy)
+        mediaStream
+          .getVideoTracks()[0]
+          .addEventListener('mute', this.onVideoTrackMute)
         setMediaStream(mediaStream)
       }
       this.engineConnection?.addEventListener(
