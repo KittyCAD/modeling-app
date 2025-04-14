@@ -106,7 +106,7 @@ sketch001 = startSketchOn(XY)
     ).toHaveCount(3)
     await expect(
       page.locator('[data-receive-command-type="scene_clear_all"]')
-    ).toHaveCount(1)
+    ).toHaveCount(2)
   })
 
   test('ensure we use the cache, and do not clear on append', async ({
@@ -161,7 +161,7 @@ sketch001 = startSketchOn(XY)
     ).toHaveCount(3)
     await expect(
       page.locator('[data-receive-command-type="scene_clear_all"]')
-    ).toHaveCount(1)
+    ).toHaveCount(2)
   })
 
   test('if you click the format button it formats your code', async ({
