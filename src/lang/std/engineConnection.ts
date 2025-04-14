@@ -1,17 +1,20 @@
 import type { Models } from '@kittycad/lib'
 import { VITE_KC_API_WS_MODELING_URL, VITE_KC_DEV_TOKEN } from '@src/env'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
-import { codeManager, rustContext } from '@src/lib/singletons'
 import { BSON } from 'bson'
 
 import type { MachineManager } from '@src/components/MachineManagerProvider'
 import type { useModelingContext } from '@src/hooks/useModelingContext'
+import type CodeManager from '@src/lang/codeManager'
 import type { KclManager } from '@src/lang/KclSingleton'
 import type { EngineCommand, ResponseMap } from '@src/lang/std/artifactGraph'
+import type { CommandLog } from '@src/lang/std/commandLog'
+import { CommandLogType } from '@src/lang/std/commandLog'
 import type { SourceRange } from '@src/lang/wasm'
 import { defaultSourceRange } from '@src/lang/wasm'
 import { EXECUTE_AST_INTERRUPT_ERROR_MESSAGE } from '@src/lib/constants'
 import { markOnce } from '@src/lib/performance'
+import type RustContext from '@src/lib/rustContext'
 import type { SettingsViaQueryString } from '@src/lib/settings/settingsTypes'
 import {
   Themes,
@@ -29,8 +32,6 @@ function isHighlightSetEntity_type(
 ): data is Models['HighlightSetEntity_type'] {
   return data.entity_id && data.sequence
 }
-
-type OkWebSocketResponseData = Models['OkWebSocketResponseData_type']
 
 interface NewTrackArgs {
   conn: EngineConnection
@@ -1275,35 +1276,6 @@ export interface Subscription<T extends ModelTypes> {
   ) => void
 }
 
-export enum CommandLogType {
-  SendModeling = 'send-modeling',
-  SendScene = 'send-scene',
-  ReceiveReliable = 'receive-reliable',
-  ExecutionDone = 'execution-done',
-  ExportDone = 'export-done',
-  SetDefaultSystemProperties = 'set_default_system_properties',
-}
-
-export type CommandLog =
-  | {
-      type: CommandLogType.SendModeling
-      data: EngineCommand
-    }
-  | {
-      type: CommandLogType.SendScene
-      data: EngineCommand
-    }
-  | {
-      type: CommandLogType.ReceiveReliable
-      data: OkWebSocketResponseData
-      id: string
-      cmd_type?: string
-    }
-  | {
-      type: CommandLogType.ExecutionDone
-      data: null
-    }
-
 export enum EngineCommandManagerEvents {
   // engineConnection is available but scene setup may not have run
   EngineAvailable = 'engine-available',
@@ -1415,6 +1387,8 @@ export class EngineCommandManager extends EventTarget {
   modelingSend: ReturnType<typeof useModelingContext>['send'] =
     (() => {}) as any
   kclManager: null | KclManager = null
+  codeManager?: CodeManager
+  rustContext?: RustContext
 
   // The current "manufacturing machine" aka 3D printer, CNC, etc.
   public machineManager: MachineManager | null = null
@@ -1487,9 +1461,9 @@ export class EngineCommandManager extends EventTarget {
 
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
     this.onEngineConnectionOpened = async () => {
-      await rustContext.clearSceneAndBustCache(
+      await this.rustContext?.clearSceneAndBustCache(
         { settings: await jsAppSettings() },
-        codeManager.currentFilePath || undefined
+        this.codeManager?.currentFilePath || undefined
       )
 
       // Set the stream's camera projection type
