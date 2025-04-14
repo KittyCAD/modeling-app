@@ -2918,8 +2918,6 @@ export const angledLineThatIntersects: SketchLineHelperKw = {
       )
     }
 
-    const angleLit = createLiteral(angle)
-
     // mutateObjExpProp(firstArg, angleLit, 'angle')
     // mutateObjExpProp(firstArg, createLiteral(offset), 'offset')
     mutateKwArg(ARG_ANGLE, callExpression, createLiteral(angle))
@@ -2933,7 +2931,6 @@ export const angledLineThatIntersects: SketchLineHelperKw = {
   addTag: addTagKw(),
   getConstraintInfo: (callExp: CallExpressionKw, code, pathToNode) => {
     if (callExp.type !== 'CallExpressionKw') return []
-    const firstArg = callExp.arguments?.[0]
     const angle = findKwArgWithIndex(ARG_ANGLE, callExp)
     const offset = findKwArgWithIndex(ARG_OFFSET, callExp)
     const intersectTag = findKwArgWithIndex(ARG_INTERSECT_TAG, callExp)
@@ -2951,11 +2948,11 @@ export const angledLineThatIntersects: SketchLineHelperKw = {
       returnVal.push(
         constrainInfo(
           'angle',
-          isNotLiteralArrayOrStatic(angle),
-          code.slice(angle.start, angle.end),
+          isNotLiteralArrayOrStatic(angle.expr),
+          code.slice(angle.expr.start, angle.expr.end),
           'angledLineThatIntersects',
           'angle',
-          topLevelRange(angle.start, angle.end),
+          topLevelRange(angle.expr.start, angle.expr.end),
           pathToAngleProp
         )
       )
@@ -2969,11 +2966,11 @@ export const angledLineThatIntersects: SketchLineHelperKw = {
       returnVal.push(
         constrainInfo(
           'intersectionOffset',
-          isNotLiteralArrayOrStatic(offset),
-          code.slice(offset.start, offset.end),
+          isNotLiteralArrayOrStatic(offset.expr),
+          code.slice(offset.expr.start, offset.expr.end),
           'angledLineThatIntersects',
           'offset',
-          topLevelRange(offset.start, offset.end),
+          topLevelRange(offset.expr.start, offset.expr.end),
           pathToOffsetProp
         )
       )
@@ -2988,10 +2985,10 @@ export const angledLineThatIntersects: SketchLineHelperKw = {
         'intersectionTag',
         // This will always be a tag identifier.
         false,
-        code.slice(tag.start, tag.end),
+        code.slice(intersectTag.expr.start, intersectTag.expr.end),
         'angledLineThatIntersects',
         'intersectTag',
-        topLevelRange(tag.start, tag.end),
+        topLevelRange(intersectTag.expr.start, intersectTag.expr.end),
         pathToTagProp
       )
       returnVal.push(info)
@@ -3050,7 +3047,6 @@ export const updateStartProfileAtArgs: SketchLineHelper['updateArgs'] = ({
 }
 
 export const sketchLineHelperMap: { [key: string]: SketchLineHelper } = {
-  angledLineThatIntersects,
   arc,
   arcTo,
 } as const
@@ -3067,6 +3063,7 @@ export const sketchLineHelperMapKw: { [key: string]: SketchLineHelperKw } = {
   angledLine,
   angledLineOfXLength,
   angledLineOfYLength,
+  angledLineThatIntersects,
   angledLineToX,
   angledLineToY,
   tangentialArc,
