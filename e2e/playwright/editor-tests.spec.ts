@@ -82,7 +82,7 @@ sketch001 = startSketchOn(XY)
       .poll(() =>
         page.locator('[data-receive-command-type="scene_clear_all"]').count()
       )
-      .toBe(1)
+      .toBe(2)
     await expect
       .poll(() => page.locator('[data-message-type="execution-done"]').count())
       .toBe(2)
@@ -133,7 +133,7 @@ sketch001 = startSketchOn(XY)
     await u.openDebugPanel()
     await expect(
       page.locator('[data-receive-command-type="scene_clear_all"]')
-    ).toHaveCount(1)
+    ).toHaveCount(2)
     await expect(
       page.locator('[data-message-type="execution-done"]')
     ).toHaveCount(2)
