@@ -2,20 +2,23 @@
 
 use crate::std::fillet::EdgeReference;
 
+use super::args::TyF64;
+
 /// A 2D axis or tagged edge.
 #[derive(Debug, Clone, PartialEq)]
 pub enum Axis2dOrEdgeReference {
     /// 2D axis and origin.
-    Axis { direction: [f64; 2], origin: [f64; 2] },
+    Axis { direction: [TyF64; 2], origin: [TyF64; 2] },
     /// Tagged edge.
     Edge(EdgeReference),
 }
 
 /// A 3D axis or tagged edge.
+#[allow(clippy::large_enum_variant)]
 #[derive(Debug, Clone, PartialEq)]
 pub enum Axis3dOrEdgeReference {
     /// 3D axis and origin.
-    Axis { direction: [f64; 3], origin: [f64; 3] },
+    Axis { direction: [TyF64; 3], origin: [TyF64; 3] },
     /// Tagged edge.
     Edge(EdgeReference),
 }

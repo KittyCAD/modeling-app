@@ -56,16 +56,14 @@ sketch002 = startSketchOn(-YZ)
   |> extrude(length = backLength - height)
 
 customPlane = {
-  plane = {
-    origin = {
-      x = 0,
-      y = -(wallsWidth / 2 - (wallThickness / 2)),
-      z = 0
-    },
-    xAxis = { x = 1, y = 0, z = 0 },
-    yAxis = { x = 0, y = 0, z = 1 },
-    zAxis = { x = 0, y = -1, z = 0 }
-  }
+  origin = {
+    x = 0,
+    y = -(wallsWidth / 2 - (wallThickness / 2)),
+    z = 0
+  },
+  xAxis = { x = 1, y = 0, z = 0 },
+  yAxis = { x = 0, y = 0, z = 1 },
+  zAxis = { x = 0, y = -1, z = 0 }
 }
 sketch003 = startSketchOn(customPlane)
   |> startProfileAt([0, 0], %)
@@ -75,7 +73,7 @@ sketch003 = startSketchOn(customPlane)
   |> extrude(length = wallThickness)
 
 // Create the right side wall of the tub
-sketch004 = startSketchOn(sketch002, 'END')
+sketch004 = startSketchOn(sketch002, face = END)
   |> startProfileAt([0, 0], %)
   |> yLine(endAbsolute = height)
   |> xLine(endAbsolute = wallThickness)
@@ -95,16 +93,14 @@ sketch004 = startSketchOn(sketch002, 'END')
   |> extrude(length = wallThickness)
 
 customPlane2 = {
-  plane = {
-    origin = {
-      x = -1 * (backLength - height + wallsWidth),
-      y = 0,
-      z = 0
-    },
-    xAxis = { x = 0, y = -1, z = 0 },
-    yAxis = { x = 0, y = 0, z = 1 },
-    zAxis = { x = 1, y = 0, z = 0 }
-  }
+  origin = {
+    x = -1 * (backLength - height + wallsWidth),
+    y = 0,
+    z = 0
+  },
+  xAxis = { x = 0, y = -1, z = 0 },
+  yAxis = { x = 0, y = 0, z = 1 },
+  zAxis = { x = 1, y = 0, z = 0 }
 }
 sketch005 = startSketchOn(customPlane2)
   |> startProfileAt([0, 0], %)
@@ -119,7 +115,7 @@ sketch005 = startSketchOn(customPlane2)
   |> close()
   |> extrude(length = wallThickness)
 
-sketch006 = startSketchOn(sketch005, seg03)
+sketch006 = startSketchOn(sketch005, face = seg03)
   |> startProfileAt([0, -1 * (backLength - height)], %)
   |> xLine(endAbsolute = -exitHeight)
   |> yLine(length = -wallsWidth)
@@ -127,7 +123,7 @@ sketch006 = startSketchOn(sketch005, seg03)
   |> close()
   |> extrude(length = wallThickness)
 
-sketch007 = startSketchOn(sketch004, 'END')
+sketch007 = startSketchOn(sketch004, face = END)
   |> startProfileAt([0, 0], %)
   |> xLine(endAbsolute = wallThickness)
   |> yLine(endAbsolute = height)
@@ -136,16 +132,14 @@ sketch007 = startSketchOn(sketch004, 'END')
   |> extrude(length = wallsWidth - (2 * wallThickness))
 
 customPlane3 = {
-  plane = {
-    origin = {
-      x = -1 * (backLength - height + wallsWidth),
-      y = 0,
-      z = wallThickness
-    },
-    xAxis = { x = 0, y = -1, z = 0 },
-    yAxis = { x = 1, y = 0, z = 0 },
-    zAxis = { x = 0, y = 0, z = 1 }
-  }
+  origin = {
+    x = -1 * (backLength - height + wallsWidth),
+    y = 0,
+    z = wallThickness
+  },
+  xAxis = { x = 0, y = -1, z = 0 },
+  yAxis = { x = 1, y = 0, z = 0 },
+  zAxis = { x = 0, y = 0, z = 1 }
 }
 
 sketch008 = startSketchOn(customPlane3)

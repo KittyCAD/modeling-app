@@ -15,7 +15,7 @@ export fn washer() {
     |> extrude(length = washerThickness)
 
   // Extrude a hole through the washer
-  washer = startSketchOn(washerBase, 'end')
+  washer = startSketchOn(washerBase, face = END)
     |> circle(center = [0, 0], radius = washerInnerDia / 2)
     |> extrude(%, length = -washerThickness)
     |> appearance(%, color = "#ee4f4f")

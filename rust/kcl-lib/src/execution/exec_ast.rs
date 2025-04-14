@@ -725,12 +725,7 @@ fn apply_ascription(
     let ty = RuntimeType::from_parsed(ty.inner.clone(), exec_state, value.into())
         .map_err(|e| KclError::Semantic(e.into()))?;
 
-    if let KclValue::Number {
-        ty: NumericType::Unknown,
-        value,
-        meta,
-    } = value
-    {
+    if let KclValue::Number { value, meta, .. } = value {
         // If the number has unknown units but the user is explicitly specifying them, treat the value as having had it's units erased,
         // rather than forcing the user to explicitly erase them.
         KclValue::Number {

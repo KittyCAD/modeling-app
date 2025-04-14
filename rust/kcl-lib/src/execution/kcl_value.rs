@@ -422,21 +422,31 @@ impl KclValue {
     }
 
     pub fn as_array(&self) -> Option<&[KclValue]> {
-        if let KclValue::MixedArray { value, meta: _ } = &self {
-            Some(value)
-        } else {
-            None
+        match self {
+            KclValue::MixedArray { value, .. } | KclValue::HomArray { value, .. } => Some(value),
+            _ => None,
         }
     }
 
-    pub fn as_point2d(&self) -> Option<[f64; 2]> {
+    pub fn as_point2d(&self) -> Option<[TyF64; 2]> {
         let arr = self.as_array()?;
         if arr.len() != 2 {
             return None;
         }
-        let x = arr[0].as_f64()?;
-        let y = arr[1].as_f64()?;
+        let x = arr[0].as_ty_f64()?;
+        let y = arr[1].as_ty_f64()?;
         Some([x, y])
+    }
+
+    pub fn as_point3d(&self) -> Option<[TyF64; 3]> {
+        let arr = self.as_array()?;
+        if arr.len() != 3 {
+            return None;
+        }
+        let x = arr[0].as_ty_f64()?;
+        let y = arr[1].as_ty_f64()?;
+        let z = arr[2].as_ty_f64()?;
+        Some([x, y, z])
     }
 
     pub fn as_uuid(&self) -> Option<uuid::Uuid> {
@@ -487,6 +497,7 @@ impl KclValue {
         }
     }
 
+    #[cfg(test)]
     pub fn as_f64(&self) -> Option<f64> {
         if let KclValue::Number { value, .. } = &self {
             Some(*value)

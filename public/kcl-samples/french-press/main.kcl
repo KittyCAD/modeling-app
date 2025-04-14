@@ -21,12 +21,10 @@ sketch001 = startSketchOn(XZ)
 
 // Create an angled plane to sketch the supports
 plane001 = {
-  plane = {
-    origin = [-0.26, 0.26, 0.0],
-    xAxis = [1, 1, 0.0],
-    yAxis = [0.0, 0.0, 1.0],
-    zAxis = [1.0, 0.0, 0.0]
-  }
+  origin = [-0.26, 0.26, 0.0],
+  xAxis = [1, 1, 0.0],
+  yAxis = [0.0, 0.0, 1.0],
+  zAxis = [1.0, 0.0, 0.0]
 }
 
 // Cross section of the metal supports
@@ -88,7 +86,7 @@ sketch003 = startSketchOn(offsetPlane(XY, offset = 1))
 
 extrude001 = extrude(sketch003, length = 0.050)
 
-sketch004 = startSketchOn(extrude001, 'END')
+sketch004 = startSketchOn(extrude001, face = END)
   |> startProfileAt([0.3, 0.17], %)
   |> yLine(length = 1.2)
   |> arc({
@@ -140,7 +138,7 @@ sketch007 = startSketchOn(offsetPlane(XY, offset = 1.12))
 extrude003 = extrude(sketch007, length = 0.050)
 
 // Pattern holes in the spiral plate
-sketch008 = startSketchOn(extrude003, 'END')
+sketch008 = startSketchOn(extrude003, face = END)
   |> circle(center = [1.4, 0], radius = .3)
   |> patternCircular2d(
        center = [0, 0],
@@ -152,7 +150,7 @@ sketch008 = startSketchOn(extrude003, 'END')
 extrude004 = extrude(sketch008, length = -0.050)
 
 // Pattern holes in the spiral plate
-sketch009 = startSketchOn(extrude003, 'END')
+sketch009 = startSketchOn(extrude003, face = END)
   |> circle(center = [0.6, 0], radius = .2)
   |> patternCircular2d(
        center = [0, 0],
@@ -169,7 +167,7 @@ sketch010 = startSketchOn(XY)
 
 // Perform a shell operation to hollow the carafe body with the top face removed
 extrude006 = extrude(sketch010, length = carafeHeight)
-  |> shell(faces = ["end"], thickness = .07)
+  |> shell(faces = [END], thickness = .07)
 
 // Draw and revolve the lid
 sketch011 = startSketchOn(XZ)

@@ -22,9 +22,9 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 118,
-            "end": 124,
-            "start": 118,
+            "commentStart": 116,
+            "end": 122,
+            "start": 116,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -71,9 +71,9 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
               8.0
             ],
             "tag": {
-              "commentStart": 118,
-              "end": 124,
-              "start": 118,
+              "commentStart": 116,
+              "end": 122,
+              "start": 116,
               "type": "TagDeclarator",
               "value": "seg01"
             },
@@ -133,22 +133,34 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
           "origin": {
             "x": 0.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
+            "z": 1.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "units": {
             "type": "Mm"
@@ -310,17 +322,26 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
+            "z": 1.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "solid": {
             "type": "Solid",
@@ -339,9 +360,9 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 118,
-                  "end": 124,
-                  "start": 118,
+                  "commentStart": 116,
+                  "end": 122,
+                  "start": 116,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -388,9 +409,9 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                     8.0
                   ],
                   "tag": {
-                    "commentStart": 118,
-                    "end": 124,
-                    "start": 118,
+                    "commentStart": 116,
+                    "end": 122,
+                    "start": 116,
                     "type": "TagDeclarator",
                     "value": "seg01"
                   },
@@ -450,22 +471,34 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "yAxis": {
                   "x": 0.0,
                   "y": 0.0,
-                  "z": 1.0
+                  "z": 1.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "zAxis": {
                   "x": 0.0,
                   "y": -1.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "units": {
                   "type": "Mm"
@@ -556,9 +589,9 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 604,
-            "end": 610,
-            "start": 604,
+            "commentStart": 616,
+            "end": 622,
+            "start": 616,
             "type": "TagDeclarator",
             "value": "seg02"
           },
@@ -593,9 +626,9 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
               1.5
             ],
             "tag": {
-              "commentStart": 604,
-              "end": 610,
-              "start": 604,
+              "commentStart": 616,
+              "end": 622,
+              "start": 616,
               "type": "TagDeclarator",
               "value": "seg02"
             },
@@ -674,17 +707,26 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
+            "z": 1.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "solid": {
             "type": "Solid",
@@ -802,17 +844,26 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "yAxis": {
                   "x": 0.0,
                   "y": 0.0,
-                  "z": 1.0
+                  "z": 1.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "zAxis": {
                   "x": 0.0,
                   "y": -1.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "solid": {
                   "type": "Solid",
@@ -831,9 +882,9 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                       "id": "[uuid]",
                       "sourceRange": [],
                       "tag": {
-                        "commentStart": 118,
-                        "end": 124,
-                        "start": 118,
+                        "commentStart": 116,
+                        "end": 122,
+                        "start": 116,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -880,9 +931,9 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                           8.0
                         ],
                         "tag": {
-                          "commentStart": 118,
-                          "end": 124,
-                          "start": 118,
+                          "commentStart": 116,
+                          "end": 122,
+                          "start": 116,
                           "type": "TagDeclarator",
                           "value": "seg01"
                         },
@@ -942,22 +993,34 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                       "origin": {
                         "x": 0.0,
                         "y": 0.0,
-                        "z": 0.0
+                        "z": 0.0,
+                        "units": {
+                          "type": "Mm"
+                        }
                       },
                       "xAxis": {
                         "x": 1.0,
                         "y": 0.0,
-                        "z": 0.0
+                        "z": 0.0,
+                        "units": {
+                          "type": "Mm"
+                        }
                       },
                       "yAxis": {
                         "x": 0.0,
                         "y": 0.0,
-                        "z": 1.0
+                        "z": 1.0,
+                        "units": {
+                          "type": "Mm"
+                        }
                       },
                       "zAxis": {
                         "x": 0.0,
                         "y": -1.0,
-                        "z": 0.0
+                        "z": 0.0,
+                        "units": {
+                          "type": "Mm"
+                        }
                       },
                       "units": {
                         "type": "Mm"
@@ -1195,17 +1258,26 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
+            "z": 1.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "solid": {
             "type": "Solid",
@@ -1217,9 +1289,9 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 604,
-                  "end": 610,
-                  "start": 604,
+                  "commentStart": 616,
+                  "end": 622,
+                  "start": 616,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -1254,9 +1326,9 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                     1.5
                   ],
                   "tag": {
-                    "commentStart": 604,
-                    "end": 610,
-                    "start": 604,
+                    "commentStart": 616,
+                    "end": 622,
+                    "start": 616,
                     "type": "TagDeclarator",
                     "value": "seg02"
                   },
@@ -1335,17 +1407,26 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "yAxis": {
                   "x": 0.0,
                   "y": 0.0,
-                  "z": 1.0
+                  "z": 1.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "zAxis": {
                   "x": 0.0,
                   "y": -1.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "solid": {
                   "type": "Solid",
@@ -1463,17 +1544,26 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                       "xAxis": {
                         "x": 1.0,
                         "y": 0.0,
-                        "z": 0.0
+                        "z": 0.0,
+                        "units": {
+                          "type": "Mm"
+                        }
                       },
                       "yAxis": {
                         "x": 0.0,
                         "y": 0.0,
-                        "z": 1.0
+                        "z": 1.0,
+                        "units": {
+                          "type": "Mm"
+                        }
                       },
                       "zAxis": {
                         "x": 0.0,
                         "y": -1.0,
-                        "z": 0.0
+                        "z": 0.0,
+                        "units": {
+                          "type": "Mm"
+                        }
                       },
                       "solid": {
                         "type": "Solid",
@@ -1492,9 +1582,9 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                             "id": "[uuid]",
                             "sourceRange": [],
                             "tag": {
-                              "commentStart": 118,
-                              "end": 124,
-                              "start": 118,
+                              "commentStart": 116,
+                              "end": 122,
+                              "start": 116,
                               "type": "TagDeclarator",
                               "value": "seg01"
                             },
@@ -1541,9 +1631,9 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                                 8.0
                               ],
                               "tag": {
-                                "commentStart": 118,
-                                "end": 124,
-                                "start": 118,
+                                "commentStart": 116,
+                                "end": 122,
+                                "start": 116,
                                 "type": "TagDeclarator",
                                 "value": "seg01"
                               },
@@ -1603,22 +1693,34 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                             "origin": {
                               "x": 0.0,
                               "y": 0.0,
-                              "z": 0.0
+                              "z": 0.0,
+                              "units": {
+                                "type": "Mm"
+                              }
                             },
                             "xAxis": {
                               "x": 1.0,
                               "y": 0.0,
-                              "z": 0.0
+                              "z": 0.0,
+                              "units": {
+                                "type": "Mm"
+                              }
                             },
                             "yAxis": {
                               "x": 0.0,
                               "y": 0.0,
-                              "z": 1.0
+                              "z": 1.0,
+                              "units": {
+                                "type": "Mm"
+                              }
                             },
                             "zAxis": {
                               "x": 0.0,
                               "y": -1.0,
-                              "z": 0.0
+                              "z": 0.0,
+                              "units": {
+                                "type": "Mm"
+                              }
                             },
                             "units": {
                               "type": "Mm"
@@ -1818,9 +1920,9 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
             8.0
           ],
           "tag": {
-            "commentStart": 118,
-            "end": 124,
-            "start": 118,
+            "commentStart": 116,
+            "end": 122,
+            "start": 116,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -1880,22 +1982,34 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
         "origin": {
           "x": 0.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": {
+            "type": "Mm"
+          }
         },
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": {
+            "type": "Mm"
+          }
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
-          "z": 1.0
+          "z": 1.0,
+          "units": {
+            "type": "Mm"
+          }
         },
         "zAxis": {
           "x": 0.0,
           "y": -1.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": {
+            "type": "Mm"
+          }
         },
         "units": {
           "type": "Mm"
@@ -2023,17 +2137,26 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": {
+            "type": "Mm"
+          }
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
-          "z": 1.0
+          "z": 1.0,
+          "units": {
+            "type": "Mm"
+          }
         },
         "zAxis": {
           "x": 0.0,
           "y": -1.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": {
+            "type": "Mm"
+          }
         },
         "solid": {
           "type": "Solid",
@@ -2052,9 +2175,9 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 118,
-                "end": 124,
-                "start": 118,
+                "commentStart": 116,
+                "end": 122,
+                "start": 116,
                 "type": "TagDeclarator",
                 "value": "seg01"
               },
@@ -2101,9 +2224,9 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                   8.0
                 ],
                 "tag": {
-                  "commentStart": 118,
-                  "end": 124,
-                  "start": 118,
+                  "commentStart": 116,
+                  "end": 122,
+                  "start": 116,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -2163,22 +2286,34 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Mm"
@@ -2266,9 +2401,9 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
             1.5
           ],
           "tag": {
-            "commentStart": 604,
-            "end": 610,
-            "start": 604,
+            "commentStart": 616,
+            "end": 622,
+            "start": 616,
             "type": "TagDeclarator",
             "value": "seg02"
           },
@@ -2347,17 +2482,26 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": {
+            "type": "Mm"
+          }
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
-          "z": 1.0
+          "z": 1.0,
+          "units": {
+            "type": "Mm"
+          }
         },
         "zAxis": {
           "x": 0.0,
           "y": -1.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": {
+            "type": "Mm"
+          }
         },
         "solid": {
           "type": "Solid",
@@ -2475,17 +2619,26 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "solid": {
                 "type": "Solid",
@@ -2504,9 +2657,9 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 118,
-                      "end": 124,
-                      "start": 118,
+                      "commentStart": 116,
+                      "end": 122,
+                      "start": 116,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -2553,9 +2706,9 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                         8.0
                       ],
                       "tag": {
-                        "commentStart": 118,
-                        "end": 124,
-                        "start": 118,
+                        "commentStart": 116,
+                        "end": 122,
+                        "start": 116,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -2615,22 +2768,34 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
-                      "z": 0.0
+                      "z": 0.0,
+                      "units": {
+                        "type": "Mm"
+                      }
                     },
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
-                      "z": 0.0
+                      "z": 0.0,
+                      "units": {
+                        "type": "Mm"
+                      }
                     },
                     "yAxis": {
                       "x": 0.0,
                       "y": 0.0,
-                      "z": 1.0
+                      "z": 1.0,
+                      "units": {
+                        "type": "Mm"
+                      }
                     },
                     "zAxis": {
                       "x": 0.0,
                       "y": -1.0,
-                      "z": 0.0
+                      "z": 0.0,
+                      "units": {
+                        "type": "Mm"
+                      }
                     },
                     "units": {
                       "type": "Mm"
@@ -2834,17 +2999,26 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": {
+            "type": "Mm"
+          }
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
-          "z": 1.0
+          "z": 1.0,
+          "units": {
+            "type": "Mm"
+          }
         },
         "zAxis": {
           "x": 0.0,
           "y": -1.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": {
+            "type": "Mm"
+          }
         },
         "solid": {
           "type": "Solid",
@@ -2856,9 +3030,9 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 604,
-                "end": 610,
-                "start": 604,
+                "commentStart": 616,
+                "end": 622,
+                "start": 616,
                 "type": "TagDeclarator",
                 "value": "seg02"
               },
@@ -2893,9 +3067,9 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                   1.5
                 ],
                 "tag": {
-                  "commentStart": 604,
-                  "end": 610,
-                  "start": 604,
+                  "commentStart": 616,
+                  "end": 622,
+                  "start": 616,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -2974,17 +3148,26 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "solid": {
                 "type": "Solid",
@@ -3102,17 +3285,26 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
-                      "z": 0.0
+                      "z": 0.0,
+                      "units": {
+                        "type": "Mm"
+                      }
                     },
                     "yAxis": {
                       "x": 0.0,
                       "y": 0.0,
-                      "z": 1.0
+                      "z": 1.0,
+                      "units": {
+                        "type": "Mm"
+                      }
                     },
                     "zAxis": {
                       "x": 0.0,
                       "y": -1.0,
-                      "z": 0.0
+                      "z": 0.0,
+                      "units": {
+                        "type": "Mm"
+                      }
                     },
                     "solid": {
                       "type": "Solid",
@@ -3131,9 +3323,9 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                           "id": "[uuid]",
                           "sourceRange": [],
                           "tag": {
-                            "commentStart": 118,
-                            "end": 124,
-                            "start": 118,
+                            "commentStart": 116,
+                            "end": 122,
+                            "start": 116,
                             "type": "TagDeclarator",
                             "value": "seg01"
                           },
@@ -3180,9 +3372,9 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                               8.0
                             ],
                             "tag": {
-                              "commentStart": 118,
-                              "end": 124,
-                              "start": 118,
+                              "commentStart": 116,
+                              "end": 122,
+                              "start": 116,
                               "type": "TagDeclarator",
                               "value": "seg01"
                             },
@@ -3242,22 +3434,34 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                           "origin": {
                             "x": 0.0,
                             "y": 0.0,
-                            "z": 0.0
+                            "z": 0.0,
+                            "units": {
+                              "type": "Mm"
+                            }
                           },
                           "xAxis": {
                             "x": 1.0,
                             "y": 0.0,
-                            "z": 0.0
+                            "z": 0.0,
+                            "units": {
+                              "type": "Mm"
+                            }
                           },
                           "yAxis": {
                             "x": 0.0,
                             "y": 0.0,
-                            "z": 1.0
+                            "z": 1.0,
+                            "units": {
+                              "type": "Mm"
+                            }
                           },
                           "zAxis": {
                             "x": 0.0,
                             "y": -1.0,
-                            "z": 0.0
+                            "z": 0.0,
+                            "units": {
+                              "type": "Mm"
+                            }
                           },
                           "units": {
                             "type": "Mm"
