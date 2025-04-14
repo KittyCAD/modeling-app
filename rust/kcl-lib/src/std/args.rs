@@ -1114,39 +1114,6 @@ impl<'a> FromKclValue<'a> for FaceTag {
     }
 }
 
-impl<'a> FromKclValue<'a> for super::sketch::ArcData {
-    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        let obj = arg.as_object()?;
-        let case1 = || {
-            let angle_start = obj.get("angleStart")?.as_ty_f64()?;
-            let angle_end = obj.get("angleEnd")?.as_ty_f64()?;
-            let_field_of!(obj, radius, TyF64);
-            Some(Self::AnglesAndRadius {
-                angle_start,
-                angle_end,
-                radius,
-            })
-        };
-        let case2 = || {
-            let obj = arg.as_object()?;
-            let_field_of!(obj, to);
-            let_field_of!(obj, center);
-            let_field_of!(obj, radius, TyF64);
-            Some(Self::CenterToRadius { center, to, radius })
-        };
-        case1().or_else(case2)
-    }
-}
-
-impl<'a> FromKclValue<'a> for super::sketch::ArcToData {
-    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        let obj = arg.as_object()?;
-        let_field_of!(obj, end);
-        let_field_of!(obj, interior);
-        Some(Self { end, interior })
-    }
-}
-
 impl<'a> FromKclValue<'a> for super::sketch::TangentialArcData {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let obj = arg.as_object()?;
