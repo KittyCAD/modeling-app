@@ -8,12 +8,11 @@ use kittycad_modeling_cmds as kcmc;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
-use super::DEFAULT_TOLERANCE;
+use super::{args::TyF64, DEFAULT_TOLERANCE};
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
-        types::{PrimitiveType, RuntimeType},
-        EdgeCut, ExecState, ExtrudeSurface, FilletSurface, GeoMeta, KclValue, Solid, TagIdentifier,
+        types::RuntimeType, EdgeCut, ExecState, ExtrudeSurface, FilletSurface, GeoMeta, KclValue, Solid, TagIdentifier,
     },
     parsing::ast::types::TagNode,
     std::Args,
@@ -63,16 +62,16 @@ pub(super) fn validate_unique<T: Eq + std::hash::Hash>(tags: &[(T, SourceRange)]
 
 /// Create fillets on tagged paths.
 pub async fn fillet(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let solid = args.get_unlabeled_kw_arg_typed("solid", &RuntimeType::Primitive(PrimitiveType::Solid), exec_state)?;
-    let radius = args.get_kw_arg("radius")?;
-    let tolerance = args.get_kw_arg_opt("tolerance")?;
+    let solid = args.get_unlabeled_kw_arg_typed("solid", &RuntimeType::solid(), exec_state)?;
+    let radius: TyF64 = args.get_kw_arg_typed("radius", &RuntimeType::length(), exec_state)?;
+    let tolerance: Option<TyF64> = args.get_kw_arg_opt_typed("tolerance", &RuntimeType::count(), exec_state)?;
     let tags = args.kw_arg_array_and_source::<EdgeReference>("tags")?;
     let tag = args.get_kw_arg_opt("tag")?;
 
     // Run the function.
     validate_unique(&tags)?;
     let tags: Vec<EdgeReference> = tags.into_iter().map(|item| item.0).collect();
-    let value = inner_fillet(solid, radius, tags, tolerance, tag, exec_state, args).await?;
+    let value = inner_fillet(solid, radius, tags, tolerance.map(|t| t.n), tag, exec_state, args).await?;
     Ok(KclValue::Solid { value })
 }
 
@@ -147,7 +146,7 @@ pub async fn fillet(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 }]
 async fn inner_fillet(
     solid: Box<Solid>,
-    radius: f64,
+    radius: TyF64,
     tags: Vec<EdgeReference>,
     tolerance: Option<f64>,
     tag: Option<TagNode>,
@@ -164,7 +163,7 @@ async fn inner_fillet(
             ModelingCmd::from(mcmd::Solid3dFilletEdge {
                 edge_id,
                 object_id: solid.id,
-                radius: LengthUnit(radius),
+                radius: LengthUnit(radius.n),
                 tolerance: LengthUnit(tolerance.unwrap_or(DEFAULT_TOLERANCE)),
                 cut_type: CutType::Fillet,
             }),
@@ -174,7 +173,7 @@ async fn inner_fillet(
         solid.edge_cuts.push(EdgeCut::Fillet {
             id,
             edge_id,
-            radius,
+            radius: radius.clone(),
             tag: Box::new(tag.clone()),
         });
 

@@ -110,7 +110,7 @@ sketch0011 = startSketchOn(XY)
      |> mirror2d( axis = X )
      |> extrude(length = 10)
 
-sketch002 = startSketchOn(sketch0011, 'END')
+sketch002 = startSketchOn(sketch0011, face = END)
     |> circle( center = [-0.01, 1.58], radius = 1.2 )
     |> extrude(length = 1.2)
 

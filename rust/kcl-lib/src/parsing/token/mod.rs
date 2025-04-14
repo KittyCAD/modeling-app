@@ -34,6 +34,8 @@ pub const NUM_SUFFIXES: [&str; 9] = ["mm", "cm", "m", "inch", "in", "ft", "yd", 
 pub enum NumericSuffix {
     None,
     Count,
+    Length,
+    Angle,
     Mm,
     Cm,
     M,
@@ -58,6 +60,8 @@ impl NumericSuffix {
         match self {
             NumericSuffix::None => &[],
             NumericSuffix::Count => b"_",
+            NumericSuffix::Length => b"Length",
+            NumericSuffix::Angle => b"Angle",
             NumericSuffix::Mm => b"mm",
             NumericSuffix::Cm => b"cm",
             NumericSuffix::M => b"m",
@@ -75,7 +79,9 @@ impl FromStr for NumericSuffix {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
-            "_" => Ok(NumericSuffix::Count),
+            "_" | "Count" => Ok(NumericSuffix::Count),
+            "Length" => Ok(NumericSuffix::Length),
+            "Angle" => Ok(NumericSuffix::Angle),
             "mm" | "millimeters" => Ok(NumericSuffix::Mm),
             "cm" | "centimeters" => Ok(NumericSuffix::Cm),
             "m" | "meters" => Ok(NumericSuffix::M),
@@ -94,6 +100,8 @@ impl fmt::Display for NumericSuffix {
         match self {
             NumericSuffix::None => Ok(()),
             NumericSuffix::Count => write!(f, "_"),
+            NumericSuffix::Length => write!(f, "Length"),
+            NumericSuffix::Angle => write!(f, "Angle"),
             NumericSuffix::Mm => write!(f, "mm"),
             NumericSuffix::Cm => write!(f, "cm"),
             NumericSuffix::M => write!(f, "m"),
