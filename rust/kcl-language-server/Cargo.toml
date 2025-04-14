@@ -23,7 +23,7 @@ kcl-lib = { path = "../kcl-lib", default-features = false, features = [
 ] }
 kittycad = { workspace = true }
 lazy_static = { workspace = true }
-log = { version = "0.4.26", features = ["serde"] }
+log = { version = "0.4.27", features = ["serde"] }
 slog = { workspace = true }
 slog-async = { workspace = true }
 slog-json = { workspace = true }
