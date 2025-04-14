@@ -2935,9 +2935,9 @@ extrude001 = extrude(sketch001, length = 30)
       const testPoint = { x: 575, y: 200 }
       const [clickOnCap] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
       const shellDeclaration =
-        "shell001 = shell(extrude001, faces = ['end'], thickness = 5)"
+        'shell001 = shell(extrude001, faces = [END], thickness = 5)'
       const editedShellDeclaration =
-        "shell001 = shell(extrude001, faces = ['end'], thickness = 2)"
+        'shell001 = shell(extrude001, faces = [END], thickness = 2)'
 
       await test.step(`Look for the grey of the shape`, async () => {
         await scene.expectPixelColor([127, 127, 127], testPoint, 15)
@@ -3079,9 +3079,9 @@ extrude001 = extrude(sketch001, length = 40)
     const [clickOnWall] = scene.makeMouseHelpers(testPoint.x, testPoint.y + 70)
     const mutatedCode = 'xLine(length = -40, tag = $seg01)'
     const shellDeclaration =
-      "shell001 = shell(extrude001, faces = ['end', seg01], thickness = 5)"
+      'shell001 = shell(extrude001, faces = [END, seg01], thickness = 5)'
     const editedShellDeclaration =
-      "shell001 = shell(extrude001, faces = ['end', seg01], thickness = 1)"
+      'shell001 = shell(extrude001, faces = [END, seg01], thickness = 1)'
 
     await test.step(`Look for the grey of the shape`, async () => {
       await scene.expectPixelColor([99, 99, 99], testPoint, 15)
@@ -3224,7 +3224,7 @@ extrude002 = extrude(sketch002, length = 50)
       const testPoint = { x: 580, y: 320 }
       const [clickOnCap] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
       const shellTarget = hasExtrudesInPipe ? 'sketch002' : 'extrude002'
-      const shellDeclaration = `shell001 = shell(${shellTarget}, faces = ['end'], thickness = 5)`
+      const shellDeclaration = `shell001 = shell(${shellTarget}, faces = [END], thickness = 5)`
 
       await test.step(`Look for the grey of the shape`, async () => {
         await scene.expectPixelColor([113, 113, 113], testPoint, 15)
@@ -3299,7 +3299,7 @@ profile001 = startProfileAt([-20, 20], sketch001)
 `
       const extrudeCode = `extrude001 = extrude(profile001, length = 40)
 `
-      const shellCode = `shell001 = shell(extrude001, faces = ['end'], thickness = 5)
+      const shellCode = `shell001 = shell(extrude001, faces = [END], thickness = 5)
 `
       const initialCode = sketchCode + extrudeCode + shellCode
       await context.addInitScript((initialCode) => {

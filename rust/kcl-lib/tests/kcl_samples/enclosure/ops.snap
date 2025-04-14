@@ -156,8 +156,8 @@ description: Operations executed enclosure.kcl
       "type": "FunctionCall",
       "name": "function001",
       "functionSourceRange": [
-        1287,
-        1884,
+        1285,
+        1882,
         0
       ],
       "unlabeledArg": null,
@@ -429,8 +429,8 @@ description: Operations executed enclosure.kcl
       "type": "FunctionCall",
       "name": "function001",
       "functionSourceRange": [
-        1287,
-        1884,
+        1285,
+        1882,
         0
       ],
       "unlabeledArg": null,
@@ -702,8 +702,8 @@ description: Operations executed enclosure.kcl
       "type": "FunctionCall",
       "name": "function001",
       "functionSourceRange": [
-        1287,
-        1884,
+        1285,
+        1882,
         0
       ],
       "unlabeledArg": null,
@@ -975,8 +975,8 @@ description: Operations executed enclosure.kcl
       "type": "FunctionCall",
       "name": "function001",
       "functionSourceRange": [
-        1287,
-        1884,
+        1285,
+        1882,
         0
       ],
       "unlabeledArg": null,
@@ -1463,7 +1463,7 @@ description: Operations executed enclosure.kcl
       "tag": {
         "value": {
           "type": "String",
-          "value": "END"
+          "value": "end"
         },
         "sourceRange": []
       }

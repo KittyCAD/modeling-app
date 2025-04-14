@@ -75,7 +75,7 @@ sketch003 = startSketchOn(customPlane)
   |> extrude(length = wallThickness)
 
 // Create the right side wall of the tub
-sketch004 = startSketchOn(sketch002, 'END')
+sketch004 = startSketchOn(sketch002, END)
   |> startProfileAt([0, 0], %)
   |> yLine(endAbsolute = height)
   |> xLine(endAbsolute = wallThickness)
@@ -127,7 +127,7 @@ sketch006 = startSketchOn(sketch005, seg03)
   |> close()
   |> extrude(length = wallThickness)
 
-sketch007 = startSketchOn(sketch004, 'END')
+sketch007 = startSketchOn(sketch004, END)
   |> startProfileAt([0, 0], %)
   |> xLine(endAbsolute = wallThickness)
   |> yLine(endAbsolute = height)

@@ -516,7 +516,7 @@ sketch001 = startSketchOn(part001, seg01)`)
   |> line(end = [8.62, -9.57])
   |> close()
   |> extrude(length = 5 + 7)
-sketch001 = startSketchOn(part001, 'END')`)
+sketch001 = startSketchOn(part001, END)`)
   })
   test('it should ensure that the new sketch is inserted after the extrude', async () => {
     const code = `sketch001 = startSketchOn(-XZ)
