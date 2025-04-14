@@ -153,9 +153,9 @@ description: Variables in memory after executing color-cube.kcl
         }
       },
       "zAxis": {
-        "x": -0.0,
+        "x": 0.0,
         "y": 1.0,
-        "z": -0.0,
+        "z": 0.0,
         "units": {
           "type": "Mm"
         }

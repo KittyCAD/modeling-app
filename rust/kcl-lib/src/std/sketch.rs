@@ -1253,7 +1253,7 @@ async fn make_sketch_plane_from_orientation(
             // front end for the feature tree which is stupid and we should fix it.
             let x_axis = match data {
                 PlaneData::NegXY => Point3d::new(-1.0, 0.0, 0.0, UnitLen::Mm),
-                PlaneData::NegXZ => Point3d::new(-1.0, 0.0, 0.0, UnitLen::Mm),
+                PlaneData::NegXZ => Point3d::new(1.0, 0.0, 0.0, UnitLen::Mm),
                 PlaneData::NegYZ => Point3d::new(0.0, -1.0, 0.0, UnitLen::Mm),
                 _ => plane.x_axis,
             };

@@ -107,7 +107,6 @@ lazy_static! {
         Box::new(crate::std::shell::Hollow),
         Box::new(crate::std::sweep::Sweep),
         Box::new(crate::std::loft::Loft),
-        Box::new(crate::std::planes::OffsetPlane),
         Box::new(crate::std::math::Acos),
         Box::new(crate::std::math::Asin),
         Box::new(crate::std::math::Atan),
@@ -204,6 +203,10 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
         ("prelude", "revolve") => (
             |e, a| Box::pin(crate::std::revolve::revolve(e, a)),
             StdFnProps::default("std::revolve").include_in_feature_tree(),
+        ),
+        ("prelude", "offsetPlane") => (
+            |e, a| Box::pin(crate::std::planes::offset_plane(e, a)),
+            StdFnProps::default("std::offsetPlane").include_in_feature_tree(),
         ),
         _ => unreachable!(),
     }

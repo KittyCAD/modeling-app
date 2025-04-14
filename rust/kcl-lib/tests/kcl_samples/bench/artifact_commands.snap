@@ -1995,8 +1995,8 @@ description: Artifact commands bench.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": -1.0,
-        "y": -0.0,
-        "z": -0.0
+        "y": 0.0,
+        "z": 0.0
       }
     }
   },
@@ -2386,8 +2386,8 @@ description: Artifact commands bench.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": -1.0,
-        "y": -0.0,
-        "z": -0.0
+        "y": 0.0,
+        "z": 0.0
       }
     }
   },
@@ -2837,8 +2837,8 @@ description: Artifact commands bench.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": -1.0,
-        "y": -0.0,
-        "z": -0.0
+        "y": 0.0,
+        "z": 0.0
       }
     }
   },
@@ -3228,8 +3228,8 @@ description: Artifact commands bench.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": -1.0,
-        "y": -0.0,
-        "z": -0.0
+        "y": 0.0,
+        "z": 0.0
       }
     }
   },
@@ -7458,8 +7458,8 @@ description: Artifact commands bench.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": -1.0,
-        "y": -0.0,
-        "z": -0.0
+        "y": 0.0,
+        "z": 0.0
       }
     }
   },
@@ -7581,9 +7581,9 @@ description: Artifact commands bench.kcl
       "animated": false,
       "adjust_camera": false,
       "planar_normal": {
-        "x": -0.0,
+        "x": 0.0,
         "y": 1.0,
-        "z": -0.0
+        "z": 0.0
       }
     }
   },
@@ -7951,8 +7951,8 @@ description: Artifact commands bench.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": -1.0,
-        "y": -0.0,
-        "z": -0.0
+        "y": 0.0,
+        "z": 0.0
       }
     }
   },
@@ -8074,9 +8074,9 @@ description: Artifact commands bench.kcl
       "animated": false,
       "adjust_camera": false,
       "planar_normal": {
-        "x": -0.0,
+        "x": 0.0,
         "y": 1.0,
-        "z": -0.0
+        "z": 0.0
       }
     }
   },
