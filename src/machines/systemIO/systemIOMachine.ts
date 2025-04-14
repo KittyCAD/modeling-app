@@ -38,9 +38,6 @@ export const systemIOMachine = setup({
           type: SystemIOMachineEvents.openProject
           data: { requestedProjectName: string }
       }
-      | {
-          type: SystemIOMachineEvents.clearRequestedProjectName
-        },
   },
   actions: {
     [SystemIOMachineActions.setFolders]: assign({
@@ -61,13 +58,7 @@ export const systemIOMachine = setup({
     [SystemIOMachineActions.setRequestedProjectName]: assign({
       requestedProjectName: ({ event }) => {
         assertEvent(event, SystemIOMachineEvents.openProject)
-        return event.data.requestedProjectName
-      },
-    }),
-    [SystemIOMachineActions.clearRequestedProjectName]: assign({
-      requestedProjectName: ({ event }) => {
-        assertEvent(event, SystemIOMachineEvents.clearRequestedProjectName)
-        return NO_PROJECT_DIRECTORY
+        return {name:event.data.requestedProjectName}
       },
     }),
   },
@@ -88,7 +79,7 @@ export const systemIOMachine = setup({
     defaultProjectFolderName: DEFAULT_PROJECT_NAME,
     projectDirectoryPath: NO_PROJECT_DIRECTORY,
     hasListedProjects: false,
-    requestedProjectName: NO_PROJECT_DIRECTORY,
+    requestedProjectName: {name:NO_PROJECT_DIRECTORY},
   }),
   states: {
     [SystemIOMachineStates.idle]: {
@@ -101,7 +92,6 @@ export const systemIOMachine = setup({
           actions: [SystemIOMachineActions.setProjectDirectoryPath],
         },
         [SystemIOMachineEvents.openProject]: {
-          target: SystemIOMachineStates.openingProject,
           actions: [SystemIOMachineActions.setRequestedProjectName],
         },
       },
@@ -123,12 +113,6 @@ export const systemIOMachine = setup({
       },
     },
     [SystemIOMachineStates.openingProject] : {
-      on: {
-        [SystemIOMachineEvents.clearRequestedProjectName]: {
-          target: SystemIOMachineStates.idle,
-          actions: [SystemIOMachineActions.clearRequestedProjectName],
-        },
-      }
     }
   },
 })

@@ -49,30 +49,14 @@ import Onboarding, { onboardingRoutes } from '@src/routes/Onboarding'
 import { Settings } from '@src/routes/Settings'
 import SignIn from '@src/routes/SignIn'
 import { Telemetry } from '@src/routes/Telemetry'
+import RootLayout from "@src/Root"
 
 const createRouter = isDesktop() ? createHashRouter : createBrowserRouter
 
 const router = createRouter([
   {
     id: PATHS.INDEX,
-    element: (
-      <OpenInDesktopAppHandler>
-        <RouteProvider>
-          <LspProvider>
-            <ProjectsContextProvider>
-              <KclContextProvider>
-                <AppStateProvider>
-                  <MachineManagerProvider>
-                    <SystemIOMachineLogicListener />
-                    <Outlet />
-                  </MachineManagerProvider>
-                </AppStateProvider>
-              </KclContextProvider>
-            </ProjectsContextProvider>
-          </LspProvider>
-        </RouteProvider>
-      </OpenInDesktopAppHandler>
-    ),
+    element: <RootLayout/>,
     errorElement: <ErrorPage />,
     children: [
       {

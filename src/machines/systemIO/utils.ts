@@ -20,14 +20,12 @@ export enum SystemIOMachineEvents {
     'read folders from project directory',
   setProjectDirectoryPath = 'set project directory path',
   openProject = 'open project',
-  clearRequestedProjectName = 'clear requested project name',
 }
 
 export enum SystemIOMachineActions {
   setFolders = 'set folders',
   setProjectDirectoryPath = 'set project directory path',
   setRequestedProjectName = 'set requested project name',
-  clearRequestedProjectName = 'clear requested project name'
 }
 
 export const NO_PROJECT_DIRECTORY = ''
@@ -43,5 +41,5 @@ export type SystemIOContext = {
   // has the application gone through the initialiation of systemIOMachine at least once.
   // this is required to prevent chokidar from spamming invalid events during initialization.
   hasListedProjects: boolean
-  requestedProjectName: string
+  requestedProjectName: {name: string}
 }

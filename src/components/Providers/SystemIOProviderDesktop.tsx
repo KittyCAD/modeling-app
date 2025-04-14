@@ -16,15 +16,13 @@ export function SystemIOMachineLogicListener() {
   const projectDirectoryPath = useProjectDirectoryPath()
   const navigate = useNavigate()
   useEffect(() => {
-    // TODO: use a {requestedProjectName: string} to by pass this clear logic...
-    if (!requestedProjectName) {return}
+    if (!requestedProjectName.name) {return}
     let projectPathWithoutSpecificKCLFile =
-      projectDirectoryPath + window.electron.path.sep + requestedProjectName
+      projectDirectoryPath + window.electron.path.sep + requestedProjectName.name
     const requestedPath = `${PATHS.FILE}/${encodeURIComponent(
 projectPathWithoutSpecificKCLFile
        )}`
     navigate(requestedPath)
-    systemIOActor.send({type:SystemIOMachineEvents.clearRequestedProjectName})
   }, [requestedProjectName])
   return null
 }
