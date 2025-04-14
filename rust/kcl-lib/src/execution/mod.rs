@@ -11,9 +11,7 @@ pub use cache::{bust_cache, clear_mem_cache};
 pub use cad_op::Operation;
 pub use geometry::*;
 pub use id_generator::IdGenerator;
-pub(crate) use import::{
-    import_foreign, send_to_engine as send_import_to_engine, PreImportedGeometry, ZOO_COORD_SYSTEM,
-};
+pub(crate) use import::PreImportedGeometry;
 use indexmap::IndexMap;
 pub use kcl_value::{KclObjectFields, KclValue};
 use kcmc::{
@@ -175,7 +173,7 @@ impl std::hash::Hash for TagIdentifier {
 }
 
 /// Engine information for a tag.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
 pub struct TagEngineInfo {
@@ -1048,11 +1046,11 @@ identifierGuy = 5
 part001 = startSketchOn(XY)
 |> startProfileAt([-1.2, 4.83], %)
 |> line(end = [2.8, 0])
-|> angledLine([100 + 100, 3.01], %)
-|> angledLine([abc, 3.02], %)
-|> angledLine([def(yo), 3.03], %)
-|> angledLine([ghi(2), 3.04], %)
-|> angledLine([jkl(yo) + 2, 3.05], %)
+|> angledLine(angle = 100 + 100, length = 3.01)
+|> angledLine(angle = abc, length = 3.02)
+|> angledLine(angle = def(yo), length = 3.03)
+|> angledLine(angle = ghi(2), length = 3.04)
+|> angledLine(angle = jkl(yo) + 2, length = 3.05)
 |> close()
 yo2 = hmm([identifierGuy + 5])"#;
 
@@ -1534,8 +1532,8 @@ let shape = layer() |> patternTransform(instances = 10, transform = transform)
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_unit_default() {
-        let ast = r#"const inMm = 25.4 * mm()
-const inInches = 1.0 * inch()"#;
+        let ast = r#"const inMm = fromMm(25.4)
+const inInches = fromInches(1)"#;
         let result = parse_execute(ast).await.unwrap();
         assert_eq!(
             25.4,
@@ -1554,8 +1552,8 @@ const inInches = 1.0 * inch()"#;
     #[tokio::test(flavor = "multi_thread")]
     async fn test_unit_overriden() {
         let ast = r#"@settings(defaultLengthUnit = inch)
-const inMm = 25.4 * mm()
-const inInches = 1.0 * inch()"#;
+const inMm = fromMm(25.4)
+const inInches = fromInches(1)"#;
         let result = parse_execute(ast).await.unwrap();
         assert_eq!(
             1.0,
@@ -1575,8 +1573,8 @@ const inInches = 1.0 * inch()"#;
     #[tokio::test(flavor = "multi_thread")]
     async fn test_unit_overriden_in() {
         let ast = r#"@settings(defaultLengthUnit = in)
-const inMm = 25.4 * mm()
-const inInches = 2.0 * inch()"#;
+const inMm = fromMm(25.4)
+const inInches = fromInches(2)"#;
         let result = parse_execute(ast).await.unwrap();
         assert_eq!(
             1.0,
@@ -2031,10 +2029,10 @@ let w = f() + f()
         let ast = r#"fn bar(t) {
   return startSketchOn(XY)
     |> startProfileAt([0,0], %)
-    |> angledLine({
+    |> angledLine(
         angle = -60,
         length = segLen(t),
-    }, %)
+    )
     |> line(end = [0, 0])
     |> close()
 }
@@ -2052,7 +2050,7 @@ fn foo() {
 
 solid = sketch |> extrude(length = 10)
 // tag0 tags a face
-sketch2 = startSketchOn(solid, tag0)
+sketch2 = startSketchOn(solid, face = tag0)
   |> startProfileAt([0,0], %)
   |> line(end = [0, 1])
   |> line(end = [1, 0])

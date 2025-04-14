@@ -17,66 +17,42 @@ brakeCaliperSketch = startSketchOn(XY)
        0,
        rotorTotalThickness + caliperTolerance - caliperInnerEdgeRadius
      ])
-  |> tangentialArc({
-       offset = 90,
-       radius = caliperInnerEdgeRadius
-     }, %)
+  |> tangentialArc(angle = 90, radius = caliperInnerEdgeRadius)
   |> line(end = [
        -caliperPadLength + 2 * caliperInnerEdgeRadius,
        0
      ])
-  |> tangentialArc({
-       offset = -90,
-       radius = caliperInnerEdgeRadius
-     }, %)
+  |> tangentialArc(angle = -90, radius = caliperInnerEdgeRadius)
   |> line(end = [
        0,
        caliperThickness - (caliperInnerEdgeRadius * 2)
      ])
-  |> tangentialArc({
-       offset = -90,
-       radius = caliperInnerEdgeRadius
-     }, %)
+  |> tangentialArc(angle = -90, radius = caliperInnerEdgeRadius)
   |> line(end = [
        caliperPadLength + caliperThickness - caliperOuterEdgeRadius - caliperInnerEdgeRadius,
        0
      ])
-  |> tangentialArc({
-       offset = -90,
-       radius = caliperOuterEdgeRadius
-     }, %)
+  |> tangentialArc(angle = -90, radius = caliperOuterEdgeRadius)
   |> line(end = [
        0,
        -2 * caliperTolerance - (2 * caliperThickness) - rotorTotalThickness + 2 * caliperOuterEdgeRadius
      ])
-  |> tangentialArc({
-       offset = -90,
-       radius = caliperOuterEdgeRadius
-     }, %)
+  |> tangentialArc(angle = -90, radius = caliperOuterEdgeRadius)
   |> line(end = [
        -caliperPadLength - caliperThickness + caliperOuterEdgeRadius + caliperInnerEdgeRadius,
        0
      ])
-  |> tangentialArc({
-       offset = -90,
-       radius = caliperInnerEdgeRadius
-     }, %)
+  |> tangentialArc(angle = -90, radius = caliperInnerEdgeRadius)
   |> line(end = [
        0,
        caliperThickness - (2 * caliperInnerEdgeRadius)
      ])
-  |> tangentialArc({
-       offset = -90,
-       radius = caliperInnerEdgeRadius
-     }, %)
+  |> tangentialArc(angle = -90, radius = caliperInnerEdgeRadius)
   |> line(end = [
        caliperPadLength - (2 * caliperInnerEdgeRadius),
        0
      ])
-  |> tangentialArc({
-       offset = 90,
-       radius = caliperInnerEdgeRadius
-     }, %)
+  |> tangentialArc(angle = 90, radius = caliperInnerEdgeRadius)
   |> close()
 
 // Revolve the brake caliper sketch

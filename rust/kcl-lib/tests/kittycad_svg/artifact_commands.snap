@@ -4905,7 +4905,8 @@ description: Artifact commands kittycad_svg.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 1.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {

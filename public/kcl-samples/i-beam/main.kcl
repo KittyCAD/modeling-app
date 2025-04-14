@@ -5,7 +5,7 @@
 @settings(defaultLengthUnit = in)
 
 // Define parameters
-beamLength = 6 * ft()
+beamLength = fromFt(6)
 beamHeight = 4
 flangeWidth = 2.663
 flangeThickness = 0.293
@@ -18,7 +18,7 @@ iBeam = startSketchOn(-XZ)
   |> xLine(length = flangeWidth / 2)
   |> yLine(length = -flangeThickness)
   |> xLine(endAbsolute = webThickness / 2 + rootRadius)
-  |> tangentialArc({ radius = rootRadius, offset = 90 }, %)
+  |> tangentialArc(radius = rootRadius, angle = 90)
   |> yLine(endAbsolute = 0)
   |> mirror2d(axis = X)
   |> mirror2d(axis = Y)

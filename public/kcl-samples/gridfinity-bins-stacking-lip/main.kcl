@@ -39,9 +39,9 @@ fn face(plane) {
     |> startProfileAt([binBaseLength + binTol, 0], %)
     |> yLine(length = height)
     |> xLine(length = -binBaseLength)
-    |> angledLineOfYLength({ angle = -45, length = thirdStep }, %)
+    |> angledLine(angle = -45, lengthY = thirdStep)
     |> yLine(length = -secondStep)
-    |> angledLineOfYLength({ angle = -45, length = firstStep }, %)
+    |> angledLine(angle = -45, lengthY = firstStep)
     |> close()
   return faceSketch
 }
@@ -109,7 +109,7 @@ singleBinFill = startSketchOn(XY)
        ],
      )
 
-magCutout000 = startSketchOn(singleBinFill, "start")
+magCutout000 = startSketchOn(singleBinFill, face = START)
   |> circle(
        center = [
          -magOffset - binBaseLength - binTol,
@@ -171,7 +171,7 @@ binTop = startSketchOn(offsetPlane(XY, offset = height))
          getPreviousAdjacentEdge(line012)
        ],
      )
-  |> shell(faces = ["end"], thickness = binThk)
+  |> shell(faces = [END], thickness = binThk)
 
 // Define a function which builds the profile of the baseplate bin
 fn lipFace(plane) {
@@ -184,53 +184,47 @@ fn lipFace(plane) {
          angleEnd = 45.0,
          radius = 0.500000
        }, %, $arc000)
-    // |> angledLineOfYLength({ angle: -45, length: lipStep5 }, %)
+    // |> angledLine(angle = -45, lengthY = lipStep5 )
     |> line(end = [1.046447, -1.046447], tag = $line001)
     |> yLine(length = -lipStep4)
-    |> angledLineOfYLength({ angle = -45, length = lipStep3 }, %)
+    |> angledLine(angle = -45, lengthY = lipStep3)
     |> yLine(length = -lipStep2)
-    |> angledLineOfYLength({ angle = -135, length = lipStep1 }, %)
+    |> angledLine(angle = -135, lengthY = lipStep1)
     |> close()
   return faceSketch
 }
 
 plane000 = {
-  plane = {
-    origin = [
-      cornerRadius,
-      0.0,
-      height + binHeight * countBinHeight
-    ],
-    xAxis = [0.0, 1.0, 0.0],
-    yAxis = [0.0, 0.0, 1.0],
-    zAxis = [1.0, 0.0, 0.0]
-  }
+  origin = [
+    cornerRadius,
+    0.0,
+    height + binHeight * countBinHeight
+  ],
+  xAxis = [0.0, 1.0, 0.0],
+  yAxis = [0.0, 0.0, 1.0],
+  zAxis = [1.0, 0.0, 0.0]
 }
 
 plane001 = {
-  plane = {
-    origin = [
-      0.0,
-      cornerRadius,
-      height + binHeight * countBinHeight
-    ],
-    xAxis = [1.0, 0.0, 0.0],
-    yAxis = [0.0, 0.0, 1.0],
-    zAxis = [0.0, 1.0, 0.0]
-  }
+  origin = [
+    0.0,
+    cornerRadius,
+    height + binHeight * countBinHeight
+  ],
+  xAxis = [1.0, 0.0, 0.0],
+  yAxis = [0.0, 0.0, 1.0],
+  zAxis = [0.0, 1.0, 0.0]
 }
 
 plane002 = {
-  plane = {
-    origin = [
-      countBinWidth * (binLength + 2 * binTol) - cornerRadius,
-      0.0,
-      height + binHeight * countBinHeight
-    ],
-    xAxis = [0.0, 1.0, 0.0],
-    yAxis = [0.0, 0.0, 1.0],
-    zAxis = [1.0, 0.0, 0.0]
-  }
+  origin = [
+    countBinWidth * (binLength + 2 * binTol) - cornerRadius,
+    0.0,
+    height + binHeight * countBinHeight
+  ],
+  xAxis = [0.0, 1.0, 0.0],
+  yAxis = [0.0, 0.0, 1.0],
+  zAxis = [1.0, 0.0, 0.0]
 }
 
 // Extrude a single side of the lip of the bin

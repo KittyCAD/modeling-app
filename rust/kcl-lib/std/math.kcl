@@ -7,7 +7,7 @@
 /// circumference = 70
 ///
 /// exampleSketch = startSketchOn(XZ)
-///  |> circle(center = [0, 0], radius = circumference/ (2 * PI))
+///  |> circle(center = [0, 0], radius = circumference / (2 * PI))
 ///
 /// example = extrude(exampleSketch, length = 5)
 /// ```
@@ -18,10 +18,10 @@ export PI = 3.14159265358979323846264338327950288_
 /// ```
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfileAt([0, 0], %)
-///   |> angledLine({
+///   |> angledLine(
 ///     angle = 30,
 ///     length = 2 * E ^ 2,
-///   }, %)
+///   )
 ///   |> yLine(endAbsolute = 0)
 ///   |> close()
 ///
@@ -34,10 +34,10 @@ export E = 2.71828182845904523536028747135266250_
 /// ```
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfileAt([0, 0], %)
-///   |> angledLine({
+///   |> angledLine(
 ///     angle = 50,
 ///     length = 10 * TAU,
-///   }, %)
+///   )
 ///   |> yLine(endAbsolute = 0)
 ///   |> close()
 ///
@@ -50,48 +50,70 @@ export TAU = 6.28318530717958647692528676655900577_
 /// ```
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfileAt([0, 0], %)
-///   |> angledLine({
+///   |> angledLine(
 ///     angle = 30,
 ///     length = 3 / cos(toRadians(30)),
-///   }, %)
+///   )
 ///   |> yLine(endAbsolute = 0)
 ///   |> close()
 ///
 /// example = extrude(exampleSketch, length = 5)
 /// ```
 @(impl = std_rust)
-export fn cos(@num: number(rad)): number(_) {}
+export fn cos(@num: number(Angle)): number(_) {}
 
 /// Compute the sine of a number (in radians).
 ///
 /// ```
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfileAt([0, 0], %)
-///   |> angledLine({
+///   |> angledLine(
 ///     angle = 50,
-///     length = 15 / sin(toDegrees(135)),
-///   }, %)
+///     length = 15 / sin(toRadians(135)),
+///   )
 ///   |> yLine(endAbsolute = 0)
 ///   |> close()
 ///
 /// example = extrude(exampleSketch, length = 5)
 /// ```
 @(impl = std_rust)
-export fn sin(@num: number(rad)): number(_) {}
+export fn sin(@num: number(Angle)): number(_) {}
 
 /// Compute the tangent of a number (in radians).
 ///
 /// ```
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfileAt([0, 0], %)
-///   |> angledLine({
+///   |> angledLine(
 ///     angle = 50,
 ///     length = 50 * tan(1/2),
-///   }, %)
+///   )
 ///   |> yLine(endAbsolute = 0)
 ///   |> close()
 ///
 /// example = extrude(exampleSketch, length = 5)
 /// ```
 @(impl = std_rust)
-export fn tan(@num: number(rad)): number(_) {}
+export fn tan(@num: number(Angle)): number(_) {}
+
+/// Convert polar/sphere (azimuth, elevation, distance) coordinates to
+/// cartesian (x/y/z grid) coordinates.
+///
+/// ```
+/// exampleSketch = startSketchOn(XZ)
+///   |> startProfileAt([0, 0], %)
+///   |> line(end = polar(angle = 30, length = 5), tag = $thing)
+///   |> line(end = [0, 5])
+///   |> line(end = [segEndX(thing), 0])
+///   |> line(end = [-20, 10])
+///   |> close()
+///  
+/// example = extrude(exampleSketch, length = 5)
+/// ```
+export fn polar(angle: number(Angle), length: number(Length)): Point2d {
+  // TODO could be done by implicit conversion when UoM coercions are activated.
+  rads = toRadians(angle)
+  x = length * cos(rads)
+  y = length * sin(rads)
+  return [x, y]
+}

@@ -6,10 +6,10 @@ import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfigu
 import { newKclFile } from '@src/lang/project'
 import {
   defaultAppSettings,
-  initPromise,
   parseAppSettings,
   parseProjectSettings,
 } from '@src/lang/wasm'
+import { initPromise, relevantFileExtensions } from '@src/lang/wasmUtils'
 import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
   PROJECT_ENTRYPOINT,
@@ -24,6 +24,7 @@ import {
 import type { FileEntry, Project } from '@src/lib/project'
 import { err } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
+import { getInVariableCase } from '@src/lib/utils'
 
 export async function renameProjectDirectory(
   projectPath: string,
@@ -199,21 +200,13 @@ export async function listProjects(
   return projects
 }
 
-const IMPORT_FILE_EXTENSIONS = [
-  // TODO Use ImportFormat enum
-  'stp',
-  'glb',
-  'fbxb',
-  'kcl',
-]
-
-const isRelevantFile = (filename: string): boolean =>
-  IMPORT_FILE_EXTENSIONS.some((ext) => filename.endsWith('.' + ext))
-
 const collectAllFilesRecursiveFrom = async (
   path: string,
   canReadWritePath: boolean
 ) => {
+  const RELEVANT_FILE_EXTENSIONS = relevantFileExtensions()
+  const isRelevantFile = (filename: string): boolean =>
+    RELEVANT_FILE_EXTENSIONS.some((ext) => filename.endsWith('.' + ext))
   // Make sure the filesystem object exists.
   try {
     await window.electron.stat(path)
@@ -706,10 +699,12 @@ export const getUser = async (
   hostname: string
 ): Promise<Models['User_type']> => {
   try {
-    const user = await window.electron.kittycad('users.get_user_self', {
-      client: { token },
+    const user = await fetch(`${hostname}/users/me`, {
+      headers: new Headers({
+        Authorization: `Bearer ${token}`,
+      }),
     })
-    return user
+    return user.json()
   } catch (e) {
     console.error(e)
   }
@@ -730,4 +725,13 @@ export const writeProjectThumbnailFile = async (
     asArray[i] = data.charCodeAt(i)
   }
   return window.electron.writeFile(filePath, asArray)
+}
+
+export function getPathFilenameInVariableCase(path: string) {
+  // from https://nodejs.org/en/learn/manipulating-files/nodejs-file-paths#example
+  const basenameNoExt = window.electron.path.basename(
+    path,
+    window.electron.path.extname(path)
+  )
+  return getInVariableCase(basenameNoExt)
 }

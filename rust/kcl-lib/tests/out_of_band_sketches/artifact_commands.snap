@@ -306,7 +306,8 @@ description: Artifact commands out_of_band_sketches.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 10.14,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -436,7 +437,8 @@ description: Artifact commands out_of_band_sketches.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 10.14,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {

@@ -30,7 +30,7 @@ tau(): number
 ```js
 exampleSketch = startSketchOn(XZ)
   |> startProfileAt([0, 0], %)
-  |> angledLine({ angle = 50, length = 10 * tau() }, %)
+  |> angledLine(angle = 50, length = 10 * tau())
   |> yLine(endAbsolute = 0)
   |> close()
 

@@ -19,7 +19,7 @@ length001 = timesFive(1) * 5
 sketch001 = startSketchOn(XZ)
   |> startProfileAt([20, 10], %)
   |> line(end = [10, 10])
-  |> angledLine([-45, length001], %)
+  |> angledLine(angle = -45, length = length001)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 revolve001 = revolve(sketch001, axis = X)
@@ -38,19 +38,13 @@ extrude001 = extrude(sketch002, length = 10)
 
 const FEATURE_TREE_SKETCH_CODE = `sketch001 = startSketchOn(XZ)
   |> startProfileAt([0, 0], %)
-  |> angledLine([0, 4], %, $rectangleSegmentA001)
-  |> angledLine([
-       segAng(rectangleSegmentA001) - 90,
-       2
-     ], %, $rectangleSegmentB001)
-  |> angledLine([
-       segAng(rectangleSegmentA001),
-       -segLen(rectangleSegmentA001)
-     ], %, $rectangleSegmentC001)
+  |> angledLine(angle = 0, length = 4, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 2, tag = $rectangleSegmentB001)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $rectangleSegmentC001)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close(%)
 extrude001 = extrude(sketch001, length = 10)
-sketch002 = startSketchOn(extrude001, rectangleSegmentB001)
+sketch002 = startSketchOn(extrude001, face = rectangleSegmentB001)
   |> circle(
        center = [-1, 2],
        radius = .5
@@ -200,7 +194,7 @@ test.describe('Feature Tree pane', () => {
           highlightedCode: '',
           diagnostics: [],
           activeLines: [
-            'sketch002=startSketchOn(extrude001,rectangleSegmentB001)',
+            'sketch002=startSketchOn(extrude001,face=rectangleSegmentB001)',
           ],
         })
         await toolbar.exitSketchBtn.click()

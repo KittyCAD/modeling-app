@@ -10,7 +10,7 @@ description: Operations executed union_cubes.kcl
       "name": "cube",
       "functionSourceRange": [
         7,
-        328,
+        356,
         0
       ],
       "unlabeledArg": null,
@@ -20,7 +20,7 @@ description: Operations executed union_cubes.kcl
   },
   {
     "labeledArgs": {
-      "data": {
+      "planeOrSolid": {
         "value": {
           "type": "Plane",
           "artifact_id": "[uuid]"
@@ -38,7 +38,7 @@ description: Operations executed union_cubes.kcl
       "length": {
         "value": {
           "type": "Number",
-          "value": 10.0,
+          "value": 20.0,
           "ty": {
             "type": "Default",
             "len": {
@@ -75,7 +75,7 @@ description: Operations executed union_cubes.kcl
       "name": "cube",
       "functionSourceRange": [
         7,
-        328,
+        356,
         0
       ],
       "unlabeledArg": null,
@@ -85,7 +85,7 @@ description: Operations executed union_cubes.kcl
   },
   {
     "labeledArgs": {
-      "data": {
+      "planeOrSolid": {
         "value": {
           "type": "Plane",
           "artifact_id": "[uuid]"

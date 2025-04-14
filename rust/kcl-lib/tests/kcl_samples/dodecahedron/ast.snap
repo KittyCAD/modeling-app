@@ -6,19 +6,19 @@ description: Result of parsing dodecahedron.kcl
   "Ok": {
     "body": [
       {
-        "commentStart": 305,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 351,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 351,
+            "commentStart": 0,
             "end": 0,
             "name": "circR",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 359,
+            "commentStart": 0,
             "end": 0,
             "raw": "25",
             "start": 0,
@@ -43,26 +43,26 @@ description: Result of parsing dodecahedron.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 361,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 421,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 421,
+            "commentStart": 0,
             "end": 0,
             "name": "wallThickness",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 437,
+            "commentStart": 0,
             "end": 0,
             "left": {
               "abs_path": false,
-              "commentStart": 437,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 437,
+                "commentStart": 0,
                 "end": 0,
                 "name": "circR",
                 "start": 0,
@@ -75,7 +75,7 @@ description: Result of parsing dodecahedron.kcl
             },
             "operator": "*",
             "right": {
-              "commentStart": 445,
+              "commentStart": 0,
               "end": 0,
               "raw": "0.2",
               "start": 0,
@@ -106,12 +106,12 @@ description: Result of parsing dodecahedron.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 448,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 484,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 484,
+            "commentStart": 0,
             "end": 0,
             "name": "dihedral",
             "start": 0,
@@ -121,12 +121,12 @@ description: Result of parsing dodecahedron.kcl
             "arguments": [
               {
                 "argument": {
-                  "commentStart": 502,
+                  "commentStart": 0,
                   "end": 0,
                   "left": {
                     "arguments": [
                       {
-                        "commentStart": 507,
+                        "commentStart": 0,
                         "end": 0,
                         "raw": "5",
                         "start": 0,
@@ -140,10 +140,10 @@ description: Result of parsing dodecahedron.kcl
                     ],
                     "callee": {
                       "abs_path": false,
-                      "commentStart": 502,
+                      "commentStart": 0,
                       "end": 0,
                       "name": {
-                        "commentStart": 502,
+                        "commentStart": 0,
                         "end": 0,
                         "name": "sqrt",
                         "start": 0,
@@ -153,7 +153,7 @@ description: Result of parsing dodecahedron.kcl
                       "start": 0,
                       "type": "Name"
                     },
-                    "commentStart": 502,
+                    "commentStart": 0,
                     "end": 0,
                     "start": 0,
                     "type": "CallExpression",
@@ -161,7 +161,7 @@ description: Result of parsing dodecahedron.kcl
                   },
                   "operator": "/",
                   "right": {
-                    "commentStart": 512,
+                    "commentStart": 0,
                     "end": 0,
                     "raw": "5",
                     "start": 0,
@@ -176,7 +176,7 @@ description: Result of parsing dodecahedron.kcl
                   "type": "BinaryExpression",
                   "type": "BinaryExpression"
                 },
-                "commentStart": 500,
+                "commentStart": 0,
                 "end": 0,
                 "operator": "-",
                 "start": 0,
@@ -186,10 +186,10 @@ description: Result of parsing dodecahedron.kcl
             ],
             "callee": {
               "abs_path": false,
-              "commentStart": 495,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 495,
+                "commentStart": 0,
                 "end": 0,
                 "name": "acos",
                 "start": 0,
@@ -199,7 +199,7 @@ description: Result of parsing dodecahedron.kcl
               "start": 0,
               "type": "Name"
             },
-            "commentStart": 495,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "CallExpression",
@@ -220,29 +220,29 @@ description: Result of parsing dodecahedron.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 515,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 537,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 537,
+            "commentStart": 0,
             "end": 0,
             "name": "inscR",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 545,
+            "commentStart": 0,
             "end": 0,
             "left": {
-              "commentStart": 545,
+              "commentStart": 0,
               "end": 0,
               "left": {
                 "abs_path": false,
-                "commentStart": 545,
+                "commentStart": 0,
                 "end": 0,
                 "name": {
-                  "commentStart": 545,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "circR",
                   "start": 0,
@@ -255,7 +255,7 @@ description: Result of parsing dodecahedron.kcl
               },
               "operator": "/",
               "right": {
-                "commentStart": 553,
+                "commentStart": 0,
                 "end": 0,
                 "raw": "15",
                 "start": 0,
@@ -274,10 +274,10 @@ description: Result of parsing dodecahedron.kcl
             "right": {
               "arguments": [
                 {
-                  "commentStart": 563,
+                  "commentStart": 0,
                   "end": 0,
                   "left": {
-                    "commentStart": 563,
+                    "commentStart": 0,
                     "end": 0,
                     "raw": "75",
                     "start": 0,
@@ -290,10 +290,10 @@ description: Result of parsing dodecahedron.kcl
                   },
                   "operator": "+",
                   "right": {
-                    "commentStart": 568,
+                    "commentStart": 0,
                     "end": 0,
                     "left": {
-                      "commentStart": 568,
+                      "commentStart": 0,
                       "end": 0,
                       "raw": "30",
                       "start": 0,
@@ -308,7 +308,7 @@ description: Result of parsing dodecahedron.kcl
                     "right": {
                       "arguments": [
                         {
-                          "commentStart": 578,
+                          "commentStart": 0,
                           "end": 0,
                           "raw": "5",
                           "start": 0,
@@ -322,10 +322,10 @@ description: Result of parsing dodecahedron.kcl
                       ],
                       "callee": {
                         "abs_path": false,
-                        "commentStart": 573,
+                        "commentStart": 0,
                         "end": 0,
                         "name": {
-                          "commentStart": 573,
+                          "commentStart": 0,
                           "end": 0,
                           "name": "sqrt",
                           "start": 0,
@@ -335,7 +335,7 @@ description: Result of parsing dodecahedron.kcl
                         "start": 0,
                         "type": "Name"
                       },
-                      "commentStart": 573,
+                      "commentStart": 0,
                       "end": 0,
                       "start": 0,
                       "type": "CallExpression",
@@ -352,10 +352,10 @@ description: Result of parsing dodecahedron.kcl
               ],
               "callee": {
                 "abs_path": false,
-                "commentStart": 558,
+                "commentStart": 0,
                 "end": 0,
                 "name": {
-                  "commentStart": 558,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "sqrt",
                   "start": 0,
@@ -365,7 +365,7 @@ description: Result of parsing dodecahedron.kcl
                 "start": 0,
                 "type": "Name"
               },
-              "commentStart": 558,
+              "commentStart": 0,
               "end": 0,
               "start": 0,
               "type": "CallExpression",
@@ -390,25 +390,25 @@ description: Result of parsing dodecahedron.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 581,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 607,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 607,
+            "commentStart": 0,
             "end": 0,
             "name": "edgeL",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 615,
+            "commentStart": 0,
             "end": 0,
             "left": {
-              "commentStart": 615,
+              "commentStart": 0,
               "end": 0,
               "left": {
-                "commentStart": 615,
+                "commentStart": 0,
                 "end": 0,
                 "raw": "4",
                 "start": 0,
@@ -422,10 +422,10 @@ description: Result of parsing dodecahedron.kcl
               "operator": "*",
               "right": {
                 "abs_path": false,
-                "commentStart": 619,
+                "commentStart": 0,
                 "end": 0,
                 "name": {
-                  "commentStart": 619,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "circR",
                   "start": 0,
@@ -442,12 +442,12 @@ description: Result of parsing dodecahedron.kcl
             },
             "operator": "/",
             "right": {
-              "commentStart": 628,
+              "commentStart": 0,
               "end": 0,
               "left": {
                 "arguments": [
                   {
-                    "commentStart": 633,
+                    "commentStart": 0,
                     "end": 0,
                     "raw": "3",
                     "start": 0,
@@ -461,10 +461,10 @@ description: Result of parsing dodecahedron.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 628,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 628,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "sqrt",
                     "start": 0,
@@ -474,7 +474,7 @@ description: Result of parsing dodecahedron.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 628,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -482,10 +482,10 @@ description: Result of parsing dodecahedron.kcl
               },
               "operator": "*",
               "right": {
-                "commentStart": 639,
+                "commentStart": 0,
                 "end": 0,
                 "left": {
-                  "commentStart": 639,
+                  "commentStart": 0,
                   "end": 0,
                   "raw": "1",
                   "start": 0,
@@ -500,7 +500,7 @@ description: Result of parsing dodecahedron.kcl
                 "right": {
                   "arguments": [
                     {
-                      "commentStart": 648,
+                      "commentStart": 0,
                       "end": 0,
                       "raw": "5",
                       "start": 0,
@@ -514,10 +514,10 @@ description: Result of parsing dodecahedron.kcl
                   ],
                   "callee": {
                     "abs_path": false,
-                    "commentStart": 643,
+                    "commentStart": 0,
                     "end": 0,
                     "name": {
-                      "commentStart": 643,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "sqrt",
                       "start": 0,
@@ -527,7 +527,7 @@ description: Result of parsing dodecahedron.kcl
                     "start": 0,
                     "type": "Name"
                   },
-                  "commentStart": 643,
+                  "commentStart": 0,
                   "end": 0,
                   "start": 0,
                   "type": "CallExpression",
@@ -560,29 +560,29 @@ description: Result of parsing dodecahedron.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 652,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 673,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 673,
+            "commentStart": 0,
             "end": 0,
             "name": "pentR",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 681,
+            "commentStart": 0,
             "end": 0,
             "left": {
-              "commentStart": 681,
+              "commentStart": 0,
               "end": 0,
               "left": {
                 "abs_path": false,
-                "commentStart": 681,
+                "commentStart": 0,
                 "end": 0,
                 "name": {
-                  "commentStart": 681,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "edgeL",
                   "start": 0,
@@ -595,7 +595,7 @@ description: Result of parsing dodecahedron.kcl
               },
               "operator": "/",
               "right": {
-                "commentStart": 689,
+                "commentStart": 0,
                 "end": 0,
                 "raw": "2",
                 "start": 0,
@@ -616,7 +616,7 @@ description: Result of parsing dodecahedron.kcl
                 {
                   "arguments": [
                     {
-                      "commentStart": 707,
+                      "commentStart": 0,
                       "end": 0,
                       "raw": "36",
                       "start": 0,
@@ -630,10 +630,10 @@ description: Result of parsing dodecahedron.kcl
                   ],
                   "callee": {
                     "abs_path": false,
-                    "commentStart": 697,
+                    "commentStart": 0,
                     "end": 0,
                     "name": {
-                      "commentStart": 697,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "toRadians",
                       "start": 0,
@@ -643,7 +643,7 @@ description: Result of parsing dodecahedron.kcl
                     "start": 0,
                     "type": "Name"
                   },
-                  "commentStart": 697,
+                  "commentStart": 0,
                   "end": 0,
                   "start": 0,
                   "type": "CallExpression",
@@ -652,10 +652,10 @@ description: Result of parsing dodecahedron.kcl
               ],
               "callee": {
                 "abs_path": false,
-                "commentStart": 693,
+                "commentStart": 0,
                 "end": 0,
                 "name": {
-                  "commentStart": 693,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "sin",
                   "start": 0,
@@ -665,7 +665,7 @@ description: Result of parsing dodecahedron.kcl
                 "start": 0,
                 "type": "Name"
               },
-              "commentStart": 693,
+              "commentStart": 0,
               "end": 0,
               "start": 0,
               "type": "CallExpression",
@@ -690,153 +690,98 @@ description: Result of parsing dodecahedron.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 711,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 758,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 758,
+            "commentStart": 0,
             "end": 0,
             "name": "plane",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 766,
+            "commentStart": 0,
             "end": 0,
             "properties": [
               {
-                "commentStart": 770,
+                "commentStart": 0,
                 "end": 0,
                 "key": {
-                  "commentStart": 770,
+                  "commentStart": 0,
                   "end": 0,
-                  "name": "plane",
+                  "name": "origin",
                   "start": 0,
                   "type": "Identifier"
                 },
                 "start": 0,
                 "type": "ObjectProperty",
                 "value": {
-                  "commentStart": 778,
-                  "end": 0,
-                  "properties": [
+                  "commentStart": 0,
+                  "elements": [
                     {
-                      "commentStart": 784,
+                      "commentStart": 0,
                       "end": 0,
-                      "key": {
-                        "commentStart": 784,
-                        "end": 0,
-                        "name": "origin",
-                        "start": 0,
-                        "type": "Identifier"
-                      },
-                      "start": 0,
-                      "type": "ObjectProperty",
-                      "value": {
-                        "commentStart": 793,
-                        "elements": [
-                          {
-                            "commentStart": 801,
+                      "left": {
+                        "argument": {
+                          "abs_path": false,
+                          "commentStart": 0,
+                          "end": 0,
+                          "name": {
+                            "commentStart": 0,
                             "end": 0,
-                            "left": {
-                              "argument": {
-                                "abs_path": false,
-                                "commentStart": 802,
+                            "name": "inscR",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
+                          "start": 0,
+                          "type": "Name",
+                          "type": "Name"
+                        },
+                        "commentStart": 0,
+                        "end": 0,
+                        "operator": "-",
+                        "start": 0,
+                        "type": "UnaryExpression",
+                        "type": "UnaryExpression"
+                      },
+                      "operator": "*",
+                      "right": {
+                        "arguments": [
+                          {
+                            "arguments": [
+                              {
+                                "commentStart": 0,
                                 "end": 0,
-                                "name": {
-                                  "commentStart": 802,
-                                  "end": 0,
-                                  "name": "inscR",
-                                  "start": 0,
-                                  "type": "Identifier"
-                                },
-                                "path": [],
-                                "start": 0,
-                                "type": "Name",
-                                "type": "Name"
-                              },
-                              "commentStart": 801,
-                              "end": 0,
-                              "operator": "-",
-                              "start": 0,
-                              "type": "UnaryExpression",
-                              "type": "UnaryExpression"
-                            },
-                            "operator": "*",
-                            "right": {
-                              "arguments": [
-                                {
+                                "left": {
                                   "arguments": [
                                     {
-                                      "commentStart": 824,
+                                      "abs_path": false,
+                                      "commentStart": 0,
                                       "end": 0,
-                                      "left": {
-                                        "arguments": [
-                                          {
-                                            "abs_path": false,
-                                            "commentStart": 834,
-                                            "end": 0,
-                                            "name": {
-                                              "commentStart": 834,
-                                              "end": 0,
-                                              "name": "dihedral",
-                                              "start": 0,
-                                              "type": "Identifier"
-                                            },
-                                            "path": [],
-                                            "start": 0,
-                                            "type": "Name",
-                                            "type": "Name"
-                                          }
-                                        ],
-                                        "callee": {
-                                          "abs_path": false,
-                                          "commentStart": 824,
-                                          "end": 0,
-                                          "name": {
-                                            "commentStart": 824,
-                                            "end": 0,
-                                            "name": "toDegrees",
-                                            "start": 0,
-                                            "type": "Identifier"
-                                          },
-                                          "path": [],
-                                          "start": 0,
-                                          "type": "Name"
-                                        },
-                                        "commentStart": 824,
+                                      "name": {
+                                        "commentStart": 0,
                                         "end": 0,
+                                        "name": "dihedral",
                                         "start": 0,
-                                        "type": "CallExpression",
-                                        "type": "CallExpression"
+                                        "type": "Identifier"
                                       },
-                                      "operator": "-",
-                                      "right": {
-                                        "commentStart": 846,
-                                        "end": 0,
-                                        "raw": "90",
-                                        "start": 0,
-                                        "type": "Literal",
-                                        "type": "Literal",
-                                        "value": {
-                                          "value": 90.0,
-                                          "suffix": "None"
-                                        }
-                                      },
+                                      "path": [],
                                       "start": 0,
-                                      "type": "BinaryExpression",
-                                      "type": "BinaryExpression"
+                                      "type": "Name",
+                                      "type": "Name"
                                     }
                                   ],
                                   "callee": {
                                     "abs_path": false,
-                                    "commentStart": 814,
+                                    "commentStart": 0,
                                     "end": 0,
                                     "name": {
-                                      "commentStart": 814,
+                                      "commentStart": 0,
                                       "end": 0,
-                                      "name": "toRadians",
+                                      "name": "toDegrees",
                                       "start": 0,
                                       "type": "Identifier"
                                     },
@@ -844,163 +789,163 @@ description: Result of parsing dodecahedron.kcl
                                     "start": 0,
                                     "type": "Name"
                                   },
-                                  "commentStart": 814,
+                                  "commentStart": 0,
                                   "end": 0,
                                   "start": 0,
                                   "type": "CallExpression",
                                   "type": "CallExpression"
-                                }
-                              ],
-                              "callee": {
-                                "abs_path": false,
-                                "commentStart": 810,
-                                "end": 0,
-                                "name": {
-                                  "commentStart": 810,
-                                  "end": 0,
-                                  "name": "cos",
-                                  "start": 0,
-                                  "type": "Identifier"
                                 },
-                                "path": [],
+                                "operator": "-",
+                                "right": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "raw": "90",
+                                  "start": 0,
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 90.0,
+                                    "suffix": "None"
+                                  }
+                                },
                                 "start": 0,
-                                "type": "Name"
-                              },
-                              "commentStart": 810,
-                              "end": 0,
-                              "start": 0,
-                              "type": "CallExpression",
-                              "type": "CallExpression"
-                            },
-                            "start": 0,
-                            "type": "BinaryExpression",
-                            "type": "BinaryExpression"
-                          },
-                          {
-                            "commentStart": 858,
-                            "end": 0,
-                            "raw": "0",
-                            "start": 0,
-                            "type": "Literal",
-                            "type": "Literal",
-                            "value": {
-                              "value": 0.0,
-                              "suffix": "None"
-                            }
-                          },
-                          {
-                            "commentStart": 867,
-                            "end": 0,
-                            "left": {
+                                "type": "BinaryExpression",
+                                "type": "BinaryExpression"
+                              }
+                            ],
+                            "callee": {
                               "abs_path": false,
-                              "commentStart": 867,
+                              "commentStart": 0,
                               "end": 0,
                               "name": {
-                                "commentStart": 867,
+                                "commentStart": 0,
                                 "end": 0,
-                                "name": "inscR",
+                                "name": "toRadians",
                                 "start": 0,
                                 "type": "Identifier"
                               },
                               "path": [],
                               "start": 0,
-                              "type": "Name",
                               "type": "Name"
                             },
-                            "operator": "-",
-                            "right": {
-                              "commentStart": 876,
-                              "end": 0,
-                              "left": {
-                                "abs_path": false,
-                                "commentStart": 876,
-                                "end": 0,
-                                "name": {
-                                  "commentStart": 876,
+                            "commentStart": 0,
+                            "end": 0,
+                            "start": 0,
+                            "type": "CallExpression",
+                            "type": "CallExpression"
+                          }
+                        ],
+                        "callee": {
+                          "abs_path": false,
+                          "commentStart": 0,
+                          "end": 0,
+                          "name": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "name": "cos",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
+                          "start": 0,
+                          "type": "Name"
+                        },
+                        "commentStart": 0,
+                        "end": 0,
+                        "start": 0,
+                        "type": "CallExpression",
+                        "type": "CallExpression"
+                      },
+                      "start": 0,
+                      "type": "BinaryExpression",
+                      "type": "BinaryExpression"
+                    },
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "raw": "0",
+                      "start": 0,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 0.0,
+                        "suffix": "None"
+                      }
+                    },
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "left": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "name": "inscR",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
+                      },
+                      "operator": "-",
+                      "right": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "left": {
+                          "abs_path": false,
+                          "commentStart": 0,
+                          "end": 0,
+                          "name": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "name": "inscR",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
+                          "start": 0,
+                          "type": "Name",
+                          "type": "Name"
+                        },
+                        "operator": "*",
+                        "right": {
+                          "arguments": [
+                            {
+                              "arguments": [
+                                {
+                                  "commentStart": 0,
                                   "end": 0,
-                                  "name": "inscR",
-                                  "start": 0,
-                                  "type": "Identifier"
-                                },
-                                "path": [],
-                                "start": 0,
-                                "type": "Name",
-                                "type": "Name"
-                              },
-                              "operator": "*",
-                              "right": {
-                                "arguments": [
-                                  {
+                                  "left": {
                                     "arguments": [
                                       {
-                                        "commentStart": 898,
+                                        "abs_path": false,
+                                        "commentStart": 0,
                                         "end": 0,
-                                        "left": {
-                                          "arguments": [
-                                            {
-                                              "abs_path": false,
-                                              "commentStart": 908,
-                                              "end": 0,
-                                              "name": {
-                                                "commentStart": 908,
-                                                "end": 0,
-                                                "name": "dihedral",
-                                                "start": 0,
-                                                "type": "Identifier"
-                                              },
-                                              "path": [],
-                                              "start": 0,
-                                              "type": "Name",
-                                              "type": "Name"
-                                            }
-                                          ],
-                                          "callee": {
-                                            "abs_path": false,
-                                            "commentStart": 898,
-                                            "end": 0,
-                                            "name": {
-                                              "commentStart": 898,
-                                              "end": 0,
-                                              "name": "toDegrees",
-                                              "start": 0,
-                                              "type": "Identifier"
-                                            },
-                                            "path": [],
-                                            "start": 0,
-                                            "type": "Name"
-                                          },
-                                          "commentStart": 898,
+                                        "name": {
+                                          "commentStart": 0,
                                           "end": 0,
+                                          "name": "dihedral",
                                           "start": 0,
-                                          "type": "CallExpression",
-                                          "type": "CallExpression"
+                                          "type": "Identifier"
                                         },
-                                        "operator": "-",
-                                        "right": {
-                                          "commentStart": 920,
-                                          "end": 0,
-                                          "raw": "90",
-                                          "start": 0,
-                                          "type": "Literal",
-                                          "type": "Literal",
-                                          "value": {
-                                            "value": 90.0,
-                                            "suffix": "None"
-                                          }
-                                        },
+                                        "path": [],
                                         "start": 0,
-                                        "type": "BinaryExpression",
-                                        "type": "BinaryExpression"
+                                        "type": "Name",
+                                        "type": "Name"
                                       }
                                     ],
                                     "callee": {
                                       "abs_path": false,
-                                      "commentStart": 888,
+                                      "commentStart": 0,
                                       "end": 0,
                                       "name": {
-                                        "commentStart": 888,
+                                        "commentStart": 0,
                                         "end": 0,
-                                        "name": "toRadians",
+                                        "name": "toDegrees",
                                         "start": 0,
                                         "type": "Identifier"
                                       },
@@ -1008,316 +953,38 @@ description: Result of parsing dodecahedron.kcl
                                       "start": 0,
                                       "type": "Name"
                                     },
-                                    "commentStart": 888,
+                                    "commentStart": 0,
                                     "end": 0,
                                     "start": 0,
                                     "type": "CallExpression",
                                     "type": "CallExpression"
-                                  }
-                                ],
-                                "callee": {
-                                  "abs_path": false,
-                                  "commentStart": 884,
-                                  "end": 0,
-                                  "name": {
-                                    "commentStart": 884,
-                                    "end": 0,
-                                    "name": "sin",
-                                    "start": 0,
-                                    "type": "Identifier"
                                   },
-                                  "path": [],
-                                  "start": 0,
-                                  "type": "Name"
-                                },
-                                "commentStart": 884,
-                                "end": 0,
-                                "start": 0,
-                                "type": "CallExpression",
-                                "type": "CallExpression"
-                              },
-                              "start": 0,
-                              "type": "BinaryExpression",
-                              "type": "BinaryExpression"
-                            },
-                            "start": 0,
-                            "type": "BinaryExpression",
-                            "type": "BinaryExpression"
-                          }
-                        ],
-                        "end": 0,
-                        "start": 0,
-                        "type": "ArrayExpression",
-                        "type": "ArrayExpression"
-                      }
-                    },
-                    {
-                      "commentStart": 937,
-                      "end": 0,
-                      "key": {
-                        "commentStart": 937,
-                        "end": 0,
-                        "name": "xAxis",
-                        "start": 0,
-                        "type": "Identifier"
-                      },
-                      "start": 0,
-                      "type": "ObjectProperty",
-                      "value": {
-                        "commentStart": 945,
-                        "elements": [
-                          {
-                            "arguments": [
-                              {
-                                "abs_path": false,
-                                "commentStart": 950,
-                                "end": 0,
-                                "name": {
-                                  "commentStart": 950,
-                                  "end": 0,
-                                  "name": "dihedral",
-                                  "start": 0,
-                                  "type": "Identifier"
-                                },
-                                "path": [],
-                                "start": 0,
-                                "type": "Name",
-                                "type": "Name"
-                              }
-                            ],
-                            "callee": {
-                              "abs_path": false,
-                              "commentStart": 946,
-                              "end": 0,
-                              "name": {
-                                "commentStart": 946,
-                                "end": 0,
-                                "name": "cos",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "path": [],
-                              "start": 0,
-                              "type": "Name"
-                            },
-                            "commentStart": 946,
-                            "end": 0,
-                            "start": 0,
-                            "type": "CallExpression",
-                            "type": "CallExpression"
-                          },
-                          {
-                            "commentStart": 961,
-                            "end": 0,
-                            "raw": "0.0",
-                            "start": 0,
-                            "type": "Literal",
-                            "type": "Literal",
-                            "value": {
-                              "value": 0.0,
-                              "suffix": "None"
-                            }
-                          },
-                          {
-                            "arguments": [
-                              {
-                                "abs_path": false,
-                                "commentStart": 970,
-                                "end": 0,
-                                "name": {
-                                  "commentStart": 970,
-                                  "end": 0,
-                                  "name": "dihedral",
-                                  "start": 0,
-                                  "type": "Identifier"
-                                },
-                                "path": [],
-                                "start": 0,
-                                "type": "Name",
-                                "type": "Name"
-                              }
-                            ],
-                            "callee": {
-                              "abs_path": false,
-                              "commentStart": 966,
-                              "end": 0,
-                              "name": {
-                                "commentStart": 966,
-                                "end": 0,
-                                "name": "sin",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "path": [],
-                              "start": 0,
-                              "type": "Name"
-                            },
-                            "commentStart": 966,
-                            "end": 0,
-                            "start": 0,
-                            "type": "CallExpression",
-                            "type": "CallExpression"
-                          }
-                        ],
-                        "end": 0,
-                        "start": 0,
-                        "type": "ArrayExpression",
-                        "type": "ArrayExpression"
-                      }
-                    },
-                    {
-                      "commentStart": 986,
-                      "end": 0,
-                      "key": {
-                        "commentStart": 986,
-                        "end": 0,
-                        "name": "yAxis",
-                        "start": 0,
-                        "type": "Identifier"
-                      },
-                      "start": 0,
-                      "type": "ObjectProperty",
-                      "value": {
-                        "commentStart": 994,
-                        "elements": [
-                          {
-                            "commentStart": 995,
-                            "end": 0,
-                            "raw": "0",
-                            "start": 0,
-                            "type": "Literal",
-                            "type": "Literal",
-                            "value": {
-                              "value": 0.0,
-                              "suffix": "None"
-                            }
-                          },
-                          {
-                            "commentStart": 998,
-                            "end": 0,
-                            "raw": "1",
-                            "start": 0,
-                            "type": "Literal",
-                            "type": "Literal",
-                            "value": {
-                              "value": 1.0,
-                              "suffix": "None"
-                            }
-                          },
-                          {
-                            "commentStart": 1001,
-                            "end": 0,
-                            "raw": "0",
-                            "start": 0,
-                            "type": "Literal",
-                            "type": "Literal",
-                            "value": {
-                              "value": 0.0,
-                              "suffix": "None"
-                            }
-                          }
-                        ],
-                        "end": 0,
-                        "start": 0,
-                        "type": "ArrayExpression",
-                        "type": "ArrayExpression"
-                      }
-                    },
-                    {
-                      "commentStart": 1009,
-                      "end": 0,
-                      "key": {
-                        "commentStart": 1009,
-                        "end": 0,
-                        "name": "zAxis",
-                        "start": 0,
-                        "type": "Identifier"
-                      },
-                      "start": 0,
-                      "type": "ObjectProperty",
-                      "value": {
-                        "commentStart": 1017,
-                        "elements": [
-                          {
-                            "arguments": [
-                              {
-                                "abs_path": false,
-                                "commentStart": 1022,
-                                "end": 0,
-                                "name": {
-                                  "commentStart": 1022,
-                                  "end": 0,
-                                  "name": "dihedral",
-                                  "start": 0,
-                                  "type": "Identifier"
-                                },
-                                "path": [],
-                                "start": 0,
-                                "type": "Name",
-                                "type": "Name"
-                              }
-                            ],
-                            "callee": {
-                              "abs_path": false,
-                              "commentStart": 1018,
-                              "end": 0,
-                              "name": {
-                                "commentStart": 1018,
-                                "end": 0,
-                                "name": "sin",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "path": [],
-                              "start": 0,
-                              "type": "Name"
-                            },
-                            "commentStart": 1018,
-                            "end": 0,
-                            "start": 0,
-                            "type": "CallExpression",
-                            "type": "CallExpression"
-                          },
-                          {
-                            "commentStart": 1033,
-                            "end": 0,
-                            "raw": "0",
-                            "start": 0,
-                            "type": "Literal",
-                            "type": "Literal",
-                            "value": {
-                              "value": 0.0,
-                              "suffix": "None"
-                            }
-                          },
-                          {
-                            "argument": {
-                              "arguments": [
-                                {
-                                  "abs_path": false,
-                                  "commentStart": 1041,
-                                  "end": 0,
-                                  "name": {
-                                    "commentStart": 1041,
+                                  "operator": "-",
+                                  "right": {
+                                    "commentStart": 0,
                                     "end": 0,
-                                    "name": "dihedral",
+                                    "raw": "90",
                                     "start": 0,
-                                    "type": "Identifier"
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 90.0,
+                                      "suffix": "None"
+                                    }
                                   },
-                                  "path": [],
                                   "start": 0,
-                                  "type": "Name",
-                                  "type": "Name"
+                                  "type": "BinaryExpression",
+                                  "type": "BinaryExpression"
                                 }
                               ],
                               "callee": {
                                 "abs_path": false,
-                                "commentStart": 1037,
+                                "commentStart": 0,
                                 "end": 0,
                                 "name": {
-                                  "commentStart": 1037,
+                                  "commentStart": 0,
                                   "end": 0,
-                                  "name": "cos",
+                                  "name": "toRadians",
                                   "start": 0,
                                   "type": "Identifier"
                                 },
@@ -1325,30 +992,341 @@ description: Result of parsing dodecahedron.kcl
                                 "start": 0,
                                 "type": "Name"
                               },
-                              "commentStart": 1037,
+                              "commentStart": 0,
                               "end": 0,
                               "start": 0,
                               "type": "CallExpression",
                               "type": "CallExpression"
-                            },
-                            "commentStart": 1036,
+                            }
+                          ],
+                          "callee": {
+                            "abs_path": false,
+                            "commentStart": 0,
                             "end": 0,
-                            "operator": "-",
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "name": "sin",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "UnaryExpression",
-                            "type": "UnaryExpression"
-                          }
-                        ],
-                        "end": 0,
+                            "type": "Name"
+                          },
+                          "commentStart": 0,
+                          "end": 0,
+                          "start": 0,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        },
                         "start": 0,
-                        "type": "ArrayExpression",
-                        "type": "ArrayExpression"
+                        "type": "BinaryExpression",
+                        "type": "BinaryExpression"
+                      },
+                      "start": 0,
+                      "type": "BinaryExpression",
+                      "type": "BinaryExpression"
+                    }
+                  ],
+                  "end": 0,
+                  "start": 0,
+                  "type": "ArrayExpression",
+                  "type": "ArrayExpression"
+                }
+              },
+              {
+                "commentStart": 0,
+                "end": 0,
+                "key": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "name": "xAxis",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "start": 0,
+                "type": "ObjectProperty",
+                "value": {
+                  "commentStart": 0,
+                  "elements": [
+                    {
+                      "arguments": [
+                        {
+                          "abs_path": false,
+                          "commentStart": 0,
+                          "end": 0,
+                          "name": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "name": "dihedral",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
+                          "start": 0,
+                          "type": "Name",
+                          "type": "Name"
+                        }
+                      ],
+                      "callee": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "name": "cos",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name"
+                      },
+                      "commentStart": 0,
+                      "end": 0,
+                      "start": 0,
+                      "type": "CallExpression",
+                      "type": "CallExpression"
+                    },
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "raw": "0.0",
+                      "start": 0,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 0.0,
+                        "suffix": "None"
+                      }
+                    },
+                    {
+                      "arguments": [
+                        {
+                          "abs_path": false,
+                          "commentStart": 0,
+                          "end": 0,
+                          "name": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "name": "dihedral",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
+                          "start": 0,
+                          "type": "Name",
+                          "type": "Name"
+                        }
+                      ],
+                      "callee": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "name": "sin",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name"
+                      },
+                      "commentStart": 0,
+                      "end": 0,
+                      "start": 0,
+                      "type": "CallExpression",
+                      "type": "CallExpression"
+                    }
+                  ],
+                  "end": 0,
+                  "start": 0,
+                  "type": "ArrayExpression",
+                  "type": "ArrayExpression"
+                }
+              },
+              {
+                "commentStart": 0,
+                "end": 0,
+                "key": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "name": "yAxis",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "start": 0,
+                "type": "ObjectProperty",
+                "value": {
+                  "commentStart": 0,
+                  "elements": [
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "raw": "0",
+                      "start": 0,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 0.0,
+                        "suffix": "None"
+                      }
+                    },
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "raw": "1",
+                      "start": 0,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 1.0,
+                        "suffix": "None"
+                      }
+                    },
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "raw": "0",
+                      "start": 0,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 0.0,
+                        "suffix": "None"
                       }
                     }
                   ],
+                  "end": 0,
                   "start": 0,
-                  "type": "ObjectExpression",
-                  "type": "ObjectExpression"
+                  "type": "ArrayExpression",
+                  "type": "ArrayExpression"
+                }
+              },
+              {
+                "commentStart": 0,
+                "end": 0,
+                "key": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "name": "zAxis",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "start": 0,
+                "type": "ObjectProperty",
+                "value": {
+                  "commentStart": 0,
+                  "elements": [
+                    {
+                      "arguments": [
+                        {
+                          "abs_path": false,
+                          "commentStart": 0,
+                          "end": 0,
+                          "name": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "name": "dihedral",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
+                          "start": 0,
+                          "type": "Name",
+                          "type": "Name"
+                        }
+                      ],
+                      "callee": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "name": "sin",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name"
+                      },
+                      "commentStart": 0,
+                      "end": 0,
+                      "start": 0,
+                      "type": "CallExpression",
+                      "type": "CallExpression"
+                    },
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "raw": "0",
+                      "start": 0,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 0.0,
+                        "suffix": "None"
+                      }
+                    },
+                    {
+                      "argument": {
+                        "arguments": [
+                          {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "name": "dihedral",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          }
+                        ],
+                        "callee": {
+                          "abs_path": false,
+                          "commentStart": 0,
+                          "end": 0,
+                          "name": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "name": "cos",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
+                          "start": 0,
+                          "type": "Name"
+                        },
+                        "commentStart": 0,
+                        "end": 0,
+                        "start": 0,
+                        "type": "CallExpression",
+                        "type": "CallExpression"
+                      },
+                      "commentStart": 0,
+                      "end": 0,
+                      "operator": "-",
+                      "start": 0,
+                      "type": "UnaryExpression",
+                      "type": "UnaryExpression"
+                    }
+                  ],
+                  "end": 0,
+                  "start": 0,
+                  "type": "ArrayExpression",
+                  "type": "ArrayExpression"
                 }
               }
             ],
@@ -1371,12 +1349,12 @@ description: Result of parsing dodecahedron.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 1057,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 1126,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 1126,
+            "commentStart": 0,
             "end": 0,
             "name": "bottomFace",
             "start": 0,
@@ -1388,10 +1366,10 @@ description: Result of parsing dodecahedron.kcl
                 "arguments": [
                   {
                     "abs_path": false,
-                    "commentStart": 1153,
+                    "commentStart": 0,
                     "end": 0,
                     "name": {
-                      "commentStart": 1153,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "XY",
                       "start": 0,
@@ -1405,10 +1383,10 @@ description: Result of parsing dodecahedron.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1139,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1139,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "startSketchOn",
                     "start": 0,
@@ -1418,7 +1396,7 @@ description: Result of parsing dodecahedron.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1139,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -1427,14 +1405,14 @@ description: Result of parsing dodecahedron.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 1170,
+                    "commentStart": 0,
                     "end": 0,
                     "properties": [
                       {
-                        "commentStart": 1179,
+                        "commentStart": 0,
                         "end": 0,
                         "key": {
-                          "commentStart": 1179,
+                          "commentStart": 0,
                           "end": 0,
                           "name": "radius",
                           "start": 0,
@@ -1444,10 +1422,10 @@ description: Result of parsing dodecahedron.kcl
                         "type": "ObjectProperty",
                         "value": {
                           "abs_path": false,
-                          "commentStart": 1188,
+                          "commentStart": 0,
                           "end": 0,
                           "name": {
-                            "commentStart": 1188,
+                            "commentStart": 0,
                             "end": 0,
                             "name": "pentR",
                             "start": 0,
@@ -1460,10 +1438,10 @@ description: Result of parsing dodecahedron.kcl
                         }
                       },
                       {
-                        "commentStart": 1202,
+                        "commentStart": 0,
                         "end": 0,
                         "key": {
-                          "commentStart": 1202,
+                          "commentStart": 0,
                           "end": 0,
                           "name": "numSides",
                           "start": 0,
@@ -1472,7 +1450,7 @@ description: Result of parsing dodecahedron.kcl
                         "start": 0,
                         "type": "ObjectProperty",
                         "value": {
-                          "commentStart": 1213,
+                          "commentStart": 0,
                           "end": 0,
                           "raw": "5",
                           "start": 0,
@@ -1485,10 +1463,10 @@ description: Result of parsing dodecahedron.kcl
                         }
                       },
                       {
-                        "commentStart": 1223,
+                        "commentStart": 0,
                         "end": 0,
                         "key": {
-                          "commentStart": 1223,
+                          "commentStart": 0,
                           "end": 0,
                           "name": "center",
                           "start": 0,
@@ -1497,10 +1475,10 @@ description: Result of parsing dodecahedron.kcl
                         "start": 0,
                         "type": "ObjectProperty",
                         "value": {
-                          "commentStart": 1232,
+                          "commentStart": 0,
                           "elements": [
                             {
-                              "commentStart": 1233,
+                              "commentStart": 0,
                               "end": 0,
                               "raw": "0",
                               "start": 0,
@@ -1512,7 +1490,7 @@ description: Result of parsing dodecahedron.kcl
                               }
                             },
                             {
-                              "commentStart": 1236,
+                              "commentStart": 0,
                               "end": 0,
                               "raw": "0",
                               "start": 0,
@@ -1531,10 +1509,10 @@ description: Result of parsing dodecahedron.kcl
                         }
                       },
                       {
-                        "commentStart": 1247,
+                        "commentStart": 0,
                         "end": 0,
                         "key": {
-                          "commentStart": 1247,
+                          "commentStart": 0,
                           "end": 0,
                           "name": "inscribed",
                           "start": 0,
@@ -1543,7 +1521,7 @@ description: Result of parsing dodecahedron.kcl
                         "start": 0,
                         "type": "ObjectProperty",
                         "value": {
-                          "commentStart": 1259,
+                          "commentStart": 0,
                           "end": 0,
                           "raw": "true",
                           "start": 0,
@@ -1558,7 +1536,7 @@ description: Result of parsing dodecahedron.kcl
                     "type": "ObjectExpression"
                   },
                   {
-                    "commentStart": 1272,
+                    "commentStart": 0,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -1567,10 +1545,10 @@ description: Result of parsing dodecahedron.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1162,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1162,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "polygon",
                     "start": 0,
@@ -1580,14 +1558,14 @@ description: Result of parsing dodecahedron.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1162,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               }
             ],
-            "commentStart": 1139,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "PipeExpression",
@@ -1608,12 +1586,12 @@ description: Result of parsing dodecahedron.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 1274,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 1276,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 1276,
+            "commentStart": 0,
             "end": 0,
             "name": "bottomSideFace",
             "start": 0,
@@ -1625,10 +1603,10 @@ description: Result of parsing dodecahedron.kcl
                 "arguments": [
                   {
                     "abs_path": false,
-                    "commentStart": 1307,
+                    "commentStart": 0,
                     "end": 0,
                     "name": {
-                      "commentStart": 1307,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "plane",
                       "start": 0,
@@ -1642,10 +1620,10 @@ description: Result of parsing dodecahedron.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1293,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1293,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "startSketchOn",
                     "start": 0,
@@ -1655,7 +1633,7 @@ description: Result of parsing dodecahedron.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1293,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -1664,14 +1642,14 @@ description: Result of parsing dodecahedron.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 1327,
+                    "commentStart": 0,
                     "end": 0,
                     "properties": [
                       {
-                        "commentStart": 1336,
+                        "commentStart": 0,
                         "end": 0,
                         "key": {
-                          "commentStart": 1336,
+                          "commentStart": 0,
                           "end": 0,
                           "name": "radius",
                           "start": 0,
@@ -1681,10 +1659,10 @@ description: Result of parsing dodecahedron.kcl
                         "type": "ObjectProperty",
                         "value": {
                           "abs_path": false,
-                          "commentStart": 1345,
+                          "commentStart": 0,
                           "end": 0,
                           "name": {
-                            "commentStart": 1345,
+                            "commentStart": 0,
                             "end": 0,
                             "name": "pentR",
                             "start": 0,
@@ -1697,10 +1675,10 @@ description: Result of parsing dodecahedron.kcl
                         }
                       },
                       {
-                        "commentStart": 1359,
+                        "commentStart": 0,
                         "end": 0,
                         "key": {
-                          "commentStart": 1359,
+                          "commentStart": 0,
                           "end": 0,
                           "name": "numSides",
                           "start": 0,
@@ -1709,7 +1687,7 @@ description: Result of parsing dodecahedron.kcl
                         "start": 0,
                         "type": "ObjectProperty",
                         "value": {
-                          "commentStart": 1370,
+                          "commentStart": 0,
                           "end": 0,
                           "raw": "5",
                           "start": 0,
@@ -1722,10 +1700,10 @@ description: Result of parsing dodecahedron.kcl
                         }
                       },
                       {
-                        "commentStart": 1380,
+                        "commentStart": 0,
                         "end": 0,
                         "key": {
-                          "commentStart": 1380,
+                          "commentStart": 0,
                           "end": 0,
                           "name": "center",
                           "start": 0,
@@ -1734,10 +1712,10 @@ description: Result of parsing dodecahedron.kcl
                         "start": 0,
                         "type": "ObjectProperty",
                         "value": {
-                          "commentStart": 1389,
+                          "commentStart": 0,
                           "elements": [
                             {
-                              "commentStart": 1390,
+                              "commentStart": 0,
                               "end": 0,
                               "raw": "0",
                               "start": 0,
@@ -1749,7 +1727,7 @@ description: Result of parsing dodecahedron.kcl
                               }
                             },
                             {
-                              "commentStart": 1393,
+                              "commentStart": 0,
                               "end": 0,
                               "raw": "0",
                               "start": 0,
@@ -1768,10 +1746,10 @@ description: Result of parsing dodecahedron.kcl
                         }
                       },
                       {
-                        "commentStart": 1404,
+                        "commentStart": 0,
                         "end": 0,
                         "key": {
-                          "commentStart": 1404,
+                          "commentStart": 0,
                           "end": 0,
                           "name": "inscribed",
                           "start": 0,
@@ -1780,7 +1758,7 @@ description: Result of parsing dodecahedron.kcl
                         "start": 0,
                         "type": "ObjectProperty",
                         "value": {
-                          "commentStart": 1416,
+                          "commentStart": 0,
                           "end": 0,
                           "raw": "true",
                           "start": 0,
@@ -1795,7 +1773,7 @@ description: Result of parsing dodecahedron.kcl
                     "type": "ObjectExpression"
                   },
                   {
-                    "commentStart": 1429,
+                    "commentStart": 0,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -1804,10 +1782,10 @@ description: Result of parsing dodecahedron.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1319,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1319,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "polygon",
                     "start": 0,
@@ -1817,20 +1795,20 @@ description: Result of parsing dodecahedron.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1319,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               }
             ],
-            "commentStart": 1293,
+            "commentStart": 0,
             "end": 0,
             "nonCodeMeta": {
               "nonCodeNodes": {
                 "1": [
                   {
-                    "commentStart": 1431,
+                    "commentStart": 0,
                     "end": 0,
                     "start": 0,
                     "type": "NonCodeNode",
@@ -1858,12 +1836,12 @@ description: Result of parsing dodecahedron.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 1468,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 1468,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 1468,
+            "commentStart": 0,
             "end": 0,
             "name": "bottom",
             "start": 0,
@@ -1874,7 +1852,7 @@ description: Result of parsing dodecahedron.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "commentStart": 1497,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "length",
                   "start": 0,
@@ -1882,10 +1860,10 @@ description: Result of parsing dodecahedron.kcl
                 },
                 "arg": {
                   "abs_path": false,
-                  "commentStart": 1506,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1506,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "wallThickness",
                     "start": 0,
@@ -1900,10 +1878,10 @@ description: Result of parsing dodecahedron.kcl
             ],
             "callee": {
               "abs_path": false,
-              "commentStart": 1477,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 1477,
+                "commentStart": 0,
                 "end": 0,
                 "name": "extrude",
                 "start": 0,
@@ -1913,17 +1891,17 @@ description: Result of parsing dodecahedron.kcl
               "start": 0,
               "type": "Name"
             },
-            "commentStart": 1477,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
               "abs_path": false,
-              "commentStart": 1485,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 1485,
+                "commentStart": 0,
                 "end": 0,
                 "name": "bottomFace",
                 "start": 0,
@@ -1945,12 +1923,12 @@ description: Result of parsing dodecahedron.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 1521,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 1521,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 1521,
+            "commentStart": 0,
             "end": 0,
             "name": "bottomSide",
             "start": 0,
@@ -1961,7 +1939,7 @@ description: Result of parsing dodecahedron.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "commentStart": 1558,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "length",
                   "start": 0,
@@ -1969,10 +1947,10 @@ description: Result of parsing dodecahedron.kcl
                 },
                 "arg": {
                   "abs_path": false,
-                  "commentStart": 1567,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1567,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "wallThickness",
                     "start": 0,
@@ -1987,10 +1965,10 @@ description: Result of parsing dodecahedron.kcl
             ],
             "callee": {
               "abs_path": false,
-              "commentStart": 1534,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 1534,
+                "commentStart": 0,
                 "end": 0,
                 "name": "extrude",
                 "start": 0,
@@ -2000,17 +1978,17 @@ description: Result of parsing dodecahedron.kcl
               "start": 0,
               "type": "Name"
             },
-            "commentStart": 1534,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
               "abs_path": false,
-              "commentStart": 1542,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 1542,
+                "commentStart": 0,
                 "end": 0,
                 "name": "bottomSideFace",
                 "start": 0,
@@ -2032,12 +2010,12 @@ description: Result of parsing dodecahedron.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 1581,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 1635,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 1635,
+            "commentStart": 0,
             "end": 0,
             "name": "bottomBowl",
             "start": 0,
@@ -2048,14 +2026,14 @@ description: Result of parsing dodecahedron.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "commentStart": 1683,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "instances",
                   "start": 0,
                   "type": "Identifier"
                 },
                 "arg": {
-                  "commentStart": 1695,
+                  "commentStart": 0,
                   "end": 0,
                   "raw": "5",
                   "start": 0,
@@ -2070,17 +2048,17 @@ description: Result of parsing dodecahedron.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "commentStart": 1700,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "axis",
                   "start": 0,
                   "type": "Identifier"
                 },
                 "arg": {
-                  "commentStart": 1707,
+                  "commentStart": 0,
                   "elements": [
                     {
-                      "commentStart": 1708,
+                      "commentStart": 0,
                       "end": 0,
                       "raw": "0",
                       "start": 0,
@@ -2092,7 +2070,7 @@ description: Result of parsing dodecahedron.kcl
                       }
                     },
                     {
-                      "commentStart": 1711,
+                      "commentStart": 0,
                       "end": 0,
                       "raw": "0",
                       "start": 0,
@@ -2104,7 +2082,7 @@ description: Result of parsing dodecahedron.kcl
                       }
                     },
                     {
-                      "commentStart": 1714,
+                      "commentStart": 0,
                       "end": 0,
                       "raw": "1",
                       "start": 0,
@@ -2125,17 +2103,17 @@ description: Result of parsing dodecahedron.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "commentStart": 1720,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "center",
                   "start": 0,
                   "type": "Identifier"
                 },
                 "arg": {
-                  "commentStart": 1729,
+                  "commentStart": 0,
                   "elements": [
                     {
-                      "commentStart": 1730,
+                      "commentStart": 0,
                       "end": 0,
                       "raw": "0",
                       "start": 0,
@@ -2147,7 +2125,7 @@ description: Result of parsing dodecahedron.kcl
                       }
                     },
                     {
-                      "commentStart": 1733,
+                      "commentStart": 0,
                       "end": 0,
                       "raw": "0",
                       "start": 0,
@@ -2159,7 +2137,7 @@ description: Result of parsing dodecahedron.kcl
                       }
                     },
                     {
-                      "commentStart": 1736,
+                      "commentStart": 0,
                       "end": 0,
                       "raw": "0",
                       "start": 0,
@@ -2180,14 +2158,14 @@ description: Result of parsing dodecahedron.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "commentStart": 1742,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "arcDegrees",
                   "start": 0,
                   "type": "Identifier"
                 },
                 "arg": {
-                  "commentStart": 1755,
+                  "commentStart": 0,
                   "end": 0,
                   "raw": "360",
                   "start": 0,
@@ -2202,14 +2180,14 @@ description: Result of parsing dodecahedron.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "commentStart": 1762,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "rotateDuplicates",
                   "start": 0,
                   "type": "Identifier"
                 },
                 "arg": {
-                  "commentStart": 1781,
+                  "commentStart": 0,
                   "end": 0,
                   "raw": "true",
                   "start": 0,
@@ -2221,10 +2199,10 @@ description: Result of parsing dodecahedron.kcl
             ],
             "callee": {
               "abs_path": false,
-              "commentStart": 1648,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 1648,
+                "commentStart": 0,
                 "end": 0,
                 "name": "patternCircular3d",
                 "start": 0,
@@ -2234,17 +2212,17 @@ description: Result of parsing dodecahedron.kcl
               "start": 0,
               "type": "Name"
             },
-            "commentStart": 1648,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
               "abs_path": false,
-              "commentStart": 1669,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 1669,
+                "commentStart": 0,
                 "end": 0,
                 "name": "bottomSide",
                 "start": 0,
@@ -2271,21 +2249,21 @@ description: Result of parsing dodecahedron.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 1788,
+        "commentStart": 0,
         "end": 0,
         "expression": {
           "arguments": [
             {
               "type": "LabeledArg",
               "label": {
-                "commentStart": 1866,
+                "commentStart": 0,
                 "end": 0,
                 "name": "instances",
                 "start": 0,
                 "type": "Identifier"
               },
               "arg": {
-                "commentStart": 1878,
+                "commentStart": 0,
                 "end": 0,
                 "raw": "2",
                 "start": 0,
@@ -2300,17 +2278,17 @@ description: Result of parsing dodecahedron.kcl
             {
               "type": "LabeledArg",
               "label": {
-                "commentStart": 1883,
+                "commentStart": 0,
                 "end": 0,
                 "name": "axis",
                 "start": 0,
                 "type": "Identifier"
               },
               "arg": {
-                "commentStart": 1890,
+                "commentStart": 0,
                 "elements": [
                   {
-                    "commentStart": 1891,
+                    "commentStart": 0,
                     "end": 0,
                     "raw": "0",
                     "start": 0,
@@ -2322,7 +2300,7 @@ description: Result of parsing dodecahedron.kcl
                     }
                   },
                   {
-                    "commentStart": 1894,
+                    "commentStart": 0,
                     "end": 0,
                     "raw": "1",
                     "start": 0,
@@ -2334,7 +2312,7 @@ description: Result of parsing dodecahedron.kcl
                     }
                   },
                   {
-                    "commentStart": 1897,
+                    "commentStart": 0,
                     "end": 0,
                     "raw": "0",
                     "start": 0,
@@ -2355,17 +2333,17 @@ description: Result of parsing dodecahedron.kcl
             {
               "type": "LabeledArg",
               "label": {
-                "commentStart": 1903,
+                "commentStart": 0,
                 "end": 0,
                 "name": "center",
                 "start": 0,
                 "type": "Identifier"
               },
               "arg": {
-                "commentStart": 1912,
+                "commentStart": 0,
                 "elements": [
                   {
-                    "commentStart": 1913,
+                    "commentStart": 0,
                     "end": 0,
                     "raw": "0",
                     "start": 0,
@@ -2377,7 +2355,7 @@ description: Result of parsing dodecahedron.kcl
                     }
                   },
                   {
-                    "commentStart": 1916,
+                    "commentStart": 0,
                     "end": 0,
                     "raw": "0",
                     "start": 0,
@@ -2390,10 +2368,10 @@ description: Result of parsing dodecahedron.kcl
                   },
                   {
                     "abs_path": false,
-                    "commentStart": 1919,
+                    "commentStart": 0,
                     "end": 0,
                     "name": {
-                      "commentStart": 1919,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "inscR",
                       "start": 0,
@@ -2414,14 +2392,14 @@ description: Result of parsing dodecahedron.kcl
             {
               "type": "LabeledArg",
               "label": {
-                "commentStart": 1929,
+                "commentStart": 0,
                 "end": 0,
                 "name": "arcDegrees",
                 "start": 0,
                 "type": "Identifier"
               },
               "arg": {
-                "commentStart": 1942,
+                "commentStart": 0,
                 "end": 0,
                 "raw": "360",
                 "start": 0,
@@ -2436,14 +2414,14 @@ description: Result of parsing dodecahedron.kcl
             {
               "type": "LabeledArg",
               "label": {
-                "commentStart": 1949,
+                "commentStart": 0,
                 "end": 0,
                 "name": "rotateDuplicates",
                 "start": 0,
                 "type": "Identifier"
               },
               "arg": {
-                "commentStart": 1968,
+                "commentStart": 0,
                 "end": 0,
                 "raw": "true",
                 "start": 0,
@@ -2455,10 +2433,10 @@ description: Result of parsing dodecahedron.kcl
           ],
           "callee": {
             "abs_path": false,
-            "commentStart": 1835,
+            "commentStart": 0,
             "end": 0,
             "name": {
-              "commentStart": 1835,
+              "commentStart": 0,
               "end": 0,
               "name": "patternCircular3d",
               "start": 0,
@@ -2468,17 +2446,17 @@ description: Result of parsing dodecahedron.kcl
             "start": 0,
             "type": "Name"
           },
-          "commentStart": 1835,
+          "commentStart": 0,
           "end": 0,
           "start": 0,
           "type": "CallExpressionKw",
           "type": "CallExpressionKw",
           "unlabeled": {
             "abs_path": false,
-            "commentStart": 1856,
+            "commentStart": 0,
             "end": 0,
             "name": {
-              "commentStart": 1856,
+              "commentStart": 0,
               "end": 0,
               "name": "bottom",
               "start": 0,
@@ -2500,21 +2478,21 @@ description: Result of parsing dodecahedron.kcl
         "type": "ExpressionStatement"
       },
       {
-        "commentStart": 1975,
+        "commentStart": 0,
         "end": 0,
         "expression": {
           "arguments": [
             {
               "type": "LabeledArg",
               "label": {
-                "commentStart": 2065,
+                "commentStart": 0,
                 "end": 0,
                 "name": "instances",
                 "start": 0,
                 "type": "Identifier"
               },
               "arg": {
-                "commentStart": 2077,
+                "commentStart": 0,
                 "end": 0,
                 "raw": "2",
                 "start": 0,
@@ -2529,17 +2507,17 @@ description: Result of parsing dodecahedron.kcl
             {
               "type": "LabeledArg",
               "label": {
-                "commentStart": 2082,
+                "commentStart": 0,
                 "end": 0,
                 "name": "axis",
                 "start": 0,
                 "type": "Identifier"
               },
               "arg": {
-                "commentStart": 2089,
+                "commentStart": 0,
                 "elements": [
                   {
-                    "commentStart": 2090,
+                    "commentStart": 0,
                     "end": 0,
                     "raw": "0",
                     "start": 0,
@@ -2551,7 +2529,7 @@ description: Result of parsing dodecahedron.kcl
                     }
                   },
                   {
-                    "commentStart": 2093,
+                    "commentStart": 0,
                     "end": 0,
                     "raw": "1",
                     "start": 0,
@@ -2563,7 +2541,7 @@ description: Result of parsing dodecahedron.kcl
                     }
                   },
                   {
-                    "commentStart": 2096,
+                    "commentStart": 0,
                     "end": 0,
                     "raw": "0",
                     "start": 0,
@@ -2584,17 +2562,17 @@ description: Result of parsing dodecahedron.kcl
             {
               "type": "LabeledArg",
               "label": {
-                "commentStart": 2102,
+                "commentStart": 0,
                 "end": 0,
                 "name": "center",
                 "start": 0,
                 "type": "Identifier"
               },
               "arg": {
-                "commentStart": 2111,
+                "commentStart": 0,
                 "elements": [
                   {
-                    "commentStart": 2112,
+                    "commentStart": 0,
                     "end": 0,
                     "raw": "0",
                     "start": 0,
@@ -2606,7 +2584,7 @@ description: Result of parsing dodecahedron.kcl
                     }
                   },
                   {
-                    "commentStart": 2115,
+                    "commentStart": 0,
                     "end": 0,
                     "raw": "0",
                     "start": 0,
@@ -2619,10 +2597,10 @@ description: Result of parsing dodecahedron.kcl
                   },
                   {
                     "abs_path": false,
-                    "commentStart": 2118,
+                    "commentStart": 0,
                     "end": 0,
                     "name": {
-                      "commentStart": 2118,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "inscR",
                       "start": 0,
@@ -2643,14 +2621,14 @@ description: Result of parsing dodecahedron.kcl
             {
               "type": "LabeledArg",
               "label": {
-                "commentStart": 2128,
+                "commentStart": 0,
                 "end": 0,
                 "name": "arcDegrees",
                 "start": 0,
                 "type": "Identifier"
               },
               "arg": {
-                "commentStart": 2141,
+                "commentStart": 0,
                 "end": 0,
                 "raw": "360",
                 "start": 0,
@@ -2665,14 +2643,14 @@ description: Result of parsing dodecahedron.kcl
             {
               "type": "LabeledArg",
               "label": {
-                "commentStart": 2148,
+                "commentStart": 0,
                 "end": 0,
                 "name": "rotateDuplicates",
                 "start": 0,
                 "type": "Identifier"
               },
               "arg": {
-                "commentStart": 2167,
+                "commentStart": 0,
                 "end": 0,
                 "raw": "true",
                 "start": 0,
@@ -2684,10 +2662,10 @@ description: Result of parsing dodecahedron.kcl
           ],
           "callee": {
             "abs_path": false,
-            "commentStart": 2030,
+            "commentStart": 0,
             "end": 0,
             "name": {
-              "commentStart": 2030,
+              "commentStart": 0,
               "end": 0,
               "name": "patternCircular3d",
               "start": 0,
@@ -2697,17 +2675,17 @@ description: Result of parsing dodecahedron.kcl
             "start": 0,
             "type": "Name"
           },
-          "commentStart": 2030,
+          "commentStart": 0,
           "end": 0,
           "start": 0,
           "type": "CallExpressionKw",
           "type": "CallExpressionKw",
           "unlabeled": {
             "abs_path": false,
-            "commentStart": 2051,
+            "commentStart": 0,
             "end": 0,
             "name": {
-              "commentStart": 2051,
+              "commentStart": 0,
               "end": 0,
               "name": "bottomBowl",
               "start": 0,
@@ -2736,7 +2714,7 @@ description: Result of parsing dodecahedron.kcl
         "commentStart": 0,
         "end": 0,
         "name": {
-          "commentStart": 273,
+          "commentStart": 0,
           "end": 0,
           "name": "settings",
           "start": 0,
@@ -2751,10 +2729,10 @@ description: Result of parsing dodecahedron.kcl
         ],
         "properties": [
           {
-            "commentStart": 282,
+            "commentStart": 0,
             "end": 0,
             "key": {
-              "commentStart": 282,
+              "commentStart": 0,
               "end": 0,
               "name": "defaultLengthUnit",
               "start": 0,
@@ -2764,10 +2742,10 @@ description: Result of parsing dodecahedron.kcl
             "type": "ObjectProperty",
             "value": {
               "abs_path": false,
-              "commentStart": 302,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 302,
+                "commentStart": 0,
                 "end": 0,
                 "name": "in",
                 "start": 0,
@@ -2788,7 +2766,7 @@ description: Result of parsing dodecahedron.kcl
       "nonCodeNodes": {
         "7": [
           {
-            "commentStart": 1274,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -2800,7 +2778,7 @@ description: Result of parsing dodecahedron.kcl
       },
       "startNodes": [
         {
-          "commentStart": 305,
+          "commentStart": 0,
           "end": 0,
           "start": 0,
           "type": "NonCodeNode",

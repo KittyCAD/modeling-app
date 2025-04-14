@@ -11,11 +11,11 @@ use kcmc::{
 use kittycad_modeling_cmds as kcmc;
 use kittycad_modeling_cmds::shared::PathSegment;
 use schemars::JsonSchema;
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    execution::{BasePath, ExecState, GeoMeta, KclValue, Path, Sketch, SketchSurface},
+    execution::{types::RuntimeType, BasePath, ExecState, GeoMeta, KclValue, Path, Sketch, SketchSurface},
     parsing::ast::types::TagNode,
     std::{
         sketch::NEW_TAG_KW,
@@ -24,8 +24,10 @@ use crate::{
     },
 };
 
+use super::{args::TyF64, utils::untype_point};
+
 /// A sketch surface or a sketch.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(untagged)]
 pub enum SketchOrSurface {
@@ -36,11 +38,19 @@ pub enum SketchOrSurface {
 /// Sketch a circle.
 pub async fn circle(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let sketch_or_surface = args.get_unlabeled_kw_arg("sketchOrSurface")?;
-    let center = args.get_kw_arg("center")?;
-    let radius = args.get_kw_arg("radius")?;
+    let center = args.get_kw_arg_typed("center", &RuntimeType::point2d(), exec_state)?;
+    let radius: TyF64 = args.get_kw_arg_typed("radius", &RuntimeType::length(), exec_state)?;
     let tag = args.get_kw_arg_opt(NEW_TAG_KW)?;
 
-    let sketch = inner_circle(sketch_or_surface, center, radius, tag, exec_state, args).await?;
+    let sketch = inner_circle(
+        sketch_or_surface,
+        untype_point(center).0,
+        radius.n,
+        tag,
+        exec_state,
+        args,
+    )
+    .await?;
     Ok(KclValue::Sketch {
         value: Box::new(sketch),
     })
@@ -121,12 +131,21 @@ async fn inner_circle(
 /// Sketch a 3-point circle.
 pub async fn circle_three_point(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let sketch_surface_or_group = args.get_unlabeled_kw_arg("sketch_surface_or_group")?;
-    let p1 = args.get_kw_arg("p1")?;
-    let p2 = args.get_kw_arg("p2")?;
-    let p3 = args.get_kw_arg("p3")?;
+    let p1 = args.get_kw_arg_typed("p1", &RuntimeType::point2d(), exec_state)?;
+    let p2 = args.get_kw_arg_typed("p2", &RuntimeType::point2d(), exec_state)?;
+    let p3 = args.get_kw_arg_typed("p3", &RuntimeType::point2d(), exec_state)?;
     let tag = args.get_kw_arg_opt("tag")?;
 
-    let sketch = inner_circle_three_point(sketch_surface_or_group, p1, p2, p3, tag, exec_state, args).await?;
+    let sketch = inner_circle_three_point(
+        sketch_surface_or_group,
+        untype_point(p1).0,
+        untype_point(p2).0,
+        untype_point(p3).0,
+        tag,
+        exec_state,
+        args,
+    )
+    .await?;
     Ok(KclValue::Sketch {
         value: Box::new(sketch),
     })
@@ -165,7 +184,7 @@ async fn inner_circle_three_point(
 ) -> Result<Sketch, KclError> {
     let center = calculate_circle_center(p1, p2, p3);
     // It can be the distance to any of the 3 points - they all lay on the circumference.
-    let radius = distance(center.into(), p2.into());
+    let radius = distance(center, p2);
 
     let sketch_surface = match sketch_surface_or_group {
         SketchOrSurface::SketchSurface(surface) => surface,
@@ -231,7 +250,7 @@ async fn inner_circle_three_point(
 }
 
 /// Type of the polygon
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Default)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema, Default)]
 #[ts(export)]
 #[serde(rename_all = "lowercase")]
 pub enum PolygonType {
@@ -241,16 +260,16 @@ pub enum PolygonType {
 }
 
 /// Data for drawing a polygon
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct PolygonData {
     /// The radius of the polygon
-    pub radius: f64,
+    pub radius: TyF64,
     /// The number of sides in the polygon
     pub num_sides: u64,
     /// The center point of the polygon
-    pub center: [f64; 2],
+    pub center: [TyF64; 2],
     /// The type of the polygon (inscribed or circumscribed)
     #[serde(skip)]
     pub polygon_type: PolygonType,
@@ -317,7 +336,7 @@ async fn inner_polygon(
         }));
     }
 
-    if data.radius <= 0.0 {
+    if data.radius.n <= 0.0 {
         return Err(KclError::Type(KclErrorDetails {
             message: "Radius must be greater than 0".to_string(),
             source_ranges: vec![args.source_range],
@@ -332,8 +351,8 @@ async fn inner_polygon(
     let half_angle = std::f64::consts::PI / data.num_sides as f64;
 
     let radius_to_vertices = match data.polygon_type {
-        PolygonType::Inscribed => data.radius,
-        PolygonType::Circumscribed => data.radius / half_angle.cos(),
+        PolygonType::Inscribed => data.radius.n,
+        PolygonType::Circumscribed => data.radius.n / half_angle.cos(),
     };
 
     let angle_step = 2.0 * std::f64::consts::PI / data.num_sides as f64;
@@ -342,8 +361,8 @@ async fn inner_polygon(
         .map(|i| {
             let angle = angle_step * i as f64;
             [
-                data.center[0] + radius_to_vertices * angle.cos(),
-                data.center[1] + radius_to_vertices * angle.sin(),
+                data.center[0].n + radius_to_vertices * angle.cos(),
+                data.center[1].n + radius_to_vertices * angle.sin(),
             ]
         })
         .collect();

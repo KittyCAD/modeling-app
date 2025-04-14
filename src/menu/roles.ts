@@ -21,6 +21,7 @@ type FileRoleLabel =
   | 'Sign out'
   | 'Theme'
   | 'Theme color'
+  | 'Insert from project file'
   | 'Export current part'
   | 'Create new file'
   | 'Create new folder'

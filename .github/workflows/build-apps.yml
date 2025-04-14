@@ -29,9 +29,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
-          cache: 'yarn'
+          cache: 'npm'
 
-      - run: yarn install
+      - run: npm install
 
       - id: filter
         name: Check for Rust changes
@@ -77,7 +77,7 @@ jobs:
         with:
           cache: false # Configured below.
 
-      - uses: taiki-e/install-action@37bdc826eaedac215f638a96472df572feab0f9b
+      - uses: taiki-e/install-action@d4635f2de61c8b8104d59cd4aede2060638378cc
         if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
         with:
           tool: wasm-pack
@@ -90,20 +90,20 @@ jobs:
 
       - name: Run build:wasm
         if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
-        run: "yarn build:wasm"
+        run: "npm run build:wasm"
 
       - name: Set nightly version, product name, release notes, and icons
         if: ${{ env.IS_NIGHTLY == 'true' }}
         run: |
           export VERSION=${GITHUB_REF_NAME#nightly-v}
-          yarn files:set-version
-          yarn files:flip-to-nightly
+          npm run files:set-version
+          npm run files:flip-to-nightly
 
       - name: Set release version
         if: ${{ env.IS_RELEASE == 'true' }}
         run: |
           export VERSION=${GITHUB_REF_NAME#v}
-          yarn files:set-version
+          npm run files:set-version
 
       - uses: actions/upload-artifact@v4
         with:
@@ -172,16 +172,16 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
-          cache: 'yarn' # Set this to npm, yarn or pnpm.
+          cache: 'npm' # Set this to npm, npm or pnpm.
 
-      - name: yarn install
+      - name: npm install
         # Windows is picky sometimes and fails on fetch. Step takes about ~30s
         uses: nick-fields/retry@v3.0.2
         with:
           shell: bash
           timeout_minutes: 2
           max_attempts: 3
-          command: yarn install
+          command: npm install
 
       - name: Prepare certificate and variables (Windows only)
         if: ${{ (env.IS_RELEASE == 'true' || env.IS_NIGHTLY == 'true') && matrix.os == 'windows-2022' }}
@@ -207,13 +207,20 @@ jobs:
           smctl.exe keypair ls
           C:\Windows\System32\certutil.exe -csp "DigiCert Signing Manager KSP" -key -user
           smksp_cert_sync.exe
+          smctl windows certsync
+        # This last line `smctl windows certsync` was added after windows codesign failures started happening
+        # with nightly-v25.4.10. It looks like `smksp_cert_sync.exe` used to do the sync to the local cert store,
+        # but stopped doing it overnight. This extra call that I randomly got from this azure-related doc page
+        # https://docs.digicert.com/en/digicert-keylocker/code-signing/sign-with-third-party-signing-tools/windows-applications/sign-azure-apps-with-signtool-using-ksp-library.html#sync-certificates--windows-only--618365
+        # seems to be doing that extra sync that we need for scripts/sign-win.js to work.
+        # TODO: we still need to make sign-win.js errors fail the workflow, see issue #6276
         shell: cmd
 
       - name: Build the app (debug)
         if: ${{ env.IS_RELEASE == 'false' && env.IS_NIGHTLY == 'false' }}
         # electron-builder doesn't have a concept of release vs debug,
         # this is just not doing any codesign or release yml generation, and points to dev infra
-        run: yarn tronb:package:dev
+        run: npm run tronb:package:dev
 
       - name: Build the app (release)
         if: ${{ env.IS_RELEASE == 'true' || env.IS_NIGHTLY == 'true' }}
@@ -233,7 +240,7 @@ jobs:
           shell: bash
           timeout_minutes: 10
           max_attempts: 3
-          command: yarn tronb:package:prod
+          command: npm run tronb:package:prod
 
       - name: List artifacts in out/
         run: ls -R out
@@ -295,7 +302,7 @@ jobs:
           shell: bash
           timeout_minutes: 10
           max_attempts: 3
-          command: yarn tronb:package:prod
+          command: npm run tronb:package:prod
 
       - uses: actions/upload-artifact@v4
         if: ${{ env.IS_RELEASE == 'true' }}
@@ -378,7 +385,7 @@ jobs:
           NOTES: ${{ needs.prepare-files.outputs.notes }}
           PUB_DATE: ${{ github.event.repository.updated_at }}
           WEBSITE_DIR: ${{ env.IS_NIGHTLY == 'true' && 'dl.zoo.dev/releases/modeling-app/nightly' || 'dl.zoo.dev/releases/modeling-app' }}
-          URL_CODED_NAME: ${{ env.IS_NIGHTLY == 'true' && 'Zoo%20Modeling%20App%20%28Nightly%29' || 'Zoo%20Modeling%20App' }}
+          URL_CODED_NAME: ${{ env.IS_NIGHTLY == 'true' && 'Zoo%20Design%20Studio%20%28Nightly%29' || 'Zoo%20Design%20Studio' }}
         run: |
           RELEASE_DIR=https://${WEBSITE_DIR}
           jq --null-input \
@@ -435,7 +442,7 @@ jobs:
           export TAG="nightly-${VERSION}"
           export PREVIOUS_TAG=$(git tag --list --sort=-committerdate "nightly-v[0-9]*" | head -n2 | tail -n1)
           export NOTES=$(./scripts/get-nightly-changelog.sh)
-          yarn files:set-notes
+          npm run files:set-notes
 
       - name: Authenticate to Google Cloud
         if: ${{ env.IS_NIGHTLY == 'true' }}
@@ -460,4 +467,4 @@ jobs:
 
       - name: Invalidate bucket cache on latest*.yml and last_download.json files
         if: ${{ env.IS_NIGHTLY == 'true' }}
-        run: yarn files:invalidate-bucket:nightly
+        run: npm run files:invalidate-bucket:nightly

@@ -7,7 +7,7 @@ use kcl_derive_docs::stdlib;
 use kcmc::{each_cmd as mcmd, length_unit::LengthUnit, ModelingCmd};
 use kittycad_modeling_cmds as kcmc;
 
-use super::DEFAULT_TOLERANCE;
+use super::{args::TyF64, DEFAULT_TOLERANCE};
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{types::RuntimeType, ExecState, KclValue, Sketch, Solid},
@@ -30,7 +30,7 @@ pub async fn loft(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
     // This can be set to override the automatically determined topological base curve, which is usually the first section encountered.
     let base_curve_index: Option<u32> = args.get_kw_arg_opt("baseCurveIndex")?;
     // Tolerance for the loft operation.
-    let tolerance: Option<f64> = args.get_kw_arg_opt("tolerance")?;
+    let tolerance: Option<TyF64> = args.get_kw_arg_opt_typed("tolerance", &RuntimeType::count(), exec_state)?;
     let tag_start = args.get_kw_arg_opt("tagStart")?;
     let tag_end = args.get_kw_arg_opt("tagEnd")?;
 
@@ -39,7 +39,7 @@ pub async fn loft(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
         v_degree,
         bez_approximate_rational,
         base_curve_index,
-        tolerance,
+        tolerance.map(|t| t.n),
         tag_start,
         tag_end,
         exec_state,

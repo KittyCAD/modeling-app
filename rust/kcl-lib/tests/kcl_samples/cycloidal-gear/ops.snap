@@ -10,7 +10,7 @@ description: Operations executed cycloidal-gear.kcl
       "name": "cycloidalGear",
       "functionSourceRange": [
         265,
-        1729,
+        1644,
         0
       ],
       "unlabeledArg": null,
@@ -25,7 +25,7 @@ description: Operations executed cycloidal-gear.kcl
       "name": "gearSketch",
       "functionSourceRange": [
         491,
-        1520,
+        1435,
         0
       ],
       "unlabeledArg": null,
@@ -65,7 +65,7 @@ description: Operations executed cycloidal-gear.kcl
   },
   {
     "labeledArgs": {
-      "data": {
+      "planeOrSolid": {
         "value": {
           "type": "Plane",
           "artifact_id": "[uuid]"
@@ -186,7 +186,7 @@ description: Operations executed cycloidal-gear.kcl
       "name": "gearSketch",
       "functionSourceRange": [
         491,
-        1520,
+        1435,
         0
       ],
       "unlabeledArg": null,
@@ -201,7 +201,13 @@ description: Operations executed cycloidal-gear.kcl
           "type": "Number",
           "value": 0.75,
           "ty": {
-            "type": "Unknown"
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -220,7 +226,7 @@ description: Operations executed cycloidal-gear.kcl
   },
   {
     "labeledArgs": {
-      "data": {
+      "planeOrSolid": {
         "value": {
           "type": "Plane",
           "artifact_id": "[uuid]"
@@ -341,7 +347,7 @@ description: Operations executed cycloidal-gear.kcl
       "name": "gearSketch",
       "functionSourceRange": [
         491,
-        1520,
+        1435,
         0
       ],
       "unlabeledArg": null,
@@ -381,7 +387,7 @@ description: Operations executed cycloidal-gear.kcl
   },
   {
     "labeledArgs": {
-      "data": {
+      "planeOrSolid": {
         "value": {
           "type": "Plane",
           "artifact_id": "[uuid]"

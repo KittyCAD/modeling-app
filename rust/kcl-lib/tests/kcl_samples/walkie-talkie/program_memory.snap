@@ -83,7 +83,13 @@ description: Variables in memory after executing walkie-talkie.kcl
     "type": "Number",
     "value": 0.48,
     "ty": {
-      "type": "Unknown"
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
     }
   },
   "buttonThickness": {
@@ -254,7 +260,13 @@ description: Variables in memory after executing walkie-talkie.kcl
     "type": "Number",
     "value": 1.25,
     "ty": {
-      "type": "Unknown"
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
     }
   },
   "speakerBoxHeight": {

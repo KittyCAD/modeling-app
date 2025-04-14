@@ -22,7 +22,7 @@ body = startSketchOn(XY)
   |> line(endAbsolute = [-width / 2, length / 2])
   |> close()
   |> extrude(length = height)
-counterBoreHoles = startSketchOn(body, 'end')
+counterBoreHoles = startSketchOn(body, face = END)
   |> circle(
        center = [
          -(width / 2 - (padding / 2)),
@@ -34,7 +34,7 @@ counterBoreHoles = startSketchOn(body, 'end')
   |> patternLinear2d(instances = 2, distance = width - padding, axis = [1, 0])
   |> extrude(%, length = -cbDepth)
 
-boltHoles = startSketchOn(body, 'start')
+boltHoles = startSketchOn(body, face = START)
   |> circle(
        center = [
          -(width / 2 - (padding / 2)),
@@ -46,6 +46,6 @@ boltHoles = startSketchOn(body, 'start')
   |> patternLinear2d(instances = 2, distance = width - padding, axis = [1, 0])
   |> extrude(length = -height + cbDepth)
 
-centerHole = startSketchOn(body, 'end')
+centerHole = startSketchOn(body, face = END)
   |> circle(center = [0, 0], radius = bearingDia / 2)
   |> extrude(length = -height)

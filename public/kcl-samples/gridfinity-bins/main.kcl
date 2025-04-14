@@ -32,9 +32,9 @@ fn face(plane) {
     |> startProfileAt([binBaseLength + binTol, 0], %)
     |> yLine(length = height)
     |> xLine(length = -binBaseLength)
-    |> angledLineOfYLength({ angle = -45, length = thirdStep }, %)
+    |> angledLine(angle = -45, lengthY = thirdStep)
     |> yLine(length = -secondStep)
-    |> angledLineOfYLength({ angle = -45, length = firstStep }, %)
+    |> angledLine(angle = -45, lengthY = firstStep)
     |> close()
   return faceSketch
 }
@@ -102,7 +102,7 @@ singleBinFill = startSketchOn(XY)
        ],
      )
 
-magCutout000 = startSketchOn(singleBinFill, "start")
+magCutout000 = startSketchOn(singleBinFill, face = START)
   |> circle(
        center = [
          -magOffset - binBaseLength - binTol,
@@ -165,4 +165,4 @@ binTop = startSketchOn(offsetPlane(XY, offset = height))
          getPreviousAdjacentEdge(line012)
        ],
      )
-  |> shell(faces = ["end"], thickness = binThk)
+  |> shell(faces = [END], thickness = binThk)

@@ -8,10 +8,10 @@ description: Result of parsing pipe_as_arg.kcl
       {
         "commentStart": 0,
         "declaration": {
-          "commentStart": 3,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 3,
+            "commentStart": 0,
             "end": 0,
             "name": "cube",
             "start": 0,
@@ -21,26 +21,26 @@ description: Result of parsing pipe_as_arg.kcl
             "body": {
               "body": [
                 {
-                  "commentStart": 28,
+                  "commentStart": 0,
                   "declaration": {
-                    "commentStart": 28,
+                    "commentStart": 0,
                     "end": 0,
                     "id": {
-                      "commentStart": 28,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "l",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "init": {
-                      "commentStart": 32,
+                      "commentStart": 0,
                       "end": 0,
                       "left": {
                         "abs_path": false,
-                        "commentStart": 32,
+                        "commentStart": 0,
                         "end": 0,
                         "name": {
-                          "commentStart": 32,
+                          "commentStart": 0,
                           "end": 0,
                           "name": "length",
                           "start": 0,
@@ -53,7 +53,7 @@ description: Result of parsing pipe_as_arg.kcl
                       },
                       "operator": "/",
                       "right": {
-                        "commentStart": 41,
+                        "commentStart": 0,
                         "end": 0,
                         "raw": "2",
                         "start": 0,
@@ -78,23 +78,23 @@ description: Result of parsing pipe_as_arg.kcl
                   "type": "VariableDeclaration"
                 },
                 {
-                  "commentStart": 45,
+                  "commentStart": 0,
                   "declaration": {
-                    "commentStart": 45,
+                    "commentStart": 0,
                     "end": 0,
                     "id": {
-                      "commentStart": 45,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "x",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "init": {
-                      "commentStart": 49,
+                      "commentStart": 0,
                       "computed": false,
                       "end": 0,
                       "object": {
-                        "commentStart": 49,
+                        "commentStart": 0,
                         "end": 0,
                         "name": "center",
                         "start": 0,
@@ -102,7 +102,7 @@ description: Result of parsing pipe_as_arg.kcl
                         "type": "Identifier"
                       },
                       "property": {
-                        "commentStart": 56,
+                        "commentStart": 0,
                         "end": 0,
                         "raw": "0",
                         "start": 0,
@@ -127,23 +127,23 @@ description: Result of parsing pipe_as_arg.kcl
                   "type": "VariableDeclaration"
                 },
                 {
-                  "commentStart": 61,
+                  "commentStart": 0,
                   "declaration": {
-                    "commentStart": 61,
+                    "commentStart": 0,
                     "end": 0,
                     "id": {
-                      "commentStart": 61,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "y",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "init": {
-                      "commentStart": 65,
+                      "commentStart": 0,
                       "computed": false,
                       "end": 0,
                       "object": {
-                        "commentStart": 65,
+                        "commentStart": 0,
                         "end": 0,
                         "name": "center",
                         "start": 0,
@@ -151,7 +151,7 @@ description: Result of parsing pipe_as_arg.kcl
                         "type": "Identifier"
                       },
                       "property": {
-                        "commentStart": 72,
+                        "commentStart": 0,
                         "end": 0,
                         "raw": "1",
                         "start": 0,
@@ -176,30 +176,30 @@ description: Result of parsing pipe_as_arg.kcl
                   "type": "VariableDeclaration"
                 },
                 {
-                  "commentStart": 77,
+                  "commentStart": 0,
                   "declaration": {
-                    "commentStart": 77,
+                    "commentStart": 0,
                     "end": 0,
                     "id": {
-                      "commentStart": 77,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "p0",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "init": {
-                      "commentStart": 82,
+                      "commentStart": 0,
                       "elements": [
                         {
-                          "commentStart": 83,
+                          "commentStart": 0,
                           "end": 0,
                           "left": {
                             "argument": {
                               "abs_path": false,
-                              "commentStart": 84,
+                              "commentStart": 0,
                               "end": 0,
                               "name": {
-                                "commentStart": 84,
+                                "commentStart": 0,
                                 "end": 0,
                                 "name": "l",
                                 "start": 0,
@@ -210,7 +210,7 @@ description: Result of parsing pipe_as_arg.kcl
                               "type": "Name",
                               "type": "Name"
                             },
-                            "commentStart": 83,
+                            "commentStart": 0,
                             "end": 0,
                             "operator": "-",
                             "start": 0,
@@ -220,10 +220,10 @@ description: Result of parsing pipe_as_arg.kcl
                           "operator": "+",
                           "right": {
                             "abs_path": false,
-                            "commentStart": 88,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 88,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "x",
                               "start": 0,
@@ -239,15 +239,15 @@ description: Result of parsing pipe_as_arg.kcl
                           "type": "BinaryExpression"
                         },
                         {
-                          "commentStart": 91,
+                          "commentStart": 0,
                           "end": 0,
                           "left": {
                             "argument": {
                               "abs_path": false,
-                              "commentStart": 92,
+                              "commentStart": 0,
                               "end": 0,
                               "name": {
-                                "commentStart": 92,
+                                "commentStart": 0,
                                 "end": 0,
                                 "name": "l",
                                 "start": 0,
@@ -258,7 +258,7 @@ description: Result of parsing pipe_as_arg.kcl
                               "type": "Name",
                               "type": "Name"
                             },
-                            "commentStart": 91,
+                            "commentStart": 0,
                             "end": 0,
                             "operator": "-",
                             "start": 0,
@@ -268,10 +268,10 @@ description: Result of parsing pipe_as_arg.kcl
                           "operator": "+",
                           "right": {
                             "abs_path": false,
-                            "commentStart": 96,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 96,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "y",
                               "start": 0,
@@ -302,30 +302,30 @@ description: Result of parsing pipe_as_arg.kcl
                   "type": "VariableDeclaration"
                 },
                 {
-                  "commentStart": 101,
+                  "commentStart": 0,
                   "declaration": {
-                    "commentStart": 101,
+                    "commentStart": 0,
                     "end": 0,
                     "id": {
-                      "commentStart": 101,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "p1",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "init": {
-                      "commentStart": 106,
+                      "commentStart": 0,
                       "elements": [
                         {
-                          "commentStart": 107,
+                          "commentStart": 0,
                           "end": 0,
                           "left": {
                             "argument": {
                               "abs_path": false,
-                              "commentStart": 108,
+                              "commentStart": 0,
                               "end": 0,
                               "name": {
-                                "commentStart": 108,
+                                "commentStart": 0,
                                 "end": 0,
                                 "name": "l",
                                 "start": 0,
@@ -336,7 +336,7 @@ description: Result of parsing pipe_as_arg.kcl
                               "type": "Name",
                               "type": "Name"
                             },
-                            "commentStart": 107,
+                            "commentStart": 0,
                             "end": 0,
                             "operator": "-",
                             "start": 0,
@@ -346,10 +346,10 @@ description: Result of parsing pipe_as_arg.kcl
                           "operator": "+",
                           "right": {
                             "abs_path": false,
-                            "commentStart": 112,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 112,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "x",
                               "start": 0,
@@ -365,14 +365,14 @@ description: Result of parsing pipe_as_arg.kcl
                           "type": "BinaryExpression"
                         },
                         {
-                          "commentStart": 115,
+                          "commentStart": 0,
                           "end": 0,
                           "left": {
                             "abs_path": false,
-                            "commentStart": 115,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 115,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "l",
                               "start": 0,
@@ -386,10 +386,10 @@ description: Result of parsing pipe_as_arg.kcl
                           "operator": "+",
                           "right": {
                             "abs_path": false,
-                            "commentStart": 119,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 119,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "y",
                               "start": 0,
@@ -420,29 +420,29 @@ description: Result of parsing pipe_as_arg.kcl
                   "type": "VariableDeclaration"
                 },
                 {
-                  "commentStart": 124,
+                  "commentStart": 0,
                   "declaration": {
-                    "commentStart": 124,
+                    "commentStart": 0,
                     "end": 0,
                     "id": {
-                      "commentStart": 124,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "p2",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "init": {
-                      "commentStart": 129,
+                      "commentStart": 0,
                       "elements": [
                         {
-                          "commentStart": 130,
+                          "commentStart": 0,
                           "end": 0,
                           "left": {
                             "abs_path": false,
-                            "commentStart": 130,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 130,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "l",
                               "start": 0,
@@ -456,10 +456,10 @@ description: Result of parsing pipe_as_arg.kcl
                           "operator": "+",
                           "right": {
                             "abs_path": false,
-                            "commentStart": 134,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 134,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "x",
                               "start": 0,
@@ -475,14 +475,14 @@ description: Result of parsing pipe_as_arg.kcl
                           "type": "BinaryExpression"
                         },
                         {
-                          "commentStart": 137,
+                          "commentStart": 0,
                           "end": 0,
                           "left": {
                             "abs_path": false,
-                            "commentStart": 137,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 137,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "l",
                               "start": 0,
@@ -496,10 +496,10 @@ description: Result of parsing pipe_as_arg.kcl
                           "operator": "+",
                           "right": {
                             "abs_path": false,
-                            "commentStart": 141,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 141,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "y",
                               "start": 0,
@@ -530,29 +530,29 @@ description: Result of parsing pipe_as_arg.kcl
                   "type": "VariableDeclaration"
                 },
                 {
-                  "commentStart": 146,
+                  "commentStart": 0,
                   "declaration": {
-                    "commentStart": 146,
+                    "commentStart": 0,
                     "end": 0,
                     "id": {
-                      "commentStart": 146,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "p3",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "init": {
-                      "commentStart": 151,
+                      "commentStart": 0,
                       "elements": [
                         {
-                          "commentStart": 152,
+                          "commentStart": 0,
                           "end": 0,
                           "left": {
                             "abs_path": false,
-                            "commentStart": 152,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 152,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "l",
                               "start": 0,
@@ -566,10 +566,10 @@ description: Result of parsing pipe_as_arg.kcl
                           "operator": "+",
                           "right": {
                             "abs_path": false,
-                            "commentStart": 156,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 156,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "x",
                               "start": 0,
@@ -585,15 +585,15 @@ description: Result of parsing pipe_as_arg.kcl
                           "type": "BinaryExpression"
                         },
                         {
-                          "commentStart": 159,
+                          "commentStart": 0,
                           "end": 0,
                           "left": {
                             "argument": {
                               "abs_path": false,
-                              "commentStart": 160,
+                              "commentStart": 0,
                               "end": 0,
                               "name": {
-                                "commentStart": 160,
+                                "commentStart": 0,
                                 "end": 0,
                                 "name": "l",
                                 "start": 0,
@@ -604,7 +604,7 @@ description: Result of parsing pipe_as_arg.kcl
                               "type": "Name",
                               "type": "Name"
                             },
-                            "commentStart": 159,
+                            "commentStart": 0,
                             "end": 0,
                             "operator": "-",
                             "start": 0,
@@ -614,10 +614,10 @@ description: Result of parsing pipe_as_arg.kcl
                           "operator": "+",
                           "right": {
                             "abs_path": false,
-                            "commentStart": 164,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 164,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "y",
                               "start": 0,
@@ -654,10 +654,10 @@ description: Result of parsing pipe_as_arg.kcl
                         "arguments": [
                           {
                             "abs_path": false,
-                            "commentStart": 191,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 191,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "XY",
                               "start": 0,
@@ -671,10 +671,10 @@ description: Result of parsing pipe_as_arg.kcl
                         ],
                         "callee": {
                           "abs_path": false,
-                          "commentStart": 177,
+                          "commentStart": 0,
                           "end": 0,
                           "name": {
-                            "commentStart": 177,
+                            "commentStart": 0,
                             "end": 0,
                             "name": "startSketchOn",
                             "start": 0,
@@ -684,7 +684,7 @@ description: Result of parsing pipe_as_arg.kcl
                           "start": 0,
                           "type": "Name"
                         },
-                        "commentStart": 177,
+                        "commentStart": 0,
                         "end": 0,
                         "start": 0,
                         "type": "CallExpression",
@@ -694,10 +694,10 @@ description: Result of parsing pipe_as_arg.kcl
                         "arguments": [
                           {
                             "abs_path": false,
-                            "commentStart": 217,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 217,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "p0",
                               "start": 0,
@@ -709,7 +709,7 @@ description: Result of parsing pipe_as_arg.kcl
                             "type": "Name"
                           },
                           {
-                            "commentStart": 221,
+                            "commentStart": 0,
                             "end": 0,
                             "start": 0,
                             "type": "PipeSubstitution",
@@ -718,10 +718,10 @@ description: Result of parsing pipe_as_arg.kcl
                         ],
                         "callee": {
                           "abs_path": false,
-                          "commentStart": 202,
+                          "commentStart": 0,
                           "end": 0,
                           "name": {
-                            "commentStart": 202,
+                            "commentStart": 0,
                             "end": 0,
                             "name": "startProfileAt",
                             "start": 0,
@@ -731,7 +731,7 @@ description: Result of parsing pipe_as_arg.kcl
                           "start": 0,
                           "type": "Name"
                         },
-                        "commentStart": 202,
+                        "commentStart": 0,
                         "end": 0,
                         "start": 0,
                         "type": "CallExpression",
@@ -742,7 +742,7 @@ description: Result of parsing pipe_as_arg.kcl
                           {
                             "type": "LabeledArg",
                             "label": {
-                              "commentStart": 236,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "endAbsolute",
                               "start": 0,
@@ -750,10 +750,10 @@ description: Result of parsing pipe_as_arg.kcl
                             },
                             "arg": {
                               "abs_path": false,
-                              "commentStart": 250,
+                              "commentStart": 0,
                               "end": 0,
                               "name": {
-                                "commentStart": 250,
+                                "commentStart": 0,
                                 "end": 0,
                                 "name": "p1",
                                 "start": 0,
@@ -768,10 +768,10 @@ description: Result of parsing pipe_as_arg.kcl
                         ],
                         "callee": {
                           "abs_path": false,
-                          "commentStart": 231,
+                          "commentStart": 0,
                           "end": 0,
                           "name": {
-                            "commentStart": 231,
+                            "commentStart": 0,
                             "end": 0,
                             "name": "line",
                             "start": 0,
@@ -781,7 +781,7 @@ description: Result of parsing pipe_as_arg.kcl
                           "start": 0,
                           "type": "Name"
                         },
-                        "commentStart": 231,
+                        "commentStart": 0,
                         "end": 0,
                         "start": 0,
                         "type": "CallExpressionKw",
@@ -793,7 +793,7 @@ description: Result of parsing pipe_as_arg.kcl
                           {
                             "type": "LabeledArg",
                             "label": {
-                              "commentStart": 266,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "endAbsolute",
                               "start": 0,
@@ -801,10 +801,10 @@ description: Result of parsing pipe_as_arg.kcl
                             },
                             "arg": {
                               "abs_path": false,
-                              "commentStart": 280,
+                              "commentStart": 0,
                               "end": 0,
                               "name": {
-                                "commentStart": 280,
+                                "commentStart": 0,
                                 "end": 0,
                                 "name": "p2",
                                 "start": 0,
@@ -819,10 +819,10 @@ description: Result of parsing pipe_as_arg.kcl
                         ],
                         "callee": {
                           "abs_path": false,
-                          "commentStart": 261,
+                          "commentStart": 0,
                           "end": 0,
                           "name": {
-                            "commentStart": 261,
+                            "commentStart": 0,
                             "end": 0,
                             "name": "line",
                             "start": 0,
@@ -832,7 +832,7 @@ description: Result of parsing pipe_as_arg.kcl
                           "start": 0,
                           "type": "Name"
                         },
-                        "commentStart": 261,
+                        "commentStart": 0,
                         "end": 0,
                         "start": 0,
                         "type": "CallExpressionKw",
@@ -844,7 +844,7 @@ description: Result of parsing pipe_as_arg.kcl
                           {
                             "type": "LabeledArg",
                             "label": {
-                              "commentStart": 296,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "endAbsolute",
                               "start": 0,
@@ -852,10 +852,10 @@ description: Result of parsing pipe_as_arg.kcl
                             },
                             "arg": {
                               "abs_path": false,
-                              "commentStart": 310,
+                              "commentStart": 0,
                               "end": 0,
                               "name": {
-                                "commentStart": 310,
+                                "commentStart": 0,
                                 "end": 0,
                                 "name": "p3",
                                 "start": 0,
@@ -870,10 +870,10 @@ description: Result of parsing pipe_as_arg.kcl
                         ],
                         "callee": {
                           "abs_path": false,
-                          "commentStart": 291,
+                          "commentStart": 0,
                           "end": 0,
                           "name": {
-                            "commentStart": 291,
+                            "commentStart": 0,
                             "end": 0,
                             "name": "line",
                             "start": 0,
@@ -883,7 +883,7 @@ description: Result of parsing pipe_as_arg.kcl
                           "start": 0,
                           "type": "Name"
                         },
-                        "commentStart": 291,
+                        "commentStart": 0,
                         "end": 0,
                         "start": 0,
                         "type": "CallExpressionKw",
@@ -895,7 +895,7 @@ description: Result of parsing pipe_as_arg.kcl
                           {
                             "type": "LabeledArg",
                             "label": {
-                              "commentStart": 326,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "endAbsolute",
                               "start": 0,
@@ -903,10 +903,10 @@ description: Result of parsing pipe_as_arg.kcl
                             },
                             "arg": {
                               "abs_path": false,
-                              "commentStart": 340,
+                              "commentStart": 0,
                               "end": 0,
                               "name": {
-                                "commentStart": 340,
+                                "commentStart": 0,
                                 "end": 0,
                                 "name": "p0",
                                 "start": 0,
@@ -921,10 +921,10 @@ description: Result of parsing pipe_as_arg.kcl
                         ],
                         "callee": {
                           "abs_path": false,
-                          "commentStart": 321,
+                          "commentStart": 0,
                           "end": 0,
                           "name": {
-                            "commentStart": 321,
+                            "commentStart": 0,
                             "end": 0,
                             "name": "line",
                             "start": 0,
@@ -934,7 +934,7 @@ description: Result of parsing pipe_as_arg.kcl
                           "start": 0,
                           "type": "Name"
                         },
-                        "commentStart": 321,
+                        "commentStart": 0,
                         "end": 0,
                         "start": 0,
                         "type": "CallExpressionKw",
@@ -944,7 +944,7 @@ description: Result of parsing pipe_as_arg.kcl
                       {
                         "arguments": [
                           {
-                            "commentStart": 357,
+                            "commentStart": 0,
                             "end": 0,
                             "start": 0,
                             "type": "PipeSubstitution",
@@ -953,10 +953,10 @@ description: Result of parsing pipe_as_arg.kcl
                         ],
                         "callee": {
                           "abs_path": false,
-                          "commentStart": 351,
+                          "commentStart": 0,
                           "end": 0,
                           "name": {
-                            "commentStart": 351,
+                            "commentStart": 0,
                             "end": 0,
                             "name": "close",
                             "start": 0,
@@ -966,7 +966,7 @@ description: Result of parsing pipe_as_arg.kcl
                           "start": 0,
                           "type": "Name"
                         },
-                        "commentStart": 351,
+                        "commentStart": 0,
                         "end": 0,
                         "start": 0,
                         "type": "CallExpression",
@@ -977,7 +977,7 @@ description: Result of parsing pipe_as_arg.kcl
                           {
                             "type": "LabeledArg",
                             "label": {
-                              "commentStart": 375,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "length",
                               "start": 0,
@@ -985,10 +985,10 @@ description: Result of parsing pipe_as_arg.kcl
                             },
                             "arg": {
                               "abs_path": false,
-                              "commentStart": 384,
+                              "commentStart": 0,
                               "end": 0,
                               "name": {
-                                "commentStart": 384,
+                                "commentStart": 0,
                                 "end": 0,
                                 "name": "length",
                                 "start": 0,
@@ -1003,10 +1003,10 @@ description: Result of parsing pipe_as_arg.kcl
                         ],
                         "callee": {
                           "abs_path": false,
-                          "commentStart": 367,
+                          "commentStart": 0,
                           "end": 0,
                           "name": {
-                            "commentStart": 367,
+                            "commentStart": 0,
                             "end": 0,
                             "name": "extrude",
                             "start": 0,
@@ -1016,7 +1016,7 @@ description: Result of parsing pipe_as_arg.kcl
                           "start": 0,
                           "type": "Name"
                         },
-                        "commentStart": 367,
+                        "commentStart": 0,
                         "end": 0,
                         "start": 0,
                         "type": "CallExpressionKw",
@@ -1024,26 +1024,26 @@ description: Result of parsing pipe_as_arg.kcl
                         "unlabeled": null
                       }
                     ],
-                    "commentStart": 177,
+                    "commentStart": 0,
                     "end": 0,
                     "start": 0,
                     "type": "PipeExpression",
                     "type": "PipeExpression"
                   },
-                  "commentStart": 166,
+                  "commentStart": 0,
                   "end": 0,
                   "start": 0,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
                 }
               ],
-              "commentStart": 24,
+              "commentStart": 0,
               "end": 0,
               "nonCodeMeta": {
                 "nonCodeNodes": {
                   "6": [
                     {
-                      "commentStart": 166,
+                      "commentStart": 0,
                       "end": 0,
                       "start": 0,
                       "type": "NonCodeNode",
@@ -1057,13 +1057,13 @@ description: Result of parsing pipe_as_arg.kcl
               },
               "start": 0
             },
-            "commentStart": 7,
+            "commentStart": 0,
             "end": 0,
             "params": [
               {
                 "type": "Parameter",
                 "identifier": {
-                  "commentStart": 8,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "length",
                   "start": 0,
@@ -1073,7 +1073,7 @@ description: Result of parsing pipe_as_arg.kcl
               {
                 "type": "Parameter",
                 "identifier": {
-                  "commentStart": 16,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "center",
                   "start": 0,
@@ -1095,12 +1095,12 @@ description: Result of parsing pipe_as_arg.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 393,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 398,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 398,
+            "commentStart": 0,
             "end": 0,
             "name": "double",
             "start": 0,
@@ -1111,14 +1111,14 @@ description: Result of parsing pipe_as_arg.kcl
               "body": [
                 {
                   "argument": {
-                    "commentStart": 419,
+                    "commentStart": 0,
                     "end": 0,
                     "left": {
                       "abs_path": false,
-                      "commentStart": 419,
+                      "commentStart": 0,
                       "end": 0,
                       "name": {
-                        "commentStart": 419,
+                        "commentStart": 0,
                         "end": 0,
                         "name": "x",
                         "start": 0,
@@ -1131,7 +1131,7 @@ description: Result of parsing pipe_as_arg.kcl
                     },
                     "operator": "*",
                     "right": {
-                      "commentStart": 423,
+                      "commentStart": 0,
                       "end": 0,
                       "raw": "2",
                       "start": 0,
@@ -1146,24 +1146,24 @@ description: Result of parsing pipe_as_arg.kcl
                     "type": "BinaryExpression",
                     "type": "BinaryExpression"
                   },
-                  "commentStart": 412,
+                  "commentStart": 0,
                   "end": 0,
                   "start": 0,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
                 }
               ],
-              "commentStart": 408,
+              "commentStart": 0,
               "end": 0,
               "start": 0
             },
-            "commentStart": 404,
+            "commentStart": 0,
             "end": 0,
             "params": [
               {
                 "type": "Parameter",
                 "identifier": {
-                  "commentStart": 405,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "x",
                   "start": 0,
@@ -1185,12 +1185,12 @@ description: Result of parsing pipe_as_arg.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 427,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 430,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 430,
+            "commentStart": 0,
             "end": 0,
             "name": "width",
             "start": 0,
@@ -1201,7 +1201,7 @@ description: Result of parsing pipe_as_arg.kcl
               "body": [
                 {
                   "argument": {
-                    "commentStart": 449,
+                    "commentStart": 0,
                     "end": 0,
                     "raw": "200",
                     "start": 0,
@@ -1212,18 +1212,18 @@ description: Result of parsing pipe_as_arg.kcl
                       "suffix": "None"
                     }
                   },
-                  "commentStart": 442,
+                  "commentStart": 0,
                   "end": 0,
                   "start": 0,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
                 }
               ],
-              "commentStart": 438,
+              "commentStart": 0,
               "end": 0,
               "start": 0
             },
-            "commentStart": 435,
+            "commentStart": 0,
             "end": 0,
             "params": [],
             "start": 0,
@@ -1240,12 +1240,12 @@ description: Result of parsing pipe_as_arg.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 454,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 456,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 456,
+            "commentStart": 0,
             "end": 0,
             "name": "myCube",
             "start": 0,
@@ -1256,7 +1256,7 @@ description: Result of parsing pipe_as_arg.kcl
               {
                 "body": [
                   {
-                    "commentStart": 470,
+                    "commentStart": 0,
                     "end": 0,
                     "raw": "200",
                     "start": 0,
@@ -1270,7 +1270,7 @@ description: Result of parsing pipe_as_arg.kcl
                   {
                     "arguments": [
                       {
-                        "commentStart": 486,
+                        "commentStart": 0,
                         "end": 0,
                         "start": 0,
                         "type": "PipeSubstitution",
@@ -1279,10 +1279,10 @@ description: Result of parsing pipe_as_arg.kcl
                     ],
                     "callee": {
                       "abs_path": false,
-                      "commentStart": 479,
+                      "commentStart": 0,
                       "end": 0,
                       "name": {
-                        "commentStart": 479,
+                        "commentStart": 0,
                         "end": 0,
                         "name": "double",
                         "start": 0,
@@ -1292,24 +1292,24 @@ description: Result of parsing pipe_as_arg.kcl
                       "start": 0,
                       "type": "Name"
                     },
-                    "commentStart": 479,
+                    "commentStart": 0,
                     "end": 0,
                     "start": 0,
                     "type": "CallExpression",
                     "type": "CallExpression"
                   }
                 ],
-                "commentStart": 470,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "PipeExpression",
                 "type": "PipeExpression"
               },
               {
-                "commentStart": 490,
+                "commentStart": 0,
                 "elements": [
                   {
-                    "commentStart": 491,
+                    "commentStart": 0,
                     "end": 0,
                     "raw": "0",
                     "start": 0,
@@ -1321,7 +1321,7 @@ description: Result of parsing pipe_as_arg.kcl
                     }
                   },
                   {
-                    "commentStart": 494,
+                    "commentStart": 0,
                     "end": 0,
                     "raw": "0",
                     "start": 0,
@@ -1341,10 +1341,10 @@ description: Result of parsing pipe_as_arg.kcl
             ],
             "callee": {
               "abs_path": false,
-              "commentStart": 465,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 465,
+                "commentStart": 0,
                 "end": 0,
                 "name": "cube",
                 "start": 0,
@@ -1354,7 +1354,7 @@ description: Result of parsing pipe_as_arg.kcl
               "start": 0,
               "type": "Name"
             },
-            "commentStart": 465,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "CallExpression",
@@ -1376,7 +1376,7 @@ description: Result of parsing pipe_as_arg.kcl
       "nonCodeNodes": {
         "0": [
           {
-            "commentStart": 393,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -1387,7 +1387,7 @@ description: Result of parsing pipe_as_arg.kcl
         ],
         "2": [
           {
-            "commentStart": 454,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",

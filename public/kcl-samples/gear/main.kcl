@@ -87,7 +87,7 @@ holeRadius = 1
 startAngle = asin(keywayWidth / 2 / holeRadius)
 
 // Sketch the keyway and center hole and extrude
-keyWay = startSketchOn(body, 'END')
+keyWay = startSketchOn(body, face = END)
   |> startProfileAt([
        holeRadius * cos(startAngle),
        holeRadius * sin(startAngle)
@@ -97,11 +97,11 @@ keyWay = startSketchOn(body, 'END')
   |> xLine(length = -keywayDepth)
   |> arc({
        angleEnd = 180,
-       angleStart = -1 * 180 / PI * startAngle + 360,
+       angleStart = -1 * toDegrees(startAngle) + 360,
        radius = holeRadius
      }, %)
   |> arc({
-       angleEnd = 180 / PI * startAngle,
+       angleEnd = toDegrees(startAngle),
        angleStart = 180,
        radius = holeRadius
      }, %)
