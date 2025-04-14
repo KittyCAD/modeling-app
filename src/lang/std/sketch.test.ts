@@ -330,11 +330,11 @@ describe('testing getConstraintInfo', () => {
   |> angledLine(angle = 30, lengthY = 3)
   |> angledLine(angle = 12.14, endAbsoluteX = 12)
   |> angledLine(angle = 30, endAbsoluteY = 10.14)
-  |> angledLineThatIntersects({
+  |> angledLineThatIntersects(
     angle = 3.14,
     intersectTag = a,
-    offset = 0
-  }, %)
+    offset = 0,
+  )
   |> tangentialArc(endAbsolute = [3.14, 13.14])`
     test.each([
       [
@@ -696,11 +696,11 @@ describe('testing getConstraintInfo', () => {
     |> angledLine(angle = 30, lengthY = 3)
     |> angledLine(angle = 12, endAbsoluteX = 12)
     |> angledLine(angle = 30, endAbsoluteY = 10)
-    |> angledLineThatIntersects({
+    |> angledLineThatIntersects(
          angle = 3.14,
          intersectTag = a,
-         offset = 0
-       }, %)
+         offset = 0,
+       )
     |> tangentialArc(endAbsolute = [3.14, 13.14])`
     test.each([
       [
@@ -857,11 +857,11 @@ describe('testing getConstraintInfo', () => {
     |> angledLine(angle = 30 + 0, lengthY = 3 + 0)
     |> angledLine(angle = 12.14 + 0, endAbsoluteX =  12 + 0)
     |> angledLine(angle = 30 + 0, endAbsoluteY =  10.14 + 0)
-    |> angledLineThatIntersects({
+    |> angledLineThatIntersects(
          angle = 3.14 + 0,
          intersectTag = a,
-         offset = 0 + 0
-       }, %)
+         offset = 0 + 0,
+       )
     |> tangentialArc(endAbsolute = [3.14 + 0, 13.14 + 0])`
     test.each([
       [
