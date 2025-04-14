@@ -32,13 +32,16 @@ export const Settings = () => {
   useEffect(() => {
     console.log('hash', location.hash)
     if (location.hash) {
-      const element = document.getElementById(location.hash.slice(1))
-      if (element) {
-        element.scrollIntoView({ block: 'center', behavior: 'smooth' })
-        ;(
-          element.querySelector('input, select, textarea') as HTMLInputElement
-        )?.focus()
-      }
+      setTimeout(() => {
+        // GOTCHA: Next tick required, you can instantly navigate to a path and this code will find a null element and not scroll into view.
+        const element = document.getElementById(location.hash.slice(1))
+        if (element) {
+          element.scrollIntoView({ block: 'center', behavior: 'smooth' })
+          ;(
+            element.querySelector('input, select, textarea') as HTMLInputElement
+          )?.focus()
+        }
+      }, 0)
     }
   }, [location.hash])
 
