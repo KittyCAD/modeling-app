@@ -132,7 +132,7 @@ pub async fn appearance(exec_state: &mut ExecState, args: Args) -> Result<KclVal
 ///
 /// shell(
 ///     firstSketch,
-///     faces = ['end'],
+///     faces = [END],
 ///     thickness = 0.25,
 /// )
 ///     |> appearance(
@@ -160,7 +160,7 @@ pub async fn appearance(exec_state: &mut ExecState, args: Args) -> Result<KclVal
 ///
 /// shell(
 ///     firstSketch,
-///     faces = ['end'],
+///     faces = [END],
 ///     thickness = 0.25,
 /// )
 /// ```

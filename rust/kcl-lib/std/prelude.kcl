@@ -297,6 +297,12 @@ export Z = {
   direction = [0, 0, 1],
 }: Axis3d
 
+/// Identifies the starting face of an extrusion. I.e., the face which is extruded.
+export START = 'start'
+
+/// Identifies the ending face of an extrusion. I.e., the new face created by an extrusion.
+export END = 'end'
+
 /// Create a helix.
 ///
 /// ```
@@ -456,7 +462,7 @@ export fn helix(
 ///     |> close()
 ///     |> revolve(axis = Y, angle = 180)
 ///
-/// part002 = startSketchOn(part001, 'end')
+/// part002 = startSketchOn(part001, END)
 ///     |> startProfileAt([4.5, -5], %)
 ///     |> line(end = [0, 5])
 ///     |> line(end = [5, 0])
@@ -474,7 +480,7 @@ export fn helix(
 ///     |> close()
 ///     |> extrude(length = 20)
 ///
-/// sketch001 = startSketchOn(box, "END")
+/// sketch001 = startSketchOn(box, END)
 ///     |> circle( center = [10,10], radius = 4 )
 ///     |> revolve(
 ///         angle = -90,
@@ -491,7 +497,7 @@ export fn helix(
 ///     |> close()
 ///     |> extrude(length = 20)
 ///
-/// sketch001 = startSketchOn(box, "END")
+/// sketch001 = startSketchOn(box, END)
 ///     |> circle( center = [10,10], radius = 4 )
 ///     |> revolve(
 ///         angle = 90,
@@ -508,7 +514,7 @@ export fn helix(
 ///     |> close()
 ///     |> extrude(length = 20)
 ///
-/// sketch001 = startSketchOn(box, "END")
+/// sketch001 = startSketchOn(box, END)
 ///     |> circle( center = [10,10], radius = 4 )
 ///     |> revolve(
 ///         angle = 90,
