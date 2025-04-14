@@ -1,7 +1,6 @@
 import { DEFAULT_PROJECT_NAME } from '@src/lib/constants'
 import type { Project } from '@src/lib/project'
-import type {
-  SystemIOContext} from '@src/machines/systemIO/utils'
+import type { SystemIOContext } from '@src/machines/systemIO/utils'
 import {
   NO_PROJECT_DIRECTORY,
   SystemIOMachineActions,
@@ -37,7 +36,7 @@ export const systemIOMachine = setup({
       | {
           type: SystemIOMachineEvents.openProject
           data: { requestedProjectName: string }
-      }
+        },
   },
   actions: {
     [SystemIOMachineActions.setFolders]: assign({
@@ -58,7 +57,7 @@ export const systemIOMachine = setup({
     [SystemIOMachineActions.setRequestedProjectName]: assign({
       requestedProjectName: ({ event }) => {
         assertEvent(event, SystemIOMachineEvents.openProject)
-        return {name:event.data.requestedProjectName}
+        return { name: event.data.requestedProjectName }
       },
     }),
   },
@@ -79,7 +78,7 @@ export const systemIOMachine = setup({
     defaultProjectFolderName: DEFAULT_PROJECT_NAME,
     projectDirectoryPath: NO_PROJECT_DIRECTORY,
     hasListedProjects: false,
-    requestedProjectName: {name:NO_PROJECT_DIRECTORY},
+    requestedProjectName: { name: NO_PROJECT_DIRECTORY },
   }),
   states: {
     [SystemIOMachineStates.idle]: {
@@ -112,8 +111,7 @@ export const systemIOMachine = setup({
         },
       },
     },
-    [SystemIOMachineStates.openingProject] : {
-    }
+    [SystemIOMachineStates.openingProject]: {},
   },
 })
 

@@ -9,23 +9,15 @@ import {
 } from 'react-router-dom'
 
 import { App } from '@src/App'
-import { AppStateProvider } from '@src/AppState'
 import { Auth } from '@src/Auth'
 import { CommandBar } from '@src/components/CommandBar/CommandBar'
 import DownloadAppBanner from '@src/components/DownloadAppBanner'
 import { ErrorPage } from '@src/components/ErrorPage'
 import FileMachineProvider from '@src/components/FileMachineProvider'
-import LspProvider from '@src/components/LspProvider'
-import { MachineManagerProvider } from '@src/components/MachineManagerProvider'
 import ModelingMachineProvider from '@src/components/ModelingMachineProvider'
-import { OpenInDesktopAppHandler } from '@src/components/OpenInDesktopAppHandler'
-import { ProjectsContextProvider } from '@src/components/ProjectsContextProvider'
-import { SystemIOMachineLogicListener } from '@src/components/Providers/SystemIOProviderDesktop'
-import { RouteProvider } from '@src/components/RouteProvider'
 import { WasmErrBanner } from '@src/components/WasmErrBanner'
 import { NetworkContext } from '@src/hooks/useNetworkContext'
 import { useNetworkStatus } from '@src/hooks/useNetworkStatus'
-import { KclContextProvider } from '@src/lang/KclProvider'
 import { coreDump } from '@src/lang/wasm'
 import {
   ASK_TO_OPEN_QUERY_PARAM,
@@ -44,23 +36,23 @@ import {
 } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
 import { useToken } from '@src/machines/appMachine'
+import RootLayout from '@src/Root'
 import Home from '@src/routes/Home'
 import Onboarding, { onboardingRoutes } from '@src/routes/Onboarding'
 import { Settings } from '@src/routes/Settings'
 import SignIn from '@src/routes/SignIn'
 import { Telemetry } from '@src/routes/Telemetry'
-import RootLayout from "@src/Root"
 
 const createRouter = isDesktop() ? createHashRouter : createBrowserRouter
 
 const router = createRouter([
   {
     id: PATHS.INDEX,
-    element: <RootLayout/>,
-    errorElement: <ErrorPage />,
+    element: <RootLayout />,
     children: [
       {
         path: PATHS.INDEX,
+        errorElement: <ErrorPage />,
         loader: async ({ request }) => {
           const onDesktop = isDesktop()
           const url = new URL(request.url)
@@ -81,6 +73,7 @@ const router = createRouter([
         loader: fileLoader,
         id: PATHS.FILE,
         path: PATHS.FILE + '/:id',
+        errorElement: <ErrorPage />,
         element: (
           <Auth>
             <FileMachineProvider>
@@ -127,6 +120,7 @@ const router = createRouter([
       },
       {
         path: PATHS.HOME,
+        errorElement: <ErrorPage />,
         element: (
           <Auth>
             <Outlet />
@@ -155,6 +149,7 @@ const router = createRouter([
       },
       {
         path: PATHS.SIGN_IN,
+        errorElement: <ErrorPage />,
         element: <SignIn />,
       },
     ],

@@ -9,7 +9,7 @@ export enum SystemIOMachineStates {
   idle = 'idle',
   readingFolders = 'readingFolders',
   settingProjectDirectoryPath = 'settingProjectDirectoryPath',
-  openingProject = 'openingProject'
+  openingProject = 'openingProject',
 }
 
 const donePrefix = 'xstate.done.actor.'
@@ -41,5 +41,5 @@ export type SystemIOContext = {
   // has the application gone through the initialiation of systemIOMachine at least once.
   // this is required to prevent chokidar from spamming invalid events during initialization.
   hasListedProjects: boolean
-  requestedProjectName: {name: string}
+  requestedProjectName: { name: string }
 }

@@ -13,7 +13,7 @@ import { settingsMachine } from '@src/machines/settingsMachine'
 import { systemIOMachineDesktop } from '@src/machines/systemIO/systemIOMachineDesktop'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 
-const { AUTH, SETTINGS, SYSTEM_IO, ENGINE_STREAM} = ACTOR_IDS
+const { AUTH, SETTINGS, SYSTEM_IO, ENGINE_STREAM } = ACTOR_IDS
 const appMachineActors = {
   [AUTH]: authMachine,
   [SETTINGS]: settingsMachine,
