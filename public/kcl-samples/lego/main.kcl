@@ -35,7 +35,7 @@ base = startSketchOn(XY)
   |> extrude(length = height)
 
 // Sketch and extrude a rectangular shape to create the shell underneath the lego. Will replace with shell function when able to call a face created from shell.
-shellExtrude = startSketchOn(base, "start")
+shellExtrude = startSketchOn(base, face = START)
   |> startProfileAt([
        -(totalWidth / 2 - t),
        -(totalLength / 2 - t)
@@ -47,7 +47,7 @@ shellExtrude = startSketchOn(base, "start")
   |> extrude(length = -(height - t))
 
 // Create the pegs on the top of the base
-peg = startSketchOn(base, 'end')
+peg = startSketchOn(base, face = END)
   |> circle(
        center = [
          -(pitch * (wbumps - 1) / 2),
@@ -60,7 +60,7 @@ peg = startSketchOn(base, 'end')
   |> extrude(length = bumpHeight)
 
 // Create the pegs on the bottom of the base
-tubePattern = startSketchOn(shellExtrude, 'start')
+tubePattern = startSketchOn(shellExtrude, face = START)
   |> circle(
        center = [
          -(pitch * (wbumps - 1) / 2 - (pitch / 2)),

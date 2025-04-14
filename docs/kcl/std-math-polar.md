@@ -11,9 +11,9 @@ cartesian (x/y/z grid) coordinates.
 
 ```js
 polar(
-  angle: number(deg),
-  length: number(mm),
-): [number(mm); 2]
+  angle: number(Angle),
+  length: number(Length),
+): Point2d
 ```
 
 
@@ -21,12 +21,12 @@ polar(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `angle` | `number(deg)` |  | Yes |
-| `length` | `number(mm)` |  | Yes |
+| `angle` | `number(Angle)` |  | Yes |
+| `length` | `number(Length)` |  | Yes |
 
 ### Returns
 
-`[number(mm); 2]`
+[`Point2d`](/docs/kcl/types/Point2d)
 
 
 ### Examples

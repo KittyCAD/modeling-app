@@ -51,7 +51,7 @@ bump-kcl-crate-versions bump='patch':
     ./target/debug/kcl-bumper --bump {{bump}}
 
 publish-kcl version:
-    git tag kcl-{{version}}
+    git tag kcl-{{version}} -m "Release kcl-{{version}}"
     cargo publish -p kcl-derive-docs
     cargo publish -p kcl-directory-test-macro
     cargo publish -p kcl-lib

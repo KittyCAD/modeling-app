@@ -69,11 +69,11 @@ case = startSketchOn(-XZ)
   |> close()
   |> extrude(length = 65)
 
-thing1 = startSketchOn(case, 'end')
+thing1 = startSketchOn(case, face = END)
   |> circle(center = [-size / 2, -size / 2], radius = 25)
   |> extrude(length = 50)
 
-thing2 = startSketchOn(case, 'end')
+thing2 = startSketchOn(case, face = END)
   |> circle(center = [size / 2, -size / 2], radius = 25)
   |> extrude(length = 50)
 

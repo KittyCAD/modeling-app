@@ -5,7 +5,7 @@ description: Operations executed tan_arc_x_line.kcl
 [
   {
     "labeledArgs": {
-      "data": {
+      "planeOrSolid": {
         "value": {
           "type": "String",
           "value": "XY"

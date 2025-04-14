@@ -13,12 +13,14 @@ use crate::{
     std::{axis_or_reference::Axis3dOrEdgeReference, Args},
 };
 
+use super::args::TyF64;
+
 /// Create a helix.
 pub async fn helix(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let angle_start = args.get_kw_arg("angleStart")?;
-    let revolutions = args.get_kw_arg("revolutions")?;
+    let angle_start: TyF64 = args.get_kw_arg_typed("angleStart", &RuntimeType::angle(), exec_state)?;
+    let revolutions: TyF64 = args.get_kw_arg_typed("revolutions", &RuntimeType::count(), exec_state)?;
     let ccw = args.get_kw_arg_opt("ccw")?;
-    let radius = args.get_kw_arg_opt("radius")?;
+    let radius: Option<TyF64> = args.get_kw_arg_opt_typed("radius", &RuntimeType::length(), exec_state)?;
     let axis: Option<Axis3dOrEdgeReference> = args.get_kw_arg_opt_typed(
         "axis",
         &RuntimeType::Union(vec![
@@ -27,8 +29,8 @@ pub async fn helix(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
         ]),
         exec_state,
     )?;
-    let length = args.get_kw_arg_opt("length")?;
-    let cylinder = args.get_kw_arg_opt("cylinder")?;
+    let length: Option<TyF64> = args.get_kw_arg_opt_typed("length", &RuntimeType::length(), exec_state)?;
+    let cylinder = args.get_kw_arg_opt_typed("cylinder", &RuntimeType::solid(), exec_state)?;
 
     // Make sure we have a radius if we don't have a cylinder.
     if radius.is_none() && cylinder.is_none() {
@@ -79,12 +81,12 @@ pub async fn helix(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     }
 
     let value = inner_helix(
-        revolutions,
-        angle_start,
+        revolutions.n,
+        angle_start.n,
         ccw,
-        radius,
+        radius.map(|t| t.n),
         axis,
-        length,
+        length.map(|t| t.n),
         cylinder,
         exec_state,
         args,
@@ -154,14 +156,14 @@ async fn inner_helix(
                         revolutions,
                         start_angle: Angle::from_degrees(angle_start),
                         axis: Point3d {
-                            x: direction[0],
-                            y: direction[1],
-                            z: direction[2],
+                            x: direction[0].n,
+                            y: direction[1].n,
+                            z: direction[2].n,
                         },
                         center: Point3d {
-                            x: LengthUnit(origin[0]),
-                            y: LengthUnit(origin[1]),
-                            z: LengthUnit(origin[2]),
+                            x: LengthUnit(origin[0].n),
+                            y: LengthUnit(origin[1].n),
+                            z: LengthUnit(origin[2].n),
                         },
                     }),
                 )

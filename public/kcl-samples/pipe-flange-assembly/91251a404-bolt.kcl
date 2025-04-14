@@ -16,7 +16,7 @@ export fn bolt() {
     |> fillet(radius = 0.020, tags = [topEdge, getOppositeEdge(topEdge)])
 
   // Define the sketch of the hex pattern on the screw head and extrude into the head
-  hexPatternSketch = startSketchOn(boltHead, 'start')
+  hexPatternSketch = startSketchOn(boltHead, face = START)
     |> startProfileAt([
          boltHexDrive / 2,
          boltHexFlatLength / 2
@@ -30,7 +30,7 @@ export fn bolt() {
     |> extrude(length = -boltHeadLength * 0.75)
 
   // create the body of the bolt
-  boltBody = startSketchOn(boltHead, 'end')
+  boltBody = startSketchOn(boltHead, face = END)
     |> circle(center = [0, 0], radius = boltDiameter / 2, tag = $filletEdge)
     |> extrude(length = boltLength)
     |> appearance(color = "#4dd043", metalness = 90, roughness = 90)
