@@ -3877,29 +3877,24 @@ export const getCircle = (
   return new Error('expected the arguments to be for a circle')
 }
 
-const getAngledLineThatIntersects = (
-  callExp: CallExpression
+export const getAngledLineThatIntersects = (
+  callExp: CallExpressionKw
 ):
   | {
       val: [Expr, Expr, Expr]
       tag?: Expr
     }
   | Error => {
-  const firstArg = callExp.arguments[0]
-  if (firstArg.type === 'ObjectExpression') {
-    const tag = firstArg.properties.find((p) => p.key.name === 'tag')?.value
-    const angle = firstArg.properties.find((p) => p.key.name === 'angle')?.value
-    const offset = firstArg.properties.find(
-      (p) => p.key.name === 'offset'
-    )?.value
-    const intersectTag = firstArg.properties.find(
-      (p) => p.key.name === 'intersectTag'
-    )?.value
-    if (angle && offset && intersectTag) {
-      return { val: [angle, offset, intersectTag], tag }
-    }
+  const angle = findKwArg(ARG_ANGLE, callExp)
+  const intersectTag = findKwArg(ARG_INTERSECT_TAG, callExp)
+  const offset = findKwArg(ARG_OFFSET, callExp)
+  if (!angle || !intersectTag || !offset) {
+    return new Error(
+      `angledLineThatIntersects call needs angle, intersectTag, and offset args`
+    )
   }
-  return new Error('expected ArrayExpression or ObjectExpression')
+  const tag = findKwArg(ARG_TAG, callExp)
+  return { val: [angle, intersectTag, offset], tag }
 }
 
 /**
@@ -3965,6 +3960,8 @@ export function getArgForEnd(lineCall: CallExpressionKw):
       }
       return getValuesForXYFns(arg)
     }
+    case 'angledLineThatIntersects':
+      return getAngledLineThatIntersects(lineCall)
     case 'yLine':
     case 'xLine': {
       const arg = findKwArgAny(DETERMINING_ARGS, lineCall)
@@ -4023,9 +4020,6 @@ export function getFirstArg(callExp: CallExpression):
   }
   if (['xLine', 'yLine', 'xLineTo', 'yLineTo'].includes(name)) {
     return getFirstArgValuesForXYLineFns(callExp)
-  }
-  if (['angledLineThatIntersects'].includes(name)) {
-    return getAngledLineThatIntersects(callExp)
   }
   if (['tangentialArc'].includes(name)) {
     // TODO probably needs it's own implementation
