@@ -36,10 +36,18 @@ export const systemIOMachine = setup({
       | {
           type: SystemIOMachineEvents.navigateToProject
           data: { requestedProjectName: string }
-      }
+        }
       | {
           type: SystemIOMachineEvents.navigateToFile
-        data: { requestedProjectName: string, requestedFileName: string }
+          data: { requestedProjectName: string; requestedFileName: string }
+        }
+      | {
+          type: SystemIOMachineEvents.createProject
+          data: { requestedProjectName: string }
+      }
+      | {
+          type: SystemIOMachineEvents.renameProject
+        data: { requestedProjectName: string, projectName: string }
         }
   },
   actions: {
@@ -67,7 +75,10 @@ export const systemIOMachine = setup({
     [SystemIOMachineActions.setRequestedFileName]: assign({
       requestedFileName: ({ event }) => {
         assertEvent(event, SystemIOMachineEvents.navigateToFile)
-        return { project: event.data.requestedProjectName, file: event.data.requestedFileName }
+        return {
+          project: event.data.requestedProjectName,
+          file: event.data.requestedFileName,
+        }
       },
     }),
   },
@@ -76,6 +87,13 @@ export const systemIOMachine = setup({
       async ({ input: context }: { input: SystemIOContext }) => {
         return []
       }
+    ),
+    [SystemIOMachineActors.createProject]: fromPromise(
+      async ({
+        input: context,
+      }: {
+        input: { context: SystemIOContext; requestProjectName: string }
+      }) => {}
     ),
   },
 }).createMachine({
@@ -89,14 +107,17 @@ export const systemIOMachine = setup({
     projectDirectoryPath: NO_PROJECT_DIRECTORY,
     hasListedProjects: false,
     requestedProjectName: { name: NO_PROJECT_DIRECTORY },
-    requestedFileName: { name: NO_PROJECT_DIRECTORY },
+    requestedFileName: {
+      project: NO_PROJECT_DIRECTORY,
+      file: NO_PROJECT_DIRECTORY,
+    },
   }),
   states: {
     [SystemIOMachineStates.idle]: {
       on: {
         // on can be an action
         [SystemIOMachineEvents.readFoldersFromProjectDirectory]:
-        SystemIOMachineStates.readingFolders,
+          SystemIOMachineStates.readingFolders,
         [SystemIOMachineEvents.setProjectDirectoryPath]: {
           target: SystemIOMachineStates.readingFolders,
           actions: [SystemIOMachineActions.setProjectDirectoryPath],
@@ -106,6 +127,12 @@ export const systemIOMachine = setup({
         },
         [SystemIOMachineEvents.navigateToFile]: {
           actions: [SystemIOMachineActions.setRequestedFileName],
+        },
+        [SystemIOMachineEvents.createProject]: {
+          target: SystemIOMachineStates.creatingProject,
+        },
+        [SystemIOMachineEvents.renameProject]: {
+          target: SystemIOMachineStates.renamingProject,
         },
       },
     },
@@ -119,6 +146,45 @@ export const systemIOMachine = setup({
         onDone: {
           target: SystemIOMachineStates.idle,
           actions: [SystemIOMachineActions.setFolders],
+        },
+        onError: {
+          target: SystemIOMachineStates.idle,
+        },
+      },
+    },
+    [SystemIOMachineStates.creatingProject]: {
+      invoke: {
+        id: SystemIOMachineActors.createProject,
+        src: SystemIOMachineActors.createProject,
+        input: ({ context, event }) => {
+          assertEvent(event, SystemIOMachineEvents.createProject)
+          return {
+            context,
+            requestedProjectName: event.data.requestedProjectName,
+          }
+        },
+        onDone: {
+          target: SystemIOMachineStates.readingFolders,
+        },
+        onError: {
+          target: SystemIOMachineStates.idle,
+        },
+      },
+    },
+    [SystemIOMachineStates.renamingProject]: {
+      invoke: {
+        id: SystemIOMachineActors.renameProject,
+        src: SystemIOMachineActors.renameProject,
+        input: ({ context, event }) => {
+          assertEvent(event, SystemIOMachineEvents.renameProject)
+          return {
+            context,
+            requestedProjectName: event.data.requestedProjectName,
+            projectName: event.data.projectName
+          }
+        },
+        onDone: {
+          target: SystemIOMachineStates.readingFolders,
         },
         onError: {
           target: SystemIOMachineStates.idle,

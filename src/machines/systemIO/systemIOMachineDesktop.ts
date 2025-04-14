@@ -1,4 +1,10 @@
-import { getProjectInfo, mkdirOrNOOP } from '@src/lib/desktop'
+import {
+  createNewProjectDirectory,
+  getProjectInfo,
+  mkdirOrNOOP,
+  renameProjectDirectory
+} from '@src/lib/desktop'
+import { getUniqueProjectName, doesProjectNameNeedInterpolated, getNextProjectIndex, interpolateProjectNameWithIndex } from '@src/lib/desktopFS'
 import type { Project } from '@src/lib/project'
 import { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import type { SystemIOContext } from '@src/machines/systemIO/utils'
@@ -51,6 +57,47 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           projects.push(project)
         }
         return projects
+      }
+    ),
+    [SystemIOMachineActors.createProject]: fromPromise(
+      async ({
+        input,
+      }: {
+        input: { context: SystemIOContext; requestedProjectName: string }
+      }) => {
+        const folders = input.context.folders
+        const requestedProjectName = input.requestedProjectName
+        const uniqueName = getUniqueProjectName(requestedProjectName, folders)
+        await createNewProjectDirectory(uniqueName)
+      }
+    ),
+    [SystemIOMachineActors.renameProject]: fromPromise(
+      async ({
+        input,
+      }: {
+        input: { context: SystemIOContext; requestedProjectName: string, projectName: string }
+      }) => {
+        const folders = input.context.folders
+        const requestedProjectName = input.requestedProjectName
+        const projectName = input.projectName
+        let newProjectName : string = requestedProjectName
+          if (doesProjectNameNeedInterpolated(requestedProjectName)) {
+            const nextIndex = getNextProjectIndex(requestedProjectName, folders)
+            newProjectName = interpolateProjectNameWithIndex(requestedProjectName, nextIndex)
+          }
+
+          // Toast an error if the project name is taken
+          if (folders.find((p) => p.name === name)) {
+            return Promise.reject(
+              new Error(`Project with name "${name}" already exists`)
+            )
+          }
+
+          await renameProjectDirectory(
+            window.electron.path.join(input.context.projectDirectoryPath, projectName),
+            newProjectName
+          )
+        // DONE
       }
     ),
   },

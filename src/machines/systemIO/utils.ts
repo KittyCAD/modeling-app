@@ -3,12 +3,16 @@ import type { Project } from '@src/lib/project'
 export enum SystemIOMachineActors {
   readFoldersFromProjectDirectory = 'read folders from project directory',
   setProjectDirectoryPath = 'set project directory path',
+  createProject = 'create project',
+  renameProject = 'rename project'
 }
 
 export enum SystemIOMachineStates {
   idle = 'idle',
   readingFolders = 'readingFolders',
   settingProjectDirectoryPath = 'settingProjectDirectoryPath',
+  creatingProject = 'creatingProject',
+  renamingProject = 'renamingProject'
 }
 
 const donePrefix = 'xstate.done.actor.'
@@ -19,7 +23,9 @@ export enum SystemIOMachineEvents {
     'read folders from project directory',
   setProjectDirectoryPath = 'set project directory path',
   navigateToProject = 'navigate to project',
-  navigateToFile = 'navigate to file'
+  navigateToFile = 'navigate to file',
+  createProject = 'create project',
+  renameProject = 'rename project'
 }
 
 export enum SystemIOMachineActions {
@@ -43,5 +49,5 @@ export type SystemIOContext = {
   // this is required to prevent chokidar from spamming invalid events during initialization.
   hasListedProjects: boolean
   requestedProjectName: { name: string }
-  requestedFileName: {project: string, file: string}
+  requestedFileName: { project: string; file: string }
 }

@@ -13,7 +13,7 @@ export const useProjectDirectoryPath = () =>
 export function SystemIOMachineLogicListener() {
   const requestedProjectName = useRequestedProjectName()
   const requestedFileName = useRequestedFileName()
-  console.log(requestedFileName,'okay')
+  console.log(requestedFileName, 'okay')
   const projectDirectoryPath = useProjectDirectoryPath()
   const navigate = useNavigate()
 
@@ -42,10 +42,7 @@ export function SystemIOMachineLogicListener() {
       projectDirectoryPath,
       requestedFileName.project
     )
-    const filePath = window.electron.join(
-      projectPath,
-      requestedFileName.file
-    )
+    const filePath = window.electron.join(projectPath, requestedFileName.file)
     const requestedPath = `${PATHS.FILE}/${encodeURIComponent(filePath)}`
     navigate(requestedPath)
   }, [requestedFileName])
