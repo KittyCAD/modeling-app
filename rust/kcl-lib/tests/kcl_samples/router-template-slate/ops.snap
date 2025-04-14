@@ -64,7 +64,7 @@ description: Operations executed router-template-slate.kcl
       "tag": {
         "value": {
           "type": "String",
-          "value": "START"
+          "value": "start"
         },
         "sourceRange": []
       }
@@ -120,7 +120,7 @@ description: Operations executed router-template-slate.kcl
       "tag": {
         "value": {
           "type": "String",
-          "value": "START"
+          "value": "start"
         },
         "sourceRange": []
       }

@@ -1077,7 +1077,7 @@ profile001 = startProfileAt([${roundOff(scale * 69.6)}, ${roundOff(
     // The click should generate a new sketch starting on the end face of extrude001
     // signified by the implicit 'END' tag for that solid.
     await page.waitForTimeout(800)
-    await page.getByText(`END')`).click()
+    await page.getByText(`END)`).click()
     await page.keyboard.press('End')
     await page.keyboard.press('Enter')
     await page.keyboard.type('  |>', { delay: 100 })
@@ -1099,7 +1099,7 @@ profile001 = startProfileAt([${roundOff(scale * 69.6)}, ${roundOff(
     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
     |> close()
   extrude001 = extrude(sketch001, length = 5)
-  sketch002 = startSketchOn(extrude001, 'END')
+  sketch002 = startSketchOn(extrude001, END)
     |>
   `.replace(/\s/g, '')
     )

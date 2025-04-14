@@ -1185,13 +1185,20 @@ description: Result of parsing enclosure.kcl
                       "commentStart": 0,
                       "elements": [
                         {
+                          "abs_path": false,
                           "commentStart": 0,
                           "end": 0,
-                          "raw": "\"end\"",
+                          "name": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "name": "END",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 0,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": "end"
+                          "type": "Name",
+                          "type": "Name"
                         }
                       ],
                       "end": 0,
@@ -5103,13 +5110,20 @@ description: Result of parsing enclosure.kcl
                     "type": "Name"
                   },
                   {
+                    "abs_path": false,
                     "commentStart": 0,
                     "end": 0,
-                    "raw": "'END'",
+                    "name": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "name": "END",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 0,
-                    "type": "Literal",
-                    "type": "Literal",
-                    "value": "END"
+                    "type": "Name",
+                    "type": "Name"
                   }
                 ],
                 "callee": {
