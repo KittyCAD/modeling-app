@@ -26,7 +26,7 @@ sketch006 = startSketchOn(plane002)
 
 extrude006 = extrude(sketch006, length = 1)
 
-sketch007 = startSketchOn(extrude006, 'END')
+sketch007 = startSketchOn(extrude006, face = END)
   |> circle(
        center = [
          1.75 * cos(toRadians(axisJ1)) / abs(cos(toRadians(axisJ1))),
@@ -39,7 +39,7 @@ extrude007 = extrude(sketch007, length = 1.5)
   |> fillet(radius = 0.1, tags = [getOppositeEdge(referenceEdge2)])
 
 // Draw Bolt Pattern on Rotating Base
-sketch008 = startSketchOn(extrude007, 'END')
+sketch008 = startSketchOn(extrude007, face = END)
   |> circle(
        center = [
          1.75 * cos(toRadians(axisJ1)) / abs(cos(toRadians(axisJ1))),
@@ -58,7 +58,7 @@ sketch008 = startSketchOn(extrude007, 'END')
      )
 extrude008 = extrude(sketch008, length = 0.2)
 
-sketch009 = startSketchOn(extrude007, 'END')
+sketch009 = startSketchOn(extrude007, face = END)
   |> circle(
        center = [
          1.75 * cos(toRadians(axisJ1)) / abs(cos(toRadians(axisJ1))),

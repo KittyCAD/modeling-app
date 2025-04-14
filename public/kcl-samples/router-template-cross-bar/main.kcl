@@ -54,7 +54,7 @@ sketch001 = startSketchOn(XZ)
 extrude001 = extrude(sketch001, length = 5)
 
 // Create the second sketch
-sketch002 = startSketchOn(extrude001, 'START')
+sketch002 = startSketchOn(extrude001, face = START)
   |> startProfileAt([distanceToInsideEdge, 0], %)
   |> angledLine(angle = 180, length = templateThickness, tag = $rectangleSegmentA002)
   |> angledLine(angle = segAng(rectangleSegmentA002) + 90, length = templateThickness, tag = $rectangleSegmentB002)
@@ -66,7 +66,7 @@ sketch002 = startSketchOn(extrude001, 'START')
 extrude002 = extrude(sketch002, length = 13)
 
 // Create the third sketch
-sketch003 = startSketchOn(extrude001, 'START')
+sketch003 = startSketchOn(extrude001, face = START)
   |> startProfileAt([-distanceToInsideEdge, 0], %)
   |> angledLine(angle = 0, length = templateThickness, tag = $rectangleSegmentA001)
   |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = templateThickness, tag = $rectangleSegmentB001)
@@ -78,7 +78,7 @@ sketch003 = startSketchOn(extrude001, 'START')
 extrude003 = extrude(sketch003, length = 13)
 
 // Create the fourth sketch
-sketch004 = startSketchOn(extrude002, 'END')
+sketch004 = startSketchOn(extrude002, face = END)
   |> startProfileAt([-distanceToInsideEdge, 0], %)
   |> angledLine(angle = 0, length = distanceToInsideEdge * 2, tag = $rectangleSegmentA003)
   |> angledLine(angle = segAng(rectangleSegmentA003) - 90, length = templateThickness, tag = $rectangleSegmentB003)

@@ -9,7 +9,7 @@ Compute the cosine of a number (in radians).
 
 
 ```js
-cos(@num: number(rad)): number(_)
+cos(@num: number(Angle)): number(_)
 ```
 
 
@@ -17,7 +17,7 @@ cos(@num: number(rad)): number(_)
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `num` | `number(rad)` |  | Yes |
+| `num` | `number(Angle)` |  | Yes |
 
 ### Returns
 

@@ -10,12 +10,10 @@ const extrude000 = extrude(sketch000, length = 1.0)
 
 // define a plane with name plane005
 const plane005 = {
-  plane: {
-    origin: [0.0, 0.0, 1.0],
-    xAxis: [0.707107, 0.707107, 0.0],
-    yAxis: [-0.0, 0.0, 1.0],
-    zAxis: [0.707107, -0.707107, 0.0]
-  }
+  origin: [0.0, 0.0, 1.0],
+  xAxis: [0.707107, 0.707107, 0.0],
+  yAxis: [-0.0, 0.0, 1.0],
+  zAxis: [0.707107, -0.707107, 0.0]
 }
 
 // create a sketch with name sketch001
