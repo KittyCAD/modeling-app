@@ -173,7 +173,8 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
     {
       name: 'load-external-model',
       displayName: 'Load external model',
-      description: 'Loads a model from an external source into the current project.',
+      description:
+        'Loads a model from an external source into the current project.',
       needsReview: true,
       icon: 'importFile',
       reviewMessage: ({ argumentsToSubmit }) =>
@@ -314,7 +315,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
           options: commandProps.specialPropsForLoadCommand.providedOptions,
         },
         path: {
-          inputType: 'pathDialog',
+          inputType: 'path',
           valueSummary: (value) => window.electron.path.basename(value),
           required: (commandContext) =>
             ['local'].includes(
