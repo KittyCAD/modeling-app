@@ -1,63 +1,63 @@
 ```mermaid
 flowchart LR
   subgraph path2 [Path]
-    2["Path<br>[595, 688, 7]"]
-    3["Segment<br>[595, 688, 7]"]
+    2["Path<br>[422, 484, 6]"]
+    3["Segment<br>[422, 484, 6]"]
     4[Solid2d]
   end
-  subgraph path6 [Path]
-    6["Path<br>[917, 972, 7]"]
-    7["Segment<br>[917, 972, 7]"]
-    8[Solid2d]
+  subgraph path11 [Path]
+    11["Path<br>[622, 682, 6]"]
+    12["Segment<br>[622, 682, 6]"]
+    13[Solid2d]
   end
-  subgraph path15 [Path]
-    15["Path<br>[1192, 1251, 7]"]
-    16["Segment<br>[1192, 1251, 7]"]
-    17[Solid2d]
+  subgraph path19 [Path]
+    19["Path<br>[595, 688, 7]"]
+    20["Segment<br>[595, 688, 7]"]
+    21[Solid2d]
   end
   subgraph path23 [Path]
-    23["Path<br>[1358, 1418, 7]"]
-    24["Segment<br>[1358, 1418, 7]"]
+    23["Path<br>[917, 972, 7]"]
+    24["Segment<br>[917, 972, 7]"]
     25[Solid2d]
   end
-  subgraph path31 [Path]
-    31["Path<br>[1580, 1633, 7]"]
-    32["Segment<br>[1580, 1633, 7]"]
-    33[Solid2d]
+  subgraph path32 [Path]
+    32["Path<br>[1192, 1251, 7]"]
+    33["Segment<br>[1192, 1251, 7]"]
+    34[Solid2d]
   end
-  subgraph path39 [Path]
-    39["Path<br>[595, 688, 7]"]
-    40["Segment<br>[595, 688, 7]"]
-    41[Solid2d]
+  subgraph path40 [Path]
+    40["Path<br>[1358, 1418, 7]"]
+    41["Segment<br>[1358, 1418, 7]"]
+    42[Solid2d]
   end
-  subgraph path43 [Path]
-    43["Path<br>[917, 972, 7]"]
-    44["Segment<br>[917, 972, 7]"]
-    45[Solid2d]
+  subgraph path48 [Path]
+    48["Path<br>[1580, 1633, 7]"]
+    49["Segment<br>[1580, 1633, 7]"]
+    50[Solid2d]
   end
-  subgraph path52 [Path]
-    52["Path<br>[1192, 1251, 7]"]
-    53["Segment<br>[1192, 1251, 7]"]
-    54[Solid2d]
+  subgraph path56 [Path]
+    56["Path<br>[595, 688, 7]"]
+    57["Segment<br>[595, 688, 7]"]
+    58[Solid2d]
   end
   subgraph path60 [Path]
-    60["Path<br>[1358, 1418, 7]"]
-    61["Segment<br>[1358, 1418, 7]"]
+    60["Path<br>[917, 972, 7]"]
+    61["Segment<br>[917, 972, 7]"]
     62[Solid2d]
   end
-  subgraph path68 [Path]
-    68["Path<br>[1580, 1633, 7]"]
-    69["Segment<br>[1580, 1633, 7]"]
-    70[Solid2d]
+  subgraph path69 [Path]
+    69["Path<br>[1192, 1251, 7]"]
+    70["Segment<br>[1192, 1251, 7]"]
+    71[Solid2d]
   end
-  subgraph path76 [Path]
-    76["Path<br>[422, 484, 6]"]
-    77["Segment<br>[422, 484, 6]"]
-    78[Solid2d]
+  subgraph path77 [Path]
+    77["Path<br>[1358, 1418, 7]"]
+    78["Segment<br>[1358, 1418, 7]"]
+    79[Solid2d]
   end
   subgraph path85 [Path]
-    85["Path<br>[622, 682, 6]"]
-    86["Segment<br>[622, 682, 6]"]
+    85["Path<br>[1580, 1633, 7]"]
+    86["Segment<br>[1580, 1633, 7]"]
     87[Solid2d]
   end
   subgraph path93 [Path]
@@ -125,58 +125,58 @@ flowchart LR
     222["Segment<br>[527, 582, 11]"]
     223[Solid2d]
   end
-  1["Plane<br>[570, 587, 7]"]
-  5["Plane<br>[892, 909, 7]"]
-  9["Sweep Extrusion<br>[1010, 1050, 7]"]
-  10[Wall]
-  11["Cap Start"]
-  12["Cap End"]
-  13["SweepEdge Opposite"]
-  14["SweepEdge Adjacent"]
-  18["Sweep Extrusion<br>[1259, 1296, 7]"]
-  19[Wall]
-  20["Cap End"]
-  21["SweepEdge Opposite"]
-  22["SweepEdge Adjacent"]
-  26["Sweep Extrusion<br>[1426, 1464, 7]"]
+  1["Plane<br>[399, 416, 6]"]
+  5["Sweep Extrusion<br>[490, 526, 6]"]
+  6[Wall]
+  7["Cap Start"]
+  8["Cap End"]
+  9["SweepEdge Opposite"]
+  10["SweepEdge Adjacent"]
+  14["Sweep Extrusion<br>[688, 725, 6]"]
+  15[Wall]
+  16["SweepEdge Opposite"]
+  17["SweepEdge Adjacent"]
+  18["Plane<br>[570, 587, 7]"]
+  22["Plane<br>[892, 909, 7]"]
+  26["Sweep Extrusion<br>[1010, 1050, 7]"]
   27[Wall]
-  28["Cap End"]
-  29["SweepEdge Opposite"]
-  30["SweepEdge Adjacent"]
-  34["Sweep Extrusion<br>[1641, 1683, 7]"]
-  35[Wall]
-  36["SweepEdge Opposite"]
-  37["SweepEdge Adjacent"]
-  38["Plane<br>[570, 587, 7]"]
-  42["Plane<br>[892, 909, 7]"]
-  46["Sweep Extrusion<br>[1010, 1050, 7]"]
-  47[Wall]
-  48["Cap Start"]
-  49["Cap End"]
-  50["SweepEdge Opposite"]
-  51["SweepEdge Adjacent"]
-  55["Sweep Extrusion<br>[1259, 1296, 7]"]
-  56[Wall]
-  57["Cap End"]
-  58["SweepEdge Opposite"]
-  59["SweepEdge Adjacent"]
-  63["Sweep Extrusion<br>[1426, 1464, 7]"]
+  28["Cap Start"]
+  29["Cap End"]
+  30["SweepEdge Opposite"]
+  31["SweepEdge Adjacent"]
+  35["Sweep Extrusion<br>[1259, 1296, 7]"]
+  36[Wall]
+  37["Cap End"]
+  38["SweepEdge Opposite"]
+  39["SweepEdge Adjacent"]
+  43["Sweep Extrusion<br>[1426, 1464, 7]"]
+  44[Wall]
+  45["Cap End"]
+  46["SweepEdge Opposite"]
+  47["SweepEdge Adjacent"]
+  51["Sweep Extrusion<br>[1641, 1683, 7]"]
+  52[Wall]
+  53["SweepEdge Opposite"]
+  54["SweepEdge Adjacent"]
+  55["Plane<br>[570, 587, 7]"]
+  59["Plane<br>[892, 909, 7]"]
+  63["Sweep Extrusion<br>[1010, 1050, 7]"]
   64[Wall]
-  65["Cap End"]
-  66["SweepEdge Opposite"]
-  67["SweepEdge Adjacent"]
-  71["Sweep Extrusion<br>[1641, 1683, 7]"]
-  72[Wall]
-  73["SweepEdge Opposite"]
-  74["SweepEdge Adjacent"]
-  75["Plane<br>[399, 416, 6]"]
-  79["Sweep Extrusion<br>[490, 526, 6]"]
-  80[Wall]
-  81["Cap Start"]
+  65["Cap Start"]
+  66["Cap End"]
+  67["SweepEdge Opposite"]
+  68["SweepEdge Adjacent"]
+  72["Sweep Extrusion<br>[1259, 1296, 7]"]
+  73[Wall]
+  74["Cap End"]
+  75["SweepEdge Opposite"]
+  76["SweepEdge Adjacent"]
+  80["Sweep Extrusion<br>[1426, 1464, 7]"]
+  81[Wall]
   82["Cap End"]
   83["SweepEdge Opposite"]
   84["SweepEdge Adjacent"]
-  88["Sweep Extrusion<br>[688, 725, 6]"]
+  88["Sweep Extrusion<br>[1641, 1683, 7]"]
   89[Wall]
   90["SweepEdge Opposite"]
   91["SweepEdge Adjacent"]
@@ -279,119 +279,118 @@ flowchart LR
   231["StartSketchOnFace<br>[1145, 1184, 7]"]
   232["StartSketchOnFace<br>[1313, 1350, 7]"]
   233["StartSketchOnFace<br>[1534, 1572, 7]"]
-  234["StartSketchOnFace<br>[579, 616, 6]"]
-  235["StartSketchOnFace<br>[556, 593, 8]"]
-  236["StartSketchOnFace<br>[733, 770, 9]"]
-  237["StartSketchOnFace<br>[1269, 1304, 9]"]
-  238["StartSketchOnFace<br>[922, 959, 10]"]
+  234["StartSketchOnFace<br>[556, 593, 8]"]
+  235["StartSketchOnFace<br>[733, 770, 9]"]
+  236["StartSketchOnFace<br>[1269, 1304, 9]"]
+  237["StartSketchOnFace<br>[922, 959, 10]"]
+  238["StartSketchOnFace<br>[484, 519, 11]"]
   239["StartSketchOnFace<br>[484, 519, 11]"]
-  240["StartSketchOnFace<br>[484, 519, 11]"]
   1 --- 2
   2 --- 3
+  2 ---- 5
   2 --- 4
+  3 --- 6
+  3 --- 9
+  3 --- 10
   5 --- 6
-  6 --- 7
-  6 ---- 9
-  6 --- 8
-  7 --- 10
-  7 --- 13
-  7 --- 14
-  9 --- 10
-  9 --- 11
-  9 --- 12
-  9 --- 13
-  9 --- 14
-  11 --- 15
-  12 --- 23
-  15 --- 16
-  15 ---- 18
-  15 --- 17
-  16 --- 19
-  16 --- 21
-  16 --- 22
+  5 --- 7
+  5 --- 8
+  5 --- 9
+  5 --- 10
+  8 --- 11
+  11 --- 12
+  11 ---- 14
+  11 --- 13
+  12 --- 15
+  12 --- 16
+  12 --- 17
+  14 --- 15
+  14 --- 16
+  14 --- 17
   18 --- 19
-  18 --- 20
-  18 --- 21
-  18 --- 22
+  19 --- 20
+  19 --- 21
+  22 --- 23
   23 --- 24
   23 ---- 26
   23 --- 25
   24 --- 27
-  24 --- 29
   24 --- 30
+  24 --- 31
   26 --- 27
   26 --- 28
   26 --- 29
   26 --- 30
-  28 --- 31
-  31 --- 32
-  31 ---- 34
-  31 --- 33
-  32 --- 35
-  32 --- 36
-  32 --- 37
-  34 --- 35
-  34 --- 36
-  34 --- 37
-  38 --- 39
-  39 --- 40
-  39 --- 41
-  42 --- 43
+  26 --- 31
+  28 --- 32
+  29 --- 40
+  32 --- 33
+  32 ---- 35
+  32 --- 34
+  33 --- 36
+  33 --- 38
+  33 --- 39
+  35 --- 36
+  35 --- 37
+  35 --- 38
+  35 --- 39
+  40 --- 41
+  40 ---- 43
+  40 --- 42
+  41 --- 44
+  41 --- 46
+  41 --- 47
   43 --- 44
-  43 ---- 46
   43 --- 45
-  44 --- 47
-  44 --- 50
-  44 --- 51
-  46 --- 47
-  46 --- 48
-  46 --- 49
-  46 --- 50
-  46 --- 51
-  48 --- 52
-  49 --- 60
-  52 --- 53
-  52 ---- 55
-  52 --- 54
-  53 --- 56
-  53 --- 58
-  53 --- 59
+  43 --- 46
+  43 --- 47
+  45 --- 48
+  48 --- 49
+  48 ---- 51
+  48 --- 50
+  49 --- 52
+  49 --- 53
+  49 --- 54
+  51 --- 52
+  51 --- 53
+  51 --- 54
   55 --- 56
-  55 --- 57
-  55 --- 58
-  55 --- 59
+  56 --- 57
+  56 --- 58
+  59 --- 60
   60 --- 61
   60 ---- 63
   60 --- 62
   61 --- 64
-  61 --- 66
   61 --- 67
+  61 --- 68
   63 --- 64
   63 --- 65
   63 --- 66
   63 --- 67
-  65 --- 68
-  68 --- 69
-  68 ---- 71
-  68 --- 70
-  69 --- 72
-  69 --- 73
-  69 --- 74
-  71 --- 72
-  71 --- 73
-  71 --- 74
-  75 --- 76
-  76 --- 77
-  76 ---- 79
-  76 --- 78
-  77 --- 80
-  77 --- 83
-  77 --- 84
-  79 --- 80
-  79 --- 81
-  79 --- 82
-  79 --- 83
-  79 --- 84
+  63 --- 68
+  65 --- 69
+  66 --- 77
+  69 --- 70
+  69 ---- 72
+  69 --- 71
+  70 --- 73
+  70 --- 75
+  70 --- 76
+  72 --- 73
+  72 --- 74
+  72 --- 75
+  72 --- 76
+  77 --- 78
+  77 ---- 80
+  77 --- 79
+  78 --- 81
+  78 --- 83
+  78 --- 84
+  80 --- 81
+  80 --- 82
+  80 --- 83
+  80 --- 84
   82 --- 85
   85 --- 86
   85 ---- 88
@@ -596,17 +595,16 @@ flowchart LR
   224 --- 225
   224 --- 226
   224 --- 227
-  11 <--x 228
-  12 <--x 229
-  28 <--x 230
-  48 <--x 231
-  49 <--x 232
-  65 <--x 233
-  82 <--x 234
-  99 <--x 235
-  115 <--x 236
-  116 <--x 237
-  174 <--x 238
-  201 <--x 239
-  218 <--x 240
+  28 <--x 228
+  29 <--x 229
+  45 <--x 230
+  65 <--x 231
+  66 <--x 232
+  82 <--x 233
+  99 <--x 234
+  115 <--x 235
+  116 <--x 236
+  174 <--x 237
+  201 <--x 238
+  218 <--x 239
 ```
