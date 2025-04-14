@@ -86,7 +86,7 @@ test.describe('Testing loading external models', () => {
   test(
     'Desktop: should create new file by default, optionally overwrite',
     { tag: '@electron' },
-    async ({ editor, context, page, scene, cmdBar, toolbar }, testInfo) => {
+    async ({ editor, context, page, scene, cmdBar, toolbar }) => {
       if (runningOnWindows()) {
         test.fixme(orRunWhenFullSuiteEnabled())
       }
@@ -115,8 +115,9 @@ test.describe('Testing loading external models', () => {
       const commandMethodOption = page.getByRole('option', {
         name: 'Overwrite',
       })
-      const newFileWarning = page.getByText('Create a new file from')
-      const overwriteWarning = page.getByText('Overwrite current file from')
+      const overwriteWarning = page.getByText(
+        'Overwrite current file with sample?'
+      )
       const confirmButton = page.getByRole('button', { name: 'Submit command' })
       const projectMenuButton = page.getByTestId('project-sidebar-toggle')
       const newlyCreatedFile = (name: string) =>
@@ -145,7 +146,6 @@ test.describe('Testing loading external models', () => {
         await cmdBar.progressCmdBar()
         await cmdBar.selectOption({ name: sampleOne.title }).click()
         await expect(overwriteWarning).not.toBeVisible()
-        await expect(newFileWarning).toBeVisible()
         await cmdBar.progressCmdBar()
         await page.waitForTimeout(1000)
       })
@@ -163,7 +163,6 @@ test.describe('Testing loading external models', () => {
         await commandMethodArgButton.click()
         await commandMethodOption.click()
         await expect(commandMethodArgButton).toContainText('overwrite')
-        await expect(newFileWarning).not.toBeVisible()
         await expect(overwriteWarning).toBeVisible()
         await confirmButton.click()
       })
@@ -203,16 +202,7 @@ test.describe('Testing loading external models', () => {
     test(
       `Load external models from local drive - ${modelName}`,
       { tag: ['@electron'] },
-      async ({
-        context,
-        page,
-        homePage,
-        scene,
-        editor,
-        toolbar,
-        cmdBar,
-        tronApp,
-      }) => {
+      async ({ page, homePage, scene, toolbar, cmdBar, tronApp }) => {
         if (!tronApp) {
           fail()
         }

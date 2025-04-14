@@ -201,6 +201,7 @@ export function getNextFileName({
   entryName: string
   baseDir: string
 }) {
+  // Preserve the extension in case of a relevant but foreign file
   let extension = window.electron.path.extname(entryName)
   if (!relevantFileExtensions().includes(extension.replace('.', ''))) {
     extension = FILE_EXT
