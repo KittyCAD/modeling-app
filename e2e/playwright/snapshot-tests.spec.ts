@@ -13,6 +13,7 @@ import type { Paths } from '@e2e/playwright/test-utils'
 import {
   doExport,
   getUtils,
+  networkMasks,
   orRunWhenFullSuiteEnabled,
   settingsToToml,
 } from '@e2e/playwright/test-utils'
@@ -465,10 +466,7 @@ test(
     await page.waitForTimeout(500)
     await expect(page).toHaveScreenshot({
       maxDiffPixels: 100,
-      mask: [
-        page.getByTestId('model-state-indicator'),
-        page.getByTestId('network-toggle'),
-      ],
+      mask: networkMasks(page),
     })
 
     const lineEndClick = () =>
@@ -497,10 +495,7 @@ test(
 
     await expect(page).toHaveScreenshot({
       maxDiffPixels: 100,
-      mask: [
-        page.getByTestId('model-state-indicator'),
-        page.getByTestId('network-toggle'),
-      ],
+      mask: networkMasks(page),
     })
     await endOfTangentClk()
 
@@ -510,10 +505,7 @@ test(
     await threePointArcMidPointMv()
     await expect(page).toHaveScreenshot({
       maxDiffPixels: 100,
-      mask: [
-        page.getByTestId('model-state-indicator'),
-        page.getByTestId('network-toggle'),
-      ],
+      mask: networkMasks(page),
     })
     await threePointArcMidPointClk()
     await page.waitForTimeout(100)
@@ -522,10 +514,7 @@ test(
     await page.waitForTimeout(500)
     await expect(page).toHaveScreenshot({
       maxDiffPixels: 100,
-      mask: [
-        page.getByTestId('model-state-indicator'),
-        page.getByTestId('network-toggle'),
-      ],
+      mask: networkMasks(page),
     })
 
     await threePointArcEndPointClk()
@@ -545,10 +534,7 @@ test(
     await page.waitForTimeout(500)
     await expect(page).toHaveScreenshot({
       maxDiffPixels: 100,
-      mask: [
-        page.getByTestId('model-state-indicator'),
-        page.getByTestId('network-toggle'),
-      ],
+      mask: networkMasks(page),
     })
     await arcEndClk()
   }
@@ -598,10 +584,7 @@ test(
     // Ensure the draft rectangle looks the same as it usually does
     await expect(page).toHaveScreenshot({
       maxDiffPixels: 100,
-      mask: [
-        page.getByTestId('model-state-indicator'),
-        page.getByTestId('network-toggle'),
-      ],
+      mask: networkMasks(page),
     })
   }
 )
@@ -644,10 +627,7 @@ test(
     // Ensure the draft rectangle looks the same as it usually does
     await expect(page).toHaveScreenshot({
       maxDiffPixels: 100,
-      mask: [
-        page.getByTestId('model-state-indicator'),
-        page.getByTestId('network-toggle'),
-      ],
+      mask: networkMasks(page),
     })
     await expect(page.locator('.cm-content')).toHaveText(
       `sketch001 = startSketchOn(XZ)profile001 = circle(sketch001, center = [366.89, -62.01], radius = 1)`
@@ -819,6 +799,10 @@ test.describe(
       // screen shot should show the sketch
       await expect(page).toHaveScreenshot({
         maxDiffPixels: 100,
+        mask: [
+          page.getByTestId('model-state-indicator'),
+          page.getByTestId('network-toggle'),
+        ],
       })
 
       // exit sketch
@@ -832,6 +816,10 @@ test.describe(
       // second screen shot should look almost identical, i.e. scale should be the same.
       await expect(page).toHaveScreenshot({
         maxDiffPixels: 100,
+        mask: [
+          page.getByTestId('model-state-indicator'),
+          page.getByTestId('network-toggle'),
+        ],
       })
     })
   }
@@ -893,10 +881,7 @@ part002 = startSketchOn(part001, face = seg01)
 
     await expect(page).toHaveScreenshot({
       maxDiffPixels: 100,
-      mask: [
-        page.getByTestId('model-state-indicator'),
-        page.getByTestId('network-toggle'),
-      ],
+      mask: networkMasks(page),
     })
   }
 )
@@ -935,10 +920,7 @@ test(
 
     await expect(page).toHaveScreenshot({
       maxDiffPixels: 100,
-      mask: [
-        page.getByTestId('model-state-indicator'),
-        page.getByTestId('network-toggle'),
-      ],
+      mask: networkMasks(page),
     })
   }
 )
@@ -978,10 +960,7 @@ test(
 
     await expect(page).toHaveScreenshot({
       maxDiffPixels: 100,
-      mask: [
-        page.getByTestId('model-state-indicator'),
-        page.getByTestId('network-toggle'),
-      ],
+      mask: networkMasks(page),
     })
   }
 )
@@ -998,6 +977,7 @@ test.describe('Grid visibility', { tag: '@snapshot' }, () => {
       page.locator('#app-header'),
       page.locator('#sidebar-top-ribbon'),
       page.locator('#sidebar-bottom-ribbon'),
+      ...networkMasks(page),
     ]
 
     await page.setViewportSize({ width: 1200, height: 500 })
@@ -1062,6 +1042,7 @@ test.describe('Grid visibility', { tag: '@snapshot' }, () => {
       page.locator('#app-header'),
       page.locator('#sidebar-top-ribbon'),
       page.locator('#sidebar-bottom-ribbon'),
+      ...networkMasks(page),
     ]
 
     await page.setViewportSize({ width: 1200, height: 500 })
@@ -1106,6 +1087,7 @@ test.describe('Grid visibility', { tag: '@snapshot' }, () => {
       page.locator('#app-header'),
       page.locator('#sidebar-top-ribbon'),
       page.locator('#sidebar-bottom-ribbon'),
+      ...networkMasks(page),
     ]
 
     await page.setViewportSize({ width: 1200, height: 500 })
@@ -1234,10 +1216,7 @@ sweepSketch = startSketchOn(XY)
 
     await expect(page, 'expect small color widget').toHaveScreenshot({
       maxDiffPixels: 100,
-      mask: [
-        page.getByTestId('model-state-indicator'),
-        page.getByTestId('network-toggle'),
-      ],
+      mask: networkMasks(page),
     })
   })
 
@@ -1294,10 +1273,7 @@ sweepSketch = startSketchOn(XY)
       'expect small color widget to have window open'
     ).toHaveScreenshot({
       maxDiffPixels: 100,
-      mask: [
-        page.getByTestId('model-state-indicator'),
-        page.getByTestId('network-toggle'),
-      ],
+      mask: networkMasks(page),
     })
   })
 })
