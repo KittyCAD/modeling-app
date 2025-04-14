@@ -22,11 +22,9 @@ export const systemIOMachine = setup({
     events: {} as
       | {
           type: SystemIOMachineEvents.readFoldersFromProjectDirectory
-          data: {}
         }
       | {
           type: SystemIOMachineEvents.done_readFoldersFromProjectDirectory
-          data: {}
           output: Project[]
         }
       | {
@@ -44,15 +42,15 @@ export const systemIOMachine = setup({
       | {
           type: SystemIOMachineEvents.createProject
           data: { requestedProjectName: string }
-      }
+        }
       | {
           type: SystemIOMachineEvents.renameProject
-        data: { requestedProjectName: string, projectName: string }
-      }
+          data: { requestedProjectName: string; projectName: string }
+        }
       | {
           type: SystemIOMachineEvents.deleteProject
-        data: { requestedProjectName: string}
-        }
+          data: { requestedProjectName: string }
+        },
   },
   actions: {
     [SystemIOMachineActions.setFolders]: assign({
@@ -89,21 +87,33 @@ export const systemIOMachine = setup({
   actors: {
     [SystemIOMachineActors.readFoldersFromProjectDirectory]: fromPromise(
       async ({ input: context }: { input: SystemIOContext }) => {
-        return []
+        const folders: Project[] = []
+        return folders
       }
     ),
     [SystemIOMachineActors.createProject]: fromPromise(
       async ({
-        input: context,
+        input: { context, requestedProjectName },
       }: {
-        input: { context: SystemIOContext; requestProjectName: string }
+        input: { context: SystemIOContext; requestedProjectName: string }
       }) => {}
     ),
     [SystemIOMachineActors.deleteProject]: fromPromise(
       async ({
-        input: context,
+        input: { context, requestedProjectName },
       }: {
-        input: { context: SystemIOContext; requestProjectName: string }
+        input: { context: SystemIOContext; requestedProjectName: string }
+      }) => {}
+    ),
+    [SystemIOMachineActors.renameProject]: fromPromise(
+      async ({
+        input: { context, requestedProjectName, projectName },
+      }: {
+        input: {
+          context: SystemIOContext
+          requestedProjectName: string
+          projectName: string
+        }
       }) => {}
     ),
   },
@@ -194,7 +204,7 @@ export const systemIOMachine = setup({
           return {
             context,
             requestedProjectName: event.data.requestedProjectName,
-            projectName: event.data.projectName
+            projectName: event.data.projectName,
           }
         },
         onDone: {

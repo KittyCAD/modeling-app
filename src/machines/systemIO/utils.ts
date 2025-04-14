@@ -5,7 +5,7 @@ export enum SystemIOMachineActors {
   setProjectDirectoryPath = 'set project directory path',
   createProject = 'create project',
   renameProject = 'rename project',
-  deleteProject = 'delete project'
+  deleteProject = 'delete project',
 }
 
 export enum SystemIOMachineStates {
@@ -14,7 +14,7 @@ export enum SystemIOMachineStates {
   settingProjectDirectoryPath = 'settingProjectDirectoryPath',
   creatingProject = 'creatingProject',
   renamingProject = 'renamingProject',
-  deletingProject = 'deletingProject'
+  deletingProject = 'deletingProject',
 }
 
 const donePrefix = 'xstate.done.actor.'
@@ -28,7 +28,7 @@ export enum SystemIOMachineEvents {
   navigateToFile = 'navigate to file',
   createProject = 'create project',
   renameProject = 'rename project',
-  deleteProject = 'delete project'
+  deleteProject = 'delete project',
 }
 
 export enum SystemIOMachineActions {
