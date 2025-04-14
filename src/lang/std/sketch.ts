@@ -6,7 +6,7 @@ import type { TagDeclarator } from '@rust/kcl-lib/bindings/TagDeclarator'
 import {
   ARG_ANGLE,
   ARG_CIRCLE_CENTER,
-  ARG_CIRCLE_RADIUS,
+  ARG_RADIUS,
   ARG_END,
   ARG_END_ABSOLUTE,
   ARG_END_ABSOLUTE_X,
@@ -1293,7 +1293,7 @@ export const circle: SketchLineHelperKw = {
     ])
     mutateKwArg(ARG_CIRCLE_CENTER, callExpression, newCenter)
     const newRadius = createLiteral(roundOff(radius))
-    mutateKwArg(ARG_CIRCLE_RADIUS, callExpression, newRadius)
+    mutateKwArg(ARG_RADIUS, callExpression, newRadius)
     return {
       modifiedAst: _node,
       pathToNode,
@@ -1306,7 +1306,7 @@ export const circle: SketchLineHelperKw = {
     const firstArg = callExp.arguments?.[0]
     if (firstArg.type !== 'LabeledArg') return []
     let centerInfo = findKwArgWithIndex(ARG_CIRCLE_CENTER, callExp)
-    let radiusInfo = findKwArgWithIndex(ARG_CIRCLE_RADIUS, callExp)
+    let radiusInfo = findKwArgWithIndex(ARG_RADIUS, callExp)
     if (!centerInfo || !radiusInfo) return []
     if (centerInfo?.expr.type !== 'ArrayExpression') return []
 
@@ -3885,7 +3885,7 @@ export const getCircle = (
   const firstArg = callExp.arguments[0]
   if (firstArg.type === 'LabeledArg') {
     let centerInfo = findKwArgWithIndex(ARG_CIRCLE_CENTER, callExp)
-    let radiusInfo = findKwArgWithIndex(ARG_CIRCLE_RADIUS, callExp)
+    let radiusInfo = findKwArgWithIndex(ARG_RADIUS, callExp)
     let tagInfo = findKwArgWithIndex(ARG_TAG, callExp)
     if (centerInfo && radiusInfo) {
       if (centerInfo.expr?.type === 'ArrayExpression' && radiusInfo.expr) {
