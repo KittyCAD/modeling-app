@@ -11,6 +11,6 @@ part001 = cube([0, 0], 20)
   |> close(%)
   |> extrude(length = 20)
 
-part002 = startSketchOn(part001, "end")
+part002 = startSketchOn(part001, face = "end")
   |> circle(center = [0, 0], radius = 5, tag = $myCircle)
   |> extrude(length = 5)

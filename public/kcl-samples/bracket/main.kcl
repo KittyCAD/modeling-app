@@ -43,7 +43,7 @@ bracketBody = startSketchOn(XZ)
   |> extrude(%, length = width)
 
 // Add mounting holes to mount to the shelf
-shelfMountingHoles = startSketchOn(bracketBody, seg03)
+shelfMountingHoles = startSketchOn(bracketBody, face = seg03)
   |> circle(
        center = [
          -(bendRadius + shelfMountingHolePlacementOffset),
@@ -56,7 +56,7 @@ shelfMountingHoles = startSketchOn(bracketBody, seg03)
   |> extrude(%, length = -thickness - .01)
 
 // Add mounting holes to mount to the wall
-wallMountingHoles = startSketchOn(bracketBody, seg04)
+wallMountingHoles = startSketchOn(bracketBody, face = seg04)
   |> circle(
        center = [
          wallMountLength - wallMountingHolePlacementOffset - bendRadius,

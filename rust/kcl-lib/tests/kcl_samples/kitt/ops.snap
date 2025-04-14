@@ -5,7 +5,7 @@ description: Operations executed kitt.kcl
 [
   {
     "labeledArgs": {
-      "data": {
+      "planeOrSolid": {
         "value": {
           "type": "Plane",
           "artifact_id": "[uuid]"
@@ -57,7 +57,7 @@ description: Operations executed kitt.kcl
       "name": "pixelBox",
       "functionSourceRange": [
         95,
-        496,
+        503,
         0
       ],
       "unlabeledArg": null,
@@ -67,16 +67,7 @@ description: Operations executed kitt.kcl
   },
   {
     "labeledArgs": {
-      "data": {
-        "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "tag": {
+      "face": {
         "value": {
           "type": "String",
           "value": "end"
@@ -87,7 +78,15 @@ description: Operations executed kitt.kcl
     "name": "startSketchOn",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
   },
   {
     "labeledArgs": {
@@ -126,16 +125,7 @@ description: Operations executed kitt.kcl
   },
   {
     "labeledArgs": {
-      "data": {
-        "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "tag": {
+      "face": {
         "value": {
           "type": "String",
           "value": "end"
@@ -146,7 +136,15 @@ description: Operations executed kitt.kcl
     "name": "startSketchOn",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
   },
   {
     "labeledArgs": {
@@ -187,7 +185,7 @@ description: Operations executed kitt.kcl
       "name": "pixelBox",
       "functionSourceRange": [
         95,
-        496,
+        503,
         0
       ],
       "unlabeledArg": null,
@@ -197,16 +195,7 @@ description: Operations executed kitt.kcl
   },
   {
     "labeledArgs": {
-      "data": {
-        "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "tag": {
+      "face": {
         "value": {
           "type": "String",
           "value": "start"
@@ -217,7 +206,15 @@ description: Operations executed kitt.kcl
     "name": "startSketchOn",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
   },
   {
     "labeledArgs": {
@@ -261,7 +258,7 @@ description: Operations executed kitt.kcl
       "name": "pixelBox",
       "functionSourceRange": [
         95,
-        496,
+        503,
         0
       ],
       "unlabeledArg": null,
@@ -271,16 +268,7 @@ description: Operations executed kitt.kcl
   },
   {
     "labeledArgs": {
-      "data": {
-        "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "tag": {
+      "face": {
         "value": {
           "type": "String",
           "value": "start"
@@ -291,7 +279,15 @@ description: Operations executed kitt.kcl
     "name": "startSketchOn",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
   },
   {
     "labeledArgs": {
@@ -335,7 +331,7 @@ description: Operations executed kitt.kcl
       "name": "pixelBox",
       "functionSourceRange": [
         95,
-        496,
+        503,
         0
       ],
       "unlabeledArg": null,
@@ -345,16 +341,7 @@ description: Operations executed kitt.kcl
   },
   {
     "labeledArgs": {
-      "data": {
-        "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "tag": {
+      "face": {
         "value": {
           "type": "String",
           "value": "start"
@@ -365,7 +352,15 @@ description: Operations executed kitt.kcl
     "name": "startSketchOn",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
   },
   {
     "labeledArgs": {
@@ -409,7 +404,7 @@ description: Operations executed kitt.kcl
       "name": "pixelBox",
       "functionSourceRange": [
         95,
-        496,
+        503,
         0
       ],
       "unlabeledArg": null,
@@ -419,16 +414,7 @@ description: Operations executed kitt.kcl
   },
   {
     "labeledArgs": {
-      "data": {
-        "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "tag": {
+      "face": {
         "value": {
           "type": "String",
           "value": "start"
@@ -439,7 +425,15 @@ description: Operations executed kitt.kcl
     "name": "startSketchOn",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
   },
   {
     "labeledArgs": {
@@ -478,16 +472,7 @@ description: Operations executed kitt.kcl
   },
   {
     "labeledArgs": {
-      "data": {
-        "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "tag": {
+      "face": {
         "value": {
           "type": "String",
           "value": "start"
@@ -498,7 +483,15 @@ description: Operations executed kitt.kcl
     "name": "startSketchOn",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
   },
   {
     "labeledArgs": {
@@ -539,7 +532,7 @@ description: Operations executed kitt.kcl
       "name": "pixelBox",
       "functionSourceRange": [
         95,
-        496,
+        503,
         0
       ],
       "unlabeledArg": null,
@@ -549,16 +542,7 @@ description: Operations executed kitt.kcl
   },
   {
     "labeledArgs": {
-      "data": {
-        "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "tag": {
+      "face": {
         "value": {
           "type": "String",
           "value": "start"
@@ -569,81 +553,15 @@ description: Operations executed kitt.kcl
     "name": "startSketchOn",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
-  },
-  {
-    "labeledArgs": {
-      "length": {
-        "value": {
-          "type": "Number",
-          "value": 0.5,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
-        },
-        "sourceRange": []
-      }
-    },
-    "name": "extrude",
-    "sourceRange": [],
-    "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
-        "type": "Sketch",
+        "type": "Solid",
         "value": {
           "artifactId": "[uuid]"
         }
       },
       "sourceRange": []
     }
-  },
-  {
-    "type": "GroupEnd"
-  },
-  {
-    "type": "GroupBegin",
-    "group": {
-      "type": "FunctionCall",
-      "name": "pixelBox",
-      "functionSourceRange": [
-        95,
-        496,
-        0
-      ],
-      "unlabeledArg": null,
-      "labeledArgs": {}
-    },
-    "sourceRange": []
-  },
-  {
-    "labeledArgs": {
-      "data": {
-        "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "tag": {
-        "value": {
-          "type": "String",
-          "value": "start"
-        },
-        "sourceRange": []
-      }
-    },
-    "name": "startSketchOn",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": null
   },
   {
     "labeledArgs": {
@@ -687,7 +605,7 @@ description: Operations executed kitt.kcl
       "name": "pixelBox",
       "functionSourceRange": [
         95,
-        496,
+        503,
         0
       ],
       "unlabeledArg": null,
@@ -697,16 +615,7 @@ description: Operations executed kitt.kcl
   },
   {
     "labeledArgs": {
-      "data": {
-        "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "tag": {
+      "face": {
         "value": {
           "type": "String",
           "value": "start"
@@ -717,7 +626,15 @@ description: Operations executed kitt.kcl
     "name": "startSketchOn",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
   },
   {
     "labeledArgs": {
@@ -761,7 +678,7 @@ description: Operations executed kitt.kcl
       "name": "pixelBox",
       "functionSourceRange": [
         95,
-        496,
+        503,
         0
       ],
       "unlabeledArg": null,
@@ -771,16 +688,7 @@ description: Operations executed kitt.kcl
   },
   {
     "labeledArgs": {
-      "data": {
-        "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "tag": {
+      "face": {
         "value": {
           "type": "String",
           "value": "start"
@@ -791,7 +699,15 @@ description: Operations executed kitt.kcl
     "name": "startSketchOn",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
   },
   {
     "labeledArgs": {
@@ -835,7 +751,7 @@ description: Operations executed kitt.kcl
       "name": "pixelBox",
       "functionSourceRange": [
         95,
-        496,
+        503,
         0
       ],
       "unlabeledArg": null,
@@ -845,16 +761,80 @@ description: Operations executed kitt.kcl
   },
   {
     "labeledArgs": {
-      "data": {
+      "face": {
         "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
+          "type": "String",
+          "value": "start"
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
+  },
+  {
+    "labeledArgs": {
+      "length": {
+        "value": {
+          "type": "Number",
+          "value": 0.5,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
+      }
+    },
+    "name": "extrude",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
       },
-      "tag": {
+      "sourceRange": []
+    }
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "pixelBox",
+      "functionSourceRange": [
+        95,
+        503,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "labeledArgs": {
+      "face": {
         "value": {
           "type": "String",
           "value": "end"
@@ -865,7 +845,15 @@ description: Operations executed kitt.kcl
     "name": "startSketchOn",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
   },
   {
     "labeledArgs": {
@@ -909,7 +897,7 @@ description: Operations executed kitt.kcl
       "name": "pixelBox",
       "functionSourceRange": [
         95,
-        496,
+        503,
         0
       ],
       "unlabeledArg": null,
@@ -919,16 +907,7 @@ description: Operations executed kitt.kcl
   },
   {
     "labeledArgs": {
-      "data": {
-        "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "tag": {
+      "face": {
         "value": {
           "type": "String",
           "value": "end"
@@ -939,7 +918,15 @@ description: Operations executed kitt.kcl
     "name": "startSketchOn",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
   },
   {
     "labeledArgs": {
@@ -983,7 +970,7 @@ description: Operations executed kitt.kcl
       "name": "pixelBox",
       "functionSourceRange": [
         95,
-        496,
+        503,
         0
       ],
       "unlabeledArg": null,
@@ -993,16 +980,7 @@ description: Operations executed kitt.kcl
   },
   {
     "labeledArgs": {
-      "data": {
-        "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "tag": {
+      "face": {
         "value": {
           "type": "String",
           "value": "end"
@@ -1013,7 +991,15 @@ description: Operations executed kitt.kcl
     "name": "startSketchOn",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
   },
   {
     "labeledArgs": {
@@ -1057,7 +1043,7 @@ description: Operations executed kitt.kcl
       "name": "pixelBox",
       "functionSourceRange": [
         95,
-        496,
+        503,
         0
       ],
       "unlabeledArg": null,
@@ -1067,16 +1053,7 @@ description: Operations executed kitt.kcl
   },
   {
     "labeledArgs": {
-      "data": {
-        "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "tag": {
+      "face": {
         "value": {
           "type": "String",
           "value": "end"
@@ -1087,7 +1064,15 @@ description: Operations executed kitt.kcl
     "name": "startSketchOn",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
   },
   {
     "labeledArgs": {
@@ -1131,7 +1116,7 @@ description: Operations executed kitt.kcl
       "name": "pixelBox",
       "functionSourceRange": [
         95,
-        496,
+        503,
         0
       ],
       "unlabeledArg": null,
@@ -1141,16 +1126,7 @@ description: Operations executed kitt.kcl
   },
   {
     "labeledArgs": {
-      "data": {
-        "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "tag": {
+      "face": {
         "value": {
           "type": "String",
           "value": "end"
@@ -1161,7 +1137,15 @@ description: Operations executed kitt.kcl
     "name": "startSketchOn",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
   },
   {
     "labeledArgs": {
@@ -1205,7 +1189,7 @@ description: Operations executed kitt.kcl
       "name": "pixelBox",
       "functionSourceRange": [
         95,
-        496,
+        503,
         0
       ],
       "unlabeledArg": null,
@@ -1215,16 +1199,7 @@ description: Operations executed kitt.kcl
   },
   {
     "labeledArgs": {
-      "data": {
-        "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "tag": {
+      "face": {
         "value": {
           "type": "String",
           "value": "end"
@@ -1235,7 +1210,15 @@ description: Operations executed kitt.kcl
     "name": "startSketchOn",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
   },
   {
     "labeledArgs": {
@@ -1279,7 +1262,7 @@ description: Operations executed kitt.kcl
       "name": "pixelBox",
       "functionSourceRange": [
         95,
-        496,
+        503,
         0
       ],
       "unlabeledArg": null,
@@ -1289,16 +1272,7 @@ description: Operations executed kitt.kcl
   },
   {
     "labeledArgs": {
-      "data": {
-        "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "tag": {
+      "face": {
         "value": {
           "type": "String",
           "value": "end"
@@ -1309,7 +1283,15 @@ description: Operations executed kitt.kcl
     "name": "startSketchOn",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
   },
   {
     "labeledArgs": {
@@ -1353,7 +1335,7 @@ description: Operations executed kitt.kcl
       "name": "pixelBox",
       "functionSourceRange": [
         95,
-        496,
+        503,
         0
       ],
       "unlabeledArg": null,
@@ -1363,16 +1345,7 @@ description: Operations executed kitt.kcl
   },
   {
     "labeledArgs": {
-      "data": {
-        "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "tag": {
+      "face": {
         "value": {
           "type": "String",
           "value": "end"
@@ -1383,7 +1356,15 @@ description: Operations executed kitt.kcl
     "name": "startSketchOn",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
   },
   {
     "labeledArgs": {
@@ -1427,7 +1408,7 @@ description: Operations executed kitt.kcl
       "name": "pixelBox",
       "functionSourceRange": [
         95,
-        496,
+        503,
         0
       ],
       "unlabeledArg": null,
@@ -1437,16 +1418,7 @@ description: Operations executed kitt.kcl
   },
   {
     "labeledArgs": {
-      "data": {
-        "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "tag": {
+      "face": {
         "value": {
           "type": "String",
           "value": "end"
@@ -1457,7 +1429,15 @@ description: Operations executed kitt.kcl
     "name": "startSketchOn",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
   },
   {
     "labeledArgs": {
@@ -1500,8 +1480,8 @@ description: Operations executed kitt.kcl
       "type": "FunctionCall",
       "name": "kitLeg",
       "functionSourceRange": [
-        6040,
-        6853,
+        6061,
+        6874,
         0
       ],
       "unlabeledArg": null,
@@ -1511,7 +1491,7 @@ description: Operations executed kitt.kcl
   },
   {
     "labeledArgs": {
-      "data": {
+      "planeOrSolid": {
         "value": {
           "type": "Plane",
           "artifact_id": "[uuid]"
@@ -1563,7 +1543,7 @@ description: Operations executed kitt.kcl
       "name": "pixelBox",
       "functionSourceRange": [
         95,
-        496,
+        503,
         0
       ],
       "unlabeledArg": null,
@@ -1573,16 +1553,7 @@ description: Operations executed kitt.kcl
   },
   {
     "labeledArgs": {
-      "data": {
-        "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "tag": {
+      "face": {
         "value": {
           "type": "String",
           "value": "end"
@@ -1593,7 +1564,15 @@ description: Operations executed kitt.kcl
     "name": "startSketchOn",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
   },
   {
     "labeledArgs": {
@@ -1639,8 +1618,8 @@ description: Operations executed kitt.kcl
       "type": "FunctionCall",
       "name": "kitLeg",
       "functionSourceRange": [
-        6040,
-        6853,
+        6061,
+        6874,
         0
       ],
       "unlabeledArg": null,
@@ -1650,7 +1629,7 @@ description: Operations executed kitt.kcl
   },
   {
     "labeledArgs": {
-      "data": {
+      "planeOrSolid": {
         "value": {
           "type": "Plane",
           "artifact_id": "[uuid]"
@@ -1702,7 +1681,7 @@ description: Operations executed kitt.kcl
       "name": "pixelBox",
       "functionSourceRange": [
         95,
-        496,
+        503,
         0
       ],
       "unlabeledArg": null,
@@ -1712,16 +1691,7 @@ description: Operations executed kitt.kcl
   },
   {
     "labeledArgs": {
-      "data": {
-        "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "tag": {
+      "face": {
         "value": {
           "type": "String",
           "value": "end"
@@ -1732,7 +1702,15 @@ description: Operations executed kitt.kcl
     "name": "startSketchOn",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
   },
   {
     "labeledArgs": {
@@ -1778,8 +1756,8 @@ description: Operations executed kitt.kcl
       "type": "FunctionCall",
       "name": "kitEar",
       "functionSourceRange": [
-        7040,
-        7955,
+        7061,
+        7976,
         0
       ],
       "unlabeledArg": null,
@@ -1794,7 +1772,7 @@ description: Operations executed kitt.kcl
       "name": "pixelBox",
       "functionSourceRange": [
         95,
-        496,
+        503,
         0
       ],
       "unlabeledArg": null,
@@ -1804,16 +1782,7 @@ description: Operations executed kitt.kcl
   },
   {
     "labeledArgs": {
-      "data": {
-        "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "tag": {
+      "face": {
         "value": {
           "type": "TagIdentifier",
           "value": "seg01",
@@ -1825,7 +1794,15 @@ description: Operations executed kitt.kcl
     "name": "startSketchOn",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
   },
   {
     "labeledArgs": {
@@ -1869,7 +1846,7 @@ description: Operations executed kitt.kcl
       "name": "pixelBox",
       "functionSourceRange": [
         95,
-        496,
+        503,
         0
       ],
       "unlabeledArg": null,
@@ -1879,16 +1856,7 @@ description: Operations executed kitt.kcl
   },
   {
     "labeledArgs": {
-      "data": {
-        "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "tag": {
+      "face": {
         "value": {
           "type": "String",
           "value": "end"
@@ -1899,7 +1867,15 @@ description: Operations executed kitt.kcl
     "name": "startSketchOn",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
   },
   {
     "labeledArgs": {
@@ -1943,7 +1919,7 @@ description: Operations executed kitt.kcl
       "name": "pixelBox",
       "functionSourceRange": [
         95,
-        496,
+        503,
         0
       ],
       "unlabeledArg": null,
@@ -1953,16 +1929,7 @@ description: Operations executed kitt.kcl
   },
   {
     "labeledArgs": {
-      "data": {
-        "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "tag": {
+      "face": {
         "value": {
           "type": "String",
           "value": "end"
@@ -1973,7 +1940,15 @@ description: Operations executed kitt.kcl
     "name": "startSketchOn",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
   },
   {
     "labeledArgs": {
@@ -2017,7 +1992,7 @@ description: Operations executed kitt.kcl
       "name": "pixelBox",
       "functionSourceRange": [
         95,
-        496,
+        503,
         0
       ],
       "unlabeledArg": null,
@@ -2027,16 +2002,7 @@ description: Operations executed kitt.kcl
   },
   {
     "labeledArgs": {
-      "data": {
-        "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "tag": {
+      "face": {
         "value": {
           "type": "String",
           "value": "end"
@@ -2047,7 +2013,15 @@ description: Operations executed kitt.kcl
     "name": "startSketchOn",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
   },
   {
     "labeledArgs": {
@@ -2093,8 +2067,8 @@ description: Operations executed kitt.kcl
       "type": "FunctionCall",
       "name": "kitEar",
       "functionSourceRange": [
-        7040,
-        7955,
+        7061,
+        7976,
         0
       ],
       "unlabeledArg": null,
@@ -2109,7 +2083,7 @@ description: Operations executed kitt.kcl
       "name": "pixelBox",
       "functionSourceRange": [
         95,
-        496,
+        503,
         0
       ],
       "unlabeledArg": null,
@@ -2119,16 +2093,7 @@ description: Operations executed kitt.kcl
   },
   {
     "labeledArgs": {
-      "data": {
-        "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "tag": {
+      "face": {
         "value": {
           "type": "TagIdentifier",
           "value": "seg01",
@@ -2140,7 +2105,15 @@ description: Operations executed kitt.kcl
     "name": "startSketchOn",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
   },
   {
     "labeledArgs": {
@@ -2184,7 +2157,7 @@ description: Operations executed kitt.kcl
       "name": "pixelBox",
       "functionSourceRange": [
         95,
-        496,
+        503,
         0
       ],
       "unlabeledArg": null,
@@ -2194,16 +2167,7 @@ description: Operations executed kitt.kcl
   },
   {
     "labeledArgs": {
-      "data": {
-        "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "tag": {
+      "face": {
         "value": {
           "type": "String",
           "value": "end"
@@ -2214,7 +2178,15 @@ description: Operations executed kitt.kcl
     "name": "startSketchOn",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
   },
   {
     "labeledArgs": {
@@ -2258,7 +2230,7 @@ description: Operations executed kitt.kcl
       "name": "pixelBox",
       "functionSourceRange": [
         95,
-        496,
+        503,
         0
       ],
       "unlabeledArg": null,
@@ -2268,16 +2240,7 @@ description: Operations executed kitt.kcl
   },
   {
     "labeledArgs": {
-      "data": {
-        "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "tag": {
+      "face": {
         "value": {
           "type": "String",
           "value": "end"
@@ -2288,7 +2251,15 @@ description: Operations executed kitt.kcl
     "name": "startSketchOn",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
   },
   {
     "labeledArgs": {
@@ -2332,7 +2303,7 @@ description: Operations executed kitt.kcl
       "name": "pixelBox",
       "functionSourceRange": [
         95,
-        496,
+        503,
         0
       ],
       "unlabeledArg": null,
@@ -2342,16 +2313,7 @@ description: Operations executed kitt.kcl
   },
   {
     "labeledArgs": {
-      "data": {
-        "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "tag": {
+      "face": {
         "value": {
           "type": "String",
           "value": "end"
@@ -2362,7 +2324,15 @@ description: Operations executed kitt.kcl
     "name": "startSketchOn",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
   },
   {
     "labeledArgs": {
@@ -2409,7 +2379,7 @@ description: Operations executed kitt.kcl
       "name": "pixelBox",
       "functionSourceRange": [
         95,
-        496,
+        503,
         0
       ],
       "unlabeledArg": null,
@@ -2419,16 +2389,7 @@ description: Operations executed kitt.kcl
   },
   {
     "labeledArgs": {
-      "data": {
-        "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "tag": {
+      "face": {
         "value": {
           "type": "TagIdentifier",
           "value": "seg02",
@@ -2440,7 +2401,15 @@ description: Operations executed kitt.kcl
     "name": "startSketchOn",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
   },
   {
     "labeledArgs": {
@@ -2484,7 +2453,7 @@ description: Operations executed kitt.kcl
       "name": "pixelBox",
       "functionSourceRange": [
         95,
-        496,
+        503,
         0
       ],
       "unlabeledArg": null,
@@ -2494,16 +2463,7 @@ description: Operations executed kitt.kcl
   },
   {
     "labeledArgs": {
-      "data": {
-        "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "tag": {
+      "face": {
         "value": {
           "type": "TagIdentifier",
           "value": "seg02",
@@ -2515,7 +2475,15 @@ description: Operations executed kitt.kcl
     "name": "startSketchOn",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
   },
   {
     "labeledArgs": {
@@ -2559,7 +2527,7 @@ description: Operations executed kitt.kcl
       "name": "pixelBox",
       "functionSourceRange": [
         95,
-        496,
+        503,
         0
       ],
       "unlabeledArg": null,
@@ -2569,16 +2537,7 @@ description: Operations executed kitt.kcl
   },
   {
     "labeledArgs": {
-      "data": {
-        "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "tag": {
+      "face": {
         "value": {
           "type": "TagIdentifier",
           "value": "seg02",
@@ -2590,7 +2549,15 @@ description: Operations executed kitt.kcl
     "name": "startSketchOn",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
   },
   {
     "labeledArgs": {
@@ -2634,7 +2601,7 @@ description: Operations executed kitt.kcl
       "name": "pixelBox",
       "functionSourceRange": [
         95,
-        496,
+        503,
         0
       ],
       "unlabeledArg": null,
@@ -2644,16 +2611,7 @@ description: Operations executed kitt.kcl
   },
   {
     "labeledArgs": {
-      "data": {
-        "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "tag": {
+      "face": {
         "value": {
           "type": "TagIdentifier",
           "value": "seg02",
@@ -2665,7 +2623,15 @@ description: Operations executed kitt.kcl
     "name": "startSketchOn",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
   },
   {
     "labeledArgs": {
@@ -2709,7 +2675,7 @@ description: Operations executed kitt.kcl
       "name": "pixelBox",
       "functionSourceRange": [
         95,
-        496,
+        503,
         0
       ],
       "unlabeledArg": null,
@@ -2719,16 +2685,7 @@ description: Operations executed kitt.kcl
   },
   {
     "labeledArgs": {
-      "data": {
-        "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "tag": {
+      "face": {
         "value": {
           "type": "TagIdentifier",
           "value": "seg02",
@@ -2740,7 +2697,15 @@ description: Operations executed kitt.kcl
     "name": "startSketchOn",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
   },
   {
     "labeledArgs": {
@@ -2784,7 +2749,7 @@ description: Operations executed kitt.kcl
       "name": "pixelBox",
       "functionSourceRange": [
         95,
-        496,
+        503,
         0
       ],
       "unlabeledArg": null,
@@ -2794,16 +2759,7 @@ description: Operations executed kitt.kcl
   },
   {
     "labeledArgs": {
-      "data": {
-        "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "tag": {
+      "face": {
         "value": {
           "type": "TagIdentifier",
           "value": "seg02",
@@ -2815,7 +2771,15 @@ description: Operations executed kitt.kcl
     "name": "startSketchOn",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
   },
   {
     "labeledArgs": {
@@ -2859,7 +2823,7 @@ description: Operations executed kitt.kcl
       "name": "pixelBox",
       "functionSourceRange": [
         95,
-        496,
+        503,
         0
       ],
       "unlabeledArg": null,
@@ -2869,16 +2833,7 @@ description: Operations executed kitt.kcl
   },
   {
     "labeledArgs": {
-      "data": {
-        "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "tag": {
+      "face": {
         "value": {
           "type": "TagIdentifier",
           "value": "seg02",
@@ -2890,7 +2845,15 @@ description: Operations executed kitt.kcl
     "name": "startSketchOn",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
   },
   {
     "labeledArgs": {
@@ -2934,7 +2897,7 @@ description: Operations executed kitt.kcl
       "name": "pixelBox",
       "functionSourceRange": [
         95,
-        496,
+        503,
         0
       ],
       "unlabeledArg": null,
@@ -2944,16 +2907,7 @@ description: Operations executed kitt.kcl
   },
   {
     "labeledArgs": {
-      "data": {
-        "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "tag": {
+      "face": {
         "value": {
           "type": "TagIdentifier",
           "value": "seg02",
@@ -2965,7 +2919,15 @@ description: Operations executed kitt.kcl
     "name": "startSketchOn",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
   },
   {
     "labeledArgs": {
@@ -3009,7 +2971,7 @@ description: Operations executed kitt.kcl
       "name": "pixelBox",
       "functionSourceRange": [
         95,
-        496,
+        503,
         0
       ],
       "unlabeledArg": null,
@@ -3019,16 +2981,7 @@ description: Operations executed kitt.kcl
   },
   {
     "labeledArgs": {
-      "data": {
-        "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "tag": {
+      "face": {
         "value": {
           "type": "TagIdentifier",
           "value": "seg02",
@@ -3040,7 +2993,15 @@ description: Operations executed kitt.kcl
     "name": "startSketchOn",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
   },
   {
     "labeledArgs": {
@@ -3084,7 +3045,7 @@ description: Operations executed kitt.kcl
       "name": "pixelBox",
       "functionSourceRange": [
         95,
-        496,
+        503,
         0
       ],
       "unlabeledArg": null,
@@ -3094,16 +3055,7 @@ description: Operations executed kitt.kcl
   },
   {
     "labeledArgs": {
-      "data": {
-        "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "tag": {
+      "face": {
         "value": {
           "type": "TagIdentifier",
           "value": "seg02",
@@ -3115,7 +3067,15 @@ description: Operations executed kitt.kcl
     "name": "startSketchOn",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
   },
   {
     "labeledArgs": {

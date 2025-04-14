@@ -5,7 +5,7 @@ description: Operations executed pipe-with-bend.kcl
 [
   {
     "labeledArgs": {
-      "data": {
+      "planeOrSolid": {
         "value": {
           "type": "Plane",
           "artifact_id": "[uuid]"
