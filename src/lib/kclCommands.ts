@@ -321,10 +321,6 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
             ['local'].includes(
               commandContext.argumentsToSubmit.source as string
             ),
-          hidden: (commandContext) =>
-            !['local'].includes(
-              commandContext.argumentsToSubmit.source as string
-            ),
         },
       },
     },
