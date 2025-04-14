@@ -684,11 +684,7 @@ describe('Testing removeSingleConstraintInfo', () => {
   |> /*2*/ angledLine(angle = 30 + 0, lengthY = 3 + 0)
   |> /*3*/ angledLine(angle = 12.14 + 0, endAbsoluteX =  12 + 0)
   |> /*4*/ angledLine(angle = 30 + 0, endAbsoluteY =  10.14 + 0)
-  |> angledLineThatIntersects(
-        angle = 3.14 + 0,
-        intersectTag = a,
-        offset = 0 + 0,
-      )
+  |> angledLineThatIntersects(angle = 3.14 + 0, intersectTag = a, offset = 0 + 0)
   |> tangentialArc(endAbsolute = [3.14 + 0, 13.14 + 0])`
     test.each([
       [' line(end = [3 + 0, 4])', 'arrayIndex', 1, ''],
@@ -728,11 +724,7 @@ describe('Testing removeSingleConstraintInfo', () => {
         '',
       ],
       [
-        `angledLineThatIntersects(
-       angle = 3.14 + 0,
-       intersectTag = a,
-       offset = 0,
-     )`,
+        `angledLineThatIntersects(angle = 3.14 + 0, intersectTag = a, offset = 0)`,
         'labeledArg',
         'offset',
         '',

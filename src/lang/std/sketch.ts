@@ -2854,13 +2854,13 @@ export const angledLineThatIntersects: SketchLineHelperKw = {
     if (replaceExistingCallback) {
       const result = replaceExistingCallback([
         {
-          type: 'objectProperty',
+          type: 'labeledArg',
           key: 'angle',
           argType: 'angle',
           expr: angle,
         },
         {
-          type: 'objectProperty',
+          type: 'labeledArg',
           key: 'offset',
           argType: 'intersectionOffset',
           expr: offset,
@@ -2918,8 +2918,6 @@ export const angledLineThatIntersects: SketchLineHelperKw = {
       )
     }
 
-    // mutateObjExpProp(firstArg, angleLit, 'angle')
-    // mutateObjExpProp(firstArg, createLiteral(offset), 'offset')
     mutateKwArg(ARG_ANGLE, callExpression, createLiteral(angle))
     mutateKwArg(ARG_OFFSET, callExpression, createLiteral(offset))
     return {
@@ -2951,27 +2949,9 @@ export const angledLineThatIntersects: SketchLineHelperKw = {
           isNotLiteralArrayOrStatic(angle.expr),
           code.slice(angle.expr.start, angle.expr.end),
           'angledLineThatIntersects',
-          'angle',
+          { type: 'labeledArg', key: 'angle' },
           topLevelRange(angle.expr.start, angle.expr.end),
           pathToAngleProp
-        )
-      )
-    }
-    if (offset !== undefined) {
-      const pathToOffsetProp: PathToNode = [
-        ...pathToBase,
-        [offset.argIndex, ARG_INDEX_FIELD],
-        ['arg', LABELED_ARG_FIELD],
-      ]
-      returnVal.push(
-        constrainInfo(
-          'intersectionOffset',
-          isNotLiteralArrayOrStatic(offset.expr),
-          code.slice(offset.expr.start, offset.expr.end),
-          'angledLineThatIntersects',
-          'offset',
-          topLevelRange(offset.expr.start, offset.expr.end),
-          pathToOffsetProp
         )
       )
     }
@@ -2987,11 +2967,29 @@ export const angledLineThatIntersects: SketchLineHelperKw = {
         false,
         code.slice(intersectTag.expr.start, intersectTag.expr.end),
         'angledLineThatIntersects',
-        'intersectTag',
+        { type: 'labeledArg', key: 'intersectTag' },
         topLevelRange(intersectTag.expr.start, intersectTag.expr.end),
         pathToTagProp
       )
       returnVal.push(info)
+    }
+    if (offset !== undefined) {
+      const pathToOffsetProp: PathToNode = [
+        ...pathToBase,
+        [offset.argIndex, ARG_INDEX_FIELD],
+        ['arg', LABELED_ARG_FIELD],
+      ]
+      returnVal.push(
+        constrainInfo(
+          'intersectionOffset',
+          isNotLiteralArrayOrStatic(offset.expr),
+          code.slice(offset.expr.start, offset.expr.end),
+          'angledLineThatIntersects',
+          { type: 'labeledArg', key: 'offset' },
+          topLevelRange(offset.expr.start, offset.expr.end),
+          pathToOffsetProp
+        )
+      )
     }
     return returnVal
   },
