@@ -13,7 +13,8 @@ import type { Paths } from '@e2e/playwright/test-utils'
 import {
   doExport,
   getUtils,
-  networkMasks,
+  headerMasks,
+  networkingMasks,
   orRunWhenFullSuiteEnabled,
   settingsToToml,
 } from '@e2e/playwright/test-utils'
@@ -375,10 +376,7 @@ const extrudeDefaultPlane = async (
 
   await expect(page).toHaveScreenshot({
     maxDiffPixels: 100,
-    mask: [
-      page.getByTestId('model-state-indicator'),
-      page.getByTestId('network-toggle'),
-    ],
+    mask: networkingMasks(page),
   })
   await u.openKclCodePanel()
 }
@@ -466,7 +464,7 @@ test(
     await page.waitForTimeout(500)
     await expect(page).toHaveScreenshot({
       maxDiffPixels: 100,
-      mask: networkMasks(page),
+      mask: networkingMasks(page),
     })
 
     const lineEndClick = () =>
@@ -495,7 +493,7 @@ test(
 
     await expect(page).toHaveScreenshot({
       maxDiffPixels: 100,
-      mask: networkMasks(page),
+      mask: networkingMasks(page),
     })
     await endOfTangentClk()
 
@@ -505,7 +503,7 @@ test(
     await threePointArcMidPointMv()
     await expect(page).toHaveScreenshot({
       maxDiffPixels: 100,
-      mask: networkMasks(page),
+      mask: networkingMasks(page),
     })
     await threePointArcMidPointClk()
     await page.waitForTimeout(100)
@@ -514,7 +512,7 @@ test(
     await page.waitForTimeout(500)
     await expect(page).toHaveScreenshot({
       maxDiffPixels: 100,
-      mask: networkMasks(page),
+      mask: networkingMasks(page),
     })
 
     await threePointArcEndPointClk()
@@ -534,7 +532,7 @@ test(
     await page.waitForTimeout(500)
     await expect(page).toHaveScreenshot({
       maxDiffPixels: 100,
-      mask: networkMasks(page),
+      mask: networkingMasks(page),
     })
     await arcEndClk()
   }
@@ -584,7 +582,7 @@ test(
     // Ensure the draft rectangle looks the same as it usually does
     await expect(page).toHaveScreenshot({
       maxDiffPixels: 100,
-      mask: networkMasks(page),
+      mask: networkingMasks(page),
     })
   }
 )
@@ -627,7 +625,7 @@ test(
     // Ensure the draft rectangle looks the same as it usually does
     await expect(page).toHaveScreenshot({
       maxDiffPixels: 100,
-      mask: networkMasks(page),
+      mask: networkingMasks(page),
     })
     await expect(page.locator('.cm-content')).toHaveText(
       `sketch001 = startSketchOn(XZ)profile001 = circle(sketch001, center = [366.89, -62.01], radius = 1)`
@@ -700,10 +698,7 @@ test.describe(
       // screen shot should show the sketch
       await expect(page).toHaveScreenshot({
         maxDiffPixels: 100,
-        mask: [
-          page.getByTestId('model-state-indicator'),
-          page.getByTestId('network-toggle'),
-        ],
+        mask: networkingMasks(page),
       })
 
       await u.doAndWaitForImageDiff(
@@ -716,10 +711,7 @@ test.describe(
       // second screen shot should look almost identical, i.e. scale should be the same.
       await expect(page).toHaveScreenshot({
         maxDiffPixels: 100,
-        mask: [
-          page.getByTestId('model-state-indicator'),
-          page.getByTestId('network-toggle'),
-        ],
+        mask: networkingMasks(page),
       })
     })
 
@@ -799,10 +791,7 @@ test.describe(
       // screen shot should show the sketch
       await expect(page).toHaveScreenshot({
         maxDiffPixels: 100,
-        mask: [
-          page.getByTestId('model-state-indicator'),
-          page.getByTestId('network-toggle'),
-        ],
+        mask: networkingMasks(page),
       })
 
       // exit sketch
@@ -816,10 +805,7 @@ test.describe(
       // second screen shot should look almost identical, i.e. scale should be the same.
       await expect(page).toHaveScreenshot({
         maxDiffPixels: 100,
-        mask: [
-          page.getByTestId('model-state-indicator'),
-          page.getByTestId('network-toggle'),
-        ],
+        mask: networkingMasks(page),
       })
     })
   }
@@ -881,7 +867,7 @@ part002 = startSketchOn(part001, face = seg01)
 
     await expect(page).toHaveScreenshot({
       maxDiffPixels: 100,
-      mask: networkMasks(page),
+      mask: networkingMasks(page),
     })
   }
 )
@@ -920,7 +906,7 @@ test(
 
     await expect(page).toHaveScreenshot({
       maxDiffPixels: 100,
-      mask: networkMasks(page),
+      mask: networkingMasks(page),
     })
   }
 )
@@ -960,7 +946,7 @@ test(
 
     await expect(page).toHaveScreenshot({
       maxDiffPixels: 100,
-      mask: networkMasks(page),
+      mask: networkingMasks(page),
     })
   }
 )
@@ -973,12 +959,6 @@ test.describe('Grid visibility', { tag: '@snapshot' }, () => {
   }) => {
     const u = await getUtils(page)
     const stream = page.getByTestId('stream')
-    const mask = [
-      page.locator('#app-header'),
-      page.locator('#sidebar-top-ribbon'),
-      page.locator('#sidebar-bottom-ribbon'),
-      ...networkMasks(page),
-    ]
 
     await page.setViewportSize({ width: 1200, height: 500 })
     await page.goto('/')
@@ -1031,19 +1011,13 @@ test.describe('Grid visibility', { tag: '@snapshot' }, () => {
 
     await expect(stream).toHaveScreenshot({
       maxDiffPixels: 100,
-      mask,
+      mask: [...headerMasks(page), ...networkingMasks(page)],
     })
   })
 
   test('Grid turned off', async ({ page, cmdBar, scene }) => {
     const u = await getUtils(page)
     const stream = page.getByTestId('stream')
-    const mask = [
-      page.locator('#app-header'),
-      page.locator('#sidebar-top-ribbon'),
-      page.locator('#sidebar-bottom-ribbon'),
-      ...networkMasks(page),
-    ]
 
     await page.setViewportSize({ width: 1200, height: 500 })
     await page.goto('/')
@@ -1058,7 +1032,7 @@ test.describe('Grid visibility', { tag: '@snapshot' }, () => {
 
     await expect(stream).toHaveScreenshot({
       maxDiffPixels: 100,
-      mask,
+      mask: [...headerMasks(page), ...networkingMasks(page)],
     })
   })
 
@@ -1083,12 +1057,6 @@ test.describe('Grid visibility', { tag: '@snapshot' }, () => {
 
     const u = await getUtils(page)
     const stream = page.getByTestId('stream')
-    const mask = [
-      page.locator('#app-header'),
-      page.locator('#sidebar-top-ribbon'),
-      page.locator('#sidebar-bottom-ribbon'),
-      ...networkMasks(page),
-    ]
 
     await page.setViewportSize({ width: 1200, height: 500 })
     await page.goto('/')
@@ -1103,7 +1071,7 @@ test.describe('Grid visibility', { tag: '@snapshot' }, () => {
 
     await expect(stream).toHaveScreenshot({
       maxDiffPixels: 100,
-      mask,
+      mask: [...headerMasks(page), ...networkingMasks(page)],
     })
   })
 })
@@ -1172,6 +1140,7 @@ test('theme persists', async ({ page, context }) => {
 
   await expect(page, 'expect screenshot to have light theme').toHaveScreenshot({
     maxDiffPixels: 100,
+    mask: networkingMasks(page),
   })
 })
 
@@ -1216,7 +1185,7 @@ sweepSketch = startSketchOn(XY)
 
     await expect(page, 'expect small color widget').toHaveScreenshot({
       maxDiffPixels: 100,
-      mask: networkMasks(page),
+      mask: networkingMasks(page),
     })
   })
 
@@ -1273,7 +1242,7 @@ sweepSketch = startSketchOn(XY)
       'expect small color widget to have window open'
     ).toHaveScreenshot({
       maxDiffPixels: 100,
-      mask: networkMasks(page),
+      mask: networkingMasks(page),
     })
   })
 })
