@@ -75,7 +75,7 @@ layout: manual
   * [`map`](kcl/map)
   * [`max`](kcl/max)
   * [`min`](kcl/min)
-  * [`offsetPlane`](kcl/offsetPlane)
+  * [`offsetPlane`](kcl/std-offsetPlane)
   * [`patternCircular2d`](kcl/patternCircular2d)
   * [`patternCircular3d`](kcl/patternCircular3d)
   * [`patternLinear2d`](kcl/patternLinear2d)

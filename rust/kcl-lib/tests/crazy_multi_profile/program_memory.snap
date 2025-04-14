@@ -768,7 +768,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             }
           },
           "xAxis": {
-            "x": -1.0,
+            "x": 1.0,
             "y": 0.0,
             "z": 0.0,
             "units": {
@@ -2765,7 +2765,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           }
         },
         "xAxis": {
-          "x": -1.0,
+          "x": 1.0,
           "y": 0.0,
           "z": 0.0,
           "units": {
@@ -2911,7 +2911,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           }
         },
         "xAxis": {
-          "x": -1.0,
+          "x": 1.0,
           "y": 0.0,
           "z": 0.0,
           "units": {
@@ -3057,7 +3057,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           }
         },
         "xAxis": {
-          "x": -1.0,
+          "x": 1.0,
           "y": 0.0,
           "z": 0.0,
           "units": {
@@ -3152,7 +3152,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           }
         },
         "xAxis": {
-          "x": -1.0,
+          "x": 1.0,
           "y": 0.0,
           "z": 0.0,
           "units": {
@@ -3323,7 +3323,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           }
         },
         "xAxis": {
-          "x": -1.0,
+          "x": 1.0,
           "y": 0.0,
           "z": 0.0,
           "units": {
@@ -3878,7 +3878,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             }
           },
           "xAxis": {
-            "x": -1.0,
+            "x": 1.0,
             "y": 0.0,
             "z": 0.0,
             "units": {
@@ -4247,7 +4247,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         }
       },
       "xAxis": {
-        "x": -1.0,
+        "x": 1.0,
         "y": 0.0,
         "z": 0.0,
         "units": {

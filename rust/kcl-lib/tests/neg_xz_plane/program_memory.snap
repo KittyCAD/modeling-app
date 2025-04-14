@@ -108,7 +108,7 @@ description: Variables in memory after executing neg_xz_plane.kcl
             }
           },
           "xAxis": {
-            "x": -1.0,
+            "x": 1.0,
             "y": 0.0,
             "z": 0.0,
             "units": {

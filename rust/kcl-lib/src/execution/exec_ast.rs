@@ -1142,9 +1142,15 @@ impl Node<UnaryExpression> {
             }
             KclValue::Plane { value } => {
                 let mut plane = value.clone();
-                plane.z_axis.x *= -1.0;
-                plane.z_axis.y *= -1.0;
-                plane.z_axis.z *= -1.0;
+                if plane.z_axis.x != 0.0 {
+                    plane.z_axis.x *= -1.0;
+                }
+                if plane.z_axis.y != 0.0 {
+                    plane.z_axis.y *= -1.0;
+                }
+                if plane.z_axis.z != 0.0 {
+                    plane.z_axis.z *= -1.0;
+                }
 
                 plane.value = PlaneType::Uninit;
                 plane.id = exec_state.next_uuid();
