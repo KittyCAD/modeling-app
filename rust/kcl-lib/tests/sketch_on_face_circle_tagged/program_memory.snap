@@ -136,22 +136,34 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
           "origin": {
             "x": 0.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
+            "z": 1.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "units": {
             "type": "Mm"
@@ -201,9 +213,9 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 340,
-            "end": 349,
-            "start": 340,
+            "commentStart": 347,
+            "end": 356,
+            "start": 347,
             "type": "TagDeclarator",
             "value": "myCircle"
           },
@@ -230,9 +242,9 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
             ],
             "radius": 5.0,
             "tag": {
-              "commentStart": 340,
-              "end": 349,
-              "start": 340,
+              "commentStart": 347,
+              "end": 356,
+              "start": 347,
               "type": "TagDeclarator",
               "value": "myCircle"
             },
@@ -254,17 +266,26 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
+            "z": 1.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "solid": {
             "type": "Solid",
@@ -389,22 +410,34 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "yAxis": {
                   "x": 0.0,
                   "y": 1.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "zAxis": {
                   "x": 0.0,
                   "y": 0.0,
-                  "z": 1.0
+                  "z": 1.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "units": {
                   "type": "Mm"

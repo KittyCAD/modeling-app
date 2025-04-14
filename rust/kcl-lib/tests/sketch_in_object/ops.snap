@@ -20,7 +20,7 @@ description: Operations executed sketch_in_object.kcl
   },
   {
     "labeledArgs": {
-      "data": {
+      "planeOrSolid": {
         "value": {
           "type": "String",
           "value": "XY"
@@ -85,7 +85,7 @@ description: Operations executed sketch_in_object.kcl
   },
   {
     "labeledArgs": {
-      "data": {
+      "planeOrSolid": {
         "value": {
           "type": "String",
           "value": "XY"

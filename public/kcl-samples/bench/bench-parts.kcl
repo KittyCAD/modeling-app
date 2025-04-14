@@ -38,8 +38,8 @@ export fn divider(plane) {
     |> extrude(length = dividerThickness / 2)
   left = dividerSketch(plane)
     |> extrude(length = -dividerThickness / 2)
-  shell(right, thickness = 1.5, faces = ["end"])
-  shell(left, thickness = 1.5, faces = ["start"])
+  shell(right, thickness = 1.5, faces = [END])
+  shell(left, thickness = 1.5, faces = [START])
   return 0
 }
 
