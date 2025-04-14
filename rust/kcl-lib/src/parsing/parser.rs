@@ -1803,11 +1803,6 @@ fn import_stmt(i: &mut TokenSlice) -> PResult<BoxNode<ImportStatement>> {
             end = alias.end;
             *selector_alias = Some(alias);
         }
-
-        ParseContext::warn(CompilationError::err(
-            SourceRange::new(start, path.end, path.module_id),
-            "Importing a whole module is experimental, likely to be buggy, and likely to change",
-        ));
     }
 
     let path_string = match path.inner.value {
@@ -3882,6 +3877,23 @@ mySk1 = startSketchOn(XY)
     }
 
     #[test]
+    fn parse_numeric() {
+        let test_program = "fn foo(x: number(Length)) {}";
+        let tokens = crate::parsing::token::lex(test_program, ModuleId::default()).unwrap();
+        run_parser(tokens.as_slice()).unwrap();
+
+        let test_program = "42_mm";
+        let tokens = crate::parsing::token::lex(test_program, ModuleId::default()).unwrap();
+        assert_eq!(tokens.iter().count(), 1);
+        run_parser(tokens.as_slice()).unwrap();
+
+        let test_program = "42_Length";
+        let tokens = crate::parsing::token::lex(test_program, ModuleId::default()).unwrap();
+        assert_eq!(tokens.iter().count(), 2);
+        assert_eq!(run_parser(tokens.as_slice()).unwrap_errs().count(), 1);
+    }
+
+    #[test]
     fn test_parameter_list() {
         let tests = [
             ("", vec![]),
@@ -4495,21 +4507,9 @@ export fn cos(num: number(rad)): number(_) {}"#;
 
     #[test]
     fn warn_import() {
-        let some_program_string = r#"import "foo.kcl""#;
-        let (_, errs) = assert_no_err(some_program_string);
-        assert_eq!(errs.len(), 1, "{errs:#?}");
-
-        let some_program_string = r#"import "foo.obj""#;
-        let (_, errs) = assert_no_err(some_program_string);
-        assert_eq!(errs.len(), 1, "{errs:#?}");
-
-        let some_program_string = r#"import "foo.sldprt""#;
-        let (_, errs) = assert_no_err(some_program_string);
-        assert_eq!(errs.len(), 1, "{errs:#?}");
-
         let some_program_string = r#"import "foo.bad""#;
         let (_, errs) = assert_no_err(some_program_string);
-        assert_eq!(errs.len(), 2, "{errs:#?}");
+        assert_eq!(errs.len(), 1, "{errs:#?}");
     }
 
     #[test]

@@ -5,7 +5,8 @@ import { ARG_INDEX_FIELD, LABELED_ARG_FIELD } from '@src/lang/queryAstConstants'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import { topLevelRange } from '@src/lang/util'
 import type { Parameter } from '@src/lang/wasm'
-import { assertParse, initPromise } from '@src/lang/wasm'
+import { assertParse } from '@src/lang/wasm'
+import { initPromise } from '@src/lang/wasmUtils'
 import { err } from '@src/lib/trap'
 
 beforeAll(async () => {

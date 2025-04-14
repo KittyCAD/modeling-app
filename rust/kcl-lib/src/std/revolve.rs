@@ -1,10 +1,15 @@
 //! Standard library revolution surfaces.
 
 use anyhow::Result;
-use kcmc::{each_cmd as mcmd, length_unit::LengthUnit, shared::Angle, shared::Opposite, ModelingCmd};
+use kcmc::{
+    each_cmd as mcmd,
+    length_unit::LengthUnit,
+    shared::{Angle, Opposite},
+    ModelingCmd,
+};
 use kittycad_modeling_cmds::{self as kcmc, shared::Point3d};
 
-use super::DEFAULT_TOLERANCE;
+use super::{args::TyF64, DEFAULT_TOLERANCE};
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
@@ -26,22 +31,23 @@ pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
         ]),
         exec_state,
     )?;
-    let angle = args.get_kw_arg_opt("angle")?;
-    let tolerance = args.get_kw_arg_opt("tolerance")?;
+    let angle: Option<TyF64> = args.get_kw_arg_opt_typed("angle", &RuntimeType::angle(), exec_state)?;
+    let tolerance: Option<TyF64> = args.get_kw_arg_opt_typed("tolerance", &RuntimeType::count(), exec_state)?;
     let tag_start = args.get_kw_arg_opt("tagStart")?;
     let tag_end = args.get_kw_arg_opt("tagEnd")?;
     let symmetric = args.get_kw_arg_opt("symmetric")?;
-    let bidirectional_angle = args.get_kw_arg_opt("bidirectionalAngle")?;
+    let bidirectional_angle: Option<TyF64> =
+        args.get_kw_arg_opt_typed("bidirectionalAngle", &RuntimeType::angle(), exec_state)?;
 
     let value = inner_revolve(
         sketches,
         axis,
-        angle,
-        tolerance,
+        angle.map(|t| t.n),
+        tolerance.map(|t| t.n),
         tag_start,
         tag_end,
         symmetric,
-        bidirectional_angle,
+        bidirectional_angle.map(|t| t.n),
         exec_state,
         args,
     )
@@ -134,13 +140,13 @@ async fn inner_revolve(
                         angle,
                         target: sketch.id.into(),
                         axis: Point3d {
-                            x: direction[0],
-                            y: direction[1],
+                            x: direction[0].n,
+                            y: direction[1].n,
                             z: 0.0,
                         },
                         origin: Point3d {
-                            x: LengthUnit(origin[0]),
-                            y: LengthUnit(origin[1]),
+                            x: LengthUnit(origin[0].n),
+                            y: LengthUnit(origin[1].n),
                             z: LengthUnit(0.0),
                         },
                         tolerance: LengthUnit(tolerance.unwrap_or(DEFAULT_TOLERANCE)),

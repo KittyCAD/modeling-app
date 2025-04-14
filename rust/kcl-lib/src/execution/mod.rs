@@ -11,9 +11,7 @@ pub use cache::{bust_cache, clear_mem_cache};
 pub use cad_op::Operation;
 pub use geometry::*;
 pub use id_generator::IdGenerator;
-pub(crate) use import::{
-    import_foreign, send_to_engine as send_import_to_engine, PreImportedGeometry, ZOO_COORD_SYSTEM,
-};
+pub(crate) use import::PreImportedGeometry;
 use indexmap::IndexMap;
 pub use kcl_value::{KclObjectFields, KclValue};
 use kcmc::{
@@ -2052,7 +2050,7 @@ fn foo() {
 
 solid = sketch |> extrude(length = 10)
 // tag0 tags a face
-sketch2 = startSketchOn(solid, tag0)
+sketch2 = startSketchOn(solid, face = tag0)
   |> startProfileAt([0,0], %)
   |> line(end = [0, 1])
   |> line(end = [1, 0])

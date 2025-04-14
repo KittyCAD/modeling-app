@@ -10,6 +10,7 @@ import Tooltip from '@src/components/Tooltip'
 import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import { EngineConnectionStateType } from '@src/lang/std/engineConnection'
 import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
+import { engineCommandManager } from '@src/lib/singletons'
 import {
   commandBarActor,
   useCommandBarState,
@@ -46,6 +47,7 @@ export const CommandBar = () => {
   useEffect(() => {
     if (
       !commandBarActor.getSnapshot().matches('Closed') &&
+      engineCommandManager.engineConnection &&
       (immediateState.type === EngineConnectionStateType.Disconnecting ||
         immediateState.type === EngineConnectionStateType.Disconnected)
     ) {

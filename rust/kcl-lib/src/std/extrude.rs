@@ -9,8 +9,7 @@ use kcmc::{
     length_unit::LengthUnit,
     ok_response::OkModelingCmdResponse,
     output::ExtrusionFaceInfo,
-    shared::ExtrusionFaceCapType,
-    shared::Opposite,
+    shared::{ExtrusionFaceCapType, Opposite},
     websocket::{ModelingCmdReq, OkWebSocketResponseData},
     ModelingCmd,
 };
@@ -27,20 +26,23 @@ use crate::{
     std::Args,
 };
 
+use super::args::TyF64;
+
 /// Extrudes by a given amount.
 pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let sketches = args.get_unlabeled_kw_arg_typed("sketches", &RuntimeType::sketches(), exec_state)?;
-    let length = args.get_kw_arg("length")?;
+    let length: TyF64 = args.get_kw_arg_typed("length", &RuntimeType::length(), exec_state)?;
     let symmetric = args.get_kw_arg_opt("symmetric")?;
-    let bidirectional_length = args.get_kw_arg_opt("bidirectionalLength")?;
+    let bidirectional_length: Option<TyF64> =
+        args.get_kw_arg_opt_typed("bidirectionalLength", &RuntimeType::length(), exec_state)?;
     let tag_start = args.get_kw_arg_opt("tagStart")?;
     let tag_end = args.get_kw_arg_opt("tagEnd")?;
 
     let result = inner_extrude(
         sketches,
-        length,
+        length.n,
         symmetric,
-        bidirectional_length,
+        bidirectional_length.map(|t| t.n),
         tag_start,
         tag_end,
         exec_state,

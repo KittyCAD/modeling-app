@@ -192,7 +192,7 @@ impl Node<Annotation> {
                 result.push_str(&indentation);
                 result.push_str(comment);
             }
-            if !comment.ends_with("*/") && !result.ends_with("\n\n") && result != "\n" {
+            if !result.ends_with("\n\n") && result != "\n" {
                 result.push('\n');
             }
         }
@@ -1023,6 +1023,20 @@ bar = 0
     }
 
     #[test]
+    fn recast_annotations_with_block_comment() {
+        let input = r#"/* Start comment
+
+sdfsdfsdfs */
+@settings(defaultLengthUnit = in)
+
+foo = 42
+"#;
+        let program = crate::parsing::top_level_parse(input).unwrap();
+        let output = program.recast(&Default::default(), 0);
+        assert_eq!(output, input);
+    }
+
+    #[test]
     fn test_recast_if_else_if_same() {
         let input = r#"b = if false {
   3
@@ -1714,7 +1728,7 @@ thk = 5
 hole_diam = 5
 // define a rectangular shape func
 fn rectShape(pos, w, l) {
-  rr = startSketchOn('xy')
+  rr = startSketchOn(XY)
     |> startProfileAt([pos[0] - (w / 2), pos[1] - (l / 2)], %)
     |> line(endAbsolute = [pos[0] + w / 2, pos[1] - (l / 2)], tag = $edge1)
     |> line(endAbsolute = [pos[0] + w / 2, pos[1] + l / 2], tag = $edge2)

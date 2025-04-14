@@ -1,0 +1,14 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Error from executing pattern_into_union.kcl
+---
+KCL Engine error
+
+  × engine: Modeling command failed: [ApiError { error_code: InternalEngine,
+  │ message: "More than 2 solids were passed to the low-level CSG method" }]
+    ╭─[67:1]
+ 66 │ 
+ 67 │ union([base,endTabs])
+    · ──────────┬──────────
+    ·           ╰── tests/pattern_into_union/input.kcl
+    ╰────

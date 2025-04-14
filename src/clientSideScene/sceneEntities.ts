@@ -95,7 +95,7 @@ import {
 } from '@src/clientSideScene/segments'
 import type EditorManager from '@src/editor/manager'
 import type CodeManager from '@src/lang/codeManager'
-import { ARG_END_ABSOLUTE } from '@src/lang/constants'
+import { ARG_END, ARG_END_ABSOLUTE } from '@src/lang/constants'
 import {
   createArrayExpression,
   createCallExpressionStdLib,
@@ -164,7 +164,7 @@ import type {
   SketchTool,
 } from '@src/machines/modelingMachine'
 
-type DraftSegment = 'line' | 'tangentialArcTo'
+type DraftSegment = 'line' | 'tangentialArc'
 
 type Vec3Array = [number, number, number]
 
@@ -235,7 +235,7 @@ export class SceneEntities {
         segment.userData.prevSegment &&
         segment.userData.type === TANGENTIAL_ARC_TO_SEGMENT
       ) {
-        update = segmentUtils.tangentialArcTo.update
+        update = segmentUtils.tangentialArc.update
       }
       if (
         segment.userData &&
@@ -758,7 +758,7 @@ export class SceneEntities {
 
         const initSegment =
           segment.type === 'TangentialArcTo'
-            ? segmentUtils.tangentialArcTo.init
+            ? segmentUtils.tangentialArc.init
             : segment.type === 'Circle'
               ? segmentUtils.circle.init
               : segment.type === 'Arc'
@@ -903,7 +903,7 @@ export class SceneEntities {
     forward: [number, number, number],
     up: [number, number, number],
     origin: [number, number, number],
-    segmentName: 'line' | 'tangentialArcTo' = 'line',
+    segmentName: 'line' | 'tangentialArc' = 'line',
     shouldTearDown = true
   ) => {
     const _ast = structuredClone(this.kclManager.ast)
@@ -999,10 +999,9 @@ export class SceneEntities {
             variables: this.kclManager.variables,
             pathToNode: sketchEntryNodePath,
             expressions: [
-              segmentName === 'tangentialArcTo'
-                ? createCallExpressionStdLib('tangentialArcTo', [
-                    originCoords,
-                    createPipeSubstitution(),
+              segmentName === 'tangentialArc'
+                ? createCallExpressionStdLibKw('tangentialArc', null, [
+                    createLabeledArg(ARG_END_ABSOLUTE, originCoords),
                   ])
                 : createCallExpressionStdLibKw('line', null, [
                     createLabeledArg(ARG_END_ABSOLUTE, originCoords),
@@ -1048,11 +1047,10 @@ export class SceneEntities {
           // This might need to become its own function if we want more
           // case-based logic for different segment types
           if (
-            (lastSegment.type === 'TangentialArcTo' &&
-              segmentName !== 'line') ||
-            segmentName === 'tangentialArcTo'
+            (lastSegment.type === 'TangentialArc' && segmentName !== 'line') ||
+            segmentName === 'tangentialArc'
           ) {
-            resolvedFunctionName = 'tangentialArcTo'
+            resolvedFunctionName = 'tangentialArc'
           } else if (isHorizontal) {
             // If the angle between is 0 or 180 degrees (+/- the snapping angle), make the line an xLine
             resolvedFunctionName = 'xLine'
@@ -1180,7 +1178,8 @@ export class SceneEntities {
     _ast = pResult.program
 
     // do a quick mock execution to get the program memory up-to-date
-    await this.kclManager.executeAstMock(_ast)
+    const didReParse = await this.kclManager.executeAstMock(_ast)
+    if (err(didReParse)) return didReParse
 
     const justCreatedNode = getNodeFromPath<VariableDeclaration>(
       _ast,
@@ -1580,7 +1579,8 @@ export class SceneEntities {
     _ast = pResult.program
 
     // do a quick mock execution to get the program memory up-to-date
-    await this.kclManager.executeAstMock(_ast)
+    const didReParse = await this.kclManager.executeAstMock(_ast)
+    if (err(didReParse)) return didReParse
 
     const { truncatedAst } = await this.setupSketch({
       sketchEntryNodePath: updatedEntryNodePath,
@@ -1775,7 +1775,8 @@ export class SceneEntities {
     _ast = pResult.program
 
     // do a quick mock execution to get the program memory up-to-date
-    await this.kclManager.executeAstMock(_ast)
+    const didReParse = await this.kclManager.executeAstMock(_ast)
+    if (err(didReParse)) return didReParse
 
     const index = sg.paths.length // because we've added a new segment that's not in the memory yet
     const draftExpressionsIndices = { start: index, end: index }
@@ -2002,7 +2003,8 @@ export class SceneEntities {
     _ast = pResult.program
 
     // do a quick mock execution to get the program memory up-to-date
-    await this.kclManager.executeAstMock(_ast)
+    const didReParse = await this.kclManager.executeAstMock(_ast)
+    if (err(didReParse)) return didReParse
 
     const index = sg.paths.length // because we've added a new segment that's not in the memory yet
     const draftExpressionsIndices = { start: index, end: index }
@@ -2267,7 +2269,8 @@ export class SceneEntities {
     _ast = pResult.program
 
     // do a quick mock execution to get the program memory up-to-date
-    await this.kclManager.executeAstMock(_ast)
+    const didReParse = await this.kclManager.executeAstMock(_ast)
+    if (err(didReParse)) return didReParse
 
     const { truncatedAst } = await this.setupSketch({
       sketchEntryNodePath: updatedEntryNodePath,
@@ -2500,7 +2503,10 @@ export class SceneEntities {
             addingNewSegmentStatus = 'pending'
             if (trap(mod)) return
 
-            await this.kclManager.executeAstMock(mod.modifiedAst)
+            const didReParse = await this.kclManager.executeAstMock(
+              mod.modifiedAst
+            )
+            if (err(didReParse)) return
             this.tearDownSketch({ removeAxis: false })
             // eslint-disable-next-line @typescript-eslint/no-floating-promises
             this.setupSketch({
@@ -2995,7 +3001,7 @@ export class SceneEntities {
     }
     let update: SegmentUtils['update'] | null = null
     if (type === TANGENTIAL_ARC_TO_SEGMENT) {
-      update = segmentUtils.tangentialArcTo.update
+      update = segmentUtils.tangentialArc.update
     } else if (type === STRAIGHT_SEGMENT) {
       update = segmentUtils.straight.update
     } else if (
@@ -3174,7 +3180,7 @@ export class SceneEntities {
           if (parent.name === STRAIGHT_SEGMENT) {
             update = segmentUtils.straight.update
           } else if (parent.name === TANGENTIAL_ARC_TO_SEGMENT) {
-            update = segmentUtils.tangentialArcTo.update
+            update = segmentUtils.tangentialArc.update
             input = {
               type: 'arc-segment',
               from: parent.userData.from,
@@ -3251,7 +3257,7 @@ export class SceneEntities {
           if (parent.name === STRAIGHT_SEGMENT) {
             update = segmentUtils.straight.update
           } else if (parent.name === TANGENTIAL_ARC_TO_SEGMENT) {
-            update = segmentUtils.tangentialArcTo.update
+            update = segmentUtils.tangentialArc.update
             input = {
               type: 'arc-segment',
               from: parent.userData.from,
@@ -3525,17 +3531,19 @@ function prepareTruncatedAst(
     if (draftSegment === 'line') {
       newSegment = createCallExpressionStdLibKw('line', null, [
         createLabeledArg(
-          'end',
+          ARG_END,
           createArrayExpression([createLiteral(0), createLiteral(0)])
         ),
       ])
     } else {
-      newSegment = createCallExpressionStdLib('tangentialArcTo', [
-        createArrayExpression([
-          createLiteral(lastSeg.to[0]),
-          createLiteral(lastSeg.to[1]),
-        ]),
-        createPipeSubstitution(),
+      newSegment = createCallExpressionStdLibKw('tangentialArc', null, [
+        createLabeledArg(
+          ARG_END_ABSOLUTE,
+          createArrayExpression([
+            createLiteral(lastSeg.to[0]),
+            createLiteral(lastSeg.to[1]),
+          ])
+        ),
       ])
     }
     ;(

@@ -14,7 +14,7 @@ description: Operations executed walkie-talkie.kcl
   },
   {
     "labeledArgs": {
-      "data": {
+      "planeOrSolid": {
         "value": {
           "type": "Plane",
           "artifact_id": "[uuid]"
@@ -117,19 +117,10 @@ description: Operations executed walkie-talkie.kcl
   },
   {
     "labeledArgs": {
-      "data": {
-        "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "tag": {
+      "face": {
         "value": {
           "type": "String",
-          "value": "END"
+          "value": "end"
         },
         "sourceRange": []
       }
@@ -137,7 +128,15 @@ description: Operations executed walkie-talkie.kcl
     "name": "startSketchOn",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
   },
   {
     "type": "GroupBegin",
@@ -245,16 +244,7 @@ description: Operations executed walkie-talkie.kcl
   },
   {
     "labeledArgs": {
-      "data": {
-        "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "tag": {
+      "face": {
         "value": {
           "type": "String",
           "value": "start"
@@ -265,7 +255,15 @@ description: Operations executed walkie-talkie.kcl
     "name": "startSketchOn",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
   },
   {
     "labeledArgs": {
@@ -301,16 +299,7 @@ description: Operations executed walkie-talkie.kcl
   },
   {
     "labeledArgs": {
-      "data": {
-        "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "tag": {
+      "face": {
         "value": {
           "type": "String",
           "value": "start"
@@ -321,7 +310,15 @@ description: Operations executed walkie-talkie.kcl
     "name": "startSketchOn",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
   },
   {
     "labeledArgs": {
@@ -369,7 +366,7 @@ description: Operations executed walkie-talkie.kcl
   },
   {
     "labeledArgs": {
-      "data": {
+      "planeOrSolid": {
         "value": {
           "type": "Plane",
           "artifact_id": "[uuid]"
@@ -414,7 +411,7 @@ description: Operations executed walkie-talkie.kcl
   },
   {
     "labeledArgs": {
-      "data": {
+      "planeOrSolid": {
         "value": {
           "type": "Plane",
           "artifact_id": "[uuid]"
@@ -469,7 +466,7 @@ description: Operations executed walkie-talkie.kcl
   },
   {
     "labeledArgs": {
-      "data": {
+      "planeOrSolid": {
         "value": {
           "type": "Plane",
           "artifact_id": "[uuid]"
@@ -484,7 +481,7 @@ description: Operations executed walkie-talkie.kcl
   },
   {
     "labeledArgs": {
-      "data": {
+      "planeOrSolid": {
         "value": {
           "type": "Plane",
           "artifact_id": "[uuid]"
@@ -499,7 +496,7 @@ description: Operations executed walkie-talkie.kcl
   },
   {
     "labeledArgs": {
-      "data": {
+      "planeOrSolid": {
         "value": {
           "type": "Plane",
           "artifact_id": "[uuid]"
@@ -1495,7 +1492,7 @@ description: Operations executed walkie-talkie.kcl
   },
   {
     "labeledArgs": {
-      "data": {
+      "planeOrSolid": {
         "value": {
           "type": "Plane",
           "artifact_id": "[uuid]"
@@ -1554,7 +1551,7 @@ description: Operations executed walkie-talkie.kcl
   },
   {
     "labeledArgs": {
-      "data": {
+      "planeOrSolid": {
         "value": {
           "type": "Plane",
           "artifact_id": "[uuid]"
@@ -1613,7 +1610,7 @@ description: Operations executed walkie-talkie.kcl
   },
   {
     "labeledArgs": {
-      "data": {
+      "planeOrSolid": {
         "value": {
           "type": "Plane",
           "artifact_id": "[uuid]"
@@ -1672,7 +1669,7 @@ description: Operations executed walkie-talkie.kcl
   },
   {
     "labeledArgs": {
-      "data": {
+      "planeOrSolid": {
         "value": {
           "type": "Plane",
           "artifact_id": "[uuid]"
@@ -1731,7 +1728,7 @@ description: Operations executed walkie-talkie.kcl
   },
   {
     "labeledArgs": {
-      "data": {
+      "planeOrSolid": {
         "value": {
           "type": "Plane",
           "artifact_id": "[uuid]"
@@ -1834,7 +1831,7 @@ description: Operations executed walkie-talkie.kcl
   },
   {
     "labeledArgs": {
-      "data": {
+      "planeOrSolid": {
         "value": {
           "type": "Plane",
           "artifact_id": "[uuid]"
@@ -1949,7 +1946,7 @@ description: Operations executed walkie-talkie.kcl
   },
   {
     "labeledArgs": {
-      "data": {
+      "planeOrSolid": {
         "value": {
           "type": "Plane",
           "artifact_id": "[uuid]"
@@ -2068,7 +2065,7 @@ description: Operations executed walkie-talkie.kcl
   },
   {
     "labeledArgs": {
-      "data": {
+      "planeOrSolid": {
         "value": {
           "type": "Plane",
           "artifact_id": "[uuid]"
@@ -2181,7 +2178,7 @@ description: Operations executed walkie-talkie.kcl
   },
   {
     "labeledArgs": {
-      "data": {
+      "planeOrSolid": {
         "value": {
           "type": "Plane",
           "artifact_id": "[uuid]"
@@ -2294,7 +2291,7 @@ description: Operations executed walkie-talkie.kcl
   },
   {
     "labeledArgs": {
-      "data": {
+      "planeOrSolid": {
         "value": {
           "type": "Plane",
           "artifact_id": "[uuid]"
@@ -2407,7 +2404,7 @@ description: Operations executed walkie-talkie.kcl
   },
   {
     "labeledArgs": {
-      "data": {
+      "planeOrSolid": {
         "value": {
           "type": "Plane",
           "artifact_id": "[uuid]"

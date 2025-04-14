@@ -21,12 +21,6 @@
           extensions = ["rustfmt" "llvm-tools-preview" "rust-src"];
         };
       })
-      (self: super: {
-        cargo-llvm-cov = super.cargo-llvm-cov.overrideAttrs (oa: {
-          doCheck = false;
-          doInstallCheck = false;
-        });
-      })
     ];
 
     allSystems = [
@@ -41,7 +35,6 @@
         f {
           pkgs = import nixpkgs {
             inherit overlays system;
-            config.allowBroken = true;
           };
           system = system;
         });
@@ -51,14 +44,12 @@
         packages =
           (with pkgs; [
             rustToolchain
-            cargo-llvm-cov
             cargo-nextest
             just
             postgresql.lib
             openssl
             pkg-config
             nodejs_22
-            yarn
             electron
             playwright-driver.browsers
             wasm-pack
