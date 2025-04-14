@@ -21,10 +21,10 @@ revolved around the same axis.
 revolve(
   @sketches: [Sketch; 1+],
   axis: Axis2d | Edge,
-  angle?: number(deg),
-  tolerance?: number(mm),
+  angle?: number(Angle),
+  tolerance?: number(Length),
   symmetric?: bool,
-  bidirectionalAngle?: number(deg),
+  bidirectionalAngle?: number(Angle),
   tagStart?: tag,
   tagEnd?: tag,
 ): Solid
@@ -37,10 +37,10 @@ revolve(
 |----------|------|-------------|----------|
 | `sketches` | `[Sketch; 1+]` | The sketch or set of sketches that should be revolved | Yes |
 | `axis` | `Axis2d | Edge` | Axis of revolution. | Yes |
-| `angle` | `number(deg)` | Angle to revolve (in degrees). Default is 360. | No |
-| `tolerance` | `number(mm)` | Tolerance for the revolve operation. | No |
+| `angle` | `number(Angle)` | Angle to revolve (in degrees). Default is 360. | No |
+| `tolerance` | `number(Length)` | Tolerance for the revolve operation. | No |
 | `symmetric` | [`bool`](/docs/kcl/types/bool) | If true, the extrusion will happen symmetrically around the sketch. Otherwise, the extrusion will happen on only one side of the sketch. | No |
-| `bidirectionalAngle` | `number(deg)` | If specified, will also revolve in the opposite direction to 'angle' to the specified angle. If 'symmetric' is true, this value is ignored. | No |
+| `bidirectionalAngle` | `number(Angle)` | If specified, will also revolve in the opposite direction to 'angle' to the specified angle. If 'symmetric' is true, this value is ignored. | No |
 | `tagStart` | [`tag`](/docs/kcl/types/tag) | A named tag for the face at the start of the revolve, i.e. the original sketch. | No |
 | `tagEnd` | [`tag`](/docs/kcl/types/tag) | A named tag for the face at the end of the revolve. | No |
 
@@ -108,7 +108,7 @@ part001 = startSketchOn(XY)
     |> close()
     |> revolve(axis = Y, angle = 180)
 
-part002 = startSketchOn(part001, 'end')
+part002 = startSketchOn(part001, face = END)
     |> startProfileAt([4.5, -5], %)
     |> line(end = [0, 5])
     |> line(end = [5, 0])
@@ -128,7 +128,7 @@ box = startSketchOn(XY)
     |> close()
     |> extrude(length = 20)
 
-sketch001 = startSketchOn(box, "END")
+sketch001 = startSketchOn(box, face = END)
     |> circle( center = [10,10], radius = 4 )
     |> revolve(
         angle = -90,
@@ -147,7 +147,7 @@ box = startSketchOn(XY)
     |> close()
     |> extrude(length = 20)
 
-sketch001 = startSketchOn(box, "END")
+sketch001 = startSketchOn(box, face = END)
     |> circle( center = [10,10], radius = 4 )
     |> revolve(
         angle = 90,
@@ -166,7 +166,7 @@ box = startSketchOn(XY)
     |> close()
     |> extrude(length = 20)
 
-sketch001 = startSketchOn(box, "END")
+sketch001 = startSketchOn(box, face = END)
     |> circle( center = [10,10], radius = 4 )
     |> revolve(
         angle = 90,

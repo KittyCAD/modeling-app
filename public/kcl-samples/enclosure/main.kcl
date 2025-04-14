@@ -31,18 +31,16 @@ extrude001 = extrude(sketch001, length = height)
      )
 
   // Apply a shell to the enclosure base to create the internal storage
-  |> shell(faces = ["end"], thickness = wallThickness)
+  |> shell(faces = [END], thickness = wallThickness)
 
 // Define a function to create the internal structure to secure a fastener at each corner
 fn function001(originStart) {
   // Create a plane to sketch on shell interior
   plane001 = {
-    plane = {
-      origin = [0.0, 0.0, wallThickness],
-      xAxis = [1.0, 0.0, 0.0],
-      yAxis = [0.0, 1.0, 0.0],
-      zAxis = [0.0, 0.0, 1.0]
-    }
+    origin = [0.0, 0.0, wallThickness],
+    xAxis = [1.0, 0.0, 0.0],
+    yAxis = [0.0, 1.0, 0.0],
+    zAxis = [0.0, 0.0, 1.0]
   }
 
   // Create a pillar with a fasterner hole at the center
@@ -120,7 +118,7 @@ extrude003 = extrude(sketch003, length = wallThickness)
      )
 
 // Define lid inner and sealing surfaces
-sketch004 = startSketchOn(extrude003, 'END')
+sketch004 = startSketchOn(extrude003, face = END)
   |> startProfileAt([
        width * 1.2 + wallThickness,
        wallThickness

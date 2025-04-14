@@ -103,6 +103,21 @@ A unit of length.
 
 ----
 
+**Type:** `object`
+
+
+
+
+
+## Properties
+
+| Property | Type | Description | Required |
+|----------|------|-------------|----------|
+| `type` |enum: `Unknown`|  | No |
+
+
+----
+
 
 
 

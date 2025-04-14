@@ -1728,7 +1728,7 @@ thk = 5
 hole_diam = 5
 // define a rectangular shape func
 fn rectShape(pos, w, l) {
-  rr = startSketchOn('xy')
+  rr = startSketchOn(XY)
     |> startProfileAt([pos[0] - (w / 2), pos[1] - (l / 2)], %)
     |> line(endAbsolute = [pos[0] + w / 2, pos[1] - (l / 2)], tag = $edge1)
     |> line(endAbsolute = [pos[0] + w / 2, pos[1] + l / 2], tag = $edge2)

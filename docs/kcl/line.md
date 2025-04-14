@@ -37,7 +37,7 @@ line(
 ```js
 triangle = startSketchOn(XZ)
   |> startProfileAt([0, 0], %)
-  // The 'end' argument means it ends at exactly [10, 0].
+  // The END argument means it ends at exactly [10, 0].
   // This is an absolute measurement, it is NOT relative to
   // the start of the sketch.
   |> line(endAbsolute = [10, 0])
