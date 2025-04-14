@@ -1,4 +1,5 @@
 use std::{
+    collections::HashMap,
     panic::{catch_unwind, AssertUnwindSafe},
     path::{Path, PathBuf},
 };
@@ -251,6 +252,39 @@ fn assert_common_snapshots(
     artifact_commands: Vec<ArtifactCommand>,
     artifact_graph: ArtifactGraph,
 ) {
+    let artifact_commands = {
+        // Due to our newfound concurrency, we're going to mess with the
+        // artifact_commands a bit -- we're going to maintain the order,
+        // but only for a given module ID. This means the artifact_commands
+        // is no longer meaningful, but it is deterministic and will hopefully
+        // catch meaningful changes in behavior.
+
+        let mut artifact_commands_map = artifact_commands
+            .into_iter()
+            .map(|v| (v.range.module_id().as_usize(), v))
+            .fold(
+                HashMap::<usize, Vec<ArtifactCommand>>::new(),
+                |mut map, (module_id, el)| {
+                    let mut v = map.remove(&module_id).unwrap_or(vec![]);
+                    v.push(el);
+                    map.insert(module_id, v);
+                    map
+                },
+            );
+
+        let mut artifact_commands_keys = artifact_commands_map.keys().cloned().collect::<Vec<_>>();
+        artifact_commands_keys.sort();
+
+        let artifact_commands: Vec<ArtifactCommand> = artifact_commands_keys
+            .iter()
+            .map(|idx| artifact_commands_map.remove(idx).unwrap())
+            .flatten()
+            .collect();
+
+        assert_eq!(0, artifact_commands_map.len());
+        artifact_commands
+    };
+
     let result1 = catch_unwind(AssertUnwindSafe(|| {
         assert_snapshot(test, "Operations executed", || {
             insta::assert_json_snapshot!("ops", operations, {
