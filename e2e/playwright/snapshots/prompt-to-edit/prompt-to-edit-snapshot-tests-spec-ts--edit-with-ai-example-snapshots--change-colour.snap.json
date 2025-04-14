@@ -29,11 +29,6 @@
       }
     }
   ],
-<<<<<<< HEAD
-  "kcl_version": "0.2.58"
-}
-=======
   "project_name": "testDefault",
   "kcl_version": "0.2.61"
 }
->>>>>>> main
