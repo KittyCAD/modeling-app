@@ -725,12 +725,7 @@ fn apply_ascription(
     let ty = RuntimeType::from_parsed(ty.inner.clone(), exec_state, value.into())
         .map_err(|e| KclError::Semantic(e.into()))?;
 
-    if let KclValue::Number {
-        ty: NumericType::Unknown,
-        value,
-        meta,
-    } = value
-    {
+    if let KclValue::Number { value, meta, .. } = value {
         // If the number has unknown units but the user is explicitly specifying them, treat the value as having had it's units erased,
         // rather than forcing the user to explicitly erase them.
         KclValue::Number {
@@ -939,25 +934,40 @@ impl Node<BinaryExpression> {
         if self.operator == BinaryOperator::Add || self.operator == BinaryOperator::Or {
             if let (KclValue::Solid { value: left }, KclValue::Solid { value: right }) = (&left_value, &right_value) {
                 let args = crate::std::Args::new(Default::default(), self.into(), ctx.clone(), None);
-                let result =
-                    crate::std::csg::inner_union(vec![*left.clone(), *right.clone()], exec_state, args).await?;
+                let result = crate::std::csg::inner_union(
+                    vec![*left.clone(), *right.clone()],
+                    Default::default(),
+                    exec_state,
+                    args,
+                )
+                .await?;
                 return Ok(result.into());
             }
         } else if self.operator == BinaryOperator::Sub {
             // Check if we have solids.
             if let (KclValue::Solid { value: left }, KclValue::Solid { value: right }) = (&left_value, &right_value) {
                 let args = crate::std::Args::new(Default::default(), self.into(), ctx.clone(), None);
-                let result =
-                    crate::std::csg::inner_subtract(vec![*left.clone()], vec![*right.clone()], exec_state, args)
-                        .await?;
+                let result = crate::std::csg::inner_subtract(
+                    vec![*left.clone()],
+                    vec![*right.clone()],
+                    Default::default(),
+                    exec_state,
+                    args,
+                )
+                .await?;
                 return Ok(result.into());
             }
         } else if self.operator == BinaryOperator::And {
             // Check if we have solids.
             if let (KclValue::Solid { value: left }, KclValue::Solid { value: right }) = (&left_value, &right_value) {
                 let args = crate::std::Args::new(Default::default(), self.into(), ctx.clone(), None);
-                let result =
-                    crate::std::csg::inner_intersect(vec![*left.clone(), *right.clone()], exec_state, args).await?;
+                let result = crate::std::csg::inner_intersect(
+                    vec![*left.clone(), *right.clone()],
+                    Default::default(),
+                    exec_state,
+                    args,
+                )
+                .await?;
                 return Ok(result.into());
             }
         }

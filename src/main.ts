@@ -1,7 +1,6 @@
 // Some of the following was taken from bits and pieces of the vite-typescript
 // template that ElectronJS provides.
 // @ts-ignore: TS1343
-import * as kittycad from '@kittycad/lib/import'
 import * as packageJSON from '@root/package.json'
 import type { Service } from 'bonjour-service'
 import { Bonjour } from 'bonjour-service'
@@ -28,6 +27,7 @@ import {
   getPathOrUrlFromArgs,
   parseCLIArgs,
 } from '@src/commandLineArgs'
+import { initPromiseNode } from '@src/lang/wasmUtilsNode'
 import { ZOO_STUDIO_PROTOCOL } from '@src/lib/constants'
 import getCurrentProjectFile from '@src/lib/getCurrentProjectFile'
 import { reportRejection } from '@src/lib/trap'
@@ -372,12 +372,6 @@ ipcMain.handle('startDeviceFlow', async (_, host: string) => {
   return handle.user_code
 })
 
-ipcMain.handle('kittycad', (event, data) => {
-  return data.access
-    .split('.')
-    .reduce((obj: any, prop: any) => obj[prop], kittycad)(data.args)
-})
-
 // Used to find other devices on the local network, e.g. 3D printers, CNC machines, etc.
 ipcMain.handle('find_machine_api', () => {
   const timeoutAfterMs = 5000
@@ -512,10 +506,11 @@ app.on('ready', () => {
 const getProjectPathAtStartup = async (
   filePath?: string
 ): Promise<string | null> => {
+  await initPromiseNode
   // If we are in development mode, we don't want to load a project at
   // startup.
   // Since the args passed are always '.'
-  // aka Forge for yarn tron:start live dev or playwright tests, but not dev packaged apps
+  // aka Forge for npm run tron:start live dev or playwright tests, but not dev packaged apps
   if (MAIN_WINDOW_VITE_DEV_SERVER_URL || IS_PLAYWRIGHT) {
     return null
   }

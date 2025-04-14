@@ -462,7 +462,8 @@ description: Artifact commands dual-basin-utility-sink.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 834.5,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -592,7 +593,8 @@ description: Artifact commands dual-basin-utility-sink.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 834.5,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -722,7 +724,8 @@ description: Artifact commands dual-basin-utility-sink.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 834.5,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -852,7 +855,8 @@ description: Artifact commands dual-basin-utility-sink.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 834.5,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -982,7 +986,8 @@ description: Artifact commands dual-basin-utility-sink.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 834.5,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -1112,7 +1117,8 @@ description: Artifact commands dual-basin-utility-sink.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 834.5,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -1242,7 +1248,8 @@ description: Artifact commands dual-basin-utility-sink.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 834.5,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -1372,7 +1379,8 @@ description: Artifact commands dual-basin-utility-sink.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 834.5,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -1849,7 +1857,8 @@ description: Artifact commands dual-basin-utility-sink.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 13.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -1979,7 +1988,8 @@ description: Artifact commands dual-basin-utility-sink.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 13.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -2109,7 +2119,8 @@ description: Artifact commands dual-basin-utility-sink.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 13.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -2239,7 +2250,8 @@ description: Artifact commands dual-basin-utility-sink.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 13.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -2369,7 +2381,8 @@ description: Artifact commands dual-basin-utility-sink.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 13.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -2499,7 +2512,8 @@ description: Artifact commands dual-basin-utility-sink.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 13.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -2788,7 +2802,8 @@ description: Artifact commands dual-basin-utility-sink.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 13.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -2918,7 +2933,8 @@ description: Artifact commands dual-basin-utility-sink.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 13.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -3395,7 +3411,8 @@ description: Artifact commands dual-basin-utility-sink.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 671.5,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -3525,7 +3542,8 @@ description: Artifact commands dual-basin-utility-sink.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 671.5,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -3655,7 +3673,8 @@ description: Artifact commands dual-basin-utility-sink.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 671.5,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -3785,7 +3804,8 @@ description: Artifact commands dual-basin-utility-sink.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 671.5,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -3915,7 +3935,8 @@ description: Artifact commands dual-basin-utility-sink.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 671.5,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -4045,7 +4066,8 @@ description: Artifact commands dual-basin-utility-sink.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 671.5,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -4373,7 +4395,8 @@ description: Artifact commands dual-basin-utility-sink.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -13.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -4503,7 +4526,8 @@ description: Artifact commands dual-basin-utility-sink.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -13.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -4792,7 +4816,8 @@ description: Artifact commands dual-basin-utility-sink.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -13.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -4922,7 +4947,8 @@ description: Artifact commands dual-basin-utility-sink.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -13.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -5210,7 +5236,8 @@ description: Artifact commands dual-basin-utility-sink.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -2.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -5491,7 +5518,8 @@ description: Artifact commands dual-basin-utility-sink.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 200.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -5617,7 +5645,8 @@ description: Artifact commands dual-basin-utility-sink.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 200.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -5898,7 +5927,8 @@ description: Artifact commands dual-basin-utility-sink.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -200.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -6024,7 +6054,8 @@ description: Artifact commands dual-basin-utility-sink.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -200.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -6468,7 +6499,8 @@ description: Artifact commands dual-basin-utility-sink.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 667.5,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -6598,7 +6630,8 @@ description: Artifact commands dual-basin-utility-sink.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 667.5,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -6728,7 +6761,8 @@ description: Artifact commands dual-basin-utility-sink.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 667.5,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -6858,7 +6892,8 @@ description: Artifact commands dual-basin-utility-sink.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 667.5,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -6988,7 +7023,8 @@ description: Artifact commands dual-basin-utility-sink.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 667.5,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -7118,7 +7154,8 @@ description: Artifact commands dual-basin-utility-sink.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 667.5,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -7407,7 +7444,8 @@ description: Artifact commands dual-basin-utility-sink.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 667.5,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -7537,7 +7575,8 @@ description: Artifact commands dual-basin-utility-sink.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 667.5,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -7958,6 +7997,15 @@ description: Artifact commands dual-basin-utility-sink.kcl
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
     }
   },
   {

@@ -30,7 +30,7 @@ e(): number
 ```js
 exampleSketch = startSketchOn(XZ)
   |> startProfileAt([0, 0], %)
-  |> angledLine({ angle = 30, length = 2 * e() ^ 2 }, %)
+  |> angledLine(angle = 30, length = 2 * e() ^ 2)
   |> yLine(endAbsolute = 0)
   |> close()
 

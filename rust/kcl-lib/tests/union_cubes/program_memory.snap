@@ -131,22 +131,34 @@ description: Variables in memory after executing union_cubes.kcl
           "origin": {
             "x": 0.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
+            "z": 1.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "units": {
             "type": "Mm"
@@ -176,7 +188,7 @@ description: Variables in memory after executing union_cubes.kcl
           "type": "Mm"
         }
       },
-      "height": 10.0,
+      "height": 20.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
@@ -309,22 +321,34 @@ description: Variables in memory after executing union_cubes.kcl
           "origin": {
             "x": 0.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
+            "z": 1.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "units": {
             "type": "Mm"
@@ -354,7 +378,7 @@ description: Variables in memory after executing union_cubes.kcl
           "type": "Mm"
         }
       },
-      "height": 10.0,
+      "height": 20.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
@@ -408,13 +432,13 @@ description: Variables in memory after executing union_cubes.kcl
               "sourceRange": []
             },
             "from": [
-              10.0,
-              0.0
+              2.0,
+              -2.0
             ],
             "tag": null,
             "to": [
-              30.0,
-              0.0
+              12.0,
+              -2.0
             ],
             "type": "ToPoint",
             "units": {
@@ -427,13 +451,13 @@ description: Variables in memory after executing union_cubes.kcl
               "sourceRange": []
             },
             "from": [
-              30.0,
-              0.0
+              12.0,
+              -2.0
             ],
             "tag": null,
             "to": [
-              30.0,
-              20.0
+              12.0,
+              8.0
             ],
             "type": "ToPoint",
             "units": {
@@ -446,13 +470,13 @@ description: Variables in memory after executing union_cubes.kcl
               "sourceRange": []
             },
             "from": [
-              30.0,
-              20.0
+              12.0,
+              8.0
             ],
             "tag": null,
             "to": [
-              10.0,
-              20.0
+              2.0,
+              8.0
             ],
             "type": "ToPoint",
             "units": {
@@ -465,13 +489,13 @@ description: Variables in memory after executing union_cubes.kcl
               "sourceRange": []
             },
             "from": [
-              10.0,
-              20.0
+              2.0,
+              8.0
             ],
             "tag": null,
             "to": [
-              10.0,
-              0.0
+              2.0,
+              -2.0
             ],
             "type": "ToPoint",
             "units": {
@@ -487,22 +511,34 @@ description: Variables in memory after executing union_cubes.kcl
           "origin": {
             "x": 0.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
+            "z": 1.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "units": {
             "type": "Mm"
@@ -510,12 +546,12 @@ description: Variables in memory after executing union_cubes.kcl
         },
         "start": {
           "from": [
-            10.0,
-            0.0
+            2.0,
+            -2.0
           ],
           "to": [
-            10.0,
-            0.0
+            2.0,
+            -2.0
           ],
           "units": {
             "type": "Mm"

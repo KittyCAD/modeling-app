@@ -1810,86 +1810,56 @@ description: Result of parsing food-service-spatula.kcl
                         {
                           "arguments": [
                             {
-                              "commentStart": 0,
-                              "end": 0,
-                              "properties": [
-                                {
+                              "type": "LabeledArg",
+                              "label": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "name": "angle",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "arg": {
+                                "abs_path": false,
+                                "commentStart": 0,
+                                "end": 0,
+                                "name": {
                                   "commentStart": 0,
                                   "end": 0,
-                                  "key": {
-                                    "commentStart": 0,
-                                    "end": 0,
-                                    "name": "angle",
-                                    "start": 0,
-                                    "type": "Identifier"
-                                  },
+                                  "name": "angle",
                                   "start": 0,
-                                  "type": "ObjectProperty",
-                                  "value": {
-                                    "abs_path": false,
-                                    "commentStart": 0,
-                                    "end": 0,
-                                    "name": {
-                                      "commentStart": 0,
-                                      "end": 0,
-                                      "name": "angle",
-                                      "start": 0,
-                                      "type": "Identifier"
-                                    },
-                                    "path": [],
-                                    "start": 0,
-                                    "type": "Name",
-                                    "type": "Name"
-                                  }
+                                  "type": "Identifier"
                                 },
-                                {
+                                "path": [],
+                                "start": 0,
+                                "type": "Name",
+                                "type": "Name"
+                              }
+                            },
+                            {
+                              "type": "LabeledArg",
+                              "label": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "name": "length",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "arg": {
+                                "abs_path": false,
+                                "commentStart": 0,
+                                "end": 0,
+                                "name": {
                                   "commentStart": 0,
                                   "end": 0,
-                                  "key": {
-                                    "commentStart": 0,
-                                    "end": 0,
-                                    "name": "length",
-                                    "start": 0,
-                                    "type": "Identifier"
-                                  },
+                                  "name": "dist",
                                   "start": 0,
-                                  "type": "ObjectProperty",
-                                  "value": {
-                                    "abs_path": false,
-                                    "commentStart": 0,
-                                    "end": 0,
-                                    "name": {
-                                      "commentStart": 0,
-                                      "end": 0,
-                                      "name": "dist",
-                                      "start": 0,
-                                      "type": "Identifier"
-                                    },
-                                    "path": [],
-                                    "start": 0,
-                                    "type": "Name",
-                                    "type": "Name"
-                                  }
-                                }
-                              ],
-                              "start": 0,
-                              "type": "ObjectExpression",
-                              "type": "ObjectExpression"
-                            },
-                            {
-                              "commentStart": 0,
-                              "end": 0,
-                              "start": 0,
-                              "type": "PipeSubstitution",
-                              "type": "PipeSubstitution"
-                            },
-                            {
-                              "commentStart": 0,
-                              "end": 0,
-                              "start": 0,
-                              "type": "TagDeclarator",
-                              "type": "TagDeclarator",
-                              "value": "line000"
+                                  "type": "Identifier"
+                                },
+                                "path": [],
+                                "start": 0,
+                                "type": "Name",
+                                "type": "Name"
+                              }
                             }
                           ],
                           "callee": {
@@ -1910,108 +1880,79 @@ description: Result of parsing food-service-spatula.kcl
                           "commentStart": 0,
                           "end": 0,
                           "start": 0,
-                          "type": "CallExpression",
-                          "type": "CallExpression"
+                          "type": "CallExpressionKw",
+                          "type": "CallExpressionKw",
+                          "unlabeled": null
                         },
                         {
                           "arguments": [
                             {
-                              "commentStart": 0,
-                              "end": 0,
-                              "properties": [
-                                {
+                              "type": "LabeledArg",
+                              "label": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "name": "radius",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "arg": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "left": {
+                                  "abs_path": false,
                                   "commentStart": 0,
                                   "end": 0,
-                                  "key": {
+                                  "name": {
                                     "commentStart": 0,
                                     "end": 0,
-                                    "name": "radius",
+                                    "name": "width",
                                     "start": 0,
                                     "type": "Identifier"
                                   },
+                                  "path": [],
                                   "start": 0,
-                                  "type": "ObjectProperty",
+                                  "type": "Name",
+                                  "type": "Name"
+                                },
+                                "operator": "/",
+                                "right": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "raw": "2",
+                                  "start": 0,
+                                  "type": "Literal",
+                                  "type": "Literal",
                                   "value": {
-                                    "commentStart": 0,
-                                    "end": 0,
-                                    "left": {
-                                      "abs_path": false,
-                                      "commentStart": 0,
-                                      "end": 0,
-                                      "name": {
-                                        "commentStart": 0,
-                                        "end": 0,
-                                        "name": "width",
-                                        "start": 0,
-                                        "type": "Identifier"
-                                      },
-                                      "path": [],
-                                      "start": 0,
-                                      "type": "Name",
-                                      "type": "Name"
-                                    },
-                                    "operator": "/",
-                                    "right": {
-                                      "commentStart": 0,
-                                      "end": 0,
-                                      "raw": "2",
-                                      "start": 0,
-                                      "type": "Literal",
-                                      "type": "Literal",
-                                      "value": {
-                                        "value": 2.0,
-                                        "suffix": "None"
-                                      }
-                                    },
-                                    "start": 0,
-                                    "type": "BinaryExpression",
-                                    "type": "BinaryExpression"
+                                    "value": 2.0,
+                                    "suffix": "None"
                                   }
                                 },
-                                {
-                                  "commentStart": 0,
-                                  "end": 0,
-                                  "key": {
-                                    "commentStart": 0,
-                                    "end": 0,
-                                    "name": "offset",
-                                    "start": 0,
-                                    "type": "Identifier"
-                                  },
-                                  "start": 0,
-                                  "type": "ObjectProperty",
-                                  "value": {
-                                    "commentStart": 0,
-                                    "end": 0,
-                                    "raw": "180",
-                                    "start": 0,
-                                    "type": "Literal",
-                                    "type": "Literal",
-                                    "value": {
-                                      "value": 180.0,
-                                      "suffix": "None"
-                                    }
-                                  }
+                                "start": 0,
+                                "type": "BinaryExpression",
+                                "type": "BinaryExpression"
+                              }
+                            },
+                            {
+                              "type": "LabeledArg",
+                              "label": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "name": "angle",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "arg": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "raw": "180",
+                                "start": 0,
+                                "type": "Literal",
+                                "type": "Literal",
+                                "value": {
+                                  "value": 180.0,
+                                  "suffix": "None"
                                 }
-                              ],
-                              "start": 0,
-                              "type": "ObjectExpression",
-                              "type": "ObjectExpression"
-                            },
-                            {
-                              "commentStart": 0,
-                              "end": 0,
-                              "start": 0,
-                              "type": "PipeSubstitution",
-                              "type": "PipeSubstitution"
-                            },
-                            {
-                              "commentStart": 0,
-                              "end": 0,
-                              "start": 0,
-                              "type": "TagDeclarator",
-                              "type": "TagDeclarator",
-                              "value": "arc000"
+                              }
                             }
                           ],
                           "callee": {
@@ -2032,100 +1973,71 @@ description: Result of parsing food-service-spatula.kcl
                           "commentStart": 0,
                           "end": 0,
                           "start": 0,
-                          "type": "CallExpression",
-                          "type": "CallExpression"
+                          "type": "CallExpressionKw",
+                          "type": "CallExpressionKw",
+                          "unlabeled": null
                         },
                         {
                           "arguments": [
                             {
-                              "commentStart": 0,
-                              "end": 0,
-                              "properties": [
-                                {
+                              "type": "LabeledArg",
+                              "label": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "name": "angle",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "arg": {
+                                "abs_path": false,
+                                "commentStart": 0,
+                                "end": 0,
+                                "name": {
                                   "commentStart": 0,
                                   "end": 0,
-                                  "key": {
-                                    "commentStart": 0,
-                                    "end": 0,
-                                    "name": "angle",
-                                    "start": 0,
-                                    "type": "Identifier"
-                                  },
+                                  "name": "angle",
                                   "start": 0,
-                                  "type": "ObjectProperty",
-                                  "value": {
-                                    "abs_path": false,
-                                    "commentStart": 0,
-                                    "end": 0,
-                                    "name": {
-                                      "commentStart": 0,
-                                      "end": 0,
-                                      "name": "angle",
-                                      "start": 0,
-                                      "type": "Identifier"
-                                    },
-                                    "path": [],
-                                    "start": 0,
-                                    "type": "Name",
-                                    "type": "Name"
-                                  }
+                                  "type": "Identifier"
                                 },
-                                {
+                                "path": [],
+                                "start": 0,
+                                "type": "Name",
+                                "type": "Name"
+                              }
+                            },
+                            {
+                              "type": "LabeledArg",
+                              "label": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "name": "length",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "arg": {
+                                "argument": {
+                                  "abs_path": false,
                                   "commentStart": 0,
                                   "end": 0,
-                                  "key": {
+                                  "name": {
                                     "commentStart": 0,
                                     "end": 0,
-                                    "name": "length",
+                                    "name": "dist",
                                     "start": 0,
                                     "type": "Identifier"
                                   },
+                                  "path": [],
                                   "start": 0,
-                                  "type": "ObjectProperty",
-                                  "value": {
-                                    "argument": {
-                                      "abs_path": false,
-                                      "commentStart": 0,
-                                      "end": 0,
-                                      "name": {
-                                        "commentStart": 0,
-                                        "end": 0,
-                                        "name": "dist",
-                                        "start": 0,
-                                        "type": "Identifier"
-                                      },
-                                      "path": [],
-                                      "start": 0,
-                                      "type": "Name",
-                                      "type": "Name"
-                                    },
-                                    "commentStart": 0,
-                                    "end": 0,
-                                    "operator": "-",
-                                    "start": 0,
-                                    "type": "UnaryExpression",
-                                    "type": "UnaryExpression"
-                                  }
-                                }
-                              ],
-                              "start": 0,
-                              "type": "ObjectExpression",
-                              "type": "ObjectExpression"
-                            },
-                            {
-                              "commentStart": 0,
-                              "end": 0,
-                              "start": 0,
-                              "type": "PipeSubstitution",
-                              "type": "PipeSubstitution"
-                            },
-                            {
-                              "commentStart": 0,
-                              "end": 0,
-                              "start": 0,
-                              "type": "TagDeclarator",
-                              "type": "TagDeclarator",
-                              "value": "line001"
+                                  "type": "Name",
+                                  "type": "Name"
+                                },
+                                "commentStart": 0,
+                                "end": 0,
+                                "operator": "-",
+                                "start": 0,
+                                "type": "UnaryExpression",
+                                "type": "UnaryExpression"
+                              }
                             }
                           ],
                           "callee": {
@@ -2146,96 +2058,92 @@ description: Result of parsing food-service-spatula.kcl
                           "commentStart": 0,
                           "end": 0,
                           "start": 0,
-                          "type": "CallExpression",
-                          "type": "CallExpression"
+                          "type": "CallExpressionKw",
+                          "type": "CallExpressionKw",
+                          "unlabeled": null
                         },
                         {
                           "arguments": [
                             {
-                              "commentStart": 0,
-                              "elements": [
-                                {
-                                  "arguments": [
-                                    {
+                              "type": "LabeledArg",
+                              "label": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "name": "endAbsolute",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "arg": {
+                                "commentStart": 0,
+                                "elements": [
+                                  {
+                                    "arguments": [
+                                      {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "start": 0,
+                                        "type": "PipeSubstitution",
+                                        "type": "PipeSubstitution"
+                                      }
+                                    ],
+                                    "callee": {
+                                      "abs_path": false,
                                       "commentStart": 0,
                                       "end": 0,
+                                      "name": {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "name": "profileStartX",
+                                        "start": 0,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
                                       "start": 0,
-                                      "type": "PipeSubstitution",
-                                      "type": "PipeSubstitution"
-                                    }
-                                  ],
-                                  "callee": {
-                                    "abs_path": false,
+                                      "type": "Name"
+                                    },
                                     "commentStart": 0,
                                     "end": 0,
-                                    "name": {
-                                      "commentStart": 0,
-                                      "end": 0,
-                                      "name": "profileStartX",
-                                      "start": 0,
-                                      "type": "Identifier"
-                                    },
-                                    "path": [],
                                     "start": 0,
-                                    "type": "Name"
+                                    "type": "CallExpression",
+                                    "type": "CallExpression"
                                   },
-                                  "commentStart": 0,
-                                  "end": 0,
-                                  "start": 0,
-                                  "type": "CallExpression",
-                                  "type": "CallExpression"
-                                },
-                                {
-                                  "arguments": [
-                                    {
+                                  {
+                                    "arguments": [
+                                      {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "start": 0,
+                                        "type": "PipeSubstitution",
+                                        "type": "PipeSubstitution"
+                                      }
+                                    ],
+                                    "callee": {
+                                      "abs_path": false,
                                       "commentStart": 0,
                                       "end": 0,
+                                      "name": {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "name": "profileStartY",
+                                        "start": 0,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
                                       "start": 0,
-                                      "type": "PipeSubstitution",
-                                      "type": "PipeSubstitution"
-                                    }
-                                  ],
-                                  "callee": {
-                                    "abs_path": false,
+                                      "type": "Name"
+                                    },
                                     "commentStart": 0,
                                     "end": 0,
-                                    "name": {
-                                      "commentStart": 0,
-                                      "end": 0,
-                                      "name": "profileStartY",
-                                      "start": 0,
-                                      "type": "Identifier"
-                                    },
-                                    "path": [],
                                     "start": 0,
-                                    "type": "Name"
-                                  },
-                                  "commentStart": 0,
-                                  "end": 0,
-                                  "start": 0,
-                                  "type": "CallExpression",
-                                  "type": "CallExpression"
-                                }
-                              ],
-                              "end": 0,
-                              "start": 0,
-                              "type": "ArrayExpression",
-                              "type": "ArrayExpression"
-                            },
-                            {
-                              "commentStart": 0,
-                              "end": 0,
-                              "start": 0,
-                              "type": "PipeSubstitution",
-                              "type": "PipeSubstitution"
-                            },
-                            {
-                              "commentStart": 0,
-                              "end": 0,
-                              "start": 0,
-                              "type": "TagDeclarator",
-                              "type": "TagDeclarator",
-                              "value": "arc001"
+                                    "type": "CallExpression",
+                                    "type": "CallExpression"
+                                  }
+                                ],
+                                "end": 0,
+                                "start": 0,
+                                "type": "ArrayExpression",
+                                "type": "ArrayExpression"
+                              }
                             }
                           ],
                           "callee": {
@@ -2245,7 +2153,7 @@ description: Result of parsing food-service-spatula.kcl
                             "name": {
                               "commentStart": 0,
                               "end": 0,
-                              "name": "tangentialArcTo",
+                              "name": "tangentialArc",
                               "start": 0,
                               "type": "Identifier"
                             },
@@ -2256,8 +2164,9 @@ description: Result of parsing food-service-spatula.kcl
                           "commentStart": 0,
                           "end": 0,
                           "start": 0,
-                          "type": "CallExpression",
-                          "type": "CallExpression"
+                          "type": "CallExpressionKw",
+                          "type": "CallExpressionKw",
+                          "unlabeled": null
                         },
                         {
                           "arguments": [],
@@ -2396,7 +2305,7 @@ description: Result of parsing food-service-spatula.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
-            "name": "sketch000",
+            "name": "flipperSketch",
             "start": 0,
             "type": "Identifier"
           },
@@ -2448,7 +2357,7 @@ description: Result of parsing food-service-spatula.kcl
         "preComments": [
           "",
           "",
-          "// Create a sketch on the \"XY\" plane"
+          "// Create a sketch on the \"XY\" plane for the flipper"
         ],
         "start": 0,
         "type": "VariableDeclaration",
@@ -2530,7 +2439,7 @@ description: Result of parsing food-service-spatula.kcl
                     "name": {
                       "commentStart": 0,
                       "end": 0,
-                      "name": "sketch000",
+                      "name": "flipperSketch",
                       "start": 0,
                       "type": "Identifier"
                     },
@@ -2976,7 +2885,7 @@ description: Result of parsing food-service-spatula.kcl
                 "name": {
                   "commentStart": 0,
                   "end": 0,
-                  "name": "sketch000",
+                  "name": "flipperSketch",
                   "start": 0,
                   "type": "Identifier"
                 },
@@ -3135,7 +3044,7 @@ description: Result of parsing food-service-spatula.kcl
                 "name": {
                   "commentStart": 0,
                   "end": 0,
-                  "name": "sketch000",
+                  "name": "flipperSketch",
                   "start": 0,
                   "type": "Identifier"
                 },
@@ -3299,7 +3208,7 @@ description: Result of parsing food-service-spatula.kcl
                 "name": {
                   "commentStart": 0,
                   "end": 0,
-                  "name": "sketch000",
+                  "name": "flipperSketch",
                   "start": 0,
                   "type": "Identifier"
                 },
@@ -3940,7 +3849,7 @@ description: Result of parsing food-service-spatula.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
-            "name": "sketch001",
+            "name": "handleSketch",
             "start": 0,
             "type": "Identifier"
           },
@@ -4136,7 +4045,7 @@ description: Result of parsing food-service-spatula.kcl
                     "name": {
                       "commentStart": 0,
                       "end": 0,
-                      "name": "sketch001",
+                      "name": "handleSketch",
                       "start": 0,
                       "type": "Identifier"
                     },
@@ -4666,7 +4575,7 @@ description: Result of parsing food-service-spatula.kcl
                     "type": "NonCodeNode",
                     "value": {
                       "type": "newLineBlockComment",
-                      "value": "Create an extrusion extrude001",
+                      "value": "Create an extrusion",
                       "style": "line"
                     }
                   }
@@ -4974,7 +4883,7 @@ description: Result of parsing food-service-spatula.kcl
                 "key": {
                   "commentStart": 0,
                   "end": 0,
-                  "name": "plane",
+                  "name": "origin",
                   "start": 0,
                   "type": "Identifier"
                 },
@@ -4982,268 +4891,246 @@ description: Result of parsing food-service-spatula.kcl
                 "type": "ObjectProperty",
                 "value": {
                   "commentStart": 0,
-                  "end": 0,
-                  "properties": [
+                  "elements": [
                     {
                       "commentStart": 0,
                       "end": 0,
-                      "key": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "name": "origin",
-                        "start": 0,
-                        "type": "Identifier"
-                      },
+                      "raw": "208.593833",
                       "start": 0,
-                      "type": "ObjectProperty",
+                      "type": "Literal",
+                      "type": "Literal",
                       "value": {
-                        "commentStart": 0,
-                        "elements": [
-                          {
-                            "commentStart": 0,
-                            "end": 0,
-                            "raw": "208.593833",
-                            "start": 0,
-                            "type": "Literal",
-                            "type": "Literal",
-                            "value": {
-                              "value": 208.593833,
-                              "suffix": "None"
-                            }
-                          },
-                          {
-                            "commentStart": 0,
-                            "end": 0,
-                            "raw": "0.0",
-                            "start": 0,
-                            "type": "Literal",
-                            "type": "Literal",
-                            "value": {
-                              "value": 0.0,
-                              "suffix": "None"
-                            }
-                          },
-                          {
-                            "commentStart": 0,
-                            "end": 0,
-                            "raw": "75.921946",
-                            "start": 0,
-                            "type": "Literal",
-                            "type": "Literal",
-                            "value": {
-                              "value": 75.921946,
-                              "suffix": "None"
-                            }
-                          }
-                        ],
-                        "end": 0,
-                        "start": 0,
-                        "type": "ArrayExpression",
-                        "type": "ArrayExpression"
+                        "value": 208.593833,
+                        "suffix": "None"
                       }
                     },
                     {
                       "commentStart": 0,
                       "end": 0,
-                      "key": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "name": "xAxis",
-                        "start": 0,
-                        "type": "Identifier"
-                      },
+                      "raw": "0.0",
                       "start": 0,
-                      "type": "ObjectProperty",
+                      "type": "Literal",
+                      "type": "Literal",
                       "value": {
-                        "commentStart": 0,
-                        "elements": [
-                          {
-                            "commentStart": 0,
-                            "end": 0,
-                            "raw": "0.342020",
-                            "start": 0,
-                            "type": "Literal",
-                            "type": "Literal",
-                            "value": {
-                              "value": 0.34202,
-                              "suffix": "None"
-                            }
-                          },
-                          {
-                            "argument": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "raw": "0.0",
-                              "start": 0,
-                              "type": "Literal",
-                              "type": "Literal",
-                              "value": {
-                                "value": 0.0,
-                                "suffix": "None"
-                              }
-                            },
-                            "commentStart": 0,
-                            "end": 0,
-                            "operator": "-",
-                            "start": 0,
-                            "type": "UnaryExpression",
-                            "type": "UnaryExpression"
-                          },
-                          {
-                            "argument": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "raw": "0.939693",
-                              "start": 0,
-                              "type": "Literal",
-                              "type": "Literal",
-                              "value": {
-                                "value": 0.939693,
-                                "suffix": "None"
-                              }
-                            },
-                            "commentStart": 0,
-                            "end": 0,
-                            "operator": "-",
-                            "start": 0,
-                            "type": "UnaryExpression",
-                            "type": "UnaryExpression"
-                          }
-                        ],
-                        "end": 0,
-                        "start": 0,
-                        "type": "ArrayExpression",
-                        "type": "ArrayExpression"
+                        "value": 0.0,
+                        "suffix": "None"
                       }
                     },
                     {
                       "commentStart": 0,
                       "end": 0,
-                      "key": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "name": "yAxis",
-                        "start": 0,
-                        "type": "Identifier"
-                      },
+                      "raw": "75.921946",
                       "start": 0,
-                      "type": "ObjectProperty",
+                      "type": "Literal",
+                      "type": "Literal",
                       "value": {
-                        "commentStart": 0,
-                        "elements": [
-                          {
-                            "commentStart": 0,
-                            "end": 0,
-                            "raw": "0.0",
-                            "start": 0,
-                            "type": "Literal",
-                            "type": "Literal",
-                            "value": {
-                              "value": 0.0,
-                              "suffix": "None"
-                            }
-                          },
-                          {
-                            "commentStart": 0,
-                            "end": 0,
-                            "raw": "1.0",
-                            "start": 0,
-                            "type": "Literal",
-                            "type": "Literal",
-                            "value": {
-                              "value": 1.0,
-                              "suffix": "None"
-                            }
-                          },
-                          {
-                            "commentStart": 0,
-                            "end": 0,
-                            "raw": "0.0",
-                            "start": 0,
-                            "type": "Literal",
-                            "type": "Literal",
-                            "value": {
-                              "value": 0.0,
-                              "suffix": "None"
-                            }
-                          }
-                        ],
-                        "end": 0,
-                        "start": 0,
-                        "type": "ArrayExpression",
-                        "type": "ArrayExpression"
-                      }
-                    },
-                    {
-                      "commentStart": 0,
-                      "end": 0,
-                      "key": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "name": "zAxis",
-                        "start": 0,
-                        "type": "Identifier"
-                      },
-                      "start": 0,
-                      "type": "ObjectProperty",
-                      "value": {
-                        "commentStart": 0,
-                        "elements": [
-                          {
-                            "commentStart": 0,
-                            "end": 0,
-                            "raw": "0.939693",
-                            "start": 0,
-                            "type": "Literal",
-                            "type": "Literal",
-                            "value": {
-                              "value": 0.939693,
-                              "suffix": "None"
-                            }
-                          },
-                          {
-                            "argument": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "raw": "0.0",
-                              "start": 0,
-                              "type": "Literal",
-                              "type": "Literal",
-                              "value": {
-                                "value": 0.0,
-                                "suffix": "None"
-                              }
-                            },
-                            "commentStart": 0,
-                            "end": 0,
-                            "operator": "-",
-                            "start": 0,
-                            "type": "UnaryExpression",
-                            "type": "UnaryExpression"
-                          },
-                          {
-                            "commentStart": 0,
-                            "end": 0,
-                            "raw": "0.342020",
-                            "start": 0,
-                            "type": "Literal",
-                            "type": "Literal",
-                            "value": {
-                              "value": 0.34202,
-                              "suffix": "None"
-                            }
-                          }
-                        ],
-                        "end": 0,
-                        "start": 0,
-                        "type": "ArrayExpression",
-                        "type": "ArrayExpression"
+                        "value": 75.921946,
+                        "suffix": "None"
                       }
                     }
                   ],
+                  "end": 0,
                   "start": 0,
-                  "type": "ObjectExpression",
-                  "type": "ObjectExpression"
+                  "type": "ArrayExpression",
+                  "type": "ArrayExpression"
+                }
+              },
+              {
+                "commentStart": 0,
+                "end": 0,
+                "key": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "name": "xAxis",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "start": 0,
+                "type": "ObjectProperty",
+                "value": {
+                  "commentStart": 0,
+                  "elements": [
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "raw": "0.342020",
+                      "start": 0,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 0.34202,
+                        "suffix": "None"
+                      }
+                    },
+                    {
+                      "argument": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "raw": "0.0",
+                        "start": 0,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
+                      },
+                      "commentStart": 0,
+                      "end": 0,
+                      "operator": "-",
+                      "start": 0,
+                      "type": "UnaryExpression",
+                      "type": "UnaryExpression"
+                    },
+                    {
+                      "argument": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "raw": "0.939693",
+                        "start": 0,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 0.939693,
+                          "suffix": "None"
+                        }
+                      },
+                      "commentStart": 0,
+                      "end": 0,
+                      "operator": "-",
+                      "start": 0,
+                      "type": "UnaryExpression",
+                      "type": "UnaryExpression"
+                    }
+                  ],
+                  "end": 0,
+                  "start": 0,
+                  "type": "ArrayExpression",
+                  "type": "ArrayExpression"
+                }
+              },
+              {
+                "commentStart": 0,
+                "end": 0,
+                "key": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "name": "yAxis",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "start": 0,
+                "type": "ObjectProperty",
+                "value": {
+                  "commentStart": 0,
+                  "elements": [
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "raw": "0.0",
+                      "start": 0,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 0.0,
+                        "suffix": "None"
+                      }
+                    },
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "raw": "1.0",
+                      "start": 0,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 1.0,
+                        "suffix": "None"
+                      }
+                    },
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "raw": "0.0",
+                      "start": 0,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 0.0,
+                        "suffix": "None"
+                      }
+                    }
+                  ],
+                  "end": 0,
+                  "start": 0,
+                  "type": "ArrayExpression",
+                  "type": "ArrayExpression"
+                }
+              },
+              {
+                "commentStart": 0,
+                "end": 0,
+                "key": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "name": "zAxis",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "start": 0,
+                "type": "ObjectProperty",
+                "value": {
+                  "commentStart": 0,
+                  "elements": [
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "raw": "0.939693",
+                      "start": 0,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 0.939693,
+                        "suffix": "None"
+                      }
+                    },
+                    {
+                      "argument": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "raw": "0.0",
+                        "start": 0,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
+                      },
+                      "commentStart": 0,
+                      "end": 0,
+                      "operator": "-",
+                      "start": 0,
+                      "type": "UnaryExpression",
+                      "type": "UnaryExpression"
+                    },
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "raw": "0.342020",
+                      "start": 0,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 0.34202,
+                        "suffix": "None"
+                      }
+                    }
+                  ],
+                  "end": 0,
+                  "start": 0,
+                  "type": "ArrayExpression",
+                  "type": "ArrayExpression"
                 }
               }
             ],
@@ -5273,7 +5160,7 @@ description: Result of parsing food-service-spatula.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
-            "name": "sketch002",
+            "name": "gripSketch",
             "start": 0,
             "type": "Identifier"
           },
@@ -5403,7 +5290,7 @@ description: Result of parsing food-service-spatula.kcl
                     "name": {
                       "commentStart": 0,
                       "end": 0,
-                      "name": "sketch002",
+                      "name": "gripSketch",
                       "start": 0,
                       "type": "Identifier"
                     },
@@ -6497,43 +6384,37 @@ description: Result of parsing food-service-spatula.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
-            "name": "sketch003",
+            "name": "holeSketch",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
             "arguments": [
               {
-                "abs_path": false,
-                "commentStart": 0,
-                "end": 0,
-                "name": {
+                "type": "LabeledArg",
+                "label": {
                   "commentStart": 0,
                   "end": 0,
-                  "name": "grip",
+                  "name": "face",
                   "start": 0,
                   "type": "Identifier"
                 },
-                "path": [],
-                "start": 0,
-                "type": "Name",
-                "type": "Name"
-              },
-              {
-                "abs_path": false,
-                "commentStart": 0,
-                "end": 0,
-                "name": {
+                "arg": {
+                  "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
-                  "name": "gripEdgeTop",
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "name": "gripEdgeTop",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
-                },
-                "path": [],
-                "start": 0,
-                "type": "Name",
-                "type": "Name"
+                  "type": "Name",
+                  "type": "Name"
+                }
               }
             ],
             "callee": {
@@ -6554,8 +6435,24 @@ description: Result of parsing food-service-spatula.kcl
             "commentStart": 0,
             "end": 0,
             "start": 0,
-            "type": "CallExpression",
-            "type": "CallExpression"
+            "type": "CallExpressionKw",
+            "type": "CallExpressionKw",
+            "unlabeled": {
+              "abs_path": false,
+              "commentStart": 0,
+              "end": 0,
+              "name": {
+                "commentStart": 0,
+                "end": 0,
+                "name": "grip",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name",
+              "type": "Name"
+            }
           },
           "start": 0,
           "type": "VariableDeclarator"
@@ -6592,7 +6489,7 @@ description: Result of parsing food-service-spatula.kcl
                 "name": {
                   "commentStart": 0,
                   "end": 0,
-                  "name": "sketch003",
+                  "name": "holeSketch",
                   "start": 0,
                   "type": "Identifier"
                 },

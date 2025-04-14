@@ -15,31 +15,16 @@ export fn hexNut() {
          hexNutFlatToFlat / 2,
          hexNutFlatLength / 2
        ], %)
-    |> angledLine({
-         angle = 270,
-         length = hexNutFlatLength
-       }, %)
-    |> angledLine({
-         angle = 210,
-         length = hexNutFlatLength
-       }, %)
-    |> angledLine({
-         angle = 150,
-         length = hexNutFlatLength
-       }, %)
-    |> angledLine({
-         angle = 90,
-         length = hexNutFlatLength
-       }, %)
-    |> angledLine({
-         angle = 30,
-         length = hexNutFlatLength
-       }, %)
+    |> angledLine(angle = 270, length = hexNutFlatLength)
+    |> angledLine(angle = 210, length = hexNutFlatLength)
+    |> angledLine(angle = 150, length = hexNutFlatLength)
+    |> angledLine(angle = 90, length = hexNutFlatLength)
+    |> angledLine(angle = 30, length = hexNutFlatLength)
     |> close()
     |> extrude(length = hexNutThickness)
 
   // Create the hole in the center of the hex nut
-  hexNut = startSketchOn(hexNutBase, 'end')
+  hexNut = startSketchOn(hexNutBase, face = END)
     |> circle(center = [0, 0], radius = hexNutDiameter / 2)
     |> extrude(%, length = -hexNutThickness)
     |> appearance(%, color = "#4edfd5")

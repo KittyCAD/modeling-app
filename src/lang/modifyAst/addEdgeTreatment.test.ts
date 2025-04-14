@@ -27,7 +27,8 @@ import type {
   SourceRange,
   VariableDeclarator,
 } from '@src/lang/wasm'
-import { assertParse, initPromise, recast } from '@src/lang/wasm'
+import { assertParse, recast } from '@src/lang/wasm'
+import { initPromise } from '@src/lang/wasmUtils'
 import type { Selection, Selections } from '@src/lib/selections'
 import {
   codeManager,
@@ -254,7 +255,7 @@ extrude003 = extrude(sketch003, length = -15)`
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
   |> extrude(length = 50)
-sketch002 = startSketchOn(sketch001, 'END')
+sketch002 = startSketchOn(sketch001, face = 'END')
   |> startProfileAt([-15, -15], %)
   |> yLine(length = 30)
   |> xLine(length = 30)
@@ -279,7 +280,7 @@ sketch002 = startSketchOn(sketch001, 'END')
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 extrude001 = extrude(sketch001, length = 50)
-sketch002 = startSketchOn(extrude001, 'END')
+sketch002 = startSketchOn(extrude001, face = 'END')
   |> startProfileAt([-15, -15], %)
   |> yLine(length = 30)
   |> xLine(length = 30)

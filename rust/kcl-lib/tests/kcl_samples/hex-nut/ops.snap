@@ -10,7 +10,7 @@ description: Operations executed hex-nut.kcl
       "name": "hexNut",
       "functionSourceRange": [
         504,
-        1055,
+        1020,
         0
       ],
       "unlabeledArg": null,
@@ -20,7 +20,7 @@ description: Operations executed hex-nut.kcl
   },
   {
     "labeledArgs": {
-      "data": {
+      "planeOrSolid": {
         "value": {
           "type": "Plane",
           "artifact_id": "[uuid]"

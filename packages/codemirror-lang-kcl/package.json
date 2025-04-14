@@ -5,6 +5,7 @@
   "main": "src/index.ts",
   "scripts": {
     "build": "rollup -c",
+    "tsc": "tsc",
     "test": "vitest --config vitest.main.config.ts run"
   },
   "type": "module",

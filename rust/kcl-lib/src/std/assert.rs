@@ -9,6 +9,8 @@ use crate::{
     std::Args,
 };
 
+use super::args::TyF64;
+
 async fn _assert(value: bool, message: &str, args: &Args) -> Result<(), KclError> {
     if !value {
         return Err(KclError::Type(KclErrorDetails {
@@ -42,8 +44,8 @@ async fn inner_assert(data: bool, message: &str, args: &Args) -> Result<(), KclE
 }
 
 pub async fn assert_lt(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (left, right, description): (f64, f64, String) = args.get_data()?;
-    inner_assert_lt(left, right, &description, &args).await?;
+    let (left, right, description): (TyF64, TyF64, String) = args.get_data()?;
+    inner_assert_lt(left.n, right.n, &description, &args).await?;
     Ok(KclValue::none())
 }
 
@@ -61,8 +63,8 @@ async fn inner_assert_lt(left: f64, right: f64, message: &str, args: &Args) -> R
 }
 
 pub async fn assert_gt(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (left, right, description): (f64, f64, String) = args.get_data()?;
-    inner_assert_gt(left, right, &description, &args).await?;
+    let (left, right, description): (TyF64, TyF64, String) = args.get_data()?;
+    inner_assert_gt(left.n, right.n, &description, &args).await?;
     Ok(KclValue::none())
 }
 
@@ -94,8 +96,8 @@ async fn inner_assert_equal(left: f64, right: f64, epsilon: f64, message: &str, 
 }
 
 pub async fn assert_equal(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (left, right, epsilon, description): (f64, f64, f64, String) = args.get_data()?;
-    inner_assert_equal(left, right, epsilon, &description, &args).await?;
+    let (left, right, epsilon, description): (TyF64, TyF64, TyF64, String) = args.get_data()?;
+    inner_assert_equal(left.n, right.n, epsilon.n, &description, &args).await?;
     Ok(KclValue::none())
 }
 
@@ -113,8 +115,8 @@ async fn inner_assert_gt(left: f64, right: f64, message: &str, args: &Args) -> R
 }
 
 pub async fn assert_lte(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (left, right, description): (f64, f64, String) = args.get_data()?;
-    inner_assert_lte(left, right, &description, &args).await?;
+    let (left, right, description): (TyF64, TyF64, String) = args.get_data()?;
+    inner_assert_lte(left.n, right.n, &description, &args).await?;
     Ok(KclValue::none())
 }
 
@@ -133,8 +135,8 @@ async fn inner_assert_lte(left: f64, right: f64, message: &str, args: &Args) -> 
 }
 
 pub async fn assert_gte(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (left, right, description): (f64, f64, String) = args.get_data()?;
-    inner_assert_gte(left, right, &description, &args).await?;
+    let (left, right, description): (TyF64, TyF64, String) = args.get_data()?;
+    inner_assert_gte(left.n, right.n, &description, &args).await?;
     Ok(KclValue::none())
 }
 

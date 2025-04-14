@@ -67,6 +67,11 @@ impl Artifact {
     /// the graph.  This should be disjoint with `child_ids`.
     pub(crate) fn back_edges(&self) -> Vec<ArtifactId> {
         match self {
+            Artifact::CompositeSolid(a) => {
+                let mut ids = a.solid_ids.clone();
+                ids.extend(a.tool_ids.iter());
+                ids
+            }
             Artifact::Plane(_) => Vec::new(),
             Artifact::Path(a) => vec![a.plane_id],
             Artifact::Segment(a) => vec![a.path_id],
@@ -87,6 +92,11 @@ impl Artifact {
     /// the graph.
     pub(crate) fn child_ids(&self) -> Vec<ArtifactId> {
         match self {
+            Artifact::CompositeSolid(_) => {
+                // Note: Don't include these since they're parents: solid_ids,
+                // tool_ids.
+                Vec::new()
+            }
             Artifact::Plane(a) => a.path_ids.clone(),
             Artifact::Path(a) => {
                 // Note: Don't include these since they're parents: plane_id.
@@ -213,6 +223,7 @@ impl ArtifactGraph {
             let id = artifact.id();
 
             let grouped = match artifact {
+                Artifact::CompositeSolid(_) => false,
                 Artifact::Plane(_) => false,
                 Artifact::Path(_) => {
                     groups.entry(id).or_insert_with(Vec::new).push(id);
@@ -278,6 +289,15 @@ impl ArtifactGraph {
         }
 
         match artifact {
+            Artifact::CompositeSolid(composite_solid) => {
+                writeln!(
+                    output,
+                    "{prefix}{}[\"CompositeSolid {:?}<br>{:?}\"]",
+                    id,
+                    composite_solid.sub_type,
+                    code_ref_display(&composite_solid.code_ref)
+                )?;
+            }
             Artifact::Plane(plane) => {
                 writeln!(
                     output,

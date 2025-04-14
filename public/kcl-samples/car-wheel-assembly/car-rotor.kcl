@@ -12,11 +12,11 @@ rotorSketch = startSketchOn(XZ)
 rotor = extrude(rotorSketch, length = rotorSinglePlateThickness)
   |> appearance(color = "#dbcd70", roughness = 90, metalness = 90)
 
-rotorBumpSketch = startSketchOn(rotor, 'end')
+rotorBumpSketch = startSketchOn(rotor, face = END)
   |> circle(center = [0, 0], radius = rotorInnerDiameter / 2)
 rotorBump = extrude(rotorBumpSketch, length = rotorInnerDiameterThickness)
 
-lugHoles = startSketchOn(rotorBump, 'end')
+lugHoles = startSketchOn(rotorBump, face = END)
   |> circle(center = [-lugSpacing / 2, 0], radius = 0.315)
   |> patternCircular2d(
        arcDegrees = 360,
@@ -28,15 +28,15 @@ lugHoles = startSketchOn(rotorBump, 'end')
   |> appearance(color = "#dbcd70", roughness = 90, metalness = 90)
 
 // (update when boolean is available)
-centerSpacer = startSketchOn(rotor, 'start')
+centerSpacer = startSketchOn(rotor, face = START)
   |> circle(%, center = [0, 0], radius = .25)
   |> extrude(%, length = spacerLength)
 
-secondaryRotorSketch = startSketchOn(centerSpacer, 'end')
+secondaryRotorSketch = startSketchOn(centerSpacer, face = END)
   |> circle(center = [0, 0], radius = rotorDiameter / 2)
 secondRotor = extrude(secondaryRotorSketch, length = rotorSinglePlateThickness)
 
-lugHoles2 = startSketchOn(secondRotor, 'end')
+lugHoles2 = startSketchOn(secondRotor, face = END)
   |> circle(center = [-lugSpacing / 2, 0], radius = 0.315)
   |> patternCircular2d(
        arcDegrees = 360,
@@ -46,7 +46,7 @@ lugHoles2 = startSketchOn(secondRotor, 'end')
      )
   |> extrude(length = -rotorSinglePlateThickness)
 
-spacerSketch = startSketchOn(rotor, 'start')
+spacerSketch = startSketchOn(rotor, face = START)
   |> circle(center = [spacerPatternDiameter / 2, 0], radius = spacerDiameter)
   |> patternCircular2d(
        arcDegrees = 360,
@@ -56,7 +56,7 @@ spacerSketch = startSketchOn(rotor, 'start')
      )
 spacers = extrude(spacerSketch, length = spacerLength)
 
-rotorSlottedSketch = startSketchOn(rotor, 'START')
+rotorSlottedSketch = startSketchOn(rotor, face = START)
   |> startProfileAt([2.17, 2.56], %)
   |> xLine(length = 0.12)
   |> yLine(length = 2.56)
@@ -71,7 +71,7 @@ rotorSlottedSketch = startSketchOn(rotor, 'START')
      )
 rotorSlotted = extrude(rotorSlottedSketch, length = -rotorSinglePlateThickness / 2)
 
-secondRotorSlottedSketch = startSketchOn(secondRotor, 'END')
+secondRotorSlottedSketch = startSketchOn(secondRotor, face = END)
   |> startProfileAt([-2.17, 2.56], %)
   |> xLine(length = -0.12)
   |> yLine(length = 2.56)
