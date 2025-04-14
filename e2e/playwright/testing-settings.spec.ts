@@ -1036,7 +1036,10 @@ fn cube`
       'toggle-settings-initial.png',
       {
         maxDiffPixels: 15,
-        mask: [page.getByTestId('model-state-indicator')],
+        mask: [
+          page.getByTestId('model-state-indicator'),
+          page.getByTestId('network-toggle'),
+        ],
       }
     )
 
@@ -1053,7 +1056,10 @@ fn cube`
       'toggle-settings-initial.png',
       {
         maxDiffPixels: 15,
-        mask: [page.getByTestId('model-state-indicator')],
+        mask: [
+          page.getByTestId('model-state-indicator'),
+          page.getByTestId('network-toggle'),
+        ],
       }
     )
   })
