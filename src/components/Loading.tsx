@@ -18,6 +18,7 @@ import { engineCommandManager } from '@src/lib/singletons'
 
 interface LoadingProps extends React.PropsWithChildren {
   className?: string
+  dataTestId?: string
 }
 
 const markedOptions: MarkedOptions = {
@@ -28,7 +29,7 @@ const markedOptions: MarkedOptions = {
   escape,
 }
 
-const Loading = ({ children, className }: LoadingProps) => {
+const Loading = ({ children, className, dataTestId }: LoadingProps) => {
   const [error, setError] = useState<ErrorType>({
     error: ConnectionError.Unset,
   })
@@ -111,7 +112,7 @@ const Loading = ({ children, className }: LoadingProps) => {
   return (
     <div
       className={`body-bg flex flex-col items-center justify-center h-screen ${colorClass} ${className}`}
-      data-testid="loading"
+      data-testid={dataTestId ? dataTestId : 'loading'}
     >
       {isUnrecoverableError ? (
         <CustomIcon

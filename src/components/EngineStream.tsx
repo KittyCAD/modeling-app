@@ -432,7 +432,9 @@ export const EngineStream = (props: {
       />
       {engineCommandManager.engineConnection?.state.type !==
         EngineConnectionStateType.ConnectionEstablished && (
-        <Loading className="fixed inset-0">Connecting to engine</Loading>
+        <Loading dataTestId="loading-engine" className="fixed inset-0">
+          Connecting to engine
+        </Loading>
       )}
     </div>
   )
