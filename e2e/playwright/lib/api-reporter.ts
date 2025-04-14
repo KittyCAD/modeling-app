@@ -19,8 +19,8 @@ class MyAPIReporter implements Reporter {
       target: process.env.TARGET || null,
       platform: process.env.RUNNER_OS || process.platform,
       // Extra test and result data
-      annotations: test.annotations.map((a) => a.type),
-      retries: result.retry,
+      retry: result.retry,
+      tags: test.tags,
       // Extra environment variables
       CI_COMMIT_SHA: process.env.CI_COMMIT_SHA || null,
       CI_PR_NUMBER: process.env.CI_PR_NUMBER || null,
