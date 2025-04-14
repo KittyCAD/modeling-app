@@ -50,7 +50,7 @@ description: Operations executed gridfinity-baseplate.kcl
   },
   {
     "labeledArgs": {
-      "data": {
+      "planeOrSolid": {
         "value": {
           "type": "Plane",
           "artifact_id": "[uuid]"
@@ -171,16 +171,26 @@ description: Operations executed gridfinity-baseplate.kcl
               "type": "Number",
               "value": 21.0,
               "ty": {
-                "type": "Known",
-                "type": "Count"
+                "type": "Default",
+                "len": {
+                  "type": "Mm"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
               }
             },
             {
               "type": "Number",
               "value": 21.0,
               "ty": {
-                "type": "Known",
-                "type": "Count"
+                "type": "Default",
+                "len": {
+                  "type": "Mm"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
               }
             },
             {
@@ -284,7 +294,7 @@ description: Operations executed gridfinity-baseplate.kcl
   },
   {
     "labeledArgs": {
-      "data": {
+      "planeOrSolid": {
         "value": {
           "type": "Plane",
           "artifact_id": "[uuid]"
@@ -480,16 +490,26 @@ description: Operations executed gridfinity-baseplate.kcl
               "type": "Number",
               "value": 21.0,
               "ty": {
-                "type": "Known",
-                "type": "Count"
+                "type": "Default",
+                "len": {
+                  "type": "Mm"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
               }
             },
             {
               "type": "Number",
               "value": 21.0,
               "ty": {
-                "type": "Known",
-                "type": "Count"
+                "type": "Default",
+                "len": {
+                  "type": "Mm"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
               }
             },
             {

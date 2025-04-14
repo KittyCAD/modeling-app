@@ -102,7 +102,7 @@ singleBinFill = startSketchOn(XY)
        ],
      )
 
-magCutout000 = startSketchOn(singleBinFill, START)
+magCutout000 = startSketchOn(singleBinFill, face = START)
   |> circle(
        center = [
          -magOffset - binBaseLength - binTol,

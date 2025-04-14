@@ -20,7 +20,7 @@ description: Operations executed hex-nut.kcl
   },
   {
     "labeledArgs": {
-      "data": {
+      "planeOrSolid": {
         "value": {
           "type": "Plane",
           "artifact_id": "[uuid]"

@@ -5,7 +5,7 @@ description: Operations executed flush_batch_on_end.kcl
 [
   {
     "labeledArgs": {
-      "data": {
+      "planeOrSolid": {
         "value": {
           "type": "String",
           "value": "XY"
@@ -51,8 +51,13 @@ description: Operations executed flush_batch_on_end.kcl
           "type": "Number",
           "value": 1.5,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
