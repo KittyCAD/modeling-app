@@ -198,7 +198,7 @@
     "@types/isomorphic-fetch": "^0.0.39",
     "@types/minimist": "^1.2.5",
     "@types/mocha": "^10.0.10",
-    "@types/node": "^22.14.0",
+    "@types/node": "^22.14.1",
     "@types/pixelmatch": "^5.2.6",
     "@types/pngjs": "^6.0.4",
     "@types/react": "^18.3.4",
