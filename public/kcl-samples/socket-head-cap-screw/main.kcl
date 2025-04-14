@@ -19,11 +19,7 @@ boltHead = startSketchOn(XZ)
   |> fillet(radius = 0.020, tags = [topEdge, getOppositeEdge(topEdge)])
 
 // Define the sketch of the hex pattern on the screw head
-<<<<<<< HEAD
-hexPatternSketch = startSketchOn(boltHead, START)
-=======
-hexPatternSketch = startSketchOn(boltHead, face = 'start')
->>>>>>> f606d3537 (More units of measure work)
+hexPatternSketch = startSketchOn(boltHead, face = START)
   |> startProfileAt([
        boltHexDrive / 2,
        boltHexFlatLength / 2
@@ -35,11 +31,7 @@ hexPatternSketch = startSketchOn(boltHead, face = 'start')
   |> angledLine(angle = 30, length = boltHexFlatLength)
   |> close()
   |> extrude(length = -boltHeadLength * 0.75)
-<<<<<<< HEAD
-boltBody = startSketchOn(boltHead, END)
-=======
-boltBody = startSketchOn(boltHead, face = 'end')
->>>>>>> f606d3537 (More units of measure work)
+boltBody = startSketchOn(boltHead, face = END)
   |> circle(center = [0, 0], radius = boltDiameter / 2, tag = $filletEdge)
   |> extrude(length = boltLength)
   |> fillet(radius = .020, tags = [getOppositeEdge(filletEdge)])

@@ -16,11 +16,7 @@ export fn bolt() {
     |> fillet(radius = 0.020, tags = [topEdge, getOppositeEdge(topEdge)])
 
   // Define the sketch of the hex pattern on the screw head and extrude into the head
-<<<<<<< HEAD
-  hexPatternSketch = startSketchOn(boltHead, START)
-=======
-  hexPatternSketch = startSketchOn(boltHead, face = 'start')
->>>>>>> f606d3537 (More units of measure work)
+  hexPatternSketch = startSketchOn(boltHead, face = START)
     |> startProfileAt([
          boltHexDrive / 2,
          boltHexFlatLength / 2
