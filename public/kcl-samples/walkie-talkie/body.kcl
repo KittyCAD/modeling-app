@@ -26,7 +26,7 @@ body = startSketchOn(XZ)
      )
 
 // Cut out the indentation for the case
-caseIndentSketch = startSketchOn(body, 'END')
+caseIndentSketch = startSketchOn(body, face = END)
   |> startProfileAt([
        -width / 2 + offset,
        height / 2 - (chamferLength + offset / 2 * cos(toRadians(45)))
@@ -51,7 +51,7 @@ caseIndentSketch = startSketchOn(body, 'END')
 extrude002 = extrude(caseIndentSketch, length = -0.0625)
 
 // Create the pocket for the screen
-screenCutout = startSketchOn(extrude002, 'start')
+screenCutout = startSketchOn(extrude002, face = START)
   |> startProfileAt([-screenWidth / 2, screenYPosition], %)
   |> xLine(length = screenWidth, tag = $seg01)
   |> yLine(length = -screenHeight)
@@ -61,7 +61,7 @@ screenCutout = startSketchOn(extrude002, 'start')
 extrude003 = extrude(screenCutout, length = screenDepth)
 
 // Create the speaker box
-speakerBox = startSketchOn(extrude002, 'start')
+speakerBox = startSketchOn(extrude002, face = START)
   |> startProfileAt([-1.25 / 2, -.125], %)
   |> xLine(length = speakerBoxWidth)
   |> yLine(length = -speakerBoxHeight)

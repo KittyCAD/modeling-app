@@ -33,8 +33,13 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
     "type": "Number",
     "value": 1800.0,
     "ty": {
-      "type": "Known",
-      "type": "Count"
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
     }
   },
   "bracket": {
@@ -49,9 +54,9 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1081,
-            "end": 1091,
-            "start": 1081,
+            "commentStart": 1079,
+            "end": 1089,
+            "start": 1079,
             "type": "TagDeclarator",
             "value": "outerEdge"
           },
@@ -62,9 +67,9 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1134,
-            "end": 1140,
-            "start": 1134,
+            "commentStart": 1132,
+            "end": 1138,
+            "start": 1132,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -82,9 +87,9 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1227,
-            "end": 1237,
-            "start": 1227,
+            "commentStart": 1225,
+            "end": 1235,
+            "start": 1225,
             "type": "TagDeclarator",
             "value": "innerEdge"
           },
@@ -119,9 +124,9 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
               0.0
             ],
             "tag": {
-              "commentStart": 1081,
-              "end": 1091,
-              "start": 1081,
+              "commentStart": 1079,
+              "end": 1089,
+              "start": 1079,
               "type": "TagDeclarator",
               "value": "outerEdge"
             },
@@ -144,9 +149,9 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
               6.0
             ],
             "tag": {
-              "commentStart": 1134,
-              "end": 1140,
-              "start": 1134,
+              "commentStart": 1132,
+              "end": 1138,
+              "start": 1132,
               "type": "TagDeclarator",
               "value": "seg01"
             },
@@ -188,9 +193,9 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
               5.6793
             ],
             "tag": {
-              "commentStart": 1227,
-              "end": 1237,
-              "start": 1227,
+              "commentStart": 1225,
+              "end": 1235,
+              "start": 1225,
               "type": "TagDeclarator",
               "value": "innerEdge"
             },
@@ -250,22 +255,34 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
           "origin": {
             "x": 0.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
+            "z": 1.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "units": {
             "type": "Mm"
@@ -316,14 +333,36 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
         {
           "type": "fillet",
           "id": "[uuid]",
-          "radius": 0.25,
+          "radius": {
+            "n": 0.25,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
           "edgeId": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
           "id": "[uuid]",
-          "radius": 0.5707134902949093,
+          "radius": {
+            "n": 0.5707134902949093,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
           "edgeId": "[uuid]",
           "tag": null
         }
@@ -544,17 +583,26 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
+            "z": 1.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "solid": {
             "type": "Solid",
@@ -566,9 +614,9 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 1081,
-                  "end": 1091,
-                  "start": 1081,
+                  "commentStart": 1079,
+                  "end": 1089,
+                  "start": 1079,
                   "type": "TagDeclarator",
                   "value": "outerEdge"
                 },
@@ -579,9 +627,9 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 1134,
-                  "end": 1140,
-                  "start": 1134,
+                  "commentStart": 1132,
+                  "end": 1138,
+                  "start": 1132,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -599,9 +647,9 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 1227,
-                  "end": 1237,
-                  "start": 1227,
+                  "commentStart": 1225,
+                  "end": 1235,
+                  "start": 1225,
                   "type": "TagDeclarator",
                   "value": "innerEdge"
                 },
@@ -636,9 +684,9 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 1081,
-                    "end": 1091,
-                    "start": 1081,
+                    "commentStart": 1079,
+                    "end": 1089,
+                    "start": 1079,
                     "type": "TagDeclarator",
                     "value": "outerEdge"
                   },
@@ -661,9 +709,9 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
                     6.0
                   ],
                   "tag": {
-                    "commentStart": 1134,
-                    "end": 1140,
-                    "start": 1134,
+                    "commentStart": 1132,
+                    "end": 1138,
+                    "start": 1132,
                     "type": "TagDeclarator",
                     "value": "seg01"
                   },
@@ -705,9 +753,9 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
                     5.6793
                   ],
                   "tag": {
-                    "commentStart": 1227,
-                    "end": 1237,
-                    "start": 1227,
+                    "commentStart": 1225,
+                    "end": 1235,
+                    "start": 1225,
                     "type": "TagDeclarator",
                     "value": "innerEdge"
                   },
@@ -767,22 +815,34 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "yAxis": {
                   "x": 0.0,
                   "y": 1.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "zAxis": {
                   "x": 0.0,
                   "y": 0.0,
-                  "z": 1.0
+                  "z": 1.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "units": {
                   "type": "Mm"
@@ -833,14 +893,36 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
               {
                 "type": "fillet",
                 "id": "[uuid]",
-                "radius": 0.25,
+                "radius": {
+                  "n": 0.25,
+                  "ty": {
+                    "type": "Default",
+                    "len": {
+                      "type": "Mm"
+                    },
+                    "angle": {
+                      "type": "Degrees"
+                    }
+                  }
+                },
                 "edgeId": "[uuid]",
                 "tag": null
               },
               {
                 "type": "fillet",
                 "id": "[uuid]",
-                "radius": 0.5707134902949093,
+                "radius": {
+                  "n": 0.5707134902949093,
+                  "ty": {
+                    "type": "Default",
+                    "len": {
+                      "type": "Mm"
+                    },
+                    "angle": {
+                      "type": "Degrees"
+                    }
+                  }
+                },
                 "edgeId": "[uuid]",
                 "tag": null
               }
@@ -889,7 +971,13 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
     "type": "Number",
     "value": 0.3207,
     "ty": {
-      "type": "Unknown"
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
     }
   },
   "wallMountL": {
