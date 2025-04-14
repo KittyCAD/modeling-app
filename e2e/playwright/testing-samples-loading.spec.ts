@@ -3,6 +3,7 @@ import { FILE_EXT } from '@src/lib/constants'
 import * as fsp from 'fs/promises'
 import { join } from 'path'
 
+import type { CmdBarSerialised } from '@e2e/playwright/fixtures/cmdBarFixture'
 import type { ElectronZoo } from '@e2e/playwright/fixtures/fixtureSetup'
 import {
   executorInputPath,
@@ -124,6 +125,18 @@ test.describe('Testing loading external models', () => {
         page.getByRole('listitem').filter({
           has: page.getByRole('button', { name }),
         })
+      const defaultLoadCmdBarState: CmdBarSerialised = {
+        commandName: 'Load external model',
+        currentArgKey: 'source',
+        currentArgValue: '',
+        headerArguments: {
+          Method: 'newFile',
+          Sample: '',
+          Source: '',
+        },
+        highlightedHeaderArg: 'source',
+        stage: 'arguments',
+      }
 
       await test.step(`Test setup`, async () => {
         await page.setBodyDimensions({ width: 1200, height: 500 })
@@ -143,6 +156,7 @@ test.describe('Testing loading external models', () => {
 
       await test.step(`Load a KCL sample with the command palette`, async () => {
         await toolbar.loadButton.click()
+        await cmdBar.expectState(defaultLoadCmdBarState)
         await cmdBar.progressCmdBar()
         await cmdBar.selectOption({ name: sampleOne.title }).click()
         await expect(overwriteWarning).not.toBeVisible()
@@ -158,6 +172,7 @@ test.describe('Testing loading external models', () => {
 
       await test.step(`Now overwrite the current file`, async () => {
         await toolbar.loadButton.click()
+        await cmdBar.expectState(defaultLoadCmdBarState)
         await cmdBar.progressCmdBar()
         await cmdBar.selectOption({ name: sampleTwo.title }).click()
         await commandMethodArgButton.click()

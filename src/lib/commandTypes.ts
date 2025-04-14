@@ -345,7 +345,7 @@ export type CommandArgument<
           ) => OutputType)
     }
   | {
-      inputType: 'pathDialog'
+      inputType: 'path'
       defaultValue?:
         | OutputType
         | ((
