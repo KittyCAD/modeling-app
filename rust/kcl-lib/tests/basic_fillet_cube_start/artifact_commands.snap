@@ -334,5 +334,13 @@ description: Artifact commands basic_fillet_cube_start.kcl
       "type": "set_scene_units",
       "unit": "mm"
     }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "set_scene_units",
+      "unit": "mm"
+    }
   }
 ]
