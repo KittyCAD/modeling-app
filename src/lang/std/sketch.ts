@@ -3156,6 +3156,7 @@ export function fnNameToTooltip(
       return isAbsolute ? 'xLineTo' : 'xLine'
     case 'yLine':
       return isAbsolute ? 'yLineTo' : 'yLine'
+    case 'angledLineThatIntersects':
     case 'circleThreePoint':
     case 'circle':
     case 'tangentialArc':
@@ -3174,7 +3175,7 @@ export function fnNameToTooltip(
           return tooltip
         }
       }
-      const err = `Unknown angledline arguments, could not map to tooltip. Args were ${argLabels}`
+      const err = `Unknown angledLine arguments, could not map to tooltip. Args were ${argLabels}`
       console.error(err)
       return new Error(err)
     }
@@ -3929,6 +3930,7 @@ export function isAbsoluteLine(lineCall: CallExpressionKw): boolean | Error {
       return new Error(
         `${name} call has neither ${ARG_END} nor ${ARG_END_ABSOLUTE} params`
       )
+    case 'angledLineThatIntersects':
     case 'circle':
     case 'circleThreePoint':
       return false
