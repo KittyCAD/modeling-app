@@ -193,8 +193,7 @@ export function useEngineConnectionSubscriptions() {
               if (!err(extrusion)) {
                 if (!isTopLevelModule(extrusion.codeRef.range)) {
                   const moduleId = getModuleId(extrusion.codeRef.range)
-                  const importDetails =
-                    kclManager.execState.filenames[moduleId]
+                  const importDetails = kclManager.execState.filenames[moduleId]
                   if (!importDetails) {
                     toast.error("can't sketch on this face")
                     return

@@ -335,7 +335,6 @@ export type ModelingMachineEvent =
   | { type: 'Constrain equal length' }
   | { type: 'Constrain parallel' }
   | { type: 'Constrain remove constraints'; data?: PathToNode }
-  | { type: 'Re-execute' }
   | {
       type: 'event.parameter.create'
       data: ModelingCommandSchema['event.parameter.create']
@@ -3007,12 +3006,6 @@ export const modelingMachine = setup({
             'Constrain remove constraints': {
               guard: 'Can constrain remove constraints',
               target: 'Await constrain remove constraints',
-            },
-
-            'Re-execute': {
-              target: 'SketchIdle',
-              reenter: false,
-              actions: ['set sketchMetadata from pathToNode'],
             },
 
             'code edit during sketch': 'clean slate',

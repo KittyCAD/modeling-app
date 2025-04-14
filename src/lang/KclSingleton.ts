@@ -129,7 +129,6 @@ export class KclManager {
   private _kclErrorsCallBack: (errors: KCLError[]) => void = () => {}
   private _diagnosticsCallback: (errors: Diagnostic[]) => void = () => {}
   private _wasmInitFailedCallback: (arg: boolean) => void = () => {}
-  private _executeCallback: () => void = () => {}
   sceneInfraBaseUnitMultiplierSetter: (unit: BaseUnit) => void = () => {}
 
   get ast() {
@@ -289,9 +288,6 @@ export class KclManager {
     this._isExecutingCallback = setIsExecuting
     this._wasmInitFailedCallback = setWasmInitFailed
   }
-  registerExecuteCallback(callback: () => void) {
-    this._executeCallback = callback
-  }
 
   clearAst() {
     this._ast = {
@@ -335,7 +331,6 @@ export class KclManager {
   private async updateArtifactGraph(
     execStateArtifactGraph: ExecState['artifactGraph']
   ) {
-    console.log('updating artifact graph', this.artifactGraph.size)
     this.artifactGraph = execStateArtifactGraph
     this.artifactIndex = buildArtifactIndex(execStateArtifactGraph)
     if (this.artifactGraph.size) {
@@ -477,7 +472,6 @@ export class KclManager {
     this.ast = structuredClone(ast)
     // updateArtifactGraph relies on updated executeState/variables
     await this.updateArtifactGraph(execState.artifactGraph)
-    this._executeCallback()
     if (!isInterrupted) {
       this.singletons.sceneInfra.modelingSend({
         type: 'code edit during sketch',

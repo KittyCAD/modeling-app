@@ -1913,18 +1913,6 @@ export const ModelingMachineProvider = ({
     }
   }, [modelingActor])
 
-  useEffect(() => {
-    kclManager.registerExecuteCallback(() => {
-      modelingSend({ type: 'Re-execute' })
-    })
-
-    // Before this component unmounts, call the 'Cancel'
-    // event to clean up any state in the modeling machine.
-    return () => {
-      modelingSend({ type: 'Cancel' })
-    }
-  }, [modelingSend])
-
   // Give the state back to the editorManager.
   useEffect(() => {
     editorManager.modelingSend = modelingSend
