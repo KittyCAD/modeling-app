@@ -3098,7 +3098,7 @@ test.describe('Redirecting to home page and back to the original file should cle
 sketch001 = startSketchOn(XZ)
 profile001 = startProfileAt([0, 0], sketch001)
   |> line(end = [191.39, 191.39])
-  |> tangentialArcTo([287.08, 95.69], %, $seg01)
+  |> tangentialArc(endAbsolute = [287.08, 95.69], tag = $seg01)
   |> angledLine(angle = tangentToEnd(seg01), length = 135.34)
   |> arcTo({
        interior = [191.39, -95.69],
