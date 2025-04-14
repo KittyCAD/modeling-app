@@ -2665,7 +2665,7 @@ export class SceneEntities {
           const snapDirection = findTangentDirection(prev)
           if (snapDirection) {
             const SNAP_TOLERANCE_PIXELS = 12 * window.devicePixelRatio
-            const SNAP_MIN_DISTANCE_PIXELS = 15 * window.devicePixelRatio
+            const SNAP_MIN_DISTANCE_PIXELS = 5 * window.devicePixelRatio
             const orthoFactor = orthoScale(this.sceneInfra.camControls.camera)
 
             // See if snapDirection intersects with any of the axes
@@ -2714,13 +2714,16 @@ export class SceneEntities {
               )
               if (
                 forceDirectionSnapping ||
-                (getLength(closestPoint, snappedPoint) / orthoFactor <
-                  SNAP_TOLERANCE_PIXELS &&
+                (this.sceneInfra.screenSpaceDistance(
+                  closestPoint,
+                  snappedPoint
+                ) < SNAP_TOLERANCE_PIXELS &&
                   // We only want to snap to the tangent direction if the mouse has moved enough to avoid quick jumps
                   // at the beginning of the drag
-                  getLength(current.userData.from, current.userData.to) /
-                    orthoFactor >
-                    SNAP_MIN_DISTANCE_PIXELS)
+                  this.sceneInfra.screenSpaceDistance(
+                    current.userData.from,
+                    current.userData.to
+                  ) > SNAP_MIN_DISTANCE_PIXELS)
               ) {
                 snappedPoint = closestPoint
                 snappedToTangent = true

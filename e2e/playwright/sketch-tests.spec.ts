@@ -1916,9 +1916,7 @@ profile003 = startProfileAt([206.63, -56.73], sketch001)
       await page.waitForTimeout(300)
 
       await page.mouse.click(572, 110)
-      await editor.expectEditor.toContain(
-        `|> angledLine(angle = tangentToEnd(seg01) + turns::HALF_TURN, length = 10.8)`
-      )
+      await editor.expectEditor.toContain(`|> line(end = [-1.22, 10.85])`)
       await startProfile1()
       await editor.expectEditor.toContain(
         `|> line(endAbsolute = [profileStartX(%), profileStartY(%)])
