@@ -51,7 +51,6 @@ function CommandBarPathInput({
   }
 
   async function pickFileThroughNativeDialog() {
-    // TODO: unify with src/lib/settings/initialSettings.tsx
     // In desktop end-to-end tests we can't control the file picker,
     // so we seed the new directory value in the element's dataset
     const inputRefVal = inputRef.current?.dataset.testValue
