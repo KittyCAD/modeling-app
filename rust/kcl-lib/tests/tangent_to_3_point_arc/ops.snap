@@ -5,7 +5,7 @@ description: Operations executed tangent_to_3_point_arc.kcl
 [
   {
     "labeledArgs": {
-      "data": {
+      "planeOrSolid": {
         "value": {
           "type": "Plane",
           "artifact_id": "[uuid]"
