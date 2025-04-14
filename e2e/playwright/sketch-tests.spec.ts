@@ -1367,7 +1367,7 @@ test.describe('Sketch mode should be toleratant to syntax errors', () => {
   test(
     'adding a syntax error, recovers after fixing',
     { tag: ['@skipWin'] },
-    async ({ page, homePage, context, scene, editor, toolbar }) => {
+    async ({ page, homePage, context, scene, editor, toolbar, cmdBar }) => {
       const file = await fs.readFile(
         path.resolve(
           __dirname,
@@ -1388,6 +1388,9 @@ test.describe('Sketch mode should be toleratant to syntax errors', () => {
       const verifyArrowHeadColor = async (c: [number, number, number]) =>
         scene.expectPixelColor(c, arrowHeadLocation, 15)
 
+      // wait for scene to load
+      await scene.settled(cmdBar)
+
       await test.step('check chamfer selection changes cursor positon', async () => {
         await expect(async () => {
           // sometimes initial click doesn't register
@@ -1405,7 +1408,10 @@ test.describe('Sketch mode should be toleratant to syntax errors', () => {
       })
 
       await test.step('Make typo and check the segments have Disappeared and there is a syntax error', async () => {
-        await editor.replaceCode('line(endAbsolute = [pro', 'badBadBadFn([pro')
+        await editor.replaceCode(
+          'line(endAbsolute = [pro',
+          'badBadBadFn(endAbsolute = [pro'
+        )
         await editor.expectState({
           activeLines: [],
           diagnostics: ['memoryitemkey`badBadBadFn`isnotdefined'],
@@ -1416,7 +1422,10 @@ test.describe('Sketch mode should be toleratant to syntax errors', () => {
       })
 
       await test.step('', async () => {
-        await editor.replaceCode('badBadBadFn([pro', 'line(endAbsolute = [pro')
+        await editor.replaceCode(
+          'badBadBadFn(endAbsolute = [pro',
+          'line(endAbsolute = [pro'
+        )
         await editor.expectState({
           activeLines: [],
           diagnostics: [],

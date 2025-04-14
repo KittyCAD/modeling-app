@@ -2726,6 +2726,16 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(errorMessage))
         }
 
+        if (kclManager.errors.length > 0) {
+          // if there's an error in the execution, we don't actually want to disable sketch mode
+          // instead we'll give the user the chance to fix their error
+          return {
+            updatedEntryNodePath: sketchDetails.sketchEntryNodePath,
+            updatedSketchNodePaths: sketchDetails.sketchNodePaths,
+            updatedPlaneNodePath: sketchDetails.planeNodePath,
+          }
+        }
+
         const updatedPlaneNodePath = updatePathToNodesAfterEdit(
           kclManager._lastAst,
           kclManager.ast,
