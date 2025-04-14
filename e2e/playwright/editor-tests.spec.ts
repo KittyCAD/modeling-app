@@ -731,7 +731,7 @@ sketch_001 = startSketchOn(XY)
     |> close()
     |> extrude(length = 10)
 
-    sketch001 = startSketchOn(box, revolveAxis)
+    sketch001 = startSketchOn(box, face = revolveAxis)
     |> startProfileAt([5, 10], %)
     |> line(end = [0, -10])
     |> line(end = [2, 0])
@@ -920,7 +920,7 @@ sketch001 = startSketchOn(XZ)
         `sketch001 = startSketchOn(XZ)
   |> startProfileAt([4.61, -14.01], %)
   |> line(end = [12.73, -0.09])
-  |> tangentialArcTo([24.95, -5.38], %)
+  |> tangentialArc(endAbsolute = [24.95, -5.38])
   |> close()`
       )
     })
@@ -969,7 +969,7 @@ sketch001 = startSketchOn(XZ)
 
     // expect the code to have changed
     await expect(page.locator('.cm-content')).toHaveText(
-      `sketch001 = startSketchOn(XZ)  |> startProfileAt([4.61, -14.01], %)  |> line(end = [12.73, -0.09])  |> tangentialArcTo([24.95, -5.38], %)  |> close()extrude001 = extrude(sketch001, length = 5)`
+      `sketch001 = startSketchOn(XZ)  |> startProfileAt([4.61, -14.01], %)  |> line(end = [12.73, -0.09])  |> tangentialArc(endAbsolute = [24.95, -5.38])  |> close()extrude001 = extrude(sketch001, length = 5)`
     )
 
     // Now hit undo
@@ -982,7 +982,7 @@ sketch001 = startSketchOn(XZ)
       .toHaveText(`sketch001 = startSketchOn(XZ)
   |> startProfileAt([4.61, -14.01], %)
   |> line(end = [12.73, -0.09])
-  |> tangentialArcTo([24.95, -5.38], %)
+  |> tangentialArc(endAbsolute = [24.95, -5.38])
   |> close()`)
   })
 
@@ -998,7 +998,7 @@ sketch001 = startSketchOn(XZ)
 sketch001 = startSketchOn(XZ)
   |> startProfileAt([4.61, -10.01], %)
   |> line(end = [12.73, -0.09])
-  |> tangentialArcTo([24.95, -0.38], %)
+  |> tangentialArc(endAbsolute = [24.95, -0.38])
   |> close()
   |> extrude(length = 5)`
         )
@@ -1072,7 +1072,7 @@ sketch001 = startSketchOn(XZ)
       // we wait so it saves the code
       await page.waitForTimeout(800)
 
-      // drag tangentialArcTo handle
+      // drag tangentialArc handle
       const tangentEnd = await u.getBoundingBox('[data-overlay-index="1"]')
       await page.dragAndDrop('#stream', '#stream', {
         sourcePosition: { x: tangentEnd.x + 10, y: tangentEnd.y - 5 },
@@ -1089,7 +1089,7 @@ sketch001 = startSketchOn(XZ)
         `sketch001 = startSketchOn(XZ)
     |> startProfileAt([2.71, -2.71], %)
     |> line(end = [15.4, -2.78])
-    |> tangentialArcTo([27.6, -3.05], %)
+    |> tangentialArc(endAbsolute = [27.6, -3.05])
     |> close()
     |> extrude(length = 5)`,
         { shouldNormalise: true }
@@ -1104,7 +1104,7 @@ sketch001 = startSketchOn(XZ)
         `sketch001 = startSketchOn(XZ)
     |> startProfileAt([2.71, -2.71], %)
     |> line(end = [15.4, -2.78])
-    |> tangentialArcTo([24.95, -0.38], %)
+    |> tangentialArc(endAbsolute = [24.95, -0.38])
     |> close()
     |> extrude(length = 5)`,
         { shouldNormalise: true }
@@ -1119,7 +1119,7 @@ sketch001 = startSketchOn(XZ)
         `sketch001 = startSketchOn(XZ)
     |> startProfileAt([2.71, -2.71], %)
     |> line(end = [12.73, -0.09])
-    |> tangentialArcTo([24.95, -0.38], %)
+    |> tangentialArc(endAbsolute = [24.95, -0.38])
     |> close()
     |> extrude(length = 5)`,
         { shouldNormalise: true }
@@ -1135,7 +1135,7 @@ sketch001 = startSketchOn(XZ)
         `sketch001 = startSketchOn(XZ)
     |> startProfileAt([4.61, -10.01], %)
     |> line(end = [12.73, -0.09])
-    |> tangentialArcTo([24.95, -0.38], %)
+    |> tangentialArc(endAbsolute = [24.95, -0.38])
     |> close()
     |> extrude(length = 5)`,
         { shouldNormalise: true }
@@ -1144,7 +1144,7 @@ sketch001 = startSketchOn(XZ)
   )
 
   test(
-    `Can use the import stdlib function on a local OBJ file`,
+    `Can import a local OBJ file`,
     { tag: '@electron' },
     async ({ page, context }, testInfo) => {
       test.fixme(orRunWhenFullSuiteEnabled())
@@ -1194,7 +1194,7 @@ sketch001 = startSketchOn(XZ)
           .toBeLessThan(15)
       })
       await test.step(`Write the import function line`, async () => {
-        await u.codeLocator.fill(`import('cube.obj')`)
+        await u.codeLocator.fill(`import 'cube.obj'\ncube`)
         await page.waitForTimeout(800)
       })
       await test.step(`Reset the camera before checking`, async () => {

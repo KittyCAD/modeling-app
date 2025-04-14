@@ -15,7 +15,7 @@ export fn pipe() {
     |> extrude(%, length = pipeLength)
 
   // Extrude a hole through the length of the pipe
-  pipe = startSketchOn(pipeBase, 'end')
+  pipe = startSketchOn(pipeBase, face = END)
     |> circle(center = [0, 0], radius = pipeInnerDiameter / 2)
     |> extrude(%, length = -pipeLength)
     |> appearance(color = "#a24ed0")

@@ -1,8 +1,5 @@
 use std::fmt::Write;
 
-#[cfg(feature = "cli")]
-use clap::ValueEnum;
-
 use crate::parsing::{
     ast::types::{
         Annotation, ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem,
@@ -195,7 +192,7 @@ impl Node<Annotation> {
                 result.push_str(&indentation);
                 result.push_str(comment);
             }
-            if !comment.ends_with("*/") && !result.ends_with("\n\n") && result != "\n" {
+            if !result.ends_with("\n\n") && result != "\n" {
                 result.push('\n');
             }
         }
@@ -867,29 +864,6 @@ impl Parameter {
     }
 }
 
-lazy_static::lazy_static! {
-
-    pub static ref IMPORT_FILE_EXTENSIONS: Vec<String> = {
-        let mut import_file_extensions = vec!["stp".to_string(), "glb".to_string(), "fbxb".to_string()];
-        #[cfg(feature = "cli")]
-        let named_extensions = kittycad::types::FileImportFormat::value_variants()
-            .iter()
-            .map(|x| format!("{}", x))
-            .collect::<Vec<String>>();
-        #[cfg(not(feature = "cli"))]
-        let named_extensions = vec![]; // We don't really need this outside of the CLI.
-        // Add all the default import formats.
-        import_file_extensions.extend_from_slice(&named_extensions);
-        import_file_extensions
-    };
-
-    pub static ref RELEVANT_EXTENSIONS: Vec<String> = {
-        let mut relevant_extensions = IMPORT_FILE_EXTENSIONS.clone();
-        relevant_extensions.push("kcl".to_string());
-        relevant_extensions
-    };
-}
-
 /// Collect all the kcl (and other relevant) files in a directory, recursively.
 #[cfg(not(target_arch = "wasm32"))]
 #[async_recursion::async_recursion]
@@ -909,7 +883,7 @@ pub async fn walk_dir(dir: &std::path::PathBuf) -> Result<Vec<std::path::PathBuf
             files.extend(walk_dir(&path).await?);
         } else if path
             .extension()
-            .is_some_and(|ext| RELEVANT_EXTENSIONS.contains(&ext.to_string_lossy().to_string()))
+            .is_some_and(|ext| crate::RELEVANT_FILE_EXTENSIONS.contains(&ext.to_string_lossy().to_string()))
         {
             files.push(path);
         }
@@ -1042,6 +1016,20 @@ foo = 42
 // Comment on another item
 @(impl = kcl)
 bar = 0
+"#;
+        let program = crate::parsing::top_level_parse(input).unwrap();
+        let output = program.recast(&Default::default(), 0);
+        assert_eq!(output, input);
+    }
+
+    #[test]
+    fn recast_annotations_with_block_comment() {
+        let input = r#"/* Start comment
+
+sdfsdfsdfs */
+@settings(defaultLengthUnit = in)
+
+foo = 42
 "#;
         let program = crate::parsing::top_level_parse(input).unwrap();
         let output = program.recast(&Default::default(), 0);
@@ -1740,7 +1728,7 @@ thk = 5
 hole_diam = 5
 // define a rectangular shape func
 fn rectShape(pos, w, l) {
-  rr = startSketchOn('xy')
+  rr = startSketchOn(XY)
     |> startProfileAt([pos[0] - (w / 2), pos[1] - (l / 2)], %)
     |> line(endAbsolute = [pos[0] + w / 2, pos[1] - (l / 2)], tag = $edge1)
     |> line(endAbsolute = [pos[0] + w / 2, pos[1] + l / 2], tag = $edge2)

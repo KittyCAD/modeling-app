@@ -44,8 +44,8 @@ profile001 = startProfileAt([-134.53, -56.17], sketch001)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg02)
   |> close()
 extrude001 = extrude(profile001, length = 100)
-sketch003 = startSketchOn(extrude001, seg02)
-sketch002 = startSketchOn(extrude001, seg01)`
+sketch003 = startSketchOn(extrude001, face = seg02)
+sketch002 = startSketchOn(extrude001, face = seg01)`
       )
     })
 

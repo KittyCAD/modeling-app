@@ -160,10 +160,11 @@ export function createNamedViewsCommand() {
                 data: {
                   level: 'project',
                   value: requestedNamedViews,
+                  toastCallback: () => {
+                    toast.success(`Named view ${requestedView.name} created.`)
+                  },
                 },
               })
-
-              toast.success(`Named view ${requestedView.name} created.`)
             }
           }
         }
@@ -210,9 +211,11 @@ export function createNamedViewsCommand() {
           data: {
             level: 'project',
             value: rest,
+            toastCallback: () => {
+              toast.success(`Named view ${viewToDelete.name} removed.`)
+            },
           },
         })
-        toast.success(`Named view ${viewToDelete.name} removed.`)
       } else {
         toast.error(`Unable to delete, could not find the named view`)
       }
@@ -307,6 +310,8 @@ export function createNamedViewsCommand() {
               type: 'default_camera_get_settings',
             },
           })
+
+          // We do not have the promise of the engine command for ensuring the camera projection has been completed.
           toast.success(`Named view ${name} loaded.`)
         } else {
           toast.error(`Unable to load named view, could not find named view`)

@@ -118,6 +118,30 @@ impl CodeRef {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export_to = "Artifact.ts")]
 #[serde(rename_all = "camelCase")]
+pub struct CompositeSolid {
+    pub id: ArtifactId,
+    pub sub_type: CompositeSolidSubType,
+    /// Constituent solids of the composite solid.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub solid_ids: Vec<ArtifactId>,
+    /// Tool solids used for asymmetric operations like subtract.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub tool_ids: Vec<ArtifactId>,
+    pub code_ref: CodeRef,
+}
+
+#[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, Eq, ts_rs::TS)]
+#[ts(export_to = "Artifact.ts")]
+#[serde(rename_all = "camelCase")]
+pub enum CompositeSolidSubType {
+    Intersect,
+    Subtract,
+    Union,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export_to = "Artifact.ts")]
+#[serde(rename_all = "camelCase")]
 pub struct Plane {
     pub id: ArtifactId,
     pub path_ids: Vec<ArtifactId>,
@@ -318,6 +342,7 @@ pub struct Helix {
 #[ts(export_to = "Artifact.ts")]
 #[serde(tag = "type", rename_all = "camelCase")]
 pub enum Artifact {
+    CompositeSolid(CompositeSolid),
     Plane(Plane),
     Path(Path),
     Segment(Segment),
@@ -336,6 +361,7 @@ pub enum Artifact {
 impl Artifact {
     pub(crate) fn id(&self) -> ArtifactId {
         match self {
+            Artifact::CompositeSolid(a) => a.id,
             Artifact::Plane(a) => a.id,
             Artifact::Path(a) => a.id,
             Artifact::Segment(a) => a.id,
@@ -355,6 +381,7 @@ impl Artifact {
     #[expect(dead_code)]
     pub(crate) fn code_ref(&self) -> Option<&CodeRef> {
         match self {
+            Artifact::CompositeSolid(a) => Some(&a.code_ref),
             Artifact::Plane(a) => Some(&a.code_ref),
             Artifact::Path(a) => Some(&a.code_ref),
             Artifact::Segment(a) => Some(&a.code_ref),
@@ -375,6 +402,7 @@ impl Artifact {
     /// type, return the new artifact which should be used as a replacement.
     fn merge(&mut self, new: Artifact) -> Option<Artifact> {
         match self {
+            Artifact::CompositeSolid(a) => a.merge(new),
             Artifact::Plane(a) => a.merge(new),
             Artifact::Path(a) => a.merge(new),
             Artifact::Segment(a) => a.merge(new),
@@ -389,6 +417,18 @@ impl Artifact {
             Artifact::EdgeCutEdge(_) => Some(new),
             Artifact::Helix(_) => Some(new),
         }
+    }
+}
+
+impl CompositeSolid {
+    fn merge(&mut self, new: Artifact) -> Option<Artifact> {
+        let Artifact::CompositeSolid(new) = new else {
+            return Some(new);
+        };
+        merge_ids(&mut self.solid_ids, new.solid_ids);
+        merge_ids(&mut self.tool_ids, new.tool_ids);
+
+        None
     }
 }
 
@@ -1045,6 +1085,85 @@ fn artifacts_to_update(
             })];
             // We could add the reverse graph edge connecting from the edge to
             // the helix here, but it's not useful right now.
+            return Ok(return_arr);
+        }
+        ModelingCmd::BooleanIntersection(_) | ModelingCmd::BooleanSubtract(_) | ModelingCmd::BooleanUnion(_) => {
+            let (sub_type, solid_ids, tool_ids) = match cmd {
+                ModelingCmd::BooleanIntersection(intersection) => {
+                    let solid_ids = intersection
+                        .solid_ids
+                        .iter()
+                        .copied()
+                        .map(ArtifactId::new)
+                        .collect::<Vec<_>>();
+                    (CompositeSolidSubType::Intersect, solid_ids, Vec::new())
+                }
+                ModelingCmd::BooleanSubtract(subtract) => {
+                    let solid_ids = subtract
+                        .target_ids
+                        .iter()
+                        .copied()
+                        .map(ArtifactId::new)
+                        .collect::<Vec<_>>();
+                    let tool_ids = subtract
+                        .tool_ids
+                        .iter()
+                        .copied()
+                        .map(ArtifactId::new)
+                        .collect::<Vec<_>>();
+                    (CompositeSolidSubType::Subtract, solid_ids, tool_ids)
+                }
+                ModelingCmd::BooleanUnion(union) => {
+                    let solid_ids = union.solid_ids.iter().copied().map(ArtifactId::new).collect::<Vec<_>>();
+                    (CompositeSolidSubType::Union, solid_ids, Vec::new())
+                }
+                _ => unreachable!(),
+            };
+
+            let mut new_solid_ids = vec![id];
+
+            match response {
+                OkModelingCmdResponse::BooleanIntersection(intersection) => intersection
+                    .extra_solid_ids
+                    .iter()
+                    .copied()
+                    .map(ArtifactId::new)
+                    .for_each(|id| new_solid_ids.push(id)),
+                OkModelingCmdResponse::BooleanSubtract(subtract) => subtract
+                    .extra_solid_ids
+                    .iter()
+                    .copied()
+                    .map(ArtifactId::new)
+                    .for_each(|id| new_solid_ids.push(id)),
+                OkModelingCmdResponse::BooleanUnion(union) => union
+                    .extra_solid_ids
+                    .iter()
+                    .copied()
+                    .map(ArtifactId::new)
+                    .for_each(|id| new_solid_ids.push(id)),
+                _ => {}
+            }
+            let return_arr = new_solid_ids
+                .into_iter()
+                // Extra solid IDs may include the command's ID.  Make sure we
+                // don't create a duplicate.
+                .filter(|solid_id| *solid_id != id)
+                .map(|solid_id| {
+                    Artifact::CompositeSolid(CompositeSolid {
+                        id: solid_id,
+                        sub_type,
+                        solid_ids: solid_ids.clone(),
+                        tool_ids: tool_ids.clone(),
+                        code_ref: CodeRef {
+                            range,
+                            path_to_node: path_to_node.clone(),
+                        },
+                    })
+                })
+                .collect::<Vec<_>>();
+
+            // TODO: Should we add the reverse graph edges?
+
             return Ok(return_arr);
         }
         _ => {}

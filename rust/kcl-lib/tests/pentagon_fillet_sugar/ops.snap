@@ -5,10 +5,10 @@ description: Operations executed pentagon_fillet_sugar.kcl
 [
   {
     "labeledArgs": {
-      "data": {
+      "planeOrSolid": {
         "value": {
-          "type": "String",
-          "value": "XY"
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       }
@@ -56,8 +56,8 @@ description: Operations executed pentagon_fillet_sugar.kcl
       "type": "FunctionCall",
       "name": "circl",
       "functionSourceRange": [
-        418,
-        568,
+        416,
+        573,
         0
       ],
       "unlabeledArg": null,
@@ -67,16 +67,7 @@ description: Operations executed pentagon_fillet_sugar.kcl
   },
   {
     "labeledArgs": {
-      "data": {
-        "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "tag": {
+      "face": {
         "value": {
           "type": "TagIdentifier",
           "value": "c",
@@ -88,7 +79,15 @@ description: Operations executed pentagon_fillet_sugar.kcl
     "name": "startSketchOn",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
   },
   {
     "type": "GroupEnd"
@@ -180,8 +179,8 @@ description: Operations executed pentagon_fillet_sugar.kcl
       "type": "FunctionCall",
       "name": "circl",
       "functionSourceRange": [
-        418,
-        568,
+        416,
+        573,
         0
       ],
       "unlabeledArg": null,
@@ -191,16 +190,7 @@ description: Operations executed pentagon_fillet_sugar.kcl
   },
   {
     "labeledArgs": {
-      "data": {
-        "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "tag": {
+      "face": {
         "value": {
           "type": "TagIdentifier",
           "value": "a",
@@ -212,7 +202,15 @@ description: Operations executed pentagon_fillet_sugar.kcl
     "name": "startSketchOn",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
   },
   {
     "type": "GroupEnd"

@@ -28,7 +28,8 @@ import { codeRefFromRange } from '@src/lang/std/artifactGraph'
 import type { InputArgKeys, SimplifiedArgDetails } from '@src/lang/std/stdTypes'
 import { topLevelRange } from '@src/lang/util'
 import type { Identifier, Literal, LiteralValue } from '@src/lang/wasm'
-import { assertParse, initPromise, recast } from '@src/lang/wasm'
+import { assertParse, recast } from '@src/lang/wasm'
+import { initPromise } from '@src/lang/wasmUtils'
 import { enginelessExecutor } from '@src/lib/testHelpers'
 import { err } from '@src/lib/trap'
 
@@ -438,7 +439,7 @@ describe('testing sketchOnExtrudedFace', () => {
   |> line(end = [8.62, -9.57])
   |> close()
   |> extrude(length = 5 + 7)
-sketch001 = startSketchOn(part001, seg01)`)
+sketch001 = startSketchOn(part001, face = seg01)`)
   })
   test('it should be able to extrude on close segments', async () => {
     const code = `part001 = startSketchOn(-XZ)
@@ -476,7 +477,7 @@ sketch001 = startSketchOn(part001, seg01)`)
   |> line(end = [8.62, -9.57])
   |> close(tag = $seg01)
   |> extrude(length = 5 + 7)
-sketch001 = startSketchOn(part001, seg01)`)
+sketch001 = startSketchOn(part001, face = seg01)`)
   })
   test('it should be able to extrude on start-end caps', async () => {
     const code = `part001 = startSketchOn(-XZ)
@@ -515,7 +516,7 @@ sketch001 = startSketchOn(part001, seg01)`)
   |> line(end = [8.62, -9.57])
   |> close()
   |> extrude(length = 5 + 7)
-sketch001 = startSketchOn(part001, 'END')`)
+sketch001 = startSketchOn(part001, face = END)`)
   })
   test('it should ensure that the new sketch is inserted after the extrude', async () => {
     const code = `sketch001 = startSketchOn(-XZ)
@@ -554,7 +555,7 @@ sketch001 = startSketchOn(part001, 'END')`)
     if (err(updatedAst)) throw updatedAst
     const newCode = recast(updatedAst.modifiedAst)
     expect(newCode).toContain(`part001 = extrude(sketch001, length = 5 + 7)
-sketch002 = startSketchOn(part001, seg01)`)
+sketch002 = startSketchOn(part001, face = seg01)`)
   })
 })
 
@@ -688,7 +689,7 @@ describe('Testing removeSingleConstraintInfo', () => {
         intersectTag = a,
         offset = 0 + 0
       }, %)
-  |> tangentialArcTo([3.14 + 0, 13.14 + 0], %)`
+  |> tangentialArc(endAbsolute = [3.14 + 0, 13.14 + 0])`
     test.each([
       [' line(end = [3 + 0, 4])', 'arrayIndex', 1, ''],
       [
@@ -736,7 +737,12 @@ describe('Testing removeSingleConstraintInfo', () => {
         'offset',
         '',
       ],
-      ['tangentialArcTo([3.14 + 0, 13.14], %)', 'arrayIndex', 1, ''],
+      [
+        'tangentialArc(endAbsolute = [3.14 + 0, 13.14])',
+        'labeledArg',
+        'endAbsolute',
+        '',
+      ],
     ] as const)(
       'stdlib fn: %s',
       async (expectedFinish, key, value, commentLabel) => {
@@ -912,7 +918,7 @@ sketch003 = startSketchOn(XZ)
     //   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
     //   |> close()
     // const extrude001 = extrude(sketch001, length = 5)
-    // sketch002 = startSketchOn(extrude001, seg01)
+    // sketch002 = startSketchOn(extrude001, face = seg01)
     //   |> startProfileAt([-12.55, 2.89], %)
     //   |> line(end = [3.02, 1.9])
     //   |> line(end = [1.82, -1.49], tag = $seg02)
@@ -933,12 +939,10 @@ sketch003 = startSketchOn(XZ)
     //   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
     //   |> close()
     // sketch002 = startSketchOn({
-    //        plane = {
     //          origin = { x = 1, y = 2, z = 3 },
     //          xAxis = { x = 4, y = 5, z = 6 },
     //          yAxis = { x = 7, y = 8, z = 9 },
     //          zAxis = { x = 10, y = 11, z = 12 }
-    //        }
     //      })
     //   |> startProfileAt([-12.55, 2.89], %)
     //   |> line(end = [3.02, 1.9])
@@ -968,7 +972,7 @@ sketch003 = startSketchOn(XZ)
     //   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
     //   |> close()
     // const extrude001 = extrude(sketch001, length = 5)
-    // sketch002 = startSketchOn(extrude001, seg01)
+    // sketch002 = startSketchOn(extrude001, face = seg01)
     //   |> startProfileAt([-12.55, 2.89], %)
     //   |> line(end = [3.02, 1.9])
     //   |> line(end = [1.82, -1.49], tag = $seg02)
@@ -989,12 +993,10 @@ sketch003 = startSketchOn(XZ)
     //   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
     //   |> close()
     // sketch002 = startSketchOn({
-    //        plane = {
     //          origin = { x = 1, y = 2, z = 3 },
     //          xAxis = { x = 4, y = 5, z = 6 },
     //          yAxis = { x = 7, y = 8, z = 9 },
     //          zAxis = { x = 10, y = 11, z = 12 }
-    //        }
     //      })
     //   |> startProfileAt([-12.55, 2.89], %)
     //   |> line(end = [3.02, 1.9])
