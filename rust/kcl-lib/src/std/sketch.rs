@@ -24,7 +24,7 @@ use crate::{
     std::{
         args::{Args, TyF64},
         utils::{
-            arc_angles, arc_center_and_end, get_tangential_arc_to_info, get_x_component, get_y_component,
+            arc_center_and_end, get_tangential_arc_to_info, get_x_component, get_y_component,
             intersection_with_parallel_line, TangentialArcInfoInput,
         },
     },
@@ -104,7 +104,7 @@ pub async fn involute_circular(exec_state: &mut ExecState, args: Args) -> Result
     let end_radius: TyF64 = args.get_kw_arg_typed("endRadius", &RuntimeType::length(), exec_state)?;
     let angle: TyF64 = args.get_kw_arg_typed("angle", &RuntimeType::angle(), exec_state)?;
     let reverse = args.get_kw_arg_opt("reverse")?;
-    let tag = args.get_kw_arg_opt("tag")?;
+    let tag = args.get_kw_arg_opt(NEW_TAG_KW)?;
     let new_sketch = inner_involute_circular(
         sketch,
         start_radius.n,
@@ -1636,51 +1636,30 @@ pub(crate) async fn inner_close(
     Ok(new_sketch)
 }
 
-/// Data to draw an arc.
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-#[ts(export)]
-#[serde(rename_all = "camelCase", untagged)]
-pub enum ArcData {
-    /// Angles and radius with an optional tag.
-    AnglesAndRadius {
-        /// The start angle.
-        #[serde(rename = "angleStart")]
-        #[schemars(range(min = -360.0, max = 360.0))]
-        angle_start: TyF64,
-        /// The end angle.
-        #[serde(rename = "angleEnd")]
-        #[schemars(range(min = -360.0, max = 360.0))]
-        angle_end: TyF64,
-        /// The radius.
-        radius: TyF64,
-    },
-    /// Center, to and radius with an optional tag.
-    CenterToRadius {
-        /// The center.
-        center: [TyF64; 2],
-        /// The to point.
-        to: [TyF64; 2],
-        /// The radius.
-        radius: TyF64,
-    },
-}
-
-/// Data to draw a three point arc (arcTo).
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-#[ts(export)]
-#[serde(rename_all = "camelCase")]
-pub struct ArcToData {
-    /// End point of the arc. A point in 3D space
-    pub end: [TyF64; 2],
-    /// Interior point of the arc. A point in 3D space
-    pub interior: [TyF64; 2],
-}
-
 /// Draw an arc.
 pub async fn arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (data, sketch, tag): (ArcData, Sketch, Option<TagNode>) = args.get_data_and_sketch_and_tag(exec_state)?;
+    let sketch =
+        args.get_unlabeled_kw_arg_typed("sketch", &RuntimeType::Primitive(PrimitiveType::Sketch), exec_state)?;
 
-    let new_sketch = inner_arc(data, sketch, tag, exec_state, args).await?;
+    let angle_start: Option<TyF64> = args.get_kw_arg_opt_typed("angleStart", &RuntimeType::degrees(), exec_state)?;
+    let angle_end: Option<TyF64> = args.get_kw_arg_opt_typed("angleEnd", &RuntimeType::degrees(), exec_state)?;
+    let radius: Option<TyF64> = args.get_kw_arg_opt_typed("radius", &RuntimeType::length(), exec_state)?;
+    let end_absolute: Option<[TyF64; 2]> =
+        args.get_kw_arg_opt_typed("endAbsolute", &RuntimeType::point2d(), exec_state)?;
+    let interior: Option<[TyF64; 2]> = args.get_kw_arg_opt_typed("interior", &RuntimeType::point2d(), exec_state)?;
+    let tag = args.get_kw_arg_opt(NEW_TAG_KW)?;
+    let new_sketch = inner_arc(
+        sketch,
+        angle_start,
+        angle_end,
+        radius,
+        end_absolute,
+        interior,
+        tag,
+        exec_state,
+        args,
+    )
+    .await?;
     Ok(KclValue::Sketch {
         value: Box::new(new_sketch),
     })
@@ -1701,74 +1680,181 @@ pub async fn arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfileAt([0, 0], %)
 ///   |> line(end = [10, 0])
-///   |> arc({
+///   |> arc(
 ///        angleStart = 0,
 ///        angleEnd = 280,
 ///        radius = 16
-///      }, %)
+///      )
+///   |> close()
+/// example = extrude(exampleSketch, length = 10)
+/// ```
+/// ```no_run
+/// exampleSketch = startSketchOn(XZ)
+///   |> startProfileAt([0, 0], %)
+///   |> arc(
+///         end = [10,0],
+///         interior = [5,5]
+///      )
 ///   |> close()
 /// example = extrude(exampleSketch, length = 10)
 /// ```
 #[stdlib {
     name = "arc",
+    keywords = true,
+    unlabeled_first = true,
+    args = {
+        sketch = { docs = "Which sketch should this path be added to?" },
+        angle_start = { docs = "Where along the circle should this arc start?" },
+        angle_end = { docs = "Where along the circle should this arc end?" },
+        radius = { docs = "How large should the circle be?" },
+        end_absolute = { docs = "Where should this arc end? Requires `interior`. Incompatible with `angleStart` or `angleEnd`" },
+        interior = { docs = "Any point between the arc's start and end? Requires `endAbsolute`. Incompatible with `angleStart` or `angleEnd`" },
+        tag = { docs = "Create a new tag which refers to this line"},
+    }
 }]
+#[allow(clippy::too_many_arguments)]
 pub(crate) async fn inner_arc(
-    data: ArcData,
     sketch: Sketch,
+    angle_start: Option<TyF64>,
+    angle_end: Option<TyF64>,
+    radius: Option<TyF64>,
+    end_absolute: Option<[TyF64; 2]>,
+    interior: Option<[TyF64; 2]>,
     tag: Option<TagNode>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
     let from: Point2d = sketch.current_pen_position()?;
+    let id = exec_state.next_uuid();
 
-    let (center, angle_start, angle_end, radius, end) = match &data {
-        ArcData::AnglesAndRadius {
-            angle_start,
-            angle_end,
-            radius,
-        } => {
-            let a_start = Angle::from_degrees(angle_start.n);
-            let a_end = Angle::from_degrees(angle_end.n);
-            let (center, end) = arc_center_and_end(from.into(), a_start, a_end, radius.n);
-            (center, a_start, a_end, radius.n, end)
+    // Relative case
+    match (angle_start, angle_end, radius, end_absolute, interior) {
+        (Some(angle_start), Some(angle_end), Some(radius), None, None) => {
+            relative_arc(&args, id, exec_state, sketch, from, angle_start, angle_end, radius, tag).await
         }
-        ArcData::CenterToRadius { center, to, radius } => {
-            let (angle_start, angle_end) = arc_angles(
-                from.into(),
-                untype_point(to.clone()).0,
-                untype_point(center.clone()).0,
-                radius.n,
-                args.source_range,
-            )?;
-            (
-                untype_point(center.clone()).0,
-                angle_start,
-                angle_end,
-                radius.n,
-                untype_point(to.clone()).0,
-            )
+        (None, None, None, Some(interior), Some(end_absolute)) => {
+            absolute_arc(&args, id, exec_state, sketch, from, interior, end_absolute,tag).await
         }
+        _ => {
+            Err(KclError::Type(KclErrorDetails {
+                message:
+                    "Invalid combination of arguments. Either provide (angleStart, angleEnd, radius) or (endAbsolute, interior)"
+                        .to_string(),
+                source_ranges: vec![args.source_range],
+            }))
+        }
+    }
+}
+
+#[allow(clippy::too_many_arguments)]
+pub async fn absolute_arc(
+    args: &Args,
+    id: uuid::Uuid,
+    exec_state: &mut ExecState,
+    sketch: Sketch,
+    from: Point2d,
+    interior: [TyF64; 2],
+    end_absolute: [TyF64; 2],
+    tag: Option<TagNode>,
+) -> Result<Sketch, KclError> {
+    // The start point is taken from the path you are extending.
+    args.batch_modeling_cmd(
+        id,
+        ModelingCmd::from(mcmd::ExtendPath {
+            path: sketch.id.into(),
+            segment: PathSegment::ArcTo {
+                end: kcmc::shared::Point3d {
+                    x: LengthUnit(end_absolute[0].n),
+                    y: LengthUnit(end_absolute[1].n),
+                    z: LengthUnit(0.0),
+                },
+                interior: kcmc::shared::Point3d {
+                    x: LengthUnit(interior[0].n),
+                    y: LengthUnit(interior[1].n),
+                    z: LengthUnit(0.0),
+                },
+                relative: false,
+            },
+        }),
+    )
+    .await?;
+
+    let start = [from.x, from.y];
+    let end = end_absolute.clone();
+    let untyped_end = untype_point(end);
+
+    let current_path = Path::ArcThreePoint {
+        base: BasePath {
+            from: from.into(),
+            to: untyped_end.0,
+            tag: tag.clone(),
+            units: sketch.units,
+            geo_meta: GeoMeta {
+                id,
+                metadata: args.source_range.into(),
+            },
+        },
+        p1: start,
+        p2: untype_point(interior).0,
+        p3: untyped_end.0,
     };
 
+    let mut new_sketch = sketch.clone();
+    if let Some(tag) = &tag {
+        new_sketch.add_tag(tag, &current_path, exec_state);
+    }
+
+    new_sketch.paths.push(current_path);
+
+    Ok(new_sketch)
+}
+
+#[allow(clippy::too_many_arguments)]
+pub async fn relative_arc(
+    args: &Args,
+    id: uuid::Uuid,
+    exec_state: &mut ExecState,
+    sketch: Sketch,
+    from: Point2d,
+    angle_start: TyF64,
+    angle_end: TyF64,
+    radius: TyF64,
+    tag: Option<TagNode>,
+) -> Result<Sketch, KclError> {
+    let a_start = Angle::from_degrees(angle_start.n);
+    let a_end = Angle::from_degrees(angle_end.n);
+    let (center, end) = arc_center_and_end(from.into(), a_start, a_end, radius.n);
     if angle_start == angle_end {
         return Err(KclError::Type(KclErrorDetails {
             message: "Arc start and end angles must be different".to_string(),
             source_ranges: vec![args.source_range],
         }));
     }
-    let ccw = angle_start < angle_end;
-
-    let id = exec_state.next_uuid();
+    if a_start.to_degrees() > 360.0 || a_start.to_degrees() < -360.0 {
+        return Err(KclError::Type(KclErrorDetails {
+            message: "Start angle must be between ±360 degrees.".to_string(),
+            // TODO: This source range should be specifically on the `angleStart` arg, not the entire arg list.
+            source_ranges: vec![args.source_range],
+        }));
+    }
+    if a_end.to_degrees() > 360.0 || a_end.to_degrees() < -360.0 {
+        return Err(KclError::Type(KclErrorDetails {
+            message: "End angle must be between ±360 degrees.".to_string(),
+            // TODO: This source range should be specifically on the `angleEnd` arg, not the entire arg list.
+            source_ranges: vec![args.source_range],
+        }));
+    }
+    let ccw = angle_start.n < angle_end.n;
 
     args.batch_modeling_cmd(
         id,
         ModelingCmd::from(mcmd::ExtendPath {
             path: sketch.id.into(),
             segment: PathSegment::Arc {
-                start: angle_start,
-                end: angle_end,
+                start: a_start,
+                end: a_end,
                 center: KPoint2d::from(center).map(LengthUnit),
-                radius: LengthUnit(radius),
+                radius: LengthUnit(radius.n),
                 relative: false,
             },
         }),
@@ -1787,7 +1873,7 @@ pub(crate) async fn inner_arc(
             },
         },
         center,
-        radius,
+        radius: radius.n,
         ccw,
     };
 
@@ -1800,98 +1886,6 @@ pub(crate) async fn inner_arc(
 
     Ok(new_sketch)
 }
-
-/// Draw a three point arc.
-pub async fn arc_to(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (data, sketch, tag): (ArcToData, Sketch, Option<TagNode>) = args.get_data_and_sketch_and_tag(exec_state)?;
-
-    let new_sketch = inner_arc_to(data, sketch, tag, exec_state, args).await?;
-    Ok(KclValue::Sketch {
-        value: Box::new(new_sketch),
-    })
-}
-
-/// Draw a three point arc.
-///
-/// The arc is constructed such that the start point is the current position of the sketch and two more points defined as the end and interior point.
-/// The interior point is placed between the start point and end point. The radius of the arc will be controlled by how far the interior point is placed from
-/// the start and end.
-///
-/// ```no_run
-/// exampleSketch = startSketchOn(XZ)
-///   |> startProfileAt([0, 0], %)
-///   |> arcTo({
-///         end = [10,0],
-///         interior = [5,5]
-///      }, %)
-///   |> close()
-/// example = extrude(exampleSketch, length = 10)
-/// ```
-#[stdlib {
-    name = "arcTo",
-}]
-pub(crate) async fn inner_arc_to(
-    data: ArcToData,
-    sketch: Sketch,
-    tag: Option<TagNode>,
-    exec_state: &mut ExecState,
-    args: Args,
-) -> Result<Sketch, KclError> {
-    let from: Point2d = sketch.current_pen_position()?;
-    let id = exec_state.next_uuid();
-
-    // The start point is taken from the path you are extending.
-    args.batch_modeling_cmd(
-        id,
-        ModelingCmd::from(mcmd::ExtendPath {
-            path: sketch.id.into(),
-            segment: PathSegment::ArcTo {
-                end: kcmc::shared::Point3d {
-                    x: LengthUnit(data.end[0].n),
-                    y: LengthUnit(data.end[1].n),
-                    z: LengthUnit(0.0),
-                },
-                interior: kcmc::shared::Point3d {
-                    x: LengthUnit(data.interior[0].n),
-                    y: LengthUnit(data.interior[1].n),
-                    z: LengthUnit(0.0),
-                },
-                relative: false,
-            },
-        }),
-    )
-    .await?;
-
-    let start = [from.x, from.y];
-    let interior = data.interior;
-    let end = data.end.clone();
-
-    let current_path = Path::ArcThreePoint {
-        base: BasePath {
-            from: from.into(),
-            to: untype_point(data.end).0,
-            tag: tag.clone(),
-            units: sketch.units,
-            geo_meta: GeoMeta {
-                id,
-                metadata: args.source_range.into(),
-            },
-        },
-        p1: start,
-        p2: untype_point(interior).0,
-        p3: untype_point(end).0,
-    };
-
-    let mut new_sketch = sketch.clone();
-    if let Some(tag) = &tag {
-        new_sketch.add_tag(tag, &current_path, exec_state);
-    }
-
-    new_sketch.paths.push(current_path);
-
-    Ok(new_sketch)
-}
-
 /// Draw a tangential arc to a specific point.
 pub async fn tangential_arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let sketch =
