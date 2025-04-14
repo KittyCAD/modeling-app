@@ -657,7 +657,7 @@ part001 = startSketchOn(XZ)
       'flatExtrusionFace',
       flatExtrusionFace,
       `angledLineThatIntersects(angle=3.14,intersectTag=a,offset=0)extrude(length=5+7)`,
-      '}, %)'
+      'angledLineThatIntersects(angle = 3.14, intersectTag = a, offset = 0)'
     )
 
     await checkCodeAtHoverPosition(
@@ -721,7 +721,7 @@ part001 = startSketchOn(XZ)
       'straightSegmentAdjacentEdge',
       straightSegmentAdjacentEdge,
       `angledLineThatIntersects(angle=3.14,intersectTag=a,offset=0)`,
-      '}, %)'
+      'angledLineThatIntersects(angle = 3.14, intersectTag = a, offset = 0)'
     )
 
     await page.waitForTimeout(200)
