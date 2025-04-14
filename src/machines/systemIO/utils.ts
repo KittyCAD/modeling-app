@@ -9,7 +9,6 @@ export enum SystemIOMachineStates {
   idle = 'idle',
   readingFolders = 'readingFolders',
   settingProjectDirectoryPath = 'settingProjectDirectoryPath',
-  openingProject = 'openingProject',
 }
 
 const donePrefix = 'xstate.done.actor.'
@@ -19,13 +18,15 @@ export enum SystemIOMachineEvents {
   done_readFoldersFromProjectDirectory = donePrefix +
     'read folders from project directory',
   setProjectDirectoryPath = 'set project directory path',
-  openProject = 'open project',
+  navigateToProject = 'navigate to project',
+  navigateToFile = 'navigate to file'
 }
 
 export enum SystemIOMachineActions {
   setFolders = 'set folders',
   setProjectDirectoryPath = 'set project directory path',
   setRequestedProjectName = 'set requested project name',
+  setRequestedFileName = 'set requested file name',
 }
 
 export const NO_PROJECT_DIRECTORY = ''
@@ -42,4 +43,5 @@ export type SystemIOContext = {
   // this is required to prevent chokidar from spamming invalid events during initialization.
   hasListedProjects: boolean
   requestedProjectName: { name: string }
+  requestedFileName: {project: string, file: string}
 }

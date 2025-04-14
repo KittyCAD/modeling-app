@@ -34,9 +34,13 @@ export const systemIOMachine = setup({
           data: { requestedProjectDirectoryPath: string }
         }
       | {
-          type: SystemIOMachineEvents.openProject
+          type: SystemIOMachineEvents.navigateToProject
           data: { requestedProjectName: string }
-        },
+      }
+      | {
+          type: SystemIOMachineEvents.navigateToFile
+        data: { requestedProjectName: string, requestedFileName: string }
+        }
   },
   actions: {
     [SystemIOMachineActions.setFolders]: assign({
@@ -56,8 +60,14 @@ export const systemIOMachine = setup({
     }),
     [SystemIOMachineActions.setRequestedProjectName]: assign({
       requestedProjectName: ({ event }) => {
-        assertEvent(event, SystemIOMachineEvents.openProject)
+        assertEvent(event, SystemIOMachineEvents.navigateToProject)
         return { name: event.data.requestedProjectName }
+      },
+    }),
+    [SystemIOMachineActions.setRequestedFileName]: assign({
+      requestedFileName: ({ event }) => {
+        assertEvent(event, SystemIOMachineEvents.navigateToFile)
+        return { project: event.data.requestedProjectName, file: event.data.requestedFileName }
       },
     }),
   },
@@ -79,19 +89,23 @@ export const systemIOMachine = setup({
     projectDirectoryPath: NO_PROJECT_DIRECTORY,
     hasListedProjects: false,
     requestedProjectName: { name: NO_PROJECT_DIRECTORY },
+    requestedFileName: { name: NO_PROJECT_DIRECTORY },
   }),
   states: {
     [SystemIOMachineStates.idle]: {
       on: {
         // on can be an action
         [SystemIOMachineEvents.readFoldersFromProjectDirectory]:
-          SystemIOMachineStates.readingFolders,
+        SystemIOMachineStates.readingFolders,
         [SystemIOMachineEvents.setProjectDirectoryPath]: {
           target: SystemIOMachineStates.readingFolders,
           actions: [SystemIOMachineActions.setProjectDirectoryPath],
         },
-        [SystemIOMachineEvents.openProject]: {
+        [SystemIOMachineEvents.navigateToProject]: {
           actions: [SystemIOMachineActions.setRequestedProjectName],
+        },
+        [SystemIOMachineEvents.navigateToFile]: {
+          actions: [SystemIOMachineActions.setRequestedFileName],
         },
       },
     },
@@ -111,7 +125,6 @@ export const systemIOMachine = setup({
         },
       },
     },
-    [SystemIOMachineStates.openingProject]: {},
   },
 })
 

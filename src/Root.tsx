@@ -6,17 +6,17 @@ import { ProjectsContextProvider } from '@src/components/ProjectsContextProvider
 import { SystemIOMachineLogicListener } from '@src/components/Providers/SystemIOProviderDesktop'
 import { RouteProvider } from '@src/components/RouteProvider'
 import { KclContextProvider } from '@src/lang/KclProvider'
-import  {Outlet} from 'react-router-dom'
-import {useEffect} from "react"
-function RootLayout () {
+import { useEffect } from 'react'
+import { Outlet } from 'react-router-dom'
+function RootLayout() {
   useEffect(() => {
-    console.log('MyComponent mounted');
+    console.log('MyComponent mounted')
 
     return () => {
-      console.log('MyComponent unmounted');
-    };
-  }, []);
-  return(
+      console.log('MyComponent unmounted')
+    }
+  }, [])
+  return (
     <div>
       <OpenInDesktopAppHandler>
         <RouteProvider>
