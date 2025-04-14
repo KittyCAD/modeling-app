@@ -8,10 +8,13 @@ import {
 } from '@src/lang/create'
 import { getNodeFromPath } from '@src/lang/queryAst'
 import type {
+  CallExpressionKw,
   Expr,
   ExpressionStatement,
   PathToNode,
+  PipeExpression,
   Program,
+  VariableDeclarator,
 } from '@src/lang/wasm'
 import { err } from '@src/lib/trap'
 
@@ -36,16 +39,6 @@ export function setTransform({
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
   const modifiedAst = structuredClone(ast)
 
-  const call = getNodeFromPath<ExpressionStatement>(
-    modifiedAst,
-    pathToNode,
-    'ExpressionStatement'
-  )
-  if (err(call)) {
-    return call
-  }
-
-  const declarator = call.node
   const translateCall = createCallExpressionStdLibKw(
     'translate',
     createPipeSubstitution(),
@@ -55,6 +48,7 @@ export function setTransform({
       createLabeledArg('z', tz),
     ]
   )
+
   const rotateCall = createCallExpressionStdLibKw(
     'rotate',
     createPipeSubstitution(),
@@ -64,48 +58,73 @@ export function setTransform({
       createLabeledArg('yaw', ry),
     ]
   )
-  // Modify the expression
-  console.log('declaration.expression', declarator.expression)
-  if (declarator.expression.type === 'Name') {
-    // 1. case when no translate exists, mutate in place
-    console.log('1. case when no translate exists, mutate in place')
-    declarator.expression = createPipeExpression([
-      declarator.expression,
-      translateCall,
-      rotateCall,
-    ])
-    console.log('after declaration expression')
-  } else if (declarator.expression.type === 'PipeExpression') {
-    // 2. case when translate exists or extrude in sketch pipe
-    const existingTranslateIndex = declarator.expression.body.findIndex(
-      (v) =>
-        v.type === 'CallExpressionKw' &&
-        v.callee.type === 'Name' &&
-        v.callee.name.name === 'translate'
+
+  const potentialPipe = getNodeFromPath<PipeExpression>(
+    modifiedAst,
+    pathToNode,
+    ['PipeExpression']
+  )
+  if (!err(potentialPipe) && potentialPipe.node.type === 'PipeExpression') {
+    setTransformInPipe(potentialPipe.node, translateCall, rotateCall)
+  } else {
+    const call = getNodeFromPath<VariableDeclarator | ExpressionStatement>(
+      modifiedAst,
+      pathToNode,
+      ['VariableDeclarator', 'ExpressionStatement']
     )
-    if (existingTranslateIndex > -1) {
-      declarator.expression.body[existingTranslateIndex] = translateCall
-    } else {
-      declarator.expression.body.push(translateCall)
+    if (err(call)) {
+      return new Error('Unsupported operation type.')
     }
 
-    const existingRotateIndex = declarator.expression.body.findIndex(
-      (v) =>
-        v.type === 'CallExpressionKw' &&
-        v.callee.type === 'Name' &&
-        v.callee.name.name === 'rotate'
-    )
-    if (existingRotateIndex > -1) {
-      declarator.expression.body[existingRotateIndex] = rotateCall
+    if (call.node.type === 'ExpressionStatement') {
+      call.node.expression = createPipeExpression([
+        call.node.expression,
+        translateCall,
+        rotateCall,
+      ])
+    } else if (call.node.type === 'VariableDeclarator') {
+      call.node.init = createPipeExpression([
+        call.node.init,
+        translateCall,
+        rotateCall,
+      ])
     } else {
-      declarator.expression.body.push(rotateCall)
+      return new Error('Unsupported operation type.')
     }
-  } else {
-    return new Error('Unsupported operation type.')
   }
 
   return {
     modifiedAst,
-    pathToNode: [], // TODO: fix
+    pathToNode, // TODO: fix
+  }
+}
+
+function setTransformInPipe(
+  expression: PipeExpression,
+  translateCall: Node<CallExpressionKw>,
+  rotateCall: Node<CallExpressionKw>
+) {
+  const existingTranslateIndex = expression.body.findIndex(
+    (v) =>
+      v.type === 'CallExpressionKw' &&
+      v.callee.type === 'Name' &&
+      v.callee.name.name === 'translate'
+  )
+  if (existingTranslateIndex > -1) {
+    expression.body[existingTranslateIndex] = translateCall
+  } else {
+    expression.body.push(translateCall)
+  }
+
+  const existingRotateIndex = expression.body.findIndex(
+    (v) =>
+      v.type === 'CallExpressionKw' &&
+      v.callee.type === 'Name' &&
+      v.callee.name.name === 'rotate'
+  )
+  if (existingRotateIndex > -1) {
+    expression.body[existingRotateIndex] = rotateCall
+  } else {
+    expression.body.push(rotateCall)
   }
 }

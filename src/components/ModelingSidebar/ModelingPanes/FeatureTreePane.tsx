@@ -356,7 +356,11 @@ const OperationItem = (props: {
   }
 
   function enterTransformFlow() {
-    if (props.item.type === 'GroupBegin') {
+    if (
+      props.item.type === 'StdLibCall' ||
+      props.item.type === 'KclStdLibCall' ||
+      props.item.type === 'GroupBegin'
+    ) {
       props.send({
         type: 'enterTransformFlow',
         data: {
@@ -427,26 +431,9 @@ const OperationItem = (props: {
             </ContextMenuItem>,
           ]
         : []),
-      ...(props.item.type === 'GroupBegin'
-        ? [
-            <ContextMenuItem
-              onClick={enterTransformFlow}
-              data-testid="context-menu-set-transform"
-            >
-              Set transform
-            </ContextMenuItem>,
-          ]
-        : []),
       ...(props.item.type === 'StdLibCall' ||
       props.item.type === 'KclStdLibCall'
         ? [
-            <ContextMenuItem
-              disabled={!stdLibMap[props.item.name]?.supportsAppearance}
-              onClick={enterAppearanceFlow}
-              data-testid="context-menu-set-appearance"
-            >
-              Set appearance
-            </ContextMenuItem>,
             <ContextMenuItem
               disabled={!stdLibMap[props.item.name]?.prepareToEdit}
               onClick={enterEditFlow}
@@ -454,15 +441,34 @@ const OperationItem = (props: {
             >
               Edit
             </ContextMenuItem>,
+            <ContextMenuItem
+              disabled={!stdLibMap[props.item.name]?.supportsAppearance}
+              onClick={enterAppearanceFlow}
+              data-testid="context-menu-set-appearance"
+            >
+              Set appearance
+            </ContextMenuItem>,
           ]
         : []),
-      <ContextMenuItem
-        onClick={deleteOperation}
-        hotkey="Delete"
-        data-testid="context-menu-delete"
-      >
-        Delete
-      </ContextMenuItem>,
+      ...(props.item.type === 'StdLibCall' ||
+      props.item.type === 'KclStdLibCall' ||
+      props.item.type === 'GroupBegin'
+        ? [
+            <ContextMenuItem
+              onClick={enterTransformFlow}
+              data-testid="context-menu-set-transform"
+            >
+              Set transform
+            </ContextMenuItem>,
+            <ContextMenuItem
+              onClick={deleteOperation}
+              hotkey="Delete"
+              data-testid="context-menu-delete"
+            >
+              Delete
+            </ContextMenuItem>,
+          ]
+        : []),
     ],
     [props.item, props.send]
   )

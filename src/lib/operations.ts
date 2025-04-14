@@ -1319,24 +1319,19 @@ export async function enterAppearanceFlow({
 export async function enterTransformFlow({
   operation,
 }: EnterEditFlowProps): Promise<Error | CommandBarMachineEvent> {
-  // TODO: check how to extend to more types
-  if (operation.type !== 'GroupBegin') {
+  if (
+    operation.type !== 'KclStdLibCall' &&
+    operation.type !== 'StdLibCall' &&
+    operation.type !== 'GroupBegin'
+  ) {
     return new Error(
-      'Transform setting not yet supported outside of imports. Please edit in the code editor.'
+      'Unsupported operation type. Please edit in the code editor.'
     )
   }
   const nodeToEdit = getNodePathFromSourceRange(
     kclManager.ast,
     sourceRangeFromRust(operation.sourceRange)
   )
-  // TODO: this specifically isn't true on first insertion, not sure why.
-  // This is temporary but we should understand why this happens.
-  const hasExpressionStatement = nodeToEdit.some(
-    ([_, desc]) => desc === 'ExpressionStatement'
-  )
-  if (!hasExpressionStatement) {
-    return new Error("Couldn't find node to transform")
-  }
 
   // TODO: clean up this extreme verbosity
   let tx: KclExpression | undefined = undefined
@@ -1445,7 +1440,6 @@ export async function enterTransformFlow({
     rp,
     ry,
   }
-  console.log('argDefaultValues', argDefaultValues)
   return {
     type: 'Find and select command',
     data: {
