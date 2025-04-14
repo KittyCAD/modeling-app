@@ -1,12 +1,13 @@
-import { test, expect } from './zoo-test'
+import { KCL_DEFAULT_LENGTH } from '@src/lib/constants'
 import * as fsp from 'fs/promises'
+import path, { join } from 'path'
+
 import {
   executorInputPath,
   getUtils,
   orRunWhenFullSuiteEnabled,
-} from './test-utils'
-import { KCL_DEFAULT_LENGTH } from 'lib/constants'
-import path, { join } from 'path'
+} from '@e2e/playwright/test-utils'
+import { expect, test } from '@e2e/playwright/zoo-test'
 
 test.describe('Command bar tests', { tag: ['@skipWin'] }, () => {
   test('Extrude from command bar selects extrude line after', async ({
@@ -316,9 +317,13 @@ test.describe('Command bar tests', { tag: ['@skipWin'] }, () => {
   test('Can switch between sketch tools via command bar', async ({
     page,
     homePage,
+    scene,
+    cmdBar,
+    toolbar,
   }) => {
     await page.setBodyDimensions({ width: 1200, height: 500 })
     await homePage.goToModelingScene()
+    await scene.settled(cmdBar)
 
     const sketchButton = page.getByRole('button', { name: 'Start Sketch' })
     const cmdBarButton = page.getByRole('button', { name: 'Commands' })
@@ -342,7 +347,9 @@ test.describe('Command bar tests', { tag: ['@skipWin'] }, () => {
 
     // Start a sketch
     await sketchButton.click()
+
     await page.mouse.click(700, 200)
+    await toolbar.waitUntilSketchingReady()
 
     // Switch between sketch tools via the command bar
     await expect(lineToolButton).toHaveAttribute('aria-pressed', 'true')

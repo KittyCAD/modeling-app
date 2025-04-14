@@ -1,27 +1,34 @@
-import { DEFAULT_PROJECT_NAME } from 'lib/constants'
-import {
-  BaseUnit,
-  SettingProps,
-  SettingsLevel,
-  baseUnitsUnion,
-} from 'lib/settings/settingsTypes'
-import { Themes } from 'lib/theme'
-import { isEnumMember } from 'lib/types'
-import {
+import { useRef, useState } from 'react'
+
+import type { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
+import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
+import type { NamedView } from '@rust/kcl-lib/bindings/NamedView'
+import type { OnboardingStatus } from '@rust/kcl-lib/bindings/OnboardingStatus'
+
+import { CustomIcon } from '@src/components/CustomIcon'
+import { Toggle } from '@src/components/Toggle/Toggle'
+import Tooltip from '@src/components/Tooltip'
+import type {
   CameraSystem,
   cameraMouseDragGuards,
   cameraSystems,
-} from 'lib/cameraControls'
-import { isDesktop } from 'lib/isDesktop'
-import { useRef } from 'react'
-import { CustomIcon } from 'components/CustomIcon'
-import Tooltip from 'components/Tooltip'
-import { capitaliseFC, isArray, toSync } from 'lib/utils'
-import { reportRejection } from 'lib/trap'
-import { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
-import { OnboardingStatus } from '@rust/kcl-lib/bindings/OnboardingStatus'
-import { NamedView } from '@rust/kcl-lib/bindings/NamedView'
-import { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
+} from '@src/lib/cameraControls'
+import { cameraMouseDragGuards, cameraSystems } from '@src/lib/cameraControls'
+import {
+  DEFAULT_DEFAULT_LENGTH_UNIT,
+  DEFAULT_PROJECT_NAME,
+} from '@src/lib/constants'
+import { isDesktop } from '@src/lib/isDesktop'
+import type {
+  BaseUnit,
+  SettingProps,
+  SettingsLevel,
+} from '@src/lib/settings/settingsTypes'
+import { baseUnitsUnion } from '@src/lib/settings/settingsTypes'
+import { Themes } from '@src/lib/theme'
+import { reportRejection } from '@src/lib/trap'
+import { isEnumMember } from '@src/lib/types'
+import { capitaliseFC, isArray, toSync } from '@src/lib/utils'
 
 /**
  * A setting that can be set at the user or project level
@@ -90,8 +97,8 @@ export class Setting<T = unknown> {
     return this._project !== undefined
       ? this._project
       : this._user !== undefined
-      ? this._user
-      : this._default
+        ? this._user
+        : this._default
   }
   /**
    * @param {SettingsLevel} level - The level to get the fallback for
@@ -120,6 +127,8 @@ export class Setting<T = unknown> {
     return level === 'project' ? 'user' : 'default'
   }
 }
+
+const MS_IN_MINUTE = 1000 * 60
 
 export function createSettings() {
   return {
@@ -206,12 +215,109 @@ export function createSettings() {
       /**
        * Stream resource saving behavior toggle
        */
-      streamIdleMode: new Setting<boolean>({
-        defaultValue: false,
-        description: 'Toggle stream idling, saving bandwidth and battery',
-        validate: (v) => typeof v === 'boolean',
-        commandConfig: {
-          inputType: 'boolean',
+      streamIdleMode: new Setting<number | undefined>({
+        defaultValue: undefined,
+        hideOnLevel: 'project',
+        description: 'Save bandwidth & battery',
+        validate: (v) =>
+          v === undefined ||
+          (typeof v === 'number' &&
+            v >= 1 * MS_IN_MINUTE &&
+            v <= 60 * MS_IN_MINUTE),
+        Component: ({
+          value: settingValueInStorage,
+          updateValue: writeSettingValueToStorage,
+        }) => {
+          const [timeoutId, setTimeoutId] = useState<
+            ReturnType<typeof setTimeout> | undefined
+          >(undefined)
+          const [preview, setPreview] = useState(
+            settingValueInStorage === undefined
+              ? settingValueInStorage
+              : settingValueInStorage / MS_IN_MINUTE
+          )
+          const onChangeRange = (e: React.SyntheticEvent) => {
+            if (
+              !(
+                e.isTrusted &&
+                'value' in e.currentTarget &&
+                e.currentTarget.value
+              )
+            )
+              return
+            setPreview(Number(e.currentTarget.value))
+          }
+          const onSaveRange = (e: React.SyntheticEvent) => {
+            if (preview === undefined) return
+            if (
+              !(
+                e.isTrusted &&
+                'value' in e.currentTarget &&
+                e.currentTarget.value
+              )
+            )
+              return
+            writeSettingValueToStorage(
+              Number(e.currentTarget.value) * MS_IN_MINUTE
+            )
+          }
+
+          return (
+            <div className="flex item-center gap-4 m-0 py-0">
+              <Toggle
+                name="streamIdleModeToggle"
+                offLabel="Off"
+                onLabel="On"
+                checked={settingValueInStorage !== undefined}
+                onChange={(event: React.SyntheticEvent<HTMLInputElement>) => {
+                  if (timeoutId) {
+                    return
+                  }
+                  const isChecked = event.currentTarget.checked
+                  clearTimeout(timeoutId)
+                  setTimeoutId(
+                    setTimeout(() => {
+                      const requested = !isChecked ? undefined : 5
+                      setPreview(requested)
+                      writeSettingValueToStorage(
+                        requested === undefined
+                          ? undefined
+                          : Number(requested) * MS_IN_MINUTE
+                      )
+                      setTimeoutId(undefined)
+                    }, 100)
+                  )
+                }}
+                className="block w-4 h-4"
+              />
+              <div className="flex flex-col grow">
+                <input
+                  type="range"
+                  onChange={onChangeRange}
+                  onMouseUp={onSaveRange}
+                  onKeyUp={onSaveRange}
+                  onPointerUp={onSaveRange}
+                  disabled={preview === undefined}
+                  value={
+                    preview !== null && preview !== undefined ? preview : 5
+                  }
+                  min={1}
+                  max={60}
+                  step={1}
+                  className="block flex-1"
+                />
+                {preview !== undefined && preview !== null && (
+                  <div>
+                    {preview / MS_IN_MINUTE === 60
+                      ? '1 hour'
+                      : preview / MS_IN_MINUTE === 1
+                        ? '1 minute'
+                        : preview + ' minutes'}
+                  </div>
+                )}
+              </div>
+            </div>
+          )
         },
       }),
       allowOrbitInSketchMode: new Setting<boolean>({
@@ -300,8 +406,9 @@ export function createSettings() {
        * The default unit to use in modeling dimensions
        */
       defaultUnit: new Setting<BaseUnit>({
-        defaultValue: 'mm',
-        description: 'The default unit to use in modeling dimensions',
+        defaultValue: DEFAULT_DEFAULT_LENGTH_UNIT,
+        description:
+          'Set the default length unit setting value to give any new files.',
         validate: (v) => baseUnitsUnion.includes(v),
         commandConfig: {
           inputType: 'options',

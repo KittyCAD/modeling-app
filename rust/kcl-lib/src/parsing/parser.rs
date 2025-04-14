@@ -35,7 +35,7 @@ use crate::{
         token::{Token, TokenSlice, TokenType},
         PIPE_OPERATOR, PIPE_SUBSTITUTION_OPERATOR,
     },
-    SourceRange,
+    SourceRange, IMPORT_FILE_EXTENSIONS,
 };
 
 thread_local! {
@@ -284,6 +284,11 @@ fn non_code_node(i: &mut TokenSlice) -> PResult<Node<NonCodeNode>> {
     }
 
     alt((non_code_node_leading_whitespace, non_code_node_no_leading_whitespace)).parse_next(i)
+}
+
+fn outer_annotation(i: &mut TokenSlice) -> PResult<Node<Annotation>> {
+    peek((at_sign, open_paren)).parse_next(i)?;
+    annotation(i)
 }
 
 fn annotation(i: &mut TokenSlice) -> PResult<Node<Annotation>> {
@@ -1798,11 +1803,6 @@ fn import_stmt(i: &mut TokenSlice) -> PResult<BoxNode<ImportStatement>> {
             end = alias.end;
             *selector_alias = Some(alias);
         }
-
-        ParseContext::warn(CompilationError::err(
-            SourceRange::new(start, path.end, path.module_id),
-            "Importing a whole module is experimental, likely to be buggy, and likely to change",
-        ));
     }
 
     let path_string = match path.inner.value {
@@ -1823,14 +1823,6 @@ fn import_stmt(i: &mut TokenSlice) -> PResult<BoxNode<ImportStatement>> {
             )
             .into(),
         ));
-    } else if matches!(path, ImportPath::Std { .. }) && matches!(selector, ImportSelector::None { .. }) {
-        return Err(ErrMode::Cut(
-            CompilationError::fatal(
-                SourceRange::new(start, end, module_id),
-                "the standard library cannot be imported as a part",
-            )
-            .into(),
-        ));
     }
 
     Ok(Node::boxed(
@@ -1845,8 +1837,6 @@ fn import_stmt(i: &mut TokenSlice) -> PResult<BoxNode<ImportStatement>> {
         module_id,
     ))
 }
-
-const FOREIGN_IMPORT_EXTENSIONS: [&str; 8] = ["fbx", "gltf", "glb", "obj", "ply", "sldprt", "step", "stl"];
 
 /// Validates the path string in an `import` statement.
 ///
@@ -1912,12 +1902,11 @@ fn validate_path_string(path_string: String, var_name: bool, path_range: SourceR
 
         ImportPath::Std { path: segments }
     } else if path_string.contains('.') {
-        // TODO should allow other extensions if there is a format attribute.
-        let extn = &path_string[path_string.rfind('.').unwrap() + 1..];
-        if !FOREIGN_IMPORT_EXTENSIONS.contains(&extn) {
+        let extn = std::path::Path::new(&path_string).extension().unwrap_or_default();
+        if !IMPORT_FILE_EXTENSIONS.contains(&extn.to_string_lossy().to_string()) {
             ParseContext::warn(CompilationError::err(
                 path_range,
-                format!("unsupported import path format. KCL files can be imported from the current project, CAD files with the following formats are supported: {}", FOREIGN_IMPORT_EXTENSIONS.join(", ")),
+                format!("unsupported import path format. KCL files can be imported from the current project, CAD files with the following formats are supported: {}", IMPORT_FILE_EXTENSIONS.join(", ")),
             ))
         }
         ImportPath::Foreign { path: path_string }
@@ -1925,7 +1914,7 @@ fn validate_path_string(path_string: String, var_name: bool, path_range: SourceR
         return Err(ErrMode::Cut(
             CompilationError::fatal(
                 path_range,
-                format!("unsupported import path format. KCL files can be imported from the current project, CAD files with the following formats are supported: {}", FOREIGN_IMPORT_EXTENSIONS.join(", ")),
+                format!("unsupported import path format. KCL files can be imported from the current project, CAD files with the following formats are supported: {}", IMPORT_FILE_EXTENSIONS.join(", ")),
             )
             .into(),
         ));
@@ -2341,21 +2330,6 @@ fn nameable_identifier(i: &mut TokenSlice) -> PResult<Node<Identifier>> {
         ));
     }
 
-    if let Some(suggestion) = super::deprecation(&result.name, DeprecationKind::Const) {
-        ParseContext::warn(
-            CompilationError::err(
-                result.as_source_range(),
-                format!("Using `{}` is deprecated, prefer using `{}`.", result.name, suggestion),
-            )
-            .with_suggestion(
-                format!("Replace `{}` with `{}`", result.name, suggestion),
-                suggestion,
-                None,
-                Tag::Deprecated,
-            ),
-        );
-    }
-
     Ok(result)
 }
 
@@ -2374,8 +2348,7 @@ fn name(i: &mut TokenSlice) -> PResult<Node<Name>> {
     let name = idents.pop().unwrap();
     let end = name.end;
     let module_id = name.module_id;
-
-    Ok(Node::new(
+    let result = Node::new(
         Name {
             name,
             path: idents,
@@ -2385,7 +2358,24 @@ fn name(i: &mut TokenSlice) -> PResult<Node<Name>> {
         start,
         end,
         module_id,
-    ))
+    );
+
+    if let Some(suggestion) = super::deprecation(&result.to_string(), DeprecationKind::Const) {
+        ParseContext::warn(
+            CompilationError::err(
+                result.as_source_range(),
+                format!("Using `{result}` is deprecated, prefer using `{suggestion}`."),
+            )
+            .with_suggestion(
+                format!("Replace `{result}` with `{suggestion}`"),
+                suggestion,
+                None,
+                Tag::Deprecated,
+            ),
+        );
+    }
+
+    Ok(result)
 }
 
 impl TryFrom<Token> for Node<TagDeclarator> {
@@ -2910,13 +2900,17 @@ struct ParamDescription {
     arg_name: Token,
     type_: std::option::Option<Node<Type>>,
     default_value: Option<DefaultParamVal>,
+    attr: Option<Node<Annotation>>,
     comments: Option<Node<Vec<String>>>,
 }
 
 fn parameter(i: &mut TokenSlice) -> PResult<ParamDescription> {
-    let (_, comments, found_at_sign, arg_name, question_mark, _, type_, _ws, default_literal) = (
+    let (_, comments, _, attr, _, found_at_sign, arg_name, question_mark, _, type_, _ws, default_literal) = (
         opt(whitespace),
         opt(comments),
+        opt(whitespace),
+        opt(outer_annotation),
+        opt(whitespace),
         opt(at_sign),
         any.verify(|token: &Token| !matches!(token.token_type, TokenType::Brace) || token.value != ")"),
         opt(question_mark),
@@ -2941,6 +2935,7 @@ fn parameter(i: &mut TokenSlice) -> PResult<ParamDescription> {
                 return Err(ErrMode::Backtrack(ContextError::from(e)));
             }
         },
+        attr,
         comments,
     })
 }
@@ -2962,12 +2957,16 @@ fn parameters(i: &mut TokenSlice) -> PResult<Vec<Parameter>> {
                  arg_name,
                  type_,
                  default_value,
+                 attr,
                  comments,
              }| {
                 let mut identifier = Node::<Identifier>::try_from(arg_name)?;
                 if let Some(comments) = comments {
                     identifier.comment_start = comments.start;
                     identifier.pre_comments = comments.inner;
+                }
+                if let Some(attr) = attr {
+                    identifier.outer_attrs.push(attr);
                 }
 
                 Ok(Parameter {
@@ -3878,6 +3877,23 @@ mySk1 = startSketchOn(XY)
     }
 
     #[test]
+    fn parse_numeric() {
+        let test_program = "fn foo(x: number(Length)) {}";
+        let tokens = crate::parsing::token::lex(test_program, ModuleId::default()).unwrap();
+        run_parser(tokens.as_slice()).unwrap();
+
+        let test_program = "42_mm";
+        let tokens = crate::parsing::token::lex(test_program, ModuleId::default()).unwrap();
+        assert_eq!(tokens.iter().count(), 1);
+        run_parser(tokens.as_slice()).unwrap();
+
+        let test_program = "42_Length";
+        let tokens = crate::parsing::token::lex(test_program, ModuleId::default()).unwrap();
+        assert_eq!(tokens.iter().count(), 2);
+        assert_eq!(run_parser(tokens.as_slice()).unwrap_errs().count(), 1);
+    }
+
+    #[test]
     fn test_parameter_list() {
         let tests = [
             ("", vec![]),
@@ -4475,10 +4491,10 @@ e
 /// ```
 /// exampleSketch = startSketchOn("XZ")
 ///   |> startProfileAt([0, 0], %)
-///   |> angledLine({
-///     angle = 30,
-///     length = 3 / cos(toRadians(30)),
-///   }, %)
+///   |> angledLine(
+///        angle = 30,
+///        length = 3 / cos(toRadians(30)),
+///      )
 ///   |> yLine(endAbsolute = 0)
 ///   |> close(%)
 ///  
@@ -4491,21 +4507,9 @@ export fn cos(num: number(rad)): number(_) {}"#;
 
     #[test]
     fn warn_import() {
-        let some_program_string = r#"import "foo.kcl""#;
-        let (_, errs) = assert_no_err(some_program_string);
-        assert_eq!(errs.len(), 1, "{errs:#?}");
-
-        let some_program_string = r#"import "foo.obj""#;
-        let (_, errs) = assert_no_err(some_program_string);
-        assert_eq!(errs.len(), 1, "{errs:#?}");
-
-        let some_program_string = r#"import "foo.sldprt""#;
-        let (_, errs) = assert_no_err(some_program_string);
-        assert_eq!(errs.len(), 1, "{errs:#?}");
-
         let some_program_string = r#"import "foo.bad""#;
         let (_, errs) = assert_no_err(some_program_string);
-        assert_eq!(errs.len(), 2, "{errs:#?}");
+        assert_eq!(errs.len(), 1, "{errs:#?}");
     }
 
     #[test]

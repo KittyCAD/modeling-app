@@ -1,9 +1,9 @@
-import {
-  IconDefinition,
-  faCircleExclamation,
-} from '@fortawesome/free-solid-svg-icons'
+import type { IconDefinition } from '@fortawesome/free-solid-svg-icons'
+import { faCircleExclamation } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { CustomIcon, CustomIconName } from './CustomIcon'
+
+import type { CustomIconName } from '@src/components/CustomIcon'
+import { CustomIcon } from '@src/components/CustomIcon'
 
 const iconSizes = {
   xs: 12,
@@ -37,7 +37,7 @@ export const ActionIcon = (props: ActionIconProps) => {
   const computedBgClassName = `bg-chalkboard-20 dark:bg-chalkboard-80 group-disabled:bg-chalkboard-30 dark:group-disabled:bg-chalkboard-80 ${bgClassName}`
 
   return (
-    <span style={{ color: iconColor }}>
+    <span style={{ display: 'contents', color: iconColor }}>
       <div
         data-testid={props['data-testid']}
         className={

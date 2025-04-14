@@ -20,14 +20,26 @@ description: Variables in memory after executing riddle_small.kcl
     "type": "Number",
     "value": -26.0,
     "ty": {
-      "type": "Unknown"
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
     }
   },
   "oy": {
     "type": "Number",
     "value": 34.0,
     "ty": {
-      "type": "Unknown"
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
     }
   },
   "r": {
@@ -155,22 +167,34 @@ description: Variables in memory after executing riddle_small.kcl
           "origin": {
             "x": 0.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
+            "z": 1.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "units": {
             "type": "Mm"

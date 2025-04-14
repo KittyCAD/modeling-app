@@ -15,14 +15,6 @@ description: Artifact commands color-cube.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "set_scene_units",
-      "unit": "mm"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
       "hidden": true
@@ -421,7 +413,8 @@ description: Artifact commands color-cube.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 1.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -687,7 +680,8 @@ description: Artifact commands color-cube.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 1.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -953,7 +947,8 @@ description: Artifact commands color-cube.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 1.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -1219,7 +1214,8 @@ description: Artifact commands color-cube.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 1.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -1485,7 +1481,8 @@ description: Artifact commands color-cube.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 1.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -1751,7 +1748,8 @@ description: Artifact commands color-cube.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 1.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {

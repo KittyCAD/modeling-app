@@ -8,10 +8,10 @@ description: Result of parsing kw_fn_too_few_args.kcl
       {
         "commentStart": 0,
         "declaration": {
-          "commentStart": 3,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 3,
+            "commentStart": 0,
             "end": 0,
             "name": "add",
             "start": 0,
@@ -22,14 +22,14 @@ description: Result of parsing kw_fn_too_few_args.kcl
               "body": [
                 {
                   "argument": {
-                    "commentStart": 24,
+                    "commentStart": 0,
                     "end": 0,
                     "left": {
                       "abs_path": false,
-                      "commentStart": 24,
+                      "commentStart": 0,
                       "end": 0,
                       "name": {
-                        "commentStart": 24,
+                        "commentStart": 0,
                         "end": 0,
                         "name": "x",
                         "start": 0,
@@ -43,10 +43,10 @@ description: Result of parsing kw_fn_too_few_args.kcl
                     "operator": "+",
                     "right": {
                       "abs_path": false,
-                      "commentStart": 28,
+                      "commentStart": 0,
                       "end": 0,
                       "name": {
-                        "commentStart": 28,
+                        "commentStart": 0,
                         "end": 0,
                         "name": "y",
                         "start": 0,
@@ -61,24 +61,24 @@ description: Result of parsing kw_fn_too_few_args.kcl
                     "type": "BinaryExpression",
                     "type": "BinaryExpression"
                   },
-                  "commentStart": 17,
+                  "commentStart": 0,
                   "end": 0,
                   "start": 0,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
                 }
               ],
-              "commentStart": 13,
+              "commentStart": 0,
               "end": 0,
               "start": 0
             },
-            "commentStart": 6,
+            "commentStart": 0,
             "end": 0,
             "params": [
               {
                 "type": "Parameter",
                 "identifier": {
-                  "commentStart": 7,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "x",
                   "start": 0,
@@ -88,7 +88,7 @@ description: Result of parsing kw_fn_too_few_args.kcl
               {
                 "type": "Parameter",
                 "identifier": {
-                  "commentStart": 10,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "y",
                   "start": 0,
@@ -110,12 +110,12 @@ description: Result of parsing kw_fn_too_few_args.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 31,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 33,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 33,
+            "commentStart": 0,
             "end": 0,
             "name": "three",
             "start": 0,
@@ -126,14 +126,14 @@ description: Result of parsing kw_fn_too_few_args.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "commentStart": 45,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "x",
                   "start": 0,
                   "type": "Identifier"
                 },
                 "arg": {
-                  "commentStart": 49,
+                  "commentStart": 0,
                   "end": 0,
                   "raw": "1",
                   "start": 0,
@@ -148,10 +148,10 @@ description: Result of parsing kw_fn_too_few_args.kcl
             ],
             "callee": {
               "abs_path": false,
-              "commentStart": 41,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 41,
+                "commentStart": 0,
                 "end": 0,
                 "name": "add",
                 "start": 0,
@@ -161,7 +161,7 @@ description: Result of parsing kw_fn_too_few_args.kcl
               "start": 0,
               "type": "Name"
             },
-            "commentStart": 41,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "CallExpressionKw",
@@ -184,7 +184,7 @@ description: Result of parsing kw_fn_too_few_args.kcl
       "nonCodeNodes": {
         "0": [
           {
-            "commentStart": 31,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",

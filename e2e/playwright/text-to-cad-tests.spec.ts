@@ -1,12 +1,13 @@
-import { Page } from '@playwright/test'
-import { test, expect } from './zoo-test'
-import {
-  getUtils,
-  createProject,
-  orRunWhenFullSuiteEnabled,
-} from './test-utils'
-import { join } from 'path'
+import type { Page } from '@playwright/test'
 import fs from 'fs'
+import { join } from 'path'
+
+import {
+  createProject,
+  getUtils,
+  orRunWhenFullSuiteEnabled,
+} from '@e2e/playwright/test-utils'
+import { expect, test } from '@e2e/playwright/zoo-test'
 
 test.describe('Text-to-CAD tests', { tag: ['@skipWin'] }, () => {
   test('basic lego happy case', async ({ page, homePage }) => {
@@ -36,18 +37,18 @@ test.describe('Text-to-CAD tests', { tag: ['@skipWin'] }, () => {
     await expect(successToastMessage).toBeVisible({ timeout: 15000 })
 
     // Hit accept.
-    const copyToClipboardButton = page.getByRole('button', {
+    const acceptButton = page.getByRole('button', {
       name: 'Accept',
     })
-    await expect(copyToClipboardButton).toBeVisible()
+    await expect(acceptButton).toBeVisible()
 
-    await copyToClipboardButton.click()
+    await acceptButton.click()
 
     // Click in the code editor.
     await page.locator('.cm-content').click()
 
     // Expect the code to be pasted.
-    await expect(page.locator('.cm-content')).toContainText(`const`)
+    await expect(page.locator('.cm-content')).toContainText(`startSketchOn`)
 
     // make sure a model renders.
     // wait for execution done

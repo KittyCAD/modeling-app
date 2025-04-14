@@ -1,7 +1,12 @@
-import { test, expect } from './zoo-test'
-import { commonPoints, getUtils, orRunWhenFullSuiteEnabled } from './test-utils'
-import { EngineCommand } from 'lang/std/artifactGraph'
-import { uuidv4 } from 'lib/utils'
+import type { EngineCommand } from '@src/lang/std/artifactGraph'
+import { uuidv4 } from '@src/lib/utils'
+
+import {
+  commonPoints,
+  getUtils,
+  orRunWhenFullSuiteEnabled,
+} from '@e2e/playwright/test-utils'
+import { expect, test } from '@e2e/playwright/zoo-test'
 
 test.describe('Test network and connection issues', () => {
   test(
@@ -84,7 +89,7 @@ test.describe('Test network and connection issues', () => {
   test(
     'Engine disconnect & reconnect in sketch mode',
     { tag: '@skipLocalEngine' },
-    async ({ page, homePage, toolbar }) => {
+    async ({ page, homePage, toolbar, scene, cmdBar }) => {
       test.fixme(orRunWhenFullSuiteEnabled())
       const networkToggle = page.getByTestId('network-toggle')
 
@@ -164,7 +169,7 @@ test.describe('Test network and connection issues', () => {
 
       // Expect the network to be up
       await expect(networkToggle).toContainText('Connected')
-      await expect(page.getByTestId('loading-stream')).not.toBeAttached()
+      await scene.settled(cmdBar)
 
       // Click off the code pane.
       await page.mouse.click(100, 100)

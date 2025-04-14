@@ -15,14 +15,6 @@ description: Artifact commands ball-bearing.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "set_scene_units",
-      "unit": "mm"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
       "hidden": true
@@ -277,7 +269,8 @@ description: Artifact commands ball-bearing.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.313,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -466,7 +459,8 @@ description: Artifact commands ball-bearing.kcl
         "unit": "degrees",
         "value": 360.0
       },
-      "tolerance": 0.0000001
+      "tolerance": 0.0000001,
+      "opposite": "None"
     }
   },
   {
@@ -703,7 +697,8 @@ description: Artifact commands ball-bearing.kcl
         "unit": "degrees",
         "value": 360.0
       },
-      "tolerance": 0.0000001
+      "tolerance": 0.0000001,
+      "opposite": "None"
     }
   },
   {
@@ -946,7 +941,8 @@ description: Artifact commands ball-bearing.kcl
         "unit": "degrees",
         "value": 36.0
       },
-      "tolerance": 0.0000001
+      "tolerance": 0.0000001,
+      "opposite": "None"
     }
   },
   {
@@ -1239,7 +1235,8 @@ description: Artifact commands ball-bearing.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.313,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {

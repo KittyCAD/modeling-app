@@ -1,6 +1,7 @@
-import { processMemory } from './MemoryPane'
-import { enginelessExecutor } from '../../../lib/testHelpers'
-import { assertParse, initPromise } from '../../../lang/wasm'
+import { processMemory } from '@src/components/ModelingSidebar/ModelingPanes/MemoryPane'
+import { assertParse } from '@src/lang/wasm'
+import { initPromise } from '@src/lang/wasmUtils'
+import { enginelessExecutor } from '@src/lib/testHelpers'
 
 beforeAll(async () => {
   await initPromise

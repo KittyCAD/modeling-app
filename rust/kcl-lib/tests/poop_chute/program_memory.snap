@@ -139,9 +139,9 @@ description: Variables in memory after executing poop_chute.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 354,
-            "end": 360,
-            "start": 354,
+            "commentStart": 358,
+            "end": 364,
+            "start": 358,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -258,9 +258,9 @@ description: Variables in memory after executing poop_chute.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 354,
-              "end": 360,
-              "start": 354,
+              "commentStart": 358,
+              "end": 364,
+              "start": 358,
               "type": "TagDeclarator",
               "value": "seg01"
             },
@@ -491,22 +491,34 @@ description: Variables in memory after executing poop_chute.kcl
           "origin": {
             "x": 0.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
+            "z": 1.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "zAxis": {
             "x": -1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "units": {
             "type": "Mm"
@@ -595,9 +607,9 @@ description: Variables in memory after executing poop_chute.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 354,
-            "end": 360,
-            "start": 354,
+            "commentStart": 358,
+            "end": 364,
+            "start": 358,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -828,22 +840,34 @@ description: Variables in memory after executing poop_chute.kcl
         "origin": {
           "x": 0.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": {
+            "type": "Mm"
+          }
         },
         "xAxis": {
           "x": 0.0,
           "y": 1.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": {
+            "type": "Mm"
+          }
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
-          "z": 1.0
+          "z": 1.0,
+          "units": {
+            "type": "Mm"
+          }
         },
         "zAxis": {
           "x": -1.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": {
+            "type": "Mm"
+          }
         },
         "units": {
           "type": "Mm"
@@ -899,9 +923,9 @@ description: Variables in memory after executing poop_chute.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1202,
-            "end": 1208,
-            "start": 1202,
+            "commentStart": 1152,
+            "end": 1158,
+            "start": 1152,
             "type": "TagDeclarator",
             "value": "seg02"
           },
@@ -1018,9 +1042,9 @@ description: Variables in memory after executing poop_chute.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 1202,
-              "end": 1208,
-              "start": 1202,
+              "commentStart": 1152,
+              "end": 1158,
+              "start": 1152,
               "type": "TagDeclarator",
               "value": "seg02"
             },
@@ -1251,22 +1275,34 @@ description: Variables in memory after executing poop_chute.kcl
           "origin": {
             "x": 0.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
+            "z": 1.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "zAxis": {
             "x": -1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "units": {
             "type": "Mm"

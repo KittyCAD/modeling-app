@@ -85,22 +85,34 @@ description: Variables in memory after executing ball-bearing.kcl
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Inches"
@@ -217,22 +229,34 @@ description: Variables in memory after executing ball-bearing.kcl
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Inches"
@@ -349,22 +373,34 @@ description: Variables in memory after executing ball-bearing.kcl
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Inches"
@@ -481,22 +517,34 @@ description: Variables in memory after executing ball-bearing.kcl
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Inches"
@@ -613,22 +661,34 @@ description: Variables in memory after executing ball-bearing.kcl
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Inches"
@@ -745,22 +805,34 @@ description: Variables in memory after executing ball-bearing.kcl
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Inches"
@@ -877,22 +949,34 @@ description: Variables in memory after executing ball-bearing.kcl
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Inches"
@@ -1009,22 +1093,34 @@ description: Variables in memory after executing ball-bearing.kcl
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Inches"
@@ -1141,22 +1237,34 @@ description: Variables in memory after executing ball-bearing.kcl
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Inches"
@@ -1273,22 +1381,34 @@ description: Variables in memory after executing ball-bearing.kcl
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Inches"
@@ -1387,22 +1507,34 @@ description: Variables in memory after executing ball-bearing.kcl
         "origin": {
           "x": 0.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": {
+            "type": "Mm"
+          }
         },
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": {
+            "type": "Mm"
+          }
         },
         "yAxis": {
           "x": 0.0,
           "y": 1.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": {
+            "type": "Mm"
+          }
         },
         "zAxis": {
           "x": 0.0,
           "y": 0.0,
-          "z": 1.0
+          "z": 1.0,
+          "units": {
+            "type": "Mm"
+          }
         },
         "units": {
           "type": "Inches"
@@ -1567,22 +1699,34 @@ description: Variables in memory after executing ball-bearing.kcl
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Inches"
@@ -1751,22 +1895,34 @@ description: Variables in memory after executing ball-bearing.kcl
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Inches"
@@ -1935,22 +2091,34 @@ description: Variables in memory after executing ball-bearing.kcl
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Inches"
@@ -2119,22 +2287,34 @@ description: Variables in memory after executing ball-bearing.kcl
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Inches"
@@ -2303,22 +2483,34 @@ description: Variables in memory after executing ball-bearing.kcl
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Inches"
@@ -2487,22 +2679,34 @@ description: Variables in memory after executing ball-bearing.kcl
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Inches"
@@ -2671,22 +2875,34 @@ description: Variables in memory after executing ball-bearing.kcl
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Inches"
@@ -2855,22 +3071,34 @@ description: Variables in memory after executing ball-bearing.kcl
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Inches"
@@ -3039,22 +3267,34 @@ description: Variables in memory after executing ball-bearing.kcl
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Inches"
@@ -3223,22 +3463,34 @@ description: Variables in memory after executing ball-bearing.kcl
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Inches"
@@ -3375,22 +3627,34 @@ description: Variables in memory after executing ball-bearing.kcl
         "origin": {
           "x": 0.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": {
+            "type": "Mm"
+          }
         },
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": {
+            "type": "Mm"
+          }
         },
         "yAxis": {
           "x": 0.0,
           "y": 1.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": {
+            "type": "Mm"
+          }
         },
         "zAxis": {
           "x": 0.0,
           "y": 0.0,
-          "z": 1.0
+          "z": 1.0,
+          "units": {
+            "type": "Mm"
+          }
         },
         "units": {
           "type": "Inches"
@@ -3425,14 +3689,26 @@ description: Variables in memory after executing ball-bearing.kcl
     "type": "Number",
     "value": 0.0313,
     "ty": {
-      "type": "Unknown"
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
     }
   },
   "chainWidth": {
     "type": "Number",
     "value": 0.125,
     "ty": {
-      "type": "Unknown"
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
     }
   },
   "insideWall": {
@@ -3488,22 +3764,34 @@ description: Variables in memory after executing ball-bearing.kcl
           "origin": {
             "x": 0.0,
             "y": 0.0,
-            "z": -0.1565
+            "z": -0.1565,
+            "units": {
+              "type": "Mm"
+            }
           },
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
+            "z": 1.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "units": {
             "type": "Inches"
@@ -3581,22 +3869,34 @@ description: Variables in memory after executing ball-bearing.kcl
         "origin": {
           "x": 0.0,
           "y": 0.0,
-          "z": -0.1565
+          "z": -0.1565,
+          "units": {
+            "type": "Mm"
+          }
         },
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": {
+            "type": "Mm"
+          }
         },
         "yAxis": {
           "x": 0.0,
           "y": 1.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": {
+            "type": "Mm"
+          }
         },
         "zAxis": {
           "x": 0.0,
           "y": 0.0,
-          "z": 1.0
+          "z": 1.0,
+          "units": {
+            "type": "Mm"
+          }
         },
         "units": {
           "type": "Inches"
@@ -3631,7 +3931,13 @@ description: Variables in memory after executing ball-bearing.kcl
     "type": "Number",
     "value": 0.0625,
     "ty": {
-      "type": "Unknown"
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
     }
   },
   "linkRevolve": {
@@ -3690,22 +3996,34 @@ description: Variables in memory after executing ball-bearing.kcl
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Inches"
@@ -3796,22 +4114,34 @@ description: Variables in memory after executing ball-bearing.kcl
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Inches"
@@ -3902,22 +4232,34 @@ description: Variables in memory after executing ball-bearing.kcl
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Inches"
@@ -4008,22 +4350,34 @@ description: Variables in memory after executing ball-bearing.kcl
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Inches"
@@ -4114,22 +4468,34 @@ description: Variables in memory after executing ball-bearing.kcl
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Inches"
@@ -4220,22 +4586,34 @@ description: Variables in memory after executing ball-bearing.kcl
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Inches"
@@ -4326,22 +4704,34 @@ description: Variables in memory after executing ball-bearing.kcl
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Inches"
@@ -4432,22 +4822,34 @@ description: Variables in memory after executing ball-bearing.kcl
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Inches"
@@ -4538,22 +4940,34 @@ description: Variables in memory after executing ball-bearing.kcl
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Inches"
@@ -4644,22 +5058,34 @@ description: Variables in memory after executing ball-bearing.kcl
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Inches"
@@ -4739,22 +5165,34 @@ description: Variables in memory after executing ball-bearing.kcl
         "origin": {
           "x": 0.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": {
+            "type": "Mm"
+          }
         },
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": {
+            "type": "Mm"
+          }
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
-          "z": 1.0
+          "z": 1.0,
+          "units": {
+            "type": "Mm"
+          }
         },
         "zAxis": {
           "x": 0.0,
           "y": -1.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": {
+            "type": "Mm"
+          }
         },
         "units": {
           "type": "Inches"
@@ -4864,22 +5302,34 @@ description: Variables in memory after executing ball-bearing.kcl
           "origin": {
             "x": 0.0,
             "y": 0.0,
-            "z": -0.1565
+            "z": -0.1565,
+            "units": {
+              "type": "Mm"
+            }
           },
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
+            "z": 1.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "units": {
             "type": "Inches"
@@ -4957,22 +5407,34 @@ description: Variables in memory after executing ball-bearing.kcl
         "origin": {
           "x": 0.0,
           "y": 0.0,
-          "z": -0.1565
+          "z": -0.1565,
+          "units": {
+            "type": "Mm"
+          }
         },
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": {
+            "type": "Mm"
+          }
         },
         "yAxis": {
           "x": 0.0,
           "y": 1.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": {
+            "type": "Mm"
+          }
         },
         "zAxis": {
           "x": 0.0,
           "y": 0.0,
-          "z": 1.0
+          "z": 1.0,
+          "units": {
+            "type": "Mm"
+          }
         },
         "units": {
           "type": "Inches"

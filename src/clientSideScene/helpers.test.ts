@@ -1,5 +1,6 @@
 import { Quaternion } from 'three'
-import { isQuaternionVertical } from './helpers'
+
+import { isQuaternionVertical } from '@src/clientSideScene/helpers'
 
 describe('isQuaternionVertical', () => {
   it('should identify vertical quaternions', () => {

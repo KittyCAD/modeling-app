@@ -1,21 +1,22 @@
-import { test, expect } from './zoo-test'
-import { secrets } from './secrets'
-import {
-  Paths,
-  doExport,
-  getUtils,
-  settingsToToml,
-  orRunWhenFullSuiteEnabled,
-} from './test-utils'
-import { Models } from '@kittycad/lib'
-import fsp from 'fs/promises'
+import type { Models } from '@kittycad/lib'
+import { KCL_DEFAULT_LENGTH } from '@src/lib/constants'
 import { spawn } from 'child_process'
-import { KCL_DEFAULT_LENGTH } from 'lib/constants'
+import fsp from 'fs/promises'
 import JSZip from 'jszip'
 import path from 'path'
-import { TEST_SETTINGS, TEST_SETTINGS_KEY } from './storageStates'
-import { SceneFixture } from './fixtures/sceneFixture'
-import { CmdBarFixture } from './fixtures/cmdBarFixture'
+
+import type { CmdBarFixture } from '@e2e/playwright/fixtures/cmdBarFixture'
+import type { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
+import { secrets } from '@e2e/playwright/secrets'
+import { TEST_SETTINGS, TEST_SETTINGS_KEY } from '@e2e/playwright/storageStates'
+import type { Paths } from '@e2e/playwright/test-utils'
+import {
+  doExport,
+  getUtils,
+  orRunWhenFullSuiteEnabled,
+  settingsToToml,
+} from '@e2e/playwright/test-utils'
+import { expect, test } from '@e2e/playwright/zoo-test'
 
 test.beforeEach(async ({ page, context }) => {
   // Make the user avatar image always 404
@@ -69,31 +70,33 @@ part001 = startSketchOn(-XZ)
   |> startProfileAt([0, 0], %)
   |> yLine(length = baseHeight)
   |> xLine(length = baseLen)
-  |> angledLineToY({
+  |> angledLine(
         angle = topAng,
-        to = totalHeightHalf,
-      }, %, $seg04)
+        endAbsoluteY = totalHeightHalf,
+        tag = $seg04,
+     )
   |> xLine(endAbsolute = totalLen, tag = $seg03)
   |> yLine(length = -armThick, tag = $seg01)
   |> angledLineThatIntersects({
-        angle = HALF_TURN,
+        angle = turns::HALF_TURN,
         offset = -armThick,
         intersectTag = seg04
       }, %)
-  |> angledLineToY([segAng(seg04, %) + 180, ZERO], %)
-  |> angledLineToY({
+  |> angledLine(angle = segAng(seg04, %) + 180, endAbsoluteY = turns::ZERO)
+  |> angledLine(
         angle = -bottomAng,
-        to = -totalHeightHalf - armThick,
-      }, %, $seg02)
+        endAbsoluteY = -totalHeightHalf - armThick,
+        tag = $seg02,
+     )
   |> xLine(length = endAbsolute = segEndX(seg03) + 0)
   |> yLine(length = -segLen(seg01, %))
   |> angledLineThatIntersects({
-        angle = HALF_TURN,
+        angle = turns::HALF_TURN,
         offset = -armThick,
         intersectTag = seg02
       }, %)
-  |> angledLineToY([segAng(seg02, %) + 180, -baseHeight], %)
-  |> xLine(endAbsolute = ZERO)
+  |> angledLine(angle = segAng(seg02, %) + 180, endAbsoluteY = -baseHeight)
+  |> xLine(endAbsolute = turns::ZERO)
   |> close()
   |> extrude(length = 4)`
       )
@@ -102,7 +105,6 @@ part001 = startSketchOn(-XZ)
 
     await u.waitForAuthSkipAppStart()
 
-    await scene.connectionEstablished()
     await scene.settled(cmdBar)
 
     const axisDirectionPair: Models['AxisDirectionPair_type'] = {
@@ -345,10 +347,12 @@ const extrudeDefaultPlane = async (
           app: {
             onboarding_status: 'dismissed',
             show_debug_panel: true,
-            theme: 'dark',
+            appearance: {
+              theme: 'dark',
+            },
           },
           project: {
-            default_project_name: 'project-$nnn',
+            default_project_name: 'untitled',
           },
           text_editor: {
             text_wrapping: true,
@@ -366,7 +370,6 @@ const extrudeDefaultPlane = async (
   await page.setViewportSize({ width: 1200, height: 500 })
 
   await u.waitForAuthSkipAppStart()
-  await scene.connectionEstablished()
   await scene.settled(cmdBar)
 
   await expect(page).toHaveScreenshot({
@@ -418,8 +421,6 @@ test(
     const PUR = 400 / 37.5 //pixeltoUnitRatio
     await u.waitForAuthSkipAppStart()
 
-    await scene.connectionEstablished()
-
     const startXPx = 600
     const [endOfTangentClk, endOfTangentMv] = scene.makeMouseHelpers(
       startXPx + PUR * 30,
@@ -452,7 +453,7 @@ test(
     await page.waitForTimeout(700) // TODO detect animation ending, or disable animation
 
     await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
-    code += `profile001 = startProfileAt([7.19, -9.7], sketch001)`
+    code += `profile001 = startProfileAt([182.59, -246.32], sketch001)`
     await expect(page.locator('.cm-content')).toHaveText(code)
     await page.waitForTimeout(100)
 
@@ -470,7 +471,7 @@ test(
     await page.waitForTimeout(500)
 
     code += `
-  |> xLine(length = 7.25)`
+  |> xLine(length = 184.3)`
     await expect(page.locator('.cm-content')).toHaveText(code)
 
     await page
@@ -548,8 +549,6 @@ test(
 
     await u.waitForAuthSkipAppStart()
 
-    await scene.connectionEstablished()
-
     // click on "Start Sketch" button
     await u.doAndWaitForImageDiff(
       () => page.getByRole('button', { name: 'Start Sketch' }).click(),
@@ -589,13 +588,12 @@ test(
   'Draft circle should look right',
   { tag: '@snapshot' },
   async ({ page, context, cmdBar, scene }) => {
+    test.fixme(orRunWhenFullSuiteEnabled())
     const u = await getUtils(page)
     await page.setViewportSize({ width: 1200, height: 500 })
     const PUR = 400 / 37.5 //pixeltoUnitRatio
 
     await u.waitForAuthSkipAppStart()
-
-    await scene.connectionEstablished()
 
     await u.doAndWaitForImageDiff(
       () => page.getByRole('button', { name: 'Start Sketch' }).click(),
@@ -628,7 +626,7 @@ test(
       mask: [page.getByTestId('model-state-indicator')],
     })
     await expect(page.locator('.cm-content')).toHaveText(
-      `sketch001 = startSketchOn(XZ)profile001 = circle(sketch001, center = [14.44, -2.44], radius = 1)`
+      `sketch001 = startSketchOn(XZ)profile001 = circle(sketch001, center = [366.89, -62.01], radius = 1)`
     )
   }
 )
@@ -647,8 +645,6 @@ test.describe(
 
       await u.waitForAuthSkipAppStart()
 
-      await scene.connectionEstablished()
-
       await u.doAndWaitForImageDiff(
         () => page.getByRole('button', { name: 'Start Sketch' }).click(),
         200
@@ -665,7 +661,7 @@ test.describe(
 
       const startXPx = 600
       await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
-      code += `profile001 = startProfileAt([7.19, -9.7], sketch001)`
+      code += `profile001 = startProfileAt([182.59, -246.32], sketch001)`
       await expect(u.codeLocator).toHaveText(code)
       await page.waitForTimeout(100)
 
@@ -673,7 +669,7 @@ test.describe(
       await page.waitForTimeout(100)
 
       code += `
-  |> xLine(length = 7.25)`
+  |> xLine(length = 184.3)`
       await expect(u.codeLocator).toHaveText(code)
 
       await page
@@ -688,7 +684,7 @@ test.describe(
       await page.mouse.click(startXPx + PUR * 30, 500 - PUR * 20)
 
       code += `
-  |> tangentialArcTo([21.7, -2.44], %)`
+  |> tangentialArc(endAbsolute = [551.2, -62.01])`
       await expect(u.codeLocator).toHaveText(code)
 
       // click tangential arc tool again to unequip it
@@ -741,7 +737,6 @@ test.describe(
 
       await u.waitForAuthSkipAppStart()
 
-      await scene.connectionEstablished()
       await scene.settled(cmdBar)
 
       await u.doAndWaitForImageDiff(
@@ -783,7 +778,7 @@ test.describe(
       await page.mouse.click(startXPx + PUR * 30, 500 - PUR * 20)
 
       code += `
-  |> tangentialArcTo([551.2, -62.01], %)`
+  |> tangentialArc(endAbsolute = [551.2, -62.01])`
       await expect(u.codeLocator).toHaveText(code)
 
       await page
@@ -829,7 +824,7 @@ test(
   |> line(end = [11.91, -10.42])
   |> close()
   |> extrude(length = ${KCL_DEFAULT_LENGTH})
-part002 = startSketchOn(part001, seg01)
+part002 = startSketchOn(part001, face = seg01)
   |> startProfileAt([8, 8], %)
   |> line(end = [4.68, 3.05])
   |> line(end = [0, -7.79])
@@ -843,7 +838,6 @@ part002 = startSketchOn(part001, seg01)
 
     await u.waitForAuthSkipAppStart()
 
-    await scene.connectionEstablished()
     await scene.settled(cmdBar)
 
     // Wait for the second extrusion to appear
@@ -899,7 +893,6 @@ test(
 
     await u.waitForAuthSkipAppStart()
 
-    await scene.connectionEstablished()
     await scene.settled(cmdBar)
 
     // Wait for the second extrusion to appear
@@ -940,7 +933,6 @@ test(
 
     await u.waitForAuthSkipAppStart()
 
-    await scene.connectionEstablished()
     await scene.settled(cmdBar)
 
     // Wait for the second extrusion to appear
@@ -973,7 +965,6 @@ test.describe('Grid visibility', { tag: '@snapshot' }, () => {
     await page.goto('/')
     await u.waitForAuthSkipAppStart()
 
-    await scene.connectionEstablished()
     await scene.settled(cmdBar)
 
     await u.closeKclCodePanel()
@@ -1038,7 +1029,6 @@ test.describe('Grid visibility', { tag: '@snapshot' }, () => {
     await page.goto('/')
     await u.waitForAuthSkipAppStart()
 
-    await scene.connectionEstablished()
     await scene.settled(cmdBar)
 
     await u.closeKclCodePanel()
@@ -1083,7 +1073,6 @@ test.describe('Grid visibility', { tag: '@snapshot' }, () => {
     await page.goto('/')
     await u.waitForAuthSkipAppStart()
 
-    await scene.connectionEstablished()
     await scene.settled(cmdBar)
 
     await u.closeKclCodePanel()
@@ -1202,7 +1191,6 @@ sweepSketch = startSketchOn(XY)
     await page.setViewportSize({ width: 1200, height: 1000 })
     await u.waitForAuthSkipAppStart()
 
-    await scene.connectionEstablished()
     await scene.settled(cmdBar)
 
     await expect(page, 'expect small color widget').toHaveScreenshot({
@@ -1252,7 +1240,6 @@ sweepSketch = startSketchOn(XY)
     await page.setViewportSize({ width: 1200, height: 1000 })
     await u.waitForAuthSkipAppStart()
 
-    await scene.connectionEstablished()
     await scene.settled(cmdBar)
 
     await expect(page.locator('.cm-css-color-picker-wrapper')).toBeVisible()

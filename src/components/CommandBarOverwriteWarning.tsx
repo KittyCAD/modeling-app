@@ -1,11 +1,11 @@
 interface CommandBarOverwriteWarningProps {
-  heading?: string
-  message?: string
+  heading: string
+  message: string
 }
 
 export function CommandBarOverwriteWarning({
-  heading = 'Overwrite current file and units?',
-  message = 'This will permanently replace the current code in the editor, and overwrite your current units.',
+  heading,
+  message,
 }: CommandBarOverwriteWarningProps) {
   return (
     <>

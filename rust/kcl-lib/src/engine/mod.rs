@@ -37,7 +37,7 @@ use uuid::Uuid;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    execution::{ArtifactCommand, DefaultPlanes, IdGenerator, Point3d},
+    execution::{types::UnitLen, ArtifactCommand, DefaultPlanes, IdGenerator, Point3d},
     SourceRange,
 };
 
@@ -92,6 +92,16 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
 
     /// Get the artifact commands that have accumulated so far.
     fn artifact_commands(&self) -> Arc<RwLock<Vec<ArtifactCommand>>>;
+
+    /// Take the batch of commands that have accumulated so far and clear them.
+    async fn take_batch(&self) -> Vec<(WebSocketRequest, SourceRange)> {
+        std::mem::take(&mut *self.batch().write().await)
+    }
+
+    /// Take the batch of end commands that have accumulated so far and clear them.
+    async fn take_batch_end(&self) -> IndexMap<Uuid, (WebSocketRequest, SourceRange)> {
+        std::mem::take(&mut *self.batch_end().write().await)
+    }
 
     /// Clear all artifact commands that have accumulated so far.
     async fn clear_artifact_commands(&self) {
@@ -170,11 +180,15 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         self.clear_queues().await;
 
         self.batch_modeling_cmd(
-            uuid::Uuid::new_v4(),
+            id_generator.next_uuid(),
             source_range,
             &ModelingCmd::SceneClearAll(mcmd::SceneClearAll::default()),
         )
         .await?;
+
+        // Reset to the default units.  Modules assume the engine starts in the
+        // default state.
+        self.set_units(Default::default(), source_range, id_generator).await?;
 
         // Flush the batch queue, so clear is run right away.
         // Otherwise the hooks below won't work.
@@ -195,9 +209,10 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         &self,
         visible: bool,
         source_range: SourceRange,
+        id_generator: &mut IdGenerator,
     ) -> Result<(), crate::errors::KclError> {
         self.batch_modeling_cmd(
-            uuid::Uuid::new_v4(),
+            id_generator.next_uuid(),
             source_range,
             &ModelingCmd::from(mcmd::EdgeLinesVisible { hidden: !visible }),
         )
@@ -231,10 +246,11 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         &self,
         units: crate::UnitLength,
         source_range: SourceRange,
+        id_generator: &mut IdGenerator,
     ) -> Result<(), crate::errors::KclError> {
         // Before we even start executing the program, set the units.
         self.batch_modeling_cmd(
-            uuid::Uuid::new_v4(),
+            id_generator.next_uuid(),
             source_range,
             &ModelingCmd::from(mcmd::SetSceneUnits { unit: units.into() }),
         )
@@ -248,15 +264,15 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         &self,
         settings: &crate::ExecutorSettings,
         source_range: SourceRange,
+        id_generator: &mut IdGenerator,
     ) -> Result<(), crate::errors::KclError> {
         // Set the edge visibility.
-        self.set_edge_visibility(settings.highlight_edges, source_range).await?;
-
-        // Change the units.
-        self.set_units(settings.units, source_range).await?;
+        self.set_edge_visibility(settings.highlight_edges, source_range, id_generator)
+            .await?;
 
         // Send the command to show the grid.
-        self.modify_grid(!settings.show_grid, source_range).await?;
+        self.modify_grid(!settings.show_grid, source_range, id_generator)
+            .await?;
 
         // We do not have commands for changing ssao on the fly.
 
@@ -364,11 +380,11 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         source_range: SourceRange,
     ) -> Result<OkWebSocketResponseData, crate::errors::KclError> {
         let all_requests = if batch_end {
-            let mut requests = self.batch().read().await.clone();
-            requests.extend(self.batch_end().read().await.values().cloned());
+            let mut requests = self.take_batch().await.clone();
+            requests.extend(self.take_batch_end().await.values().cloned());
             requests
         } else {
-            self.batch().read().await.clone()
+            self.take_batch().await.clone()
         };
 
         // Return early if we have no commands to send.
@@ -436,11 +452,6 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
             }
         }
 
-        // Throw away the old batch queue.
-        self.batch().write().await.clear();
-        if batch_end {
-            self.batch_end().write().await.clear();
-        }
         self.stats().batches_sent.fetch_add(1, Ordering::Relaxed);
 
         // We pop off the responses to cleanup our mappings.
@@ -502,10 +513,17 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         y_axis: Point3d,
         color: Option<Color>,
         source_range: SourceRange,
+        id_generator: &mut IdGenerator,
     ) -> Result<uuid::Uuid, KclError> {
         // Create new default planes.
         let default_size = 100.0;
-        let default_origin = Point3d { x: 0.0, y: 0.0, z: 0.0 }.into();
+        let default_origin = Point3d {
+            x: 0.0,
+            y: 0.0,
+            z: 0.0,
+            units: UnitLen::Mm,
+        }
+        .into();
 
         self.batch_modeling_cmd(
             plane_id,
@@ -524,7 +542,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         if let Some(color) = color {
             // Set the color.
             self.batch_modeling_cmd(
-                uuid::Uuid::new_v4(),
+                id_generator.next_uuid(),
                 source_range,
                 &ModelingCmd::from(mcmd::PlaneSetColor { color, plane_id }),
             )
@@ -543,8 +561,18 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
             (
                 PlaneName::Xy,
                 id_generator.next_uuid(),
-                Point3d { x: 1.0, y: 0.0, z: 0.0 },
-                Point3d { x: 0.0, y: 1.0, z: 0.0 },
+                Point3d {
+                    x: 1.0,
+                    y: 0.0,
+                    z: 0.0,
+                    units: UnitLen::Mm,
+                },
+                Point3d {
+                    x: 0.0,
+                    y: 1.0,
+                    z: 0.0,
+                    units: UnitLen::Mm,
+                },
                 Some(Color {
                     r: 0.7,
                     g: 0.28,
@@ -555,8 +583,18 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
             (
                 PlaneName::Yz,
                 id_generator.next_uuid(),
-                Point3d { x: 0.0, y: 1.0, z: 0.0 },
-                Point3d { x: 0.0, y: 0.0, z: 1.0 },
+                Point3d {
+                    x: 0.0,
+                    y: 1.0,
+                    z: 0.,
+                    units: UnitLen::Mm,
+                },
+                Point3d {
+                    x: 0.0,
+                    y: 0.0,
+                    z: 1.0,
+                    units: UnitLen::Mm,
+                },
                 Some(Color {
                     r: 0.28,
                     g: 0.7,
@@ -567,8 +605,18 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
             (
                 PlaneName::Xz,
                 id_generator.next_uuid(),
-                Point3d { x: 1.0, y: 0.0, z: 0.0 },
-                Point3d { x: 0.0, y: 0.0, z: 1.0 },
+                Point3d {
+                    x: 1.0,
+                    y: 0.0,
+                    z: 0.0,
+                    units: UnitLen::Mm,
+                },
+                Point3d {
+                    x: 0.0,
+                    y: 0.0,
+                    z: 1.0,
+                    units: UnitLen::Mm,
+                },
                 Some(Color {
                     r: 0.28,
                     g: 0.28,
@@ -583,8 +631,14 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
                     x: -1.0,
                     y: 0.0,
                     z: 0.0,
+                    units: UnitLen::Mm,
                 },
-                Point3d { x: 0.0, y: 1.0, z: 0.0 },
+                Point3d {
+                    x: 0.0,
+                    y: 1.0,
+                    z: 0.0,
+                    units: UnitLen::Mm,
+                },
                 None,
             ),
             (
@@ -594,8 +648,14 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
                     x: 0.0,
                     y: -1.0,
                     z: 0.0,
+                    units: UnitLen::Mm,
                 },
-                Point3d { x: 0.0, y: 0.0, z: 1.0 },
+                Point3d {
+                    x: 0.0,
+                    y: 0.0,
+                    z: 1.0,
+                    units: UnitLen::Mm,
+                },
                 None,
             ),
             (
@@ -605,8 +665,14 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
                     x: -1.0,
                     y: 0.0,
                     z: 0.0,
+                    units: UnitLen::Mm,
                 },
-                Point3d { x: 0.0, y: 0.0, z: 1.0 },
+                Point3d {
+                    x: 0.0,
+                    y: 0.0,
+                    z: 1.0,
+                    units: UnitLen::Mm,
+                },
                 None,
             ),
         ];
@@ -615,7 +681,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         for (name, plane_id, x_axis, y_axis, color) in plane_settings {
             planes.insert(
                 name,
-                self.make_default_plane(plane_id, x_axis, y_axis, color, source_range)
+                self.make_default_plane(plane_id, x_axis, y_axis, color, source_range, id_generator)
                     .await?,
             );
         }
@@ -701,10 +767,15 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         }))
     }
 
-    async fn modify_grid(&self, hidden: bool, source_range: SourceRange) -> Result<(), KclError> {
+    async fn modify_grid(
+        &self,
+        hidden: bool,
+        source_range: SourceRange,
+        id_generator: &mut IdGenerator,
+    ) -> Result<(), KclError> {
         // Hide/show the grid.
         self.batch_modeling_cmd(
-            uuid::Uuid::new_v4(),
+            id_generator.next_uuid(),
             source_range,
             &ModelingCmd::from(mcmd::ObjectVisible {
                 hidden,
@@ -715,7 +786,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
 
         // Hide/show the grid scale text.
         self.batch_modeling_cmd(
-            uuid::Uuid::new_v4(),
+            id_generator.next_uuid(),
             source_range,
             &ModelingCmd::from(mcmd::ObjectVisible {
                 hidden,

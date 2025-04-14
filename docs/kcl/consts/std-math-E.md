@@ -17,10 +17,10 @@ std::math::E: number = 2.71828182845904523536028747135266250_
 ```js
 exampleSketch = startSketchOn(XZ)
   |> startProfileAt([0, 0], %)
-  |> angledLine({
+  |> angledLine(
     angle = 30,
     length = 2 * E ^ 2,
-  }, %)
+  )
   |> yLine(endAbsolute = 0)
   |> close()
 

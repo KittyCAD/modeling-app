@@ -2,7 +2,7 @@
 name = "kcl-language-server"
 description = "A language server for KCL."
 authors = ["KittyCAD Inc <kcl@kittycad.io>"]
-version = "0.2.55"
+version = "0.2.61"
 edition = "2021"
 license = "MIT"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
@@ -32,7 +32,7 @@ tracing-subscriber = { workspace = true }
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 signal-hook = "0.3.17"
-tokio = { version = "1.43.0", features = ["full"] }
+tokio = { version = "1.44.2", features = ["full"] }
 tower-lsp = { version = "0.20.0", features = ["proposed"] }
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]

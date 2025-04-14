@@ -7,7 +7,13 @@ description: Variables in memory after executing makeup-mirror.kcl
     "type": "Number",
     "value": 90.0,
     "ty": {
-      "type": "Unknown"
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
     }
   },
   "archThickness": {
@@ -105,22 +111,34 @@ description: Variables in memory after executing makeup-mirror.kcl
           "origin": {
             "x": 0.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
+            "z": 1.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "zAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "units": {
             "type": "Mm"
@@ -211,22 +229,34 @@ description: Variables in memory after executing makeup-mirror.kcl
           "origin": {
             "x": 0.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
+            "z": 1.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "units": {
             "type": "Mm"
@@ -297,7 +327,13 @@ description: Variables in memory after executing makeup-mirror.kcl
     "type": "Number",
     "value": 24.0,
     "ty": {
-      "type": "Unknown"
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
     }
   },
   "hingePartA1": {
@@ -353,22 +389,34 @@ description: Variables in memory after executing makeup-mirror.kcl
           "origin": {
             "x": 0.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
+            "z": 1.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "units": {
             "type": "Mm"
@@ -459,22 +507,34 @@ description: Variables in memory after executing makeup-mirror.kcl
           "origin": {
             "x": 0.0,
             "y": 0.0,
-            "z": 24.5
+            "z": 24.5,
+            "units": {
+              "type": "Mm"
+            }
           },
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
+            "z": 1.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "units": {
             "type": "Mm"
@@ -565,22 +625,34 @@ description: Variables in memory after executing makeup-mirror.kcl
           "origin": {
             "x": 0.0,
             "y": 0.0,
-            "z": 49.0
+            "z": 49.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
+            "z": 1.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "units": {
             "type": "Mm"
@@ -671,22 +743,34 @@ description: Variables in memory after executing makeup-mirror.kcl
           "origin": {
             "x": 0.0,
             "y": 0.0,
-            "z": 24.5
+            "z": 24.5,
+            "units": {
+              "type": "Mm"
+            }
           },
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
+            "z": 1.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "units": {
             "type": "Mm"
@@ -777,22 +861,34 @@ description: Variables in memory after executing makeup-mirror.kcl
           "origin": {
             "x": 0.0,
             "y": 0.0,
-            "z": 49.0
+            "z": 49.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
+            "z": 1.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "units": {
             "type": "Mm"
@@ -883,22 +979,34 @@ description: Variables in memory after executing makeup-mirror.kcl
           "origin": {
             "x": 0.0,
             "y": 0.0,
-            "z": 49.0
+            "z": 49.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
+            "z": 1.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "units": {
             "type": "Mm"
@@ -989,22 +1097,34 @@ description: Variables in memory after executing makeup-mirror.kcl
           "origin": {
             "x": 0.0,
             "y": 0.0,
-            "z": 73.5
+            "z": 73.5,
+            "units": {
+              "type": "Mm"
+            }
           },
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
+            "z": 1.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "units": {
             "type": "Mm"
@@ -1108,22 +1228,34 @@ description: Variables in memory after executing makeup-mirror.kcl
           "origin": {
             "x": 0.0,
             "y": -165.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
+            "z": 1.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "units": {
             "type": "Mm"
@@ -1168,7 +1300,13 @@ description: Variables in memory after executing makeup-mirror.kcl
     "type": "Number",
     "value": 85.0,
     "ty": {
-      "type": "Unknown"
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
     }
   },
   "mirrorThickness": {

@@ -1,15 +1,17 @@
-import { SceneEntities } from 'clientSideScene/sceneEntities'
-import { SceneInfra } from 'clientSideScene/sceneInfra'
-import EditorManager from 'editor/manager'
-import { KclManager } from 'lang/KclSingleton'
-import CodeManager from 'lang/codeManager'
-import { EngineCommandManager } from 'lang/std/engineConnection'
-import { uuidv4 } from './utils'
-import RustContext from 'lib/rustContext'
+import EditorManager from '@src/editor/manager'
+import { KclManager } from '@src/lang/KclSingleton'
+import CodeManager from '@src/lang/codeManager'
+import { EngineCommandManager } from '@src/lang/std/engineConnection'
+import RustContext from '@src/lib/rustContext'
+import { uuidv4 } from '@src/lib/utils'
+
+import { SceneEntities } from '@src/clientSideScene/sceneEntities'
+import { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import type { BaseUnit } from '@src/lib/settings/settingsTypes'
 
 export const codeManager = new CodeManager()
-
 export const engineCommandManager = new EngineCommandManager()
+export const rustContext = new RustContext(engineCommandManager)
 
 declare global {
   interface Window {
@@ -21,19 +23,40 @@ declare global {
 // Accessible for tests mostly
 window.engineCommandManager = engineCommandManager
 
-// This needs to be after codeManager is created.
-export const kclManager = new KclManager(engineCommandManager)
-engineCommandManager.kclManager = kclManager
-
 export const sceneInfra = new SceneInfra(engineCommandManager)
 engineCommandManager.camControlsCameraChange = sceneInfra.onCameraChange
 
-export const sceneEntitiesManager = new SceneEntities(engineCommandManager)
-
 // This needs to be after sceneInfra and engineCommandManager are is created.
-export const editorManager = new EditorManager()
+export const editorManager = new EditorManager(engineCommandManager)
 
-export const rustContext = new RustContext(engineCommandManager)
+// This needs to be after codeManager is created.
+// (lee: what??? why?)
+export const kclManager = new KclManager(engineCommandManager, {
+  rustContext,
+  codeManager,
+  editorManager,
+  sceneInfra,
+})
+
+// The most obvious of cyclic dependencies.
+// This is because the   handleOnViewUpdate(viewUpdate: ViewUpdate): void {
+// method requires it for the current ast.
+// CYCLIC REF
+editorManager.kclManager = kclManager
+
+engineCommandManager.kclManager = kclManager
+kclManager.sceneInfraBaseUnitMultiplierSetter = (unit: BaseUnit) => {
+  sceneInfra.baseUnit = unit
+}
+
+export const sceneEntitiesManager = new SceneEntities(
+  engineCommandManager,
+  sceneInfra,
+  editorManager,
+  codeManager,
+  kclManager,
+  rustContext
+)
 
 if (typeof window !== 'undefined') {
   ;(window as any).engineCommandManager = engineCommandManager

@@ -1,6 +1,8 @@
 //! Cache testing framework.
 
 use kcl_lib::{bust_cache, ExecError, ExecOutcome};
+use kcmc::{each_cmd as mcmd, ModelingCmd};
+use kittycad_modeling_cmds as kcmc;
 
 #[derive(Debug)]
 struct Variation<'a> {
@@ -47,45 +49,6 @@ async fn cache_test(
     ctx.close().await;
 
     img_results
-}
-
-#[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_cache_change_units_changes_output() {
-    let code = r#"part001 = startSketchOn('XY')
-  |> startProfileAt([5.5229, 5.25217], %)
-  |> line(end = [10.50433, -1.19122])
-  |> line(end = [8.01362, -5.48731])
-  |> line(end = [-1.02877, -6.76825])
-  |> line(end = [-11.53311, 2.81559])
-  |> close()
-  |> extrude(length = 4)
-"#;
-
-    let result = cache_test(
-        "change_units_changes_output",
-        vec![
-            Variation {
-                code,
-                settings: &kcl_lib::ExecutorSettings {
-                    units: kcl_lib::UnitLength::In,
-                    ..Default::default()
-                },
-            },
-            Variation {
-                code,
-                settings: &kcl_lib::ExecutorSettings {
-                    units: kcl_lib::UnitLength::Mm,
-                    ..Default::default()
-                },
-            },
-        ],
-    )
-    .await;
-
-    let first = result.first().unwrap();
-    let second = result.last().unwrap();
-
-    assert!(first.1 != second.1);
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -252,4 +215,70 @@ extrude(sketch001, length = 4)
         first.artifact_graph.len(),
         second.artifact_graph.len()
     );
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn kcl_test_cache_empty_file_pop_cache_empty_file_planes_work() {
+    // Get the current working directory.
+    let code = "";
+
+    let ctx = kcl_lib::ExecutorContext::new_with_default_client().await.unwrap();
+    let program = kcl_lib::Program::parse_no_errs(code).unwrap();
+    let outcome = ctx.run_with_caching(program).await.unwrap();
+
+    // Ensure nothing is left in the batch
+    assert!(ctx.engine.batch().read().await.is_empty());
+    assert!(ctx.engine.batch_end().read().await.is_empty());
+
+    // Ensure the planes work, and we can show or hide them.
+    // Hide/show the grid.
+    let default_planes = ctx.engine.get_default_planes().read().await.clone().unwrap();
+
+    // Assure the outcome is the same.
+    assert_eq!(outcome.default_planes, Some(default_planes.clone()));
+
+    ctx.engine
+        .send_modeling_cmd(
+            uuid::Uuid::new_v4(),
+            Default::default(),
+            &ModelingCmd::from(mcmd::ObjectVisible {
+                hidden: false,
+                object_id: default_planes.xy,
+            }),
+        )
+        .await
+        .unwrap();
+
+    // Now simulate an engine pause/network disconnect.
+    // Raw dog clear the scene entirely.
+    ctx.engine
+        .send_modeling_cmd(
+            uuid::Uuid::new_v4(),
+            Default::default(),
+            &ModelingCmd::from(mcmd::SceneClearAll {}),
+        )
+        .await
+        .unwrap();
+
+    // Bust the cache and reset the scene.
+    let outcome = ctx.bust_cache_and_reset_scene().await.unwrap();
+    // Get the default planes.
+    let default_planes = ctx.engine.get_default_planes().read().await.clone().unwrap();
+
+    assert_eq!(outcome.default_planes, Some(default_planes.clone()));
+
+    // Ensure we can show a plane.
+    ctx.engine
+        .send_modeling_cmd(
+            uuid::Uuid::new_v4(),
+            Default::default(),
+            &ModelingCmd::from(mcmd::ObjectVisible {
+                hidden: false,
+                object_id: default_planes.xz,
+            }),
+        )
+        .await
+        .unwrap();
+
+    ctx.close().await;
 }

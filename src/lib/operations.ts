@@ -1,27 +1,27 @@
-import { CustomIconName } from 'components/CustomIcon'
+import type { Operation, OpKclValue } from '@rust/kcl-lib/bindings/Operation'
+
+import type { CustomIconName } from '@src/components/CustomIcon'
+import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
+import type { Artifact } from '@src/lang/std/artifactGraph'
 import {
-  Artifact,
   getArtifactOfTypes,
   getCapCodeRef,
   getEdgeCutConsumedCodeRef,
   getSweepEdgeCodeRef,
   getWallCodeRef,
-} from 'lang/std/artifactGraph'
-import { Operation } from '@rust/kcl-lib/bindings/Operation'
-import { codeManager, engineCommandManager, kclManager } from './singletons'
-import { err } from './trap'
-import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
-import { sourceRangeFromRust } from 'lang/wasm'
-import { CommandBarMachineEvent } from 'machines/commandBarMachine'
-import { stringToKclExpression } from './kclHelpers'
-import {
+} from '@src/lang/std/artifactGraph'
+import { sourceRangeFromRust } from '@src/lang/wasm'
+import type {
   HelixModes,
   ModelingCommandSchema,
-} from './commandBarConfigs/modelingCommandConfig'
-import { isDefaultPlaneStr } from './planes'
-import { Selection, Selections } from './selections'
-import { rustContext } from './singletons'
-import { KclExpression } from './commandTypes'
+} from '@src/lib/commandBarConfigs/modelingCommandConfig'
+import type { KclExpression } from '@src/lib/commandTypes'
+import { stringToKclExpression } from '@src/lib/kclHelpers'
+import { isDefaultPlaneStr } from '@src/lib/planes'
+import type { Selection, Selections } from '@src/lib/selections'
+import { codeManager, kclManager, rustContext } from '@src/lib/singletons'
+import { err } from '@src/lib/trap'
+import type { CommandBarMachineEvent } from '@src/machines/commandBarMachine'
 
 type ExecuteCommandEvent = CommandBarMachineEvent & {
   type: 'Find and select command'
@@ -61,7 +61,7 @@ const prepareToEditExtrude: PrepareToEditCallback =
     if (
       !artifact ||
       !('pathId' in artifact) ||
-      operation.type !== 'StdLibCall'
+      (operation.type !== 'StdLibCall' && operation.type !== 'KclStdLibCall')
     ) {
       return baseCommand
     }
@@ -73,7 +73,7 @@ const prepareToEditExtrude: PrepareToEditCallback =
         key: artifact.pathId,
         types: ['path'],
       },
-      engineCommandManager.artifactGraph
+      kclManager.artifactGraph
     )
     if (
       err(pathArtifact) ||
@@ -86,7 +86,7 @@ const prepareToEditExtrude: PrepareToEditCallback =
         key: pathArtifact.solid2dId,
         types: ['solid2d'],
       },
-      engineCommandManager.artifactGraph
+      kclManager.artifactGraph
     )
     if (err(solid2DArtifact) || solid2DArtifact.type !== 'solid2d') {
       return baseCommand
@@ -144,7 +144,7 @@ const prepareToEditEdgeTreatment: PrepareToEditCallback = async ({
     groupId: 'modeling',
   }
   if (
-    operation.type !== 'StdLibCall' ||
+    (operation.type !== 'StdLibCall' && operation.type !== 'KclStdLibCall') ||
     !operation.labeledArgs ||
     (!isChamfer && !isFillet)
   ) {
@@ -157,7 +157,7 @@ const prepareToEditEdgeTreatment: PrepareToEditCallback = async ({
       key: artifact.consumedEdgeId,
       types: ['segment', 'sweepEdge'],
     },
-    engineCommandManager.artifactGraph
+    kclManager.artifactGraph
   )
   if (err(edgeArtifact)) {
     return { reason: "Couldn't find edge artifact" }
@@ -165,7 +165,7 @@ const prepareToEditEdgeTreatment: PrepareToEditCallback = async ({
 
   let edgeCodeRef = getEdgeCutConsumedCodeRef(
     artifact,
-    engineCommandManager.artifactGraph
+    kclManager.artifactGraph
   )
   if (err(edgeCodeRef)) {
     return { reason: "Couldn't find edge coderef" }
@@ -255,7 +255,7 @@ const prepareToEditShell: PrepareToEditCallback =
     }
 
     if (
-      operation.type !== 'StdLibCall' ||
+      (operation.type !== 'StdLibCall' && operation.type !== 'KclStdLibCall') ||
       !operation.labeledArgs ||
       !operation.unlabeledArg ||
       operation.unlabeledArg.value.type !== 'Solid' ||
@@ -272,16 +272,13 @@ const prepareToEditShell: PrepareToEditCallback =
     // that we can query in another loop later
     const sweepId = operation.unlabeledArg.value.value.artifactId
     const candidates: Map<string, Selection> = new Map()
-    for (const artifact of engineCommandManager.artifactGraph.values()) {
+    for (const artifact of kclManager.artifactGraph.values()) {
       if (
         artifact.type === 'cap' &&
         artifact.sweepId === sweepId &&
         artifact.subType
       ) {
-        const codeRef = getCapCodeRef(
-          artifact,
-          engineCommandManager.artifactGraph
-        )
+        const codeRef = getCapCodeRef(artifact, kclManager.artifactGraph)
         if (err(codeRef)) {
           return baseCommand
         }
@@ -297,7 +294,7 @@ const prepareToEditShell: PrepareToEditCallback =
       ) {
         const segArtifact = getArtifactOfTypes(
           { key: artifact.segId, types: ['segment'] },
-          engineCommandManager.artifactGraph
+          kclManager.artifactGraph
         )
         if (err(segArtifact)) {
           return baseCommand
@@ -368,7 +365,7 @@ const prepareToEditOffsetPlane: PrepareToEditCallback = async ({
     groupId: 'modeling',
   }
   if (
-    operation.type !== 'StdLibCall' ||
+    (operation.type !== 'StdLibCall' && operation.type !== 'KclStdLibCall') ||
     !operation.labeledArgs ||
     !operation.unlabeledArg ||
     !('offset' in operation.labeledArgs) ||
@@ -442,7 +439,7 @@ const prepareToEditSweep: PrepareToEditCallback = async ({
     groupId: 'modeling',
   }
   if (
-    operation.type !== 'StdLibCall' ||
+    (operation.type !== 'StdLibCall' && operation.type !== 'KclStdLibCall') ||
     !operation.labeledArgs ||
     !operation.unlabeledArg ||
     !('sectional' in operation.labeledArgs) ||
@@ -450,7 +447,11 @@ const prepareToEditSweep: PrepareToEditCallback = async ({
   ) {
     return baseCommand
   }
-  if (!artifact || !('pathId' in artifact) || operation.type !== 'StdLibCall') {
+  if (
+    !artifact ||
+    !('pathId' in artifact) ||
+    (operation.type !== 'StdLibCall' && operation.type !== 'KclStdLibCall')
+  ) {
     return baseCommand
   }
 
@@ -461,7 +462,7 @@ const prepareToEditSweep: PrepareToEditCallback = async ({
       key: artifact.pathId,
       types: ['path'],
     },
-    engineCommandManager.artifactGraph
+    kclManager.artifactGraph
   )
 
   if (
@@ -477,7 +478,7 @@ const prepareToEditSweep: PrepareToEditCallback = async ({
       key: pathArtifact.solid2dId,
       types: ['solid2d'],
     },
-    engineCommandManager.artifactGraph
+    kclManager.artifactGraph
   )
 
   if (err(targetArtifact) || targetArtifact.type !== 'solid2d') {
@@ -508,7 +509,7 @@ const prepareToEditSweep: PrepareToEditCallback = async ({
       key: operation.labeledArgs.path.value.value.artifactId,
       types: ['path'],
     },
-    engineCommandManager.artifactGraph
+    kclManager.artifactGraph
   )
 
   if (err(trajectoryPathArtifact) || trajectoryPathArtifact.type !== 'path') {
@@ -520,7 +521,7 @@ const prepareToEditSweep: PrepareToEditCallback = async ({
       key: trajectoryPathArtifact.segIds[0],
       types: ['segment'],
     },
-    engineCommandManager.artifactGraph
+    kclManager.artifactGraph
   )
 
   if (err(trajectoryArtifact) || trajectoryArtifact.type !== 'segment') {
@@ -570,12 +571,20 @@ const prepareToEditSweep: PrepareToEditCallback = async ({
   }
 }
 
+const nonZero = (val: OpKclValue): number => {
+  if (val.type === 'Number') {
+    return val.value
+  } else {
+    return 0
+  }
+}
+
 const prepareToEditHelix: PrepareToEditCallback = async ({ operation }) => {
   const baseCommand = {
     name: 'Helix',
     groupId: 'modeling',
   }
-  if (operation.type !== 'StdLibCall' || !operation.labeledArgs) {
+  if (operation.type !== 'KclStdLibCall' || !operation.labeledArgs) {
     return { reason: 'Wrong operation type or arguments' }
   }
 
@@ -595,10 +604,22 @@ const prepareToEditHelix: PrepareToEditCallback = async ({ operation }) => {
   if ('axis' in operation.labeledArgs && operation.labeledArgs.axis) {
     // axis options string or selection arg
     const axisValue = operation.labeledArgs.axis.value
-    if (axisValue.type === 'String') {
-      // default axis casee
+    if (axisValue.type === 'Object') {
+      // default axis case
       mode = 'Axis'
-      axis = axisValue.value
+      const direction = axisValue.value['direction']
+      if (!direction || direction.type !== 'Array') {
+        return { reason: 'No direction vector for axis' }
+      }
+      if (nonZero(direction.value[0])) {
+        axis = 'X'
+      } else if (nonZero(direction.value[1])) {
+        axis = 'Y'
+      } else if (nonZero(direction.value[2])) {
+        axis = 'Z'
+      } else {
+        return { reason: 'Bad direction vector for axis' }
+      }
     } else if (axisValue.type === 'TagIdentifier' && axisValue.artifact_id) {
       // segment case
       mode = 'Edge'
@@ -607,7 +628,7 @@ const prepareToEditHelix: PrepareToEditCallback = async ({ operation }) => {
           key: axisValue.artifact_id,
           types: ['segment'],
         },
-        engineCommandManager.artifactGraph
+        kclManager.artifactGraph
       )
       if (err(artifact)) {
         return { reason: "Couldn't find related edge artifact" }
@@ -630,16 +651,13 @@ const prepareToEditHelix: PrepareToEditCallback = async ({ operation }) => {
           key: axisValue.value,
           types: ['sweepEdge'],
         },
-        engineCommandManager.artifactGraph
+        kclManager.artifactGraph
       )
       if (err(artifact)) {
         return { reason: "Couldn't find related edge artifact" }
       }
 
-      const codeRef = getSweepEdgeCodeRef(
-        artifact,
-        engineCommandManager.artifactGraph
-      )
+      const codeRef = getSweepEdgeCodeRef(artifact, kclManager.artifactGraph)
       if (err(codeRef)) {
         return { reason: "Couldn't find related edge code ref" }
       }
@@ -667,7 +685,7 @@ const prepareToEditHelix: PrepareToEditCallback = async ({ operation }) => {
     }
 
     const sweepId = operation.labeledArgs.cylinder.value.value.artifactId
-    const wallArtifact = [...engineCommandManager.artifactGraph.values()].find(
+    const wallArtifact = [...kclManager.artifactGraph.values()].find(
       (p) => p.type === 'wall' && p.sweepId === sweepId
     )
     if (!wallArtifact || wallArtifact.type !== 'wall') {
@@ -676,10 +694,7 @@ const prepareToEditHelix: PrepareToEditCallback = async ({ operation }) => {
       }
     }
 
-    const wallCodeRef = getWallCodeRef(
-      wallArtifact,
-      engineCommandManager.artifactGraph
-    )
+    const wallCodeRef = getWallCodeRef(wallArtifact, kclManager.artifactGraph)
     if (err(wallCodeRef)) {
       return {
         reason: "Cylinder arg found doesn't point to a valid sweep code ref",
@@ -757,7 +772,9 @@ const prepareToEditHelix: PrepareToEditCallback = async ({ operation }) => {
     } else {
       return { reason: "Couldn't find radius argument" }
     }
+  }
 
+  if (mode === 'Axis') {
     if ('length' in operation.labeledArgs && operation.labeledArgs.length) {
       const r = await stringToKclExpression(
         codeManager.code.slice(
@@ -802,6 +819,173 @@ const prepareToEditHelix: PrepareToEditCallback = async ({ operation }) => {
     ),
   }
 
+  return {
+    ...baseCommand,
+    argDefaultValues,
+  }
+}
+
+const prepareToEditRevolve: PrepareToEditCallback = async ({
+  operation,
+  artifact,
+}) => {
+  const baseCommand = {
+    name: 'Revolve',
+    groupId: 'modeling',
+  }
+  if (
+    !artifact ||
+    !('pathId' in artifact) ||
+    operation.type !== 'KclStdLibCall' ||
+    !operation.labeledArgs
+  ) {
+    return { reason: 'Wrong operation type or artifact' }
+  }
+
+  // We have to go a little roundabout to get from the original artifact
+  // to the solid2DId that we need to pass to the command.
+  const pathArtifact = getArtifactOfTypes(
+    {
+      key: artifact.pathId,
+      types: ['path'],
+    },
+    kclManager.artifactGraph
+  )
+  if (
+    err(pathArtifact) ||
+    pathArtifact.type !== 'path' ||
+    !pathArtifact.solid2dId
+  ) {
+    return { reason: "Couldn't find related path artifact" }
+  }
+
+  const solid2DArtifact = getArtifactOfTypes(
+    {
+      key: pathArtifact.solid2dId,
+      types: ['solid2d'],
+    },
+    kclManager.artifactGraph
+  )
+  if (err(solid2DArtifact) || solid2DArtifact.type !== 'solid2d') {
+    return { reason: "Couldn't find related solid2d artifact" }
+  }
+
+  const selection = {
+    graphSelections: [
+      {
+        artifact: solid2DArtifact,
+        codeRef: pathArtifact.codeRef,
+      },
+    ],
+    otherSelections: [],
+  }
+
+  // axis options string arg
+  if (!('axis' in operation.labeledArgs) || !operation.labeledArgs.axis) {
+    return { reason: "Couldn't find axis argument" }
+  }
+
+  const axisValue = operation.labeledArgs.axis.value
+  let axisOrEdge: 'Axis' | 'Edge' | undefined
+  let axis: string | undefined
+  let edge: Selections | undefined
+  if (axisValue.type === 'Object') {
+    // default axis casee
+    axisOrEdge = 'Axis'
+    const direction = axisValue.value['direction']
+    if (!direction || direction.type !== 'Array') {
+      return { reason: 'No direction vector for axis' }
+    }
+    if (nonZero(direction.value[0])) {
+      axis = 'X'
+    } else if (nonZero(direction.value[1])) {
+      axis = 'Y'
+    } else {
+      return { reason: 'Bad direction vector for axis' }
+    }
+  } else if (axisValue.type === 'TagIdentifier' && axisValue.artifact_id) {
+    // segment case
+    axisOrEdge = 'Edge'
+    const artifact = getArtifactOfTypes(
+      {
+        key: axisValue.artifact_id,
+        types: ['segment'],
+      },
+      kclManager.artifactGraph
+    )
+    if (err(artifact)) {
+      return { reason: "Couldn't find related edge artifact" }
+    }
+
+    edge = {
+      graphSelections: [
+        {
+          artifact,
+          codeRef: artifact.codeRef,
+        },
+      ],
+      otherSelections: [],
+    }
+  } else if (axisValue.type === 'Uuid') {
+    // sweepEdge case
+    axisOrEdge = 'Edge'
+    const artifact = getArtifactOfTypes(
+      {
+        key: axisValue.value,
+        types: ['sweepEdge'],
+      },
+      kclManager.artifactGraph
+    )
+    if (err(artifact)) {
+      return { reason: "Couldn't find related edge artifact" }
+    }
+
+    const codeRef = getSweepEdgeCodeRef(artifact, kclManager.artifactGraph)
+    if (err(codeRef)) {
+      return { reason: "Couldn't find related edge code ref" }
+    }
+
+    edge = {
+      graphSelections: [
+        {
+          artifact,
+          codeRef,
+        },
+      ],
+      otherSelections: [],
+    }
+  } else {
+    return { reason: 'The type of the axis argument is unsupported' }
+  }
+
+  // angle kcl arg
+  if (!('angle' in operation.labeledArgs) || !operation.labeledArgs.angle) {
+    return { reason: "Couldn't find angle argument" }
+  }
+  const angle = await stringToKclExpression(
+    codeManager.code.slice(
+      operation.labeledArgs.angle.sourceRange[0],
+      operation.labeledArgs.angle.sourceRange[1]
+    )
+  )
+  if (err(angle) || 'errors' in angle) {
+    return { reason: 'Error in angle argument retrieval' }
+  }
+
+  // Assemble the default argument values for the Offset Plane command,
+  // with `nodeToEdit` set, which will let the Offset Plane actor know
+  // to edit the node that corresponds to the StdLibCall.
+  const argDefaultValues: ModelingCommandSchema['Revolve'] = {
+    axisOrEdge,
+    axis,
+    edge,
+    selection,
+    angle,
+    nodeToEdit: getNodePathFromSourceRange(
+      kclManager.ast,
+      sourceRangeFromRust(operation.sourceRange)
+    ),
+  }
   return {
     ...baseCommand,
     argDefaultValues,
@@ -880,6 +1064,7 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
   revolve: {
     label: 'Revolve',
     icon: 'revolve',
+    prepareToEdit: prepareToEditRevolve,
     supportsAppearance: true,
   },
   shell: {
@@ -930,10 +1115,22 @@ export function getOperationLabel(op: Operation): string {
   switch (op.type) {
     case 'StdLibCall':
       return stdLibMap[op.name]?.label ?? op.name
-    case 'UserDefinedFunctionCall':
-      return op.name ?? 'Anonymous custom function'
-    case 'UserDefinedFunctionReturn':
-      return 'User function return'
+    case 'KclStdLibCall':
+      return stdLibMap[op.name]?.label ?? op.name
+    case 'GroupBegin':
+      if (op.group.type === 'FunctionCall') {
+        return op.group.name ?? 'anonymous'
+      } else if (op.group.type === 'ModuleInstance') {
+        return op.group.name
+      } else {
+        const _exhaustiveCheck: never = op.group
+        return '' // unreachable
+      }
+    case 'GroupEnd':
+      return 'Group end'
+    default:
+      const _exhaustiveCheck: never = op
+      return '' // unreachable
   }
 }
 
@@ -944,8 +1141,18 @@ export function getOperationIcon(op: Operation): CustomIconName {
   switch (op.type) {
     case 'StdLibCall':
       return stdLibMap[op.name]?.icon ?? 'questionMark'
-    default:
+    case 'KclStdLibCall':
+      return stdLibMap[op.name]?.icon ?? 'questionMark'
+    case 'GroupBegin':
+      if (op.group.type === 'ModuleInstance') {
+        return 'import' // TODO: Use insert icon.
+      }
       return 'make-variable'
+    case 'GroupEnd':
+      return 'questionMark'
+    default:
+      const _exhaustiveCheck: never = op
+      return 'questionMark' // unreachable
   }
 }
 
@@ -962,30 +1169,30 @@ export function filterOperations(operations: Operation[]): Operation[] {
  */
 const operationFilters = [
   isNotUserFunctionWithNoOperations,
-  isNotInsideUserFunction,
-  isNotUserFunctionReturn,
+  isNotInsideGroup,
+  isNotGroupEnd,
 ]
 
 /**
- * A filter to exclude everything that occurs inside a UserDefinedFunctionCall
- * and its corresponding UserDefinedFunctionReturn from a list of operations.
- * This works even when there are nested function calls.
+ * A filter to exclude everything that occurs inside a GroupBegin and its
+ * corresponding GroupEnd from a list of operations. This works even when there
+ * are nested function calls and module instances.
  */
-function isNotInsideUserFunction(operations: Operation[]): Operation[] {
+function isNotInsideGroup(operations: Operation[]): Operation[] {
   const ops: Operation[] = []
   let depth = 0
   for (const op of operations) {
     if (depth === 0) {
       ops.push(op)
     }
-    if (op.type === 'UserDefinedFunctionCall') {
+    if (op.type === 'GroupBegin') {
       depth++
     }
-    if (op.type === 'UserDefinedFunctionReturn') {
+    if (op.type === 'GroupEnd') {
       depth--
       console.assert(
         depth >= 0,
-        'Unbalanced UserDefinedFunctionCall and UserDefinedFunctionReturn; too many returns'
+        'Unbalanced GroupBegin and GroupEnd; too many ends'
       )
     }
   }
@@ -994,26 +1201,29 @@ function isNotInsideUserFunction(operations: Operation[]): Operation[] {
 }
 
 /**
- * A filter to exclude UserDefinedFunctionCall operations and their
- * corresponding UserDefinedFunctionReturn that don't have any operations inside
- * them from a list of operations.
+ * A filter to exclude GroupBegin operations and their corresponding GroupEnd
+ * that don't have any operations inside them from a list of operations, if it's
+ * a function call.
  */
 function isNotUserFunctionWithNoOperations(
   operations: Operation[]
 ): Operation[] {
   return operations.filter((op, index) => {
     if (
-      op.type === 'UserDefinedFunctionCall' &&
-      // If this is a call at the end of the array, it's preserved.
+      op.type === 'GroupBegin' &&
+      op.group.type === 'FunctionCall' &&
+      // If this is a "begin" at the end of the array, it's preserved.
       index < operations.length - 1 &&
-      operations[index + 1].type === 'UserDefinedFunctionReturn'
+      operations[index + 1].type === 'GroupEnd'
     )
       return false
+    const previousOp = index > 0 ? operations[index - 1] : undefined
     if (
-      op.type === 'UserDefinedFunctionReturn' &&
-      // If this return is at the beginning of the array, it's preserved.
-      index > 0 &&
-      operations[index - 1].type === 'UserDefinedFunctionCall'
+      op.type === 'GroupEnd' &&
+      // If this is an "end" at the beginning of the array, it's preserved.
+      previousOp !== undefined &&
+      previousOp.type === 'GroupBegin' &&
+      previousOp.group.type === 'FunctionCall'
     )
       return false
 
@@ -1022,11 +1232,10 @@ function isNotUserFunctionWithNoOperations(
 }
 
 /**
- * A filter to exclude UserDefinedFunctionReturn operations from a list of
- * operations.
+ * A filter to exclude GroupEnd operations from a list of operations.
  */
-function isNotUserFunctionReturn(ops: Operation[]): Operation[] {
-  return ops.filter((op) => op.type !== 'UserDefinedFunctionReturn')
+function isNotGroupEnd(ops: Operation[]): Operation[] {
+  return ops.filter((op) => op.type !== 'GroupEnd')
 }
 
 export interface EnterEditFlowProps {
@@ -1038,9 +1247,9 @@ export async function enterEditFlow({
   operation,
   artifact,
 }: EnterEditFlowProps): Promise<Error | CommandBarMachineEvent> {
-  if (operation.type !== 'StdLibCall') {
+  if (operation.type !== 'StdLibCall' && operation.type !== 'KclStdLibCall') {
     return new Error(
-      'Feature tree editing not yet supported for user-defined functions. Please edit in the code editor.'
+      'Feature tree editing not yet supported for user-defined functions or modules. Please edit in the code editor.'
     )
   }
   const stdLibInfo = stdLibMap[operation.name]
@@ -1077,9 +1286,9 @@ export async function enterAppearanceFlow({
   operation,
   artifact,
 }: EnterEditFlowProps): Promise<Error | CommandBarMachineEvent> {
-  if (operation.type !== 'StdLibCall') {
+  if (operation.type !== 'StdLibCall' && operation.type !== 'KclStdLibCall') {
     return new Error(
-      'Appearance setting not yet supported for user-defined functions. Please edit in the code editor.'
+      'Appearance setting not yet supported for user-defined functions or modules. Please edit in the code editor.'
     )
   }
   const stdLibInfo = stdLibMap[operation.name]

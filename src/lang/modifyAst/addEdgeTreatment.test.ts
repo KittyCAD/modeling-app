@@ -1,41 +1,43 @@
-import {
-  assertParse,
-  recast,
-  initPromise,
-  PathToNode,
-  Program,
-  CallExpression,
-  PipeExpression,
-  VariableDeclarator,
-  SourceRange,
-  topLevelRange,
-  CallExpressionKw,
-} from '../wasm'
+import { VITE_KC_DEV_TOKEN } from '@src/env'
+
+import { createLiteral } from '@src/lang/create'
+import type {
+  ChamferParameters,
+  EdgeTreatmentParameters,
+  FilletParameters,
+} from '@src/lang/modifyAst/addEdgeTreatment'
 import {
   EdgeTreatmentType,
+  deleteEdgeTreatment,
   getPathToExtrudeForSegmentSelection,
   hasValidEdgeTreatmentSelection,
   isTagUsedInEdgeTreatment,
   modifyAstWithEdgeTreatmentAndTag,
-  FilletParameters,
-  ChamferParameters,
-  EdgeTreatmentParameters,
-  deleteEdgeTreatment,
-} from './addEdgeTreatment'
-import { getNodeFromPath } from '../queryAst'
-import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
-import { createLiteral } from 'lang/modifyAst'
-import { err } from 'lib/trap'
-import { Selection, Selections } from 'lib/selections'
+} from '@src/lang/modifyAst/addEdgeTreatment'
+import { getNodeFromPath } from '@src/lang/queryAst'
+import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
+import { codeRefFromRange } from '@src/lang/std/artifactGraph'
+import { topLevelRange } from '@src/lang/util'
+import type {
+  CallExpression,
+  CallExpressionKw,
+  PathToNode,
+  PipeExpression,
+  Program,
+  SourceRange,
+  VariableDeclarator,
+} from '@src/lang/wasm'
+import { assertParse, recast } from '@src/lang/wasm'
+import { initPromise } from '@src/lang/wasmUtils'
+import type { Selection, Selections } from '@src/lib/selections'
 import {
   codeManager,
   editorManager,
   engineCommandManager,
   kclManager,
-} from 'lib/singletons'
-import { VITE_KC_DEV_TOKEN } from 'env'
-import { isOverlap } from 'lib/utils'
-import { codeRefFromRange } from 'lang/std/artifactGraph'
+} from '@src/lib/singletons'
+import { err } from '@src/lib/trap'
+import { isOverlap } from '@src/lib/utils'
 
 beforeAll(async () => {
   await initPromise
@@ -139,7 +141,7 @@ const runGetPathToExtrudeForSegmentSelectionTest = async (
 
   // executeAst and artifactGraph
   await kclManager.executeAst({ ast })
-  const artifactGraph = engineCommandManager.artifactGraph
+  const artifactGraph = kclManager.artifactGraph
 
   // find artifact
   const maybeArtifact = [...artifactGraph].find(([, artifact]) => {
@@ -253,7 +255,7 @@ extrude003 = extrude(sketch003, length = -15)`
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
   |> extrude(length = 50)
-sketch002 = startSketchOn(sketch001, 'END')
+sketch002 = startSketchOn(sketch001, face = 'END')
   |> startProfileAt([-15, -15], %)
   |> yLine(length = 30)
   |> xLine(length = 30)
@@ -278,7 +280,7 @@ sketch002 = startSketchOn(sketch001, 'END')
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 extrude001 = extrude(sketch001, length = 50)
-sketch002 = startSketchOn(extrude001, 'END')
+sketch002 = startSketchOn(extrude001, face = 'END')
   |> startProfileAt([-15, -15], %)
   |> yLine(length = 30)
   |> xLine(length = 30)
@@ -348,7 +350,7 @@ const runModifyAstCloneWithEdgeTreatmentAndTag = async (
 
   // executeAst
   await kclManager.executeAst({ ast })
-  const artifactGraph = engineCommandManager.artifactGraph
+  const artifactGraph = kclManager.artifactGraph
 
   const selection: Selections = {
     graphSelections: segmentRanges.map((segmentRange) => {
@@ -390,7 +392,7 @@ const runDeleteEdgeTreatmentTest = async (
 
   // update artifact graph
   await kclManager.executeAst({ ast })
-  const artifactGraph = engineCommandManager.artifactGraph
+  const artifactGraph = kclManager.artifactGraph
 
   // define snippet range
   const edgeTreatmentRange = topLevelRange(

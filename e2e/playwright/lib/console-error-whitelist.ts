@@ -259,21 +259,12 @@ export const isErrorWhitelisted = (exception: Error) => {
     },
     // TODO: fix this error in the code
     {
-      name: 'TypeError',
-      message: "Cannot read properties of undefined (reading 'length')",
-      stack: '',
-      project: 'Google Chrome',
-      foundInSpec: '', // many tests are impacted by this error
-    },
-    // TODO: fix this error in the code
-    {
       name: 'ReferenceError',
       message: '_testUtils is not defined',
       stack: '',
       project: 'Google Chrome',
       foundInSpec: 'e2e/playwright/snapshot-tests.spec.ts',
     },
-    // TODO: fix this error in the code
     {
       name: 'TypeError',
       message: 'Failed to fetch',
@@ -281,21 +272,13 @@ export const isErrorWhitelisted = (exception: Error) => {
       project: 'Google Chrome',
       foundInSpec: 'e2e/playwright/snapshot-tests.spec.ts',
     },
-    // TODO: fix this error in the code
     {
-      name: 'ReferenceError',
-      message: 'originalCode is not defined',
-      stack: '',
+      name: 'Error',
+      message: 'The "path" argument must be of type string. Received undefined',
+      stack:
+        'Error: The "path" argument must be of type string. Received undefined',
       project: 'Google Chrome',
-      foundInSpec: 'e2e/playwright/onboarding-tests.spec.ts',
-    },
-    // TODO: fix this error in the code
-    {
-      name: 'ReferenceError',
-      message: 'createNewVariableCheckbox is not defined',
-      stack: '',
-      project: 'Google Chrome',
-      foundInSpec: 'e2e/playwright/testing-constraints.spec.ts',
+      foundInSpec: '', // many tests are impacted by this error
     },
   ]
 

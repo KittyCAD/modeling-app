@@ -1,30 +1,37 @@
-import type { IndexLoaderData } from 'lib/types'
-import { PATHS } from 'lib/paths'
-import { ActionButton } from './ActionButton'
-import Tooltip from './Tooltip'
-import { Dispatch, useCallback, useRef, useState } from 'react'
-import { useNavigate, useRouteLoaderData } from 'react-router-dom'
-import { Disclosure } from '@headlessui/react'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faChevronRight, faPencil } from '@fortawesome/free-solid-svg-icons'
-import { useFileContext } from 'hooks/useFileContext'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { Disclosure } from '@headlessui/react'
+import type { Dispatch } from 'react'
+import { useCallback, useRef, useState } from 'react'
+import { useNavigate, useRouteLoaderData } from 'react-router-dom'
+
+import { ActionButton } from '@src/components/ActionButton'
+import { ContextMenu, ContextMenuItem } from '@src/components/ContextMenu'
+import { CustomIcon } from '@src/components/CustomIcon'
+import { useLspContext } from '@src/components/LspProvider'
+import { DeleteConfirmationDialog } from '@src/components/ProjectCard/DeleteProjectDialog'
+import Tooltip from '@src/components/Tooltip'
+import { useFileContext } from '@src/hooks/useFileContext'
+import { useFileSystemWatcher } from '@src/hooks/useFileSystemWatcher'
+import { useModelingContext } from '@src/hooks/useModelingContext'
+import usePlatform from '@src/hooks/usePlatform'
+import { useKclContext } from '@src/lang/KclProvider'
+import type { KCLError } from '@src/lang/errors'
+import { kclErrorsByFilename } from '@src/lang/errors'
+import { normalizeLineEndings } from '@src/lib/codeEditor'
+import { FILE_EXT, INSERT_FOREIGN_TOAST_ID } from '@src/lib/constants'
+import { sortFilesAndDirectories } from '@src/lib/desktopFS'
+import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
+import { PATHS } from '@src/lib/paths'
+import type { FileEntry } from '@src/lib/project'
+import { codeManager, kclManager } from '@src/lib/singletons'
+import { reportRejection } from '@src/lib/trap'
+import type { IndexLoaderData } from '@src/lib/types'
+
+import { ToastInsert } from '@src/components/ToastInsert'
+import { commandBarActor } from '@src/machines/commandBarMachine'
+import toast from 'react-hot-toast'
 import styles from './FileTree.module.css'
-import { sortFilesAndDirectories } from 'lib/desktopFS'
-import { FILE_EXT } from 'lib/constants'
-import { CustomIcon } from './CustomIcon'
-import { codeManager, kclManager } from 'lib/singletons'
-import { useLspContext } from './LspProvider'
-import useHotkeyWrapper from 'lib/hotkeyWrapper'
-import { useModelingContext } from 'hooks/useModelingContext'
-import { DeleteConfirmationDialog } from './ProjectCard/DeleteProjectDialog'
-import { ContextMenu, ContextMenuItem } from './ContextMenu'
-import usePlatform from 'hooks/usePlatform'
-import { FileEntry } from 'lib/project'
-import { useFileSystemWatcher } from 'hooks/useFileSystemWatcher'
-import { normalizeLineEndings } from 'lib/codeEditor'
-import { reportRejection } from 'lib/trap'
-import { useKclContext } from 'lang/KclProvider'
-import { kclErrorsByFilename, KCLError } from 'lang/errors'
 
 function getIndentationCSS(level: number) {
   return `calc(1rem * ${level + 1})`
@@ -260,16 +267,26 @@ const FileTreeItem = ({
     if (fileOrDir.children !== null) return // Don't open directories
 
     if (fileOrDir.name?.endsWith(FILE_EXT) === false && project?.path) {
-      // Import non-kcl files
-      // We want to update both the state and editor here.
-      codeManager.updateCodeStateEditor(
-        `import("${fileOrDir.path.replace(project.path, '.')}")\n` +
-          codeManager.code
+      toast.custom(
+        ToastInsert({
+          onInsert: () => {
+            const relativeFilePath = fileOrDir.path.replace(
+              project.path + window.electron.sep,
+              ''
+            )
+            commandBarActor.send({
+              type: 'Find and select command',
+              data: {
+                name: 'Insert',
+                groupId: 'code',
+                argDefaultValues: { path: relativeFilePath },
+              },
+            })
+            toast.dismiss(INSERT_FOREIGN_TOAST_ID)
+          },
+        }),
+        { duration: 30000, id: INSERT_FOREIGN_TOAST_ID }
       )
-      await codeManager.writeToFile()
-
-      // Prevent seeing the model built one piece at a time when changing files
-      await kclManager.executeCode(true)
     } else {
       // Let the lsp servers know we closed a file.
       onFileClose(currentFile?.path || null, project?.path || null)

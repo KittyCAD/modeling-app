@@ -15,12 +15,14 @@ use crate::{
     std::{fillet::EdgeReference, Args},
 };
 
+use super::args::TyF64;
+
 pub(crate) const DEFAULT_TOLERANCE: f64 = 0.0000001;
 
 /// Create chamfers on tagged paths.
 pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let solid = args.get_unlabeled_kw_arg_typed("solid", &RuntimeType::Primitive(PrimitiveType::Solid), exec_state)?;
-    let length = args.get_kw_arg("length")?;
+    let length: TyF64 = args.get_kw_arg_typed("length", &RuntimeType::length(), exec_state)?;
     let tags = args.kw_arg_array_and_source::<EdgeReference>("tags")?;
     let tag = args.get_kw_arg_opt("tag")?;
 
@@ -43,7 +45,7 @@ pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 /// thickness = 1
 /// chamferLength = 2
 ///
-/// mountingPlateSketch = startSketchOn("XY")
+/// mountingPlateSketch = startSketchOn(XY)
 ///   |> startProfileAt([-width/2, -length/2], %)
 ///   |> line(endAbsolute = [width/2, -length/2], tag = $edge1)
 ///   |> line(endAbsolute = [width/2, length/2], tag = $edge2)
@@ -65,7 +67,7 @@ pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 /// ```no_run
 /// // Sketch on the face of a chamfer.
 /// fn cube(pos, scale) {
-/// sg = startSketchOn('XY')
+/// sg = startSketchOn(XY)
 ///     |> startProfileAt(pos, %)
 ///     |> line(end = [0, scale])
 ///     |> line(end = [scale, 0])
@@ -84,7 +86,7 @@ pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 ///         tag = $chamfer1,
 ///     )  
 ///
-/// sketch001 = startSketchOn(part001, chamfer1)
+/// sketch001 = startSketchOn(part001, face = chamfer1)
 ///     |> startProfileAt([10, 10], %)
 ///     |> line(end = [2, 0])
 ///     |> line(end = [0, 2])
@@ -107,7 +109,7 @@ pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 }]
 async fn inner_chamfer(
     solid: Box<Solid>,
-    length: f64,
+    length: TyF64,
     tags: Vec<EdgeReference>,
     tag: Option<TagNode>,
     exec_state: &mut ExecState,
@@ -135,11 +137,9 @@ async fn inner_chamfer(
             ModelingCmd::from(mcmd::Solid3dFilletEdge {
                 edge_id,
                 object_id: solid.id,
-                radius: LengthUnit(length),
+                radius: LengthUnit(length.n),
                 tolerance: LengthUnit(DEFAULT_TOLERANCE), // We can let the user set this in the future.
                 cut_type: CutType::Chamfer,
-                // We make this a none so that we can remove it in the future.
-                face_id: None,
             }),
         )
         .await?;
@@ -147,7 +147,7 @@ async fn inner_chamfer(
         solid.edge_cuts.push(EdgeCut::Chamfer {
             id,
             edge_id,
-            length,
+            length: length.clone(),
             tag: Box::new(tag.clone()),
         });
 

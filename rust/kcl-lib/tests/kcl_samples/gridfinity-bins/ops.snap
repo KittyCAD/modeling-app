@@ -34,20 +34,23 @@ description: Operations executed gridfinity-bins.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "face",
-    "functionSourceRange": [
-      874,
-      1247,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "face",
+      "functionSourceRange": [
+        875,
+        1218,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
     "labeledArgs": {
-      "data": {
+      "planeOrSolid": {
         "value": {
           "type": "Plane",
           "artifact_id": "[uuid]"
@@ -61,7 +64,7 @@ description: Operations executed gridfinity-bins.kcl
     "unlabeledArg": null
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
     "labeledArgs": {
@@ -70,7 +73,13 @@ description: Operations executed gridfinity-bins.kcl
           "type": "Number",
           "value": 34.0,
           "ty": {
-            "type": "Unknown"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -162,14 +171,26 @@ description: Operations executed gridfinity-bins.kcl
               "type": "Number",
               "value": 21.0,
               "ty": {
-                "type": "Unknown"
+                "type": "Default",
+                "len": {
+                  "type": "Mm"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
               }
             },
             {
               "type": "Number",
               "value": 21.0,
               "ty": {
-                "type": "Unknown"
+                "type": "Default",
+                "len": {
+                  "type": "Mm"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
               }
             },
             {
@@ -257,20 +278,23 @@ description: Operations executed gridfinity-bins.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "face",
-    "functionSourceRange": [
-      874,
-      1247,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "face",
+      "functionSourceRange": [
+        875,
+        1218,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
     "labeledArgs": {
-      "data": {
+      "planeOrSolid": {
         "value": {
           "type": "Plane",
           "artifact_id": "[uuid]"
@@ -284,9 +308,25 @@ description: Operations executed gridfinity-bins.kcl
     "unlabeledArg": null
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   },
   {
+    "type": "KclStdLibCall",
+    "name": "revolve",
+    "unlabeledArg": {
+      "value": {
+        "type": "Array",
+        "value": [
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          }
+        ]
+      },
+      "sourceRange": []
+    },
     "labeledArgs": {
       "angle": {
         "value": {
@@ -308,90 +348,74 @@ description: Operations executed gridfinity-bins.kcl
         "value": {
           "type": "Object",
           "value": {
-            "custom": {
-              "type": "Object",
-              "value": {
-                "axis": {
-                  "type": "Array",
-                  "value": [
-                    {
-                      "type": "Number",
-                      "value": 0.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": {
-                          "type": "Mm"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
-                      }
+            "direction": {
+              "type": "Array",
+              "value": [
+                {
+                  "type": "Number",
+                  "value": 0.0,
+                  "ty": {
+                    "type": "Default",
+                    "len": {
+                      "type": "Mm"
                     },
-                    {
-                      "type": "Number",
-                      "value": 1.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": {
-                          "type": "Mm"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
-                      }
+                    "angle": {
+                      "type": "Degrees"
                     }
-                  ]
+                  }
                 },
-                "origin": {
-                  "type": "Array",
-                  "value": [
-                    {
-                      "type": "Number",
-                      "value": 4.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": {
-                          "type": "Mm"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
-                      }
+                {
+                  "type": "Number",
+                  "value": 1.0,
+                  "ty": {
+                    "type": "Default",
+                    "len": {
+                      "type": "Mm"
                     },
-                    {
-                      "type": "Number",
-                      "value": 4.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": {
-                          "type": "Mm"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
-                      }
+                    "angle": {
+                      "type": "Degrees"
                     }
-                  ]
+                  }
                 }
-              }
+              ]
+            },
+            "origin": {
+              "type": "Array",
+              "value": [
+                {
+                  "type": "Number",
+                  "value": 4.0,
+                  "ty": {
+                    "type": "Default",
+                    "len": {
+                      "type": "Mm"
+                    },
+                    "angle": {
+                      "type": "Degrees"
+                    }
+                  }
+                },
+                {
+                  "type": "Number",
+                  "value": 4.0,
+                  "ty": {
+                    "type": "Default",
+                    "len": {
+                      "type": "Mm"
+                    },
+                    "angle": {
+                      "type": "Degrees"
+                    }
+                  }
+                }
+              ]
             }
           }
         },
         "sourceRange": []
       }
     },
-    "name": "revolve",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Sketch",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": []
-    }
+    "sourceRange": []
   },
   {
     "labeledArgs": {
@@ -466,14 +490,26 @@ description: Operations executed gridfinity-bins.kcl
               "type": "Number",
               "value": 21.0,
               "ty": {
-                "type": "Unknown"
+                "type": "Default",
+                "len": {
+                  "type": "Mm"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
               }
             },
             {
               "type": "Number",
               "value": 21.0,
               "ty": {
-                "type": "Unknown"
+                "type": "Default",
+                "len": {
+                  "type": "Mm"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
               }
             },
             {
@@ -532,7 +568,7 @@ description: Operations executed gridfinity-bins.kcl
   },
   {
     "labeledArgs": {
-      "data": {
+      "planeOrSolid": {
         "value": {
           "type": "Plane",
           "artifact_id": "[uuid]"
@@ -635,16 +671,7 @@ description: Operations executed gridfinity-bins.kcl
   },
   {
     "labeledArgs": {
-      "data": {
-        "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "tag": {
+      "face": {
         "value": {
           "type": "String",
           "value": "start"
@@ -655,67 +682,15 @@ description: Operations executed gridfinity-bins.kcl
     "name": "startSketchOn",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
-  },
-  {
-    "type": "UserDefinedFunctionCall",
-    "name": "circle",
-    "functionSourceRange": [
-      0,
-      0,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {
-      "center": {
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
         "value": {
-          "type": "Array",
-          "value": [
-            {
-              "type": "Number",
-              "value": -8.0,
-              "ty": {
-                "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
-              }
-            },
-            {
-              "type": "Number",
-              "value": 8.0,
-              "ty": {
-                "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
-              }
-            }
-          ]
-        },
-        "sourceRange": []
+          "artifactId": "[uuid]"
+        }
       },
-      "radius": {
-        "value": {
-          "type": "Number",
-          "value": 3.25,
-          "ty": {
-            "type": "Unknown"
-          }
-        },
-        "sourceRange": []
-      }
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "UserDefinedFunctionReturn"
+      "sourceRange": []
+    }
   },
   {
     "labeledArgs": {
@@ -826,7 +801,13 @@ description: Operations executed gridfinity-bins.kcl
           "type": "Number",
           "value": 42.0,
           "ty": {
-            "type": "Unknown"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -938,7 +919,13 @@ description: Operations executed gridfinity-bins.kcl
           "type": "Number",
           "value": 42.0,
           "ty": {
-            "type": "Unknown"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -1074,7 +1061,13 @@ description: Operations executed gridfinity-bins.kcl
           "type": "Number",
           "value": 42.0,
           "ty": {
-            "type": "Unknown"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -1186,7 +1179,13 @@ description: Operations executed gridfinity-bins.kcl
           "type": "Number",
           "value": 42.0,
           "ty": {
-            "type": "Unknown"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -1322,7 +1321,13 @@ description: Operations executed gridfinity-bins.kcl
           "type": "Number",
           "value": 42.0,
           "ty": {
-            "type": "Unknown"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -1411,7 +1416,13 @@ description: Operations executed gridfinity-bins.kcl
           "type": "Number",
           "value": 42.0,
           "ty": {
-            "type": "Unknown"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -1489,7 +1500,7 @@ description: Operations executed gridfinity-bins.kcl
   },
   {
     "labeledArgs": {
-      "data": {
+      "planeOrSolid": {
         "value": {
           "type": "Plane",
           "artifact_id": "[uuid]"
@@ -1509,7 +1520,13 @@ description: Operations executed gridfinity-bins.kcl
           "type": "Number",
           "value": 14.0,
           "ty": {
-            "type": "Unknown"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []

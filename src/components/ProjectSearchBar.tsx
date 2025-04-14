@@ -1,8 +1,9 @@
-import { Project } from 'lib/project'
-import { CustomIcon } from './CustomIcon'
+import Fuse from 'fuse.js'
 import { useEffect, useRef, useState } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
-import Fuse from 'fuse.js'
+
+import { CustomIcon } from '@src/components/CustomIcon'
+import type { Project } from '@src/lib/project'
 
 export function useProjectSearch(projects: Project[]) {
   const [query, setQuery] = useState('')

@@ -7,6 +7,7 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
+use super::types::NumericType;
 use crate::{
     errors::{KclError, KclErrorDetails, Severity},
     execution::{
@@ -30,6 +31,8 @@ pub struct ExecState {
     pub(super) exec_context: Option<super::ExecutorContext>,
 }
 
+pub type ModuleInfoMap = IndexMap<ModuleId, ModuleInfo>;
+
 #[derive(Debug, Clone)]
 pub(super) struct GlobalState {
     /// Map from source file absolute path to module ID.
@@ -37,7 +40,7 @@ pub(super) struct GlobalState {
     /// Map from module ID to source file.
     pub id_to_source: IndexMap<ModuleId, ModuleSource>,
     /// Map from module ID to module info.
-    pub module_infos: IndexMap<ModuleId, ModuleInfo>,
+    pub module_infos: ModuleInfoMap,
     /// Output map of UUIDs to artifacts.
     pub artifacts: IndexMap<ArtifactId, Artifact>,
     /// Output commands to allow building the artifact graph by the caller.
@@ -80,7 +83,7 @@ impl ExecState {
     pub fn new(exec_context: &super::ExecutorContext) -> Self {
         ExecState {
             global: GlobalState::new(&exec_context.settings),
-            mod_local: ModuleState::new(&exec_context.settings, None, ProgramMemory::new(), Default::default()),
+            mod_local: ModuleState::new(None, ProgramMemory::new(), Default::default()),
             exec_context: Some(exec_context.clone()),
         }
     }
@@ -90,7 +93,7 @@ impl ExecState {
 
         *self = ExecState {
             global,
-            mod_local: ModuleState::new(&exec_context.settings, None, ProgramMemory::new(), Default::default()),
+            mod_local: ModuleState::new(None, ProgramMemory::new(), Default::default()),
             exec_context: Some(exec_context.clone()),
         };
     }
@@ -226,6 +229,13 @@ impl ExecState {
         self.global.module_infos.insert(id, module_info);
     }
 
+    pub fn current_default_units(&self) -> NumericType {
+        NumericType::Default {
+            len: self.length_unit(),
+            angle: self.angle_unit(),
+        }
+    }
+
     pub fn length_unit(&self) -> UnitLen {
         self.mod_local.settings.default_length_units
     }
@@ -287,12 +297,7 @@ impl GlobalState {
 }
 
 impl ModuleState {
-    pub(super) fn new(
-        exec_settings: &ExecutorSettings,
-        std_path: Option<String>,
-        memory: Arc<ProgramMemory>,
-        module_id: Option<ModuleId>,
-    ) -> Self {
+    pub(super) fn new(std_path: Option<String>, memory: Arc<ProgramMemory>, module_id: Option<ModuleId>) -> Self {
         ModuleState {
             id_generator: IdGenerator::new(module_id),
             stack: memory.new_stack(),
@@ -301,14 +306,14 @@ impl ModuleState {
             explicit_length_units: false,
             std_path,
             settings: MetaSettings {
-                default_length_units: exec_settings.units.into(),
+                default_length_units: Default::default(),
                 default_angle_units: Default::default(),
             },
         }
     }
 }
 
-#[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, Eq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct MetaSettings {

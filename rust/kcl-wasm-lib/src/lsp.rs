@@ -56,7 +56,7 @@ pub async fn lsp_run_kcl(config: LspServerConfig, token: String, baseurl: String
             // In the case of dev we don't always have a sub set, but prod we should.
             if err
                 .to_string()
-                .contains("The modeling app subscription type is missing.")
+                .contains("The Design Studio subscription type is missing.")
             {
                 true
             } else {
@@ -69,7 +69,6 @@ pub async fn lsp_run_kcl(config: LspServerConfig, token: String, baseurl: String
     let (service, socket) = LspService::build(|client| {
         kcl_lib::KclLspBackend::new_wasm(client, executor_ctx, fs, zoo_client, can_send_telemetry).unwrap()
     })
-    .custom_method("kcl/updateUnits", kcl_lib::KclLspBackend::update_units)
     .custom_method("kcl/updateCanExecute", kcl_lib::KclLspBackend::update_can_execute)
     .finish();
 

@@ -1,8 +1,8 @@
-import { KclLanguage } from '../src/index'
 import { fileTests } from '@lezer/generator/dist/test'
-
 import * as fs from 'fs'
 import * as path from 'path'
+
+import { KclLanguage } from '../src/index'
 
 let caseDir = path.dirname(__filename)
 

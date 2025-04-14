@@ -1,10 +1,12 @@
+import type { ForwardedRef } from 'react'
+import { forwardRef } from 'react'
+import { useLocation } from 'react-router-dom'
+
+import type { InteractionMapItem } from '@src/lib/settings/initialKeybindings'
 import {
-  InteractionMapItem,
   interactionMap,
   sortInteractionMapByCategory,
-} from 'lib/settings/initialKeybindings'
-import { ForwardedRef, forwardRef } from 'react'
-import { useLocation } from 'react-router-dom'
+} from '@src/lib/settings/initialKeybindings'
 
 type AllKeybindingsFieldsProps = object
 

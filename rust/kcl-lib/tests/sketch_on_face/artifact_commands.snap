@@ -15,14 +15,6 @@ description: Artifact commands sketch_on_face.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "set_scene_units",
-      "unit": "mm"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
       "hidden": true
@@ -187,7 +179,8 @@ description: Artifact commands sketch_on_face.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 5.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -411,7 +404,8 @@ description: Artifact commands sketch_on_face.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 5.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {

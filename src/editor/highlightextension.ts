@@ -1,5 +1,5 @@
-import { StateField, StateEffect, Annotation } from '@codemirror/state'
-import { EditorView, Decoration } from '@codemirror/view'
+import { Annotation, StateEffect, StateField } from '@codemirror/state'
+import { Decoration, EditorView } from '@codemirror/view'
 
 export { EditorView }
 

@@ -11,9 +11,7 @@ pub use cache::{bust_cache, clear_mem_cache};
 pub use cad_op::Operation;
 pub use geometry::*;
 pub use id_generator::IdGenerator;
-pub(crate) use import::{
-    import_foreign, send_to_engine as send_import_to_engine, PreImportedGeometry, ZOO_COORD_SYSTEM,
-};
+pub(crate) use import::PreImportedGeometry;
 use indexmap::IndexMap;
 pub use kcl_value::{KclObjectFields, KclValue};
 use kcmc::{
@@ -39,7 +37,6 @@ use crate::{
     fs::FileManager,
     modules::{ModuleId, ModulePath},
     parsing::ast::types::{Expr, ImportPath, NodeRef},
-    settings::types::UnitLength,
     source_range::SourceRange,
     std::StdLib,
     CompilationError, ExecError, ExecutionKind, KclErrorWithOutputs,
@@ -176,7 +173,7 @@ impl std::hash::Hash for TagIdentifier {
 }
 
 /// Engine information for a tag.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
 pub struct TagEngineInfo {
@@ -241,7 +238,7 @@ pub enum ContextType {
     Live,
 
     /// Completely mocked connection
-    /// Mock mode is only for the modeling app when they just want to mock engine calls and not
+    /// Mock mode is only for the Design Studio when they just want to mock engine calls and not
     /// actually make them.
     Mock,
 
@@ -265,8 +262,6 @@ pub struct ExecutorContext {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 pub struct ExecutorSettings {
-    /// The project-default unit to use in modeling dimensions.
-    pub units: UnitLength,
     /// Highlight edges of 3D objects?
     pub highlight_edges: bool,
     /// Whether or not Screen Space Ambient Occlusion (SSAO) is enabled.
@@ -287,7 +282,6 @@ pub struct ExecutorSettings {
 impl Default for ExecutorSettings {
     fn default() -> Self {
         Self {
-            units: Default::default(),
             highlight_edges: true,
             enable_ssao: false,
             show_grid: false,
@@ -301,7 +295,6 @@ impl Default for ExecutorSettings {
 impl From<crate::settings::types::Configuration> for ExecutorSettings {
     fn from(config: crate::settings::types::Configuration) -> Self {
         Self {
-            units: config.settings.modeling.base_unit,
             highlight_edges: config.settings.modeling.highlight_edges.into(),
             enable_ssao: config.settings.modeling.enable_ssao.into(),
             show_grid: config.settings.modeling.show_scale_grid,
@@ -315,7 +308,6 @@ impl From<crate::settings::types::Configuration> for ExecutorSettings {
 impl From<crate::settings::types::project::ProjectConfiguration> for ExecutorSettings {
     fn from(config: crate::settings::types::project::ProjectConfiguration) -> Self {
         Self {
-            units: config.settings.modeling.base_unit,
             highlight_edges: config.settings.modeling.highlight_edges.into(),
             enable_ssao: config.settings.modeling.enable_ssao.into(),
             show_grid: Default::default(),
@@ -329,7 +321,6 @@ impl From<crate::settings::types::project::ProjectConfiguration> for ExecutorSet
 impl From<crate::settings::types::ModelingSettings> for ExecutorSettings {
     fn from(modeling: crate::settings::types::ModelingSettings) -> Self {
         Self {
-            units: modeling.base_unit,
             highlight_edges: modeling.highlight_edges.into(),
             enable_ssao: modeling.enable_ssao.into(),
             show_grid: modeling.show_scale_grid,
@@ -343,7 +334,6 @@ impl From<crate::settings::types::ModelingSettings> for ExecutorSettings {
 impl From<crate::settings::types::project::ProjectModelingSettings> for ExecutorSettings {
     fn from(modeling: crate::settings::types::project::ProjectModelingSettings) -> Self {
         Self {
-            units: modeling.base_unit,
             highlight_edges: modeling.highlight_edges.into(),
             enable_ssao: modeling.enable_ssao.into(),
             show_grid: Default::default(),
@@ -476,26 +466,17 @@ impl ExecutorContext {
     /// This allows for passing in `ZOO_API_TOKEN` and `ZOO_HOST` as environment
     /// variables.
     #[cfg(not(target_arch = "wasm32"))]
-    pub async fn new_with_default_client(units: UnitLength) -> Result<Self> {
+    pub async fn new_with_default_client() -> Result<Self> {
         // Create the client.
-        let ctx = Self::new_with_client(
-            ExecutorSettings {
-                units,
-                ..Default::default()
-            },
-            None,
-            None,
-        )
-        .await?;
+        let ctx = Self::new_with_client(Default::default(), None, None).await?;
         Ok(ctx)
     }
 
     /// For executing unit tests.
     #[cfg(not(target_arch = "wasm32"))]
-    pub async fn new_for_unit_test(units: UnitLength, engine_addr: Option<String>) -> Result<Self> {
+    pub async fn new_for_unit_test(engine_addr: Option<String>) -> Result<Self> {
         let ctx = ExecutorContext::new_with_client(
             ExecutorSettings {
-                units,
                 highlight_edges: true,
                 enable_ssao: false,
                 show_grid: false,
@@ -514,9 +495,13 @@ impl ExecutorContext {
         self.context_type == ContextType::Mock || self.context_type == ContextType::MockCustomForwarded
     }
 
+    pub async fn is_isolated_execution(&self) -> bool {
+        self.engine.execution_kind().await.is_isolated()
+    }
+
     /// Returns true if we should not send engine commands for any reason.
     pub async fn no_engine_commands(&self) -> bool {
-        self.is_mock() || self.engine.execution_kind().await.is_isolated()
+        self.is_mock() || self.is_isolated_execution().await
     }
 
     pub async fn send_clear_scene(
@@ -527,6 +512,18 @@ impl ExecutorContext {
         self.engine
             .clear_scene(&mut exec_state.mod_local.id_generator, source_range)
             .await
+    }
+
+    pub async fn bust_cache_and_reset_scene(&self) -> Result<ExecOutcome, KclErrorWithOutputs> {
+        cache::bust_cache().await;
+
+        // Execute an empty program to clear and reset the scene.
+        // We specifically want to be returned the objects after the scene is reset.
+        // Like the default planes so it is easier to just execute an empty program
+        // after the cache is busted.
+        let outcome = self.run_with_caching(crate::Program::empty()).await?;
+
+        Ok(outcome)
     }
 
     async fn prepare_mem(&self, exec_state: &mut ExecState) -> Result<(), KclErrorWithOutputs> {
@@ -547,7 +544,10 @@ impl ExecutorContext {
         let mut exec_state = ExecState::new(self);
         if use_prev_memory {
             match cache::read_old_memory().await {
-                Some(mem) => *exec_state.mut_stack() = mem,
+                Some(mem) => {
+                    *exec_state.mut_stack() = mem.0;
+                    exec_state.global.module_infos = mem.1;
+                }
                 None => self.prepare_mem(&mut exec_state).await?,
             }
         } else {
@@ -565,10 +565,11 @@ impl ExecutorContext {
         // memory, not to the exec_state which is not cached for mock execution.
 
         let mut mem = exec_state.stack().clone();
+        let module_infos = exec_state.global.module_infos.clone();
         let outcome = exec_state.to_mock_wasm_outcome(result.0).await;
 
         mem.squash_env(result.0);
-        cache::write_old_memory(mem).await;
+        cache::write_old_memory((mem, module_infos)).await;
 
         Ok(outcome)
     }
@@ -602,7 +603,7 @@ impl ExecutorContext {
                     if reapply_settings
                         && self
                             .engine
-                            .reapply_settings(&self.settings, Default::default())
+                            .reapply_settings(&self.settings, Default::default(), old_state.id_generator())
                             .await
                             .is_err()
                     {
@@ -620,7 +621,7 @@ impl ExecutorContext {
                 CacheResult::NoAction(true) => {
                     if self
                         .engine
-                        .reapply_settings(&self.settings, Default::default())
+                        .reapply_settings(&self.settings, Default::default(), old_state.id_generator())
                         .await
                         .is_ok()
                     {
@@ -721,7 +722,7 @@ impl ExecutorContext {
 
         // Re-apply the settings, in case the cache was busted.
         self.engine
-            .reapply_settings(&self.settings, Default::default())
+            .reapply_settings(&self.settings, Default::default(), exec_state.id_generator())
             .await
             .map_err(KclErrorWithOutputs::no_outputs)?;
 
@@ -758,7 +759,7 @@ impl ExecutorContext {
         if !self.is_mock() {
             let mut mem = exec_state.stack().deep_clone();
             mem.restore_env(env_ref);
-            cache::write_old_memory(mem).await;
+            cache::write_old_memory((mem, exec_state.global.module_infos.clone())).await;
         }
         let session_data = self.engine.get_session_data().await;
         Ok((env_ref, session_data))
@@ -844,11 +845,6 @@ impl ExecutorContext {
         }
 
         Ok(())
-    }
-
-    /// Update the units for the executor.
-    pub(crate) fn update_units(&mut self, units: UnitLength) {
-        self.settings.units = units;
     }
 
     /// Get a snapshot of the current scene.
@@ -992,11 +988,7 @@ mod tests {
     use pretty_assertions::assert_eq;
 
     use super::*;
-    use crate::{
-        errors::{KclErrorDetails, Severity},
-        execution::memory::Stack,
-        ModuleId,
-    };
+    use crate::{errors::KclErrorDetails, execution::memory::Stack, ModuleId};
 
     /// Convenience function to get a JSON value from memory and unwrap.
     #[track_caller]
@@ -1054,11 +1046,11 @@ identifierGuy = 5
 part001 = startSketchOn(XY)
 |> startProfileAt([-1.2, 4.83], %)
 |> line(end = [2.8, 0])
-|> angledLine([100 + 100, 3.01], %)
-|> angledLine([abc, 3.02], %)
-|> angledLine([def(yo), 3.03], %)
-|> angledLine([ghi(2), 3.04], %)
-|> angledLine([jkl(yo) + 2, 3.05], %)
+|> angledLine(angle = 100 + 100, length = 3.01)
+|> angledLine(angle = abc, length = 3.02)
+|> angledLine(angle = def(yo), length = 3.03)
+|> angledLine(angle = ghi(2), length = 3.04)
+|> angledLine(angle = jkl(yo) + 2, length = 3.05)
 |> close()
 yo2 = hmm([identifierGuy + 5])"#;
 
@@ -1540,8 +1532,8 @@ let shape = layer() |> patternTransform(instances = 10, transform = transform)
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_unit_default() {
-        let ast = r#"const inMm = 25.4 * mm()
-const inInches = 1.0 * inch()"#;
+        let ast = r#"const inMm = fromMm(25.4)
+const inInches = fromInches(1)"#;
         let result = parse_execute(ast).await.unwrap();
         assert_eq!(
             25.4,
@@ -1560,8 +1552,8 @@ const inInches = 1.0 * inch()"#;
     #[tokio::test(flavor = "multi_thread")]
     async fn test_unit_overriden() {
         let ast = r#"@settings(defaultLengthUnit = inch)
-const inMm = 25.4 * mm()
-const inInches = 1.0 * inch()"#;
+const inMm = fromMm(25.4)
+const inInches = fromInches(1)"#;
         let result = parse_execute(ast).await.unwrap();
         assert_eq!(
             1.0,
@@ -1581,8 +1573,8 @@ const inInches = 1.0 * inch()"#;
     #[tokio::test(flavor = "multi_thread")]
     async fn test_unit_overriden_in() {
         let ast = r#"@settings(defaultLengthUnit = in)
-const inMm = 25.4 * mm()
-const inInches = 2.0 * inch()"#;
+const inMm = fromMm(25.4)
+const inInches = fromInches(2)"#;
         let result = parse_execute(ast).await.unwrap();
         assert_eq!(
             1.0,
@@ -1597,34 +1589,6 @@ const inInches = 2.0 * inch()"#;
                 .as_f64()
                 .unwrap()
         );
-    }
-
-    #[tokio::test(flavor = "multi_thread")]
-    async fn test_unit_suggest() {
-        let src = "foo = 42";
-        let program = crate::Program::parse_no_errs(src).unwrap();
-        let ctx = ExecutorContext {
-            engine: Arc::new(Box::new(
-                crate::engine::conn_mock::EngineConnection::new().await.unwrap(),
-            )),
-            fs: Arc::new(crate::fs::FileManager::new()),
-            stdlib: Arc::new(crate::std::StdLib::new()),
-            settings: ExecutorSettings {
-                units: UnitLength::Ft,
-                ..Default::default()
-            },
-            context_type: ContextType::Mock,
-        };
-        let mut exec_state = ExecState::new(&ctx);
-        ctx.run(&program, &mut exec_state).await.unwrap();
-        let errs = exec_state.errors();
-        assert_eq!(errs.len(), 1, "{errs:?}");
-        let warn = &errs[0];
-        assert_eq!(warn.severity, Severity::Warning);
-        assert_eq!(
-            warn.apply_suggestion(src).unwrap(),
-            "@settings(defaultLengthUnit = ft)\nfoo = 42"
-        )
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -1955,9 +1919,7 @@ let w = f() + f()
 )
 "#;
 
-        let ctx = crate::test_server::new_context(UnitLength::Mm, true, None)
-            .await
-            .unwrap();
+        let ctx = crate::test_server::new_context(true, None).await.unwrap();
         let old_program = crate::Program::parse_no_errs(code).unwrap();
 
         // Execute the program.
@@ -2010,9 +1972,7 @@ let w = f() + f()
 )
 "#;
 
-        let mut ctx = crate::test_server::new_context(UnitLength::Mm, true, None)
-            .await
-            .unwrap();
+        let mut ctx = crate::test_server::new_context(true, None).await.unwrap();
         let old_program = crate::Program::parse_no_errs(code).unwrap();
 
         // Execute the program.
@@ -2044,11 +2004,13 @@ let w = f() + f()
 
         // Ensure the settings are as expected.
         assert_eq!(settings_state, ctx.settings);
+
+        ctx.close().await;
     }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn mock_after_not_mock() {
-        let ctx = ExecutorContext::new_with_default_client(UnitLength::Mm).await.unwrap();
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
         let program = crate::Program::parse_no_errs("x = 2").unwrap();
         let result = ctx.run_with_caching(program).await.unwrap();
         assert_eq!(result.variables.get("x").unwrap().as_f64().unwrap(), 2.0);
@@ -2057,6 +2019,9 @@ let w = f() + f()
         let program2 = crate::Program::parse_no_errs("z = x + 1").unwrap();
         let result = ctx2.run_mock(program2, true).await.unwrap();
         assert_eq!(result.variables.get("z").unwrap().as_f64().unwrap(), 3.0);
+
+        ctx.close().await;
+        ctx2.close().await;
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -2064,10 +2029,10 @@ let w = f() + f()
         let ast = r#"fn bar(t) {
   return startSketchOn(XY)
     |> startProfileAt([0,0], %)
-    |> angledLine({
+    |> angledLine(
         angle = -60,
         length = segLen(t),
-    }, %)
+    )
     |> line(end = [0, 0])
     |> close()
 }
@@ -2085,7 +2050,7 @@ fn foo() {
 
 solid = sketch |> extrude(length = 10)
 // tag0 tags a face
-sketch2 = startSketchOn(solid, tag0)
+sketch2 = startSketchOn(solid, face = tag0)
   |> startProfileAt([0,0], %)
   |> line(end = [0, 1])
   |> line(end = [1, 0])

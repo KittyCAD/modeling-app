@@ -6,19 +6,19 @@ description: Result of parsing flush_batch_on_end.kcl
   "Ok": {
     "body": [
       {
-        "commentStart": 33,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 84,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 84,
+            "commentStart": 0,
             "end": 0,
             "name": "innerDiameter",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 100,
+            "commentStart": 0,
             "end": 0,
             "raw": "0.364",
             "start": 0,
@@ -45,22 +45,22 @@ description: Result of parsing flush_batch_on_end.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 106,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 106,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 106,
+            "commentStart": 0,
             "end": 0,
             "name": "outerDiameter",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 122,
+            "commentStart": 0,
             "end": 0,
             "left": {
-              "commentStart": 122,
+              "commentStart": 0,
               "end": 0,
               "raw": "35",
               "start": 0,
@@ -73,7 +73,7 @@ description: Result of parsing flush_batch_on_end.kcl
             },
             "operator": "/",
             "right": {
-              "commentStart": 127,
+              "commentStart": 0,
               "end": 0,
               "raw": "64",
               "start": 0,
@@ -98,22 +98,22 @@ description: Result of parsing flush_batch_on_end.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 130,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 130,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 130,
+            "commentStart": 0,
             "end": 0,
             "name": "length",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 139,
+            "commentStart": 0,
             "end": 0,
             "left": {
-              "commentStart": 139,
+              "commentStart": 0,
               "end": 0,
               "raw": "1",
               "start": 0,
@@ -126,10 +126,10 @@ description: Result of parsing flush_batch_on_end.kcl
             },
             "operator": "+",
             "right": {
-              "commentStart": 143,
+              "commentStart": 0,
               "end": 0,
               "left": {
-                "commentStart": 143,
+                "commentStart": 0,
                 "end": 0,
                 "raw": "1",
                 "start": 0,
@@ -142,7 +142,7 @@ description: Result of parsing flush_batch_on_end.kcl
               },
               "operator": "/",
               "right": {
-                "commentStart": 147,
+                "commentStart": 0,
                 "end": 0,
                 "raw": "2",
                 "start": 0,
@@ -171,12 +171,12 @@ description: Result of parsing flush_batch_on_end.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 148,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 187,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 187,
+            "commentStart": 0,
             "end": 0,
             "name": "sketch000",
             "start": 0,
@@ -185,7 +185,7 @@ description: Result of parsing flush_batch_on_end.kcl
           "init": {
             "arguments": [
               {
-                "commentStart": 213,
+                "commentStart": 0,
                 "end": 0,
                 "raw": "'XY'",
                 "start": 0,
@@ -196,10 +196,10 @@ description: Result of parsing flush_batch_on_end.kcl
             ],
             "callee": {
               "abs_path": false,
-              "commentStart": 199,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 199,
+                "commentStart": 0,
                 "end": 0,
                 "name": "startSketchOn",
                 "start": 0,
@@ -209,7 +209,7 @@ description: Result of parsing flush_batch_on_end.kcl
               "start": 0,
               "type": "Name"
             },
-            "commentStart": 199,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "CallExpression",
@@ -230,12 +230,12 @@ description: Result of parsing flush_batch_on_end.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 218,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 267,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 267,
+            "commentStart": 0,
             "end": 0,
             "name": "outerProfile",
             "start": 0,
@@ -246,17 +246,17 @@ description: Result of parsing flush_batch_on_end.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "commentStart": 305,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "center",
                   "start": 0,
                   "type": "Identifier"
                 },
                 "arg": {
-                  "commentStart": 314,
+                  "commentStart": 0,
                   "elements": [
                     {
-                      "commentStart": 315,
+                      "commentStart": 0,
                       "end": 0,
                       "raw": "0.0",
                       "start": 0,
@@ -268,7 +268,7 @@ description: Result of parsing flush_batch_on_end.kcl
                       }
                     },
                     {
-                      "commentStart": 320,
+                      "commentStart": 0,
                       "end": 0,
                       "raw": "0.0",
                       "start": 0,
@@ -289,21 +289,21 @@ description: Result of parsing flush_batch_on_end.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "commentStart": 328,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "radius",
                   "start": 0,
                   "type": "Identifier"
                 },
                 "arg": {
-                  "commentStart": 337,
+                  "commentStart": 0,
                   "end": 0,
                   "left": {
                     "abs_path": false,
-                    "commentStart": 337,
+                    "commentStart": 0,
                     "end": 0,
                     "name": {
-                      "commentStart": 337,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "outerDiameter",
                       "start": 0,
@@ -316,7 +316,7 @@ description: Result of parsing flush_batch_on_end.kcl
                   },
                   "operator": "/",
                   "right": {
-                    "commentStart": 353,
+                    "commentStart": 0,
                     "end": 0,
                     "raw": "2",
                     "start": 0,
@@ -335,14 +335,14 @@ description: Result of parsing flush_batch_on_end.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "commentStart": 358,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "tag",
                   "start": 0,
                   "type": "Identifier"
                 },
                 "arg": {
-                  "commentStart": 364,
+                  "commentStart": 0,
                   "end": 0,
                   "start": 0,
                   "type": "TagDeclarator",
@@ -353,10 +353,10 @@ description: Result of parsing flush_batch_on_end.kcl
             ],
             "callee": {
               "abs_path": false,
-              "commentStart": 282,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 282,
+                "commentStart": 0,
                 "end": 0,
                 "name": "circle",
                 "start": 0,
@@ -366,17 +366,17 @@ description: Result of parsing flush_batch_on_end.kcl
               "start": 0,
               "type": "Name"
             },
-            "commentStart": 282,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
               "abs_path": false,
-              "commentStart": 292,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 292,
+                "commentStart": 0,
                 "end": 0,
                 "name": "sketch000",
                 "start": 0,
@@ -403,12 +403,12 @@ description: Result of parsing flush_batch_on_end.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 374,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 422,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 422,
+            "commentStart": 0,
             "end": 0,
             "name": "innerProfile",
             "start": 0,
@@ -419,17 +419,17 @@ description: Result of parsing flush_batch_on_end.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "commentStart": 460,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "center",
                   "start": 0,
                   "type": "Identifier"
                 },
                 "arg": {
-                  "commentStart": 469,
+                  "commentStart": 0,
                   "elements": [
                     {
-                      "commentStart": 470,
+                      "commentStart": 0,
                       "end": 0,
                       "raw": "0.0",
                       "start": 0,
@@ -441,7 +441,7 @@ description: Result of parsing flush_batch_on_end.kcl
                       }
                     },
                     {
-                      "commentStart": 475,
+                      "commentStart": 0,
                       "end": 0,
                       "raw": "0.0",
                       "start": 0,
@@ -462,21 +462,21 @@ description: Result of parsing flush_batch_on_end.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "commentStart": 483,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "radius",
                   "start": 0,
                   "type": "Identifier"
                 },
                 "arg": {
-                  "commentStart": 492,
+                  "commentStart": 0,
                   "end": 0,
                   "left": {
                     "abs_path": false,
-                    "commentStart": 492,
+                    "commentStart": 0,
                     "end": 0,
                     "name": {
-                      "commentStart": 492,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "innerDiameter",
                       "start": 0,
@@ -489,7 +489,7 @@ description: Result of parsing flush_batch_on_end.kcl
                   },
                   "operator": "/",
                   "right": {
-                    "commentStart": 508,
+                    "commentStart": 0,
                     "end": 0,
                     "raw": "2",
                     "start": 0,
@@ -508,14 +508,14 @@ description: Result of parsing flush_batch_on_end.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "commentStart": 513,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "tag",
                   "start": 0,
                   "type": "Identifier"
                 },
                 "arg": {
-                  "commentStart": 519,
+                  "commentStart": 0,
                   "end": 0,
                   "start": 0,
                   "type": "TagDeclarator",
@@ -526,10 +526,10 @@ description: Result of parsing flush_batch_on_end.kcl
             ],
             "callee": {
               "abs_path": false,
-              "commentStart": 437,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 437,
+                "commentStart": 0,
                 "end": 0,
                 "name": "circle",
                 "start": 0,
@@ -539,17 +539,17 @@ description: Result of parsing flush_batch_on_end.kcl
               "start": 0,
               "type": "Name"
             },
-            "commentStart": 437,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
               "abs_path": false,
-              "commentStart": 447,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 447,
+                "commentStart": 0,
                 "end": 0,
                 "name": "sketch000",
                 "start": 0,
@@ -576,12 +576,12 @@ description: Result of parsing flush_batch_on_end.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 529,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 587,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 587,
+            "commentStart": 0,
             "end": 0,
             "name": "pipeProfile",
             "start": 0,
@@ -591,10 +591,10 @@ description: Result of parsing flush_batch_on_end.kcl
             "body": [
               {
                 "abs_path": false,
-                "commentStart": 601,
+                "commentStart": 0,
                 "end": 0,
                 "name": {
-                  "commentStart": 601,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "outerProfile",
                   "start": 0,
@@ -609,10 +609,10 @@ description: Result of parsing flush_batch_on_end.kcl
                 "arguments": [
                   {
                     "abs_path": false,
-                    "commentStart": 624,
+                    "commentStart": 0,
                     "end": 0,
                     "name": {
-                      "commentStart": 624,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "innerProfile",
                       "start": 0,
@@ -624,7 +624,7 @@ description: Result of parsing flush_batch_on_end.kcl
                     "type": "Name"
                   },
                   {
-                    "commentStart": 638,
+                    "commentStart": 0,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -633,10 +633,10 @@ description: Result of parsing flush_batch_on_end.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 619,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 619,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "hole",
                     "start": 0,
@@ -646,20 +646,20 @@ description: Result of parsing flush_batch_on_end.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 619,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               }
             ],
-            "commentStart": 601,
+            "commentStart": 0,
             "end": 0,
             "nonCodeMeta": {
               "nonCodeNodes": {
                 "1": [
                   {
-                    "commentStart": 640,
+                    "commentStart": 0,
                     "end": 0,
                     "start": 0,
                     "type": "NonCodeNode",
@@ -692,12 +692,12 @@ description: Result of parsing flush_batch_on_end.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 689,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 689,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 689,
+            "commentStart": 0,
             "end": 0,
             "name": "pipe",
             "start": 0,
@@ -708,7 +708,7 @@ description: Result of parsing flush_batch_on_end.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "commentStart": 717,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "length",
                   "start": 0,
@@ -716,10 +716,10 @@ description: Result of parsing flush_batch_on_end.kcl
                 },
                 "arg": {
                   "abs_path": false,
-                  "commentStart": 726,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 726,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "length",
                     "start": 0,
@@ -734,10 +734,10 @@ description: Result of parsing flush_batch_on_end.kcl
             ],
             "callee": {
               "abs_path": false,
-              "commentStart": 696,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 696,
+                "commentStart": 0,
                 "end": 0,
                 "name": "extrude",
                 "start": 0,
@@ -747,17 +747,17 @@ description: Result of parsing flush_batch_on_end.kcl
               "start": 0,
               "type": "Name"
             },
-            "commentStart": 696,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
               "abs_path": false,
-              "commentStart": 704,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 704,
+                "commentStart": 0,
                 "end": 0,
                 "name": "pipeProfile",
                 "start": 0,
@@ -786,7 +786,7 @@ description: Result of parsing flush_batch_on_end.kcl
         "commentStart": 0,
         "end": 0,
         "name": {
-          "commentStart": 1,
+          "commentStart": 0,
           "end": 0,
           "name": "settings",
           "start": 0,
@@ -794,10 +794,10 @@ description: Result of parsing flush_batch_on_end.kcl
         },
         "properties": [
           {
-            "commentStart": 10,
+            "commentStart": 0,
             "end": 0,
             "key": {
-              "commentStart": 10,
+              "commentStart": 0,
               "end": 0,
               "name": "defaultLengthUnit",
               "start": 0,
@@ -807,10 +807,10 @@ description: Result of parsing flush_batch_on_end.kcl
             "type": "ObjectProperty",
             "value": {
               "abs_path": false,
-              "commentStart": 30,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 30,
+                "commentStart": 0,
                 "end": 0,
                 "name": "in",
                 "start": 0,
@@ -831,7 +831,7 @@ description: Result of parsing flush_batch_on_end.kcl
       "nonCodeNodes": {},
       "startNodes": [
         {
-          "commentStart": 33,
+          "commentStart": 0,
           "end": 0,
           "start": 0,
           "type": "NonCodeNode",

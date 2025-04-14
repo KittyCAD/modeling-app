@@ -15,14 +15,6 @@ description: Artifact commands router-template-cross-bar.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "set_scene_units",
-      "unit": "mm"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
       "hidden": true
@@ -500,7 +492,8 @@ description: Artifact commands router-template-cross-bar.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 5.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -1041,7 +1034,8 @@ description: Artifact commands router-template-cross-bar.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 13.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -1282,7 +1276,8 @@ description: Artifact commands router-template-cross-bar.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 13.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -1523,7 +1518,8 @@ description: Artifact commands router-template-cross-bar.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 4.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {

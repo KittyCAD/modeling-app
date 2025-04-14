@@ -1,7 +1,7 @@
-import { CommandBarOverwriteWarning } from 'components/CommandBarOverwriteWarning'
-import { StateMachineCommandSetConfig } from 'lib/commandTypes'
-import { isDesktop } from 'lib/isDesktop'
-import { projectsMachine } from 'machines/projectsMachine'
+import { CommandBarOverwriteWarning } from '@src/components/CommandBarOverwriteWarning'
+import type { StateMachineCommandSetConfig } from '@src/lib/commandTypes'
+import { isDesktop } from '@src/lib/isDesktop'
+import type { projectsMachine } from '@src/machines/projectsMachine'
 
 export type ProjectsCommandSchema = {
   'Read projects': Record<string, unknown>

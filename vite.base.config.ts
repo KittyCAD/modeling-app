@@ -1,6 +1,7 @@
 import { builtinModules } from 'node:module'
 import type { AddressInfo } from 'node:net'
 import type { ConfigEnv, Plugin, UserConfig } from 'vite'
+
 import pkg from './package.json'
 
 export const builtins = [
@@ -59,17 +60,20 @@ export function getBuildDefine(env: ConfigEnv<'build'>) {
     .filter(({ name }) => name != null)
     .map(({ name }) => name!)
   const defineKeys = getDefineKeys(names)
-  const define = Object.entries(defineKeys).reduce((acc, [name, keys]) => {
-    const { VITE_DEV_SERVER_URL, VITE_NAME } = keys
-    const def = {
-      [VITE_DEV_SERVER_URL]:
-        command === 'serve'
-          ? JSON.stringify(process.env[VITE_DEV_SERVER_URL])
-          : undefined,
-      [VITE_NAME]: JSON.stringify(name),
-    }
-    return { ...acc, ...def }
-  }, {} as Record<string, any>)
+  const define = Object.entries(defineKeys).reduce(
+    (acc, [name, keys]) => {
+      const { VITE_DEV_SERVER_URL, VITE_NAME } = keys
+      const def = {
+        [VITE_DEV_SERVER_URL]:
+          command === 'serve'
+            ? JSON.stringify(process.env[VITE_DEV_SERVER_URL])
+            : undefined,
+        [VITE_NAME]: JSON.stringify(name),
+      }
+      return { ...acc, ...def }
+    },
+    {} as Record<string, any>
+  )
 
   return define
 }
@@ -87,9 +91,8 @@ export function pluginExposeRenderer(name: string): Plugin {
       server.httpServer?.once('listening', () => {
         const addressInfo = server.httpServer!.address() as AddressInfo
         // Expose env constant for main process use.
-        process.env[
-          VITE_DEV_SERVER_URL
-        ] = `http://localhost:${addressInfo?.port}`
+        process.env[VITE_DEV_SERVER_URL] =
+          `http://localhost:${addressInfo?.port}`
       })
     },
   }

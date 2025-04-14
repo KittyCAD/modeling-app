@@ -1,5 +1,6 @@
-import { assertParse, initPromise } from 'lang/wasm'
-import { getIdentifiersInProgram } from './getIndentifiersInProgram'
+import { getIdentifiersInProgram } from '@src/lang/queryAst/getIndentifiersInProgram'
+import { assertParse } from '@src/lang/wasm'
+import { initPromise } from '@src/lang/wasmUtils'
 
 function identifier(name: string, start: number, end: number) {
   return {

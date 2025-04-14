@@ -93,11 +93,11 @@ pub use lsp::{
     kcl::{Backend as KclLspBackend, Server as KclLspServerSubCommand},
 };
 pub use modules::ModuleId;
-pub use parsing::ast::{modify::modify_ast_for_sketch, types::FormatOptions};
+pub use parsing::ast::types::FormatOptions;
 pub use settings::types::{project::ProjectConfiguration, Configuration, UnitLength};
 pub use source_range::SourceRange;
 #[cfg(not(target_arch = "wasm32"))]
-pub use unparser::recast_dir;
+pub use unparser::{recast_dir, walk_dir};
 
 // Rather than make executor public and make lots of it pub(crate), just re-export into a new module.
 // Ideally we wouldn't export these things at all, they should only be used for testing.
@@ -131,10 +131,35 @@ pub mod pretty {
     pub use crate::{parsing::token::NumericSuffix, unparser::format_number};
 }
 
+#[cfg(feature = "cli")]
+use clap::ValueEnum;
 use serde::{Deserialize, Serialize};
 
 #[allow(unused_imports)]
 use crate::log::{log, logln};
+
+lazy_static::lazy_static! {
+
+    pub static ref IMPORT_FILE_EXTENSIONS: Vec<String> = {
+        let mut import_file_extensions = vec!["stp".to_string(), "glb".to_string(), "fbxb".to_string()];
+        #[cfg(feature = "cli")]
+        let named_extensions = kittycad::types::FileImportFormat::value_variants()
+            .iter()
+            .map(|x| format!("{}", x))
+            .collect::<Vec<String>>();
+        #[cfg(not(feature = "cli"))]
+        let named_extensions = vec![]; // We don't really need this outside of the CLI.
+        // Add all the default import formats.
+        import_file_extensions.extend_from_slice(&named_extensions);
+        import_file_extensions
+    };
+
+    pub static ref RELEVANT_FILE_EXTENSIONS: Vec<String> = {
+        let mut relevant_extensions = IMPORT_FILE_EXTENSIONS.clone();
+        relevant_extensions.push("kcl".to_string());
+        relevant_extensions
+    };
+}
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Program {
@@ -195,6 +220,10 @@ impl Program {
         })
     }
 
+    pub fn is_empty_or_only_settings(&self) -> bool {
+        self.ast.is_empty_or_only_settings()
+    }
+
     pub fn lint_all(&self) -> Result<Vec<lint::Discovered>, anyhow::Error> {
         self.ast.lint_all()
     }
@@ -210,6 +239,14 @@ impl Program {
 
     pub fn recast_with_options(&self, options: &FormatOptions) -> String {
         self.ast.recast(options, 0)
+    }
+
+    /// Create an empty program.
+    pub fn empty() -> Self {
+        Self {
+            ast: parsing::ast::types::Node::no_src(parsing::ast::types::Program::default()),
+            original_file_contents: String::new(),
+        }
     }
 }
 

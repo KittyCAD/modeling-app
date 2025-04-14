@@ -20,7 +20,6 @@ pub(crate) const SETTINGS_UNIT_ANGLE: &str = "defaultAngleUnit";
 pub(super) const NO_PRELUDE: &str = "no_std";
 
 pub(super) const IMPORT_FORMAT: &str = "format";
-pub(super) const IMPORT_FORMAT_VALUES: [&str; 9] = ["fbx", "gltf", "glb", "obj", "ply", "sldprt", "stp", "step", "stl"];
 pub(super) const IMPORT_COORDS: &str = "coords";
 pub(super) const IMPORT_COORDS_VALUES: [(&str, &System); 3] =
     [("zoo", KITTYCAD), ("opengl", OPENGL), ("vulkan", VULKAN)];

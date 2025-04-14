@@ -1,34 +1,33 @@
-import { SceneInfra } from 'clientSideScene/sceneInfra'
-import { sceneInfra } from 'lib/singletons'
-import { MutableRefObject, useEffect, useRef } from 'react'
+import { Popover } from '@headlessui/react'
+import type { MutableRefObject } from 'react'
+import { useEffect, useRef } from 'react'
+import type { Camera, ColorRepresentation, Intersection, Object3D } from 'three'
 import {
-  WebGLRenderer,
-  Scene,
-  OrthographicCamera,
   BoxGeometry,
-  SphereGeometry,
-  MeshBasicMaterial,
+  Clock,
   Color,
   Mesh,
-  Clock,
+  MeshBasicMaterial,
+  OrthographicCamera,
   Quaternion,
-  ColorRepresentation,
-  Vector2,
   Raycaster,
-  Camera,
-  Intersection,
-  Object3D,
+  Scene,
+  SphereGeometry,
+  Vector2,
+  WebGLRenderer,
 } from 'three'
-import { Popover } from '@headlessui/react'
-import { CustomIcon } from './CustomIcon'
-import { reportRejection } from 'lib/trap'
+
+import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import { CustomIcon } from '@src/components/CustomIcon'
 import {
-  useViewControlMenuItems,
   ViewControlContextMenu,
-} from './ViewControlMenu'
-import { AxisNames } from 'lib/constants'
-import { useModelingContext } from 'hooks/useModelingContext'
-import { useSettings } from 'machines/appMachine'
+  useViewControlMenuItems,
+} from '@src/components/ViewControlMenu'
+import { useModelingContext } from '@src/hooks/useModelingContext'
+import { AxisNames } from '@src/lib/constants'
+import { sceneInfra } from '@src/lib/singletons'
+import { reportRejection } from '@src/lib/trap'
+import { useSettings } from '@src/machines/appMachine'
 
 const CANVAS_SIZE = 80
 const FRUSTUM_SIZE = 0.5

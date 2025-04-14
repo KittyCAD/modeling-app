@@ -1,12 +1,14 @@
-import { DeepPartial } from 'lib/types'
-import { Configuration } from '@rust/kcl-lib/bindings/Configuration'
+import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
+import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
+
+import { createSettings } from '@src/lib/settings/initialSettings'
 import {
   configurationToSettingsPayload,
   getAllCurrentSettings,
   projectConfigurationToSettingsPayload,
   setSettingsAtLevel,
-} from './settingsUtils'
-import { createSettings } from './initialSettings'
+} from '@src/lib/settings/settingsUtils'
+import type { DeepPartial } from '@src/lib/types'
 
 describe(`testing settings initialization`, () => {
   it(`sets settings at the 'user' level`, () => {
@@ -42,11 +44,10 @@ describe(`testing settings initialization`, () => {
         },
       },
     }
-    const projectConfiguration: DeepPartial<Configuration> = {
+    const projectConfiguration: DeepPartial<ProjectConfiguration> = {
       settings: {
         app: {
           appearance: {
-            theme: 'light',
             color: 200,
           },
         },
@@ -81,11 +82,10 @@ describe(`testing getAllCurrentSettings`, () => {
         },
       },
     }
-    const projectConfiguration: DeepPartial<Configuration> = {
+    const projectConfiguration: DeepPartial<ProjectConfiguration> = {
       settings: {
         app: {
           appearance: {
-            theme: 'light',
             color: 200,
           },
         },

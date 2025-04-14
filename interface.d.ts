@@ -1,13 +1,10 @@
-import fs from 'node:fs/promises'
-import fsSync from 'node:fs'
-import path from 'path'
-import { dialog, shell } from 'electron'
 import { MachinesListing } from 'components/MachineManagerProvider'
-import type { Channel } from 'src/menu/channels'
-import { Menu, WebContents } from 'electron'
-import { ZooLabel, ZooMenuEvents } from 'menu/roles'
-import type { MenuActionIPC } from 'menu/rules'
+import 'electron'
+import { dialog, shell } from 'electron'
 import type { WebContentSendPayload } from 'menu/channels'
+import { ZooLabel } from 'menu/roles'
+import fs from 'node:fs/promises'
+import path from 'path'
 
 // Extend the interface with additional custom properties
 declare module 'electron' {
@@ -75,7 +72,6 @@ export interface IElectronAPI {
   process: {
     env: {
       BASE_URL: string
-      TEST_SETTINGS_FILE_KEY: string
       IS_PLAYWRIGHT: string
       VITE_KC_DEV_TOKEN: string
       VITE_KC_API_WS_MODELING_URL: string

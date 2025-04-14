@@ -1,19 +1,27 @@
-import { EditorView, ViewUpdate } from '@codemirror/view'
+import { redo, undo } from '@codemirror/commands'
 import { syntaxTree } from '@codemirror/language'
-import { EditorSelection, Annotation, Transaction } from '@codemirror/state'
-import { engineCommandManager, kclManager } from 'lib/singletons'
-import { modelingMachine, ModelingMachineEvent } from 'machines/modelingMachine'
-import { Selections, Selection, processCodeMirrorRanges } from 'lib/selections'
-import { undo, redo } from '@codemirror/commands'
-import { addLineHighlight, addLineHighlightEvent } from './highlightextension'
+import type { Diagnostic } from '@codemirror/lint'
+import { forEachDiagnostic, setDiagnosticsEffect } from '@codemirror/lint'
+import { Annotation, EditorSelection, Transaction } from '@codemirror/state'
+import type { ViewUpdate } from '@codemirror/view'
+import { EditorView } from '@codemirror/view'
+import type { StateFrom } from 'xstate'
+
 import {
-  Diagnostic,
-  forEachDiagnostic,
-  setDiagnosticsEffect,
-} from '@codemirror/lint'
-import { StateFrom } from 'xstate'
-import { markOnce } from 'lib/performance'
-import { kclEditorActor } from 'machines/kclEditorMachine'
+  addLineHighlight,
+  addLineHighlightEvent,
+} from '@src/editor/highlightextension'
+import type { KclManager } from '@src/lang/KclSingleton'
+import type { EngineCommandManager } from '@src/lang/std/engineConnection'
+import { isTopLevelModule } from '@src/lang/util'
+import { markOnce } from '@src/lib/performance'
+import type { Selection, Selections } from '@src/lib/selections'
+import { processCodeMirrorRanges } from '@src/lib/selections'
+import { kclEditorActor } from '@src/machines/kclEditorMachine'
+import type {
+  ModelingMachineEvent,
+  modelingMachine,
+} from '@src/machines/modelingMachine'
 
 declare global {
   interface Window {
@@ -38,6 +46,7 @@ export const setDiagnosticsEvent = setDiagnosticsAnnotation.of(true)
 
 export default class EditorManager {
   private _copilotEnabled: boolean = true
+  private engineCommandManager: EngineCommandManager
 
   private _isAllTextSelected: boolean = false
   private _isShiftDown: boolean = false
@@ -57,6 +66,11 @@ export default class EditorManager {
   private _highlightRange: Array<[number, number]> = [[0, 0]]
 
   public _editorView: EditorView | null = null
+  public kclManager?: KclManager
+
+  constructor(engineCommandManager: EngineCommandManager) {
+    this.engineCommandManager = engineCommandManager
+  }
 
   setCopilotEnabled(enabled: boolean) {
     this._copilotEnabled = enabled
@@ -134,12 +148,12 @@ export default class EditorManager {
     selection: Array<Selection['codeRef']['range']>
   ): Array<[number, number]> {
     if (!this._editorView) {
-      return selection.map((s): [number, number] => {
+      return selection.filter(isTopLevelModule).map((s): [number, number] => {
         return [s[0], s[1]]
       })
     }
 
-    return selection.map((s): [number, number] => {
+    return selection.filter(isTopLevelModule).map((s): [number, number] => {
       const safeEnd = Math.min(s[1], this._editorView?.state.doc.length || s[1])
       return [s[0], safeEnd]
     })
@@ -369,12 +383,17 @@ export default class EditorManager {
       }
     )
 
+    if (!this.kclManager) {
+      console.error('unreachable')
+      return
+    }
+
     const eventInfo = processCodeMirrorRanges({
       codeMirrorRanges: viewUpdate.state.selection.ranges,
       selectionRanges: this._selectionRanges,
       isShiftDown: this._isShiftDown,
-      ast: kclManager.ast,
-      artifactGraph: engineCommandManager.artifactGraph,
+      ast: this.kclManager.ast,
+      artifactGraph: this.kclManager.artifactGraph,
     })
 
     if (!eventInfo) {
@@ -401,7 +420,7 @@ export default class EditorManager {
     this._modelingSend(eventInfo.modelingEvent)
     eventInfo.engineEvents.forEach((event) => {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      engineCommandManager.sendSceneCommand(event)
+      this.engineCommandManager.sendSceneCommand(event)
     })
   }
 }

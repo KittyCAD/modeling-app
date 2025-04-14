@@ -15,14 +15,6 @@ description: Artifact commands union_cubes.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "set_scene_units",
-      "unit": "mm"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
       "hidden": true
@@ -186,8 +178,9 @@ description: Artifact commands union_cubes.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 10.0,
-      "faces": null
+      "distance": 20.0,
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -349,8 +342,8 @@ description: Artifact commands union_cubes.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 10.0,
-        "y": 0.0,
+        "x": 2.0,
+        "y": -2.0,
         "z": 0.0
       }
     }
@@ -371,8 +364,8 @@ description: Artifact commands union_cubes.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 30.0,
-          "y": 0.0,
+          "x": 12.0,
+          "y": -2.0,
           "z": 0.0
         },
         "relative": false
@@ -388,8 +381,8 @@ description: Artifact commands union_cubes.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 30.0,
-          "y": 20.0,
+          "x": 12.0,
+          "y": 8.0,
           "z": 0.0
         },
         "relative": false
@@ -405,8 +398,8 @@ description: Artifact commands union_cubes.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 10.0,
-          "y": 20.0,
+          "x": 2.0,
+          "y": 8.0,
           "z": 0.0
         },
         "relative": false
@@ -444,7 +437,8 @@ description: Artifact commands union_cubes.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 10.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -549,6 +543,42 @@ description: Artifact commands union_cubes.kcl
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "set_object_transform",
+      "object_id": "[uuid]",
+      "transforms": [
+        {
+          "translate": {
+            "property": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0
+            },
+            "set": false,
+            "is_local": true
+          },
+          "rotate_rpy": null,
+          "rotate_angle_axis": null,
+          "scale": null
+        }
+      ]
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "boolean_union",
+      "solid_ids": [
+        "[uuid]",
+        "[uuid]"
+      ],
+      "tolerance": 0.0000001
     }
   }
 ]

@@ -1,9 +1,8 @@
 import '@testing-library/jest-dom'
-import { WebSocket } from 'ws'
+import fetch from 'node-fetch'
 import { vi } from 'vitest'
 import 'vitest-webgl-canvas-mock'
-
-import fetch from 'node-fetch'
+import { WebSocket } from 'ws'
 
 // @ts-ignore
 globalThis.fetch = fetch
