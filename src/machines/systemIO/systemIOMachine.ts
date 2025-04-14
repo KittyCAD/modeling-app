@@ -50,6 +50,14 @@ export const systemIOMachine = setup({
       | {
           type: SystemIOMachineEvents.deleteProject
           data: { requestedProjectName: string }
+        }
+      | {
+          type: SystemIOMachineEvents.createKCLFile
+          data: {
+            requestedProjectName: string
+            requestedFileName: string
+            requestedCode: string
+          }
         },
   },
   actions: {
@@ -116,6 +124,18 @@ export const systemIOMachine = setup({
         }
       }) => {}
     ),
+    [SystemIOMachineActors.createKCLFile]: fromPromise(
+      async ({
+        input,
+      }: {
+        input: {
+          context: SystemIOContext
+          requestedProjectName: string
+          requestedFileName: string
+          requestedCode: string
+        }
+      }) => {}
+    ),
   },
 }).createMachine({
   initial: SystemIOMachineStates.idle,
@@ -157,6 +177,9 @@ export const systemIOMachine = setup({
         },
         [SystemIOMachineEvents.deleteProject]: {
           target: SystemIOMachineStates.deletingProject,
+        },
+        [SystemIOMachineEvents.createKCLFile]: {
+          target: SystemIOMachineStates.creatingKCLFile,
         },
       },
     },
@@ -228,6 +251,27 @@ export const systemIOMachine = setup({
         },
         onDone: {
           target: SystemIOMachineStates.readingFolders,
+        },
+        onError: {
+          target: SystemIOMachineStates.idle,
+        },
+      },
+    },
+    [SystemIOMachineStates.creatingKCLFile]: {
+      invoke: {
+        id: SystemIOMachineActors.createKCLFile,
+        src: SystemIOMachineActors.createKCLFile,
+        input: ({ context, event }) => {
+          assertEvent(event, SystemIOMachineEvents.createKCLFile)
+          return {
+            context,
+            requestedProjectName: event.data.requestedProjectName,
+            requestedFileName: event.data.requestedFileName,
+            requestedCode: event.data.requestedCode,
+          }
+        },
+        onDone: {
+          target: SystemIOMachineStates.idle,
         },
         onError: {
           target: SystemIOMachineStates.idle,

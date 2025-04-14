@@ -2,10 +2,12 @@ import {
   createNewProjectDirectory,
   getProjectInfo,
   mkdirOrNOOP,
+  readAppSettingsFile,
   renameProjectDirectory,
 } from '@src/lib/desktop'
 import {
   doesProjectNameNeedInterpolated,
+  getNextFileName,
   getNextProjectIndex,
   getUniqueProjectName,
   interpolateProjectNameWithIndex,
@@ -129,6 +131,53 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           {
             recursive: true,
           }
+        )
+      }
+    ),
+    [SystemIOMachineActors.createKCLFile]: fromPromise(
+      async ({
+        input,
+      }: {
+        input: {
+          context: SystemIOContext
+          requestedProjectName: string
+          requestedFileName: string
+          requestedCode: string
+        }
+      }) => {
+        const requestedProjectName = input.requestedProjectName
+        const requestedFileName = input.requestedFileName
+        const requestedCode = input.requestedCode
+        const folders = input.context.folders
+
+        let newProjectName = requestedProjectName
+
+        const needsInterpolated =
+          doesProjectNameNeedInterpolated(newProjectName)
+        if (needsInterpolated) {
+          const nextIndex = getNextProjectIndex(newProjectName, folders)
+          newProjectName = interpolateProjectNameWithIndex(
+            newProjectName,
+            nextIndex
+          )
+        }
+
+        const baseDir = window.electron.join(
+          input.context.projectDirectoryPath,
+          newProjectName
+        )
+        const { name: newFileName } = getNextFileName({
+          entryName: requestedFileName,
+          baseDir,
+        })
+        const configuration = await readAppSettingsFile()
+
+        // Create the project around the file if newProject
+        await createNewProjectDirectory(
+          newProjectName,
+          requestedCode,
+          configuration,
+          newFileName
         )
       }
     ),

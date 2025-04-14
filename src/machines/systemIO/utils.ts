@@ -6,6 +6,7 @@ export enum SystemIOMachineActors {
   createProject = 'create project',
   renameProject = 'rename project',
   deleteProject = 'delete project',
+  createKCLFile = 'create kcl file',
 }
 
 export enum SystemIOMachineStates {
@@ -15,6 +16,7 @@ export enum SystemIOMachineStates {
   creatingProject = 'creatingProject',
   renamingProject = 'renamingProject',
   deletingProject = 'deletingProject',
+  creatingKCLFile = 'creatingKCLFile',
 }
 
 const donePrefix = 'xstate.done.actor.'
@@ -29,6 +31,7 @@ export enum SystemIOMachineEvents {
   createProject = 'create project',
   renameProject = 'rename project',
   deleteProject = 'delete project',
+  createKCLFile = 'create kcl file',
 }
 
 export enum SystemIOMachineActions {
