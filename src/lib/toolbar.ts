@@ -3,6 +3,7 @@ import type { EventFrom, StateFrom } from 'xstate'
 
 import type { CustomIconName } from '@src/components/CustomIcon'
 import { createLiteral } from '@src/lang/create'
+import { isDesktop } from '@src/lib/isDesktop'
 import { commandBarActor } from '@src/machines/commandBarMachine'
 import type { modelingMachine } from '@src/machines/modelingMachine'
 import {
@@ -335,6 +336,50 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         title: 'Helix',
         description: 'Create a helix or spiral in 3D about an axis.',
         links: [{ label: 'KCL docs', url: 'https://zoo.dev/docs/kcl/helix' }],
+      },
+      'break',
+      {
+        id: 'modules',
+        array: [
+          {
+            id: 'insert',
+            onClick: () =>
+              commandBarActor.send({
+                type: 'Find and select command',
+                data: { name: 'Insert', groupId: 'code' },
+              }),
+            hotkey: 'I',
+            icon: 'import',
+            status: DEV || IS_NIGHTLY_OR_DEBUG ? 'available' : 'kcl-only',
+            disabled: () => !isDesktop(),
+            title: 'Insert',
+            description: 'Insert from a file in the current project directory',
+            links: [
+              {
+                label: 'API docs',
+                url: 'https://zoo.dev/docs/kcl/import',
+              },
+            ],
+          },
+          {
+            id: 'transform',
+            icon: 'angle',
+            status: 'kcl-only',
+            title: 'Transform',
+            description: 'Apply a translation and/or rotation to a module',
+            onClick: () => undefined,
+            links: [
+              {
+                label: 'API docs',
+                url: 'https://zoo.dev/docs/kcl/translate',
+              },
+              {
+                label: 'API docs',
+                url: 'https://zoo.dev/docs/kcl/rotate',
+              },
+            ],
+          },
+        ],
       },
       'break',
       {

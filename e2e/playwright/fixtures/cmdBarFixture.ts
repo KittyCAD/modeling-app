@@ -3,7 +3,7 @@ import { expect } from '@playwright/test'
 import * as fs from 'fs'
 import * as path from 'path'
 
-type CmdBarSerialised =
+export type CmdBarSerialised =
   | {
       stage: 'commandBarClosed'
     }
