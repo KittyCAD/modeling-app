@@ -141,7 +141,7 @@ description: Artifact commands router-template-slate.kcl
         },
         "end": {
           "unit": "degrees",
-          "value": 0.0
+          "value": 8.11875
         },
         "relative": false
       }
@@ -156,7 +156,7 @@ description: Artifact commands router-template-slate.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 18.8688,
+          "x": 18.7874,
           "y": -12.4937,
           "z": 0.0
         },
@@ -258,7 +258,7 @@ description: Artifact commands router-template-slate.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 11.8813,
+          "x": 11.9626,
           "y": 0.0,
           "z": 0.0
         },
@@ -276,7 +276,7 @@ description: Artifact commands router-template-slate.kcl
         "type": "line",
         "end": {
           "x": 0.0,
-          "y": 32.4938,
+          "y": 33.6403,
           "z": 0.0
         },
         "relative": true
@@ -292,8 +292,8 @@ description: Artifact commands router-template-slate.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": -10.75,
-          "y": 20.0
+          "x": -10.6686,
+          "y": 21.1466
         },
         "radius": 8.11875,
         "start": {
@@ -302,7 +302,7 @@ description: Artifact commands router-template-slate.kcl
         },
         "end": {
           "unit": "degrees",
-          "value": 90.0
+          "value": 8.11875
         },
         "relative": false
       }

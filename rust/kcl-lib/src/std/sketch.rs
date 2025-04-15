@@ -1830,20 +1830,6 @@ pub async fn relative_arc(
             source_ranges: vec![args.source_range],
         }));
     }
-    if a_start.to_degrees() > 360.0 || a_start.to_degrees() < -360.0 {
-        return Err(KclError::Type(KclErrorDetails {
-            message: "Start angle must be between ±360 degrees.".to_string(),
-            // TODO: This source range should be specifically on the `angleStart` arg, not the entire arg list.
-            source_ranges: vec![args.source_range],
-        }));
-    }
-    if a_end.to_degrees() > 360.0 || a_end.to_degrees() < -360.0 {
-        return Err(KclError::Type(KclErrorDetails {
-            message: "End angle must be between ±360 degrees.".to_string(),
-            // TODO: This source range should be specifically on the `angleEnd` arg, not the entire arg list.
-            source_ranges: vec![args.source_range],
-        }));
-    }
     let ccw = angle_start.n < angle_end.n;
 
     args.batch_modeling_cmd(

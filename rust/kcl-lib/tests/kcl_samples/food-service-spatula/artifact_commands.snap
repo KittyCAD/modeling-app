@@ -175,7 +175,7 @@ description: Artifact commands food-service-spatula.kcl
         },
         "end": {
           "unit": "degrees",
-          "value": 196.91239
+          "value": 110.0
         },
         "relative": false
       }

@@ -50,7 +50,7 @@ description: Variables in memory after executing ball-bearing.kcl
                 "tag": null,
                 "to": [
                   0.725,
-                  0.001
+                  0.0013
                 ],
                 "type": "Arc",
                 "units": {
@@ -64,7 +64,7 @@ description: Variables in memory after executing ball-bearing.kcl
                 },
                 "from": [
                   0.725,
-                  0.001
+                  0.0013
                 ],
                 "tag": null,
                 "to": [
@@ -194,7 +194,7 @@ description: Variables in memory after executing ball-bearing.kcl
                 "tag": null,
                 "to": [
                   0.725,
-                  0.001
+                  0.0013
                 ],
                 "type": "Arc",
                 "units": {
@@ -208,7 +208,7 @@ description: Variables in memory after executing ball-bearing.kcl
                 },
                 "from": [
                   0.725,
-                  0.001
+                  0.0013
                 ],
                 "tag": null,
                 "to": [
@@ -338,7 +338,7 @@ description: Variables in memory after executing ball-bearing.kcl
                 "tag": null,
                 "to": [
                   0.725,
-                  0.001
+                  0.0013
                 ],
                 "type": "Arc",
                 "units": {
@@ -352,7 +352,7 @@ description: Variables in memory after executing ball-bearing.kcl
                 },
                 "from": [
                   0.725,
-                  0.001
+                  0.0013
                 ],
                 "tag": null,
                 "to": [
@@ -482,7 +482,7 @@ description: Variables in memory after executing ball-bearing.kcl
                 "tag": null,
                 "to": [
                   0.725,
-                  0.001
+                  0.0013
                 ],
                 "type": "Arc",
                 "units": {
@@ -496,7 +496,7 @@ description: Variables in memory after executing ball-bearing.kcl
                 },
                 "from": [
                   0.725,
-                  0.001
+                  0.0013
                 ],
                 "tag": null,
                 "to": [
@@ -626,7 +626,7 @@ description: Variables in memory after executing ball-bearing.kcl
                 "tag": null,
                 "to": [
                   0.725,
-                  0.001
+                  0.0013
                 ],
                 "type": "Arc",
                 "units": {
@@ -640,7 +640,7 @@ description: Variables in memory after executing ball-bearing.kcl
                 },
                 "from": [
                   0.725,
-                  0.001
+                  0.0013
                 ],
                 "tag": null,
                 "to": [
@@ -770,7 +770,7 @@ description: Variables in memory after executing ball-bearing.kcl
                 "tag": null,
                 "to": [
                   0.725,
-                  0.001
+                  0.0013
                 ],
                 "type": "Arc",
                 "units": {
@@ -784,7 +784,7 @@ description: Variables in memory after executing ball-bearing.kcl
                 },
                 "from": [
                   0.725,
-                  0.001
+                  0.0013
                 ],
                 "tag": null,
                 "to": [
@@ -914,7 +914,7 @@ description: Variables in memory after executing ball-bearing.kcl
                 "tag": null,
                 "to": [
                   0.725,
-                  0.001
+                  0.0013
                 ],
                 "type": "Arc",
                 "units": {
@@ -928,7 +928,7 @@ description: Variables in memory after executing ball-bearing.kcl
                 },
                 "from": [
                   0.725,
-                  0.001
+                  0.0013
                 ],
                 "tag": null,
                 "to": [
@@ -1058,7 +1058,7 @@ description: Variables in memory after executing ball-bearing.kcl
                 "tag": null,
                 "to": [
                   0.725,
-                  0.001
+                  0.0013
                 ],
                 "type": "Arc",
                 "units": {
@@ -1072,7 +1072,7 @@ description: Variables in memory after executing ball-bearing.kcl
                 },
                 "from": [
                   0.725,
-                  0.001
+                  0.0013
                 ],
                 "tag": null,
                 "to": [
@@ -1202,7 +1202,7 @@ description: Variables in memory after executing ball-bearing.kcl
                 "tag": null,
                 "to": [
                   0.725,
-                  0.001
+                  0.0013
                 ],
                 "type": "Arc",
                 "units": {
@@ -1216,7 +1216,7 @@ description: Variables in memory after executing ball-bearing.kcl
                 },
                 "from": [
                   0.725,
-                  0.001
+                  0.0013
                 ],
                 "tag": null,
                 "to": [
@@ -1346,7 +1346,7 @@ description: Variables in memory after executing ball-bearing.kcl
                 "tag": null,
                 "to": [
                   0.725,
-                  0.001
+                  0.0013
                 ],
                 "type": "Arc",
                 "units": {
@@ -1360,7 +1360,7 @@ description: Variables in memory after executing ball-bearing.kcl
                 },
                 "from": [
                   0.725,
-                  0.001
+                  0.0013
                 ],
                 "tag": null,
                 "to": [
@@ -1472,7 +1472,7 @@ description: Variables in memory after executing ball-bearing.kcl
           "tag": null,
           "to": [
             0.725,
-            0.001
+            0.0013
           ],
           "type": "Arc",
           "units": {
@@ -1486,7 +1486,7 @@ description: Variables in memory after executing ball-bearing.kcl
           },
           "from": [
             0.725,
-            0.001
+            0.0013
           ],
           "tag": null,
           "to": [
@@ -1625,8 +1625,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "radius": 0.125,
                 "tag": null,
                 "to": [
-                  0.6625,
-                  0.1083
+                  0.725,
+                  0.0003
                 ],
                 "type": "Arc",
                 "units": {
@@ -1639,13 +1639,13 @@ description: Variables in memory after executing ball-bearing.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.6625,
-                  0.1083
+                  0.725,
+                  0.0003
                 ],
                 "tag": null,
                 "to": [
-                  0.6625,
-                  0.1395
+                  0.725,
+                  0.0315
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -1658,13 +1658,13 @@ description: Variables in memory after executing ball-bearing.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.6625,
-                  0.1395
+                  0.725,
+                  0.0315
                 ],
                 "tag": null,
                 "to": [
-                  0.5375,
-                  0.1395
+                  0.6,
+                  0.0315
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -1677,8 +1677,8 @@ description: Variables in memory after executing ball-bearing.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.5375,
-                  0.1395
+                  0.6,
+                  0.0315
                 ],
                 "tag": null,
                 "to": [
@@ -1821,8 +1821,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "radius": 0.125,
                 "tag": null,
                 "to": [
-                  0.6625,
-                  0.1083
+                  0.725,
+                  0.0003
                 ],
                 "type": "Arc",
                 "units": {
@@ -1835,13 +1835,13 @@ description: Variables in memory after executing ball-bearing.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.6625,
-                  0.1083
+                  0.725,
+                  0.0003
                 ],
                 "tag": null,
                 "to": [
-                  0.6625,
-                  0.1395
+                  0.725,
+                  0.0315
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -1854,13 +1854,13 @@ description: Variables in memory after executing ball-bearing.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.6625,
-                  0.1395
+                  0.725,
+                  0.0315
                 ],
                 "tag": null,
                 "to": [
-                  0.5375,
-                  0.1395
+                  0.6,
+                  0.0315
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -1873,8 +1873,8 @@ description: Variables in memory after executing ball-bearing.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.5375,
-                  0.1395
+                  0.6,
+                  0.0315
                 ],
                 "tag": null,
                 "to": [
@@ -2017,8 +2017,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "radius": 0.125,
                 "tag": null,
                 "to": [
-                  0.6625,
-                  0.1083
+                  0.725,
+                  0.0003
                 ],
                 "type": "Arc",
                 "units": {
@@ -2031,13 +2031,13 @@ description: Variables in memory after executing ball-bearing.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.6625,
-                  0.1083
+                  0.725,
+                  0.0003
                 ],
                 "tag": null,
                 "to": [
-                  0.6625,
-                  0.1395
+                  0.725,
+                  0.0315
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -2050,13 +2050,13 @@ description: Variables in memory after executing ball-bearing.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.6625,
-                  0.1395
+                  0.725,
+                  0.0315
                 ],
                 "tag": null,
                 "to": [
-                  0.5375,
-                  0.1395
+                  0.6,
+                  0.0315
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -2069,8 +2069,8 @@ description: Variables in memory after executing ball-bearing.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.5375,
-                  0.1395
+                  0.6,
+                  0.0315
                 ],
                 "tag": null,
                 "to": [
@@ -2213,8 +2213,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "radius": 0.125,
                 "tag": null,
                 "to": [
-                  0.6625,
-                  0.1083
+                  0.725,
+                  0.0003
                 ],
                 "type": "Arc",
                 "units": {
@@ -2227,13 +2227,13 @@ description: Variables in memory after executing ball-bearing.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.6625,
-                  0.1083
+                  0.725,
+                  0.0003
                 ],
                 "tag": null,
                 "to": [
-                  0.6625,
-                  0.1395
+                  0.725,
+                  0.0315
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -2246,13 +2246,13 @@ description: Variables in memory after executing ball-bearing.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.6625,
-                  0.1395
+                  0.725,
+                  0.0315
                 ],
                 "tag": null,
                 "to": [
-                  0.5375,
-                  0.1395
+                  0.6,
+                  0.0315
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -2265,8 +2265,8 @@ description: Variables in memory after executing ball-bearing.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.5375,
-                  0.1395
+                  0.6,
+                  0.0315
                 ],
                 "tag": null,
                 "to": [
@@ -2409,8 +2409,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "radius": 0.125,
                 "tag": null,
                 "to": [
-                  0.6625,
-                  0.1083
+                  0.725,
+                  0.0003
                 ],
                 "type": "Arc",
                 "units": {
@@ -2423,13 +2423,13 @@ description: Variables in memory after executing ball-bearing.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.6625,
-                  0.1083
+                  0.725,
+                  0.0003
                 ],
                 "tag": null,
                 "to": [
-                  0.6625,
-                  0.1395
+                  0.725,
+                  0.0315
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -2442,13 +2442,13 @@ description: Variables in memory after executing ball-bearing.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.6625,
-                  0.1395
+                  0.725,
+                  0.0315
                 ],
                 "tag": null,
                 "to": [
-                  0.5375,
-                  0.1395
+                  0.6,
+                  0.0315
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -2461,8 +2461,8 @@ description: Variables in memory after executing ball-bearing.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.5375,
-                  0.1395
+                  0.6,
+                  0.0315
                 ],
                 "tag": null,
                 "to": [
@@ -2605,8 +2605,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "radius": 0.125,
                 "tag": null,
                 "to": [
-                  0.6625,
-                  0.1083
+                  0.725,
+                  0.0003
                 ],
                 "type": "Arc",
                 "units": {
@@ -2619,13 +2619,13 @@ description: Variables in memory after executing ball-bearing.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.6625,
-                  0.1083
+                  0.725,
+                  0.0003
                 ],
                 "tag": null,
                 "to": [
-                  0.6625,
-                  0.1395
+                  0.725,
+                  0.0315
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -2638,13 +2638,13 @@ description: Variables in memory after executing ball-bearing.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.6625,
-                  0.1395
+                  0.725,
+                  0.0315
                 ],
                 "tag": null,
                 "to": [
-                  0.5375,
-                  0.1395
+                  0.6,
+                  0.0315
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -2657,8 +2657,8 @@ description: Variables in memory after executing ball-bearing.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.5375,
-                  0.1395
+                  0.6,
+                  0.0315
                 ],
                 "tag": null,
                 "to": [
@@ -2801,8 +2801,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "radius": 0.125,
                 "tag": null,
                 "to": [
-                  0.6625,
-                  0.1083
+                  0.725,
+                  0.0003
                 ],
                 "type": "Arc",
                 "units": {
@@ -2815,13 +2815,13 @@ description: Variables in memory after executing ball-bearing.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.6625,
-                  0.1083
+                  0.725,
+                  0.0003
                 ],
                 "tag": null,
                 "to": [
-                  0.6625,
-                  0.1395
+                  0.725,
+                  0.0315
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -2834,13 +2834,13 @@ description: Variables in memory after executing ball-bearing.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.6625,
-                  0.1395
+                  0.725,
+                  0.0315
                 ],
                 "tag": null,
                 "to": [
-                  0.5375,
-                  0.1395
+                  0.6,
+                  0.0315
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -2853,8 +2853,8 @@ description: Variables in memory after executing ball-bearing.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.5375,
-                  0.1395
+                  0.6,
+                  0.0315
                 ],
                 "tag": null,
                 "to": [
@@ -2997,8 +2997,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "radius": 0.125,
                 "tag": null,
                 "to": [
-                  0.6625,
-                  0.1083
+                  0.725,
+                  0.0003
                 ],
                 "type": "Arc",
                 "units": {
@@ -3011,13 +3011,13 @@ description: Variables in memory after executing ball-bearing.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.6625,
-                  0.1083
+                  0.725,
+                  0.0003
                 ],
                 "tag": null,
                 "to": [
-                  0.6625,
-                  0.1395
+                  0.725,
+                  0.0315
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -3030,13 +3030,13 @@ description: Variables in memory after executing ball-bearing.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.6625,
-                  0.1395
+                  0.725,
+                  0.0315
                 ],
                 "tag": null,
                 "to": [
-                  0.5375,
-                  0.1395
+                  0.6,
+                  0.0315
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -3049,8 +3049,8 @@ description: Variables in memory after executing ball-bearing.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.5375,
-                  0.1395
+                  0.6,
+                  0.0315
                 ],
                 "tag": null,
                 "to": [
@@ -3193,8 +3193,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "radius": 0.125,
                 "tag": null,
                 "to": [
-                  0.6625,
-                  0.1083
+                  0.725,
+                  0.0003
                 ],
                 "type": "Arc",
                 "units": {
@@ -3207,13 +3207,13 @@ description: Variables in memory after executing ball-bearing.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.6625,
-                  0.1083
+                  0.725,
+                  0.0003
                 ],
                 "tag": null,
                 "to": [
-                  0.6625,
-                  0.1395
+                  0.725,
+                  0.0315
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -3226,13 +3226,13 @@ description: Variables in memory after executing ball-bearing.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.6625,
-                  0.1395
+                  0.725,
+                  0.0315
                 ],
                 "tag": null,
                 "to": [
-                  0.5375,
-                  0.1395
+                  0.6,
+                  0.0315
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -3245,8 +3245,8 @@ description: Variables in memory after executing ball-bearing.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.5375,
-                  0.1395
+                  0.6,
+                  0.0315
                 ],
                 "tag": null,
                 "to": [
@@ -3389,8 +3389,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "radius": 0.125,
                 "tag": null,
                 "to": [
-                  0.6625,
-                  0.1083
+                  0.725,
+                  0.0003
                 ],
                 "type": "Arc",
                 "units": {
@@ -3403,13 +3403,13 @@ description: Variables in memory after executing ball-bearing.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.6625,
-                  0.1083
+                  0.725,
+                  0.0003
                 ],
                 "tag": null,
                 "to": [
-                  0.6625,
-                  0.1395
+                  0.725,
+                  0.0315
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -3422,13 +3422,13 @@ description: Variables in memory after executing ball-bearing.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.6625,
-                  0.1395
+                  0.725,
+                  0.0315
                 ],
                 "tag": null,
                 "to": [
-                  0.5375,
-                  0.1395
+                  0.6,
+                  0.0315
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -3441,8 +3441,8 @@ description: Variables in memory after executing ball-bearing.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.5375,
-                  0.1395
+                  0.6,
+                  0.0315
                 ],
                 "tag": null,
                 "to": [
@@ -3553,8 +3553,8 @@ description: Variables in memory after executing ball-bearing.kcl
           "radius": 0.125,
           "tag": null,
           "to": [
-            0.6625,
-            0.1083
+            0.725,
+            0.0003
           ],
           "type": "Arc",
           "units": {
@@ -3567,13 +3567,13 @@ description: Variables in memory after executing ball-bearing.kcl
             "sourceRange": []
           },
           "from": [
-            0.6625,
-            0.1083
+            0.725,
+            0.0003
           ],
           "tag": null,
           "to": [
-            0.6625,
-            0.1395
+            0.725,
+            0.0315
           ],
           "type": "ToPoint",
           "units": {
@@ -3586,13 +3586,13 @@ description: Variables in memory after executing ball-bearing.kcl
             "sourceRange": []
           },
           "from": [
-            0.6625,
-            0.1395
+            0.725,
+            0.0315
           ],
           "tag": null,
           "to": [
-            0.5375,
-            0.1395
+            0.6,
+            0.0315
           ],
           "type": "ToPoint",
           "units": {
@@ -3605,8 +3605,8 @@ description: Variables in memory after executing ball-bearing.kcl
             "sourceRange": []
           },
           "from": [
-            0.5375,
-            0.1395
+            0.6,
+            0.0315
           ],
           "tag": null,
           "to": [

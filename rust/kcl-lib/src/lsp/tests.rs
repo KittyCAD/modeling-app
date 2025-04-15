@@ -1643,11 +1643,11 @@ sphere = startSketchOn(XZ)
        0 - 0.05
      ], %)
   |> line(end = [sphereDia - 0.1, 0])
-  |> arc({
+  |> arc(
        angle_start = 0,
        angle_end = -180,
-       radius: sphereDia / 2 - 0.05
-     }, %)
+       radius = sphereDia / 2 - 0.05,
+     )
   |> close()
   |> revolve({ axis = X }, %)
   |> patternCircular3d(
@@ -1743,11 +1743,11 @@ sphere = startSketchOn(XZ)
        0 - 0.05
      ], %)
   |> line(end = [sphereDia - 0.1, 0])
-  |> arc({
+  |> arc(
        angle_start = 0,
        angle_end = -180,
        radius = sphereDia / 2 - 0.05
-     }, %)
+     )
   |> close()
   |> revolve({ axis = X }, %)
   |> patternCircular3d(

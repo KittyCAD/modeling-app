@@ -1888,6 +1888,20 @@ description: Variables in memory after executing gear.kcl
           "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudePlane"
         }
       ],
       "sketch": {
@@ -1968,8 +1982,8 @@ description: Variables in memory after executing gear.kcl
             "radius": 1.0,
             "tag": null,
             "to": [
-              -1.0,
-              0.0
+              0.9998,
+              0.0175
             ],
             "type": "Arc",
             "units": {
@@ -1983,18 +1997,18 @@ description: Variables in memory after executing gear.kcl
             },
             "ccw": false,
             "center": [
-              0.0,
-              0.0
+              1.9998,
+              0.0175
             ],
             "from": [
-              -1.0,
-              0.0
+              0.9998,
+              0.0175
             ],
             "radius": 1.0,
             "tag": null,
             "to": [
-              0.9922,
-              0.125
+              2.9997,
+              0.0349
             ],
             "type": "Arc",
             "units": {
@@ -2007,8 +2021,8 @@ description: Variables in memory after executing gear.kcl
               "sourceRange": []
             },
             "from": [
-              0.9922,
-              0.125
+              2.9997,
+              0.0349
             ],
             "tag": null,
             "to": [

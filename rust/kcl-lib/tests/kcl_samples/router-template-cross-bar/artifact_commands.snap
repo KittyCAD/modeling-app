@@ -438,7 +438,7 @@ description: Artifact commands router-template-cross-bar.kcl
         },
         "end": {
           "unit": "degrees",
-          "value": 90.0
+          "value": 11.88125
         },
         "relative": false
       }

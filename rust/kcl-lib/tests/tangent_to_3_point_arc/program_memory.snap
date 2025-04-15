@@ -42,23 +42,23 @@ description: Variables in memory after executing tangent_to_3_point_arc.kcl
             120.0
           ],
           "p2": [
-            300.0,
-            100.0
-          ],
-          "p3": [
             200.0,
             -100.0
           ],
+          "p3": [
+            300.0,
+            100.0
+          ],
           "tag": {
-            "commentStart": 202,
-            "end": 208,
-            "start": 202,
+            "commentStart": 210,
+            "end": 216,
+            "start": 210,
             "type": "TagDeclarator",
             "value": "seg01"
           },
           "to": [
-            200.0,
-            -100.0
+            300.0,
+            100.0
           ],
           "type": "ArcThreePoint",
           "units": {
@@ -71,13 +71,13 @@ description: Variables in memory after executing tangent_to_3_point_arc.kcl
             "sourceRange": []
           },
           "from": [
-            200.0,
-            -100.0
+            300.0,
+            100.0
           ],
           "tag": null,
           "to": [
-            100.1962,
-            -106.2608
+            245.1263,
+            183.5995
           ],
           "type": "ToPoint",
           "units": {

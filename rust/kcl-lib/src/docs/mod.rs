@@ -963,11 +963,11 @@ mod tests {
         let snippet = arc_fn.to_autocomplete_snippet().unwrap();
         assert_eq!(
             snippet,
-            r#"arc({
-	angleStart = ${0:3.14},
-	angleEnd = ${1:3.14},
-	radius = ${2:3.14},
-}, ${3:%})"#
+            r#"arc(${0:%}
+	angleStart = ${1:3.14},
+	angleEnd = ${2:3.14},
+	radius = ${3:3.14},
+)"#
         );
     }
 

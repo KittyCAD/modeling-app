@@ -48,11 +48,11 @@ fn caster = (originStart) => {
 
   const sketch002c = startSketchOn(sketch001c, face = 'START')
     |> startProfileAt([-originStart[0], 2.2 + originStart[1]], %)
-    |> arc({
-         angle_start: 30,
-         angle_end: 330,
-         radius: 3.2 / 2
-       }, %)
+    |> arc(
+         angle_start = 30,
+         angle_end = 330,
+         radius = 3.2 / 2
+       )
     |> close()
     |> extrude(length = 3.1)
 

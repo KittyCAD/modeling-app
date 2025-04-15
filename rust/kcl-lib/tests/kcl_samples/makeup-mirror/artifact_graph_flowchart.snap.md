@@ -53,10 +53,10 @@ flowchart LR
   subgraph path101 [Path]
     101["Path<br>[1785, 1841, 0]"]
     102["Segment<br>[1849, 1873, 0]"]
-    103["Segment<br>[1881, 1999, 0]"]
-    104["Segment<br>[2007, 2031, 0]"]
-    105["Segment<br>[2039, 2207, 0]"]
-    106["Segment<br>[2215, 2222, 0]"]
+    103["Segment<br>[1881, 1973, 0]"]
+    104["Segment<br>[1981, 2005, 0]"]
+    105["Segment<br>[2013, 2183, 0]"]
+    106["Segment<br>[2191, 2198, 0]"]
     107[Solid2d]
   end
   1["Plane<br>[547, 574, 0]"]
@@ -129,29 +129,32 @@ flowchart LR
   98["Cap End"]
   99["SweepEdge Opposite"]
   100["SweepEdge Adjacent"]
-  108["Sweep Extrusion<br>[2230, 2253, 0]"]
+  108["Sweep Extrusion<br>[2206, 2229, 0]"]
   109[Wall]
   110[Wall]
   111[Wall]
   112[Wall]
-  113["Cap Start"]
-  114["Cap End"]
-  115["SweepEdge Opposite"]
-  116["SweepEdge Adjacent"]
-  117["SweepEdge Opposite"]
-  118["SweepEdge Adjacent"]
-  119["SweepEdge Opposite"]
-  120["SweepEdge Adjacent"]
-  121["SweepEdge Opposite"]
-  122["SweepEdge Adjacent"]
-  123["StartSketchOnPlane<br>[533, 575, 0]"]
-  124["StartSketchOnPlane<br>[533, 575, 0]"]
-  125["StartSketchOnPlane<br>[533, 575, 0]"]
+  113[Wall]
+  114["Cap Start"]
+  115["Cap End"]
+  116["SweepEdge Opposite"]
+  117["SweepEdge Adjacent"]
+  118["SweepEdge Opposite"]
+  119["SweepEdge Adjacent"]
+  120["SweepEdge Opposite"]
+  121["SweepEdge Adjacent"]
+  122["SweepEdge Opposite"]
+  123["SweepEdge Adjacent"]
+  124["SweepEdge Opposite"]
+  125["SweepEdge Adjacent"]
   126["StartSketchOnPlane<br>[533, 575, 0]"]
   127["StartSketchOnPlane<br>[533, 575, 0]"]
   128["StartSketchOnPlane<br>[533, 575, 0]"]
   129["StartSketchOnPlane<br>[533, 575, 0]"]
-  130["StartSketchOnPlane<br>[1596, 1663, 0]"]
+  130["StartSketchOnPlane<br>[533, 575, 0]"]
+  131["StartSketchOnPlane<br>[533, 575, 0]"]
+  132["StartSketchOnPlane<br>[533, 575, 0]"]
+  133["StartSketchOnPlane<br>[1596, 1663, 0]"]
   1 --- 2
   2 --- 3
   2 ---- 5
@@ -280,18 +283,21 @@ flowchart LR
   101 --- 106
   101 ---- 108
   101 --- 107
-  102 --- 112
-  102 --- 121
-  102 --- 122
-  103 --- 111
-  103 --- 119
-  103 --- 120
-  104 --- 110
-  104 --- 117
-  104 --- 118
-  105 --- 109
-  105 --- 115
-  105 --- 116
+  102 --- 113
+  102 --- 124
+  102 --- 125
+  103 --- 112
+  103 --- 122
+  103 --- 123
+  104 --- 111
+  104 --- 120
+  104 --- 121
+  105 --- 110
+  105 --- 118
+  105 --- 119
+  106 --- 109
+  106 --- 116
+  106 --- 117
   108 --- 109
   108 --- 110
   108 --- 111
@@ -306,12 +312,15 @@ flowchart LR
   108 --- 120
   108 --- 121
   108 --- 122
-  1 <--x 123
-  11 <--x 124
-  21 <--x 125
-  31 <--x 126
-  41 <--x 127
-  51 <--x 128
-  61 <--x 129
-  91 <--x 130
+  108 --- 123
+  108 --- 124
+  108 --- 125
+  1 <--x 126
+  11 <--x 127
+  21 <--x 128
+  31 <--x 129
+  41 <--x 130
+  51 <--x 131
+  61 <--x 132
+  91 <--x 133
 ```

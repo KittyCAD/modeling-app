@@ -424,7 +424,7 @@ description: Artifact commands ball-bearing.kcl
         },
         "end": {
           "unit": "degrees",
-          "value": 0.0
+          "value": 0.125
         },
         "relative": false
       }
@@ -628,7 +628,7 @@ description: Artifact commands ball-bearing.kcl
         },
         "end": {
           "unit": "degrees",
-          "value": 60.0
+          "value": 0.125
         },
         "relative": false
       }

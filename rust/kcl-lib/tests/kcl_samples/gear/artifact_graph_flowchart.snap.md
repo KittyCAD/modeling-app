@@ -108,7 +108,7 @@ flowchart LR
     111["Segment<br>[1537, 1575, 0]"]
     112["Segment<br>[1537, 1575, 0]"]
     113["Segment<br>[1537, 1575, 0]"]
-    114["Segment<br>[1938, 2040, 0]"]
+    114["Segment<br>[1938, 2007, 0]"]
     115["Segment<br>[1765, 1795, 0]"]
     116["Segment<br>[1765, 1795, 0]"]
     117["Segment<br>[1765, 1795, 0]"]
@@ -210,17 +210,17 @@ flowchart LR
     213["Segment<br>[1765, 1795, 0]"]
     214["Segment<br>[1765, 1795, 0]"]
     215["Segment<br>[1765, 1795, 0]"]
-    216["Segment<br>[2086, 2093, 0]"]
+    216["Segment<br>[2053, 2060, 0]"]
     217[Solid2d]
   end
   subgraph path219 [Path]
-    219["Path<br>[2574, 2674, 0]"]
-    220["Segment<br>[2680, 2707, 0]"]
-    221["Segment<br>[2713, 2741, 0]"]
-    222["Segment<br>[2747, 2775, 0]"]
-    223["Segment<br>[2781, 2901, 0]"]
-    224["Segment<br>[2907, 3016, 0]"]
-    225["Segment<br>[3022, 3029, 0]"]
+    219["Path<br>[2541, 2641, 0]"]
+    220["Segment<br>[2647, 2674, 0]"]
+    221["Segment<br>[2680, 2708, 0]"]
+    222["Segment<br>[2714, 2742, 0]"]
+    223["Segment<br>[2748, 2842, 0]"]
+    224["Segment<br>[2848, 2913, 0]"]
+    225["Segment<br>[2919, 2926, 0]"]
     226[Solid2d]
   end
   1["Plane<br>[1299, 1316, 0]"]
@@ -231,21 +231,27 @@ flowchart LR
   9["SweepEdge Opposite"]
   10["SweepEdge Adjacent"]
   11["Plane<br>[1826, 1843, 0]"]
-  218["Sweep Extrusion<br>[2099, 2127, 0]"]
-  227["Sweep Extrusion<br>[3035, 3064, 0]"]
+  218["Sweep Extrusion<br>[2066, 2094, 0]"]
+  227["Sweep Extrusion<br>[2932, 2961, 0]"]
   228[Wall]
   229[Wall]
   230[Wall]
   231[Wall]
-  232["SweepEdge Opposite"]
-  233["SweepEdge Adjacent"]
+  232[Wall]
+  233[Wall]
   234["SweepEdge Opposite"]
   235["SweepEdge Adjacent"]
   236["SweepEdge Opposite"]
   237["SweepEdge Adjacent"]
   238["SweepEdge Opposite"]
   239["SweepEdge Adjacent"]
-  240["StartSketchOnFace<br>[2537, 2568, 0]"]
+  240["SweepEdge Opposite"]
+  241["SweepEdge Adjacent"]
+  242["SweepEdge Opposite"]
+  243["SweepEdge Adjacent"]
+  244["SweepEdge Opposite"]
+  245["SweepEdge Adjacent"]
+  246["StartSketchOnFace<br>[2504, 2535, 0]"]
   1 --- 2
   2 --- 3
   2 ---- 5
@@ -474,18 +480,24 @@ flowchart LR
   219 --- 225
   219 ---- 227
   219 --- 226
-  220 --- 231
-  220 --- 238
-  220 --- 239
-  221 --- 230
-  221 --- 236
-  221 --- 237
-  222 --- 229
-  222 --- 234
-  222 --- 235
-  224 --- 228
-  224 --- 232
-  224 --- 233
+  220 --- 233
+  220 --- 244
+  220 --- 245
+  221 --- 232
+  221 --- 242
+  221 --- 243
+  222 --- 231
+  222 --- 240
+  222 --- 241
+  223 --- 230
+  223 --- 238
+  223 --- 239
+  224 --- 229
+  224 --- 236
+  224 --- 237
+  225 --- 228
+  225 --- 234
+  225 --- 235
   227 --- 228
   227 --- 229
   227 --- 230
@@ -498,5 +510,11 @@ flowchart LR
   227 --- 237
   227 --- 238
   227 --- 239
-  8 <--x 240
+  227 --- 240
+  227 --- 241
+  227 --- 242
+  227 --- 243
+  227 --- 244
+  227 --- 245
+  8 <--x 246
 ```

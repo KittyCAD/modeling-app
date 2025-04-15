@@ -290,7 +290,7 @@ async fn optional_params() {
     fn other_circle = (pos, radius, tag?) => {
       sg = startSketchOn(XY)
         |> startProfileAt(pos, %)
-        |> arc({angleEnd = 360, angleStart = 0, radius}, %)
+        |> arc(angleEnd = 360, angleStart = 0, radius = radius)
         |> close()
         |> extrude(length = 2)
 
@@ -1191,11 +1191,12 @@ async fn kcl_test_plumbus_fillets() {
     let code = r#"fn make_circle = (ext, face, pos, radius) => {
   sg = startSketchOn(ext, face = face)
   |> startProfileAt([pos[0] + radius, pos[1]], %)
-  |> arc({
+  |> arc(
        angleEnd = 360,
        angleStart = 0,
-       radius = radius
-     }, %, $arc1)
+       radius = radius,
+       tag = $arc1,
+     )
   |> close()
 
   return sg
@@ -1769,11 +1770,11 @@ async fn kcl_test_extrude_custom_plane() {
 async fn kcl_test_arc_error_same_start_end() {
     let code = r#"startSketchOn(XY)
   |> startProfileAt([10, 0], %)
-  |> arc({
-       angleStart: 180,
-       angleEnd: 180,
-       radius= 1.5
-     }, %)
+  |> arc(
+       angleStart = 180,
+       angleEnd = 180,
+       radius = 1.5
+     )
   |> close()
   |> patternCircular2d(
        arcDegrees = 360,
