@@ -257,7 +257,7 @@ fn rect(origin) {
        )
     |> angledLine(
          angle = segAng(rectangleSegmentA001),
-         length = -segLen(rectangleSegmentA001)
+         length = -segLen(rectangleSegmentA001),
          tag = $rectangleSegmentC001,
        )
     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
