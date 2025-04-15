@@ -10,8 +10,10 @@ Draw an angled line from the current origin, constructing a line segment such th
 
 ```js
 angledLineThatIntersects(
-  data: AngledLineThatIntersectsData,
   sketch: Sketch,
+  angle: number,
+  intersectTag: TagIdentifier,
+  offset?: number,
   tag?: TagDeclarator,
 ): Sketch
 ```
@@ -21,9 +23,11 @@ angledLineThatIntersects(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `data` | [`AngledLineThatIntersectsData`](/docs/kcl/types/AngledLineThatIntersectsData) | Data for drawing an angled line that intersects with a given line. | Yes |
-| `sketch` | [`Sketch`](/docs/kcl/types/Sketch) |  | Yes |
-| [`tag`](/docs/kcl/types/tag) | [`TagDeclarator`](/docs/kcl/types#tag-declaration) |  | No |
+| `sketch` | [`Sketch`](/docs/kcl/types/Sketch) | Which sketch should this path be added to? | Yes |
+| `angle` | [`number`](/docs/kcl/types/number) | Which angle should the line be drawn at? | Yes |
+| `intersectTag` | [`TagIdentifier`](/docs/kcl/types#tag-identifier) | The tag of the line to intersect with | Yes |
+| `offset` | [`number`](/docs/kcl/types/number) | The offset from the intersecting line. Defaults to 0. | No |
+| [`tag`](/docs/kcl/types/tag) | [`TagDeclarator`](/docs/kcl/types#tag-declaration) | Create a new tag which refers to this line | No |
 
 ### Returns
 
@@ -38,11 +42,7 @@ exampleSketch = startSketchOn(XZ)
   |> line(endAbsolute = [5, 10])
   |> line(endAbsolute = [-10, 10], tag = $lineToIntersect)
   |> line(endAbsolute = [0, 20])
-  |> angledLineThatIntersects({
-       angle = 80,
-       intersectTag = lineToIntersect,
-       offset = 10
-     }, %)
+  |> angledLineThatIntersects(angle = 80, intersectTag = lineToIntersect, offset = 10)
   |> close()
 
 example = extrude(exampleSketch, length = 10)

@@ -7,9 +7,11 @@ import {
   ARG_END_ABSOLUTE,
   ARG_END_ABSOLUTE_X,
   ARG_END_ABSOLUTE_Y,
+  ARG_INTERSECT_TAG,
   ARG_LENGTH,
   ARG_LENGTH_X,
   ARG_LENGTH_Y,
+  ARG_OFFSET,
   ARG_TAG,
   DETERMINING_ARGS,
 } from '@src/lang/constants'
@@ -36,6 +38,7 @@ import {
   createFirstArg,
   fnNameToTooltip,
   getAngledLine,
+  getAngledLineThatIntersects,
   getArgForEnd,
   getCircle,
   getConstraintInfo,
@@ -345,20 +348,16 @@ function intersectCallWrapper({
   tag?: Expr
   valueUsedInTransform?: number
 }): CreatedSketchExprResult {
-  const firstArg: any = {
-    angle: angleVal,
-    offset: offsetVal,
-    intersectTag,
-  }
-  const args: Expr[] = [
-    createObjectExpression(firstArg),
-    createPipeSubstitution(),
+  const args: LabeledArg[] = [
+    createLabeledArg(ARG_ANGLE, angleVal),
+    createLabeledArg(ARG_OFFSET, offsetVal),
+    createLabeledArg(ARG_INTERSECT_TAG, intersectTag),
   ]
   if (tag) {
-    args.push(tag)
+    args.push(createLabeledArg(ARG_TAG, tag))
   }
   return {
-    callExp: createCallExpression(fnName, args),
+    callExp: createCallExpressionStdLibKw(fnName, null, args),
     valueUsedInTransform,
   }
 }
@@ -2341,6 +2340,9 @@ export function getConstraintLevelFromSourceRange(
             name === 'angledLineToY'
           ) {
             return getAngledLine(nodeMeta.node)
+          }
+          if (name === 'angledLineThatIntersects') {
+            return getAngledLineThatIntersects(nodeMeta.node)
           }
           const arg = findKwArgAny(DETERMINING_ARGS, nodeMeta.node)
           if (arg === undefined) {
