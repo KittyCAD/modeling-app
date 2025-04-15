@@ -438,10 +438,16 @@ export type ModelingMachineEvent =
   | { type: 'Finish arc' }
   | { type: 'Artifact graph populated' }
   | { type: 'Artifact graph emptied' }
+  | {
+      type: 'Toggle default plane visibility'
+      planeId: string
+      planeKey: string
+    }
 
 export type MoveDesc = { line: number; snippet: string }
 
 export const PERSIST_MODELING_CONTEXT = 'persistModelingContext'
+
 interface PersistedModelingContext {
   openPanes: Store['openPanes']
 }
@@ -471,7 +477,9 @@ export interface ModelingMachineContext {
   segmentOverlays: SegmentOverlays
   segmentHoverMap: { [pathToNodeString: string]: number }
   store: Store
+  defaultPlaneVisibility: Record<string, boolean>
 }
+
 export const modelingMachineDefaultContext: ModelingMachineContext = {
   currentMode: 'modeling',
   currentTool: 'none',
@@ -503,6 +511,11 @@ export const modelingMachineDefaultContext: ModelingMachineContext = {
   segmentHoverMap: {},
   store: {
     openPanes: getPersistedContext().openPanes || ['code'],
+  },
+  defaultPlaneVisibility: {
+    xy: true,
+    xz: true,
+    yz: true,
   },
 }
 
@@ -709,10 +722,12 @@ export const modelingMachine = setup({
         }
       }
     ),
-    'hide default planes': () => {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      kclManager.hidePlanes()
-    },
+    'hide default planes': assign({
+      defaultPlaneVisibility: () => {
+        kclManager.hidePlanes().catch(reportRejection)
+        return { xy: false, xz: false, yz: false }
+      },
+    }),
     'reset sketch metadata': assign({
       sketchDetails: null,
       sketchEnginePathId: '',
@@ -1098,10 +1113,12 @@ export const modelingMachine = setup({
         },
       }
     }),
-    'show default planes': () => {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      kclManager.showPlanes()
-    },
+    'show default planes': assign({
+      defaultPlaneVisibility: () => {
+        kclManager.showPlanes().catch(reportRejection)
+        return { xy: true, xz: true, yz: true }
+      },
+    }),
     'setup noPoints onClick listener': ({
       context: { sketchDetails, currentTool },
     }) => {
@@ -1283,6 +1300,25 @@ export const modelingMachine = setup({
     'debug-action': (data) => {
       console.log('re-eval debug-action', data)
     },
+    'Toggle default plane visibility': assign(({ context, event }) => {
+      if (event.type !== 'Toggle default plane visibility') return {}
+
+      const currentVisibilityMap = context.defaultPlaneVisibility
+
+      const currentVisibility = currentVisibilityMap[event.planeKey]
+      const newVisibility = !currentVisibility
+
+      kclManager.engineCommandManager
+        .setPlaneHidden(event.planeId, !newVisibility)
+        .catch(reportRejection)
+
+      return {
+        defaultPlaneVisibility: {
+          ...currentVisibilityMap,
+          [event.planeKey]: newVisibility,
+        },
+      }
+    }),
   },
   // end actions
   actors: {
@@ -4333,6 +4369,10 @@ export const modelingMachine = setup({
       reenter: false,
       actions: 'Center camera on selection',
     },
+    'Toggle default plane visibility': {
+      reenter: false,
+      actions: 'Toggle default plane visibility',
+    },
   },
 })
 
@@ -4381,6 +4421,7 @@ export function isEditingExistingSketch({
     )
   return (hasStartProfileAt && maybePipeExpression.body.length > 1) || hasCircle
 }
+
 export function pipeHasCircle({
   sketchDetails,
 }: {

@@ -1,7 +1,6 @@
 import type { Diagnostic } from '@codemirror/lint'
 import { useMachine, useSelector } from '@xstate/react'
-import type { ComponentProps } from 'react'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { ComponentProps, useCallback, useEffect, useMemo, useRef } from 'react'
 import type { Actor, Prop } from 'xstate'
 
 import type { Operation } from '@rust/kcl-lib/bindings/Operation'
@@ -205,28 +204,21 @@ export const FeatureTreePane = () => {
   )
 }
 
-export const visibilityMap = new Map<string, boolean>()
-
 interface VisibilityToggleProps {
-  entityId: string
-  initialVisibility: boolean
-  onVisibilityChange?: () => unknown
+  visible: boolean
+  onVisibilityChange: () => unknown
 }
 
 /**
  * A button that toggles the visibility of an entity
  * tied to an artifact in the feature tree.
- * TODO: this is unimplemented and will be used for
- * default planes after we fix them and add them to the artifact graph / feature tree
+ * For now just used for default planes.
  */
 const VisibilityToggle = (props: VisibilityToggleProps) => {
-  const [visible, setVisible] = useState(props.initialVisibility)
-
-  function handleToggleVisible() {
-    setVisible(!visible)
-    visibilityMap.set(props.entityId, !visible)
-    props.onVisibilityChange?.()
-  }
+  const visible = props.visible
+  const handleToggleVisible = useCallback(() => {
+    props.onVisibilityChange()
+  }, [props.onVisibilityChange])
 
   return (
     <button
@@ -459,40 +451,32 @@ const OperationItem = (props: {
 }
 
 const DefaultPlanes = () => {
-  const handleVisibilityChange = useCallback(
-    async (planeId: string, isCurrentlyVisible: boolean) => {
-      await kclManager.engineCommandManager.setPlaneHidden(
-        planeId,
-        isCurrentlyVisible
-      )
-    },
-    []
-  )
+  const { state: modelingState, send } = useModelingContext()
 
   const defaultPlanes = rustContext.defaultPlanes
   if (!defaultPlanes) return null
 
   const planes = [
-    { name: 'Front plane', id: defaultPlanes.xz },
-    { name: 'Top plane', id: defaultPlanes.xy },
-    { name: 'Side plane', id: defaultPlanes.yz },
+    { name: 'Front plane', id: defaultPlanes.xz, key: 'xz' },
+    { name: 'Top plane', id: defaultPlanes.xy, key: 'xy' },
+    { name: 'Side plane', id: defaultPlanes.yz, key: 'yz' },
   ]
 
   return (
     <div className="mb-2">
       {planes.map((plane) => (
         <OperationItemWrapper
-          key={plane.id}
+          key={plane.key}
           icon={'plane'}
           name={plane.name}
           visibilityToggle={{
-            entityId: plane.id,
-            initialVisibility: true,
-            onVisibilityChange: async () => {
-              await handleVisibilityChange(
-                plane.id,
-                !(visibilityMap.get(plane.id) ?? true)
-              )
+            visible: modelingState.context.defaultPlaneVisibility[plane.key],
+            onVisibilityChange: () => {
+              send({
+                type: 'Toggle default plane visibility',
+                planeId: plane.id,
+                planeKey: plane.key,
+              })
             },
           }}
         />
