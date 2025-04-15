@@ -563,7 +563,7 @@ export const modelingMachine = setup({
         selectionRanges,
         constraint: 'xAbs',
       })
-      if (trap(info)) return false
+      if (err(info)) return false
       return info.enabled
     },
     'Can constrain ABS Y': ({ context: { selectionRanges } }) => {
@@ -571,33 +571,33 @@ export const modelingMachine = setup({
         selectionRanges,
         constraint: 'yAbs',
       })
-      if (trap(info)) return false
+      if (err(info)) return false
       return info.enabled
     },
     'Can constrain angle': ({ context: { selectionRanges } }) => {
       const angleBetween = angleBetweenInfo({
         selectionRanges,
       })
-      if (trap(angleBetween)) return false
+      if (err(angleBetween)) return false
       const angleLength = angleLengthInfo({
         selectionRanges,
         angleOrLength: 'setAngle',
       })
-      if (trap(angleLength)) return false
+      if (err(angleLength)) return false
       return angleBetween.enabled || angleLength.enabled
     },
     'Can constrain length': ({ context: { selectionRanges } }) => {
       const angleLength = angleLengthInfo({
         selectionRanges,
       })
-      if (trap(angleLength)) return false
+      if (err(angleLength)) return false
       return angleLength.enabled
     },
     'Can constrain perpendicular distance': ({
       context: { selectionRanges },
     }) => {
       const info = intersectInfo({ selectionRanges })
-      if (trap(info)) return false
+      if (err(info)) return false
       return info.enabled
     },
     'Can constrain horizontally align': ({ context: { selectionRanges } }) => {
@@ -605,7 +605,7 @@ export const modelingMachine = setup({
         selectionRanges: selectionRanges,
         constraint: 'setHorzDistance',
       })
-      if (trap(info)) return false
+      if (err(info)) return false
       return info.enabled
     },
     'Can constrain vertically align': ({ context: { selectionRanges } }) => {
@@ -613,7 +613,7 @@ export const modelingMachine = setup({
         selectionRanges: selectionRanges,
         constraint: 'setHorzDistance',
       })
-      if (trap(info)) return false
+      if (err(info)) return false
       return info.enabled
     },
     'Can constrain snap to X': ({ context: { selectionRanges } }) => {
@@ -621,7 +621,7 @@ export const modelingMachine = setup({
         selectionRanges,
         constraint: 'snapToXAxis',
       })
-      if (trap(info)) return false
+      if (err(info)) return false
       return info.enabled
     },
     'Can constrain snap to Y': ({ context: { selectionRanges } }) => {
@@ -629,17 +629,17 @@ export const modelingMachine = setup({
         selectionRanges,
         constraint: 'snapToYAxis',
       })
-      if (trap(info)) return false
+      if (err(info)) return false
       return info.enabled
     },
     'Can constrain equal length': ({ context: { selectionRanges } }) => {
       const info = setEqualLengthInfo({
         selectionRanges,
       })
-      if (trap(info)) return false
+      if (err(info)) return false
       return info.enabled
     },
-    'Can canstrain parallel': ({ context: { selectionRanges } }) => {
+    'Can constrain parallel': ({ context: { selectionRanges } }) => {
       const info = equalAngleInfo({
         selectionRanges,
       })
@@ -655,7 +655,7 @@ export const modelingMachine = setup({
         selectionRanges,
         pathToNodes: event.data && [event.data],
       })
-      if (trap(info)) return false
+      if (err(info)) return false
       return info.enabled
     },
     'Can convert to named value': ({ event }) => {
@@ -2749,7 +2749,8 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(errorMessage))
         }
 
-        if (kclManager.errors.length > 0) {
+        // hasErrors is for parse errors, errors is for runtime errors
+        if (kclManager.errors.length > 0 || kclManager.hasErrors()) {
           // if there's an error in the execution, we don't actually want to disable sketch mode
           // instead we'll give the user the chance to fix their error
           return {
@@ -3033,7 +3034,7 @@ export const modelingMachine = setup({
 
             'Constrain parallel': {
               target: 'Await constrain parallel',
-              guard: 'Can canstrain parallel',
+              guard: 'Can constrain parallel',
             },
 
             'Constrain remove constraints': {

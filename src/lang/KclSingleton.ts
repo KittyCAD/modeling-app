@@ -135,7 +135,10 @@ export class KclManager {
     return this._ast
   }
   set ast(ast) {
-    this._lastAst = structuredClone(this._ast)
+    if (this._ast.body.length !== 0) {
+      // last intact ast, if the user makes a typo with a syntax error, we want to keep the one before they made that mistake
+      this._lastAst = structuredClone(this._ast)
+    }
     this._ast = ast
     this._astCallBack(ast)
   }

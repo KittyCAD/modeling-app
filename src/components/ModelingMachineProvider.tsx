@@ -551,8 +551,8 @@ export const ModelingMachineProvider = ({
           if (selectionRanges.graphSelections.length <= 0) return false
           return true
         },
-        'is-error-free': (event, ab) => {
-          return kclManager.errors.length === 0
+        'is-error-free': () => {
+          return kclManager.errors.length === 0 && !kclManager.hasErrors()
         },
         'Selection is on face': ({ context: { selectionRanges }, event }) => {
           if (event.type !== 'Enter sketch') return false
