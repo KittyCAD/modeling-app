@@ -27,6 +27,8 @@ import {
 } from '@src/lib/singletons'
 import { err, reportRejection } from '@src/lib/trap'
 import { getModuleId } from '@src/lib/utils'
+import { engineStreamActor } from '@src/machines/appMachine'
+import { EngineStreamState } from '@src/machines/engineStreamMachine'
 import type {
   EdgeCutInfo,
   ExtrudeFacePlane,
@@ -38,8 +40,11 @@ export function useEngineConnectionSubscriptions() {
   const stateRef = useRef(state)
   stateRef.current = state
 
+  const engineStreamState = engineStreamActor.getSnapshot()
+
   useEffect(() => {
     if (!engineCommandManager) return
+    if (engineStreamState.value !== EngineStreamState.Playing) return
 
     const unSubHover = engineCommandManager.subscribeToUnreliable({
       // Note this is our hover logic, "highlight_set_entity" is the event that is fired when we hover over an entity
@@ -76,9 +81,12 @@ export function useEngineConnectionSubscriptions() {
       unSubHover()
       unSubClick()
     }
-  }, [engineCommandManager, context?.sketchEnginePathId])
+  }, [engineCommandManager, engineStreamState, context?.sketchEnginePathId])
 
   useEffect(() => {
+    if (!engineCommandManager) return
+    if (engineStreamState.value !== EngineStreamState.Playing) return
+
     const unSub = engineCommandManager.subscribeTo({
       event: 'select_with_point',
       callback: state.matches('Sketch no face')
@@ -342,5 +350,5 @@ export function useEngineConnectionSubscriptions() {
         : () => {},
     })
     return unSub
-  }, [state])
+  }, [engineCommandManager, engineStreamState, state])
 }

@@ -2,7 +2,6 @@ import * as TWEEN from '@tweenjs/tween.js'
 import type {
   Group,
   Intersection,
-  Mesh,
   MeshBasicMaterial,
   Object3D,
   Object3DEventMap,
@@ -13,6 +12,7 @@ import {
   Color,
   GridHelper,
   LineBasicMaterial,
+  Mesh,
   OrthographicCamera,
   Raycaster,
   Scene,
@@ -42,7 +42,7 @@ import { compareVec2Epsilon2 } from '@src/lang/std/sketch'
 import type { Axis, NonCodeSelection } from '@src/lib/selections'
 import { type BaseUnit } from '@src/lib/settings/settingsTypes'
 import { Themes } from '@src/lib/theme'
-import { getAngle, throttle } from '@src/lib/utils'
+import { getAngle, getLength, throttle } from '@src/lib/utils'
 import type {
   MouseState,
   SegmentOverlayPayload,
@@ -68,6 +68,7 @@ interface OnDragCallbackArgs extends OnMouseEnterLeaveArgs {
   }
   intersects: Intersection<Object3D<Object3DEventMap>>[]
 }
+
 export interface OnClickCallbackArgs {
   mouseEvent: MouseEvent
   intersectionPoint?: {
@@ -93,6 +94,7 @@ interface OnMoveCallbackArgs {
 // Anything that added the the scene for the user to interact with is probably in SceneEntities.ts
 
 type Voidish = void | Promise<void>
+
 export class SceneInfra {
   static instance: SceneInfra
   readonly scene: Scene
@@ -130,6 +132,7 @@ export class SceneInfra {
     this.onMouseLeave = callbacks.onMouseLeave || this.onMouseLeave
     this.selected = null // following selections between callbacks being set is too tricky
   }
+
   set baseUnit(unit: BaseUnit) {
     this._baseUnitMultiplier = baseUnitTomm(unit)
     this.scene.scale.set(
@@ -138,9 +141,11 @@ export class SceneInfra {
       this._baseUnitMultiplier
     )
   }
+
   set theme(theme: Themes) {
     this._theme = theme
   }
+
   resetMouseListeners = () => {
     this.setCallbacks({
       onDragStart: () => {},
@@ -155,12 +160,15 @@ export class SceneInfra {
 
   modelingSend: SendType = (() => {}) as any
   throttledModelingSend: any = (() => {}) as any
+
   setSend(send: SendType) {
     this.modelingSend = send
     this.throttledModelingSend = throttle(send, 100)
   }
+
   overlayTimeout = 0
   callbacks: (() => SegmentOverlayPayload | null)[] = []
+
   _overlayCallbacks(callbacks: (() => SegmentOverlayPayload | null)[]) {
     const segmentOverlayPayload: SegmentOverlayPayload = {
       type: 'add-many',
@@ -179,6 +187,7 @@ export class SceneInfra {
       data: segmentOverlayPayload,
     })
   }
+
   overlayCallbacks(
     callbacks: (() => SegmentOverlayPayload | null)[],
     instant = false
@@ -195,6 +204,7 @@ export class SceneInfra {
   }
 
   overlayThrottleMap: { [pathToNodeString: string]: number } = {}
+
   updateOverlayDetails({
     handle,
     group,
@@ -349,6 +359,7 @@ export class SceneInfra {
     window.removeEventListener('resize', this.onWindowResize)
     // Dispose of any other resources like geometries, materials, textures
   }
+
   getClientSceneScaleFactor(meshOrGroup: Mesh | Group) {
     const orthoFactor = orthoScale(this.camControls.camera)
     const factor =
@@ -358,6 +369,7 @@ export class SceneInfra {
       this._baseUnitMultiplier
     return factor
   }
+
   getPlaneIntersectPoint = (): {
     twoD?: Vector2
     threeD?: Vector3
@@ -556,6 +568,7 @@ export class SceneInfra {
       (a, b) => a.distance - b.distance
     )
   }
+
   updateMouseState(mouseState: MouseState) {
     if (this.lastMouseState.type === mouseState.type) return
     this.lastMouseState = mouseState
@@ -664,6 +677,13 @@ export class SceneInfra {
         mesh.userData.isSelected = false
       }
     })
+  }
+
+  screenSpaceDistance(a: Coords2d, b: Coords2d): number {
+    const dummy = new Mesh()
+    dummy.position.set(0, 0, 0)
+    const scale = this.getClientSceneScaleFactor(dummy)
+    return getLength(a, b) / scale
   }
 }
 

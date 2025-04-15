@@ -5,7 +5,10 @@ import { useModelingContext } from '@src/hooks/useModelingContext'
 import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
 import { getArtifactOfTypes } from '@src/lang/std/artifactGraph'
-import { EngineCommandManagerEvents } from '@src/lang/std/engineConnection'
+import {
+  EngineCommandManagerEvents,
+  EngineConnectionStateType,
+} from '@src/lang/std/engineConnection'
 import { btnName } from '@src/lib/cameraControls'
 import { PATHS } from '@src/lib/paths'
 import { sendSelectEventToEngine } from '@src/lib/selections'
@@ -25,6 +28,7 @@ import {
   EngineStreamTransition,
 } from '@src/machines/engineStreamMachine'
 
+import Loading from '@src/components/Loading'
 import { useSelector } from '@xstate/react'
 import type { MouseEventHandler } from 'react'
 import { useEffect, useRef, useState } from 'react'
@@ -426,6 +430,12 @@ export const EngineStream = (props: {
         }
         menuTargetElement={videoWrapperRef}
       />
+      {engineCommandManager.engineConnection?.state.type !==
+        EngineConnectionStateType.ConnectionEstablished && (
+        <Loading dataTestId="loading-engine" className="fixed inset-0">
+          Connecting to engine
+        </Loading>
+      )}
     </div>
   )
 }

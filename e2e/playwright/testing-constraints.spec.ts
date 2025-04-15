@@ -219,7 +219,9 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
         await expect(activeLinesContent[0]).toHaveText(
           `|> line(end = [74.36, 130.4], tag = $seg01)`
         )
-        await expect(activeLinesContent[1]).toHaveText(`}, %)`)
+        await expect(activeLinesContent[1]).toHaveText(
+          `  |> angledLineThatIntersects(angle = -57, offset = ${offset}, intersectTag = seg01)`
+        )
 
         // checking the count of the overlays is a good proxy check that the client sketch scene is in a good state
         await expect(page.getByTestId('segment-overlay')).toHaveCount(4)

@@ -337,11 +337,7 @@ describe('it recasts wrapped object expressions in pipe bodies with correct inde
   |> startProfileAt([-0.01, -0.08], %)
   |> line(end = [0.62, 4.15], tag = $seg01)
   |> line(end = [2.77, -1.24])
-  |> angledLineThatIntersects({
-       angle = 201,
-       offset = -1.35,
-       intersectTag = $seg01
-     }, %)
+  |> angledLineThatIntersects(angle = 201, offset = -1.35, intersectTag = $seg01)
   |> line(end = [-0.42, -1.72])
 `
     const { ast } = code2ast(code)
@@ -350,11 +346,7 @@ describe('it recasts wrapped object expressions in pipe bodies with correct inde
     expect(recasted).toBe(code)
   })
   it('recasts wrapped object expressions NOT in pipe body correctly', () => {
-    const code = `angledLineThatIntersects({
-  angle = 201,
-  offset = -1.35,
-  intersectTag = $seg01
-}, %)
+    const code = `angledLineThatIntersects(angle = 201, offset = -1.35, intersectTag = $seg01)
 `
     const { ast } = code2ast(code)
     const recasted = recast(ast)

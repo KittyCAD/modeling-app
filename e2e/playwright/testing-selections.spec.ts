@@ -524,11 +524,7 @@ part001 = startSketchOn(XZ)
   |> angledLine(angle = 30, lengthY = 3 + 0)
   |> angledLine(angle = 22.14 + 0, endAbsoluteX =  12)
   |> angledLine(angle = 30, endAbsoluteY =  11.14)
-  |> angledLineThatIntersects({
-        angle = 3.14,
-        intersectTag = a,
-        offset = 0
-      }, %)
+  |> angledLineThatIntersects(angle = 3.14, intersectTag = a, offset = 0)
   |> tangentialArc(endAbsolute = [13.14 + 0, 13.14])
   |> close()
   |> extrude(length = 5 + 7)
@@ -660,8 +656,8 @@ part001 = startSketchOn(XZ)
     await checkCodeAtHoverPosition(
       'flatExtrusionFace',
       flatExtrusionFace,
-      `angledLineThatIntersects({angle=3.14,intersectTag=a,offset=0},%)extrude(length=5+7)`,
-      '}, %)'
+      `angledLineThatIntersects(angle=3.14,intersectTag=a,offset=0)extrude(length=5+7)`,
+      'angledLineThatIntersects(angle = 3.14, intersectTag = a, offset = 0)'
     )
 
     await checkCodeAtHoverPosition(
@@ -724,8 +720,8 @@ part001 = startSketchOn(XZ)
     await checkCodeAtHoverPosition(
       'straightSegmentAdjacentEdge',
       straightSegmentAdjacentEdge,
-      `angledLineThatIntersects({angle=3.14,intersectTag=a,offset=0},%)`,
-      '}, %)'
+      `angledLineThatIntersects(angle=3.14,intersectTag=a,offset=0)`,
+      'angledLineThatIntersects(angle = 3.14, intersectTag = a, offset = 0)'
     )
 
     await page.waitForTimeout(200)
