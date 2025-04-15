@@ -191,7 +191,7 @@ impl ArtifactGraph {
 
         let mut next_id = 1_u32;
         let mut stable_id_map = FnvHashMap::default();
-        for id in self.map.keys() {
+        for id in self.sorted_keys() {
             stable_id_map.insert(*id, next_id);
             next_id = next_id.checked_add(1).unwrap();
         }
@@ -207,6 +207,18 @@ impl ArtifactGraph {
         Ok(output)
     }
 
+    fn sorted_keys(&self) -> Vec<&ArtifactId> {
+        let mut sorted_keys: Vec<_> = self.map.iter().collect();
+        sorted_keys.sort_by_key(|(_, v)| v.code_ref().range.module_id().as_usize());
+        sorted_keys.into_iter().map(|(k, _)| k).collect()
+    }
+
+    fn sorted_values(&self) -> Vec<&Artifact> {
+        let mut sorted_keys: Vec<_> = self.map.iter().collect();
+        sorted_keys.sort_by_key(|(_, v)| v.code_ref().range.module_id().as_usize());
+        sorted_keys.into_iter().map(|(_, v)| v).collect()
+    }
+
     /// Output the Mermaid flowchart nodes, one for each artifact.
     fn flowchart_nodes<W: Write>(
         &self,
@@ -219,7 +231,7 @@ impl ArtifactGraph {
         let mut groups = IndexMap::new();
         let mut ungrouped = Vec::new();
 
-        for artifact in self.map.values() {
+        for artifact in self.sorted_values() {
             let id = artifact.id();
 
             let grouped = match artifact {
@@ -416,7 +428,7 @@ impl ArtifactGraph {
 
         // Collect all edges to deduplicate them.
         let mut edges = IndexMap::default();
-        for artifact in self.map.values() {
+        for artifact in self.sorted_values() {
             let source_id = *stable_id_map.get(&artifact.id()).unwrap();
             // In Mermaid, the textual order defines the rank, even though the
             // edge arrow can go in either direction.
