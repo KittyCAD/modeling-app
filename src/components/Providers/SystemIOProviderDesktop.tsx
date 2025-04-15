@@ -9,8 +9,6 @@ import {
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { projectsCommandBarConfig } from '@src/lib/commandBarConfigs/projectsCommandConfig'
-import useStateMachineCommands from '@src/hooks/useStateMachineCommands'
 
 export function SystemIOMachineLogicListener() {
   const requestedProjectName = useRequestedProjectName()

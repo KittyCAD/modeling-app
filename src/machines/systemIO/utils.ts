@@ -41,6 +41,8 @@ export enum SystemIOMachineActions {
   setRequestedProjectName = 'set requested project name',
   setRequestedFileName = 'set requested file name',
   setDefaultProjectFolderName = 'set default project folder name',
+  toastSuccess = 'toastSuccess',
+  toastError = 'toastError',
 }
 
 export const NO_PROJECT_DIRECTORY = ''

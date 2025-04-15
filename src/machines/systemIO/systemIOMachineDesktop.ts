@@ -76,6 +76,10 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
         const requestedProjectName = input.requestedProjectName
         const uniqueName = getUniqueProjectName(requestedProjectName, folders)
         await createNewProjectDirectory(uniqueName)
+        return {
+          message: `Successfully created "${uniqueName}"`,
+          name: uniqueName,
+        }
       }
     ),
     [SystemIOMachineActors.renameProject]: fromPromise(

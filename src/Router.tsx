@@ -48,7 +48,7 @@ const createRouter = isDesktop() ? createHashRouter : createBrowserRouter
 const router = createRouter([
   {
     id: PATHS.INDEX,
-    element: <RootLayout/>,
+    element: <RootLayout />,
     children: [
       {
         path: PATHS.INDEX,

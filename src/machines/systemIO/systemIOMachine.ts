@@ -8,6 +8,7 @@ import {
   SystemIOMachineEvents,
   SystemIOMachineStates,
 } from '@src/machines/systemIO/utils'
+import toast from 'react-hot-toast'
 import { assertEvent, assign, fromPromise, setup } from 'xstate'
 
 /**
@@ -101,6 +102,28 @@ export const systemIOMachine = setup({
         return event.data.requestedDefaultProjectFolderName
       },
     }),
+    [SystemIOMachineActions.toastSuccess]: ({ event }) => {
+      toast.success(
+        ('data' in event && typeof event.data === 'string' && event.data) ||
+          ('output' in event &&
+            'message' in event.output &&
+            typeof event.output.message === 'string' &&
+            event.output.message) ||
+          ''
+      )
+    },
+    [SystemIOMachineActions.toastError]: ({ event }) => {
+      toast.error(
+        ('data' in event && typeof event.data === 'string' && event.data) ||
+          ('output' in event &&
+            typeof event.output === 'string' &&
+            event.output) ||
+          ('error' in event &&
+            event.error instanceof Error &&
+            event.error.message) ||
+          ''
+      )
+    },
   },
   actors: {
     [SystemIOMachineActors.readFoldersFromProjectDirectory]: fromPromise(
@@ -143,8 +166,7 @@ export const systemIOMachine = setup({
           requestedProjectName: string
           requestedFileName: string
           requestedCode: string
-
-}
+        }
       }) => {}
     ),
   },
@@ -227,9 +249,11 @@ export const systemIOMachine = setup({
         },
         onDone: {
           target: SystemIOMachineStates.readingFolders,
+          actions: [SystemIOMachineActions.toastSuccess],
         },
         onError: {
           target: SystemIOMachineStates.idle,
+          actions: [SystemIOMachineActions.toastError],
         },
       },
     },
