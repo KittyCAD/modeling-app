@@ -1395,11 +1395,11 @@ export async function enterTransformFlow({
         }
       }
 
-      const pitch = rotate.arguments.find(
+      const pitchArg = rotate.arguments.find(
         (a) => a.label.type === 'Identifier' && a.label.name === 'pitch'
       )
-      if (pitch?.type === 'LabeledArg' && pitch.arg.type === 'Literal') {
-        const result = await stringToKclExpression(pitch.arg.raw)
+      if (pitchArg?.type === 'LabeledArg' && pitchArg.arg.type === 'Literal') {
+        const result = await stringToKclExpression(pitchArg.arg.raw)
         if (!(err(result) || 'errors' in result)) {
           rp = result
         }

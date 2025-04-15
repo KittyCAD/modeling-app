@@ -4,7 +4,6 @@ import {
   createCallExpressionStdLibKw,
   createLabeledArg,
   createPipeExpression,
-  createPipeSubstitution,
 } from '@src/lang/create'
 import { getNodeFromPath } from '@src/lang/queryAst'
 import type {
@@ -39,9 +38,10 @@ export function setTransform({
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
   const modifiedAst = structuredClone(ast)
 
+  const noPercentSign = null
   const translateCall = createCallExpressionStdLibKw(
     'translate',
-    createPipeSubstitution(),
+    noPercentSign,
     [
       createLabeledArg('x', tx),
       createLabeledArg('y', ty),
@@ -49,15 +49,11 @@ export function setTransform({
     ]
   )
 
-  const rotateCall = createCallExpressionStdLibKw(
-    'rotate',
-    createPipeSubstitution(),
-    [
-      createLabeledArg('roll', rr),
-      createLabeledArg('pitch', rp),
-      createLabeledArg('yaw', ry),
-    ]
-  )
+  const rotateCall = createCallExpressionStdLibKw('rotate', noPercentSign, [
+    createLabeledArg('roll', rr),
+    createLabeledArg('pitch', rp),
+    createLabeledArg('yaw', ry),
+  ])
 
   const potentialPipe = getNodeFromPath<PipeExpression>(
     modifiedAst,

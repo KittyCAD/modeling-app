@@ -143,6 +143,65 @@ test.describe('Point-and-click assemblies tests', () => {
         await scene.settled(cmdBar)
       })
 
+      await test.step('Set transform on the second part', async () => {
+        await toolbar.closePane('code')
+        await toolbar.openPane('feature-tree')
+
+        const op = await toolbar.getFeatureTreeOperation('bracket', 0)
+        await op.click({ button: 'right' })
+        await page.getByTestId('context-menu-set-transform').click()
+        await cmdBar.expectState({
+          stage: 'arguments',
+          currentArgKey: 'Translate X',
+          currentArgValue: '0',
+          headerArguments: {
+            'Translate X': '',
+            'Translate Y': '',
+            'Translate Z': '',
+            'Rotate Roll': '',
+            'Rotate Pitch': '',
+            'Rotate Yaw': '',
+          },
+          highlightedHeaderArg: 'Translate X',
+          commandName: 'Transform',
+        })
+        await page.keyboard.insertText('1')
+        await cmdBar.progressCmdBar()
+        await page.keyboard.insertText('2')
+        await cmdBar.progressCmdBar()
+        await page.keyboard.insertText('3')
+        await cmdBar.progressCmdBar()
+        await page.keyboard.insertText('4')
+        await cmdBar.progressCmdBar()
+        await page.keyboard.insertText('5')
+        await cmdBar.progressCmdBar()
+        await page.keyboard.insertText('6')
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          stage: 'review',
+          headerArguments: {
+            'Translate X': '1',
+            'Translate Y': '2',
+            'Translate Z': '3',
+            'Rotate Roll': '4',
+            'Rotate Pitch': '5',
+            'Rotate Yaw': '6',
+          },
+          commandName: 'Transform',
+        })
+        await cmdBar.progressCmdBar()
+        await toolbar.closePane('feature-tree')
+        await toolbar.openPane('code')
+        await editor.expectEditor.toContain(
+          `
+        bracket
+          |> translate(x = 1, y = 2, z = 3)
+          |> rotate(roll = 4, pitch = 5, yaw = 6)
+        `,
+          { shouldNormalise: true }
+        )
+      })
+
       await test.step('Insert a second time and expect error', async () => {
         // TODO: revisit once we have clone with #6209
         await insertPartIntoAssembly(
@@ -159,6 +218,8 @@ test.describe('Point-and-click assemblies tests', () => {
         import "bracket.kcl" as bracket
         cylinder
         bracket
+          |> translate(x = 1, y = 2, z = 3)
+          |> rotate(roll = 4, pitch = 5, yaw = 6)
         bracket
       `,
           { shouldNormalise: true }
@@ -287,107 +348,6 @@ test.describe('Point-and-click assemblies tests', () => {
         await toolbar.closePane('code')
         await scene.expectPixelColor(partColor, partPoint, tolerance)
       })
-    }
-  )
-
-  // TODO: figure out if this should live as part of the insert test.
-  // Had to separate them due hasExpressionStatement in enterTransformFlow
-  // evaluating to false on first insert.
-  test(
-    `Set transforms on assembly parts with whole module import`,
-    { tag: ['@electron'] },
-    async ({
-      context,
-      page,
-      homePage,
-      scene,
-      editor,
-      toolbar,
-      cmdBar,
-      tronApp,
-    }) => {
-      if (!tronApp) {
-        fail()
-      }
-
-      const initialCode = `import "cylinder.kcl" as cylinder
-import "bracket.kcl" as bracket
-cylinder
-bracket
-`
-      const projectName = 'assembly'
-      await context.folderSetupFn(async (dir) => {
-        const bracketDir = path.join(dir, projectName)
-        await fsp.mkdir(bracketDir, { recursive: true })
-        await Promise.all([
-          fsp.copyFile(
-            executorInputPath('cylinder-inches.kcl'),
-            path.join(bracketDir, 'cylinder.kcl')
-          ),
-          fsp.copyFile(
-            executorInputPath('e2e-can-sketch-on-chamfer.kcl'),
-            path.join(bracketDir, 'bracket.kcl')
-          ),
-          fsp.writeFile(path.join(bracketDir, 'main.kcl'), initialCode),
-        ])
-      })
-      await homePage.openProject(projectName)
-      await scene.settled(cmdBar)
-
-      await test.step('Set transform on the first part', async () => {
-        await toolbar.closePane('code')
-        await toolbar.openPane('feature-tree')
-
-        const op = await toolbar.getFeatureTreeOperation('cylinder', 0)
-        await op.click({ button: 'right' })
-        await page.getByTestId('context-menu-set-transform').click()
-        await cmdBar.expectState({
-          stage: 'arguments',
-          currentArgKey: 'Translate X',
-          currentArgValue: '0',
-          headerArguments: {
-            'Translate X': '',
-            'Translate Y': '',
-            'Translate Z': '',
-            'Rotate Roll': '',
-            'Rotate Pitch': '',
-            'Rotate Yaw': '',
-          },
-          highlightedHeaderArg: 'Translate X',
-          commandName: 'Transform',
-        })
-        await cmdBar.progressCmdBar()
-        await cmdBar.progressCmdBar()
-        await cmdBar.progressCmdBar()
-        await cmdBar.progressCmdBar()
-        await cmdBar.progressCmdBar()
-        await cmdBar.progressCmdBar()
-        await cmdBar.progressCmdBar()
-        await toolbar.closePane('feature-tree')
-        await toolbar.openPane('code')
-
-        // TODO: this below doesn't actually execute because cylinder doesn't return a solid.
-        // This is a broader discussion to have
-        await editor.expectEditor.toContain(
-          `
-        cylinder
-          |> translate(
-              %,
-              x = 0,
-              y = 0,
-              z = 0,
-            )
-          |> rotate(
-              %,
-              roll = 0,
-              pitch = 0,
-              yaw = 0,
-            )
-      `,
-          { shouldNormalise: true }
-        )
-      })
-      await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
     }
   )
 })
