@@ -234,7 +234,7 @@ extrude(profile001, length = 100)"#
         "multi_file_same_code_dont_reexecute",
         vec![
             Variation {
-                code: code,
+                code,
                 other_files: vec![other_file.clone()],
                 settings: &Default::default(),
             },
