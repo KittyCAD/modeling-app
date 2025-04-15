@@ -13,7 +13,6 @@ export const useProjectDirectoryPath = () =>
 export function SystemIOMachineLogicListener() {
   const requestedProjectName = useRequestedProjectName()
   const requestedFileName = useRequestedFileName()
-  console.log(requestedFileName, 'okay')
   const projectDirectoryPath = useProjectDirectoryPath()
   const navigate = useNavigate()
 

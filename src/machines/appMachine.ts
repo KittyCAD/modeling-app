@@ -1,8 +1,10 @@
 import { useSelector } from '@xstate/react'
 import { createActor, setup, spawnChild } from 'xstate'
 
+import { readAppSettingsFile } from '@src/lib/desktop'
 import { isDesktop } from '@src/lib/isDesktop'
 import { createSettings } from '@src/lib/settings/initialSettings'
+import { reportRejection } from '@src/lib/trap'
 import { authMachine } from '@src/machines/authMachine'
 import type { EngineStreamActor } from '@src/machines/engineStreamMachine'
 import {
@@ -14,7 +16,6 @@ import { settingsMachine } from '@src/machines/settingsMachine'
 import { systemIOMachineDesktop } from '@src/machines/systemIO/systemIOMachineDesktop'
 import { systemIOMachineWeb } from '@src/machines/systemIO/systemIOMachineWeb'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
-
 const { AUTH, SETTINGS, SYSTEM_IO, ENGINE_STREAM } = ACTOR_IDS
 const appMachineActors = {
   [AUTH]: authMachine,
@@ -84,15 +85,23 @@ export const useSettings = () =>
 // TODO: Debugging
 export const systemIOActor = appActor.getSnapshot().children.systemIO!
 
-// systemIOActor.send({type:SystemIOMachineEvents.readFoldersFromProjectDirectory, data: {}})
+async function initializeActors() {
+  if (isDesktop()) {
+    const appSettings = await readAppSettingsFile()
+    const projectDirectorySettting = appSettings.settings?.project?.directory
+    systemIOActor.send({
+      type: SystemIOMachineEvents.setProjectDirectoryPath,
+      data: {
+        requestedProjectDirectoryPath: projectDirectorySettting || '',
+      },
+    })
+    systemIOActor.send({
+      type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
+    })
+  }
+}
 
-systemIOActor.send({
-  type: SystemIOMachineEvents.setProjectDirectoryPath,
-  data: {
-    requestedProjectDirectoryPath:
-      '/home/kevin-nadro/Documents/zoo-modeling-app-projects',
-  },
-})
+initializeActors().catch(reportRejection)
 
 window.systemIOActor = systemIOActor
 export const engineStreamActor = appActor.system.get(
