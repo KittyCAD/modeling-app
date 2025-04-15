@@ -304,8 +304,9 @@ extrude001 = extrude(sketch001, length = 50)
       await page.keyboard.press('Enter')
       await page.keyboard.press('ArrowLeft')
 
-      await expect(page.locator('.cm-content'))
-        .toContainText(`exampleSketch = startSketchOn("XZ")
+      await expect(
+        page.locator('.cm-content')
+      ).toContainText(`exampleSketch = startSketchOn("XZ")
       |> startProfileAt([0, 0], %)
       |> angledLine(angle = 50, length = 45 )
       |> yLine(endAbsolute = 0)

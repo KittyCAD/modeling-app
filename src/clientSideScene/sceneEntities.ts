@@ -3725,7 +3725,6 @@ function prepareTruncatedAst(
       (updatedSrcRangeAst.body[bodyStartIndex] as VariableDeclaration)
         .declaration.init as PipeExpression
     ).body.slice(-1)[0]
-
     ;(
       (_ast.body[bodyStartIndex] as VariableDeclaration).declaration
         .init as PipeExpression
