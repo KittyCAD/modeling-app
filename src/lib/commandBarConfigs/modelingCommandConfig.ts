@@ -1053,16 +1053,30 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       selection: {
         inputType: 'selectionMixed',
-        multiple: true,
+        multiple: false,
         required: true,
         skip: true,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+        allowNoSelection: false,
         selectionSource: {
-          allowSceneSelection: false,
+          allowSceneSelection: true,
           allowCodeSelection: true,
         },
         selectionTypes: [
-          // TODO: figure out what we could support here beyond module. Likely sweeps and solid2d first
+          'compositeSolid',
+          'plane',
+          'path',
+          'segment',
+          'solid2d',
+          'startSketchOnFace',
+          'startSketchOnPlane',
+          'sweep',
+          'wall',
+          'cap',
+          'sweepEdge',
+          'edgeCut',
+          'edgeCutEdge',
+          'helix',
         ],
       },
       tx: {
