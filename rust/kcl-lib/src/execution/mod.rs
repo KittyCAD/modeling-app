@@ -831,7 +831,7 @@ impl ExecutorContext {
                                 &module_path,
                                 &mut exec_state,
                                 source_range,
-                                preserve_mem,
+                                false,
                             )
                             .await;
 
@@ -854,7 +854,7 @@ impl ExecutorContext {
                                 &module_path,
                                 &mut exec_state,
                                 source_range,
-                                preserve_mem,
+                                false,
                             )
                             .await;
 
