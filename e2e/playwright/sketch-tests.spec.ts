@@ -3174,9 +3174,9 @@ profile003 = startProfileAt([-201.08, 254.17], sketch002)
   })
 
   await test.step('Add new variable and wait for re-execution', async () => {
-    await page.waitForTimeout(500) // wait for deffered execution
+    await page.waitForTimeout(500) // wait for deferred execution
     await editor.replaceCode('myVar2 = 6', 'myVar2 = 6\nmyVar3 = 7')
-    await page.waitForTimeout(2000) // wait for deffered execution
+    await page.waitForTimeout(2000) // wait for deferred execution
     await expectSketchOriginToBeDrawn()
   })
 
@@ -3200,7 +3200,7 @@ profile003 = startProfileAt([-201.08, 254.17], sketch002)
     await editor.replaceCode('myVar3 = 7', '')
     await page.waitForTimeout(50)
     await editor.replaceCode('myVar2 = 6', '')
-    await page.waitForTimeout(2000) // Wait for deffered execution
+    await page.waitForTimeout(2000) // Wait for deferred execution
     await expectSketchOriginToBeDrawn()
   })
 
@@ -3225,7 +3225,7 @@ profile003 = startProfileAt([-201.08, 254.17], sketch002)
 sketch003 = startSketchOn(XY)
 profile004 = circle(sketch003, center = [143.91, 136.89], radius = 71.63)`
     )
-    await page.waitForTimeout(2000) // Wait for deffered execution
+    await page.waitForTimeout(2000) // Wait for deferred execution
     await expectSketchOriginToBeDrawn()
   })
 
