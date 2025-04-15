@@ -7,26 +7,24 @@ description: Artifact commands pipe-flange-assembly.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "edge_lines_visible",
-      "hidden": false
+      "type": "set_scene_units",
+      "unit": "mm"
     }
   },
   {
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
+      "type": "set_scene_units",
+      "unit": "mm"
     }
   },
   {
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
+      "type": "set_scene_units",
+      "unit": "mm"
     }
   },
   {
@@ -41,488 +39,8 @@ description: Artifact commands pipe-flange-assembly.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "set_object_transform",
-      "object_id": "[uuid]",
-      "transforms": [
-        {
-          "translate": null,
-          "rotate_rpy": null,
-          "rotate_angle_axis": {
-            "property": {
-              "x": 0.0,
-              "y": 1.0,
-              "z": 0.0,
-              "w": 180.0
-            },
-            "set": false,
-            "is_local": true
-          },
-          "scale": null
-        }
-      ]
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "set_object_transform",
-      "object_id": "[uuid]",
-      "transforms": [
-        {
-          "translate": {
-            "property": {
-              "x": 0.0,
-              "y": 0.0,
-              "z": 0.151
-            },
-            "set": false,
-            "is_local": true
-          },
-          "rotate_rpy": null,
-          "rotate_angle_axis": null,
-          "scale": null
-        }
-      ]
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "set_object_transform",
-      "object_id": "[uuid]",
-      "transforms": [
-        {
-          "translate": {
-            "property": {
-              "x": 0.0,
-              "y": 0.0,
-              "z": -0.091
-            },
-            "set": false,
-            "is_local": true
-          },
-          "rotate_rpy": null,
-          "rotate_angle_axis": null,
-          "scale": null
-        }
-      ]
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "set_object_transform",
-      "object_id": "[uuid]",
-      "transforms": [
-        {
-          "translate": {
-            "property": {
-              "x": 2.375,
-              "y": 0.0,
-              "z": 0.69
-            },
-            "set": false,
-            "is_local": true
-          },
-          "rotate_rpy": null,
-          "rotate_angle_axis": null,
-          "scale": null
-        }
-      ]
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "entity_circular_pattern",
-      "entity_id": "[uuid]",
-      "axis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0
-      },
-      "center": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "num_repetitions": 3,
-      "arc_degrees": 360.0,
-      "rotate_duplicates": false
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "entity_linear_pattern_transform",
-      "entity_id": "[uuid]",
-      "transform": [],
-      "transforms": [
-        [
-          {
-            "translate": {
-              "x": -0.0,
-              "y": -0.0,
-              "z": -1.563
-            },
-            "scale": {
-              "x": 1.0,
-              "y": 1.0,
-              "z": 1.0
-            },
-            "rotation": {
-              "axis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0
-              },
-              "angle": {
-                "unit": "degrees",
-                "value": 0.0
-              },
-              "origin": {
-                "type": "local"
-              }
-            },
-            "replicate": true
-          }
-        ]
-      ]
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "entity_linear_pattern_transform",
-      "entity_id": "[uuid]",
-      "transform": [],
-      "transforms": [
-        [
-          {
-            "translate": {
-              "x": -0.0,
-              "y": -0.0,
-              "z": -1.563
-            },
-            "scale": {
-              "x": 1.0,
-              "y": 1.0,
-              "z": 1.0
-            },
-            "rotation": {
-              "axis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0
-              },
-              "angle": {
-                "unit": "degrees",
-                "value": 0.0
-              },
-              "origin": {
-                "type": "local"
-              }
-            },
-            "replicate": true
-          }
-        ]
-      ]
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "entity_linear_pattern_transform",
-      "entity_id": "[uuid]",
-      "transform": [],
-      "transforms": [
-        [
-          {
-            "translate": {
-              "x": -0.0,
-              "y": -0.0,
-              "z": -1.563
-            },
-            "scale": {
-              "x": 1.0,
-              "y": 1.0,
-              "z": 1.0
-            },
-            "rotation": {
-              "axis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0
-              },
-              "angle": {
-                "unit": "degrees",
-                "value": 0.0
-              },
-              "origin": {
-                "type": "local"
-              }
-            },
-            "replicate": true
-          }
-        ]
-      ]
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "entity_linear_pattern_transform",
-      "entity_id": "[uuid]",
-      "transform": [],
-      "transforms": [
-        [
-          {
-            "translate": {
-              "x": -0.0,
-              "y": -0.0,
-              "z": -1.563
-            },
-            "scale": {
-              "x": 1.0,
-              "y": 1.0,
-              "z": 1.0
-            },
-            "rotation": {
-              "axis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0
-              },
-              "angle": {
-                "unit": "degrees",
-                "value": 0.0
-              },
-              "origin": {
-                "type": "local"
-              }
-            },
-            "replicate": true
-          }
-        ]
-      ]
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "set_object_transform",
-      "object_id": "[uuid]",
-      "transforms": [
-        {
-          "translate": {
-            "property": {
-              "x": 2.375,
-              "y": 0.0,
-              "z": 0.722
-            },
-            "set": false,
-            "is_local": true
-          },
-          "rotate_rpy": null,
-          "rotate_angle_axis": null,
-          "scale": null
-        }
-      ]
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "set_object_transform",
-      "object_id": "[uuid]",
-      "transforms": [
-        {
-          "translate": null,
-          "rotate_rpy": {
-            "property": {
-              "x": 90.0,
-              "y": 0.0,
-              "z": 0.0
-            },
-            "set": false,
-            "is_local": true
-          },
-          "rotate_angle_axis": null,
-          "scale": null
-        }
-      ]
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "entity_circular_pattern",
-      "entity_id": "[uuid]",
-      "axis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0
-      },
-      "center": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "num_repetitions": 3,
-      "arc_degrees": 360.0,
-      "rotate_duplicates": false
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "set_object_transform",
-      "object_id": "[uuid]",
-      "transforms": [
-        {
-          "translate": {
-            "property": {
-              "x": 2.375,
-              "y": 0.0,
-              "z": -1.419875
-            },
-            "set": false,
-            "is_local": true
-          },
-          "rotate_rpy": null,
-          "rotate_angle_axis": null,
-          "scale": null
-        }
-      ]
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "entity_circular_pattern",
-      "entity_id": "[uuid]",
-      "axis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0
-      },
-      "center": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "num_repetitions": 3,
-      "arc_degrees": 360.0,
-      "rotate_duplicates": false
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "set_object_transform",
-      "object_id": "[uuid]",
-      "transforms": [
-        {
-          "translate": null,
-          "rotate_rpy": {
-            "property": {
-              "x": -90.0,
-              "y": 0.0,
-              "z": 0.0
-            },
-            "set": false,
-            "is_local": true
-          },
-          "rotate_angle_axis": null,
-          "scale": null
-        }
-      ]
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "set_object_transform",
-      "object_id": "[uuid]",
-      "transforms": [
-        {
-          "translate": {
-            "property": {
-              "x": 0.0,
-              "y": 0.0,
-              "z": 0.43999999999999995
-            },
-            "set": false,
-            "is_local": false
-          },
-          "rotate_rpy": null,
-          "rotate_angle_axis": null,
-          "scale": null
-        }
-      ]
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "set_object_transform",
-      "object_id": "[uuid]",
-      "transforms": [
-        {
-          "translate": null,
-          "rotate_rpy": {
-            "property": {
-              "x": 90.0,
-              "y": 0.0,
-              "z": 0.0
-            },
-            "set": false,
-            "is_local": true
-          },
-          "rotate_angle_axis": null,
-          "scale": null
-        }
-      ]
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "set_object_transform",
-      "object_id": "[uuid]",
-      "transforms": [
-        {
-          "translate": {
-            "property": {
-              "x": 0.0,
-              "y": 0.0,
-              "z": -0.591
-            },
-            "set": false,
-            "is_local": false
-          },
-          "rotate_rpy": null,
-          "rotate_angle_axis": null,
-          "scale": null
-        }
-      ]
+      "type": "set_scene_units",
+      "unit": "in"
     }
   },
   {
@@ -530,7 +48,7 @@ description: Artifact commands pipe-flange-assembly.kcl
     "range": [],
     "command": {
       "type": "set_scene_units",
-      "unit": "mm"
+      "unit": "in"
     }
   },
   {
@@ -538,7 +56,7 @@ description: Artifact commands pipe-flange-assembly.kcl
     "range": [],
     "command": {
       "type": "set_scene_units",
-      "unit": "mm"
+      "unit": "in"
     }
   },
   {
@@ -546,7 +64,7 @@ description: Artifact commands pipe-flange-assembly.kcl
     "range": [],
     "command": {
       "type": "set_scene_units",
-      "unit": "mm"
+      "unit": "in"
     }
   },
   {
@@ -897,6 +415,32 @@ description: Artifact commands pipe-flange-assembly.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "edge_lines_visible",
+      "hidden": false
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "set_scene_units",
       "unit": "in"
     }
@@ -2665,8 +2209,73 @@ description: Artifact commands pipe-flange-assembly.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "set_scene_units",
-      "unit": "in"
+      "type": "set_object_transform",
+      "object_id": "[uuid]",
+      "transforms": [
+        {
+          "translate": null,
+          "rotate_rpy": null,
+          "rotate_angle_axis": {
+            "property": {
+              "x": 0.0,
+              "y": 1.0,
+              "z": 0.0,
+              "w": 180.0
+            },
+            "set": false,
+            "is_local": true
+          },
+          "scale": null
+        }
+      ]
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "set_object_transform",
+      "object_id": "[uuid]",
+      "transforms": [
+        {
+          "translate": {
+            "property": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.151
+            },
+            "set": false,
+            "is_local": true
+          },
+          "rotate_rpy": null,
+          "rotate_angle_axis": null,
+          "scale": null
+        }
+      ]
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "set_object_transform",
+      "object_id": "[uuid]",
+      "transforms": [
+        {
+          "translate": {
+            "property": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": -0.091
+            },
+            "set": false,
+            "is_local": true
+          },
+          "rotate_rpy": null,
+          "rotate_angle_axis": null,
+          "scale": null
+        }
+      ]
     }
   },
   {
@@ -3001,8 +2610,205 @@ description: Artifact commands pipe-flange-assembly.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "set_scene_units",
-      "unit": "in"
+      "type": "set_object_transform",
+      "object_id": "[uuid]",
+      "transforms": [
+        {
+          "translate": {
+            "property": {
+              "x": 2.375,
+              "y": 0.0,
+              "z": 0.69
+            },
+            "set": false,
+            "is_local": true
+          },
+          "rotate_rpy": null,
+          "rotate_angle_axis": null,
+          "scale": null
+        }
+      ]
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "entity_circular_pattern",
+      "entity_id": "[uuid]",
+      "axis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0
+      },
+      "center": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "num_repetitions": 3,
+      "arc_degrees": 360.0,
+      "rotate_duplicates": false
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "entity_linear_pattern_transform",
+      "entity_id": "[uuid]",
+      "transform": [],
+      "transforms": [
+        [
+          {
+            "translate": {
+              "x": -0.0,
+              "y": -0.0,
+              "z": -1.563
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ]
+      ]
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "entity_linear_pattern_transform",
+      "entity_id": "[uuid]",
+      "transform": [],
+      "transforms": [
+        [
+          {
+            "translate": {
+              "x": -0.0,
+              "y": -0.0,
+              "z": -1.563
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ]
+      ]
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "entity_linear_pattern_transform",
+      "entity_id": "[uuid]",
+      "transform": [],
+      "transforms": [
+        [
+          {
+            "translate": {
+              "x": -0.0,
+              "y": -0.0,
+              "z": -1.563
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ]
+      ]
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "entity_linear_pattern_transform",
+      "entity_id": "[uuid]",
+      "transform": [],
+      "transforms": [
+        [
+          {
+            "translate": {
+              "x": -0.0,
+              "y": -0.0,
+              "z": -1.563
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ]
+      ]
     }
   },
   {
@@ -3670,8 +3476,69 @@ description: Artifact commands pipe-flange-assembly.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "set_scene_units",
-      "unit": "in"
+      "type": "set_object_transform",
+      "object_id": "[uuid]",
+      "transforms": [
+        {
+          "translate": {
+            "property": {
+              "x": 2.375,
+              "y": 0.0,
+              "z": 0.722
+            },
+            "set": false,
+            "is_local": true
+          },
+          "rotate_rpy": null,
+          "rotate_angle_axis": null,
+          "scale": null
+        }
+      ]
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "set_object_transform",
+      "object_id": "[uuid]",
+      "transforms": [
+        {
+          "translate": null,
+          "rotate_rpy": {
+            "property": {
+              "x": 90.0,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "set": false,
+            "is_local": true
+          },
+          "rotate_angle_axis": null,
+          "scale": null
+        }
+      ]
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "entity_circular_pattern",
+      "entity_id": "[uuid]",
+      "axis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0
+      },
+      "center": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "num_repetitions": 3,
+      "arc_degrees": 360.0,
+      "rotate_duplicates": false
     }
   },
   {
@@ -4166,8 +4033,45 @@ description: Artifact commands pipe-flange-assembly.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "set_scene_units",
-      "unit": "in"
+      "type": "set_object_transform",
+      "object_id": "[uuid]",
+      "transforms": [
+        {
+          "translate": {
+            "property": {
+              "x": 2.375,
+              "y": 0.0,
+              "z": -1.419875
+            },
+            "set": false,
+            "is_local": true
+          },
+          "rotate_rpy": null,
+          "rotate_angle_axis": null,
+          "scale": null
+        }
+      ]
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "entity_circular_pattern",
+      "entity_id": "[uuid]",
+      "axis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0
+      },
+      "center": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "num_repetitions": 3,
+      "arc_degrees": 360.0,
+      "rotate_duplicates": false
     }
   },
   {
@@ -4502,6 +4406,54 @@ description: Artifact commands pipe-flange-assembly.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "set_object_transform",
+      "object_id": "[uuid]",
+      "transforms": [
+        {
+          "translate": null,
+          "rotate_rpy": {
+            "property": {
+              "x": -90.0,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "set": false,
+            "is_local": true
+          },
+          "rotate_angle_axis": null,
+          "scale": null
+        }
+      ]
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "set_object_transform",
+      "object_id": "[uuid]",
+      "transforms": [
+        {
+          "translate": {
+            "property": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.43999999999999995
+            },
+            "set": false,
+            "is_local": false
+          },
+          "rotate_rpy": null,
+          "rotate_angle_axis": null,
+          "scale": null
+        }
+      ]
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "make_plane",
       "origin": {
         "x": 0.0,
@@ -4824,6 +4776,54 @@ description: Artifact commands pipe-flange-assembly.kcl
       "metalness": 0.0,
       "roughness": 0.0,
       "ambient_occlusion": 0.0
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "set_object_transform",
+      "object_id": "[uuid]",
+      "transforms": [
+        {
+          "translate": null,
+          "rotate_rpy": {
+            "property": {
+              "x": 90.0,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "set": false,
+            "is_local": true
+          },
+          "rotate_angle_axis": null,
+          "scale": null
+        }
+      ]
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "set_object_transform",
+      "object_id": "[uuid]",
+      "transforms": [
+        {
+          "translate": {
+            "property": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": -0.591
+            },
+            "set": false,
+            "is_local": false
+          },
+          "rotate_rpy": null,
+          "rotate_angle_axis": null,
+          "scale": null
+        }
+      ]
     }
   }
 ]

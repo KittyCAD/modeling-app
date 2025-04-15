@@ -7,6 +7,30 @@ description: Artifact commands gear-rack.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "set_scene_units",
+      "unit": "mm"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "set_scene_units",
+      "unit": "mm"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "set_scene_units",
+      "unit": "mm"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "edge_lines_visible",
       "hidden": false
     }
@@ -3024,30 +3048,6 @@ description: Artifact commands gear-rack.kcl
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "set_scene_units",
-      "unit": "mm"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "set_scene_units",
-      "unit": "mm"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "set_scene_units",
-      "unit": "mm"
     }
   }
 ]
