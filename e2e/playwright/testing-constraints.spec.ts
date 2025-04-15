@@ -1,6 +1,6 @@
+import path from 'node:path'
 import { XOR } from '@src/lib/utils'
 import * as fsp from 'fs/promises'
-import path from 'node:path'
 
 import {
   TEST_COLORS,

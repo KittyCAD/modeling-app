@@ -1,3 +1,4 @@
+import { join } from 'path'
 import {
   PROJECT_SETTINGS_FILE_NAME,
   SETTINGS_FILE_NAME,
@@ -5,7 +6,6 @@ import {
 import type { SettingsLevel } from '@src/lib/settings/settingsTypes'
 import type { DeepPartial } from '@src/lib/types'
 import * as fsp from 'fs/promises'
-import { join } from 'path'
 
 import type { Settings } from '@rust/kcl-lib/bindings/Settings'
 
