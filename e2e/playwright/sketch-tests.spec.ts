@@ -3108,7 +3108,7 @@ test.describe('manual edits during sketch mode', () => {
     const handle1Location = { x: 843, y: 235 }
 
     await test.step('Edit sketch by dragging handle', async () => {
-      // const handleLocation = { x: 500, y: 300 } // Approximate location of a handle
+      await page.waitForTimeout(500)
       await editor.expectEditor.toContain('length = 156.54, angle = -28')
       await page.mouse.move(handle1Location.x, handle1Location.y)
       await page.mouse.down()
