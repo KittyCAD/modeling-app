@@ -3174,6 +3174,7 @@ export function fnNameToTooltip(
     case 'yLine':
       return isAbsolute ? 'yLineTo' : 'yLine'
     case 'angledLineThatIntersects':
+    case 'arc':
     case 'circleThreePoint':
     case 'circle':
     case 'tangentialArc':
