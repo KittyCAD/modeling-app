@@ -790,11 +790,7 @@ profile001 = startProfileAt([56.37, 120.33], sketch001)
        end = [391.48, 131.54]
      }, %)
   |> yLine(-131.54, %)
-  |> arc({
-       radius = 126.46,
-       angleStart = 33.53,
-       angleEnd = -141.07
-     }, %)
+  |> arc(angleStart = 33.53, angleEnd = -141.07, radius = 126.46)
 `
         )
         localStorage.setItem('disableAxis', 'true')
@@ -1049,11 +1045,7 @@ part001 = startSketchOn(XZ)
        interior = [16.25, 5.12],
        end = [21.61, 4.15]
      }, %)
-  |> arc({
-       radius = 9.03,
-       angleStart = 40.27,
-       angleEnd = -38.05
-     }, %)
+  |> arc(angleStart = 40.27, angleEnd = -38.05, radius = 9.03)
 
       `
         )
@@ -1087,11 +1079,7 @@ part001 = startSketchOn(XZ)
 
       await deleteSegmentSequence({
         hoverPos: { x: segmentToDelete.x, y: segmentToDelete.y },
-        codeToBeDeleted: `arc({
-       radius = 9.03,
-       angleStart = 40.27,
-       angleEnd = -38.05
-     }, %)`,
+        codeToBeDeleted: `arc(angleStart = 40.27, angleEnd = -38.05, radius = 9.03)`,
         stdLibFnName: 'arc',
         ang: ang + 180,
         steps: 6,

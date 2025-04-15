@@ -378,17 +378,9 @@ const sketch017w = startSketchOn(plane002)
        depth - 1 - (3.7 * cos(23 * pi() / 180)),
        60.65 + 3.7 * sin(23 * pi() / 180) + 1.75 / 2
      ], %)
-  |> arc({
-       angleStart: -23,
-       angleEnd: 180 - 23,
-       radius: 7 / 2 + 2
-     }, %)
+  |> arc(angleStart = -23, angleEnd = 180 - 23, radius = 7 / 2 + 2)
   |> angledLine(angle = -23 + 180, length = -1 )
-  |> arc({
-       angleStart: 180 - 23,
-       angleEnd: -23,
-       radius: 7 / 2 + 1
-     }, %)
+  |> arc(angleStart = 180 - 23, angleEnd = -23, radius = 7 / 2 + 1)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 const extrude017w = extrude(sketch017w, length = 1)
@@ -398,17 +390,9 @@ const sketch018w = startSketchOn(plane002)
        depth - 1 - (19.3 * cos(23 * pi() / 180)),
        60.65 + 19.3 * sin(23 * pi() / 180) + 1.75 / 2
      ], %)
-  |> arc({
-       angleStart: -23,
-       angleEnd: 180 - 23,
-       radius: 7 / 2 + 2
-     }, %)
+  |> arc(angleStart = -23, angleEnd = 180 - 23, radius = 7 / 2 + 2)
   |> angledLine(angle = -23 + 180, length = -1 )
-  |> arc({
-       angleStart: 180 - 23,
-       angleEnd: -23,
-       radius: 7 / 2 + 1
-     }, %)
+  |> arc(angleStart = 180 - 23, angleEnd = -23, radius = 7 / 2 + 1)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 const extrude018w = extrude(sketch018w, length = 1)
@@ -627,17 +611,9 @@ const extrude002fl = extrude(sketch002fl, length = thickness)
 // Bend
 const sketch003fl = startSketchOn(planeXYfl)
   |> startProfileAt([0 + thickness + bendRad+originStart[1], originStart[0]], %)
-  |> arc({
-       angleStart: 270,
-       angleEnd: 180,
-       radius: bendRad + thickness
-     }, %)
+  |> arc(angleStart = 270, angleEnd = 180, radius = bendRad + thickness)
   |> xLine(length = thickness)
-  |> arc({
-       angleStart: 180,
-       angleEnd: 270,
-       radius: bendRad
-     }, %)
+  |> arc(angleStart = 180, angleEnd = 270, radius = bendRad)
   |> yLine(length = -thickness)
   |> close()
 
@@ -853,17 +829,9 @@ const sketch003fr = startSketchOn(planeXYfr)
        bendRad + originStart[1] + width - 2 - thickness - bendRad,
        originStart[0] + bendRad + thickness
      ], %)
-  |> arc({
-       angleStart: 0,
-       angleEnd: -90,
-       radius: bendRad
-     }, %)
+  |> arc(angleStart = 0, angleEnd = -90, radius = bendRad)
   |> yLine(length = -thickness)
-  |> arc({
-       angleStart: -90,
-       angleEnd: 0,
-       radius: bendRad + thickness
-     }, %)
+  |> arc(angleStart = -90, angleEnd = 0, radius = bendRad + thickness)
   |> close()
 
 const extrude003fr = extrude(sketch003fr, length = railHeight * 1.75)
@@ -1093,17 +1061,9 @@ const sketch003rr = startSketchOn(planeXYrr)
        bendRad + originStart[1] + width - 2-bendRad,
        originStart[0]-bendRad
      ], %)
-  |> arc({
-       angleStart: 0,
-       angleEnd: 90,
-       radius: bendRad+thickness
-     }, %)
+  |> arc(angleStart = 0, angleEnd = 90, radius = bendRad+thickness)
   |> yLine(length = -thickness)
-    |> arc({
-       angleStart: 90,
-       angleEnd: 0,
-       radius: bendRad
-     }, %)
+    |> arc(angleStart = 90, angleEnd = 0, radius = bendRad)
   |> close()
 
 const extrude003rr = extrude(sketch003rr, length = railHeight * 1.75)
@@ -1332,17 +1292,9 @@ const sketch003rl = startSketchOn(planeXYrl)
        bendRad + originStart[1] + thickness,
        originStart[0]
      ], %)
-  |> arc({
-       angleStart: 90,
-       angleEnd: 180,
-       radius: bendRad
-     }, %)
+  |> arc(angleStart = 90, angleEnd = 180, radius = bendRad)
   |> xLine(length = -thickness)
-  |> arc({
-       angleStart: 180,
-       angleEnd: 90,
-       radius: bendRad + thickness
-     }, %)
+  |> arc(angleStart = 180, angleEnd = 90, radius = bendRad + thickness)
   |> close()
 
 const extrude003rl = extrude(sketch003rl, length = railHeight * 1.75)

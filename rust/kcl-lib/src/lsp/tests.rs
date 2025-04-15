@@ -1644,8 +1644,8 @@ sphere = startSketchOn(XZ)
      ], %)
   |> line(end = [sphereDia - 0.1, 0])
   |> arc({
-       angle_start: 0,
-       angle_end: -180,
+       angle_start = 0,
+       angle_end = -180,
        radius: sphereDia / 2 - 0.05
      }, %)
   |> close()

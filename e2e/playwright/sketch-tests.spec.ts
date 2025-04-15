@@ -45,11 +45,7 @@ test.describe('Sketch tests', { tag: ['@skipWin'] }, () => {
 
     screwHole = startSketchOn(XY)
   ${startProfileAt1}
-  |> arc({
-        radius = screwRadius,
-        angleStart = 0,
-        angleEnd = 360
-      }, %)
+  |> arc(angleStart = 0, angleEnd = 360, radius = screwRadius)
 
     part001 = startSketchOn(XY)
   ${startProfileAt2}
@@ -66,11 +62,7 @@ test.describe('Sketch tests', { tag: ['@skipWin'] }, () => {
   |> tangentialArc(endAbsolute = [width / 2, 0])
   |> xLine(length = -width / 4 + wireRadius)
   |> yLine(length = wireOffset)
-  |> arc({
-        radius = wireRadius,
-        angleStart = 0,
-        angleEnd = 180
-      }, %)
+  |> arc(angleStart = 0, angleEnd = 180, radius = wireRadius)
   |> yLine(length = -wireOffset)
   |> xLine(length = -width / 4)
   |> close()
@@ -218,11 +210,7 @@ sketch001 = startProfileAt([12.34, -12.34], sketch002)
           interior = [20.18, -1.7],
           end = [11.82, -1.16]
         }, %)
-      |> arc({
-          radius = 5.92,
-          angleStart = -89.36,
-          angleEnd = 135.81
-        }, %)
+      |> arc(angleStart = -89.36, angleEnd = 135.81, radius = 5.92)
       |> close()`
         )
       })
@@ -268,11 +256,7 @@ sketch001 = startProfileAt([12.34, -12.34], sketch002)
           interior = [20.18, -1.7],
           end = [11.82, -1.16]
         }, %)
-      |> arc({
-          radius = 5.92,
-          angleStart = -89.36,
-          angleEnd = 135.81
-        }, %)
+      |> arc(angleStart = -89.36, angleEnd = 135.81, radius = 5.92)
       |> close()
 `)
       } else {
@@ -414,11 +398,7 @@ sketch001 = startProfileAt([12.34, -12.34], sketch002)
        interior = [18.11, -3.73],
        end = [9.77, -3.19]
      }, %)
-  |> arc({
-       radius = 3.75,
-       angleStart = -58.29,
-       angleEnd = 161.17
-     }, %)
+  |> arc(angleStart = -58.29, angleEnd = 161.17, radius = 3.75)
   |> close()
 `)
     }
