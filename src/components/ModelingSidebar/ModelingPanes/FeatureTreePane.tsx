@@ -1,6 +1,7 @@
 import type { Diagnostic } from '@codemirror/lint'
 import { useMachine, useSelector } from '@xstate/react'
-import { ComponentProps, useCallback, useEffect, useMemo, useRef } from 'react'
+import type { ComponentProps } from 'react'
+import { useCallback, useEffect, useMemo, useRef } from 'react'
 import type { Actor, Prop } from 'xstate'
 
 import type { Operation } from '@rust/kcl-lib/bindings/Operation'
