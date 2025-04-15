@@ -14,3 +14,5 @@ export const useCanReadWriteProjectDirectory = () =>
     systemIOActor,
     (state) => state.context.canReadWriteProjectDirectory
   )
+export const useHasListedProjects = () =>
+  useSelector(systemIOActor, (state) => state.context.hasListedProjects)

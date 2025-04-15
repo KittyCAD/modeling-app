@@ -1,6 +1,8 @@
+import { useFileSystemWatcher } from '@src/hooks/useFileSystemWatcher'
 import { PATHS } from '@src/lib/paths'
 import { systemIOActor, useSettings } from '@src/machines/appMachine'
 import {
+  useHasListedProjects,
   useProjectDirectoryPath,
   useRequestedFileName,
   useRequestedProjectName,
@@ -13,6 +15,7 @@ export function SystemIOMachineLogicListener() {
   const requestedProjectName = useRequestedProjectName()
   const requestedFileName = useRequestedFileName()
   const projectDirectoryPath = useProjectDirectoryPath()
+  const hasListedProjects = useHasListedProjects()
   const navigate = useNavigate()
   const settings = useSettings()
 
@@ -67,6 +70,26 @@ export function SystemIOMachineLogicListener() {
       },
     })
   }, [settings.projects.defaultProjectName.current])
+
+  useFileSystemWatcher(
+    async () => {
+      // Gotcha: Chokidar is buggy. It will emit addDir or add on files that did not get created.
+      // This means while the application initialize and Chokidar initializes you cannot tell if
+      // a directory or file is actually created or they are buggy signals. This means you must
+      // ignore all signals during initialization because it is ambiguous. Once those signals settle
+      // you can actually start listening to real signals.
+      // If someone creates folders or files during initialization we ignore those events!
+      if (!hasListedProjects) {
+        return
+      }
+      systemIOActor.send({
+        type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
+      })
+    },
+    settings.app.projectDirectory.current
+      ? [settings.app.projectDirectory.current]
+      : []
+  )
 
   return null
 }

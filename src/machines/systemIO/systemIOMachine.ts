@@ -258,7 +258,10 @@ export const systemIOMachine = setup({
         },
         onDone: {
           target: SystemIOMachineStates.idle,
-          actions: [SystemIOMachineActions.setFolders],
+          actions: [
+            SystemIOMachineActions.setFolders,
+            assign({ hasListedProjects: true }),
+          ],
         },
         onError: {
           target: SystemIOMachineStates.idle,
@@ -278,7 +281,14 @@ export const systemIOMachine = setup({
         },
         onDone: {
           target: SystemIOMachineStates.readingFolders,
-          actions: [SystemIOMachineActions.toastSuccess],
+          actions: [
+            assign({
+              requestedProjectName: ({ event }) => {
+                return { name: event.output.name }
+              },
+            }),
+            SystemIOMachineActions.toastSuccess,
+          ],
         },
         onError: {
           target: SystemIOMachineStates.idle,

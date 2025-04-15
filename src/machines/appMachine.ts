@@ -79,8 +79,10 @@ export const useSettings = () =>
     return settings
   })
 
+// TODO: Debugging
 export const systemIOActor = appActor.getSnapshot().children.systemIO!
 
+window.systemIOActor = systemIOActor
 export const engineStreamActor = appActor.system.get(
   ENGINE_STREAM
 ) as EngineStreamActor
