@@ -1,13 +1,13 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Error from executing argument_error.kcl
 ---
-KCL Type error
+[31mKCL Type error[0m
 
-  × type: Expected an array but found Function
+  [31m×[0m type: Expected an array but found Function
    ╭─[5:5]
- 4 │ 
- 5 │ map(f, [0, 1])
-   ·     ┬
-   ·     ╰── tests/argument_error/input.kcl
+ [2m4[0m │ 
+ [2m5[0m │ map(f, [0, 1])
+   · [35;1m    ┬[0m
+   ·     [35;1m╰── [35;1mtests/argument_error/input.kcl[0m[0m
    ╰────
