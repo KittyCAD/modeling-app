@@ -147,14 +147,18 @@ export const systemIOMachine = setup({
         input: { context, requestedProjectName },
       }: {
         input: { context: SystemIOContext; requestedProjectName: string }
-      }) => {}
+      }) => {
+        return { message: '', name: '' }
+      }
     ),
     [SystemIOMachineActors.deleteProject]: fromPromise(
       async ({
         input: { context, requestedProjectName },
       }: {
         input: { context: SystemIOContext; requestedProjectName: string }
-      }) => {}
+      }) => {
+        return { message: '', name: '' }
+      }
     ),
     [SystemIOMachineActors.renameProject]: fromPromise(
       async ({
@@ -165,7 +169,9 @@ export const systemIOMachine = setup({
           requestedProjectName: string
           projectName: string
         }
-      }) => {}
+      }): Promise<{ message: string; newName: string; oldName: string }> => {
+        return { message: '', newName: '', oldName: '' }
+      }
     ),
     [SystemIOMachineActors.createKCLFile]: fromPromise(
       async ({
@@ -187,7 +193,9 @@ export const systemIOMachine = setup({
           context: SystemIOContext
           requestedProjectDirectoryPath: string
         }
-      }) => {}
+      }): Promise<{ value: boolean; error: unknown }> => {
+        return { value: true, error: undefined }
+      }
     ),
   },
 }).createMachine({
