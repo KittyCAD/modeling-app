@@ -1,5 +1,5 @@
-import type { BrowserWindow } from 'electron'
 import os from 'node:os'
+import type { BrowserWindow } from 'electron'
 
 import { typeSafeWebContentsSend } from '@src/menu/channels'
 import type { ZooMenuItemConstructorOptions } from '@src/menu/roles'

@@ -82,16 +82,14 @@ const SignIn = () => {
       style={
         isDesktop()
           ? ({
-              '-webkit-app-region': 'drag',
+              WebkitAppRegion: 'drag',
             } as CSSProperties)
           : {}
       }
     >
       <div
         style={
-          isDesktop()
-            ? ({ '-webkit-app-region': 'no-drag' } as CSSProperties)
-            : {}
+          isDesktop() ? ({ WebkitAppRegion: 'no-drag' } as CSSProperties) : {}
         }
         className="body-bg py-5 px-12 rounded-lg grid place-items-center overflow-y-auto"
       >

@@ -1,6 +1,6 @@
+import { join } from 'path'
 import { bracket } from '@e2e/playwright/fixtures/bracket'
 import fsp from 'fs/promises'
-import { join } from 'path'
 
 import { TEST_CODE_LONG_WITH_ERROR_OUT_OF_VIEW } from '@e2e/playwright/storageStates'
 import {
