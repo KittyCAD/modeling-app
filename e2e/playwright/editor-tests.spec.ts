@@ -1,6 +1,6 @@
+import { join } from 'path'
 import { uuidv4 } from '@src/lib/utils'
 import fsp from 'fs/promises'
-import { join } from 'path'
 
 import {
   TEST_COLORS,
@@ -409,8 +409,9 @@ sketch_001 = startSketchOn(XY)
     // Hit alt+shift+f to format the code
     await page.keyboard.press('Alt+Shift+KeyF')
 
-    await expect(page.locator('.cm-content'))
-      .toHaveText(`sketch001 = startSketchOn(XY)
+    await expect(
+      page.locator('.cm-content')
+    ).toHaveText(`sketch001 = startSketchOn(XY)
   |> startProfileAt([-10, -10], %)
   |> line(end = [20, 0])
   |> line(end = [0, 20])
@@ -462,8 +463,9 @@ sketch_001 = startSketchOn(XY)
     await u.expectCmdLog('[data-message-type="execution-done"]')
     await u.closeDebugPanel()
 
-    await expect(page.locator('.cm-content'))
-      .toHaveText(`sketch_001 = startSketchOn(XY)
+    await expect(
+      page.locator('.cm-content')
+    ).toHaveText(`sketch_001 = startSketchOn(XY)
   |> startProfileAt([-10, -10], %)
   |> line(end = [20, 0])
   |> line(end = [0, 20])
@@ -978,8 +980,9 @@ sketch001 = startSketchOn(XZ)
     await page.keyboard.up('Control')
 
     await page.waitForTimeout(100)
-    await expect(page.locator('.cm-content'))
-      .toHaveText(`sketch001 = startSketchOn(XZ)
+    await expect(
+      page.locator('.cm-content')
+    ).toHaveText(`sketch001 = startSketchOn(XZ)
   |> startProfileAt([4.61, -14.01], %)
   |> line(end = [12.73, -0.09])
   |> tangentialArc(endAbsolute = [24.95, -5.38])

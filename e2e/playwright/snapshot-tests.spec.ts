@@ -1,9 +1,9 @@
+import { spawn } from 'child_process'
+import path from 'path'
 import type { Models } from '@kittycad/lib'
 import { KCL_DEFAULT_LENGTH } from '@src/lib/constants'
-import { spawn } from 'child_process'
 import fsp from 'fs/promises'
 import JSZip from 'jszip'
-import path from 'path'
 
 import type { CmdBarFixture } from '@e2e/playwright/fixtures/cmdBarFixture'
 import type { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'

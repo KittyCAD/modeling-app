@@ -1,7 +1,7 @@
-import { init, reloadModule } from '@src/lib/wasm_lib_wrapper'
 import fs from 'fs'
-import fsPromises from 'fs/promises'
 import path from 'path'
+import { init, reloadModule } from '@src/lib/wasm_lib_wrapper'
+import fsPromises from 'fs/promises'
 
 export const wasmUrlNode = () => {
   // In prod the file will be right next to the compiled js file.

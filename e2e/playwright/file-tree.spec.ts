@@ -1,7 +1,7 @@
-import { FILE_EXT } from '@src/lib/constants'
 import * as fs from 'fs'
-import * as fsp from 'fs/promises'
 import { join } from 'path'
+import { FILE_EXT } from '@src/lib/constants'
+import * as fsp from 'fs/promises'
 
 import {
   createProject,

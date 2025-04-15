@@ -1,5 +1,5 @@
-import * as fsp from 'fs/promises'
 import path from 'path'
+import * as fsp from 'fs/promises'
 
 import type { CmdBarFixture } from '@e2e/playwright/fixtures/cmdBarFixture'
 import type { ToolbarFixture } from '@e2e/playwright/fixtures/toolbarFixture'
