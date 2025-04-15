@@ -4,7 +4,7 @@
 // Set Units
 @settings(defaultLengthUnit = mm)
 
-// Input parameters to define the bottle
+// Input dimensions to define the bottle
 bottleWidth = 80
 bottleLength = 125
 bottleHeight = 220
@@ -26,11 +26,10 @@ bottleBody = startSketchOn(XY)
   |> extrude(length = bottleHeight - neckDepth)
 
 // Create a neck centered at the top of the bottle
-bottleNeck = startSketchOn(bottleBody, 'END')
+bottleNeck = startSketchOn(bottleBody, face = END)
   |> circle(center = [0, 0], radius = neckDiameter / 2)
   |> extrude(length = neckDepth)
 
 // Define a shell operation so that the entire body and neck are hollow, with only the top face opened
-bottleShell = shell(bottleNeck, faces = ['end'], thickness = wallThickness)
+bottleShell = shell(bottleNeck, faces = [END], thickness = wallThickness)
   |> appearance(%, color = "#0078c2")
-
