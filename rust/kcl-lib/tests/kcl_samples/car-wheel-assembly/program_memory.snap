@@ -31,7 +31,7 @@ description: Variables in memory after executing car-wheel-assembly.kcl
   },
   "brakeCaliper": {
     "type": "Module",
-    "value": 8
+    "value": 7
   },
   "c1": {
     "type": "TagIdentifier",
@@ -105,11 +105,11 @@ description: Variables in memory after executing car-wheel-assembly.kcl
   },
   "carRotor": {
     "type": "Module",
-    "value": 7
+    "value": 6
   },
   "carTire": {
     "type": "Module",
-    "value": 10
+    "value": 9
   },
   "carWheel": {
     "type": "Module",
@@ -195,7 +195,7 @@ description: Variables in memory after executing car-wheel-assembly.kcl
   },
   "lugNut": {
     "type": "Module",
-    "value": 9
+    "value": 8
   },
   "lugSpacing": {
     "type": "Number",
