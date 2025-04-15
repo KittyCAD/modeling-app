@@ -77,7 +77,7 @@ fn fanBlade(offsetHeight, startAngle) {
 
 // Loft the fan blade cross sections into a single blade, then pattern them about the fan center
 loft([
-       fanBlade(4, 50),
+       fanBlade(4.5, 50),
        fanBlade((fanHeight - 2 - 4) / 2, 30),
        fanBlade(fanHeight - 2, 0)
      ])
@@ -90,3 +90,4 @@ loft([
        arcDegrees = 360,
        rotateDuplicates = true,
      )
+
