@@ -2662,8 +2662,8 @@ export const modelingMachine = setup({
         input: ModelingCommandSchema['Transform'] | undefined
       }) => {
         if (!input) return new Error('No input provided')
-        // Extract inputs
         const ast = kclManager.ast
+        const modifiedAst = structuredClone(ast)
         const { tx, ty, tz, rr, rp, ry, nodeToEdit, selection } = input
         let pathToNode = nodeToEdit
         if (!(pathToNode && typeof pathToNode[1][0] === 'number')) {
@@ -2683,12 +2683,20 @@ export const modelingMachine = setup({
           }
           // Insert the variable if it exists
           if ('variableName' in v && v.variableName) {
-            const newBody = [...ast.body]
-            newBody.splice(v.insertIndex, 0, v.variableDeclarationAst)
-            ast.body = newBody
+            modifiedAst.body.splice(v.insertIndex, 0, v.variableDeclarationAst)
           }
         }
 
+        const updatedPathToNode = updatePathToNodesAfterEdit(
+          ast,
+          modifiedAst,
+          pathToNode
+        )
+        if (err(updatedPathToNode)) {
+          return updatedPathToNode
+        }
+
+        pathToNode = updatedPathToNode
         const valueOrVariable = (variable: KclCommandValue) => {
           return 'variableName' in variable
             ? variable.variableIdentifierAst
@@ -2696,8 +2704,8 @@ export const modelingMachine = setup({
         }
 
         const result = setTransform({
-          ast,
           pathToNode,
+          ast: modifiedAst,
           tx: valueOrVariable(tx),
           ty: valueOrVariable(ty),
           tz: valueOrVariable(tz),
@@ -2705,12 +2713,9 @@ export const modelingMachine = setup({
           rp: valueOrVariable(rp),
           ry: valueOrVariable(ry),
         })
-
         if (err(result)) {
           return err(result)
         }
-
-        console.log('result.modifiedAst', result.modifiedAst)
 
         await updateModelingState(
           result.modifiedAst,
