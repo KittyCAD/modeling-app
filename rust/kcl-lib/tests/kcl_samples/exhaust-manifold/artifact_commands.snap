@@ -7,30 +7,6 @@ description: Artifact commands exhaust-manifold.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "set_scene_units",
-      "unit": "mm"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "set_scene_units",
-      "unit": "mm"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "set_scene_units",
-      "unit": "mm"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
       "type": "edge_lines_visible",
       "hidden": false
     }
@@ -3418,6 +3394,30 @@ description: Artifact commands exhaust-manifold.kcl
       "radius": 0.25,
       "tolerance": 0.0000001,
       "cut_type": "fillet"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "set_scene_units",
+      "unit": "mm"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "set_scene_units",
+      "unit": "mm"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "set_scene_units",
+      "unit": "mm"
     }
   }
 ]
