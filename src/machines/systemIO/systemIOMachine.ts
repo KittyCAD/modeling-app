@@ -271,9 +271,11 @@ export const systemIOMachine = setup({
         },
         onDone: {
           target: SystemIOMachineStates.readingFolders,
+          actions: [SystemIOMachineActions.toastSuccess],
         },
         onError: {
           target: SystemIOMachineStates.idle,
+          actions: [SystemIOMachineActions.toastError],
         },
       },
     },
@@ -290,9 +292,11 @@ export const systemIOMachine = setup({
         },
         onDone: {
           target: SystemIOMachineStates.readingFolders,
+          actions: [SystemIOMachineActions.toastSuccess],
         },
         onError: {
           target: SystemIOMachineStates.idle,
+          actions: [SystemIOMachineActions.toastError],
         },
       },
     },
@@ -314,6 +318,7 @@ export const systemIOMachine = setup({
         },
         onError: {
           target: SystemIOMachineStates.idle,
+          actions: [SystemIOMachineActions.toastError],
         },
       },
     },

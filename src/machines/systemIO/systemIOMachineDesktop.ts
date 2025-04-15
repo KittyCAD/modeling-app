@@ -118,7 +118,12 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           ),
           newProjectName
         )
-        // DONE
+
+        return {
+          message: `Successfully renamed "${projectName}" to "${newProjectName}"`,
+          oldName: projectName,
+          newName: newProjectName,
+        }
       }
     ),
     [SystemIOMachineActors.deleteProject]: fromPromise(
@@ -136,6 +141,11 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
             recursive: true,
           }
         )
+
+        return {
+          message: `Successfully deleted "${input.requestedProjectName}"`,
+          name: input.requestedProjectName,
+        }
       }
     ),
     [SystemIOMachineActors.createKCLFile]: fromPromise(
