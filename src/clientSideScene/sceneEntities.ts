@@ -5,6 +5,7 @@ import type {
   Object3DEventMap,
   Quaternion,
 } from 'three'
+
 import {
   BoxGeometry,
   DoubleSide,
@@ -36,7 +37,8 @@ import type { Sketch } from '@rust/kcl-lib/bindings/Sketch'
 import type { SourceRange } from '@rust/kcl-lib/bindings/SourceRange'
 import type { VariableDeclaration } from '@rust/kcl-lib/bindings/VariableDeclaration'
 import type { VariableDeclarator } from '@rust/kcl-lib/bindings/VariableDeclarator'
-import { uuidv4 } from '@src/lib/utils'
+import type { SafeArray } from '@src/lib/utils'
+import { getAngle, getLength, uuidv4 } from '@src/lib/utils'
 
 import {
   createGridHelper,
@@ -48,6 +50,7 @@ import {
 import {
   ARC_ANGLE_END,
   ARC_SEGMENT,
+  ARC_SEGMENT_TYPES,
   CIRCLE_CENTER_HANDLE,
   CIRCLE_SEGMENT,
   CIRCLE_THREE_POINT_HANDLE1,
@@ -56,6 +59,7 @@ import {
   CIRCLE_THREE_POINT_SEGMENT,
   DRAFT_DASHED_LINE,
   EXTRA_SEGMENT_HANDLE,
+  getParentGroup,
   PROFILE_START,
   SEGMENT_BODIES,
   SEGMENT_BODIES_PLUS_PROFILE_START,
@@ -66,31 +70,32 @@ import {
   THREE_POINT_ARC_HANDLE2,
   THREE_POINT_ARC_HANDLE3,
   THREE_POINT_ARC_SEGMENT,
-  getParentGroup,
 } from '@src/clientSideScene/sceneConstants'
 import type {
   OnClickCallbackArgs,
   OnMouseEnterLeaveArgs,
   SceneInfra,
 } from '@src/clientSideScene/sceneInfra'
+
 import {
   ANGLE_SNAP_THRESHOLD_DEGREES,
   ARROWHEAD,
   AXIS_GROUP,
   DRAFT_POINT,
   DRAFT_POINT_GROUP,
+  getSceneScale,
   INTERSECTION_PLANE_LAYER,
   RAYCASTABLE_PLANE,
   SKETCH_GROUP_SEGMENTS,
   SKETCH_LAYER,
   X_AXIS,
   Y_AXIS,
-  getSceneScale,
 } from '@src/clientSideScene/sceneUtils'
 import type { SegmentUtils } from '@src/clientSideScene/segments'
 import {
   createProfileStartHandle,
   dashedStraight,
+  getTanPreviousPoint,
   segmentUtils,
 } from '@src/clientSideScene/segments'
 import type EditorManager from '@src/editor/manager'
@@ -118,6 +123,7 @@ import {
   insertNewStartProfileAt,
   updateSketchNodePathsWithInsertIndex,
 } from '@src/lang/modifyAst'
+import { mutateAstWithTagForSketchSegment } from '@src/lang/modifyAst/addEdgeTreatment'
 import { getNodeFromPath } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import {
@@ -138,6 +144,7 @@ import { topLevelRange } from '@src/lang/util'
 import type { PathToNode, VariableMap } from '@src/lang/wasm'
 import {
   defaultSourceRange,
+  getTangentialArcToInfo,
   parse,
   recast,
   resultIsOk,
@@ -157,12 +164,14 @@ import type { Themes } from '@src/lib/theme'
 import { getThemeColorForThreeJs } from '@src/lib/theme'
 import { err, reportRejection, trap } from '@src/lib/trap'
 import { isArray, isOverlap, roundOff } from '@src/lib/utils'
+import { closestPointOnRay, deg2Rad } from '@src/lib/utils2d'
 import type {
   SegmentOverlayPayload,
   SketchDetails,
   SketchDetailsUpdate,
   SketchTool,
 } from '@src/machines/modelingMachine'
+import { calculateIntersectionOfTwoLines } from 'sketch-helpers'
 
 type DraftSegment = 'line' | 'tangentialArc'
 
@@ -183,6 +192,7 @@ export class SceneEntities {
   axisGroup: Group | null = null
   draftPointGroups: Group[] = []
   currentSketchQuaternion: Quaternion | null = null
+
   constructor(
     engineCommandManager: EngineCommandManager,
     sceneInfra: SceneInfra,
@@ -344,6 +354,7 @@ export class SceneEntities {
     sceneInfra.scene.add(intersectionPlane)
     return intersectionPlane
   }
+
   createSketchAxis(
     sketchPathToNode: PathToNode,
     forward: [number, number, number],
@@ -423,9 +434,11 @@ export class SceneEntities {
     sketchPosition && this.axisGroup.position.set(...sketchPosition)
     this.sceneInfra.scene.add(this.axisGroup)
   }
+
   getDraftPoint() {
     return this.sceneInfra.scene.getObjectByName(DRAFT_POINT)
   }
+
   createDraftPoint({
     point,
     origin,
@@ -857,6 +870,7 @@ export class SceneEntities {
       variableDeclarationName,
     }
   }
+
   updateAstAndRejigSketch = async (
     sketchEntryNodePath: PathToNode,
     sketchNodePaths: PathToNode[],
@@ -1016,22 +1030,25 @@ export class SceneEntities {
           })
           if (trap(modifiedAst)) return Promise.reject(modifiedAst)
         } else if (intersection2d) {
-          const intersectsYAxis = args.intersects.find(
-            (sceneObject) => sceneObject.object.name === Y_AXIS
-          )
-          const intersectsXAxis = args.intersects.find(
-            (sceneObject) => sceneObject.object.name === X_AXIS
+          const lastSegment = sketch.paths.slice(-1)[0] || sketch.start
+
+          let {
+            snappedPoint,
+            snappedToTangent,
+            intersectsXAxis,
+            intersectsYAxis,
+            negativeTangentDirection,
+          } = this.getSnappedDragPoint(
+            intersection2d,
+            args.intersects,
+            args.mouseEvent,
+            Object.values(this.activeSegments).at(-1)
           )
 
-          const lastSegment = sketch.paths.slice(-1)[0] || sketch.start
-          const snappedPoint = {
-            x: intersectsYAxis ? 0 : intersection2d.x,
-            y: intersectsXAxis ? 0 : intersection2d.y,
-          }
           // Get the angle between the previous segment (or sketch start)'s end and this one's
           const angle = Math.atan2(
-            snappedPoint.y - lastSegment.to[1],
-            snappedPoint.x - lastSegment.to[0]
+            snappedPoint[1] - lastSegment.to[1],
+            snappedPoint[0] - lastSegment.to[0]
           )
 
           const isHorizontal =
@@ -1043,6 +1060,12 @@ export class SceneEntities {
             ANGLE_SNAP_THRESHOLD_DEGREES
 
           let resolvedFunctionName: ToolTip = 'line'
+          const snaps = {
+            previousArcTag: '',
+            negativeTangentDirection,
+            xAxis: !!intersectsXAxis,
+            yAxis: !!intersectsYAxis,
+          }
 
           // This might need to become its own function if we want more
           // case-based logic for different segment types
@@ -1051,27 +1074,46 @@ export class SceneEntities {
             segmentName === 'tangentialArc'
           ) {
             resolvedFunctionName = 'tangentialArc'
+          } else if (snappedToTangent) {
+            // Generate tag for previous arc segment and use it for the angle of angledLine:
+            //   |> tangentialArcTo([5, -10], %, $arc001)
+            //   |> angledLine({ angle = tangentToEnd(arc001), length = 12 }, %)
+
+            const previousSegmentPathToNode = getNodePathFromSourceRange(
+              modifiedAst,
+              sourceRangeFromRust(lastSegment.__geoMeta.sourceRange)
+            )
+            const taggedAstResult = mutateAstWithTagForSketchSegment(
+              modifiedAst,
+              previousSegmentPathToNode
+            )
+            if (trap(taggedAstResult)) return Promise.reject(taggedAstResult)
+
+            modifiedAst = taggedAstResult.modifiedAst
+            snaps.previousArcTag = taggedAstResult.tag
+            resolvedFunctionName = 'angledLine'
           } else if (isHorizontal) {
             // If the angle between is 0 or 180 degrees (+/- the snapping angle), make the line an xLine
             resolvedFunctionName = 'xLine'
           } else if (isVertical) {
             // If the angle between is 90 or 270 degrees (+/- the snapping angle), make the line a yLine
             resolvedFunctionName = 'yLine'
-          } else if (snappedPoint.x === 0 || snappedPoint.y === 0) {
+          } else if (snappedPoint[0] === 0 || snappedPoint[1] === 0) {
             // We consider a point placed on axes or origin to be absolute
             resolvedFunctionName = 'lineTo'
           }
 
           const tmp = addNewSketchLn({
-            node: this.kclManager.ast,
+            node: modifiedAst,
             variables: this.kclManager.variables,
             input: {
               type: 'straight-segment',
               from: [lastSegment.to[0], lastSegment.to[1]],
-              to: [snappedPoint.x, snappedPoint.y],
+              to: [snappedPoint[0], snappedPoint[1]],
             },
             fnName: resolvedFunctionName,
             pathToNode: sketchEntryNodePath,
+            snaps,
           })
           if (trap(tmp)) return Promise.reject(tmp)
           modifiedAst = tmp.modifiedAst
@@ -1118,11 +1160,11 @@ export class SceneEntities {
           intersects: args.intersects,
           sketchNodePaths,
           sketchEntryNodePath,
-          planeNodePath,
           draftInfo: {
             truncatedAst,
             variableDeclarationName,
           },
+          mouseEvent: args.mouseEvent,
         })
       },
     })
@@ -1263,10 +1305,11 @@ export class SceneEntities {
 
         const { intersectionPoint } = args
         if (!intersectionPoint?.twoD) return
-        const { snappedPoint, isSnapped } = this.getSnappedDragPoint({
-          intersection2d: intersectionPoint.twoD,
-          intersects: args.intersects,
-        })
+        const { snappedPoint, isSnapped } = this.getSnappedDragPoint(
+          intersectionPoint.twoD,
+          args.intersects,
+          args.mouseEvent
+        )
         if (isSnapped) {
           this.positionDraftPoint({
             snappedPoint: new Vector2(...snappedPoint),
@@ -2046,10 +2089,11 @@ export class SceneEntities {
         if (trap(_node)) return
         const sketchInit = _node.node.declaration.init
 
-        const maybeSnapToAxis = this.getSnappedDragPoint({
-          intersection2d: args.intersectionPoint.twoD,
-          intersects: args.intersects,
-        }).snappedPoint
+        const maybeSnapToAxis = this.getSnappedDragPoint(
+          args.intersectionPoint.twoD,
+          args.intersects,
+          args.mouseEvent
+        ).snappedPoint
 
         const maybeSnapToProfileStart = doNotSnapAsThreePointArcIsTheOnlySegment
           ? new Vector2(...maybeSnapToAxis)
@@ -2148,10 +2192,11 @@ export class SceneEntities {
               type: 'circle-three-point-segment',
               p1,
               p2,
-              p3: this.getSnappedDragPoint({
-                intersection2d: args.intersectionPoint.twoD,
-                intersects: args.intersects,
-              }).snappedPoint,
+              p3: this.getSnappedDragPoint(
+                args.intersectionPoint.twoD,
+                args.intersects,
+                args.mouseEvent
+              ).snappedPoint,
             }
           )
           if (err(moddedResult)) return
@@ -2524,10 +2569,10 @@ export class SceneEntities {
             this.onDragSegment({
               sketchNodePaths,
               sketchEntryNodePath: pathToNodeForNewSegment,
-              planeNodePath,
               object: selected,
               intersection2d: intersectionPoint.twoD,
               intersects,
+              mouseEvent: mouseEvent,
             })
           }
           return
@@ -2536,10 +2581,10 @@ export class SceneEntities {
         this.onDragSegment({
           object: selected,
           intersection2d: intersectionPoint.twoD,
-          planeNodePath,
           intersects,
           sketchNodePaths,
           sketchEntryNodePath,
+          mouseEvent: mouseEvent,
         })
       },
       onMove: () => {},
@@ -2578,13 +2623,19 @@ export class SceneEntities {
       this.kclManager.lastSuccessfulVariables,
       draftSegment
     )
-  getSnappedDragPoint({
-    intersects,
-    intersection2d,
-  }: {
-    intersects: Intersection<Object3D<Object3DEventMap>>[]
-    intersection2d: Vector2
-  }): { snappedPoint: [number, number]; isSnapped: boolean } {
+
+  getSnappedDragPoint(
+    pos: Vector2,
+    intersects: Intersection<Object3D<Object3DEventMap>>[],
+    mouseEvent: MouseEvent,
+    // During draft segment mouse move:
+    //  - the  three.js object currently being dragged: the new draft segment or existing segment (may not be the last in activeSegments)
+    // When placing the draft segment::
+    // - the last segment in activeSegments
+    currentObject?: Object3D | Group
+  ) {
+    let snappedPoint: Coords2d = [pos.x, pos.y]
+
     const intersectsYAxis = intersects.find(
       (sceneObject) => sceneObject.object.name === Y_AXIS
     )
@@ -2592,16 +2643,116 @@ export class SceneEntities {
       (sceneObject) => sceneObject.object.name === X_AXIS
     )
 
-    const snappedPoint = new Vector2(
-      intersectsYAxis ? 0 : intersection2d.x,
-      intersectsXAxis ? 0 : intersection2d.y
-    )
+    // Snap to previous segment's tangent direction when drawing a straight segment
+    let snappedToTangent = false
+    let negativeTangentDirection = false
+
+    const disableTangentSnapping = mouseEvent.ctrlKey || mouseEvent.altKey
+    const forceDirectionSnapping = mouseEvent.shiftKey
+    if (!disableTangentSnapping) {
+      const segments: SafeArray<Group> = Object.values(this.activeSegments) // Using the order in the object feels wrong
+      const currentIndex =
+        currentObject instanceof Group ? segments.indexOf(currentObject) : -1
+      const current = segments[currentIndex]
+      if (
+        current?.userData.type === STRAIGHT_SEGMENT &&
+        // This draft check is not strictly necessary currently, but we only want
+        // to snap when drawing a new segment, this makes that more robust.
+        current?.userData.draft
+      ) {
+        const prev = segments[currentIndex - 1]
+        if (prev && ARC_SEGMENT_TYPES.includes(prev.userData.type)) {
+          const snapDirection = findTangentDirection(prev)
+          if (snapDirection) {
+            const SNAP_TOLERANCE_PIXELS = 12 * window.devicePixelRatio
+            const SNAP_MIN_DISTANCE_PIXELS = 5 * window.devicePixelRatio
+            const orthoFactor = orthoScale(this.sceneInfra.camControls.camera)
+
+            // See if snapDirection intersects with any of the axes
+            if (intersectsXAxis || intersectsYAxis) {
+              let intersectionPoint: Coords2d | undefined
+              if (intersectsXAxis && intersectsYAxis) {
+                // Current mouse position intersects with both axes (origin) -> that has precedence over tangent so we snap to the origin.
+                intersectionPoint = [0, 0]
+              } else {
+                // Intersects only one axis
+                const axisLine: [Coords2d, Coords2d] = intersectsXAxis
+                  ? [
+                      [0, 0],
+                      [1, 0],
+                    ]
+                  : [
+                      [0, 0],
+                      [0, 1],
+                    ]
+                // See if that axis line intersects with the tangent direction
+                // Note: this includes both positive and negative tangent directions as it just checks 2 lines.
+                intersectionPoint = calculateIntersectionOfTwoLines({
+                  line1: axisLine,
+                  line2Angle: getAngle([0, 0], snapDirection),
+                  line2Point: current.userData.from,
+                })
+              }
+
+              // If yes, see if that intersection point is within tolerance and if yes snap to it.
+              if (
+                intersectionPoint &&
+                getLength(intersectionPoint, snappedPoint) / orthoFactor <
+                  SNAP_TOLERANCE_PIXELS
+              ) {
+                snappedPoint = intersectionPoint
+                snappedToTangent = true
+              }
+            }
+            if (!snappedToTangent) {
+              // Otherwise, try to snap to the tangent direction, in both positive and negative directions
+              const { closestPoint, t } = closestPointOnRay(
+                prev.userData.to,
+                snapDirection,
+                snappedPoint,
+                true
+              )
+              if (
+                forceDirectionSnapping ||
+                (this.sceneInfra.screenSpaceDistance(
+                  closestPoint,
+                  snappedPoint
+                ) < SNAP_TOLERANCE_PIXELS &&
+                  // We only want to snap to the tangent direction if the mouse has moved enough to avoid quick jumps
+                  // at the beginning of the drag
+                  this.sceneInfra.screenSpaceDistance(
+                    current.userData.from,
+                    current.userData.to
+                  ) > SNAP_MIN_DISTANCE_PIXELS)
+              ) {
+                snappedPoint = closestPoint
+                snappedToTangent = true
+                negativeTangentDirection = t < 0
+              }
+            }
+          }
+        }
+      }
+    }
+
+    // Snap to the main axes if there was no snapping to tangent direction
+    if (!snappedToTangent) {
+      snappedPoint = [
+        intersectsYAxis ? 0 : snappedPoint[0],
+        intersectsXAxis ? 0 : snappedPoint[1],
+      ]
+    }
 
     return {
-      snappedPoint: [snappedPoint.x, snappedPoint.y],
-      isSnapped: !!(intersectsYAxis || intersectsXAxis),
+      isSnapped: !!(intersectsYAxis || intersectsXAxis || snappedToTangent),
+      snappedToTangent,
+      negativeTangentDirection,
+      snappedPoint,
+      intersectsXAxis,
+      intersectsYAxis,
     }
   }
+
   positionDraftPoint({
     origin,
     yAxis,
@@ -2634,6 +2785,7 @@ export class SceneEntities {
       draftPoint.position.set(snappedPoint.x, snappedPoint.y, 0)
     }
   }
+
   maybeSnapProfileStartIntersect2d({
     sketchEntryNodePath,
     intersects,
@@ -2654,25 +2806,26 @@ export class SceneEntities {
       : _intersection2d
     return intersection2d
   }
+
   onDragSegment({
     object,
     intersection2d: _intersection2d,
     sketchEntryNodePath,
     sketchNodePaths,
-    planeNodePath,
     draftInfo,
     intersects,
+    mouseEvent,
   }: {
     object: Object3D<Object3DEventMap>
     intersection2d: Vector2
     sketchEntryNodePath: PathToNode
     sketchNodePaths: PathToNode[]
-    planeNodePath: PathToNode
     intersects: Intersection<Object3D<Object3DEventMap>>[]
     draftInfo?: {
       truncatedAst: Node<Program>
       variableDeclarationName: string
     }
+    mouseEvent: MouseEvent
   }) {
     const intersection2d = this.maybeSnapProfileStartIntersect2d({
       sketchEntryNodePath,
@@ -2705,10 +2858,12 @@ export class SceneEntities {
       group.userData?.from?.[0],
       group.userData?.from?.[1],
     ]
-    const dragTo = this.getSnappedDragPoint({
-      intersects,
+    const { snappedPoint: dragTo, snappedToTangent } = this.getSnappedDragPoint(
       intersection2d,
-    }).snappedPoint
+      intersects,
+      mouseEvent,
+      object
+    )
     let modifiedAst = draftInfo
       ? draftInfo.truncatedAst
       : { ...this.kclManager.ast }
@@ -2938,7 +3093,8 @@ export class SceneEntities {
           varDecIndex,
           modifiedAst,
           orthoFactor,
-          sketch
+          sketch,
+          snappedToTangent
         )
 
         callBacks.push(
@@ -2949,7 +3105,8 @@ export class SceneEntities {
               varDecIndex,
               modifiedAst,
               orthoFactor,
-              sketch
+              sketch,
+              snappedToTangent
             )
           )
         )
@@ -2967,6 +3124,7 @@ export class SceneEntities {
    * @param modifiedAst
    * @param orthoFactor
    * @param sketch
+   * @param snappedToTangent if currently drawn draft segment is snapping to previous arc tangent
    */
   updateSegment = (
     segment: Path | Sketch['start'],
@@ -2974,7 +3132,8 @@ export class SceneEntities {
     varDecIndex: number,
     modifiedAst: Program,
     orthoFactor: number,
-    sketch: Sketch
+    sketch: Sketch,
+    snappedToTangent: boolean = false
   ): (() => SegmentOverlayPayload | null) => {
     const segPathToNode = getNodePathFromSourceRange(
       modifiedAst,
@@ -2998,6 +3157,7 @@ export class SceneEntities {
       type: 'straight-segment',
       from: segment.from,
       to: segment.to,
+      snap: snappedToTangent,
     }
     let update: SegmentUtils['update'] | null = null
     if (type === TANGENTIAL_ARC_TO_SEGMENT) {
@@ -3095,9 +3255,11 @@ export class SceneEntities {
       })
     })
   }
+
   removeSketchGrid() {
     if (this.axisGroup) this.sceneInfra.scene.remove(this.axisGroup)
   }
+
   tearDownSketch({ removeAxis = true }: { removeAxis?: boolean }) {
     // Remove all draft groups
     this.draftPointGroups.forEach((draftPointGroup) => {
@@ -3125,6 +3287,7 @@ export class SceneEntities {
     this.sceneInfra.camControls.enableRotate = true
     this.activeSegments = {}
   }
+
   mouseEnterLeaveCallbacks() {
     return {
       onMouseEnter: ({ selected, dragSelected }: OnMouseEnterLeaveArgs) => {
@@ -3333,6 +3496,7 @@ export class SceneEntities {
       },
     }
   }
+
   resetOverlays() {
     this.sceneInfra.modelingSend({
       type: 'Set Segment Overlays',
@@ -3713,6 +3877,7 @@ function getSketchesInfo({
   }
   return sketchesInfo
 }
+
 /**
  * Given a SourceRange [x,y,boolean] create a Selections object which contains
  * graphSelections with the artifact and codeRef.
@@ -3746,4 +3911,37 @@ function isGroupStartProfileForCurrentProfile(sketchEntryNodePath: PathToNode) {
       groupExpressionIndex === sketchEntryNodePath[1][0]
     return isProfileStartOfCurrentExpr
   }
+}
+
+// Returns the 2D tangent direction vector at the end of the segmentGroup if it's an arc.
+function findTangentDirection(segmentGroup: Group) {
+  let tangentDirection: Coords2d | undefined
+  if (segmentGroup.userData.type === TANGENTIAL_ARC_TO_SEGMENT) {
+    const prevSegment = segmentGroup.userData.prevSegment
+    const arcInfo = getTangentialArcToInfo({
+      arcStartPoint: segmentGroup.userData.from,
+      arcEndPoint: segmentGroup.userData.to,
+      tanPreviousPoint: getTanPreviousPoint(prevSegment),
+      obtuse: true,
+    })
+    const tangentAngle =
+      arcInfo.endAngle + (Math.PI / 2) * (arcInfo.ccw ? 1 : -1)
+    tangentDirection = [Math.cos(tangentAngle), Math.sin(tangentAngle)]
+  } else if (
+    segmentGroup.userData.type === ARC_SEGMENT ||
+    segmentGroup.userData.type === THREE_POINT_ARC_SEGMENT
+  ) {
+    const tangentAngle =
+      deg2Rad(
+        getAngle(segmentGroup.userData.center, segmentGroup.userData.to)
+      ) +
+      (Math.PI / 2) * (segmentGroup.userData.ccw ? 1 : -1)
+    tangentDirection = [Math.cos(tangentAngle), Math.sin(tangentAngle)]
+  } else {
+    console.warn(
+      'Unsupported segment type for tangent direction calculation: ',
+      segmentGroup.userData.type
+    )
+  }
+  return tangentDirection
 }
