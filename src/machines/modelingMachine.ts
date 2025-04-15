@@ -2681,31 +2681,23 @@ export const modelingMachine = setup({
           if (v === undefined) {
             continue
           }
-          // Insert the variable if it exists
+          // Insert the variable if it exists and offset pathToNode
           if ('variableName' in v && v.variableName) {
             modifiedAst.body.splice(v.insertIndex, 0, v.variableDeclarationAst)
+            if (typeof pathToNode[1][0] === 'number') {
+              pathToNode[1][0]++
+            }
           }
         }
 
-        const updatedPathToNode = updatePathToNodesAfterEdit(
-          ast,
-          modifiedAst,
-          pathToNode
-        )
-        if (err(updatedPathToNode)) {
-          return updatedPathToNode
-        }
-
-        pathToNode = updatedPathToNode
         const valueOrVariable = (variable: KclCommandValue) => {
           return 'variableName' in variable
             ? variable.variableIdentifierAst
             : variable.valueAst
         }
-
         const result = setTransform({
           pathToNode,
-          ast: modifiedAst,
+          modifiedAst,
           tx: valueOrVariable(tx),
           ty: valueOrVariable(ty),
           tz: valueOrVariable(tz),

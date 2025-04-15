@@ -18,7 +18,7 @@ import type {
 import { err } from '@src/lib/trap'
 
 export function setTransform({
-  ast,
+  modifiedAst,
   pathToNode,
   tx,
   ty,
@@ -27,7 +27,7 @@ export function setTransform({
   rp,
   ry,
 }: {
-  ast: Node<Program>
+  modifiedAst: Node<Program>
   pathToNode: PathToNode
   tx: Expr
   ty: Expr
@@ -36,8 +36,6 @@ export function setTransform({
   rp: Expr
   ry: Expr
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
-  const modifiedAst = structuredClone(ast)
-
   const noPercentSign = null
   const translateCall = createCallExpressionStdLibKw(
     'translate',
