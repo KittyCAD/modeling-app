@@ -1,6 +1,7 @@
 import { useSelector } from '@xstate/react'
 import { createActor, setup, spawnChild } from 'xstate'
 
+import { isDesktop } from '@src/lib/isDesktop'
 import { createSettings } from '@src/lib/settings/initialSettings'
 import { authMachine } from '@src/machines/authMachine'
 import type { EngineStreamActor } from '@src/machines/engineStreamMachine'
@@ -11,13 +12,14 @@ import {
 import { ACTOR_IDS } from '@src/machines/machineConstants'
 import { settingsMachine } from '@src/machines/settingsMachine'
 import { systemIOMachineDesktop } from '@src/machines/systemIO/systemIOMachineDesktop'
+import { systemIOMachineWeb } from '@src/machines/systemIO/systemIOMachineWeb'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 
 const { AUTH, SETTINGS, SYSTEM_IO, ENGINE_STREAM } = ACTOR_IDS
 const appMachineActors = {
   [AUTH]: authMachine,
   [SETTINGS]: settingsMachine,
-  [SYSTEM_IO]: systemIOMachineDesktop,
+  [SYSTEM_IO]: isDesktop() ? systemIOMachineDesktop : systemIOMachineWeb,
   [ENGINE_STREAM]: engineStreamMachine,
 } as const
 
