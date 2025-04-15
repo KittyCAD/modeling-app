@@ -1692,7 +1692,7 @@ pub async fn arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfileAt([0, 0], %)
 ///   |> arc(
-///         end = [10,0],
+///         endAbsolute = [10,0],
 ///         interior = [5,5]
 ///      )
 ///   |> close()
