@@ -4758,7 +4758,7 @@ description: Artifact commands axial-fan.kcl
       "origin": {
         "x": 0.0,
         "y": 0.0,
-        "z": 4.0
+        "z": 4.5
       },
       "x_axis": {
         "x": 1.0,
