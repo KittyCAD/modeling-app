@@ -1785,11 +1785,9 @@ async fn kcl_test_arc_error_same_start_end() {
 "#;
 
     let result = execute_and_snapshot(code, None).await;
-    assert!(result.is_err());
-    assert_eq!(
-        result.err().unwrap().to_string(),
-        r#"type: KclErrorDetails { source_ranges: [SourceRange([55, 136, 0])], message: "Arc start and end angles must be different" }"#
-    );
+    let err = result.expect_err("Code should have failed due to end angle === start angle");
+    let err = err.as_kcl_error().unwrap();
+    assert_eq!(err.message(), "Arc start and end angles must be different");
 }
 
 #[tokio::test(flavor = "multi_thread")]

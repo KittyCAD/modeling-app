@@ -38,6 +38,8 @@ overwrite-sim-test-sample test_name:
     EXPECTORATE=overwrite TWENTY_TWENTY=overwrite {{cita}} -p kcl-lib --no-quiet -- simulation_tests::kcl_samples::kcl_test_execute_{{test_name}}
 
 overwrite-sim-test test_name:
+    EXPECTORATE=overwrite TWENTY_TWENTY=overwrite {{cita}} -p kcl-lib --no-quiet -- simulation_tests::{{test_name}}::parse
+    EXPECTORATE=overwrite TWENTY_TWENTY=overwrite {{cita}} -p kcl-lib --no-quiet -- simulation_tests::{{test_name}}::unparse
     EXPECTORATE=overwrite TWENTY_TWENTY=overwrite {{cita}} -p kcl-lib --no-quiet -- simulation_tests::{{test_name}}::kcl_test_execute
 
 # Regenerate all the simulation test output.

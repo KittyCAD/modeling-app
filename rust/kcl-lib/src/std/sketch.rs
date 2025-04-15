@@ -1704,9 +1704,9 @@ pub async fn arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
     unlabeled_first = true,
     args = {
         sketch = { docs = "Which sketch should this path be added to?" },
-        angle_start = { docs = "Where along the circle should this arc start?" },
-        angle_end = { docs = "Where along the circle should this arc end?" },
-        radius = { docs = "How large should the circle be?" },
+        angle_start = { docs = "Where along the circle should this arc start?", include_in_snippet = true },
+        angle_end = { docs = "Where along the circle should this arc end?", include_in_snippet = true },
+        radius = { docs = "How large should the circle be?", include_in_snippet = true },
         end_absolute = { docs = "Where should this arc end? Requires `interior`. Incompatible with `angleStart` or `angleEnd`" },
         interior = { docs = "Any point between the arc's start and end? Requires `endAbsolute`. Incompatible with `angleStart` or `angleEnd`" },
         tag = { docs = "Create a new tag which refers to this line"},
