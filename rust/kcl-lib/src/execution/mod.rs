@@ -1139,6 +1139,14 @@ impl ExecutorContext {
 
 #[cfg(test)]
 pub(crate) async fn parse_execute(code: &str) -> Result<ExecTestResults, KclError> {
+    parse_execute_with_project_dir(code, None).await
+}
+
+#[cfg(test)]
+pub(crate) async fn parse_execute_with_project_dir(
+    code: &str,
+    project_directory: Option<std::path::PathBuf>,
+) -> Result<ExecTestResults, KclError> {
     let program = crate::Program::parse_no_errs(code)?;
 
     let exec_ctxt = ExecutorContext {
@@ -1152,7 +1160,10 @@ pub(crate) async fn parse_execute(code: &str) -> Result<ExecTestResults, KclErro
         )),
         fs: Arc::new(crate::fs::FileManager::new()),
         stdlib: Arc::new(crate::std::StdLib::new()),
-        settings: Default::default(),
+        settings: ExecutorSettings {
+            project_directory,
+            ..Default::default()
+        },
         context_type: ContextType::Mock,
     };
     let mut exec_state = ExecState::new(&exec_ctxt);
