@@ -20,6 +20,7 @@ import {
   createProject,
   executorInputPath,
   getUtils,
+  networkingMasks,
   orRunWhenFullSuiteEnabled,
   tomlToSettings,
 } from '@e2e/playwright/test-utils'
@@ -1036,7 +1037,7 @@ fn cube`
       'toggle-settings-initial.png',
       {
         maxDiffPixels: 15,
-        mask: [page.getByTestId('model-state-indicator')],
+        mask: networkingMasks(page),
       }
     )
 
@@ -1053,7 +1054,7 @@ fn cube`
       'toggle-settings-initial.png',
       {
         maxDiffPixels: 15,
-        mask: [page.getByTestId('model-state-indicator')],
+        mask: networkingMasks(page),
       }
     )
   })

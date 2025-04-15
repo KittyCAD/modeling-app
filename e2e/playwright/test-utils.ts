@@ -29,6 +29,17 @@ const toNormalizedCode = (text: string) => {
   return text.replace(/\s+/g, '')
 }
 
+export const headerMasks = (page: Page) => [
+  page.locator('#app-header'),
+  page.locator('#sidebar-top-ribbon'),
+  page.locator('#sidebar-bottom-ribbon'),
+]
+
+export const networkingMasks = (page: Page) => [
+  page.getByTestId('model-state-indicator'),
+  page.getByTestId('network-toggle'),
+]
+
 export type TestColor = [number, number, number]
 export const TEST_COLORS: { [key: string]: TestColor } = {
   WHITE: [249, 249, 249],
