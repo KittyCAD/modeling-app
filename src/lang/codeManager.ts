@@ -174,7 +174,7 @@ export default class CodeManager {
     // to be in, and it's not going to be pretty, but at the least, let's not
     // permanently delete the user's code accidentally.
     // if you want to clear the scene, pass in the `isDeleting` option.
-    if (ast.body.length === 0 && options?.isDeleting === false) return
+    if (ast.body.length === 0 && !options?.isDeleting) return
     const newCode = recast(ast)
     if (err(newCode)) return
     // Test to see if we can parse the recast code, and never update the editor with bad code.
