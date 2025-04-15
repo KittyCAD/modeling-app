@@ -224,11 +224,7 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
         |> angledLine(angle = -91, lengthY = 19 + 0)
         |> angledLine(angle = 3 + 0, endAbsoluteX = 5 + 26)
         |> angledLine(angle = 89, endAbsoluteY = 20 + 9.14 + 0)
-        |> angledLineThatIntersects({
-        angle = 4.14,
-        intersectTag = a,
-        offset = 9
-      }, %)
+        |> angledLineThatIntersects(angle = 4.14, intersectTag = a, offset = 9)
         |> tangentialArc(endAbsolute = [5 + 3.14 + 13, 20 + 3.14])
       `
         )
@@ -472,11 +468,7 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
         |> angledLine(angle = -91, lengthY = 19 + 0)
         |> angledLine(angle = 3 + 0, endAbsoluteX = 26)
         |> angledLine(angle = 89, endAbsoluteY = 9.14 + 0)
-        |> angledLineThatIntersects({
-        angle = 4.14,
-        intersectTag = a,
-        offset = 9
-      }, %)
+        |> angledLineThatIntersects(angle = 4.14, intersectTag = a, offset = 9)
         |> tangentialArc(endAbsolute = [3.14 + 13, 3.14])
       `
         )
@@ -597,11 +589,7 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
         |> angledLine(angle = -91, lengthY = 19 + 0)
         |> angledLine(angle = 3 + 0, endAbsoluteX = 26)
         |> angledLine(angle = 89, endAbsoluteY = 9.14 + 0)
-        |> angledLineThatIntersects({
-        angle = 4.14,
-        intersectTag = a,
-        offset = 9
-      }, %)
+        |> angledLineThatIntersects(angle = 4.14, intersectTag = a, offset = 9)
         |> tangentialArc(endAbsolute = [3.14 + 13, 1.14])
       `
         )
@@ -691,21 +679,9 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
           y: angledLineThatIntersects.y,
         },
         constraintType: 'angle',
-        expectBeforeUnconstrained: `angledLineThatIntersects({
-    angle = 4.14,
-    intersectTag = a,
-    offset = 9
-        }, %)`,
-        expectAfterUnconstrained: `angledLineThatIntersects({
-    angle = angle003,
-    intersectTag = a,
-    offset = 9
-        }, %)`,
-        expectFinal: `angledLineThatIntersects({
-    angle = -176,
-    offset = 9,
-    intersectTag = a
-        }, %)`,
+        expectBeforeUnconstrained: `angledLineThatIntersects(angle = 4.14, intersectTag = a, offset = 9)`,
+        expectAfterUnconstrained: `angledLineThatIntersects(angle = angle003, intersectTag = a,offset = 9)`,
+        expectFinal: `angledLineThatIntersects(angle = -176, offset = 9, intersectTag = a)`,
         ang: ang + 180,
         locator: '[data-overlay-toolbar-index="11"]',
       })
@@ -716,21 +692,9 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
           y: angledLineThatIntersects.y,
         },
         constraintType: 'intersectionOffset',
-        expectBeforeUnconstrained: `angledLineThatIntersects({
-    angle = -176,
-    offset = 9,
-    intersectTag = a
-        }, %)`,
-        expectAfterUnconstrained: `angledLineThatIntersects({
-    angle = -176,
-    offset = perpDist001,
-    intersectTag = a
-        }, %)`,
-        expectFinal: `angledLineThatIntersects({
-    angle = -176,
-    offset = 9,
-    intersectTag = a
-        }, %)`,
+        expectBeforeUnconstrained: `angledLineThatIntersects(angle = -176, offset = 9, intersectTag = a)`,
+        expectAfterUnconstrained: `angledLineThatIntersects(angle = -176, offset = perpDist001, intersectTag = a)`,
+        expectFinal: `angledLineThatIntersects(angle = -176, offset = 9, intersectTag = a)`,
         ang: ang + 180,
         locator: '[data-overlay-toolbar-index="11"]',
       })
@@ -753,11 +717,7 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
         |> angledLine(angle = -91, lengthY = 19 + 0)
         |> angledLine(angle = 3 + 0, endAbsoluteX = 26)
         |> angledLine(angle = 89, endAbsoluteY = 9.14 + 0)
-        |> angledLineThatIntersects({
-        angle = 4.14,
-        intersectTag = a,
-        offset = 9
-      }, %)
+        |> angledLineThatIntersects(angle = 4.14, intersectTag = a, offset = 9)
         |> tangentialArc(endAbsolute = [3.14 + 13, -3.14])
       `
         )
@@ -1083,11 +1043,7 @@ part001 = startSketchOn(XZ)
   |> angledLine(angle = -91, lengthY = 19 + 0)
   |> angledLine(angle = 3 + 0, endAbsoluteX = 26)
   |> angledLine(angle = 89, endAbsoluteY = 9.14 + 0)
-  |> angledLineThatIntersects({
-       angle = 4.14,
-       intersectTag = a,
-       offset = 9
-     }, %)
+  |> angledLineThatIntersects(angle = 4.14, intersectTag = a, offset = 9)
   |> tangentialArc(endAbsolute = [3.14 + 13, 1.14])
   |> arcTo({
        interior = [16.25, 5.12],
@@ -1169,11 +1125,7 @@ part001 = startSketchOn(XZ)
       ang = await u.getAngle('[data-overlay-index="11"]')
       await deleteSegmentSequence({
         hoverPos: { x: segmentToDelete.x, y: segmentToDelete.y },
-        codeToBeDeleted: `angledLineThatIntersects({
-      angle = 4.14,
-      intersectTag = a,
-      offset = 9
-        }, %)`,
+        codeToBeDeleted: `angledLineThatIntersects(angle = 4.14, intersectTag = a, offset = 9)`,
         stdLibFnName: 'angledLineThatIntersects',
         ang: ang + 180,
         steps: 7,
