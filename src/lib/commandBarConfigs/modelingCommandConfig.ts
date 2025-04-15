@@ -1057,8 +1057,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         required: true,
         skip: true,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
-        warningMessage:
-          'This is still in development and only supports feature tree selection of whole-module imports',
         selectionSource: {
           allowSceneSelection: false,
           allowCodeSelection: true,

@@ -3818,4 +3818,166 @@ extrude001 = extrude(profile001, length = 100)
       )
     })
   })
+
+  const setTransformCases: { mode: 'right-click menu' | 'command' }[] = [
+    {
+      mode: 'right-click menu',
+    },
+    {
+      mode: 'command',
+    },
+  ]
+  setTransformCases.map(({ mode }) => {
+    test(`Set transform through ${mode}`, async ({
+      context,
+      page,
+      homePage,
+      scene,
+      editor,
+      toolbar,
+      cmdBar,
+    }) => {
+      const initialCode = `sketch001 = startSketchOn(XZ)
+  profile001 = circle(sketch001, center = [0, 0], radius = 1)
+  extrude001 = extrude(profile001, length = 1)
+  `
+      await context.addInitScript((initialCode) => {
+        localStorage.setItem('persistCode', initialCode)
+      }, initialCode)
+      await page.setBodyDimensions({ width: 1000, height: 500 })
+      await homePage.goToModelingScene()
+      await scene.settled(cmdBar)
+
+      // One dumb hardcoded screen pixel value
+      const midPoint = { x: 500, y: 250 }
+      const moreToTheRightPoint = { x: 800, y: 250 }
+      const bgColor: [number, number, number] = [50, 50, 50]
+      const partColor: [number, number, number] = [150, 150, 150]
+      const tolerance = 50
+      const [clickMidPoint] = scene.makeMouseHelpers(midPoint.x, midPoint.y)
+
+      await test.step('Confirm extrude exists with default appearance', async () => {
+        await toolbar.closePane('code')
+        await scene.expectPixelColor(partColor, midPoint, tolerance)
+        await scene.expectPixelColor(bgColor, moreToTheRightPoint, tolerance)
+      })
+
+      await test.step('Set transform through command bar flow', async () => {
+        if (mode === 'right-click menu') {
+          await toolbar.openPane('feature-tree')
+          const op = await toolbar.getFeatureTreeOperation('Extrude', 0)
+          await op.click({ button: 'right' })
+          await page.getByTestId('context-menu-set-transform').click()
+          await cmdBar.expectState({
+            stage: 'arguments',
+            currentArgKey: 'Translate X',
+            currentArgValue: '0',
+            headerArguments: {
+              'Translate X': '',
+              'Translate Y': '',
+              'Translate Z': '',
+              'Rotate Roll': '',
+              'Rotate Pitch': '',
+              'Rotate Yaw': '',
+            },
+            highlightedHeaderArg: 'Translate X',
+            commandName: 'Transform',
+          })
+          await page.keyboard.insertText('2')
+          await cmdBar.progressCmdBar()
+          await cmdBar.progressCmdBar()
+          await cmdBar.progressCmdBar()
+          await cmdBar.progressCmdBar()
+          await cmdBar.progressCmdBar()
+          await cmdBar.progressCmdBar()
+          await cmdBar.expectState({
+            stage: 'review',
+            headerArguments: {
+              'Translate X': '2',
+              'Translate Y': '0',
+              'Translate Z': '0',
+              'Rotate Roll': '0',
+              'Rotate Pitch': '0',
+              'Rotate Yaw': '0',
+            },
+            commandName: 'Transform',
+          })
+          await cmdBar.progressCmdBar()
+          await toolbar.closePane('feature-tree')
+        } else {
+          await cmdBar.openCmdBar()
+          await cmdBar.chooseCommand('Transform')
+          await cmdBar.expectState({
+            stage: 'arguments',
+            currentArgKey: 'selection',
+            currentArgValue: '',
+            headerArguments: {
+              Selection: '',
+              'Translate X': '',
+              'Translate Y': '',
+              'Translate Z': '',
+              'Rotate Roll': '',
+              'Rotate Pitch': '',
+              'Rotate Yaw': '',
+            },
+            highlightedHeaderArg: 'selection',
+            commandName: 'Transform',
+          })
+          await clickMidPoint()
+          await cmdBar.expectState({
+            stage: 'arguments',
+            currentArgKey: 'selection',
+            currentArgValue: '1 face',
+            headerArguments: {
+              Selection: '1 face',
+              'Translate X': '',
+              'Translate Y': '',
+              'Translate Z': '',
+              'Rotate Roll': '',
+              'Rotate Pitch': '',
+              'Rotate Yaw': '',
+            },
+            highlightedHeaderArg: 'selection',
+            commandName: 'Transform',
+          })
+          await cmdBar.progressCmdBar()
+          await page.keyboard.insertText('2')
+          await cmdBar.progressCmdBar()
+          await cmdBar.progressCmdBar()
+          await cmdBar.progressCmdBar()
+          await cmdBar.progressCmdBar()
+          await cmdBar.progressCmdBar()
+          await cmdBar.progressCmdBar()
+          await cmdBar.expectState({
+            stage: 'review',
+            headerArguments: {
+              Selection: '1 face',
+              'Translate X': '2',
+              'Translate Y': '0',
+              'Translate Z': '0',
+              'Rotate Roll': '0',
+              'Rotate Pitch': '0',
+              'Rotate Yaw': '0',
+            },
+            commandName: 'Transform',
+          })
+          await cmdBar.progressCmdBar()
+        }
+      })
+
+      await test.step('Confirm code and scene have changed', async () => {
+        await toolbar.openPane('code')
+        await editor.expectEditor.toContain(
+          `
+          extrude001 = extrude(profile001, length = 1)
+            |> translate(x = 2, y = 0, z = 0)
+            |> rotate(roll = 0, pitch = 0, yaw = 0)
+          `,
+          { shouldNormalise: true }
+        )
+        await scene.expectPixelColor(bgColor, midPoint, tolerance)
+        await scene.expectPixelColor(partColor, moreToTheRightPoint, tolerance)
+      })
+    })
+  })
 })
