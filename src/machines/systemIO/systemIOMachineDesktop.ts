@@ -195,5 +195,24 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
         )
       }
     ),
+    [SystemIOMachineActors.checkReadWrite]: fromPromise(
+      async ({
+        input,
+      }: {
+        input: {
+          context: SystemIOContext
+          requestedProjectDirectoryPath: string
+        }
+      }) => {
+        const requestProjectDirectoryPath = input.requestedProjectDirectoryPath
+        if (!requestProjectDirectoryPath) {
+          return { value: true, error: undefined }
+        }
+        const result = await window.electron.canReadWriteDirectory(
+          requestProjectDirectoryPath
+        )
+        return result
+      }
+    ),
   },
 })

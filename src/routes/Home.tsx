@@ -1,5 +1,5 @@
 import type { FormEvent } from 'react'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import { toast } from 'react-hot-toast'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
@@ -29,6 +29,7 @@ import { reportRejection } from '@src/lib/trap'
 import { authActor, systemIOActor, useSettings } from '@src/machines/appMachine'
 import { commandBarActor } from '@src/machines/commandBarMachine'
 import {
+  useCanReadWriteProjectDirectory,
   useFolders,
   useState as useSystemIOState,
 } from '@src/machines/systemIO/hooks'
@@ -42,13 +43,7 @@ import type { WebContentSendPayload } from '@src/menu/channels'
 // as defined in Router.tsx, so we can use the desktop APIs and types.
 const Home = () => {
   const state = useSystemIOState()
-  const [readWriteProjectDir, setReadWriteProjectDir] = useState<{
-    value: boolean
-    error: unknown
-  }>({
-    value: true,
-    error: undefined,
-  })
+  const readWriteProjectDir = useCanReadWriteProjectDirectory()
 
   // Only create the native file menus on desktop
   useEffect(() => {

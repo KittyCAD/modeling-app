@@ -9,3 +9,8 @@ export const useProjectDirectoryPath = () =>
 export const useFolders = () =>
   useSelector(systemIOActor, (state) => state.context.folders)
 export const useState = () => useSelector(systemIOActor, (state) => state)
+export const useCanReadWriteProjectDirectory = () =>
+  useSelector(
+    systemIOActor,
+    (state) => state.context.canReadWriteProjectDirectory
+  )

@@ -4,7 +4,6 @@ import {
   useProjectDirectoryPath,
   useRequestedFileName,
   useRequestedProjectName,
-  useState as useSystemIOState,
 } from '@src/machines/systemIO/hooks'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { useEffect } from 'react'
@@ -16,7 +15,6 @@ export function SystemIOMachineLogicListener() {
   const projectDirectoryPath = useProjectDirectoryPath()
   const navigate = useNavigate()
   const settings = useSettings()
-  const state = useSystemIOState()
 
   // Handle global project name navigation
   useEffect(() => {

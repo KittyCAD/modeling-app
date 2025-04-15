@@ -7,6 +7,7 @@ export enum SystemIOMachineActors {
   renameProject = 'rename project',
   deleteProject = 'delete project',
   createKCLFile = 'create kcl file',
+  checkReadWrite = 'check read write',
 }
 
 export enum SystemIOMachineStates {
@@ -17,6 +18,7 @@ export enum SystemIOMachineStates {
   renamingProject = 'renamingProject',
   deletingProject = 'deletingProject',
   creatingKCLFile = 'creatingKCLFile',
+  checkingReadWrite = 'checkingReadWrite',
 }
 
 const donePrefix = 'xstate.done.actor.'
@@ -33,6 +35,7 @@ export enum SystemIOMachineEvents {
   deleteProject = 'delete project',
   createKCLFile = 'create kcl file',
   setDefaultProjectFolderName = 'set default project folder name',
+  done_checkReadWrite = donePrefix + 'check read write',
 }
 
 export enum SystemIOMachineActions {
@@ -43,6 +46,7 @@ export enum SystemIOMachineActions {
   setDefaultProjectFolderName = 'set default project folder name',
   toastSuccess = 'toastSuccess',
   toastError = 'toastError',
+  setReadWriteProjectDirectory = 'set read write project directory',
 }
 
 export const NO_PROJECT_DIRECTORY = ''
@@ -60,4 +64,5 @@ export type SystemIOContext = {
   hasListedProjects: boolean
   requestedProjectName: { name: string }
   requestedFileName: { project: string; file: string }
+  canReadWriteProjectDirectory: { value: boolean; error: unknown }
 }

@@ -29,6 +29,10 @@ export const systemIOMachine = setup({
           output: Project[]
         }
       | {
+          type: SystemIOMachineEvents.done_checkReadWrite
+          output: { value: boolean; error: unknown }
+        }
+      | {
           type: SystemIOMachineEvents.setProjectDirectoryPath
           data: { requestedProjectDirectoryPath: string }
         }
@@ -124,6 +128,12 @@ export const systemIOMachine = setup({
           ''
       )
     },
+    [SystemIOMachineActions.setReadWriteProjectDirectory]: assign({
+      canReadWriteProjectDirectory: ({ event }) => {
+        assertEvent(event, SystemIOMachineEvents.done_checkReadWrite)
+        return event.output
+      },
+    }),
   },
   actors: {
     [SystemIOMachineActors.readFoldersFromProjectDirectory]: fromPromise(
@@ -169,6 +179,16 @@ export const systemIOMachine = setup({
         }
       }) => {}
     ),
+    [SystemIOMachineActors.checkReadWrite]: fromPromise(
+      async ({
+        input: { context, requestedProjectDirectoryPath },
+      }: {
+        input: {
+          context: SystemIOContext
+          requestedProjectDirectoryPath: string
+        }
+      }) => {}
+    ),
   },
 }).createMachine({
   initial: SystemIOMachineStates.idle,
@@ -185,6 +205,7 @@ export const systemIOMachine = setup({
       project: NO_PROJECT_DIRECTORY,
       file: NO_PROJECT_DIRECTORY,
     },
+    canReadWriteProjectDirectory: { value: true, error: undefined },
   }),
   states: {
     [SystemIOMachineStates.idle]: {
@@ -194,7 +215,7 @@ export const systemIOMachine = setup({
           target: SystemIOMachineStates.readingFolders,
         },
         [SystemIOMachineEvents.setProjectDirectoryPath]: {
-          target: SystemIOMachineStates.readingFolders,
+          target: SystemIOMachineStates.checkingReadWrite,
           actions: [SystemIOMachineActions.setProjectDirectoryPath],
         },
         [SystemIOMachineEvents.navigateToProject]: {
@@ -318,6 +339,27 @@ export const systemIOMachine = setup({
         },
         onError: {
           target: SystemIOMachineStates.idle,
+          actions: [SystemIOMachineActions.toastError],
+        },
+      },
+    },
+    [SystemIOMachineStates.checkingReadWrite]: {
+      invoke: {
+        id: SystemIOMachineActors.checkReadWrite,
+        src: SystemIOMachineActors.checkReadWrite,
+        input: ({ context, event }) => {
+          assertEvent(event, SystemIOMachineEvents.setProjectDirectoryPath)
+          return {
+            context,
+            requestedProjectDirectoryPath:
+              event.data.requestedProjectDirectoryPath,
+          }
+        },
+        onDone: {
+          target: SystemIOMachineStates.readingFolders,
+        },
+        onError: {
+          target: SystemIOMachineStates.readingFolders,
           actions: [SystemIOMachineActions.toastError],
         },
       },
