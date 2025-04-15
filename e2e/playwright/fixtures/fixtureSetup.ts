@@ -7,11 +7,11 @@ import type {
 } from '@playwright/test'
 import { _electron as electron } from '@playwright/test'
 
+import fs from 'node:fs'
+import path from 'path'
 import { SETTINGS_FILE_NAME } from '@src/lib/constants'
 import type { DeepPartial } from '@src/lib/types'
 import fsp from 'fs/promises'
-import fs from 'node:fs'
-import path from 'path'
 
 import type { Settings } from '@rust/kcl-lib/bindings/Settings'
 

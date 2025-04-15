@@ -1,7 +1,7 @@
-import type { Page } from '@playwright/test'
-import { roundOff, uuidv4 } from '@src/lib/utils'
 import fs from 'node:fs/promises'
 import path from 'node:path'
+import type { Page } from '@playwright/test'
+import { roundOff, uuidv4 } from '@src/lib/utils'
 
 import type { CmdBarFixture } from '@e2e/playwright/fixtures/cmdBarFixture'
 import type { HomePageFixture } from '@e2e/playwright/fixtures/homePageFixture'
