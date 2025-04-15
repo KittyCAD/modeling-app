@@ -3261,22 +3261,15 @@ test.describe('manual edits during sketch mode', () => {
     })
 
     await test.step('rename variable of current sketch, sketch002 to changeSketchNamePartWayThrough', async () => {
-      await editor.replaceCode(
-        'sketch002',
-        'changeSketchNamePartWayThrough'
-      )
+      await editor.replaceCode('sketch002', 'changeSketchNamePartWayThrough')
       await page.waitForTimeout(100)
       // three times to rename the declaration and it's use
-      await editor.replaceCode(
-        'sketch002',
-        'changeSketchNamePartWayThrough'
-      )
+      await editor.replaceCode('sketch002', 'changeSketchNamePartWayThrough')
       await page.waitForTimeout(100)
-      await editor.replaceCode(
-        'sketch002',
-        'changeSketchNamePartWayThrough'
-      )
-      await expect(page.getByText('Unable to maintain sketch mode')).toBeVisible()
+      await editor.replaceCode('sketch002', 'changeSketchNamePartWayThrough')
+      await expect(
+        page.getByText('Unable to maintain sketch mode')
+      ).toBeVisible()
     })
   })
   test(
@@ -3332,7 +3325,11 @@ test.describe('manual edits during sketch mode', () => {
           diagnostics: ['memoryitemkey`badBadBadFn`isnotdefined'],
           highlightedCode: '',
         })
-        await expect(page.getByText("Error in kcl script, sketch cannot be drawn until it's fixed")).toBeVisible()
+        await expect(
+          page.getByText(
+            "Error in kcl script, sketch cannot be drawn until it's fixed"
+          )
+        ).toBeVisible()
         // this checks sketch segments have failed to be drawn
         await verifyArrowHeadColor(backgroundGray)
       })
