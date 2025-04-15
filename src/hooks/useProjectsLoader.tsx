@@ -24,7 +24,6 @@ export const useProjectsLoader = (deps?: [number]) => {
     if (deps) {
       setLastTs(deps[0])
     }
-
     ;(async () => {
       const { configuration } = await loadAndValidateSettings()
       const _projectsDir = await ensureProjectDirectoryExists(configuration)

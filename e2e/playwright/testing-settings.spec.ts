@@ -1,3 +1,4 @@
+import { join } from 'path'
 import {
   PROJECT_SETTINGS_FILE_NAME,
   SETTINGS_FILE_NAME,
@@ -5,7 +6,6 @@ import {
 import type { SettingsLevel } from '@src/lib/settings/settingsTypes'
 import type { DeepPartial } from '@src/lib/types'
 import * as fsp from 'fs/promises'
-import { join } from 'path'
 
 import type { Settings } from '@rust/kcl-lib/bindings/Settings'
 
@@ -20,6 +20,7 @@ import {
   createProject,
   executorInputPath,
   getUtils,
+  networkingMasks,
   orRunWhenFullSuiteEnabled,
   tomlToSettings,
 } from '@e2e/playwright/test-utils'
@@ -1036,7 +1037,7 @@ fn cube`
       'toggle-settings-initial.png',
       {
         maxDiffPixels: 15,
-        mask: [page.getByTestId('model-state-indicator')],
+        mask: networkingMasks(page),
       }
     )
 
@@ -1053,7 +1054,7 @@ fn cube`
       'toggle-settings-initial.png',
       {
         maxDiffPixels: 15,
-        mask: [page.getByTestId('model-state-indicator')],
+        mask: networkingMasks(page),
       }
     )
   })

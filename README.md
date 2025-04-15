@@ -250,55 +250,29 @@ You will need a `./e2e/playwright/playwright-secrets.env` file:
 $ touch ./e2e/playwright/playwright-secrets.env
 $ cat ./e2e/playwright/playwright-secrets.env
 token=<dev.zoo.dev/account/api-tokens>
-snapshottoken=<your-snapshot-token>
+snapshottoken=<zoo.dev/account/api-tokens>
 ```
+or use `export` to set the environment variables `token` and `snapshottoken`.
 
-For a portable way to run Playwright you'll need Docker.
+#### Snapshot tests (Google Chrome on Ubuntu only)
 
-#### Generic example
-
-After that, open a terminal and run:
-
-```bash
-docker run --network host  --rm --init -it playwright/chrome:playwright-x.xx.x
+Only Ubunu and Google Chrome is supported for the set of tests evaluating screenshot snapshots.
+If you don't run Ubuntu locally or in a VM, you may use a GitHub Codespace.
 ```
-
-and in another terminal, run:
-
-```bash
-PW_TEST_CONNECT_WS_ENDPOINT=ws://127.0.0.1:4444/ npm run playwright test --project="Google Chrome" <test suite>
+npm run playwright -- install chrome
+npm run test:snapshots
 ```
+You may use `-- --update-snapshots` as needed.
 
-#### Specific example
-
-open a terminal and run:
-
-```bash
-docker run --network host  --rm --init -it playwright/chrome:playwright-1.46.0
-```
-
-and in another terminal, run:
-
-```bash
-PW_TEST_CONNECT_WS_ENDPOINT=ws://127.0.0.1:4444/ npm run playwright test --project="Google Chrome" e2e/playwright/command-bar-tests.spec.ts
-```
-
-run a specific test change the test from `test('...` to `test.only('...`
-(note if you commit this, the tests will instantly fail without running any of the tests)
-
-**Gotcha**: running the docker container with a mismatched image against your `./node_modules/playwright` will cause a failure. Make sure the versions are matched and up to date.
-
-run headed
+#### Electron flow tests (Chromium on Ubuntu, macOS, Windows)
 
 ```
-npm run playwright test --headed
+npm run playwright -- install chromium
+npm run test:playwright:electron:local 
 ```
+You may use `-- -g "my test"` to match specific test titles, or `-- path/to/file.spec.ts` for a test file.
 
-run with step through debugger
-
-```
-PWDEBUG=1 npm run playwright test
-```
+#### Debugger
 
 However, if you want a debugger I recommend using VSCode and the `playwright` extension, as the above command is a cruder debugger that steps into every function call which is annoying.
 With the extension you can set a breakpoint after `waitForDefaultPlanesVisibilityChange` in order to skip app loading, then the vscode debugger's "step over" is much better for being able to stay at the right level of abstraction as you debug the code.
@@ -446,7 +420,7 @@ npm run test-setup
 
 ```
 npm run tsc
-npm run fmt-check
+npm run fmt:check
 npm run lint
 npm run test:unit:local
 ```
