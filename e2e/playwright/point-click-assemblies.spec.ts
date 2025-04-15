@@ -343,17 +343,17 @@ bracket
         await page.getByTestId('context-menu-set-transform').click()
         await cmdBar.expectState({
           stage: 'arguments',
-          currentArgKey: 'tx',
+          currentArgKey: 'Translate X',
           currentArgValue: '0',
           headerArguments: {
-            Tx: '',
-            Ty: '',
-            Tz: '',
-            Rr: '',
-            Rp: '',
-            Ry: '',
+            'Translate X': '',
+            'Translate Y': '',
+            'Translate Z': '',
+            'Rotate Roll': '',
+            'Rotate Pitch': '',
+            'Rotate Yaw': '',
           },
-          highlightedHeaderArg: 'tx',
+          highlightedHeaderArg: 'Translate X',
           commandName: 'Transform',
         })
         await cmdBar.progressCmdBar()
