@@ -295,7 +295,7 @@ jobs:
         isScheduled:
           - ${{ github.event_name == 'schedule' }}
         exclude:
-          - os: namespace-profile-macos-8-cores
+          - os: namespace-profile-macos-6-cores
             isScheduled: true
           - os: windows-latest-8-cores
             isScheduled: true

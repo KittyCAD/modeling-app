@@ -18,6 +18,8 @@ if (process.env.E2E_WORKERS) {
       workers = '50%' // CI Linux runners are generally beefier
       break
     case 'darwin':
+      workers = '33%' // Lower concurrency for heavier Electron processes
+      break
     case 'win32':
     default:
       workers = '25%' // Lower concurrency for heavier Electron processes
