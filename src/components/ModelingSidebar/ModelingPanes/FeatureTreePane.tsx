@@ -210,7 +210,7 @@ export const visibilityMap = new Map<string, boolean>()
 interface VisibilityToggleProps {
   entityId: string
   initialVisibility: boolean
-  onVisibilityChange?: () => void
+  onVisibilityChange?: () => unknown
 }
 
 /**
