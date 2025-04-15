@@ -5,6 +5,8 @@ import type { TagDeclarator } from '@rust/kcl-lib/bindings/TagDeclarator'
 
 import {
   ARG_ANGLE,
+  ARG_ANGLE_END,
+  ARG_ANGLE_START,
   ARG_CIRCLE_CENTER,
   ARG_RADIUS,
   ARG_END,
@@ -1383,7 +1385,7 @@ export const circle: SketchLineHelperKw = {
   },
 }
 
-export const arc: SketchLineHelper = {
+export const arc: SketchLineHelperKw = {
   add: ({
     node,
     variables,
@@ -1569,109 +1571,101 @@ export const arc: SketchLineHelper = {
       pathToNode: shallowPath,
     }
   },
-  getTag: getTag(),
-  addTag: addTag(),
+  getTag: getTagKwArg(),
+  addTag: addTagKw(),
   getConstraintInfo: (callExp, code, pathToNode, filterValue) => {
     // TODO this isn't quiet right, the filter value needs to be added to group the radius and start angle together
     // with the end angle by itself,
     // also both angles are just called angle, which is not correct
-    if (callExp.type !== 'CallExpression') return []
-    const args = callExp.arguments
-    if (args.length < 1) return []
+    if (callExp.type !== 'CallExpressionKw') return []
 
-    const firstArg = args[0]
-    if (firstArg.type !== 'ObjectExpression') return []
+    const returnVal = []
+    const pathToBase: PathToNode = [
+      ...pathToNode,
+      ['arguments', 'CallExpressionKw'],
+    ]
 
     // Find radius, angleStart, and angleEnd properties
-    const radiusProp = firstArg.properties.find(
-      (prop) =>
-        prop.type === 'ObjectProperty' &&
-        prop.key.type === 'Identifier' &&
-        prop.key.name === 'radius'
+    const angleStart = findKwArgWithIndex(ARG_ANGLE_START, callExp)
+    const angleEnd = findKwArgWithIndex(ARG_ANGLE_END, callExp)
+    const radius = findKwArgWithIndex(ARG_RADIUS, callExp)
+    if (!radius || !angleStart || !angleEnd) return []
+    const pathToAngleStartArg: PathToNode = [
+      ...pathToBase,
+      [angleStart.argIndex, ARG_INDEX_FIELD],
+      ['arg', LABELED_ARG_FIELD],
+    ]
+    returnVal.push(
+      constrainInfo(
+        'angle',
+        isNotLiteralArrayOrStatic(angleStart.expr),
+        code.slice(angleStart.expr.start, angleStart.expr.end),
+        'arc',
+        { type: 'labeledArg', key: ARG_ANGLE_START },
+        topLevelRange(angleStart.expr.start, angleStart.expr.end),
+        pathToAngleStartArg
+      )
     )
-
-    const angleStartProp = firstArg.properties.find(
-      (prop) =>
-        prop.type === 'ObjectProperty' &&
-        prop.key.type === 'Identifier' &&
-        prop.key.name === 'angleStart'
+    const pathToAngleEndArg: PathToNode = [
+      ...pathToBase,
+      [angleEnd.argIndex, ARG_INDEX_FIELD],
+      ['arg', LABELED_ARG_FIELD],
+    ]
+    returnVal.push(
+      constrainInfo(
+        'angle',
+        isNotLiteralArrayOrStatic(angleEnd.expr),
+        code.slice(angleEnd.expr.start, angleEnd.expr.end),
+        'arc',
+        { type: 'labeledArg', key: ARG_ANGLE_END },
+        topLevelRange(angleEnd.expr.start, angleEnd.expr.end),
+        pathToAngleEndArg
+      )
     )
-
-    const angleEndProp = firstArg.properties.find(
-      (prop) =>
-        prop.type === 'ObjectProperty' &&
-        prop.key.type === 'Identifier' &&
-        prop.key.name === 'angleEnd'
+    const pathToRadiusArg: PathToNode = [
+      ...pathToBase,
+      [radius.argIndex, ARG_INDEX_FIELD],
+      ['arg', LABELED_ARG_FIELD],
+    ]
+    returnVal.push(
+      constrainInfo(
+        'angle',
+        isNotLiteralArrayOrStatic(radius.expr),
+        code.slice(radius.expr.start, radius.expr.end),
+        'arc',
+        { type: 'labeledArg', key: ARG_RADIUS },
+        topLevelRange(radius.expr.start, radius.expr.end),
+        pathToRadiusArg
+      )
     )
-
-    if (!radiusProp || !angleStartProp || !angleEndProp) return []
-
-    const pathToFirstArg: PathToNode = [
-      ...pathToNode,
-      ['arguments', 'CallExpression'],
-      [0, 'index'],
-    ]
-
-    const pathToRadiusProp: PathToNode = [
-      ...pathToFirstArg,
-      ['properties', 'ObjectExpression'],
-      [firstArg.properties.indexOf(radiusProp), 'index'],
-    ]
-
-    const pathToAngleStartProp: PathToNode = [
-      ...pathToFirstArg,
-      ['properties', 'ObjectExpression'],
-      [firstArg.properties.indexOf(angleStartProp), 'index'],
-    ]
-
-    const pathToAngleEndProp: PathToNode = [
-      ...pathToFirstArg,
-      ['properties', 'ObjectExpression'],
-      [firstArg.properties.indexOf(angleEndProp), 'index'],
-    ]
-
-    const pathToRadiusValue: PathToNode = [
-      ...pathToRadiusProp,
-      ['value', 'ObjectProperty'],
-    ]
-
-    const pathToAngleStartValue: PathToNode = [
-      ...pathToAngleStartProp,
-      ['value', 'ObjectProperty'],
-    ]
-
-    const pathToAngleEndValue: PathToNode = [
-      ...pathToAngleEndProp,
-      ['value', 'ObjectProperty'],
-    ]
 
     const constraints: ConstrainInfo[] = [
       constrainInfo(
         'radius',
-        isNotLiteralArrayOrStatic(radiusProp.value),
-        code.slice(radiusProp.value.start, radiusProp.value.end),
+        isNotLiteralArrayOrStatic(radius.expr),
+        code.slice(radius.expr.start, radius.expr.end),
         'arc',
         'radius',
-        topLevelRange(radiusProp.value.start, radiusProp.value.end),
-        pathToRadiusValue
+        topLevelRange(radius.expr.start, radius.expr.end),
+        pathToRadiusArg
       ),
       constrainInfo(
         'angle',
-        isNotLiteralArrayOrStatic(angleStartProp.value),
-        code.slice(angleStartProp.value.start, angleStartProp.value.end),
+        isNotLiteralArrayOrStatic(angleStart.expr),
+        code.slice(angleStart.expr.start, angleStart.expr.end),
         'arc',
         'angleStart',
-        topLevelRange(angleStartProp.value.start, angleStartProp.value.end),
-        pathToAngleStartValue
+        topLevelRange(angleStart.expr.start, angleStart.expr.end),
+        pathToAngleStartArg
       ),
       constrainInfo(
         'angle',
-        isNotLiteralArrayOrStatic(angleEndProp.value),
-        code.slice(angleEndProp.value.start, angleEndProp.value.end),
+        isNotLiteralArrayOrStatic(angleEnd.expr),
+        code.slice(angleEnd.expr.start, angleEnd.expr.end),
         'arc',
         'angleEnd',
-        topLevelRange(angleEndProp.value.start, angleEndProp.value.end),
-        pathToAngleEndValue
+        topLevelRange(angleEnd.expr.start, angleEnd.expr.end),
+        pathToAngleEndArg
       ),
     ]
 
@@ -3070,11 +3064,11 @@ export const updateStartProfileAtArgs: SketchLineHelper['updateArgs'] = ({
 }
 
 export const sketchLineHelperMap: { [key: string]: SketchLineHelper } = {
-  arc,
   arcTo,
 } as const
 
 export const sketchLineHelperMapKw: { [key: string]: SketchLineHelperKw } = {
+  arc,
   line,
   lineTo,
   circleThreePoint,
@@ -3923,6 +3917,24 @@ export const getAngledLineThatIntersects = (
   return { val: [angle, intersectTag, offset], tag }
 }
 
+export const getArc = (
+  callExp: CallExpressionKw
+):
+  | {
+      val: [Expr, Expr, Expr]
+      tag?: Expr
+    }
+  | Error => {
+  const angleStart = findKwArg(ARG_ANGLE_START, callExp)
+  const angleEnd = findKwArg(ARG_ANGLE_END, callExp)
+  const radius = findKwArg(ARG_RADIUS, callExp)
+  if (!angleStart || !angleEnd || !radius) {
+    return new Error(`arc call needs angleStart, angleEnd, and radius args`)
+  }
+  const tag = findKwArg(ARG_TAG, callExp)
+  return { val: [angleStart, angleEnd, radius], tag }
+}
+
 /**
 Given a line call, return whether it's using absolute or relative end.
 */
@@ -3952,6 +3964,7 @@ export function isAbsoluteLine(lineCall: CallExpressionKw): boolean | Error {
         `${name} call has neither ${ARG_END} nor ${ARG_END_ABSOLUTE} params`
       )
     case 'angledLineThatIntersects':
+    case 'arc':
     case 'circle':
     case 'circleThreePoint':
       return false
@@ -3988,6 +4001,8 @@ export function getArgForEnd(lineCall: CallExpressionKw):
     }
     case 'angledLineThatIntersects':
       return getAngledLineThatIntersects(lineCall)
+    case 'arc':
+      return getArc(lineCall)
     case 'yLine':
     case 'xLine': {
       const arg = findKwArgAny(DETERMINING_ARGS, lineCall)

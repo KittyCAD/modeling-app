@@ -39,6 +39,7 @@ import {
   fnNameToTooltip,
   getAngledLine,
   getAngledLineThatIntersects,
+  getArc,
   getArgForEnd,
   getCircle,
   getConstraintInfo,
@@ -2343,6 +2344,9 @@ export function getConstraintLevelFromSourceRange(
           }
           if (name === 'angledLineThatIntersects') {
             return getAngledLineThatIntersects(nodeMeta.node)
+          }
+          if (name === 'arc') {
+            return getArc(nodeMeta.node)
           }
           const arg = findKwArgAny(DETERMINING_ARGS, nodeMeta.node)
           if (arg === undefined) {
