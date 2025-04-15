@@ -18,8 +18,6 @@ if (process.env.E2E_WORKERS) {
       workers = '100%' // CI Linux runners are generally beefier
       break
     case 'darwin':
-      workers = '80%' // Slightly conservative for GUI-based OSes
-      break
     case 'win32':
     default:
       workers = '75%' // Slightly conservative for GUI-based OSes
