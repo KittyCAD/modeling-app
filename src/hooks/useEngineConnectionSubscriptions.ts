@@ -27,6 +27,8 @@ import {
 } from '@src/lib/singletons'
 import { err, reportRejection } from '@src/lib/trap'
 import { getModuleId } from '@src/lib/utils'
+import { engineStreamActor } from '@src/machines/appMachine'
+import { EngineStreamState } from '@src/machines/engineStreamMachine'
 import type {
   EdgeCutInfo,
   ExtrudeFacePlane,
@@ -38,8 +40,11 @@ export function useEngineConnectionSubscriptions() {
   const stateRef = useRef(state)
   stateRef.current = state
 
+  const engineStreamState = engineStreamActor.getSnapshot()
+
   useEffect(() => {
     if (!engineCommandManager) return
+    if (engineStreamState.value !== EngineStreamState.Playing) return
 
     const unSubHover = engineCommandManager.subscribeToUnreliable({
       // Note this is our hover logic, "highlight_set_entity" is the event that is fired when we hover over an entity
@@ -76,9 +81,12 @@ export function useEngineConnectionSubscriptions() {
       unSubHover()
       unSubClick()
     }
-  }, [engineCommandManager, context?.sketchEnginePathId])
+  }, [engineCommandManager, engineStreamState, context?.sketchEnginePathId])
 
   useEffect(() => {
+    if (!engineCommandManager) return
+    if (engineStreamState.value !== EngineStreamState.Playing) return
+
     const unSub = engineCommandManager.subscribeTo({
       event: 'select_with_point',
       callback: state.matches('Sketch no face')
@@ -192,9 +200,8 @@ export function useEngineConnectionSubscriptions() {
               )
               if (!err(extrusion)) {
                 if (!isTopLevelModule(extrusion.codeRef.range)) {
-                  const fileIndex = getModuleId(extrusion.codeRef.range)
-                  const importDetails =
-                    kclManager.execState.filenames[fileIndex]
+                  const moduleId = getModuleId(extrusion.codeRef.range)
+                  const importDetails = kclManager.execState.filenames[moduleId]
                   if (!importDetails) {
                     toast.error("can't sketch on this face")
                     return
@@ -209,6 +216,7 @@ export function useEngineConnectionSubscriptions() {
                   ) {
                     toast.error("can't sketch on this face")
                   } else {
+                    // force tsc error if more cases are added
                     const _exhaustiveCheck: never = importDetails
                   }
                 }
@@ -342,5 +350,5 @@ export function useEngineConnectionSubscriptions() {
         : () => {},
     })
     return unSub
-  }, [state])
+  }, [engineCommandManager, engineStreamState, state])
 }

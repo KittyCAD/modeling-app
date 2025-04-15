@@ -1,6 +1,6 @@
+import { join } from 'path'
 import { uuidv4 } from '@src/lib/utils'
 import fsp from 'fs/promises'
-import { join } from 'path'
 
 import {
   TEST_COLORS,
@@ -82,7 +82,7 @@ sketch001 = startSketchOn(XY)
       .poll(() =>
         page.locator('[data-receive-command-type="scene_clear_all"]').count()
       )
-      .toBe(1)
+      .toBe(2)
     await expect
       .poll(() => page.locator('[data-message-type="execution-done"]').count())
       .toBe(2)
@@ -106,7 +106,7 @@ sketch001 = startSketchOn(XY)
     ).toHaveCount(3)
     await expect(
       page.locator('[data-receive-command-type="scene_clear_all"]')
-    ).toHaveCount(1)
+    ).toHaveCount(2)
   })
 
   test('ensure we use the cache, and do not clear on append', async ({
@@ -133,7 +133,7 @@ sketch001 = startSketchOn(XY)
     await u.openDebugPanel()
     await expect(
       page.locator('[data-receive-command-type="scene_clear_all"]')
-    ).toHaveCount(1)
+    ).toHaveCount(2)
     await expect(
       page.locator('[data-message-type="execution-done"]')
     ).toHaveCount(2)
@@ -161,7 +161,7 @@ sketch001 = startSketchOn(XY)
     ).toHaveCount(3)
     await expect(
       page.locator('[data-receive-command-type="scene_clear_all"]')
-    ).toHaveCount(1)
+    ).toHaveCount(2)
   })
 
   test('if you click the format button it formats your code', async ({
@@ -409,8 +409,9 @@ sketch_001 = startSketchOn(XY)
     // Hit alt+shift+f to format the code
     await page.keyboard.press('Alt+Shift+KeyF')
 
-    await expect(page.locator('.cm-content'))
-      .toHaveText(`sketch001 = startSketchOn(XY)
+    await expect(
+      page.locator('.cm-content')
+    ).toHaveText(`sketch001 = startSketchOn(XY)
   |> startProfileAt([-10, -10], %)
   |> line(end = [20, 0])
   |> line(end = [0, 20])
@@ -462,8 +463,9 @@ sketch_001 = startSketchOn(XY)
     await u.expectCmdLog('[data-message-type="execution-done"]')
     await u.closeDebugPanel()
 
-    await expect(page.locator('.cm-content'))
-      .toHaveText(`sketch_001 = startSketchOn(XY)
+    await expect(
+      page.locator('.cm-content')
+    ).toHaveText(`sketch_001 = startSketchOn(XY)
   |> startProfileAt([-10, -10], %)
   |> line(end = [20, 0])
   |> line(end = [0, 20])
@@ -978,8 +980,9 @@ sketch001 = startSketchOn(XZ)
     await page.keyboard.up('Control')
 
     await page.waitForTimeout(100)
-    await expect(page.locator('.cm-content'))
-      .toHaveText(`sketch001 = startSketchOn(XZ)
+    await expect(
+      page.locator('.cm-content')
+    ).toHaveText(`sketch001 = startSketchOn(XZ)
   |> startProfileAt([4.61, -14.01], %)
   |> line(end = [12.73, -0.09])
   |> tangentialArc(endAbsolute = [24.95, -5.38])

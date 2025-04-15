@@ -1,9 +1,9 @@
-import type { Locator, Page, Request, Route, TestInfo } from '@playwright/test'
-import { expect } from '@playwright/test'
 import * as fs from 'fs'
 import * as path from 'path'
+import type { Locator, Page, Request, Route, TestInfo } from '@playwright/test'
+import { expect } from '@playwright/test'
 
-type CmdBarSerialised =
+export type CmdBarSerialised =
   | {
       stage: 'commandBarClosed'
     }
