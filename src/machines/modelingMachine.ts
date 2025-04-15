@@ -534,12 +534,12 @@ export const modelingMachine = setup({
       isEditingExistingSketch({ sketchDetails }),
     'Can make selection horizontal': ({ context: { selectionRanges } }) => {
       const info = horzVertInfo(selectionRanges, 'horizontal')
-      if (trap(info)) return false
+      if (err(info)) return false
       return info.enabled
     },
     'Can make selection vertical': ({ context: { selectionRanges } }) => {
       const info = horzVertInfo(selectionRanges, 'vertical')
-      if (trap(info)) return false
+      if (err(info)) return false
       return info.enabled
     },
     'Can constrain horizontal distance': ({ context: { selectionRanges } }) => {
@@ -547,7 +547,7 @@ export const modelingMachine = setup({
         selectionRanges: selectionRanges,
         constraint: 'setHorzDistance',
       })
-      if (trap(info)) return false
+      if (err(info)) return false
       return info.enabled
     },
     'Can constrain vertical distance': ({ context: { selectionRanges } }) => {
@@ -555,7 +555,7 @@ export const modelingMachine = setup({
         selectionRanges: selectionRanges,
         constraint: 'setVertDistance',
       })
-      if (trap(info)) return false
+      if (err(info)) return false
       return info.enabled
     },
     'Can constrain ABS X': ({ context: { selectionRanges } }) => {
