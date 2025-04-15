@@ -123,6 +123,8 @@ export class Setting<T = unknown> {
   }
 }
 
+const MS_IN_MINUTE = 1000 * 60
+
 export function createSettings() {
   return {
     /** Settings that affect the behavior of the entire app,
@@ -208,12 +210,42 @@ export function createSettings() {
       /**
        * Stream resource saving behavior toggle
        */
-      streamIdleMode: new Setting<boolean>({
-        defaultValue: false,
-        description: 'Toggle stream idling, saving bandwidth and battery',
-        validate: (v) => typeof v === 'boolean',
+      streamIdleMode: new Setting<number | undefined>({
+        defaultValue: undefined,
+        hideOnLevel: 'project',
+        description: 'Save bandwidth & battery',
+        validate: (v) =>
+          String(v) == 'undefined' ||
+          (Number(v) >= 0 && Number(v) <= 60 * MS_IN_MINUTE),
         commandConfig: {
-          inputType: 'boolean',
+          inputType: 'options',
+          defaultValueFromContext: (context) =>
+            context.app.streamIdleMode.current,
+          options: (cmdContext, settingsContext) =>
+            [
+              undefined,
+              5 * 1000,
+              30 * 1000,
+              1 * MS_IN_MINUTE,
+              2 * MS_IN_MINUTE,
+              5 * MS_IN_MINUTE,
+              15 * MS_IN_MINUTE,
+              30 * MS_IN_MINUTE,
+              60 * MS_IN_MINUTE,
+            ].map((v) => ({
+              name:
+                v === undefined
+                  ? 'Off'
+                  : v < MS_IN_MINUTE
+                    ? `${Math.floor(v / 1000)} seconds`
+                    : `${Math.floor(v / MS_IN_MINUTE)} minutes`,
+              value: v,
+              isCurrent:
+                v ===
+                settingsContext.app.streamIdleMode[
+                  cmdContext.argumentsToSubmit.level as SettingsLevel
+                ],
+            })),
         },
       }),
       allowOrbitInSketchMode: new Setting<boolean>({

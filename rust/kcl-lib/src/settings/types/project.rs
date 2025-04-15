@@ -60,7 +60,7 @@ impl ProjectConfiguration {
 #[ts(export)]
 #[serde(rename_all = "snake_case")]
 pub struct PerProjectSettings {
-    /// The settings for the modeling app.
+    /// The settings for the Design Studio.
     #[serde(default)]
     #[validate(nested)]
     pub app: ProjectAppSettings,

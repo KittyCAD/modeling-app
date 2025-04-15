@@ -2,7 +2,7 @@ import type { Models } from '@kittycad/lib/dist/types/src'
 
 import type { UnitAngle, UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
 
-export const APP_NAME = 'Modeling App'
+export const APP_NAME = 'Design Studio'
 /** Search string in new project names to increment as an index */
 export const INDEX_IDENTIFIER = '$n'
 /** The maximum number of 0's to pad a default project name's index with */
@@ -11,7 +11,7 @@ export const MAX_PADDING = 7
  * This is used as a template for new projects, with $nnn being replaced by an index
  * This is available for users to edit as a setting.
  */
-export const DEFAULT_PROJECT_NAME = 'project-$nnn'
+export const DEFAULT_PROJECT_NAME = 'untitled'
 export const DEFAULT_PROJECT_KCL_FILE = 'main.kcl'
 /** Name given the temporary "project" in the browser version of the app */
 export const BROWSER_PROJECT_NAME = 'browser'
@@ -21,9 +21,9 @@ export const BROWSER_FILE_NAME = 'main'
  * The default name of the project in Desktop.
  * This is prefixed by the Documents directory path.
  */
-export const PROJECT_FOLDER = 'zoo-modeling-app-projects'
+export const PROJECT_FOLDER = 'zoo-design-studio-projects'
 /**
- * File extension for Modeling App's files, which are written in kcl
+ * File extension for Design Studio's files, which are written in kcl
  * @link - https://zoo.dev/docs/kcl
  * */
 export const FILE_EXT = '.kcl'
@@ -35,18 +35,6 @@ export const PROJECT_IMAGE_NAME = `thumbnail.png`
 export const FILE_PERSIST_KEY = `${PROJECT_FOLDER}-last-opened` as const
 /** The default name given to new kcl files in a project */
 export const DEFAULT_FILE_NAME = 'Untitled'
-/** The file endings that will appear in
- * the file explorer if found in a project directory */
-export const RELEVANT_FILE_TYPES = [
-  'kcl',
-  'fbx',
-  'gltf',
-  'glb',
-  'obj',
-  'ply',
-  'step',
-  'stl',
-] as const
 /** The default name for a tutorial project */
 export const ONBOARDING_PROJECT_NAME = 'Tutorial Project $nn'
 /**
@@ -72,9 +60,6 @@ export const KCL_DEFAULT_DEGREE = `360`
 
 /** The default KCL color expression */
 export const KCL_DEFAULT_COLOR = `#3c73ff`
-
-/** localStorage key for the playwright test-specific app settings file */
-export const TEST_SETTINGS_FILE_KEY = 'playwright-test-settings'
 
 export const SETTINGS_FILE_NAME = 'settings.toml'
 export const TOKEN_FILE_NAME = 'token.txt'
@@ -133,6 +118,9 @@ export const CREATE_FILE_URL_PARAM = 'create-file'
 
 /** Toast id for the app auto-updater toast */
 export const AUTO_UPDATER_TOAST_ID = 'auto-updater-toast'
+
+/** Toast id for the insert foreign part toast */
+export const INSERT_FOREIGN_TOAST_ID = 'insert-foreign-toast'
 
 /** Local sketch axis values in KCL for operations, it could either be 'X' or 'Y' */
 export const KCL_AXIS_X = 'X'

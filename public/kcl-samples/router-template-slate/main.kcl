@@ -1,18 +1,20 @@
-// Router template for a slate
+// Router Template for a Slate
 // A guide for routing a slate for a cross bar.
 
-// Set Units
+// Set units
 @settings(defaultLengthUnit = mm)
 
-// Define constants
+// Define parameters
 routerDiameter = 12.7
-templateDiameter = 11 / 16 * inch()
-templateGap = (templateDiameter - routerDiameter) / 2 - 0.5
+templateDiameter = fromInches(11 / 16)
 slateWidthHalf = 41.5 / 2
 minClampingDistance = 50 + 30
 templateThickness = 10
 radius = 10
 depth = 30
+
+// Calculated parameters
+templateGap = (templateDiameter - routerDiameter) / 2 - 0.5
 length001 = slateWidthHalf - radius
 length002 = depth + minClampingDistance
 
@@ -46,20 +48,14 @@ sketch001 = startSketchOn(XZ)
 extrude001 = extrude(sketch001, length = 5)
 
 // Create the second sketch
-sketch002 = startSketchOn(extrude001, 'START')
+sketch002 = startSketchOn(extrude001, face = START)
   |> startProfileAt([
        -slateWidthHalf,
        -templateGap * 2 - (templateDiameter / 2)
      ], %)
   |> xLine(length = -7, tag = $rectangleSegmentA001)
-  |> angledLine([
-       segAng(rectangleSegmentA001) + 90,
-       minClampingDistance
-     ], %, $rectangleSegmentB001)
-  |> angledLine([
-       segAng(rectangleSegmentA001),
-       -segLen(rectangleSegmentA001)
-     ], %, $rectangleSegmentC001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) + 90, length = minClampingDistance, tag = $rectangleSegmentB001)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $rectangleSegmentC001)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 
@@ -67,20 +63,14 @@ sketch002 = startSketchOn(extrude001, 'START')
 extrude002 = extrude(sketch002, length = 7.5)
 
 // Create the third sketch
-sketch003 = startSketchOn(extrude001, 'START')
+sketch003 = startSketchOn(extrude001, face = START)
   |> startProfileAt([
        slateWidthHalf,
        -templateGap * 2 - (templateDiameter / 2)
      ], %)
   |> xLine(length = 7, tag = $rectangleSegmentA002)
-  |> angledLine([
-       segAng(rectangleSegmentA002) - 90,
-       minClampingDistance
-     ], %)
-  |> angledLine([
-       segAng(rectangleSegmentA002),
-       -segLen(rectangleSegmentA002)
-     ], %)
+  |> angledLine(angle = segAng(rectangleSegmentA002) - 90, length = minClampingDistance)
+  |> angledLine(angle = segAng(rectangleSegmentA002), length = -segLen(rectangleSegmentA002))
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 

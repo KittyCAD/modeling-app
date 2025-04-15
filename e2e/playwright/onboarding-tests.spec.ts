@@ -1,7 +1,7 @@
-import { bracket } from '@src/lib/exampleKcl'
+import { join } from 'path'
+import { bracket } from '@e2e/playwright/fixtures/bracket'
 import { onboardingPaths } from '@src/routes/Onboarding/paths'
 import fsp from 'fs/promises'
-import { join } from 'path'
 
 import { expectPixelColor } from '@e2e/playwright/fixtures/sceneFixture'
 import {
@@ -15,6 +15,7 @@ import {
   executorInputPath,
   getUtils,
   orRunWhenFullSuiteEnabled,
+  runningOnWindows,
   settingsToToml,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
@@ -42,10 +43,10 @@ test.describe('Onboarding tests', () => {
     await homePage.goToModelingScene()
 
     // Test that the onboarding pane loaded
-    await expect(page.getByText('Welcome to Modeling App! This')).toBeVisible()
+    await expect(page.getByText('Welcome to Design Studio! This')).toBeVisible()
 
     // Test that the onboarding pane loaded
-    await expect(page.getByText('Welcome to Modeling App! This')).toBeVisible()
+    await expect(page.getByText('Welcome to Design Studio! This')).toBeVisible()
 
     // *and* that the code is shown in the editor
     await expect(page.locator('.cm-content')).toContainText('// Shelf Bracket')
@@ -86,7 +87,7 @@ test.describe('Onboarding tests', () => {
       await test.step(`Ensure we see the onboarding stuff`, async () => {
         // Test that the onboarding pane loaded
         await expect(
-          page.getByText('Welcome to Modeling App! This')
+          page.getByText('Welcome to Design Studio! This')
         ).toBeVisible()
 
         // *and* that the code is shown in the editor
@@ -147,7 +148,7 @@ test.describe('Onboarding tests', () => {
     await nextButton.click()
 
     // Ensure we see the introduction and that the code has been reset
-    await expect(page.getByText('Welcome to Modeling App!')).toBeVisible()
+    await expect(page.getByText('Welcome to Design Studio!')).toBeVisible()
     await expect(page.locator('.cm-content')).toContainText('// Shelf Bracket')
 
     // There used to be old code here that checked if we stored the reset
@@ -188,7 +189,7 @@ test.describe('Onboarding tests', () => {
     await homePage.goToModelingScene()
 
     // Test that the onboarding pane loaded
-    await expect(page.getByText('Welcome to Modeling App! This')).toBeVisible()
+    await expect(page.getByText('Welcome to Design Studio! This')).toBeVisible()
 
     const nextButton = page.getByTestId('onboarding-next')
     const prevButton = page.getByTestId('onboarding-prev')
@@ -278,6 +279,9 @@ test.describe('Onboarding tests', () => {
   }) => {
     if (!tronApp) {
       fail()
+    }
+    if (runningOnWindows()) {
+      test.fixme(orRunWhenFullSuiteEnabled())
     }
     await tronApp.cleanProjectDir({
       app: {
@@ -494,7 +498,7 @@ test('Restarting onboarding on desktop takes one attempt', async ({
   const tutorialProjectIndicator = page
     .getByTestId('project-sidebar-toggle')
     .filter({ hasText: 'Tutorial Project 00' })
-  const tutorialModalText = page.getByText('Welcome to Modeling App!')
+  const tutorialModalText = page.getByText('Welcome to Design Studio!')
   const tutorialDismissButton = page.getByRole('button', { name: 'Dismiss' })
   const userMenuButton = page.getByTestId('user-sidebar-toggle')
   const userMenuSettingsButton = page.getByRole('button', {

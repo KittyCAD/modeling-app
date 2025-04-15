@@ -45,7 +45,8 @@ export function useDemoCode() {
     }
     // Don't run if the network isn't healthy or the connection isn't established
     if (
-      overallState !== NetworkHealthState.Ok ||
+      overallState === NetworkHealthState.Disconnected ||
+      overallState === NetworkHealthState.Issue ||
       immediateState.type !== EngineConnectionStateType.ConnectionEstablished
     ) {
       return
@@ -53,7 +54,7 @@ export function useDemoCode() {
     setTimeout(
       toSync(async () => {
         codeManager.updateCodeStateEditor(bracket)
-        await kclManager.executeCode(true)
+        await kclManager.executeCode()
         await codeManager.writeToFile()
       }, reportRejection)
     )

@@ -514,7 +514,9 @@ export function getCodeRefsByArtifactId(
   artifactGraph: ArtifactGraph
 ): Array<CodeRef> | null {
   const artifact = artifactGraph.get(id)
-  if (artifact?.type === 'solid2d') {
+  if (artifact?.type === 'compositeSolid') {
+    return [artifact.codeRef]
+  } else if (artifact?.type === 'solid2d') {
     const codeRef = getSolid2dCodeRef(artifact, artifactGraph)
     if (err(codeRef)) return null
     return [codeRef]
@@ -736,7 +738,7 @@ const onlyConsecutivePaths = (
 }
 
 export function getPathsFromPlaneArtifact(
-  planeArtifact: PlaneArtifact,
+  planeArtifact: PlaneArtifact | WallArtifact | CapArtifact,
   artifactGraph: ArtifactGraph,
   ast: Program
 ): PathToNode[] {

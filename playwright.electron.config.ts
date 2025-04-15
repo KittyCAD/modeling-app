@@ -1,5 +1,29 @@
+import os from 'os'
 import { defineConfig, devices } from '@playwright/test'
-import { platform } from 'os'
+
+const platform = os.platform() // 'linux' (Ubuntu), 'darwin' (macOS), 'win32' (Windows)
+
+let workers: number | string
+
+if (process.env.E2E_WORKERS) {
+  workers = process.env.E2E_WORKERS.includes('%')
+    ? process.env.E2E_WORKERS
+    : parseInt(process.env.E2E_WORKERS)
+} else if (!process.env.CI) {
+  workers = 1 // Local dev: keep things simple and deterministic by default
+} else {
+  // On CI: adjust based on OS
+  switch (platform) {
+    case 'linux':
+      workers = '50%' // CI Linux runners are generally beefier
+      break
+    case 'darwin':
+    case 'win32':
+    default:
+      workers = '25%' // Lower concurrency for heavier Electron processes
+      break
+  }
+}
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -8,19 +32,22 @@ export default defineConfig({
   timeout: 120_000, // override the default 30s timeout
   testDir: './e2e/playwright',
   testIgnore: '*.test.ts', // ignore unit tests
+  /* Share snapshots across all platforms */
+  snapshotPathTemplate: '{testDir}/{testFileName}-snapshots/{arg}{ext}',
   /* Run tests in files in parallel */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
-  forbidOnly: true,
-  /* Do not retry */
+  forbidOnly: Boolean(process.env.CI),
+  /* Do not retry using Playwright's built-in retry mechanism */
   retries: 0,
-  /* Different amount of parallelism on CI and local. */
-  workers: platform() === 'win32' ? 1 : 2,
+  /* Use all available CPU cores */
+  workers: workers,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: [
     ['dot'],
     ['json', { outputFile: './test-results/report.json' }],
     ['html'],
+    ['./e2e/playwright/lib/api-reporter.ts'],
   ],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {

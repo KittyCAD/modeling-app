@@ -1,10 +1,10 @@
 import { MachinesListing } from 'components/MachineManagerProvider'
 import 'electron'
+import fs from 'node:fs/promises'
+import path from 'path'
 import { dialog, shell } from 'electron'
 import type { WebContentSendPayload } from 'menu/channels'
 import { ZooLabel } from 'menu/roles'
-import fs from 'node:fs/promises'
-import path from 'path'
 
 // Extend the interface with additional custom properties
 declare module 'electron' {
@@ -72,7 +72,6 @@ export interface IElectronAPI {
   process: {
     env: {
       BASE_URL: string
-      TEST_SETTINGS_FILE_KEY: string
       IS_PLAYWRIGHT: string
       VITE_KC_DEV_TOKEN: string
       VITE_KC_API_WS_MODELING_URL: string

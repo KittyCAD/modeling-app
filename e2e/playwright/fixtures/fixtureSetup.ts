@@ -7,11 +7,11 @@ import type {
 } from '@playwright/test'
 import { _electron as electron } from '@playwright/test'
 
+import fs from 'node:fs'
+import path from 'path'
 import { SETTINGS_FILE_NAME } from '@src/lib/constants'
 import type { DeepPartial } from '@src/lib/types'
 import fsp from 'fs/promises'
-import fs from 'node:fs'
-import path from 'path'
 
 import type { Settings } from '@rust/kcl-lib/bindings/Settings'
 
@@ -39,7 +39,8 @@ export class AuthenticatedApp {
   }
 
   async initialise(code = '') {
-    await setup(this.context, this.page, this.testInfo)
+    const testDir = this.testInfo.outputPath('electron-test-projects-dir')
+    await setup(this.context, this.page, testDir, this.testInfo)
     const u = await getUtils(this.page)
 
     await this.page.addInitScript(async (code) => {
@@ -102,11 +103,11 @@ export class ElectronZoo {
             return resolve(undefined)
           }
 
-          if (Date.now() - timeA > 10000) {
+          if (Date.now() - timeA > 3000) {
             return resolve(undefined)
           }
 
-          setTimeout(checkDisconnected, 0)
+          setTimeout(checkDisconnected, 1)
         }
         checkDisconnected()
       })
@@ -128,11 +129,9 @@ export class ElectronZoo {
     const that = this
 
     const options = {
-      timeout: 120000,
       args: ['.', '--no-sandbox'],
       env: {
         ...process.env,
-        TEST_SETTINGS_FILE_KEY: this.projectDirName,
         IS_PLAYWRIGHT: 'true',
       },
       ...(process.env.ELECTRON_OVERRIDE_DIST_PATH
@@ -177,11 +176,37 @@ export class ElectronZoo {
 
       this.context = this.electron.context()
       await this.context.tracing.start({ screenshots: true, snapshots: true })
+
+      // We need to patch this because addInitScript will bind too late in our
+      // electron tests, never running. We need to call reload() after each call
+      // to guarantee it runs.
+      const oldContextAddInitScript = this.context.addInitScript
+      this.context.addInitScript = async function (a, b) {
+        // @ts-ignore pretty sure way out of tsc's type checking capabilities.
+        // This code works perfectly fine.
+        await oldContextAddInitScript.apply(this, [a, b])
+        await that.page.reload()
+      }
+
+      const oldPageAddInitScript = this.page.addInitScript
+      this.page.addInitScript = async function (a: any, b: any) {
+        // @ts-ignore pretty sure way out of tsc's type checking capabilities.
+        // This code works perfectly fine.
+        await oldPageAddInitScript.apply(this, [a, b])
+        await that.page.reload()
+      }
     }
 
     await this.context.tracing.startChunk()
 
-    await setup(this.context, this.page, testInfo)
+    // THIS IS ABSOLUTELY NECESSARY TO CHANGE THE PROJECT DIRECTORY BETWEEN
+    // TESTS BECAUSE OF THE ELECTRON INSTANCE REUSE.
+    await this.electron?.evaluate(({ app }, projectDirName) => {
+      // @ts-ignore can't declaration merge see main.ts
+      app.testProperty['TEST_SETTINGS_FILE_KEY'] = projectDirName
+    }, this.projectDirName)
+
+    await setup(this.context, this.page, this.projectDirName, testInfo)
 
     await this.cleanProjectDir()
 
@@ -219,26 +244,6 @@ export class ElectronZoo {
         }))
     }
 
-    // We need to patch this because addInitScript will bind too late in our
-    // electron tests, never running. We need to call reload() after each call
-    // to guarantee it runs.
-    const oldContextAddInitScript = this.context.addInitScript
-    this.context.addInitScript = async function (a, b) {
-      // @ts-ignore pretty sure way out of tsc's type checking capabilities.
-      // This code works perfectly fine.
-      await oldContextAddInitScript.apply(this, [a, b])
-      await that.page.reload()
-    }
-
-    // No idea why we mix and match page and context's addInitScript but we do
-    const oldPageAddInitScript = this.page.addInitScript
-    this.page.addInitScript = async function (a: any, b: any) {
-      // @ts-ignore pretty sure way out of tsc's type checking capabilities.
-      // This code works perfectly fine.
-      await oldPageAddInitScript.apply(this, [a, b])
-      await that.page.reload()
-    }
-
     if (!this.firstUrl) {
       await this.page.getByText('Your Projects').count()
       this.firstUrl = this.page.url()
@@ -250,11 +255,6 @@ export class ElectronZoo {
     // await tronApp.electronApp.evaluate(({ app }) => {
     //   return app.reuseWindowForTest();
     // });
-
-    await this.electron?.evaluate(({ app }, projectDirName) => {
-      // @ts-ignore can't declaration merge see main.ts
-      app.testProperty['TEST_SETTINGS_FILE_KEY'] = projectDirName
-    }, this.projectDirName)
 
     // Always start at the root view
     await this.page.goto(this.firstUrl)
@@ -279,8 +279,9 @@ export class ElectronZoo {
       // Not a problem if it already exists.
     }
 
-    const tempSettingsFilePath = path.join(
+    const tempSettingsFilePath = path.resolve(
       this.projectDirName,
+      '..',
       SETTINGS_FILE_NAME
     )
 

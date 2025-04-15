@@ -8,7 +8,7 @@ import React, {
 } from 'react'
 import toast from 'react-hot-toast'
 import { useHotkeys } from 'react-hotkeys-hook'
-import { useLoaderData, useNavigate, useSearchParams } from 'react-router-dom'
+import { useLoaderData, useNavigate } from 'react-router-dom'
 import type { Actor, ContextFrom, Prop, SnapshotFrom, StateFrom } from 'xstate'
 import { assign, fromPromise } from 'xstate'
 
@@ -19,6 +19,7 @@ import type {
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { Plane } from '@rust/kcl-lib/bindings/Plane'
 
+import { useAppState } from '@src/AppState'
 import { letEngineAnimateAndSyncCamAfter } from '@src/clientSideScene/CameraControls'
 import {
   SEGMENT_BODIES,
@@ -26,6 +27,7 @@ import {
 } from '@src/clientSideScene/sceneConstants'
 import type { MachineManager } from '@src/components/MachineManagerProvider'
 import { MachineManagerContext } from '@src/components/MachineManagerProvider'
+import type { SidebarType } from '@src/components/ModelingSidebar/ModelingPanes'
 import { applyConstraintIntersect } from '@src/components/Toolbar/Intersect'
 import { applyConstraintAbsDistance } from '@src/components/Toolbar/SetAbsDistance'
 import {
@@ -38,8 +40,13 @@ import {
   applyConstraintLength,
 } from '@src/components/Toolbar/setAngleLength'
 import { useFileContext } from '@src/hooks/useFileContext'
-import { useSetupEngineManager } from '@src/hooks/useSetupEngineManager'
+import {
+  useMenuListener,
+  useSketchModeMenuEnableDisable,
+} from '@src/hooks/useMenu'
+import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import useStateMachineCommands from '@src/hooks/useStateMachineCommands'
+import { useKclContext } from '@src/lang/KclProvider'
 import { updateModelingState } from '@src/lang/modelingWorkflows'
 import {
   insertNamedConstant,
@@ -111,6 +118,7 @@ import {
   modelingMachine,
   modelingMachineDefaultContext,
 } from '@src/machines/modelingMachine'
+import type { WebContentSendPayload } from '@src/menu/channels'
 
 export const ModelingMachineContext = createContext(
   {} as {
@@ -131,14 +139,7 @@ export const ModelingMachineProvider = ({
 }) => {
   const {
     app: { theme, allowOrbitInSketchMode },
-    modeling: {
-      defaultUnit,
-      cameraProjection,
-      highlightEdges,
-      showScaleGrid,
-      cameraOrbit,
-      enableSSAO,
-    },
+    modeling: { defaultUnit, cameraProjection, highlightEdges, cameraOrbit },
   } = useSettings()
   const navigate = useNavigate()
   const { context, send: fileMachineSend } = useFileContext()
@@ -147,13 +148,11 @@ export const ModelingMachineProvider = ({
   const streamRef = useRef<HTMLDivElement>(null)
   const persistedContext = useMemo(() => getPersistedContext(), [])
 
-  let [searchParams] = useSearchParams()
-  const pool = searchParams.get('pool')
-
   const isCommandBarClosed = useSelector(
     commandBarActor,
     commandBarIsClosedSelector
   )
+
   // Settings machine setup
   // const retrievedSettings = useRef(
   // localStorage?.getItem(MODELING_PERSIST_KEY) || '{}'
@@ -445,10 +444,15 @@ export const ModelingMachineProvider = ({
                   },
                 })
               }
+
+              // If there are engine commands that need sent off, send them
+              // TODO: This should be handled outside of an action as its own
+              // actor, so that the system state is more controlled.
               engineEvents &&
                 engineEvents.forEach((event) => {
-                  // eslint-disable-next-line @typescript-eslint/no-floating-promises
-                  engineCommandManager.sendSceneCommand(event)
+                  engineCommandManager
+                    .sendSceneCommand(event)
+                    .catch(reportRejection)
                 })
               updateSceneObjectColors()
 
@@ -546,6 +550,9 @@ export const ModelingMachineProvider = ({
           if (!isCommandBarClosed) return false
           if (selectionRanges.graphSelections.length <= 0) return false
           return true
+        },
+        'is-error-free': () => {
+          return kclManager.errors.length === 0 && !kclManager.hasErrors()
         },
         'Selection is on face': ({ context: { selectionRanges }, event }) => {
           if (event.type !== 'Enter sketch') return false
@@ -756,7 +763,8 @@ export const ModelingMachineProvider = ({
 
               // remove body item at varDecIndex
               newAst.body = newAst.body.filter((_, i) => i !== varDecIndex)
-              await kclManager.executeAstMock(newAst)
+              const didReParse = await kclManager.executeAstMock(newAst)
+              if (err(didReParse)) return reject(didReParse)
               await codeManager.updateEditorWithAstAndWriteToFile(newAst)
             }
             sceneInfra.setCallbacks({
@@ -769,6 +777,7 @@ export const ModelingMachineProvider = ({
         'animate-to-face': fromPromise(async ({ input }) => {
           if (!input) return null
           if (input.type === 'extrudeFace' || input.type === 'offsetPlane') {
+            const originalCode = codeManager.code
             const sketched =
               input.type === 'extrudeFace'
                 ? sketchOnExtrudedFace(
@@ -787,7 +796,13 @@ export const ModelingMachineProvider = ({
             }
             const { modifiedAst, pathToNode: pathToNewSketchNode } = sketched
 
-            await kclManager.executeAstMock(modifiedAst)
+            const didReParse = await kclManager.executeAstMock(modifiedAst)
+            if (err(didReParse)) {
+              // there was a problem, restore the original code
+              codeManager.code = originalCode
+              await kclManager.executeCode()
+              return reject(didReParse)
+            }
 
             const id =
               input.type === 'extrudeFace' ? input.faceId : input.planeId
@@ -842,6 +857,7 @@ export const ModelingMachineProvider = ({
                 : plane?.pathIds[0]
             let sketch: KclValue | null = null
             let planeVar: Plane | null = null
+
             for (const variable of Object.values(
               kclManager.execState.variables
             )) {
@@ -872,6 +888,7 @@ export const ModelingMachineProvider = ({
                 planeVar = variable.value
               }
             }
+
             if (!sketch || sketch.type !== 'Sketch') {
               if (artifact?.type !== 'plane')
                 return Promise.reject(new Error('No sketch'))
@@ -1566,9 +1583,7 @@ export const ModelingMachineProvider = ({
               data
             )
             if (err(result)) return reject(result)
-
-            // eslint-disable-next-line @typescript-eslint/no-floating-promises
-            codeManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
+            await codeManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
 
             return result
           }
@@ -1753,6 +1768,142 @@ export const ModelingMachineProvider = ({
     }
   )
 
+  // Register file menu actions based off modeling send
+  const cb = (data: WebContentSendPayload) => {
+    const openPanes = modelingActor.getSnapshot().context.store.openPanes
+    if (data.menuLabel === 'View.Panes.Feature tree') {
+      const featureTree: SidebarType = 'feature-tree'
+      const alwaysAddFeatureTree: SidebarType[] = [
+        ...new Set([...openPanes, featureTree]),
+      ]
+      modelingSend({
+        type: 'Set context',
+        data: {
+          openPanes: alwaysAddFeatureTree,
+        },
+      })
+    } else if (data.menuLabel === 'View.Panes.KCL code') {
+      const code: SidebarType = 'code'
+      const alwaysAddCode: SidebarType[] = [...new Set([...openPanes, code])]
+      modelingSend({
+        type: 'Set context',
+        data: {
+          openPanes: alwaysAddCode,
+        },
+      })
+    } else if (data.menuLabel === 'View.Panes.Project files') {
+      const projectFiles: SidebarType = 'files'
+      const alwaysAddProjectFiles: SidebarType[] = [
+        ...new Set([...openPanes, projectFiles]),
+      ]
+      modelingSend({
+        type: 'Set context',
+        data: {
+          openPanes: alwaysAddProjectFiles,
+        },
+      })
+    } else if (data.menuLabel === 'View.Panes.Variables') {
+      const variables: SidebarType = 'variables'
+      const alwaysAddVariables: SidebarType[] = [
+        ...new Set([...openPanes, variables]),
+      ]
+      modelingSend({
+        type: 'Set context',
+        data: {
+          openPanes: alwaysAddVariables,
+        },
+      })
+    } else if (data.menuLabel === 'View.Panes.Logs') {
+      const logs: SidebarType = 'logs'
+      const alwaysAddLogs: SidebarType[] = [...new Set([...openPanes, logs])]
+      modelingSend({
+        type: 'Set context',
+        data: {
+          openPanes: alwaysAddLogs,
+        },
+      })
+    } else if (data.menuLabel === 'Design.Start sketch') {
+      modelingSend({
+        type: 'Enter sketch',
+        data: { forceNewSketch: true },
+      })
+    }
+  }
+  useMenuListener(cb)
+
+  const { overallState } = useNetworkContext()
+  const { isExecuting } = useKclContext()
+  const { isStreamReady } = useAppState()
+
+  // Assumes all commands are network commands
+  useSketchModeMenuEnableDisable(
+    modelingState.context.currentMode,
+    overallState,
+    isExecuting,
+    isStreamReady,
+    [
+      { menuLabel: 'Edit.Modify with Zoo Text-To-CAD' },
+      { menuLabel: 'View.Standard views' },
+      { menuLabel: 'View.Named views' },
+      { menuLabel: 'Design.Start sketch' },
+      {
+        menuLabel: 'Design.Create an offset plane',
+        commandName: 'Offset plane',
+        groupId: 'modeling',
+      },
+      {
+        menuLabel: 'Design.Create a helix',
+        commandName: 'Helix',
+        groupId: 'modeling',
+      },
+      {
+        menuLabel: 'Design.Create an additive feature.Extrude',
+        commandName: 'Extrude',
+        groupId: 'modeling',
+      },
+      {
+        menuLabel: 'Design.Create an additive feature.Revolve',
+        commandName: 'Revolve',
+        groupId: 'modeling',
+      },
+      {
+        menuLabel: 'Design.Create an additive feature.Sweep',
+        commandName: 'Sweep',
+        groupId: 'modeling',
+      },
+      {
+        menuLabel: 'Design.Create an additive feature.Loft',
+        commandName: 'Loft',
+        groupId: 'modeling',
+      },
+      {
+        menuLabel: 'Design.Apply modification feature.Fillet',
+        commandName: 'Fillet',
+        groupId: 'modeling',
+      },
+      {
+        menuLabel: 'Design.Apply modification feature.Chamfer',
+        commandName: 'Chamfer',
+        groupId: 'modeling',
+      },
+      {
+        menuLabel: 'Design.Apply modification feature.Shell',
+        commandName: 'Shell',
+        groupId: 'modeling',
+      },
+      {
+        menuLabel: 'Design.Create with Zoo Text-To-CAD',
+        commandName: 'Text-to-CAD',
+        groupId: 'modeling',
+      },
+      {
+        menuLabel: 'Design.Modify with Zoo Text-To-CAD',
+        commandName: 'Prompt-to-edit',
+        groupId: 'modeling',
+      },
+    ]
+  )
+
   // Add debug function to window object
   useEffect(() => {
     // @ts-ignore - we're intentionally adding this to window
@@ -1764,34 +1915,6 @@ export const ModelingMachineProvider = ({
       }
     }
   }, [modelingActor])
-
-  useSetupEngineManager(
-    streamRef,
-    modelingSend,
-    modelingState.context,
-    {
-      pool: pool,
-      theme: theme.current,
-      highlightEdges: highlightEdges.current,
-      enableSSAO: enableSSAO.current,
-      showScaleGrid: showScaleGrid.current,
-      cameraProjection: cameraProjection.current,
-      cameraOrbit: cameraOrbit.current,
-    },
-    token
-  )
-
-  useEffect(() => {
-    kclManager.registerExecuteCallback(() => {
-      modelingSend({ type: 'Re-execute' })
-    })
-
-    // Before this component unmounts, call the 'Cancel'
-    // event to clean up any state in the modeling machine.
-    return () => {
-      modelingSend({ type: 'Cancel' })
-    }
-  }, [modelingSend])
 
   // Give the state back to the editorManager.
   useEffect(() => {

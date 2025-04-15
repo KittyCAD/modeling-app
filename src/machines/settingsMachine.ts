@@ -76,7 +76,14 @@ export const settingsMachine = setup({
           level: SettingsLevel
         }
       | { type: 'Set all settings'; settings: typeof settings }
-      | { type: 'set.app.namedViews'; value: NamedView }
+      | {
+          type: 'set.app.namedViews'
+          data: {
+            value: NamedView
+            toastCallback: () => void
+            level: SettingsLevel
+          }
+        }
       | { type: 'load.project'; project?: Project }
       | { type: 'clear.project' }
     ) & { doNotPersist?: boolean },
@@ -84,7 +91,11 @@ export const settingsMachine = setup({
   actors: {
     persistSettings: fromPromise<
       void,
-      { doNotPersist: boolean; context: SettingsMachineContext }
+      {
+        doNotPersist: boolean
+        context: SettingsMachineContext
+        toastCallback?: () => void
+      }
     >(async ({ input }) => {
       // Without this, when a user changes the file, it'd
       // create a detection loop with the file-system watcher.
@@ -93,7 +104,12 @@ export const settingsMachine = setup({
       codeManager.writeCausedByAppCheckedInFileTreeFileSystemWatcher = true
       const { currentProject, ...settings } = input.context
 
-      return saveSettings(settings, currentProject?.path)
+      const val = await saveSettings(settings, currentProject?.path)
+
+      if (input.toastCallback) {
+        input.toastCallback()
+      }
+      return val
     }),
     loadUserSettings: fromPromise<SettingsMachineContext, void>(async () => {
       const { settings } = await loadAndValidateSettings()
@@ -174,14 +190,6 @@ export const settingsMachine = setup({
     }),
   },
   actions: {
-    setClientSideSceneUnits: ({ context, event }) => {
-      const newBaseUnit =
-        event.type === 'set.modeling.defaultUnit'
-          ? (event.data.value as BaseUnit)
-          : context.modeling.defaultUnit.current
-      if (!sceneInfra) return
-      sceneInfra.baseUnit = newBaseUnit
-    },
     setEngineTheme: ({ context }) => {
       if (engineCommandManager && context.app.theme.current) {
         engineCommandManager
@@ -253,7 +261,7 @@ export const settingsMachine = setup({
 
         if (shouldExecute) {
           // Unit changes requires a re-exec of code
-          kclManager.executeCode(true).catch(reportRejection)
+          kclManager.executeCode().catch(reportRejection)
         } else {
           // For any future logging we'd like to do
           // console.log(
@@ -372,7 +380,7 @@ export const settingsMachine = setup({
   ],
   states: {
     idle: {
-      entry: ['setThemeClass', 'setClientSideSceneUnits', 'sendThemeToWatcher'],
+      entry: ['setThemeClass', 'sendThemeToWatcher'],
 
       on: {
         '*': {
@@ -415,12 +423,7 @@ export const settingsMachine = setup({
         'set.modeling.defaultUnit': {
           target: 'persisting settings',
 
-          actions: [
-            'setSettingAtLevel',
-            'toastSuccess',
-            'setClientSideSceneUnits',
-            'Execute AST',
-          ],
+          actions: ['setSettingAtLevel', 'toastSuccess', 'Execute AST'],
         },
 
         'set.app.theme': {
@@ -474,7 +477,6 @@ export const settingsMachine = setup({
             'resetSettings',
             'setThemeClass',
             'setEngineTheme',
-            'setClientSideSceneUnits',
             'setThemeColor',
             'Execute AST',
             'setClientTheme',
@@ -488,7 +490,6 @@ export const settingsMachine = setup({
             'setAllSettings',
             'setThemeClass',
             'setEngineTheme',
-            'setClientSideSceneUnits',
             'setThemeColor',
             'Execute AST',
             'setClientTheme',
@@ -532,6 +533,17 @@ export const settingsMachine = setup({
           },
         },
         input: ({ context, event }) => {
+          if (
+            event.type === 'set.app.namedViews' &&
+            'toastCallback' in event.data
+          ) {
+            return {
+              doNotPersist: event.doNotPersist ?? false,
+              context,
+              toastCallback: event.data.toastCallback,
+            }
+          }
+
           return {
             doNotPersist: event.doNotPersist ?? false,
             context,
@@ -549,7 +561,6 @@ export const settingsMachine = setup({
             'setAllSettings',
             'setThemeClass',
             'setEngineTheme',
-            'setClientSideSceneUnits',
             'setThemeColor',
             'setClientTheme',
             'setAllowOrbitInSketchMode',
@@ -579,7 +590,6 @@ export const settingsMachine = setup({
             'setAllSettings',
             'setThemeClass',
             'setEngineTheme',
-            'setClientSideSceneUnits',
             'setThemeColor',
             'Execute AST',
             'setClientTheme',

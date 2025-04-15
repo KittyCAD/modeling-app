@@ -28,8 +28,8 @@ import type { UnitLen } from '@rust/kcl-lib/bindings/UnitLen'
 import { KCLError } from '@src/lang/errors'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import {
-  defaultArtifactGraph,
   type Artifact,
+  defaultArtifactGraph,
 } from '@src/lang/std/artifactGraph'
 import type { Coords2d } from '@src/lang/std/sketch'
 import {
@@ -50,7 +50,6 @@ import {
   format_number,
   get_kcl_version,
   get_tangential_arc_to_info,
-  init,
   is_kcl_empty_or_only_settings,
   is_points_ccw,
   kcl_lint,
@@ -59,7 +58,6 @@ import {
   parse_project_settings,
   parse_wasm,
   recast_wasm,
-  reloadModule,
   serialize_configuration,
   serialize_project_configuration,
 } from '@src/lib/wasm_lib_wrapper'
@@ -71,6 +69,7 @@ export type {
   ArtifactId,
   Cap as CapArtifact,
   CodeRef,
+  CompositeSolid as CompositeSolidArtifact,
   EdgeCut,
   Path as PathArtifact,
   Plane as PlaneArtifact,
@@ -156,36 +155,6 @@ function firstSourceRange(error: RustKclError): SourceRange {
     ? sourceRangeFromRust(error.sourceRanges[0])
     : defaultSourceRange()
 }
-
-export const wasmUrl = () => {
-  // For when we're in electron (file based) or web server (network based)
-  // For some reason relative paths don't work as expected. Otherwise we would
-  // just do /wasm_lib_bg.wasm. In particular, the issue arises when the path
-  // is used from within worker.ts.
-  const fullUrl = document.location.protocol.includes('http')
-    ? document.location.origin + '/kcl_wasm_lib_bg.wasm'
-    : document.location.protocol +
-      document.location.pathname.split('/').slice(0, -1).join('/') +
-      '/kcl_wasm_lib_bg.wasm'
-
-  return fullUrl
-}
-
-// Initialise the wasm module.
-const initialise = async () => {
-  try {
-    await reloadModule()
-    const fullUrl = wasmUrl()
-    const input = await fetch(fullUrl)
-    const buffer = await input.arrayBuffer()
-    return await init({ module_or_path: buffer })
-  } catch (e) {
-    console.log('Error initialising WASM', e)
-    return Promise.reject(e)
-  }
-}
-
-export const initPromise = initialise()
 
 const splitErrors = (
   input: CompilationError[]
@@ -273,7 +242,10 @@ export function assertParse(code: string): Node<Program> {
   if (err(result)) throw result
   if (!resultIsOk(result)) {
     // eslint-disable-next-line suggest-no-throw/suggest-no-throw
-    throw new Error('parse result contains errors', { cause: result })
+    throw new Error(
+      `parse result contains errors: ${result.errors.map((err) => err.message).join('\n')}`,
+      { cause: result }
+    )
   }
   return result.program
 }

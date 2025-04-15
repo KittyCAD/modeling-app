@@ -4,6 +4,7 @@ import type { MouseEventHandler } from 'react'
 import { useCallback, useContext, useEffect, useMemo } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 
+import { useAppState } from '@src/AppState'
 import { ActionIcon } from '@src/components/ActionIcon'
 import type { CustomIconName } from '@src/components/CustomIcon'
 import { MachineManagerContext } from '@src/components/MachineManagerProvider'
@@ -15,7 +16,10 @@ import type {
 import { sidebarPanes } from '@src/components/ModelingSidebar/ModelingPanes'
 import Tooltip from '@src/components/Tooltip'
 import { useModelingContext } from '@src/hooks/useModelingContext'
+import { useNetworkContext } from '@src/hooks/useNetworkContext'
+import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
 import { useKclContext } from '@src/lang/KclProvider'
+import { EngineConnectionStateType } from '@src/lang/std/engineConnection'
 import { SIDEBAR_BUTTON_SUFFIX } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 import { useSettings } from '@src/machines/appMachine'
@@ -50,6 +54,16 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
       : 'pointer-events-auto '
   const showDebugPanel = settings.app.showDebugPanel
 
+  const { overallState, immediateState } = useNetworkContext()
+  const { isExecuting } = useKclContext()
+  const { isStreamReady } = useAppState()
+  const reliesOnEngine =
+    (overallState !== NetworkHealthState.Ok &&
+      overallState !== NetworkHealthState.Weak) ||
+    isExecuting ||
+    immediateState.type !== EngineConnectionStateType.ConnectionEstablished ||
+    !isStreamReady
+
   const paneCallbackProps = useMemo(
     () => ({
       kclContext,
@@ -61,11 +75,37 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
 
   const sidebarActions: SidebarAction[] = [
     {
+      id: 'load-external-model',
+      title: 'Load external model',
+      sidebarName: 'Load external model',
+      icon: 'importFile',
+      keybinding: 'Ctrl + Shift + I',
+      action: () =>
+        commandBarActor.send({
+          type: 'Find and select command',
+          data: { name: 'load-external-model', groupId: 'code' },
+        }),
+    },
+    {
+      id: 'share-link',
+      title: 'Create share link',
+      sidebarName: 'Create share link',
+      icon: 'link',
+      keybinding: 'Mod + Alt + S',
+      action: () =>
+        commandBarActor.send({
+          type: 'Find and select command',
+          data: { name: 'share-file-link', groupId: 'code' },
+        }),
+    },
+    {
       id: 'export',
       title: 'Export part',
       sidebarName: 'Export part',
       icon: 'floppyDiskArrow',
       keybinding: 'Ctrl + Shift + E',
+      disable: () =>
+        reliesOnEngine ? 'Need engine connection to export' : undefined,
       action: () =>
         commandBarActor.send({
           type: 'Find and select command',

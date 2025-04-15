@@ -37,7 +37,7 @@ use uuid::Uuid;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    execution::{ArtifactCommand, DefaultPlanes, IdGenerator, Point3d},
+    execution::{types::UnitLen, ArtifactCommand, DefaultPlanes, IdGenerator, Point3d},
     SourceRange,
 };
 
@@ -92,6 +92,16 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
 
     /// Get the artifact commands that have accumulated so far.
     fn artifact_commands(&self) -> Arc<RwLock<Vec<ArtifactCommand>>>;
+
+    /// Take the batch of commands that have accumulated so far and clear them.
+    async fn take_batch(&self) -> Vec<(WebSocketRequest, SourceRange)> {
+        std::mem::take(&mut *self.batch().write().await)
+    }
+
+    /// Take the batch of end commands that have accumulated so far and clear them.
+    async fn take_batch_end(&self) -> IndexMap<Uuid, (WebSocketRequest, SourceRange)> {
+        std::mem::take(&mut *self.batch_end().write().await)
+    }
 
     /// Clear all artifact commands that have accumulated so far.
     async fn clear_artifact_commands(&self) {
@@ -370,11 +380,11 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         source_range: SourceRange,
     ) -> Result<OkWebSocketResponseData, crate::errors::KclError> {
         let all_requests = if batch_end {
-            let mut requests = self.batch().read().await.clone();
-            requests.extend(self.batch_end().read().await.values().cloned());
+            let mut requests = self.take_batch().await.clone();
+            requests.extend(self.take_batch_end().await.values().cloned());
             requests
         } else {
-            self.batch().read().await.clone()
+            self.take_batch().await.clone()
         };
 
         // Return early if we have no commands to send.
@@ -442,11 +452,6 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
             }
         }
 
-        // Throw away the old batch queue.
-        self.batch().write().await.clear();
-        if batch_end {
-            self.batch_end().write().await.clear();
-        }
         self.stats().batches_sent.fetch_add(1, Ordering::Relaxed);
 
         // We pop off the responses to cleanup our mappings.
@@ -512,7 +517,13 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
     ) -> Result<uuid::Uuid, KclError> {
         // Create new default planes.
         let default_size = 100.0;
-        let default_origin = Point3d { x: 0.0, y: 0.0, z: 0.0 }.into();
+        let default_origin = Point3d {
+            x: 0.0,
+            y: 0.0,
+            z: 0.0,
+            units: UnitLen::Mm,
+        }
+        .into();
 
         self.batch_modeling_cmd(
             plane_id,
@@ -550,8 +561,18 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
             (
                 PlaneName::Xy,
                 id_generator.next_uuid(),
-                Point3d { x: 1.0, y: 0.0, z: 0.0 },
-                Point3d { x: 0.0, y: 1.0, z: 0.0 },
+                Point3d {
+                    x: 1.0,
+                    y: 0.0,
+                    z: 0.0,
+                    units: UnitLen::Mm,
+                },
+                Point3d {
+                    x: 0.0,
+                    y: 1.0,
+                    z: 0.0,
+                    units: UnitLen::Mm,
+                },
                 Some(Color {
                     r: 0.7,
                     g: 0.28,
@@ -562,8 +583,18 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
             (
                 PlaneName::Yz,
                 id_generator.next_uuid(),
-                Point3d { x: 0.0, y: 1.0, z: 0.0 },
-                Point3d { x: 0.0, y: 0.0, z: 1.0 },
+                Point3d {
+                    x: 0.0,
+                    y: 1.0,
+                    z: 0.,
+                    units: UnitLen::Mm,
+                },
+                Point3d {
+                    x: 0.0,
+                    y: 0.0,
+                    z: 1.0,
+                    units: UnitLen::Mm,
+                },
                 Some(Color {
                     r: 0.28,
                     g: 0.7,
@@ -574,8 +605,18 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
             (
                 PlaneName::Xz,
                 id_generator.next_uuid(),
-                Point3d { x: 1.0, y: 0.0, z: 0.0 },
-                Point3d { x: 0.0, y: 0.0, z: 1.0 },
+                Point3d {
+                    x: 1.0,
+                    y: 0.0,
+                    z: 0.0,
+                    units: UnitLen::Mm,
+                },
+                Point3d {
+                    x: 0.0,
+                    y: 0.0,
+                    z: 1.0,
+                    units: UnitLen::Mm,
+                },
                 Some(Color {
                     r: 0.28,
                     g: 0.28,
@@ -590,8 +631,14 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
                     x: -1.0,
                     y: 0.0,
                     z: 0.0,
+                    units: UnitLen::Mm,
                 },
-                Point3d { x: 0.0, y: 1.0, z: 0.0 },
+                Point3d {
+                    x: 0.0,
+                    y: 1.0,
+                    z: 0.0,
+                    units: UnitLen::Mm,
+                },
                 None,
             ),
             (
@@ -601,8 +648,14 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
                     x: 0.0,
                     y: -1.0,
                     z: 0.0,
+                    units: UnitLen::Mm,
                 },
-                Point3d { x: 0.0, y: 0.0, z: 1.0 },
+                Point3d {
+                    x: 0.0,
+                    y: 0.0,
+                    z: 1.0,
+                    units: UnitLen::Mm,
+                },
                 None,
             ),
             (
@@ -612,8 +665,14 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
                     x: -1.0,
                     y: 0.0,
                     z: 0.0,
+                    units: UnitLen::Mm,
                 },
-                Point3d { x: 0.0, y: 0.0, z: 1.0 },
+                Point3d {
+                    x: 0.0,
+                    y: 0.0,
+                    z: 1.0,
+                    units: UnitLen::Mm,
+                },
                 None,
             ),
         ];

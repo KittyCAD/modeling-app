@@ -179,7 +179,8 @@ description: Artifact commands function_sketch.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 3.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {

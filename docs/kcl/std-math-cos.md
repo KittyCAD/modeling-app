@@ -9,7 +9,7 @@ Compute the cosine of a number (in radians).
 
 
 ```js
-cos(@num: number(rad)): number(_)
+cos(@num: number(Angle)): number(_)
 ```
 
 
@@ -17,7 +17,7 @@ cos(@num: number(rad)): number(_)
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `num` | `number(rad)` |  | Yes |
+| `num` | `number(Angle)` |  | Yes |
 
 ### Returns
 
@@ -29,10 +29,10 @@ cos(@num: number(rad)): number(_)
 ```js
 exampleSketch = startSketchOn(XZ)
   |> startProfileAt([0, 0], %)
-  |> angledLine({
+  |> angledLine(
     angle = 30,
     length = 3 / cos(toRadians(30)),
-  }, %)
+  )
   |> yLine(endAbsolute = 0)
   |> close()
 

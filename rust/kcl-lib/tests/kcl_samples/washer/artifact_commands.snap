@@ -254,8 +254,9 @@ description: Artifact commands washer.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 0.038,
-      "faces": null
+      "distance": 0.032,
+      "faces": null,
+      "opposite": "None"
     }
   },
   {

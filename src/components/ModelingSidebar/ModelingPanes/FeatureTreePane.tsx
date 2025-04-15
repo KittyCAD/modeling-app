@@ -24,7 +24,10 @@ import {
   stdLibMap,
 } from '@src/lib/operations'
 import { editorManager, kclManager } from '@src/lib/singletons'
-import { featureTreeMachine } from '@src/machines/featureTreeMachine'
+import {
+  featureTreeMachine,
+  featureTreeMachineDefaultContext,
+} from '@src/machines/featureTreeMachine'
 import {
   editorIsMountedSelector,
   kclEditorActor,
@@ -101,7 +104,13 @@ export const FeatureTreePane = () => {
           }
         },
       },
-    })
+    }),
+    {
+      input: {
+        ...featureTreeMachineDefaultContext,
+      },
+      // devTools: true,
+    }
   )
   // If there are parse errors we show the last successful operations
   // and overlay a message on top of the pane
@@ -289,10 +298,7 @@ const OperationItem = (props: {
   send: Prop<Actor<typeof featureTreeMachine>, 'send'>
 }) => {
   const kclContext = useKclContext()
-  const name =
-    'name' in props.item && props.item.name !== null
-      ? getOperationLabel(props.item)
-      : 'anonymous'
+  const name = getOperationLabel(props.item)
   const errors = useMemo(() => {
     return kclContext.diagnostics.filter(
       (diag) =>
@@ -304,7 +310,7 @@ const OperationItem = (props: {
   }, [kclContext.diagnostics.length])
 
   function selectOperation() {
-    if (props.item.type === 'UserDefinedFunctionReturn') {
+    if (props.item.type === 'GroupEnd') {
       return
     }
     props.send({
@@ -320,7 +326,10 @@ const OperationItem = (props: {
    * TODO: https://github.com/KittyCAD/modeling-app/issues/4442
    */
   function enterEditFlow() {
-    if (props.item.type === 'StdLibCall') {
+    if (
+      props.item.type === 'StdLibCall' ||
+      props.item.type === 'KclStdLibCall'
+    ) {
       props.send({
         type: 'enterEditFlow',
         data: {
@@ -332,7 +341,10 @@ const OperationItem = (props: {
   }
 
   function enterAppearanceFlow() {
-    if (props.item.type === 'StdLibCall') {
+    if (
+      props.item.type === 'StdLibCall' ||
+      props.item.type === 'KclStdLibCall'
+    ) {
       props.send({
         type: 'enterAppearanceFlow',
         data: {
@@ -346,7 +358,8 @@ const OperationItem = (props: {
   function deleteOperation() {
     if (
       props.item.type === 'StdLibCall' ||
-      props.item.type === 'UserDefinedFunctionCall'
+      props.item.type === 'GroupBegin' ||
+      props.item.type === 'KclStdLibCall'
     ) {
       props.send({
         type: 'deleteOperation',
@@ -361,7 +374,7 @@ const OperationItem = (props: {
     () => [
       <ContextMenuItem
         onClick={() => {
-          if (props.item.type === 'UserDefinedFunctionReturn') {
+          if (props.item.type === 'GroupEnd') {
             return
           }
           props.send({
@@ -374,14 +387,19 @@ const OperationItem = (props: {
       >
         View KCL source code
       </ContextMenuItem>,
-      ...(props.item.type === 'UserDefinedFunctionCall'
+      ...(props.item.type === 'GroupBegin' &&
+      props.item.group.type === 'FunctionCall'
         ? [
             <ContextMenuItem
               onClick={() => {
-                if (props.item.type !== 'UserDefinedFunctionCall') {
+                if (props.item.type !== 'GroupBegin') {
                   return
                 }
-                const functionRange = props.item.functionSourceRange
+                if (props.item.group.type !== 'FunctionCall') {
+                  // TODO: Add module instance support.
+                  return
+                }
+                const functionRange = props.item.group.functionSourceRange
                 // For some reason, the cursor goes to the end of the source
                 // range we select.  So set the end equal to the beginning.
                 functionRange[1] = functionRange[0]
@@ -397,7 +415,8 @@ const OperationItem = (props: {
             </ContextMenuItem>,
           ]
         : []),
-      ...(props.item.type === 'StdLibCall'
+      ...(props.item.type === 'StdLibCall' ||
+      props.item.type === 'KclStdLibCall'
         ? [
             <ContextMenuItem
               disabled={!stdLibMap[props.item.name]?.supportsAppearance}

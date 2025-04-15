@@ -1,3 +1,4 @@
+import path from 'path'
 import * as TOML from '@iarna/toml'
 import type { Models } from '@kittycad/lib'
 import type { BrowserContext, Locator, Page, TestInfo } from '@playwright/test'
@@ -9,7 +10,6 @@ import { reportRejection } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
 import { isArray } from '@src/lib/utils'
 import fsp from 'fs/promises'
-import path from 'path'
 import pixelMatch from 'pixelmatch'
 import type { Protocol } from 'playwright-core/types/protocol'
 import { PNG } from 'pngjs'
@@ -28,6 +28,17 @@ import { test } from '@e2e/playwright/zoo-test'
 const toNormalizedCode = (text: string) => {
   return text.replace(/\s+/g, '')
 }
+
+export const headerMasks = (page: Page) => [
+  page.locator('#app-header'),
+  page.locator('#sidebar-top-ribbon'),
+  page.locator('#sidebar-bottom-ribbon'),
+]
+
+export const networkingMasks = (page: Page) => [
+  page.getByTestId('model-state-indicator'),
+  page.getByTestId('network-toggle'),
+]
 
 export type TestColor = [number, number, number]
 export const TEST_COLORS: { [key: string]: TestColor } = {
@@ -74,7 +85,10 @@ async function waitForPageLoadWithRetry(page: Page) {
   await expect(async () => {
     await page.goto('/')
     const errorMessage = 'App failed to load - 🔃 Retrying ...'
-    await expect(page.getByTestId('loading'), errorMessage).not.toBeAttached({
+    await expect(
+      page.getByTestId('model-state-indicator-playing'),
+      errorMessage
+    ).toBeAttached({
       timeout: 20_000,
     })
 
@@ -87,9 +101,10 @@ async function waitForPageLoadWithRetry(page: Page) {
   }).toPass({ timeout: 70_000, intervals: [1_000] })
 }
 
+// lee: This needs to be replaced by scene.settled() eventually.
 async function waitForPageLoad(page: Page) {
   // wait for all spinners to be gone
-  await expect(page.getByTestId('loading')).not.toBeAttached({
+  await expect(page.getByTestId('model-state-indicator-playing')).toBeVisible({
     timeout: 20_000,
   })
 
@@ -871,9 +886,10 @@ export async function tearDown(page: Page, testInfo: TestInfo) {
 export async function setup(
   context: BrowserContext,
   page: Page,
+  testDir: string,
   testInfo?: TestInfo
 ) {
-  await context.addInitScript(
+  await page.addInitScript(
     async ({
       token,
       settingsKey,
@@ -914,7 +930,7 @@ export async function setup(
         },
       }),
       IS_PLAYWRIGHT_KEY,
-      PLAYWRIGHT_TEST_DIR: TEST_SETTINGS.project?.directory || '',
+      PLAYWRIGHT_TEST_DIR: testDir,
       PERSIST_MODELING_CONTEXT,
     }
   )
@@ -934,7 +950,7 @@ export async function setup(
   await page.emulateMedia({ reducedMotion: 'reduce' })
 
   // Trigger a navigation, since loading file:// doesn't.
-  // await page.reload()
+  await page.reload()
 }
 
 function failOnConsoleErrors(page: Page, testInfo?: TestInfo) {
@@ -1014,6 +1030,10 @@ export async function createProject({
 
 export function executorInputPath(fileName: string): string {
   return path.join('rust', 'kcl-lib', 'e2e', 'executor', 'inputs', fileName)
+}
+
+export function testsInputPath(fileName: string): string {
+  return path.join('rust', 'kcl-lib', 'tests', 'inputs', fileName)
 }
 
 export async function doAndWaitForImageDiff(
@@ -1131,7 +1151,7 @@ export function tomlToPerProjectSettings(
   return TOML.parse(toml)
 }
 
-export function perProjectsettingsToToml(
+export function perProjectSettingsToToml(
   settings: DeepPartial<ProjectConfiguration>
 ) {
   // eslint-disable-next-line no-restricted-syntax

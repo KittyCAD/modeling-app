@@ -8,24 +8,24 @@ description: Result of parsing property_of_object.kcl
       {
         "commentStart": 0,
         "declaration": {
-          "commentStart": 50,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 50,
+            "commentStart": 0,
             "end": 0,
             "name": "obj",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 56,
+            "commentStart": 0,
             "end": 0,
             "properties": [
               {
-                "commentStart": 58,
+                "commentStart": 0,
                 "end": 0,
                 "key": {
-                  "commentStart": 58,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "foo",
                   "start": 0,
@@ -34,7 +34,7 @@ description: Result of parsing property_of_object.kcl
                 "start": 0,
                 "type": "ObjectProperty",
                 "value": {
-                  "commentStart": 64,
+                  "commentStart": 0,
                   "end": 0,
                   "raw": "1",
                   "start": 0,
@@ -47,10 +47,10 @@ description: Result of parsing property_of_object.kcl
                 }
               },
               {
-                "commentStart": 67,
+                "commentStart": 0,
                 "end": 0,
                 "key": {
-                  "commentStart": 67,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "bar",
                   "start": 0,
@@ -59,7 +59,7 @@ description: Result of parsing property_of_object.kcl
                 "start": 0,
                 "type": "ObjectProperty",
                 "value": {
-                  "commentStart": 73,
+                  "commentStart": 0,
                   "end": 0,
                   "raw": "0",
                   "start": 0,
@@ -86,23 +86,23 @@ description: Result of parsing property_of_object.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 76,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 116,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 116,
+            "commentStart": 0,
             "end": 0,
             "name": "one_a",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 124,
+            "commentStart": 0,
             "computed": false,
             "end": 0,
             "object": {
-              "commentStart": 124,
+              "commentStart": 0,
               "end": 0,
               "name": "obj",
               "start": 0,
@@ -110,7 +110,7 @@ description: Result of parsing property_of_object.kcl
               "type": "Identifier"
             },
             "property": {
-              "commentStart": 128,
+              "commentStart": 0,
               "end": 0,
               "raw": "\"foo\"",
               "start": 0,
@@ -132,16 +132,16 @@ description: Result of parsing property_of_object.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 134,
+        "commentStart": 0,
         "end": 0,
         "expression": {
           "arguments": [
             {
               "abs_path": false,
-              "commentStart": 155,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 155,
+                "commentStart": 0,
                 "end": 0,
                 "name": "one_a",
                 "start": 0,
@@ -153,7 +153,7 @@ description: Result of parsing property_of_object.kcl
               "type": "Name"
             },
             {
-              "commentStart": 162,
+              "commentStart": 0,
               "end": 0,
               "raw": "1",
               "start": 0,
@@ -165,7 +165,7 @@ description: Result of parsing property_of_object.kcl
               }
             },
             {
-              "commentStart": 165,
+              "commentStart": 0,
               "end": 0,
               "raw": "\"Literal property lookup\"",
               "start": 0,
@@ -176,10 +176,10 @@ description: Result of parsing property_of_object.kcl
           ],
           "callee": {
             "abs_path": false,
-            "commentStart": 136,
+            "commentStart": 0,
             "end": 0,
             "name": {
-              "commentStart": 136,
+              "commentStart": 0,
               "end": 0,
               "name": "assertLessThanOrEq",
               "start": 0,
@@ -189,7 +189,7 @@ description: Result of parsing property_of_object.kcl
             "start": 0,
             "type": "Name"
           },
-          "commentStart": 136,
+          "commentStart": 0,
           "end": 0,
           "start": 0,
           "type": "CallExpression",
@@ -200,16 +200,16 @@ description: Result of parsing property_of_object.kcl
         "type": "ExpressionStatement"
       },
       {
-        "commentStart": 192,
+        "commentStart": 0,
         "end": 0,
         "expression": {
           "arguments": [
             {
               "abs_path": false,
-              "commentStart": 214,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 214,
+                "commentStart": 0,
                 "end": 0,
                 "name": "one_a",
                 "start": 0,
@@ -221,7 +221,7 @@ description: Result of parsing property_of_object.kcl
               "type": "Name"
             },
             {
-              "commentStart": 221,
+              "commentStart": 0,
               "end": 0,
               "raw": "1",
               "start": 0,
@@ -233,7 +233,7 @@ description: Result of parsing property_of_object.kcl
               }
             },
             {
-              "commentStart": 224,
+              "commentStart": 0,
               "end": 0,
               "raw": "\"Literal property lookup\"",
               "start": 0,
@@ -244,10 +244,10 @@ description: Result of parsing property_of_object.kcl
           ],
           "callee": {
             "abs_path": false,
-            "commentStart": 192,
+            "commentStart": 0,
             "end": 0,
             "name": {
-              "commentStart": 192,
+              "commentStart": 0,
               "end": 0,
               "name": "assertGreaterThanOrEq",
               "start": 0,
@@ -257,7 +257,7 @@ description: Result of parsing property_of_object.kcl
             "start": 0,
             "type": "Name"
           },
-          "commentStart": 192,
+          "commentStart": 0,
           "end": 0,
           "start": 0,
           "type": "CallExpression",
@@ -268,19 +268,19 @@ description: Result of parsing property_of_object.kcl
         "type": "ExpressionStatement"
       },
       {
-        "commentStart": 250,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 340,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 340,
+            "commentStart": 0,
             "end": 0,
             "name": "p",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 344,
+            "commentStart": 0,
             "end": 0,
             "raw": "\"foo\"",
             "start": 0,
@@ -298,23 +298,23 @@ description: Result of parsing property_of_object.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 350,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 350,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 350,
+            "commentStart": 0,
             "end": 0,
             "name": "one_b",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 358,
+            "commentStart": 0,
             "computed": true,
             "end": 0,
             "object": {
-              "commentStart": 358,
+              "commentStart": 0,
               "end": 0,
               "name": "obj",
               "start": 0,
@@ -322,7 +322,7 @@ description: Result of parsing property_of_object.kcl
               "type": "Identifier"
             },
             "property": {
-              "commentStart": 362,
+              "commentStart": 0,
               "end": 0,
               "name": "p",
               "start": 0,
@@ -343,16 +343,16 @@ description: Result of parsing property_of_object.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 364,
+        "commentStart": 0,
         "end": 0,
         "expression": {
           "arguments": [
             {
               "abs_path": false,
-              "commentStart": 385,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 385,
+                "commentStart": 0,
                 "end": 0,
                 "name": "one_b",
                 "start": 0,
@@ -364,7 +364,7 @@ description: Result of parsing property_of_object.kcl
               "type": "Name"
             },
             {
-              "commentStart": 392,
+              "commentStart": 0,
               "end": 0,
               "raw": "1",
               "start": 0,
@@ -376,7 +376,7 @@ description: Result of parsing property_of_object.kcl
               }
             },
             {
-              "commentStart": 395,
+              "commentStart": 0,
               "end": 0,
               "raw": "\"Computed property lookup\"",
               "start": 0,
@@ -387,10 +387,10 @@ description: Result of parsing property_of_object.kcl
           ],
           "callee": {
             "abs_path": false,
-            "commentStart": 366,
+            "commentStart": 0,
             "end": 0,
             "name": {
-              "commentStart": 366,
+              "commentStart": 0,
               "end": 0,
               "name": "assertLessThanOrEq",
               "start": 0,
@@ -400,7 +400,7 @@ description: Result of parsing property_of_object.kcl
             "start": 0,
             "type": "Name"
           },
-          "commentStart": 366,
+          "commentStart": 0,
           "end": 0,
           "start": 0,
           "type": "CallExpression",
@@ -411,16 +411,16 @@ description: Result of parsing property_of_object.kcl
         "type": "ExpressionStatement"
       },
       {
-        "commentStart": 423,
+        "commentStart": 0,
         "end": 0,
         "expression": {
           "arguments": [
             {
               "abs_path": false,
-              "commentStart": 445,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 445,
+                "commentStart": 0,
                 "end": 0,
                 "name": "one_b",
                 "start": 0,
@@ -432,7 +432,7 @@ description: Result of parsing property_of_object.kcl
               "type": "Name"
             },
             {
-              "commentStart": 452,
+              "commentStart": 0,
               "end": 0,
               "raw": "1",
               "start": 0,
@@ -444,7 +444,7 @@ description: Result of parsing property_of_object.kcl
               }
             },
             {
-              "commentStart": 455,
+              "commentStart": 0,
               "end": 0,
               "raw": "\"Computed property lookup\"",
               "start": 0,
@@ -455,10 +455,10 @@ description: Result of parsing property_of_object.kcl
           ],
           "callee": {
             "abs_path": false,
-            "commentStart": 423,
+            "commentStart": 0,
             "end": 0,
             "name": {
-              "commentStart": 423,
+              "commentStart": 0,
               "end": 0,
               "name": "assertGreaterThanOrEq",
               "start": 0,
@@ -468,7 +468,7 @@ description: Result of parsing property_of_object.kcl
             "start": 0,
             "type": "Name"
           },
-          "commentStart": 423,
+          "commentStart": 0,
           "end": 0,
           "start": 0,
           "type": "CallExpression",
@@ -479,26 +479,26 @@ description: Result of parsing property_of_object.kcl
         "type": "ExpressionStatement"
       },
       {
-        "commentStart": 482,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 524,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 524,
+            "commentStart": 0,
             "end": 0,
             "name": "obj2",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 531,
+            "commentStart": 0,
             "end": 0,
             "properties": [
               {
-                "commentStart": 533,
+                "commentStart": 0,
                 "end": 0,
                 "key": {
-                  "commentStart": 533,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "inner",
                   "start": 0,
@@ -508,10 +508,10 @@ description: Result of parsing property_of_object.kcl
                 "type": "ObjectProperty",
                 "value": {
                   "abs_path": false,
-                  "commentStart": 541,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 541,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "obj",
                     "start": 0,
@@ -538,27 +538,27 @@ description: Result of parsing property_of_object.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 546,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 548,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 548,
+            "commentStart": 0,
             "end": 0,
             "name": "one_c",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 556,
+            "commentStart": 0,
             "computed": false,
             "end": 0,
             "object": {
-              "commentStart": 556,
+              "commentStart": 0,
               "computed": false,
               "end": 0,
               "object": {
-                "commentStart": 556,
+                "commentStart": 0,
                 "end": 0,
                 "name": "obj2",
                 "start": 0,
@@ -566,7 +566,7 @@ description: Result of parsing property_of_object.kcl
                 "type": "Identifier"
               },
               "property": {
-                "commentStart": 561,
+                "commentStart": 0,
                 "end": 0,
                 "name": "inner",
                 "start": 0,
@@ -578,7 +578,7 @@ description: Result of parsing property_of_object.kcl
               "type": "MemberExpression"
             },
             "property": {
-              "commentStart": 567,
+              "commentStart": 0,
               "end": 0,
               "raw": "\"foo\"",
               "start": 0,
@@ -600,16 +600,16 @@ description: Result of parsing property_of_object.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 573,
+        "commentStart": 0,
         "end": 0,
         "expression": {
           "arguments": [
             {
               "abs_path": false,
-              "commentStart": 594,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 594,
+                "commentStart": 0,
                 "end": 0,
                 "name": "one_c",
                 "start": 0,
@@ -621,7 +621,7 @@ description: Result of parsing property_of_object.kcl
               "type": "Name"
             },
             {
-              "commentStart": 601,
+              "commentStart": 0,
               "end": 0,
               "raw": "1",
               "start": 0,
@@ -633,7 +633,7 @@ description: Result of parsing property_of_object.kcl
               }
             },
             {
-              "commentStart": 604,
+              "commentStart": 0,
               "end": 0,
               "raw": "\"Literal property lookup\"",
               "start": 0,
@@ -644,10 +644,10 @@ description: Result of parsing property_of_object.kcl
           ],
           "callee": {
             "abs_path": false,
-            "commentStart": 575,
+            "commentStart": 0,
             "end": 0,
             "name": {
-              "commentStart": 575,
+              "commentStart": 0,
               "end": 0,
               "name": "assertLessThanOrEq",
               "start": 0,
@@ -657,7 +657,7 @@ description: Result of parsing property_of_object.kcl
             "start": 0,
             "type": "Name"
           },
-          "commentStart": 575,
+          "commentStart": 0,
           "end": 0,
           "start": 0,
           "type": "CallExpression",
@@ -668,16 +668,16 @@ description: Result of parsing property_of_object.kcl
         "type": "ExpressionStatement"
       },
       {
-        "commentStart": 631,
+        "commentStart": 0,
         "end": 0,
         "expression": {
           "arguments": [
             {
               "abs_path": false,
-              "commentStart": 653,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 653,
+                "commentStart": 0,
                 "end": 0,
                 "name": "one_c",
                 "start": 0,
@@ -689,7 +689,7 @@ description: Result of parsing property_of_object.kcl
               "type": "Name"
             },
             {
-              "commentStart": 660,
+              "commentStart": 0,
               "end": 0,
               "raw": "1",
               "start": 0,
@@ -701,7 +701,7 @@ description: Result of parsing property_of_object.kcl
               }
             },
             {
-              "commentStart": 663,
+              "commentStart": 0,
               "end": 0,
               "raw": "\"Literal property lookup\"",
               "start": 0,
@@ -712,10 +712,10 @@ description: Result of parsing property_of_object.kcl
           ],
           "callee": {
             "abs_path": false,
-            "commentStart": 631,
+            "commentStart": 0,
             "end": 0,
             "name": {
-              "commentStart": 631,
+              "commentStart": 0,
               "end": 0,
               "name": "assertGreaterThanOrEq",
               "start": 0,
@@ -725,7 +725,7 @@ description: Result of parsing property_of_object.kcl
             "start": 0,
             "type": "Name"
           },
-          "commentStart": 631,
+          "commentStart": 0,
           "end": 0,
           "start": 0,
           "type": "CallExpression",
@@ -736,27 +736,27 @@ description: Result of parsing property_of_object.kcl
         "type": "ExpressionStatement"
       },
       {
-        "commentStart": 689,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 752,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 752,
+            "commentStart": 0,
             "end": 0,
             "name": "one_d",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 760,
+            "commentStart": 0,
             "computed": true,
             "end": 0,
             "object": {
-              "commentStart": 760,
+              "commentStart": 0,
               "computed": false,
               "end": 0,
               "object": {
-                "commentStart": 760,
+                "commentStart": 0,
                 "end": 0,
                 "name": "obj2",
                 "start": 0,
@@ -764,7 +764,7 @@ description: Result of parsing property_of_object.kcl
                 "type": "Identifier"
               },
               "property": {
-                "commentStart": 765,
+                "commentStart": 0,
                 "end": 0,
                 "name": "inner",
                 "start": 0,
@@ -776,7 +776,7 @@ description: Result of parsing property_of_object.kcl
               "type": "MemberExpression"
             },
             "property": {
-              "commentStart": 771,
+              "commentStart": 0,
               "end": 0,
               "name": "p",
               "start": 0,
@@ -797,16 +797,16 @@ description: Result of parsing property_of_object.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 773,
+        "commentStart": 0,
         "end": 0,
         "expression": {
           "arguments": [
             {
               "abs_path": false,
-              "commentStart": 794,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 794,
+                "commentStart": 0,
                 "end": 0,
                 "name": "one_d",
                 "start": 0,
@@ -818,7 +818,7 @@ description: Result of parsing property_of_object.kcl
               "type": "Name"
             },
             {
-              "commentStart": 801,
+              "commentStart": 0,
               "end": 0,
               "raw": "1",
               "start": 0,
@@ -830,7 +830,7 @@ description: Result of parsing property_of_object.kcl
               }
             },
             {
-              "commentStart": 804,
+              "commentStart": 0,
               "end": 0,
               "raw": "\"Computed property lookup\"",
               "start": 0,
@@ -841,10 +841,10 @@ description: Result of parsing property_of_object.kcl
           ],
           "callee": {
             "abs_path": false,
-            "commentStart": 775,
+            "commentStart": 0,
             "end": 0,
             "name": {
-              "commentStart": 775,
+              "commentStart": 0,
               "end": 0,
               "name": "assertLessThanOrEq",
               "start": 0,
@@ -854,7 +854,7 @@ description: Result of parsing property_of_object.kcl
             "start": 0,
             "type": "Name"
           },
-          "commentStart": 775,
+          "commentStart": 0,
           "end": 0,
           "start": 0,
           "type": "CallExpression",
@@ -865,16 +865,16 @@ description: Result of parsing property_of_object.kcl
         "type": "ExpressionStatement"
       },
       {
-        "commentStart": 832,
+        "commentStart": 0,
         "end": 0,
         "expression": {
           "arguments": [
             {
               "abs_path": false,
-              "commentStart": 854,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 854,
+                "commentStart": 0,
                 "end": 0,
                 "name": "one_d",
                 "start": 0,
@@ -886,7 +886,7 @@ description: Result of parsing property_of_object.kcl
               "type": "Name"
             },
             {
-              "commentStart": 861,
+              "commentStart": 0,
               "end": 0,
               "raw": "1",
               "start": 0,
@@ -898,7 +898,7 @@ description: Result of parsing property_of_object.kcl
               }
             },
             {
-              "commentStart": 864,
+              "commentStart": 0,
               "end": 0,
               "raw": "\"Computed property lookup\"",
               "start": 0,
@@ -909,10 +909,10 @@ description: Result of parsing property_of_object.kcl
           ],
           "callee": {
             "abs_path": false,
-            "commentStart": 832,
+            "commentStart": 0,
             "end": 0,
             "name": {
-              "commentStart": 832,
+              "commentStart": 0,
               "end": 0,
               "name": "assertGreaterThanOrEq",
               "start": 0,
@@ -922,7 +922,7 @@ description: Result of parsing property_of_object.kcl
             "start": 0,
             "type": "Name"
           },
-          "commentStart": 832,
+          "commentStart": 0,
           "end": 0,
           "start": 0,
           "type": "CallExpression",
@@ -939,7 +939,7 @@ description: Result of parsing property_of_object.kcl
       "nonCodeNodes": {
         "0": [
           {
-            "commentStart": 76,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -950,7 +950,7 @@ description: Result of parsing property_of_object.kcl
             }
           },
           {
-            "commentStart": 113,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -961,7 +961,7 @@ description: Result of parsing property_of_object.kcl
         ],
         "1": [
           {
-            "commentStart": 134,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -972,7 +972,7 @@ description: Result of parsing property_of_object.kcl
         ],
         "3": [
           {
-            "commentStart": 250,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -983,7 +983,7 @@ description: Result of parsing property_of_object.kcl
             }
           },
           {
-            "commentStart": 289,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -994,7 +994,7 @@ description: Result of parsing property_of_object.kcl
             }
           },
           {
-            "commentStart": 337,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -1005,7 +1005,7 @@ description: Result of parsing property_of_object.kcl
         ],
         "5": [
           {
-            "commentStart": 364,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -1016,7 +1016,7 @@ description: Result of parsing property_of_object.kcl
         ],
         "7": [
           {
-            "commentStart": 482,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -1027,7 +1027,7 @@ description: Result of parsing property_of_object.kcl
             }
           },
           {
-            "commentStart": 521,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -1038,7 +1038,7 @@ description: Result of parsing property_of_object.kcl
         ],
         "8": [
           {
-            "commentStart": 546,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -1049,7 +1049,7 @@ description: Result of parsing property_of_object.kcl
         ],
         "9": [
           {
-            "commentStart": 573,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -1060,7 +1060,7 @@ description: Result of parsing property_of_object.kcl
         ],
         "11": [
           {
-            "commentStart": 689,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -1071,7 +1071,7 @@ description: Result of parsing property_of_object.kcl
             }
           },
           {
-            "commentStart": 749,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -1082,7 +1082,7 @@ description: Result of parsing property_of_object.kcl
         ],
         "12": [
           {
-            "commentStart": 773,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -1105,7 +1105,7 @@ description: Result of parsing property_of_object.kcl
           }
         },
         {
-          "commentStart": 47,
+          "commentStart": 0,
           "end": 0,
           "start": 0,
           "type": "NonCodeNode",

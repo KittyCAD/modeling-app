@@ -1,9 +1,17 @@
 import type { Node } from '@rust/kcl-lib/bindings/Node'
+import { type NonCodeMeta } from '@rust/kcl-lib/bindings/NonCodeMeta'
 
 import {
+  ARG_ANGLE,
   ARG_END,
   ARG_END_ABSOLUTE,
+  ARG_END_ABSOLUTE_X,
+  ARG_END_ABSOLUTE_Y,
+  ARG_INTERSECT_TAG,
   ARG_LENGTH,
+  ARG_LENGTH_X,
+  ARG_LENGTH_Y,
+  ARG_OFFSET,
   ARG_TAG,
   DETERMINING_ARGS,
 } from '@src/lang/constants'
@@ -29,6 +37,8 @@ import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import {
   createFirstArg,
   fnNameToTooltip,
+  getAngledLine,
+  getAngledLineThatIntersects,
   getArgForEnd,
   getCircle,
   getConstraintInfo,
@@ -67,8 +77,14 @@ import type {
 } from '@src/lang/wasm'
 import { sketchFromKclValue } from '@src/lang/wasm'
 import type { Selections } from '@src/lib/selections'
-import { cleanErrs, err } from '@src/lib/trap'
-import { getAngle, isArray, normaliseAngle, roundOff } from '@src/lib/utils'
+import { cleanErrs, err, isErr, isNotErr } from '@src/lib/trap'
+import {
+  allLabels,
+  getAngle,
+  isArray,
+  normaliseAngle,
+  roundOff,
+} from '@src/lib/utils'
 
 export type LineInputsType =
   | 'xAbsolute'
@@ -158,6 +174,43 @@ function createCallWrapper(
           'line',
           null, // Assumes this is being called in a pipeline, so the first arg is optional and if not given, will become pipeline substitution.
           labeledArgs
+        ),
+        valueUsedInTransform,
+      }
+    }
+    if (
+      tooltip === 'angledLine' ||
+      tooltip === 'angledLineToX' ||
+      tooltip === 'angledLineToY' ||
+      tooltip === 'angledLineOfXLength' ||
+      tooltip === 'angledLineOfYLength'
+    ) {
+      const args = [createLabeledArg(ARG_ANGLE, val[0])]
+      const v = val[1]
+      args.push(
+        (() => {
+          switch (tooltip) {
+            case 'angledLine':
+              return createLabeledArg(ARG_LENGTH, v)
+            case 'angledLineToX':
+              return createLabeledArg(ARG_END_ABSOLUTE_X, v)
+            case 'angledLineToY':
+              return createLabeledArg(ARG_END_ABSOLUTE_Y, v)
+            case 'angledLineOfXLength':
+              return createLabeledArg(ARG_LENGTH_X, v)
+            case 'angledLineOfYLength':
+              return createLabeledArg(ARG_LENGTH_Y, v)
+          }
+        })()
+      )
+      if (tag) {
+        args.push(createLabeledArg(ARG_TAG, tag))
+      }
+      return {
+        callExp: createCallExpressionStdLibKw(
+          'angledLine',
+          null, // Assumes this is being called in a pipeline, so the first arg is optional and if not given, will become pipeline substitution.
+          args
         ),
         valueUsedInTransform,
       }
@@ -262,7 +315,8 @@ function createStdlibCallExpressionKw(
   labeled: LabeledArg[],
   tag?: Expr,
   valueUsedInTransform?: number,
-  unlabeled?: Expr
+  unlabeled?: Expr,
+  noncode?: NonCodeMeta
 ): CreatedSketchExprResult {
   const args = labeled
   if (tag) {
@@ -272,7 +326,8 @@ function createStdlibCallExpressionKw(
     callExp: createCallExpressionStdLibKw(
       tool,
       unlabeled ? unlabeled : null,
-      args
+      args,
+      noncode
     ),
     valueUsedInTransform,
   }
@@ -293,20 +348,16 @@ function intersectCallWrapper({
   tag?: Expr
   valueUsedInTransform?: number
 }): CreatedSketchExprResult {
-  const firstArg: any = {
-    angle: angleVal,
-    offset: offsetVal,
-    intersectTag,
-  }
-  const args: Expr[] = [
-    createObjectExpression(firstArg),
-    createPipeSubstitution(),
+  const args: LabeledArg[] = [
+    createLabeledArg(ARG_ANGLE, angleVal),
+    createLabeledArg(ARG_OFFSET, offsetVal),
+    createLabeledArg(ARG_INTERSECT_TAG, intersectTag),
   ]
   if (tag) {
-    args.push(tag)
+    args.push(createLabeledArg(ARG_TAG, tag))
   }
   return {
-    callExp: createCallExpression(fnName, args),
+    callExp: createCallExpressionStdLibKw(fnName, null, args),
     valueUsedInTransform,
   }
 }
@@ -1441,22 +1492,67 @@ export function removeSingleConstraint({
       // So we should update the call expression to use the inputs, except for
       // the inputDetails, input where we should use the rawValue(s)
 
+      if (inputToReplace.type === 'labeledArg') {
+        if (callExp.node.type !== 'CallExpressionKw') {
+          return new Error(
+            'This code path only works with callExpressionKw but a positional call was somehow passed'
+          )
+        }
+        const toReplace = inputToReplace.key
+        let argsPreFilter = inputs.map((arg) => {
+          if (arg.type !== 'labeledArg') {
+            return new Error(`arg isn't a labeled arg: ${arg.type}`)
+          }
+          const k = arg.key
+          if (k !== toReplace) {
+            return createLabeledArg(k, arg.expr)
+          } else {
+            const rawArgVersion = rawArgs.find(
+              (a) => a.type === 'labeledArg' && a.key === k
+            )
+            if (!rawArgVersion) {
+              return new Error(
+                `raw arg version not found while trying to remove constraint: ${JSON.stringify(arg)}`
+              )
+            }
+            return createLabeledArg(k, rawArgVersion.expr)
+          }
+        })
+        const args = argsPreFilter.filter(isNotErr)
+        const errorArgs = argsPreFilter.filter(isErr)
+        if (errorArgs.length > 0) {
+          return new Error('Error while trying to remove constraint', {
+            cause: errorArgs,
+          })
+        }
+        const noncode = callExp.node.nonCodeMeta
+        return createStdlibCallExpressionKw(
+          callExp.node.callee.name.name as ToolTip,
+          args,
+          tag,
+          undefined,
+          undefined,
+          noncode
+        )
+      }
       if (inputToReplace.type === 'arrayItem') {
         const values = inputs.map((arg) => {
+          const argExpr = arg.overrideExpr ?? arg.expr
           if (
             !(
               (arg.type === 'arrayItem' || arg.type === 'arrayOrObjItem') &&
               arg.index === inputToReplace.index
             )
           )
-            return arg.expr
-          const literal = rawArgs.find(
+            return argExpr
+          const rawArg = rawArgs.find(
             (rawValue) =>
               (rawValue.type === 'arrayItem' ||
                 rawValue.type === 'arrayOrObjItem') &&
               rawValue.index === inputToReplace.index
-          )?.expr
-          return (arg.index === inputToReplace.index && literal) || arg.expr
+          )
+          const literal = rawArg?.overrideExpr ?? rawArg?.expr
+          return (arg.index === inputToReplace.index && literal) || argExpr
         })
         if (callExp.node.type === 'CallExpression') {
           return createStdlibCallExpression(
@@ -1494,6 +1590,7 @@ export function removeSingleConstraint({
         const objInput: Parameters<typeof createObjectExpression>[0] = {}
         const kwArgInput: ReturnType<typeof createLabeledArg>[] = []
         inputs.forEach((currentArg) => {
+          const currentArgExpr = currentArg.overrideExpr ?? currentArg.expr
           if (
             // should be one of these, return early to make TS happy.
             currentArg.type !== 'objectProperty' &&
@@ -1524,8 +1621,11 @@ export function removeSingleConstraint({
             if (!arrayInput[currentArg.key]) {
               arrayInput[currentArg.key] = []
             }
-            arrayInput[inputToReplace.key][inputToReplace.index] =
+            const rawLiteralArrayInObjectExpr =
+              rawLiteralArrayInObject.overrideExpr ??
               rawLiteralArrayInObject.expr
+            arrayInput[inputToReplace.key][inputToReplace.index] =
+              rawLiteralArrayInObjectExpr
             let existingKwgForKey = kwArgInput.find(
               (kwArg) => kwArg.label.name === currentArg.key
             )
@@ -1538,7 +1638,7 @@ export function removeSingleConstraint({
             }
             if (existingKwgForKey.arg.type === 'ArrayExpression') {
               existingKwgForKey.arg.elements[inputToReplace.index] =
-                rawLiteralArrayInObject.expr
+                rawLiteralArrayInObjectExpr
             }
           } else if (
             inputToReplace.type === 'objectProperty' &&
@@ -1547,10 +1647,11 @@ export function removeSingleConstraint({
             rawLiteralObjProp?.key === inputToReplace.key &&
             currentArg.key === inputToReplace.key
           ) {
-            objInput[inputToReplace.key] = rawLiteralObjProp.expr
+            objInput[inputToReplace.key] =
+              rawLiteralObjProp.overrideExpr ?? rawLiteralObjProp.expr
           } else if (currentArg.type === 'arrayInObject') {
             if (!arrayInput[currentArg.key]) arrayInput[currentArg.key] = []
-            arrayInput[currentArg.key][currentArg.index] = currentArg.expr
+            arrayInput[currentArg.key][currentArg.index] = currentArgExpr
             let existingKwgForKey = kwArgInput.find(
               (kwArg) => kwArg.label.name === currentArg.key
             )
@@ -1562,10 +1663,10 @@ export function removeSingleConstraint({
               kwArgInput.push(existingKwgForKey)
             }
             if (existingKwgForKey.arg.type === 'ArrayExpression') {
-              existingKwgForKey.arg.elements[currentArg.index] = currentArg.expr
+              existingKwgForKey.arg.elements[currentArg.index] = currentArgExpr
             }
           } else if (currentArg.type === 'objectProperty') {
-            objInput[currentArg.key] = currentArg.expr
+            objInput[currentArg.key] = currentArgExpr
           }
         })
         const createObjParam: Parameters<typeof createObjectExpression>[0] = {}
@@ -1599,7 +1700,7 @@ export function removeSingleConstraint({
 
       return createCallWrapper(
         callExp.node.callee.name.name as any,
-        rawArgs[0].expr,
+        rawArgs[0].overrideExpr ?? rawArgs[0].expr,
         tag
       )
     },
@@ -1674,7 +1775,7 @@ function getTransformMapPathKw(
       constraintType: ConstraintType
     }
   | false {
-  const name = sketchFnExp.callee.name.name as ToolTip
+  const name = sketchFnExp.callee.name.name
   if (name === 'circleThreePoint') {
     const info = transformMap?.circleThreePoint?.free?.[constraintType]
     if (info)
@@ -1685,8 +1786,7 @@ function getTransformMapPathKw(
       }
     return false
   }
-  const isAbsolute = findKwArg(ARG_END_ABSOLUTE, sketchFnExp) !== undefined
-  const tooltip = fnNameToTooltip(isAbsolute, name)
+  const tooltip = fnNameToTooltip(allLabels(sketchFnExp), name)
   if (err(tooltip)) {
     return false
   }
@@ -1717,7 +1817,8 @@ function getTransformMapPathKw(
   }
 
   // check what constraints the function has
-  const lineInputType = getConstraintType(argForEnd.val, name, isAbsolute)
+  const isAbsolute = findKwArg(ARG_END_ABSOLUTE, sketchFnExp) !== undefined
+  const lineInputType = getConstraintType(argForEnd.val, tooltip, isAbsolute)
   if (lineInputType) {
     const info = transformMap?.[tooltip]?.[lineInputType]?.[constraintType]
     if (info) {
@@ -2030,34 +2131,53 @@ export function transformAstSketchLines({
       const nodeMeta = getNodeFromPath<Expr>(ast, a.pathToNode)
       if (err(nodeMeta)) return
 
-      if (a?.argPosition?.type === 'arrayItem') {
-        inputs.push({
-          type: 'arrayItem',
-          index: a.argPosition.index,
-          expr: nodeMeta.node,
-          argType: a.type,
-        })
-      } else if (a?.argPosition?.type === 'objectProperty') {
-        inputs.push({
-          type: 'objectProperty',
-          key: a.argPosition.key,
-          expr: nodeMeta.node,
-          argType: a.type,
-        })
-      } else if (a?.argPosition?.type === 'singleValue') {
-        inputs.push({
-          type: 'singleValue',
-          argType: a.type,
-          expr: nodeMeta.node,
-        })
-      } else if (a?.argPosition?.type === 'arrayInObject') {
-        inputs.push({
-          type: 'arrayInObject',
-          key: a.argPosition.key,
-          index: a.argPosition.index,
-          expr: nodeMeta.node,
-          argType: a.type,
-        })
+      switch (a?.argPosition?.type) {
+        case 'arrayItem':
+          inputs.push({
+            type: 'arrayItem',
+            index: a.argPosition.index,
+            expr: nodeMeta.node,
+            argType: a.type,
+          })
+          break
+        case 'objectProperty':
+          inputs.push({
+            type: 'objectProperty',
+            key: a.argPosition.key,
+            expr: nodeMeta.node,
+            argType: a.type,
+          })
+          break
+        case 'singleValue':
+          inputs.push({
+            type: 'singleValue',
+            argType: a.type,
+            expr: nodeMeta.node,
+          })
+          break
+        case 'labeledArg':
+          inputs.push({
+            type: 'labeledArg',
+            key: a.argPosition.key,
+            expr: nodeMeta.node,
+            argType: a.type,
+          })
+          break
+        case 'arrayInObject':
+          inputs.push({
+            type: 'arrayInObject',
+            key: a.argPosition.key,
+            index: a.argPosition.index,
+            expr: nodeMeta.node,
+            argType: a.type,
+          })
+          break
+        case 'arrayOrObjItem':
+          break
+        case undefined:
+          break
+        default:
+          const _exhaustiveCheck: never = a?.argPosition
       }
     })
 
@@ -2211,6 +2331,18 @@ export function getConstraintLevelFromSourceRange(
         case 'CallExpressionKw':
           if (name === 'circle') {
             return getCircle(nodeMeta.node)
+          }
+          if (
+            name === 'angledLine' ||
+            name === 'angledLineOfXLength' ||
+            name === 'angledLineOfYLength' ||
+            name === 'angledLineToX' ||
+            name === 'angledLineToY'
+          ) {
+            return getAngledLine(nodeMeta.node)
+          }
+          if (name === 'angledLineThatIntersects') {
+            return getAngledLineThatIntersects(nodeMeta.node)
           }
           const arg = findKwArgAny(DETERMINING_ARGS, nodeMeta.node)
           if (arg === undefined) {

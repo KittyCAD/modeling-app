@@ -82,7 +82,7 @@ export const OpenInDesktopAppHandler = (props: React.PropsWithChildren) => {
             <img
               src={pathLogomarkSvg}
               className="w-48"
-              alt="Zoo Modeling App"
+              alt="Zoo Design Studio"
             />
           </h1>
         </div>

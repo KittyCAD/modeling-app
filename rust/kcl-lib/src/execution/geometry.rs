@@ -10,16 +10,16 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     errors::KclError,
-    execution::{ArtifactId, ExecState, Metadata, TagEngineInfo, TagIdentifier, UnitLen},
+    execution::{types::NumericType, ArtifactId, ExecState, Metadata, TagEngineInfo, TagIdentifier, UnitLen},
     parsing::ast::types::{Node, NodeRef, TagDeclarator, TagNode},
-    std::sketch::PlaneData,
+    std::{args::TyF64, sketch::PlaneData},
 };
 
 type Point2D = kcmc::shared::Point2d<f64>;
 type Point3D = kcmc::shared::Point3d<f64>;
 
 /// A geometry.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum Geometry {
@@ -47,7 +47,7 @@ impl Geometry {
 }
 
 /// A set of geometry.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
 #[allow(clippy::vec_box)]
@@ -66,7 +66,7 @@ impl From<Geometry> for Geometries {
 }
 
 /// Data for an imported geometry.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct ImportedGeometry {
@@ -79,7 +79,7 @@ pub struct ImportedGeometry {
 }
 
 /// Data for a solid or an imported geometry.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
 #[allow(clippy::vec_box)]
@@ -159,7 +159,7 @@ pub struct Helix {
     pub meta: Vec<Metadata>,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct Plane {
@@ -184,62 +184,191 @@ pub struct Plane {
 
 impl Plane {
     pub(crate) fn into_plane_data(self) -> PlaneData {
-        if self.origin == Point3d::new(0.0, 0.0, 0.0) {
+        if self.origin.is_zero() {
             match self {
                 Self {
-                    origin: Point3d { x: 0.0, y: 0.0, z: 0.0 },
-                    x_axis: Point3d { x: 1.0, y: 0.0, z: 0.0 },
-                    y_axis: Point3d { x: 0.0, y: 1.0, z: 0.0 },
-                    z_axis: Point3d { x: 0.0, y: 0.0, z: 1.0 },
+                    origin:
+                        Point3d {
+                            x: 0.0,
+                            y: 0.0,
+                            z: 0.0,
+                            units: UnitLen::Mm,
+                        },
+                    x_axis:
+                        Point3d {
+                            x: 1.0,
+                            y: 0.0,
+                            z: 0.0,
+                            units: UnitLen::Mm,
+                        },
+                    y_axis:
+                        Point3d {
+                            x: 0.0,
+                            y: 1.0,
+                            z: 0.0,
+                            units: UnitLen::Mm,
+                        },
+                    z_axis:
+                        Point3d {
+                            x: 0.0,
+                            y: 0.0,
+                            z: 1.0,
+                            units: UnitLen::Mm,
+                        },
                     ..
                 } => return PlaneData::XY,
                 Self {
-                    origin: Point3d { x: 0.0, y: 0.0, z: 0.0 },
-                    x_axis: Point3d { x: 1.0, y: 0.0, z: 0.0 },
-                    y_axis: Point3d { x: 0.0, y: 1.0, z: 0.0 },
+                    origin:
+                        Point3d {
+                            x: 0.0,
+                            y: 0.0,
+                            z: 0.0,
+                            units: UnitLen::Mm,
+                        },
+                    x_axis:
+                        Point3d {
+                            x: 1.0,
+                            y: 0.0,
+                            z: 0.0,
+                            units: UnitLen::Mm,
+                        },
+                    y_axis:
+                        Point3d {
+                            x: 0.0,
+                            y: 1.0,
+                            z: 0.0,
+                            units: UnitLen::Mm,
+                        },
                     z_axis:
                         Point3d {
                             x: 0.0,
                             y: 0.0,
                             z: -1.0,
+                            units: UnitLen::Mm,
                         },
                     ..
                 } => return PlaneData::NegXY,
                 Self {
-                    origin: Point3d { x: 0.0, y: 0.0, z: 0.0 },
-                    x_axis: Point3d { x: 1.0, y: 0.0, z: 0.0 },
-                    y_axis: Point3d { x: 0.0, y: 0.0, z: 1.0 },
+                    origin:
+                        Point3d {
+                            x: 0.0,
+                            y: 0.0,
+                            z: 0.0,
+                            units: UnitLen::Mm,
+                        },
+                    x_axis:
+                        Point3d {
+                            x: 1.0,
+                            y: 0.0,
+                            z: 0.0,
+                            units: UnitLen::Mm,
+                        },
+                    y_axis:
+                        Point3d {
+                            x: 0.0,
+                            y: 0.0,
+                            z: 1.0,
+                            units: UnitLen::Mm,
+                        },
                     z_axis:
                         Point3d {
                             x: 0.0,
                             y: -1.0,
                             z: 0.0,
+                            units: UnitLen::Mm,
                         },
                     ..
                 } => return PlaneData::XZ,
                 Self {
-                    origin: Point3d { x: 0.0, y: 0.0, z: 0.0 },
-                    x_axis: Point3d { x: 1.0, y: 0.0, z: 0.0 },
-                    y_axis: Point3d { x: 0.0, y: 0.0, z: 1.0 },
-                    z_axis: Point3d { x: 0.0, y: 1.0, z: 0.0 },
+                    origin:
+                        Point3d {
+                            x: 0.0,
+                            y: 0.0,
+                            z: 0.0,
+                            units: UnitLen::Mm,
+                        },
+                    x_axis:
+                        Point3d {
+                            x: 1.0,
+                            y: 0.0,
+                            z: 0.0,
+                            units: UnitLen::Mm,
+                        },
+                    y_axis:
+                        Point3d {
+                            x: 0.0,
+                            y: 0.0,
+                            z: 1.0,
+                            units: UnitLen::Mm,
+                        },
+                    z_axis:
+                        Point3d {
+                            x: 0.0,
+                            y: 1.0,
+                            z: 0.0,
+                            units: UnitLen::Mm,
+                        },
                     ..
                 } => return PlaneData::NegXZ,
                 Self {
-                    origin: Point3d { x: 0.0, y: 0.0, z: 0.0 },
-                    x_axis: Point3d { x: 0.0, y: 1.0, z: 0.0 },
-                    y_axis: Point3d { x: 0.0, y: 0.0, z: 1.0 },
-                    z_axis: Point3d { x: 1.0, y: 0.0, z: 0.0 },
+                    origin:
+                        Point3d {
+                            x: 0.0,
+                            y: 0.0,
+                            z: 0.0,
+                            units: UnitLen::Mm,
+                        },
+                    x_axis:
+                        Point3d {
+                            x: 0.0,
+                            y: 1.0,
+                            z: 0.0,
+                            units: UnitLen::Mm,
+                        },
+                    y_axis:
+                        Point3d {
+                            x: 0.0,
+                            y: 0.0,
+                            z: 1.0,
+                            units: UnitLen::Mm,
+                        },
+                    z_axis:
+                        Point3d {
+                            x: 1.0,
+                            y: 0.0,
+                            z: 0.0,
+                            units: UnitLen::Mm,
+                        },
                     ..
                 } => return PlaneData::YZ,
                 Self {
-                    origin: Point3d { x: 0.0, y: 0.0, z: 0.0 },
-                    x_axis: Point3d { x: 0.0, y: 1.0, z: 0.0 },
-                    y_axis: Point3d { x: 0.0, y: 0.0, z: 1.0 },
+                    origin:
+                        Point3d {
+                            x: 0.0,
+                            y: 0.0,
+                            z: 0.0,
+                            units: UnitLen::Mm,
+                        },
+                    x_axis:
+                        Point3d {
+                            x: 0.0,
+                            y: 1.0,
+                            z: 0.0,
+                            units: UnitLen::Mm,
+                        },
+                    y_axis:
+                        Point3d {
+                            x: 0.0,
+                            y: 0.0,
+                            z: 1.0,
+                            units: UnitLen::Mm,
+                        },
                     z_axis:
                         Point3d {
                             x: -1.0,
                             y: 0.0,
                             z: 0.0,
+                            units: UnitLen::Mm,
                         },
                     ..
                 } => return PlaneData::NegYZ,
@@ -261,10 +390,10 @@ impl Plane {
             PlaneData::XY => Plane {
                 id,
                 artifact_id: id.into(),
-                origin: Point3d::new(0.0, 0.0, 0.0),
-                x_axis: Point3d::new(1.0, 0.0, 0.0),
-                y_axis: Point3d::new(0.0, 1.0, 0.0),
-                z_axis: Point3d::new(0.0, 0.0, 1.0),
+                origin: Point3d::new(0.0, 0.0, 0.0, UnitLen::Mm),
+                x_axis: Point3d::new(1.0, 0.0, 0.0, UnitLen::Mm),
+                y_axis: Point3d::new(0.0, 1.0, 0.0, UnitLen::Mm),
+                z_axis: Point3d::new(0.0, 0.0, 1.0, UnitLen::Mm),
                 value: PlaneType::XY,
                 units: exec_state.length_unit(),
                 meta: vec![],
@@ -272,10 +401,10 @@ impl Plane {
             PlaneData::NegXY => Plane {
                 id,
                 artifact_id: id.into(),
-                origin: Point3d::new(0.0, 0.0, 0.0),
-                x_axis: Point3d::new(1.0, 0.0, 0.0),
-                y_axis: Point3d::new(0.0, 1.0, 0.0),
-                z_axis: Point3d::new(0.0, 0.0, -1.0),
+                origin: Point3d::new(0.0, 0.0, 0.0, UnitLen::Mm),
+                x_axis: Point3d::new(1.0, 0.0, 0.0, UnitLen::Mm),
+                y_axis: Point3d::new(0.0, 1.0, 0.0, UnitLen::Mm),
+                z_axis: Point3d::new(0.0, 0.0, -1.0, UnitLen::Mm),
                 value: PlaneType::XY,
                 units: exec_state.length_unit(),
                 meta: vec![],
@@ -283,10 +412,10 @@ impl Plane {
             PlaneData::XZ => Plane {
                 id,
                 artifact_id: id.into(),
-                origin: Point3d::new(0.0, 0.0, 0.0),
-                x_axis: Point3d::new(1.0, 0.0, 0.0),
-                y_axis: Point3d::new(0.0, 0.0, 1.0),
-                z_axis: Point3d::new(0.0, -1.0, 0.0),
+                origin: Point3d::new(0.0, 0.0, 0.0, UnitLen::Mm),
+                x_axis: Point3d::new(1.0, 0.0, 0.0, UnitLen::Mm),
+                y_axis: Point3d::new(0.0, 0.0, 1.0, UnitLen::Mm),
+                z_axis: Point3d::new(0.0, -1.0, 0.0, UnitLen::Mm),
                 value: PlaneType::XZ,
                 units: exec_state.length_unit(),
                 meta: vec![],
@@ -294,10 +423,10 @@ impl Plane {
             PlaneData::NegXZ => Plane {
                 id,
                 artifact_id: id.into(),
-                origin: Point3d::new(0.0, 0.0, 0.0),
-                x_axis: Point3d::new(-1.0, 0.0, 0.0),
-                y_axis: Point3d::new(0.0, 0.0, 1.0),
-                z_axis: Point3d::new(0.0, 1.0, 0.0),
+                origin: Point3d::new(0.0, 0.0, 0.0, UnitLen::Mm),
+                x_axis: Point3d::new(-1.0, 0.0, 0.0, UnitLen::Mm),
+                y_axis: Point3d::new(0.0, 0.0, 1.0, UnitLen::Mm),
+                z_axis: Point3d::new(0.0, 1.0, 0.0, UnitLen::Mm),
                 value: PlaneType::XZ,
                 units: exec_state.length_unit(),
                 meta: vec![],
@@ -305,10 +434,10 @@ impl Plane {
             PlaneData::YZ => Plane {
                 id,
                 artifact_id: id.into(),
-                origin: Point3d::new(0.0, 0.0, 0.0),
-                x_axis: Point3d::new(0.0, 1.0, 0.0),
-                y_axis: Point3d::new(0.0, 0.0, 1.0),
-                z_axis: Point3d::new(1.0, 0.0, 0.0),
+                origin: Point3d::new(0.0, 0.0, 0.0, UnitLen::Mm),
+                x_axis: Point3d::new(0.0, 1.0, 0.0, UnitLen::Mm),
+                y_axis: Point3d::new(0.0, 0.0, 1.0, UnitLen::Mm),
+                z_axis: Point3d::new(1.0, 0.0, 0.0, UnitLen::Mm),
                 value: PlaneType::YZ,
                 units: exec_state.length_unit(),
                 meta: vec![],
@@ -316,10 +445,10 @@ impl Plane {
             PlaneData::NegYZ => Plane {
                 id,
                 artifact_id: id.into(),
-                origin: Point3d::new(0.0, 0.0, 0.0),
-                x_axis: Point3d::new(0.0, 1.0, 0.0),
-                y_axis: Point3d::new(0.0, 0.0, 1.0),
-                z_axis: Point3d::new(-1.0, 0.0, 0.0),
+                origin: Point3d::new(0.0, 0.0, 0.0, UnitLen::Mm),
+                x_axis: Point3d::new(0.0, 1.0, 0.0, UnitLen::Mm),
+                y_axis: Point3d::new(0.0, 0.0, 1.0, UnitLen::Mm),
+                z_axis: Point3d::new(-1.0, 0.0, 0.0, UnitLen::Mm),
                 value: PlaneType::YZ,
                 units: exec_state.length_unit(),
                 meta: vec![],
@@ -353,7 +482,7 @@ impl Plane {
 }
 
 /// A face.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct Face {
@@ -377,7 +506,7 @@ pub struct Face {
 }
 
 /// Type for a plane.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, FromStr, Display)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema, FromStr, Display)]
 #[ts(export)]
 #[display(style = "camelCase")]
 pub enum PlaneType {
@@ -398,7 +527,7 @@ pub enum PlaneType {
     Uninit,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
 pub struct Sketch {
@@ -418,6 +547,9 @@ pub struct Sketch {
     pub artifact_id: ArtifactId,
     #[ts(skip)]
     pub original_id: uuid::Uuid,
+    /// If the sketch includes a mirror.
+    #[serde(skip)]
+    pub mirror: Option<uuid::Uuid>,
     pub units: UnitLen,
     /// Metadata.
     #[serde(skip)]
@@ -460,7 +592,7 @@ impl Sketch {
 }
 
 /// A sketch type.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
 pub enum SketchSurface {
@@ -509,10 +641,10 @@ pub(crate) enum GetTangentialInfoFromPathsResult {
 }
 
 impl GetTangentialInfoFromPathsResult {
-    pub(crate) fn tan_previous_point(&self, last_arc_end: crate::std::utils::Coords2d) -> [f64; 2] {
+    pub(crate) fn tan_previous_point(&self, last_arc_end: [f64; 2]) -> [f64; 2] {
         match self {
             GetTangentialInfoFromPathsResult::PreviousPoint(p) => *p,
-            GetTangentialInfoFromPathsResult::Arc { center, ccw, .. } => {
+            GetTangentialInfoFromPathsResult::Arc { center, ccw } => {
                 crate::std::utils::get_tangent_point_from_previous_arc(*center, *ccw, last_arc_end)
             }
             // The circle always starts at 0 degrees, so a suitable tangent
@@ -564,11 +696,10 @@ impl Sketch {
     /// where the last path segment ends, and the next path segment will begin.
     pub(crate) fn current_pen_position(&self) -> Result<Point2d, KclError> {
         let Some(path) = self.latest_path() else {
-            return Ok(self.start.to.into());
+            return Ok(Point2d::new(self.start.to[0], self.start.to[1], self.start.units));
         };
 
-        let base = path.get_base();
-        Ok(base.to.into())
+        Ok(path.get_to().into())
     }
 
     pub(crate) fn get_tangential_info_from_paths(&self) -> GetTangentialInfoFromPathsResult {
@@ -579,7 +710,7 @@ impl Sketch {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
 pub struct Solid {
@@ -613,7 +744,7 @@ impl Solid {
 }
 
 /// A fillet or a chamfer.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
 pub enum EdgeCut {
@@ -621,7 +752,7 @@ pub enum EdgeCut {
     Fillet {
         /// The id of the engine command that called this fillet.
         id: uuid::Uuid,
-        radius: f64,
+        radius: TyF64,
         /// The engine id of the edge to fillet.
         #[serde(rename = "edgeId")]
         edge_id: uuid::Uuid,
@@ -631,7 +762,7 @@ pub enum EdgeCut {
     Chamfer {
         /// The id of the engine command that called this chamfer.
         id: uuid::Uuid,
-        length: f64,
+        length: TyF64,
         /// The engine id of the edge to chamfer.
         #[serde(rename = "edgeId")]
         edge_id: uuid::Uuid,
@@ -667,17 +798,16 @@ impl EdgeCut {
 pub struct Point2d {
     pub x: f64,
     pub y: f64,
+    pub units: UnitLen,
 }
 
-impl From<[f64; 2]> for Point2d {
-    fn from(p: [f64; 2]) -> Self {
-        Self { x: p[0], y: p[1] }
-    }
-}
-
-impl From<&[f64; 2]> for Point2d {
-    fn from(p: &[f64; 2]) -> Self {
-        Self { x: p[0], y: p[1] }
+impl From<[TyF64; 2]> for Point2d {
+    fn from(p: [TyF64; 2]) -> Self {
+        Self {
+            x: p[0].n,
+            y: p[1].n,
+            units: p[0].ty.expect_length(),
+        }
     }
 }
 
@@ -694,12 +824,14 @@ impl From<Point2d> for Point2D {
 }
 
 impl Point2d {
-    pub const ZERO: Self = Self { x: 0.0, y: 0.0 };
-    pub fn scale(self, scalar: f64) -> Self {
-        Self {
-            x: self.x * scalar,
-            y: self.y * scalar,
-        }
+    pub const ZERO: Self = Self {
+        x: 0.0,
+        y: 0.0,
+        units: UnitLen::Mm,
+    };
+
+    pub fn new(x: f64, y: f64, units: UnitLen) -> Self {
+        Self { x, y, units }
     }
 }
 
@@ -709,12 +841,34 @@ pub struct Point3d {
     pub x: f64,
     pub y: f64,
     pub z: f64,
+    pub units: UnitLen,
 }
 
 impl Point3d {
-    pub const ZERO: Self = Self { x: 0.0, y: 0.0, z: 0.0 };
-    pub fn new(x: f64, y: f64, z: f64) -> Self {
-        Self { x, y, z }
+    pub const ZERO: Self = Self {
+        x: 0.0,
+        y: 0.0,
+        z: 0.0,
+        units: UnitLen::Mm,
+    };
+
+    pub fn new(x: f64, y: f64, z: f64, units: UnitLen) -> Self {
+        Self { x, y, z, units }
+    }
+
+    pub const fn is_zero(&self) -> bool {
+        self.x == 0.0 && self.y == 0.0 && self.z == 0.0
+    }
+}
+
+impl From<[TyF64; 3]> for Point3d {
+    fn from(p: [TyF64; 3]) -> Self {
+        Self {
+            x: p[0].n,
+            y: p[1].n,
+            z: p[2].n,
+            units: p[0].ty.expect_length(),
+        }
     }
 }
 
@@ -737,10 +891,12 @@ impl Add for Point3d {
     type Output = Point3d;
 
     fn add(self, rhs: Self) -> Self::Output {
+        // TODO should assert that self and rhs the same units or coerce them
         Point3d {
             x: self.x + rhs.x,
             y: self.y + rhs.y,
             z: self.z + rhs.z,
+            units: self.units,
         }
     }
 }
@@ -759,12 +915,13 @@ impl Mul<f64> for Point3d {
             x: self.x * rhs,
             y: self.y * rhs,
             z: self.z * rhs,
+            units: self.units,
         }
     }
 }
 
 /// A base path.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct BasePath {
@@ -782,8 +939,20 @@ pub struct BasePath {
     pub geo_meta: GeoMeta,
 }
 
+impl BasePath {
+    pub fn get_to(&self) -> [TyF64; 2] {
+        let ty: NumericType = self.units.into();
+        [TyF64::new(self.to[0], ty.clone()), TyF64::new(self.to[1], ty)]
+    }
+
+    pub fn get_from(&self) -> [TyF64; 2] {
+        let ty: NumericType = self.units.into();
+        [TyF64::new(self.from[0], ty.clone()), TyF64::new(self.from[1], ty)]
+    }
+}
+
 /// Geometry metadata.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct GeoMeta {
@@ -795,7 +964,7 @@ pub struct GeoMeta {
 }
 
 /// A path.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum Path {
@@ -976,19 +1145,24 @@ impl Path {
     }
 
     /// Where does this path segment start?
-    pub fn get_from(&self) -> &[f64; 2] {
-        &self.get_base().from
+    pub fn get_from(&self) -> [TyF64; 2] {
+        let p = &self.get_base().from;
+        let ty: NumericType = self.get_base().units.into();
+        [TyF64::new(p[0], ty.clone()), TyF64::new(p[1], ty)]
     }
+
     /// Where does this path segment end?
-    pub fn get_to(&self) -> &[f64; 2] {
-        &self.get_base().to
+    pub fn get_to(&self) -> [TyF64; 2] {
+        let p = &self.get_base().to;
+        let ty: NumericType = self.get_base().units.into();
+        [TyF64::new(p[0], ty.clone()), TyF64::new(p[1], ty)]
     }
 
     /// Length of this path segment, in cartesian plane.
-    pub fn length(&self) -> f64 {
-        match self {
+    pub fn length(&self) -> TyF64 {
+        let n = match self {
             Self::ToPoint { .. } | Self::Base { .. } | Self::Horizontal { .. } | Self::AngledLineTo { .. } => {
-                linear_distance(self.get_from(), self.get_to())
+                linear_distance(&self.get_base().from, &self.get_base().to)
             }
             Self::TangentialArc {
                 base: _,
@@ -1002,30 +1176,34 @@ impl Path {
             } => {
                 // The radius can be calculated as the linear distance between `to` and `center`,
                 // or between `from` and `center`. They should be the same.
-                let radius = linear_distance(self.get_from(), center);
-                debug_assert_eq!(radius, linear_distance(self.get_to(), center));
+                let radius = linear_distance(&self.get_base().from, center);
+                debug_assert_eq!(radius, linear_distance(&self.get_base().to, center));
                 // TODO: Call engine utils to figure this out.
-                linear_distance(self.get_from(), self.get_to())
+                linear_distance(&self.get_base().from, &self.get_base().to)
             }
             Self::Circle { radius, .. } => 2.0 * std::f64::consts::PI * radius,
             Self::CircleThreePoint { .. } => {
                 let circle_center = crate::std::utils::calculate_circle_from_3_points([
-                    self.get_base().from.into(),
-                    self.get_base().to.into(),
-                    self.get_base().to.into(),
+                    self.get_base().from,
+                    self.get_base().to,
+                    self.get_base().to,
                 ]);
-                let radius = linear_distance(&[circle_center.center.x, circle_center.center.y], &self.get_base().from);
+                let radius = linear_distance(
+                    &[circle_center.center[0], circle_center.center[1]],
+                    &self.get_base().from,
+                );
                 2.0 * std::f64::consts::PI * radius
             }
             Self::Arc { .. } => {
                 // TODO: Call engine utils to figure this out.
-                linear_distance(self.get_from(), self.get_to())
+                linear_distance(&self.get_base().from, &self.get_base().to)
             }
             Self::ArcThreePoint { .. } => {
                 // TODO: Call engine utils to figure this out.
-                linear_distance(self.get_from(), self.get_to())
+                linear_distance(&self.get_base().from, &self.get_base().to)
             }
-        }
+        };
+        TyF64::new(n, self.get_base().units.into())
     }
 
     pub fn get_base_mut(&mut self) -> Option<&mut BasePath> {
@@ -1052,14 +1230,10 @@ impl Path {
                 ccw: *ccw,
             },
             Path::ArcThreePoint { p1, p2, p3, .. } => {
-                let circle_center =
-                    crate::std::utils::calculate_circle_from_3_points([(*p1).into(), (*p2).into(), (*p3).into()]);
-                let radius = linear_distance(&[circle_center.center.x, circle_center.center.y], p1);
-                let center_point = [circle_center.center.x, circle_center.center.y];
-                GetTangentialInfoFromPathsResult::Circle {
-                    center: center_point,
-                    ccw: true,
-                    radius,
+                let circle_center = crate::std::utils::calculate_circle_from_3_points([*p1, *p2, *p3]);
+                GetTangentialInfoFromPathsResult::Arc {
+                    center: circle_center.center,
+                    ccw: crate::std::utils::is_points_ccw(&[*p1, *p2, *p3]) > 0,
                 }
             }
             Path::Circle {
@@ -1070,12 +1244,12 @@ impl Path {
                 radius: *radius,
             },
             Path::CircleThreePoint { p1, p2, p3, .. } => {
-                let circle_center =
-                    crate::std::utils::calculate_circle_from_3_points([(*p1).into(), (*p2).into(), (*p3).into()]);
-                let radius = linear_distance(&[circle_center.center.x, circle_center.center.y], p1);
-                let center_point = [circle_center.center.x, circle_center.center.y];
+                let circle_center = crate::std::utils::calculate_circle_from_3_points([*p1, *p2, *p3]);
+                let radius = linear_distance(&[circle_center.center[0], circle_center.center[1]], p1);
+                let center_point = [circle_center.center[0], circle_center.center[1]];
                 GetTangentialInfoFromPathsResult::Circle {
                     center: center_point,
+                    // Note: a circle is always ccw regardless of the order of points
                     ccw: true,
                     radius,
                 }
@@ -1100,7 +1274,7 @@ fn linear_distance(
 }
 
 /// An extrude surface.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
 pub enum ExtrudeSurface {
@@ -1112,7 +1286,7 @@ pub enum ExtrudeSurface {
 }
 
 // Chamfer surface.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct ChamferSurface {
@@ -1126,7 +1300,7 @@ pub struct ChamferSurface {
 }
 
 // Fillet surface.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct FilletSurface {
@@ -1140,7 +1314,7 @@ pub struct FilletSurface {
 }
 
 /// An extruded plane.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct ExtrudePlane {
@@ -1154,7 +1328,7 @@ pub struct ExtrudePlane {
 }
 
 /// An extruded arc.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct ExtrudeArc {

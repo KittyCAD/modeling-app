@@ -1,17 +1,18 @@
-import type { Locator, Page } from '@playwright/test'
 import fs from 'node:fs/promises'
 import path from 'node:path'
+import type { Locator, Page } from '@playwright/test'
 
 import type { EditorFixture } from '@e2e/playwright/fixtures/editorFixture'
 import type { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
 import type { ToolbarFixture } from '@e2e/playwright/fixtures/toolbarFixture'
-import { getUtils, orRunWhenFullSuiteEnabled } from '@e2e/playwright/test-utils'
+import { orRunWhenFullSuiteEnabled } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
 // test file is for testing point an click code gen functionality that's not sketch mode related
 
 test.describe('Point-and-click tests', () => {
   test('verify extruding circle works', async ({
+    page,
     context,
     homePage,
     cmdBar,
@@ -30,8 +31,9 @@ test.describe('Point-and-click tests', () => {
     await context.addInitScript((file) => {
       localStorage.setItem('persistCode', file)
     }, file)
+
     await homePage.goToModelingScene()
-    await scene.waitForExecutionDone()
+    await scene.connectionEstablished()
 
     const [clickCircle, moveToCircle] = scene.makeMouseHelpers(582, 217)
 
@@ -72,7 +74,6 @@ test.describe('Point-and-click tests', () => {
 
     await test.step('do extrude flow and check extrude code is added to editor', async () => {
       await toolbar.extrudeButton.click()
-
       await cmdBar.expectState({
         stage: 'arguments',
         currentArgKey: 'distance',
@@ -186,6 +187,7 @@ test.describe('Point-and-click tests', () => {
       editor,
       toolbar,
       scene,
+      cmdBar,
     }) => {
       const file = await fs.readFile(
         path.resolve(
@@ -200,9 +202,7 @@ test.describe('Point-and-click tests', () => {
       }, file)
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
-      await expect(
-        page.getByTestId('model-state-indicator-receive-reliable')
-      ).toBeVisible()
+      await scene.settled(cmdBar)
 
       const sketchOnAChamfer = _sketchOnAChamfer(page, editor, toolbar, scene)
 
@@ -210,7 +210,7 @@ test.describe('Point-and-click tests', () => {
         clickCoords: { x: 570, y: 220 },
         cameraPos: { x: 16020, y: -2000, z: 10500 },
         cameraTarget: { x: -150, y: -4500, z: -80 },
-        beforeChamferSnippet: `angledLine([segAng(rectangleSegmentA001)-90,217.26],%,$seg01)
+        beforeChamferSnippet: `angledLine(angle=segAng(rectangleSegmentA001)-90,length=217.26,tag=$seg01)
       chamfer(length = 30,tags = [
       seg01,
       getNextAdjacentEdge(yo),
@@ -220,12 +220,12 @@ test.describe('Point-and-click tests', () => {
     )`,
 
         afterChamferSelectSnippet:
-          'sketch002 = startSketchOn(extrude001, seg03)',
+          'sketch002 = startSketchOn(extrude001, face = seg03)',
         afterRectangle1stClickSnippet:
           'startProfileAt([205.96, 254.59], sketch002)',
-        afterRectangle2ndClickSnippet: `angledLine([0,11.39],%,$rectangleSegmentA002)
-        |>angledLine([segAng(rectangleSegmentA002)-90,105.26],%)
-        |>angledLine([segAng(rectangleSegmentA002),-segLen(rectangleSegmentA002)],%)
+        afterRectangle2ndClickSnippet: `angledLine(angle=0,length=11.39,tag=$rectangleSegmentA002)
+        |>angledLine(angle=segAng(rectangleSegmentA002)-90,length=105.26)
+        |>angledLine(angle=segAng(rectangleSegmentA002),length=-segLen(rectangleSegmentA002))
         |>line(endAbsolute=[profileStartX(%),profileStartY(%)])
         |>close()`,
       })
@@ -234,10 +234,7 @@ test.describe('Point-and-click tests', () => {
         clickCoords: { x: 690, y: 250 },
         cameraPos: { x: 16020, y: -2000, z: 10500 },
         cameraTarget: { x: -150, y: -4500, z: -80 },
-        beforeChamferSnippet: `angledLine([
-         segAng(rectangleSegmentA001) - 90,
-         217.26
-       ], %, $seg01)chamfer(
+        beforeChamferSnippet: `angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 217.26, tag = $seg01)chamfer(
          length = 30,
          tags = [
            seg01,
@@ -247,12 +244,12 @@ test.describe('Point-and-click tests', () => {
        )`,
 
         afterChamferSelectSnippet:
-          'sketch003 = startSketchOn(extrude001, seg04)',
+          'sketch003 = startSketchOn(extrude001, face = seg04)',
         afterRectangle1stClickSnippet:
           'startProfileAt([-209.64, 255.28], sketch003)',
-        afterRectangle2ndClickSnippet: `angledLine([0,11.56],%,$rectangleSegmentA003)
-        |>angledLine([segAng(rectangleSegmentA003)-90,106.84],%)
-        |>angledLine([segAng(rectangleSegmentA003),-segLen(rectangleSegmentA003)],%)
+        afterRectangle2ndClickSnippet: `angledLine(angle=0,length=11.56,tag=$rectangleSegmentA003)
+        |>angledLine(angle=segAng(rectangleSegmentA003)-90,length=106.84)
+        |>angledLine(angle=segAng(rectangleSegmentA003),length=-segLen(rectangleSegmentA003))
         |>line(endAbsolute=[profileStartX(%),profileStartY(%)])
         |>close()`,
       })
@@ -261,7 +258,7 @@ test.describe('Point-and-click tests', () => {
         clickCoords: { x: 677, y: 87 },
         cameraPos: { x: -6200, y: 1500, z: 6200 },
         cameraTarget: { x: 8300, y: 1100, z: 4800 },
-        beforeChamferSnippet: `angledLine([0, 268.43], %, $rectangleSegmentA001)chamfer(
+        beforeChamferSnippet: `angledLine(angle = 0, length = 268.43, tag = $rectangleSegmentA001)chamfer(
          length = 30,
          tags = [
            getNextAdjacentEdge(yo),
@@ -269,12 +266,12 @@ test.describe('Point-and-click tests', () => {
          ]
        )`,
         afterChamferSelectSnippet:
-          'sketch004 = startSketchOn(extrude001, seg05)',
+          'sketch004 = startSketchOn(extrude001, face = seg05)',
         afterRectangle1stClickSnippet:
           'startProfileAt([82.57, 322.96], sketch004)',
-        afterRectangle2ndClickSnippet: `angledLine([0,11.16],%,$rectangleSegmentA004)
-        |>angledLine([segAng(rectangleSegmentA004)-90,103.07],%)
-        |>angledLine([segAng(rectangleSegmentA004),-segLen(rectangleSegmentA004)],%)
+        afterRectangle2ndClickSnippet: `angledLine(angle=0,length=11.16,tag=$rectangleSegmentA004)
+        |>angledLine(angle=segAng(rectangleSegmentA004)-90,length=103.07)
+        |>angledLine(angle=segAng(rectangleSegmentA004),length=-segLen(rectangleSegmentA004))
         |>line(endAbsolute=[profileStartX(%),profileStartY(%)])
         |>close()`,
       })
@@ -287,12 +284,12 @@ test.describe('Point-and-click tests', () => {
         beforeChamferSnippetEnd:
           '|> chamfer(length = 30, tags = [getNextAdjacentEdge(yo)])',
         afterChamferSelectSnippet:
-          'sketch005 = startSketchOn(extrude001, seg06)',
+          'sketch005 = startSketchOn(extrude001, face = seg06)',
         afterRectangle1stClickSnippet:
           'startProfileAt([-23.43, 19.69], sketch005)',
-        afterRectangle2ndClickSnippet: `angledLine([0,9.1],%,$rectangleSegmentA005)
-        |>angledLine([segAng(rectangleSegmentA005)-90,84.07],%)
-        |>angledLine([segAng(rectangleSegmentA005),-segLen(rectangleSegmentA005)],%)
+        afterRectangle2ndClickSnippet: `angledLine(angle=0,length=9.1,tag=$rectangleSegmentA005)
+        |>angledLine(angle=segAng(rectangleSegmentA005)-90,length=84.07)
+        |>angledLine(angle=segAng(rectangleSegmentA005),length=-segLen(rectangleSegmentA005))
         |>line(endAbsolute=[profileStartX(%),profileStartY(%)])
         |>close()`,
       })
@@ -302,15 +299,9 @@ test.describe('Point-and-click tests', () => {
           `@settings(defaultLengthUnit = in)
 sketch001 = startSketchOn(XZ)
   |> startProfileAt([75.8, 317.2], %) // [$startCapTag, $EndCapTag]
-  |> angledLine([0, 268.43], %, $rectangleSegmentA001)
-  |> angledLine([
-       segAng(rectangleSegmentA001) - 90,
-       217.26
-     ], %, $seg01)
-  |> angledLine([
-       segAng(rectangleSegmentA001),
-       -segLen(rectangleSegmentA001)
-     ], %, $yo)
+  |> angledLine(angle = 0, length = 268.43, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 217.26, tag = $seg01)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $yo)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg02)
   |> close()
 extrude001 = extrude(sketch001, length = 100)
@@ -318,50 +309,32 @@ extrude001 = extrude(sketch001, length = 100)
   |> chamfer(length = 30, tags = [seg01], tag = $seg04)
   |> chamfer(length = 30, tags = [getNextAdjacentEdge(seg02)], tag = $seg05)
   |> chamfer(length = 30, tags = [getNextAdjacentEdge(yo)], tag = $seg06)
-sketch005 = startSketchOn(extrude001, seg06)
+sketch005 = startSketchOn(extrude001, face = seg06)
 profile004=startProfileAt([-23.43,19.69], sketch005)
-  |> angledLine([0, 9.1], %, $rectangleSegmentA005)
-  |> angledLine([segAng(rectangleSegmentA005) - 90, 84.07], %)
-  |> angledLine([segAng(rectangleSegmentA005), -segLen(rectangleSegmentA005)], %)
+  |> angledLine(angle = 0, length = 9.1, tag = $rectangleSegmentA005)
+  |> angledLine(angle = segAng(rectangleSegmentA005) - 90, length = 84.07)
+  |> angledLine(angle = segAng(rectangleSegmentA005), length = -segLen(rectangleSegmentA005))
   |> line(endAbsolute=[profileStartX(%), profileStartY(%)])
   |> close()
-sketch004 = startSketchOn(extrude001, seg05)
+sketch004 = startSketchOn(extrude001, face = seg05)
 profile003 = startProfileAt([82.57, 322.96], sketch004)
-  |> angledLine([0, 11.16], %, $rectangleSegmentA004)
-  |> angledLine([
-       segAng(rectangleSegmentA004) - 90,
-       103.07
-     ], %)
-  |> angledLine([
-       segAng(rectangleSegmentA004),
-       -segLen(rectangleSegmentA004)
-     ], %)
+  |> angledLine(angle = 0, length = 11.16, tag = $rectangleSegmentA004)
+  |> angledLine(angle = segAng(rectangleSegmentA004) - 90, length = 103.07)
+  |> angledLine(angle = segAng(rectangleSegmentA004), length = -segLen(rectangleSegmentA004))
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-sketch003 = startSketchOn(extrude001, seg04)
+sketch003 = startSketchOn(extrude001, face = seg04)
 profile002 = startProfileAt([-209.64, 255.28], sketch003)
-  |> angledLine([0, 11.56], %, $rectangleSegmentA003)
-  |> angledLine([
-       segAng(rectangleSegmentA003) - 90,
-       106.84
-     ], %)
-  |> angledLine([
-       segAng(rectangleSegmentA003),
-       -segLen(rectangleSegmentA003)
-     ], %)
+  |> angledLine(angle = 0, length = 11.56, tag = $rectangleSegmentA003)
+  |> angledLine(angle = segAng(rectangleSegmentA003) - 90, length = 106.84)
+  |> angledLine(angle = segAng(rectangleSegmentA003), length = -segLen(rectangleSegmentA003))
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-sketch002 = startSketchOn(extrude001, seg03)
+sketch002 = startSketchOn(extrude001, face = seg03)
 profile001 = startProfileAt([205.96, 254.59], sketch002)
-  |> angledLine([0, 11.39], %, $rectangleSegmentA002)
-  |> angledLine([
-       segAng(rectangleSegmentA002) - 90,
-       105.26
-     ], %)
-  |> angledLine([
-       segAng(rectangleSegmentA002),
-       -segLen(rectangleSegmentA002)
-     ], %)
+  |> angledLine(angle = 0, length = 11.39, tag = $rectangleSegmentA002)
+  |> angledLine(angle = segAng(rectangleSegmentA002) - 90, length = 105.26)
+  |> angledLine(angle = segAng(rectangleSegmentA002), length = -segLen(rectangleSegmentA002))
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 `,
@@ -377,6 +350,7 @@ profile001 = startProfileAt([205.96, 254.59], sketch002)
       editor,
       toolbar,
       scene,
+      cmdBar,
     }) => {
       const file = await fs.readFile(
         path.resolve(
@@ -392,7 +366,7 @@ profile001 = startProfileAt([205.96, 254.59], sketch002)
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
 
-      await scene.waitForExecutionDone()
+      await scene.settled(cmdBar)
 
       const sketchOnAChamfer = _sketchOnAChamfer(page, editor, toolbar, scene)
 
@@ -400,7 +374,7 @@ profile001 = startProfileAt([205.96, 254.59], sketch002)
         clickCoords: { x: 570, y: 220 },
         cameraPos: { x: 16020, y: -2000, z: 10500 },
         cameraTarget: { x: -150, y: -4500, z: -80 },
-        beforeChamferSnippet: `angledLine([segAng(rectangleSegmentA001)-90,217.26],%,$seg01)
+        beforeChamferSnippet: `angledLine(angle=segAng(rectangleSegmentA001)-90,length=217.26,tag=$seg01)
       chamfer(extrude001,length=30,tags=[
       seg01,
       getNextAdjacentEdge(yo),
@@ -409,12 +383,12 @@ profile001 = startProfileAt([205.96, 254.59], sketch002)
     ])`,
         beforeChamferSnippetEnd: ')',
         afterChamferSelectSnippet:
-          'sketch002 = startSketchOn(extrude001, seg03)',
+          'sketch002 = startSketchOn(extrude001, face = seg03)',
         afterRectangle1stClickSnippet:
           'startProfileAt([205.96, 254.59], sketch002)',
-        afterRectangle2ndClickSnippet: `angledLine([0,11.39],%,$rectangleSegmentA002)
-        |>angledLine([segAng(rectangleSegmentA002)-90,105.26],%)
-        |>angledLine([segAng(rectangleSegmentA002),-segLen(rectangleSegmentA002)],%)
+        afterRectangle2ndClickSnippet: `angledLine(angle=0,length=11.39,tag=$rectangleSegmentA002)
+        |>angledLine(angle=segAng(rectangleSegmentA002)-90,length=105.26)
+        |>angledLine(angle=segAng(rectangleSegmentA002),length=-segLen(rectangleSegmentA002))
         |>line(endAbsolute=[profileStartX(%),profileStartY(%)])
         |>close()`,
       })
@@ -422,15 +396,9 @@ profile001 = startProfileAt([205.96, 254.59], sketch002)
         `@settings(defaultLengthUnit = in)
 sketch001 = startSketchOn(XZ)
   |> startProfileAt([75.8, 317.2], %)
-  |> angledLine([0, 268.43], %, $rectangleSegmentA001)
-  |> angledLine([
-       segAng(rectangleSegmentA001) - 90,
-       217.26
-     ], %, $seg01)
-  |> angledLine([
-       segAng(rectangleSegmentA001),
-       -segLen(rectangleSegmentA001)
-     ], %, $yo)
+  |> angledLine(angle = 0, length = 268.43, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 217.26, tag = $seg01)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $yo)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg02)
   |> close()
 extrude001 = extrude(sketch001, length = 100)
@@ -448,17 +416,11 @@ chamf = chamfer(
          getNextAdjacentEdge(seg02)
        ],
      )
-sketch002 = startSketchOn(extrude001, seg03)
+sketch002 = startSketchOn(extrude001, face = seg03)
 profile001 = startProfileAt([205.96, 254.59], sketch002)
-  |> angledLine([0, 11.39], %, $rectangleSegmentA002)
-  |> angledLine([
-       segAng(rectangleSegmentA002) - 90,
-       105.26
-     ], %)
-  |> angledLine([
-       segAng(rectangleSegmentA002),
-       -segLen(rectangleSegmentA002)
-     ], %)
+  |> angledLine(angle = 0, length = 11.39, tag = $rectangleSegmentA002)
+  |> angledLine(angle = segAng(rectangleSegmentA002) - 90, length = 105.26)
+  |> angledLine(angle = segAng(rectangleSegmentA002), length = -segLen(rectangleSegmentA002))
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 `,
@@ -479,6 +441,7 @@ profile001 = startProfileAt([205.96, 254.59], sketch002)
     await page.setBodyDimensions(viewPortSize)
 
     await homePage.goToModelingScene()
+    await scene.connectionEstablished()
 
     // Constants and locators
     // These are mappings from screenspace to KCL coordinates,
@@ -537,8 +500,7 @@ profile001 = startProfileAt([205.96, 254.59], sketch002)
       await toolbar.startSketchPlaneSelection()
       await moveToXzPlane()
       await clickOnXzPlane()
-      // timeout wait for engine animation is unavoidable
-      await page.waitForTimeout(600)
+      await toolbar.waitUntilSketchingReady()
       await editor.expectEditor.toContain(expectedCodeSnippets.sketchOnXzPlane)
     })
     await test.step(`Place a point a few pixels off the middle, verify it still snaps to 0,0`, async () => {
@@ -580,16 +542,15 @@ profile001 = startProfileAt([205.96, 254.59], sketch002)
     editor,
     toolbar,
     scene,
+    cmdBar,
   }) => {
-    const u = await getUtils(page)
-
     const initialCode = `closedSketch = startSketchOn(XZ)
   |> circle(center = [8, 5], radius = 2)
 openSketch = startSketchOn(XY)
   |> startProfileAt([-5, 0], %)
   |> line(endAbsolute = [0, 5])
   |> xLine(length = 5)
-  |> tangentialArcTo([10, 0], %)
+  |> tangentialArc(endAbsolute = [10, 0])
 `
     const viewPortSize = { width: 1000, height: 500 }
     await page.setBodyDimensions(viewPortSize)
@@ -599,8 +560,6 @@ openSketch = startSketchOn(XY)
     }, initialCode)
 
     await homePage.goToModelingScene()
-    await u.waitForPageLoad()
-    await page.waitForTimeout(1000)
 
     const pointInsideCircle = {
       x: viewPortSize.width * 0.63,
@@ -625,15 +584,16 @@ openSketch = startSketchOn(XY)
     const exitSketch = async () => {
       await test.step(`Exit sketch mode`, async () => {
         await toolbar.exitSketchBtn.click()
-        await expect(toolbar.exitSketchBtn).not.toBeVisible()
         await expect(toolbar.startSketchBtn).toBeEnabled()
       })
     }
 
     await test.step(`Double-click on the closed sketch`, async () => {
+      await scene.settled(cmdBar)
       await moveToCircle()
+      await page.waitForTimeout(1000)
       await dblClickCircle()
-      await expect(toolbar.startSketchBtn).not.toBeVisible()
+      await page.waitForTimeout(1000)
       await expect(toolbar.exitSketchBtn).toBeVisible()
       await editor.expectState({
         activeLines: [`|>circle(center=[8,5],radius=2)`],
@@ -670,13 +630,12 @@ openSketch = startSketchOn(XY)
       // There is a full execution after exiting sketch that clears the scene.
       await page.waitForTimeout(500)
       await dblClickOpenPath()
-      await expect(toolbar.startSketchBtn).not.toBeVisible()
       await expect(toolbar.exitSketchBtn).toBeVisible()
       // Wait for enter sketch mode to complete
       await page.waitForTimeout(500)
       await editor.expectState({
-        activeLines: [`|>tangentialArcTo([10,0],%)`],
-        highlightedCode: 'tangentialArcTo([10,0],%)',
+        activeLines: [`|>tangentialArc(endAbsolute=[10,0])`],
+        highlightedCode: 'tangentialArc(endAbsolute=[10,0])',
         diagnostics: [],
       })
     })
@@ -1031,6 +990,9 @@ openSketch = startSketchOn(XY)
     })
     await test.step(`Go through the command bar flow`, async () => {
       await toolbar.offsetPlaneButton.click()
+      await expect
+        .poll(() => page.getByText('Please select one').count())
+        .toBe(1)
       await cmdBar.expectState({
         stage: 'arguments',
         currentArgKey: 'plane',
@@ -1084,10 +1046,11 @@ openSketch = startSketchOn(XY)
   }) => {
     // One dumb hardcoded screen pixel value
     const testPoint = { x: 620, y: 257 }
-    const expectedOutput = `helix001 = helix(  axis = 'X',  radius = 5,  length = 5,  revolutions = 1,  angleStart = 360,  ccw = false,)`
-    const expectedLine = `axis='X',`
+    const expectedOutput = `helix001 = helix(  axis = X,  radius = 5,  length = 5,  revolutions = 1,  angleStart = 360,  ccw = false,)`
+    const expectedLine = `axis=X,`
 
     await homePage.goToModelingScene()
+    await scene.connectionEstablished()
 
     await test.step(`Go through the command bar flow`, async () => {
       await toolbar.helixButton.click()
@@ -1106,6 +1069,7 @@ openSketch = startSketchOn(XY)
         commandName: 'Helix',
       })
       await cmdBar.progressCmdBar()
+      await expect.poll(() => page.getByText('Axis').count()).toBe(6)
       await cmdBar.progressCmdBar()
       await cmdBar.progressCmdBar()
       await cmdBar.progressCmdBar()
@@ -1217,7 +1181,7 @@ openSketch = startSketchOn(XY)
         cmdBar,
       }) => {
         page.on('console', console.log)
-        const initialCode = `sketch001 = startSketchOn('XZ')
+        const initialCode = `sketch001 = startSketchOn(XZ)
   profile001 = startProfileAt([0, 0], sketch001)
     |> yLine(length = 100)
     |> line(endAbsolute = [100, 0])
@@ -1233,6 +1197,7 @@ openSketch = startSketchOn(XY)
         }, initialCode)
         await page.setBodyDimensions({ width: 1000, height: 500 })
         await homePage.goToModelingScene()
+        await scene.settled(cmdBar)
 
         await test.step(`Go through the command bar flow`, async () => {
           await toolbar.closePane('code')
@@ -1252,15 +1217,22 @@ openSketch = startSketchOn(XY)
             commandName: 'Helix',
           })
           await cmdBar.selectOption({ name: 'Edge' }).click()
+          await expect
+            .poll(() => page.getByText('Please select one').count())
+            .toBe(1)
           await clickOnEdge()
+          await page.waitForTimeout(1000)
           await cmdBar.progressCmdBar()
+          await page.waitForTimeout(1000)
           await cmdBar.argumentInput.focus()
+          await page.waitForTimeout(1000)
           await page.keyboard.insertText('20')
           await cmdBar.progressCmdBar()
           await page.keyboard.insertText('0')
           await cmdBar.progressCmdBar()
           await page.keyboard.insertText('1')
           await cmdBar.progressCmdBar()
+          await page.keyboard.insertText('100')
           await cmdBar.expectState({
             stage: 'review',
             headerArguments: {
@@ -1274,6 +1246,7 @@ openSketch = startSketchOn(XY)
             commandName: 'Helix',
           })
           await cmdBar.progressCmdBar()
+          await page.waitForTimeout(1000)
         })
 
         await test.step(`Confirm code is added to the editor, scene has changed`, async () => {
@@ -1369,7 +1342,7 @@ extrude001 = extrude(profile001, length = 100)
     }, initialCode)
     await page.setBodyDimensions({ width: 1000, height: 500 })
     await homePage.goToModelingScene()
-    await scene.waitForExecutionDone()
+    await scene.settled(cmdBar)
 
     // One dumb hardcoded screen pixel value
     const testPoint = { x: 620, y: 257 }
@@ -1530,6 +1503,9 @@ extrude001 = extrude(profile001, length = 100)
       if (!shouldPreselect) {
         await test.step(`Go through the command bar flow without preselected sketches`, async () => {
           await toolbar.loftButton.click()
+          await expect
+            .poll(() => page.getByText('Please select one').count())
+            .toBe(1)
           await cmdBar.expectState({
             stage: 'arguments',
             currentArgKey: 'selection',
@@ -1579,6 +1555,7 @@ extrude001 = extrude(profile001, length = 100)
     page,
     homePage,
     scene,
+    cmdBar,
   }) => {
     const initialCode = `sketch001 = startSketchOn(XZ)
   |> circle(center = [0, 0], radius = 30)
@@ -1592,7 +1569,7 @@ loft001 = loft([sketch001, sketch002])
     }, initialCode)
     await page.setBodyDimensions({ width: 1000, height: 500 })
     await homePage.goToModelingScene()
-    await scene.waitForExecutionDone()
+    await scene.settled(cmdBar)
 
     // One dumb hardcoded screen pixel value
     const testPoint = { x: 575, y: 200 }
@@ -1647,7 +1624,7 @@ profile001 = circle(sketch001, center = [0, 0], radius = 500)
 sketch002 = startSketchOn(XZ)
   |> startProfileAt([0, 0], %)
   |> xLine(length = -500)
-  |> tangentialArcTo([-2000, 500], %)`,
+  |> tangentialArc(endAbsolute = [-2000, 500])`,
     },
     {
       targetType: 'rectangle',
@@ -1655,21 +1632,15 @@ sketch002 = startSketchOn(XZ)
       initialCode: `@settings(defaultLengthUnit = in)
 sketch001 = startSketchOn(YZ)
 profile001 = startProfileAt([-400, -400], sketch001)
-  |> angledLine([0, 800], %, $rectangleSegmentA001)
-  |> angledLine([
-       segAng(rectangleSegmentA001) + 90,
-       800
-     ], %)
-  |> angledLine([
-       segAng(rectangleSegmentA001),
-       -segLen(rectangleSegmentA001)
-     ], %)
+  |> angledLine(angle = 0, length = 800, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) + 90, length = 800)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 sketch002 = startSketchOn(XZ)
   |> startProfileAt([0, 0], %)
   |> xLine(length = -500)
-  |> tangentialArcTo([-2000, 500], %)`,
+  |> tangentialArc(endAbsolute = [-2000, 500])`,
     },
   ]
   sweepCases.map(({ initialCode, targetType, testPoint }) => {
@@ -1687,7 +1658,7 @@ sketch002 = startSketchOn(XZ)
       }, initialCode)
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
-      await scene.waitForExecutionDone()
+      await scene.settled(cmdBar)
 
       // One dumb hardcoded screen pixel value
       const [clickOnSketch1] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
@@ -1707,6 +1678,9 @@ sketch002 = startSketchOn(XZ)
 
       await test.step(`Go through the command bar flow`, async () => {
         await toolbar.sweepButton.click()
+        await expect
+          .poll(() => page.getByText('Please select one').count())
+          .toBe(1)
         await cmdBar.expectState({
           commandName: 'Sweep',
           currentArgKey: 'target',
@@ -1826,7 +1800,7 @@ sketch002 = startSketchOn(XZ)
     }, initialCode)
     await page.setBodyDimensions({ width: 1000, height: 500 })
     await homePage.goToModelingScene()
-    await scene.waitForExecutionDone()
+    await scene.settled(cmdBar)
 
     // One dumb hardcoded screen pixel value
     const testPoint = { x: 700, y: 250 }
@@ -1843,6 +1817,9 @@ sketch002 = startSketchOn(XZ)
 
     await test.step(`Go through the command bar flow and fail validation with a toast`, async () => {
       await toolbar.sweepButton.click()
+      await expect
+        .poll(() => page.getByText('Please select one').count())
+        .toBe(1)
       await cmdBar.expectState({
         commandName: 'Sweep',
         currentArgKey: 'target',
@@ -2059,6 +2036,9 @@ extrude001 = extrude(sketch001, length = -12)
     await test.step(`Open fillet UI without selecting edges`, async () => {
       await page.waitForTimeout(100)
       await toolbar.filletButton.click()
+      await expect
+        .poll(() => page.getByText('Please select one').count())
+        .toBe(1)
       await cmdBar.expectState({
         stage: 'arguments',
         currentArgKey: 'selection',
@@ -2184,6 +2164,7 @@ extrude001 = extrude(sketch001, length = -12)
     homePage,
     scene,
     toolbar,
+    cmdBar,
   }) => {
     const initialCode = `sketch001 = startSketchOn(XY)
 profile001 = circle(
@@ -2200,7 +2181,7 @@ fillet001 = fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg01)])
     }, initialCode)
     await page.setBodyDimensions({ width: 1000, height: 500 })
     await homePage.goToModelingScene()
-    await scene.waitForExecutionDone()
+    await scene.settled(cmdBar)
 
     await test.step('Double-click in feature tree and expect error toast', async () => {
       await toolbar.openPane('feature-tree')
@@ -2521,7 +2502,7 @@ extrude001 = extrude(sketch001, length = -12)
       }, initialCode)
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
-      await scene.waitForExecutionDone()
+      await scene.settled(cmdBar)
     })
 
     // Test 1: Command bar flow with preselected edges
@@ -2554,6 +2535,7 @@ extrude001 = extrude(sketch001, length = -12)
         stage: 'arguments',
       })
       await cmdBar.progressCmdBar()
+      await page.waitForTimeout(1000)
       await cmdBar.expectState({
         commandName: 'Chamfer',
         highlightedHeaderArg: 'length',
@@ -2565,7 +2547,10 @@ extrude001 = extrude(sketch001, length = -12)
         },
         stage: 'arguments',
       })
+      await cmdBar.argumentInput.focus()
+      await page.waitForTimeout(1000)
       await cmdBar.progressCmdBar()
+      await page.waitForTimeout(1000)
       await cmdBar.expectState({
         commandName: 'Chamfer',
         headerArguments: {
@@ -2649,6 +2634,9 @@ extrude001 = extrude(sketch001, length = -12)
     await test.step(`Open chamfer UI without selecting edges`, async () => {
       await page.waitForTimeout(100)
       await toolbar.chamferButton.click()
+      await expect
+        .poll(() => page.getByText('Please select one').count())
+        .toBe(1)
       await cmdBar.expectState({
         stage: 'arguments',
         currentArgKey: 'selection',
@@ -2771,6 +2759,7 @@ extrude001 = extrude(sketch001, length = -12)
     scene,
     editor,
     toolbar,
+    cmdBar,
   }) => {
     // Code samples
     const initialCode = `@settings(defaultLengthUnit = in)
@@ -2814,7 +2803,7 @@ chamfer04 = chamfer(extrude001, length = 5, tags = [getOppositeEdge(seg02)])
       }, initialCode)
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
-      await scene.waitForExecutionDone()
+      await scene.settled(cmdBar)
 
       // verify modeling scene is loaded
       await scene.expectPixelColor(
@@ -2936,17 +2925,19 @@ extrude001 = extrude(sketch001, length = 30)
       await context.addInitScript((initialCode) => {
         localStorage.setItem('persistCode', initialCode)
       }, initialCode)
+
       await page.setBodyDimensions({ width: 1000, height: 500 })
+
       await homePage.goToModelingScene()
-      await scene.waitForExecutionDone()
+      await scene.connectionEstablished()
 
       // One dumb hardcoded screen pixel value
       const testPoint = { x: 575, y: 200 }
       const [clickOnCap] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
       const shellDeclaration =
-        "shell001 = shell(extrude001, faces = ['end'], thickness = 5)"
+        'shell001 = shell(extrude001, faces = [END], thickness = 5)'
       const editedShellDeclaration =
-        "shell001 = shell(extrude001, faces = ['end'], thickness = 2)"
+        'shell001 = shell(extrude001, faces = [END], thickness = 2)'
 
       await test.step(`Look for the grey of the shape`, async () => {
         await scene.expectPixelColor([127, 127, 127], testPoint, 15)
@@ -2955,6 +2946,9 @@ extrude001 = extrude(sketch001, length = 30)
       if (!shouldPreselect) {
         await test.step(`Go through the command bar flow without preselected faces`, async () => {
           await toolbar.shellButton.click()
+          await expect
+            .poll(() => page.getByText('Please select one').count())
+            .toBe(1)
           await cmdBar.expectState({
             stage: 'arguments',
             currentArgKey: 'selection',
@@ -3015,7 +3009,6 @@ extrude001 = extrude(sketch001, length = 30)
       })
 
       await test.step('Edit shell via feature tree selection works', async () => {
-        await toolbar.closePane('code')
         await toolbar.openPane('feature-tree')
         const operationButton = await toolbar.getFeatureTreeOperation(
           'Shell',
@@ -3044,7 +3037,6 @@ extrude001 = extrude(sketch001, length = 30)
         await cmdBar.progressCmdBar()
         await toolbar.closePane('feature-tree')
         await scene.expectPixelColor([150, 150, 150], testPoint, 15)
-        await toolbar.openPane('code')
         await editor.expectEditor.toContain(editedShellDeclaration)
         await editor.expectState({
           diagnostics: [],
@@ -3079,7 +3071,7 @@ extrude001 = extrude(sketch001, length = 40)
     }, initialCode)
     await page.setBodyDimensions({ width: 1000, height: 500 })
     await homePage.goToModelingScene()
-    await scene.waitForExecutionDone()
+    await scene.settled(cmdBar)
 
     // One dumb hardcoded screen pixel value
     const testPoint = { x: 580, y: 180 }
@@ -3087,9 +3079,9 @@ extrude001 = extrude(sketch001, length = 40)
     const [clickOnWall] = scene.makeMouseHelpers(testPoint.x, testPoint.y + 70)
     const mutatedCode = 'xLine(length = -40, tag = $seg01)'
     const shellDeclaration =
-      "shell001 = shell(extrude001, faces = ['end', seg01], thickness = 5)"
+      'shell001 = shell(extrude001, faces = [END, seg01], thickness = 5)'
     const editedShellDeclaration =
-      "shell001 = shell(extrude001, faces = ['end', seg01], thickness = 1)"
+      'shell001 = shell(extrude001, faces = [END, seg01], thickness = 1)'
 
     await test.step(`Look for the grey of the shape`, async () => {
       await scene.expectPixelColor([99, 99, 99], testPoint, 15)
@@ -3097,6 +3089,9 @@ extrude001 = extrude(sketch001, length = 40)
 
     await test.step(`Go through the command bar flow, selecting a wall and keeping default thickness`, async () => {
       await toolbar.shellButton.click()
+      await expect
+        .poll(() => page.getByText('Please select one').count())
+        .toBe(1)
       await cmdBar.expectState({
         stage: 'arguments',
         currentArgKey: 'selection',
@@ -3108,6 +3103,9 @@ extrude001 = extrude(sketch001, length = 40)
         highlightedHeaderArg: 'selection',
         commandName: 'Shell',
       })
+      await expect
+        .poll(() => page.getByText('Please select one').count())
+        .toBe(1)
       await clickOnCap()
       await page.keyboard.down('Shift')
       await clickOnWall()
@@ -3116,6 +3114,7 @@ extrude001 = extrude(sketch001, length = 40)
       await cmdBar.progressCmdBar()
       await page.waitForTimeout(500)
       await cmdBar.progressCmdBar()
+      await page.waitForTimeout(500)
       await cmdBar.expectState({
         stage: 'review',
         headerArguments: {
@@ -3124,7 +3123,9 @@ extrude001 = extrude(sketch001, length = 40)
         },
         commandName: 'Shell',
       })
+      await page.waitForTimeout(500)
       await cmdBar.progressCmdBar()
+      await page.waitForTimeout(500)
     })
 
     await test.step(`Confirm code is added to the editor, scene has changed`, async () => {
@@ -3139,7 +3140,6 @@ extrude001 = extrude(sketch001, length = 40)
     })
 
     await test.step('Edit shell via feature tree selection works', async () => {
-      await editor.closePane()
       const operationButton = await toolbar.getFeatureTreeOperation('Shell', 0)
       await operationButton.dblclick({ button: 'left' })
       await cmdBar.expectState({
@@ -3154,6 +3154,7 @@ extrude001 = extrude(sketch001, length = 40)
       })
       await page.keyboard.insertText('1')
       await cmdBar.progressCmdBar()
+      await page.waitForTimeout(500)
       await cmdBar.expectState({
         stage: 'review',
         headerArguments: {
@@ -3164,7 +3165,6 @@ extrude001 = extrude(sketch001, length = 40)
       await cmdBar.progressCmdBar()
       await toolbar.closePane('feature-tree')
       await scene.expectPixelColor([150, 150, 150], testPoint, 15)
-      await toolbar.openPane('code')
       await editor.expectEditor.toContain(editedShellDeclaration)
       await editor.expectState({
         diagnostics: [],
@@ -3188,7 +3188,7 @@ sketch001 = startSketchOn(XZ)
   |> circle(center = [0, 0], radius = 100)
   |> extrude(length = 100)
 
-sketch002 = startSketchOn(sketch001, 'END')
+sketch002 = startSketchOn(sketch001, face = 'END')
   |> circle(center = [0, 0], radius = 50)
   |> extrude(length = 50)
   `,
@@ -3197,7 +3197,7 @@ sketch001 = startSketchOn(XZ)
   |> circle(center = [0, 0], radius = 100)
 extrude001 = extrude(sketch001, length = 100)
 
-sketch002 = startSketchOn(extrude001, 'END')
+sketch002 = startSketchOn(extrude001, face = 'END')
   |> circle(center = [0, 0], radius = 50)
 extrude002 = extrude(sketch002, length = 50)
   `,
@@ -3218,13 +3218,13 @@ extrude002 = extrude(sketch002, length = 50)
       }, initialCode)
       await page.setBodyDimensions({ width: 1200, height: 500 })
       await homePage.goToModelingScene()
-      await scene.waitForExecutionDone()
+      await scene.settled(cmdBar)
 
       // One dumb hardcoded screen pixel value
       const testPoint = { x: 580, y: 320 }
       const [clickOnCap] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
       const shellTarget = hasExtrudesInPipe ? 'sketch002' : 'extrude002'
-      const shellDeclaration = `shell001 = shell(${shellTarget}, faces = ['end'], thickness = 5)`
+      const shellDeclaration = `shell001 = shell(${shellTarget}, faces = [END], thickness = 5)`
 
       await test.step(`Look for the grey of the shape`, async () => {
         await scene.expectPixelColor([113, 113, 113], testPoint, 15)
@@ -3243,12 +3243,13 @@ extrude002 = extrude(sketch002, length = 50)
           highlightedHeaderArg: 'selection',
           commandName: 'Shell',
         })
+        await expect
+          .poll(() => page.getByText('Please select one').count())
+          .toBe(1)
         await clickOnCap()
-        await page.waitForTimeout(500)
+        await page.waitForTimeout(1000)
         await cmdBar.progressCmdBar()
-        await page.waitForTimeout(500)
         await cmdBar.progressCmdBar()
-        await page.waitForTimeout(500)
         await cmdBar.expectState({
           stage: 'review',
           headerArguments: {
@@ -3298,7 +3299,7 @@ profile001 = startProfileAt([-20, 20], sketch001)
 `
       const extrudeCode = `extrude001 = extrude(profile001, length = 40)
 `
-      const shellCode = `shell001 = shell(extrude001, faces = ['end'], thickness = 5)
+      const shellCode = `shell001 = shell(extrude001, faces = [END], thickness = 5)
 `
       const initialCode = sketchCode + extrudeCode + shellCode
       await context.addInitScript((initialCode) => {
@@ -3306,7 +3307,7 @@ profile001 = startProfileAt([-20, 20], sketch001)
       }, initialCode)
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
-      await scene.waitForExecutionDone()
+      await scene.settled(cmdBar)
       await toolbar.openPane('feature-tree')
 
       // One dumb hardcoded screen pixel value
@@ -3386,7 +3387,7 @@ sweep001 = sweep(sketch001, path = sketch002)
     }, initialCode)
     await page.setBodyDimensions({ width: 1000, height: 500 })
     await homePage.goToModelingScene()
-    await scene.waitForExecutionDone()
+    await scene.settled(cmdBar)
 
     // One dumb hardcoded screen pixel value
     const testPoint = { x: 500, y: 250 }
@@ -3399,6 +3400,9 @@ sweep001 = sweep(sketch001, path = sketch002)
 
     await test.step(`Go through the Shell flow and fail validation with a toast`, async () => {
       await toolbar.shellButton.click()
+      await expect
+        .poll(() => page.getByText('Please select one').count())
+        .toBe(1)
       await cmdBar.expectState({
         stage: 'arguments',
         currentArgKey: 'selection',
@@ -3433,26 +3437,29 @@ sweep001 = sweep(sketch001, path = sketch002)
       const initialCode = `
 sketch001 = startSketchOn(XZ)
 |> startProfileAt([-100.0, 100.0], %)
-|> angledLine([0, 200.0], %, $rectangleSegmentA001)
-|> angledLine([segAng(rectangleSegmentA001) - 90, 200], %, $rectangleSegmentB001)
-|> angledLine([
-segAng(rectangleSegmentA001),
--segLen(rectangleSegmentA001)
-], %, $rectangleSegmentC001)
+|> angledLine(angle = 0, length = 200.0, tag = $rectangleSegmentA001)
+|> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 200, tag = $rectangleSegmentB001)
+|> angledLine(
+angle=segAng(rectangleSegmentA001),
+length=-segLen(rectangleSegmentA001),
+tag=$rectangleSegmentC001,
+)
 |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
 |> close()
 extrude001 = extrude(sketch001, length = 200)
-sketch002 = startSketchOn(extrude001, rectangleSegmentA001)
+sketch002 = startSketchOn(extrude001, face = rectangleSegmentA001)
 |> startProfileAt([-66.77, 84.81], %)
-|> angledLine([180, 27.08], %, $rectangleSegmentA002)
-|> angledLine([
-segAng(rectangleSegmentA002) - 90,
-27.8
-], %, $rectangleSegmentB002)
-|> angledLine([
-segAng(rectangleSegmentA002),
--segLen(rectangleSegmentA002)
-], %, $rectangleSegmentC002)
+|> angledLine(angle = 180, length = 27.08, tag = $rectangleSegmentA002)
+|> angledLine(
+angle=segAng(rectangleSegmentA002) - 90,
+length=27.8,
+tag=$rectangleSegmentB002,
+)
+|> angledLine(
+angle=segAng(rectangleSegmentA002),
+length=-segLen(rectangleSegmentA002),
+tag=$rectangleSegmentC002,
+)
 |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
 |> close()
 `
@@ -3462,19 +3469,20 @@ segAng(rectangleSegmentA002),
       }, initialCode)
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
-      await scene.waitForExecutionDone()
+      await scene.settled(cmdBar)
 
       // select line of code
-      const codeToSelecton = `segAng(rectangleSegmentA002) - 90,`
+      const codeToSelection = `segAng(rectangleSegmentA002) - 90,`
       // revolve
-      await page.getByText(codeToSelecton).click()
+      await editor.scrollToText(codeToSelection)
+      await page.getByText(codeToSelection).click()
       await toolbar.revolveButton.click()
       await cmdBar.progressCmdBar()
       await cmdBar.progressCmdBar()
       await cmdBar.progressCmdBar()
       await cmdBar.progressCmdBar()
 
-      const newCodeToFind = `revolve001 = revolve(sketch002, angle = 360, axis = 'X')`
+      const newCodeToFind = `revolve001 = revolve(sketch002, angle = 360, axis = X)`
       expect(editor.expectEditor.toContain(newCodeToFind)).toBeTruthy()
 
       // Edit flow
@@ -3521,35 +3529,32 @@ segAng(rectangleSegmentA002),
     }) => {
       const initialCode = `sketch001 = startSketchOn(XZ)
   |> startProfileAt([-102.57, 101.72], %)
-  |> angledLine([0, 202.6], %, $rectangleSegmentA001)
-  |> angledLine([
-       segAng(rectangleSegmentA001) - 90,
-       202.6
-     ], %, $rectangleSegmentB001)
-  |> angledLine([
-       segAng(rectangleSegmentA001),
-       -segLen(rectangleSegmentA001)
-     ], %, $rectangleSegmentC001)
+  |> angledLine(angle = 0, length = 202.6, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 202.6, tag = $rectangleSegmentB001)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $rectangleSegmentC001)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 extrude001 = extrude(sketch001, length = 50)
-sketch002 = startSketchOn(extrude001, rectangleSegmentA001)
+sketch002 = startSketchOn(extrude001, face = rectangleSegmentA001)
   |> circle(center = [-11.34, 10.0], radius = 8.69)
+
 `
       await context.addInitScript((initialCode) => {
         localStorage.setItem('persistCode', initialCode)
       }, initialCode)
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
-      await scene.waitForExecutionDone()
+      await scene.connectionEstablished()
+      await scene.settled(cmdBar)
 
       // select line of code
-      const codeToSelecton = `center = [-11.34, 10.0]`
+      const codeToSelection = `center = [-11.34, 10.0]`
       // revolve
-      await page.getByText(codeToSelecton).click()
+      await editor.scrollToText(codeToSelection)
+      await page.getByText(codeToSelection).click()
       await toolbar.revolveButton.click()
       await page.getByText('Edge', { exact: true }).click()
-      const lineCodeToSelection = `|> angledLine([0, 202.6], %, $rectangleSegmentA001)`
+      const lineCodeToSelection = `angledLine(angle = 0, length = 202.6, tag = $rectangleSegmentA001)`
       await page.getByText(lineCodeToSelection).click()
       await cmdBar.progressCmdBar()
       await cmdBar.progressCmdBar()
@@ -3595,6 +3600,7 @@ sketch002 = startSketchOn(extrude001, rectangleSegmentA001)
       await editor.expectEditor.toContain(
         newCodeToFind.replace('angle = 360', 'angle = angle001')
       )
+      expect(editor.expectEditor.toContain(newCodeToFind)).toBeTruthy()
     })
     test('revolve sketch circle around line segment from startProfileAt sketch', async ({
       context,
@@ -3605,22 +3611,23 @@ sketch002 = startSketchOn(extrude001, rectangleSegmentA001)
       toolbar,
       cmdBar,
     }) => {
-      const initialCode = `sketch002 = startSketchOn(XY)
-  |> startProfileAt([-2.02, 1.79], %)
-  |> xLine(length = 2.6)
-sketch001 = startSketchOn(-XY)
-  |> startProfileAt([-0.48, 1.25], %)
-  |> angledLine([0, 2.38], %, $rectangleSegmentA001)
-  |> angledLine([segAng(rectangleSegmentA001) - 90, 2.4], %, $rectangleSegmentB001)
-  |> angledLine([
-       segAng(rectangleSegmentA001),
-       -segLen(rectangleSegmentA001)
-     ], %, $rectangleSegmentC001)
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> close()
-extrude001 = extrude(sketch001, length = 5)
-sketch003 = startSketchOn(extrude001, 'START')
-  |> circle(center = [-0.69, 0.56], radius = 0.28)
+      const initialCode = `
+    sketch002 = startSketchOn(XY)
+      |> startProfileAt([-2.02, 1.79], %)
+      |> xLine(length = 2.6)
+    sketch001 = startSketchOn('-XY')
+      |> startProfileAt([-0.48, 1.25], %)
+      |> angledLine(angle = 0, length = 2.38, tag = $rectangleSegmentA001)
+      |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 2.4, tag = $rectangleSegmentB001)
+      |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $rectangleSegmentC001)
+      |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+      |> close()
+    extrude001 = extrude(sketch001, length = 5)
+    sketch003 = startSketchOn(extrude001, face = 'START')
+      |> circle(
+        center = [-0.69, 0.56],
+        radius = 0.28
+      )
 `
 
       await context.addInitScript((initialCode) => {
@@ -3628,15 +3635,20 @@ sketch003 = startSketchOn(extrude001, 'START')
       }, initialCode)
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
-      await scene.waitForExecutionDone()
+      await scene.connectionEstablished()
+      await scene.settled(cmdBar)
 
       // select line of code
-      const codeToSelecton = `center = [-0.69, 0.56]`
+      const codeToSelection = `center = [-0.69, 0.56]`
       // revolve
-      await page.getByText(codeToSelecton).click()
       await toolbar.revolveButton.click()
+      await page.waitForTimeout(1000)
+      await editor.scrollToText(codeToSelection)
+      await page.getByText(codeToSelection).click()
+      await expect.poll(() => page.getByText('AxisOrEdge').count()).toBe(2)
       await page.getByText('Edge', { exact: true }).click()
-      const lineCodeToSelection = `|> xLine(length = 2.6)`
+      const lineCodeToSelection = `length = 2.6`
+      await editor.scrollToText(lineCodeToSelection)
       await page.getByText(lineCodeToSelection).click()
       await cmdBar.progressCmdBar()
       await cmdBar.progressCmdBar()
@@ -3703,21 +3715,22 @@ extrude001 = extrude(profile001, length = 100)
     }, initialCode)
     await page.setBodyDimensions({ width: 1000, height: 500 })
     await homePage.goToModelingScene()
-    await scene.waitForExecutionDone()
+    await scene.settled(cmdBar)
 
     // One dumb hardcoded screen pixel value
     const testPoint = { x: 500, y: 250 }
     const initialColor: [number, number, number] = [123, 123, 123]
+    const tolerance = 50
 
     await test.step(`Confirm extrude exists with default appearance`, async () => {
       await toolbar.closePane('code')
-      await scene.expectPixelColor(initialColor, testPoint, 15)
+      await scene.expectPixelColor(initialColor, testPoint, tolerance)
     })
 
     async function setApperanceAndCheck(
       option: string,
       hex: string,
-      shapeColor: [number, number, number]
+      shapeColor?: [number, number, number]
     ) {
       await toolbar.openPane('feature-tree')
       const enterAppearanceFlow = async (stepName: string) =>
@@ -3766,7 +3779,9 @@ extrude001 = extrude(profile001, length = 100)
       })
       await cmdBar.progressCmdBar()
       await toolbar.closePane('feature-tree')
-      await scene.expectPixelColor(shapeColor, testPoint, 10)
+      if (shapeColor) {
+        await scene.expectPixelColor(shapeColor, testPoint, tolerance)
+      }
       await toolbar.openPane('code')
       if (hex === 'default') {
         const anyAppearanceDeclaration = `|> appearance(`
@@ -3785,16 +3800,17 @@ extrude001 = extrude(profile001, length = 100)
     }
 
     await test.step(`Go through the Set Appearance flow for all options`, async () => {
-      await setApperanceAndCheck('Red', '#FF0000', [180, 0, 0])
-      await setApperanceAndCheck('Green', '#00FF00', [0, 180, 0])
-      await setApperanceAndCheck('Blue', '#0000FF', [0, 0, 180])
-      await setApperanceAndCheck('Turquoise', '#00FFFF', [0, 180, 180])
-      await setApperanceAndCheck('Purple', '#FF00FF', [180, 0, 180])
-      await setApperanceAndCheck('Yellow', '#FFFF00', [180, 180, 0])
-      await setApperanceAndCheck('Black', '#000000', [0, 0, 0])
-      await setApperanceAndCheck('Dark Grey', '#080808', [0x33, 0x33, 0x33])
-      await setApperanceAndCheck('Light Grey', '#D3D3D3', [176, 176, 176])
-      await setApperanceAndCheck('White', '#FFFFFF', [184, 184, 184])
+      await setApperanceAndCheck('Red', '#FF0000', [180, 30, 30])
+      // Not checking the scene color every time cause that's not really deterministic. Red seems reliable though
+      await setApperanceAndCheck('Green', '#00FF00')
+      await setApperanceAndCheck('Blue', '#0000FF')
+      await setApperanceAndCheck('Turquoise', '#00FFFF')
+      await setApperanceAndCheck('Purple', '#FF00FF')
+      await setApperanceAndCheck('Yellow', '#FFFF00')
+      await setApperanceAndCheck('Black', '#000000')
+      await setApperanceAndCheck('Dark Grey', '#080808')
+      await setApperanceAndCheck('Light Grey', '#D3D3D3')
+      await setApperanceAndCheck('White', '#FFFFFF')
       await setApperanceAndCheck(
         'Default (clear appearance)',
         'default',

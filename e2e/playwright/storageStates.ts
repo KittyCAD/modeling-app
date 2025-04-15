@@ -23,7 +23,7 @@ export const TEST_SETTINGS: DeepPartial<Settings> = {
     camera_projection: 'perspective',
   },
   project: {
-    default_project_name: 'project-$nnn',
+    default_project_name: 'untitled',
     directory: '',
   },
   text_editor: {
@@ -80,24 +80,21 @@ export const TEST_SETTINGS_CORRUPTED = {
   },
 } satisfies Partial<SaveSettingsPayload>
 
-export const TEST_CODE_GIZMO = `part001 = startSketchOn(XZ)
+export const TEST_CODE_GIZMO = `@settings(defaultLengthUnit = in)
+part001 = startSketchOn(XZ)
 |> startProfileAt([20, 0], %)
 |> line(end = [7.13, 4 + 0])
-|> angledLine({ angle: 3 + 0, length: 3.14 + 0 }, %)
+|> angledLine(angle = 3 + 0, length = 3.14 + 0 )
 |> line(endAbsolute = [20.14 + 0, -0.14 + 0])
 |> xLine(endAbsolute = 29 + 0)
 |> yLine(length = -3.14 + 0, tag = $a)
 |> xLine(length = 1.63)
-|> angledLineOfXLength({ angle: 3 + 0, length: 3.14 }, %)
-|> angledLineOfYLength({ angle: 30, length: 3 + 0 }, %)
-|> angledLineToX({ angle: 22.14 + 0, to: 12 }, %)
-|> angledLineToY({ angle: 30, to: 11.14 }, %)
-|> angledLineThatIntersects({
-  angle: 3.14,
-  intersectTag: a,
-  offset: 0
-}, %)
-|> tangentialArcTo([13.14 + 0, 13.14], %)
+|> angledLine(angle = 3 + 0, lengthX = 3.14 )
+|> angledLine(angle = 30, lengthY = 3 + 0 )
+|> angledLine(angle = 22.14 + 0, endAbsoluteX = 12)
+|> angledLine(angle = 30, endAbsoluteY = 11.14)
+|> angledLineThatIntersects(angle = 3.14, intersectTag = a, offset = 0)
+|> tangentialArc(endAbsolute = [13.14 + 0, 13.14])
 |> close()
 |> extrude(length = 5 + 7)
 `
@@ -139,7 +136,7 @@ box = startSketchOn(XY)
   |> close()
   |> extrude(length = 10)
 
-sketch001 = startSketchOn(box, revolveAxis)
+sketch001 = startSketchOn(box, face = revolveAxis)
   |> startProfileAt([5, 10], %)
   |> line(end = [0, -10])
   |> line(end = [2, 0])

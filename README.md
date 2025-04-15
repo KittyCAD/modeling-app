@@ -1,17 +1,17 @@
-![Zoo Modeling App](/public/zma-logomark-outlined.png)
+![Zoo Design Studio](/public/zma-logomark-outlined.png)
 
-## Zoo Modeling App
+## Zoo Design Studio
 
 download at [zoo.dev/modeling-app/download](https://zoo.dev/modeling-app/download)
 
 A CAD application from the future, brought to you by the [Zoo team](https://zoo.dev).
 
-Modeling App is our take on what a modern modelling experience can be. It is applying several lessons learned in the decades since most major CAD tools came into existence:
+Design Studio is our take on what a modern modelling experience can be. It is applying several lessons learned in the decades since most major CAD tools came into existence:
 
 - All artifacts—including parts and assemblies—should be represented as human-readable code. At the end of the day, your CAD project should be "plain text"
   - This makes version control—which is a solved problem in software engineering—trivial for CAD
 - All GUI (or point-and-click) interactions should be actions performed on this code representation under the hood
-  - This unlocks a hybrid approach to modeling. Whether you point-and-click as you always have or you write your own KCL code, you are performing the same action in Modeling App
+  - This unlocks a hybrid approach to modeling. Whether you point-and-click as you always have or you write your own KCL code, you are performing the same action in Design Studio
 - Everything graphics _has_ to be built for the GPU
   - Most CAD applications have had to retrofit support for GPUs, but our geometry engine is made for GPUs (primarily Nvidia's Vulkan), getting the order of magnitude rendering performance boost with it
 - Make the resource-intensive pieces of an application auto-scaling
@@ -19,9 +19,9 @@ Modeling App is our take on what a modern modelling experience can be. It is app
 
 We are excited about what a small team of people could build in a short time with our API. We welcome you to try our API, build your own applications, or contribute to ours!
 
-Modeling App is a _hybrid_ user interface for CAD modeling. You can point-and-click to design parts (and soon assemblies), but everything you make is really just [`kcl` code](https://github.com/KittyCAD/kcl-experiments) under the hood. All of your CAD models can be checked into source control such as GitHub and responsibly versioned, rolled back, and more.
+Design Studio is a _hybrid_ user interface for CAD modeling. You can point-and-click to design parts (and soon assemblies), but everything you make is really just [`kcl` code](https://github.com/KittyCAD/kcl-experiments) under the hood. All of your CAD models can be checked into source control such as GitHub and responsibly versioned, rolled back, and more.
 
-The 3D view in Modeling App is just a video stream from our hosted geometry engine. The app sends new modeling commands to the engine via WebSockets, which returns back video frames of the view within the engine.
+The 3D view in Design Studio is just a video stream from our hosted geometry engine. The app sends new modeling commands to the engine via WebSockets, which returns back video frames of the view within the engine.
 
 ## Tools
 
@@ -62,39 +62,39 @@ fnm use
 Install the NPM dependencies with:
 
 ```
-yarn install
+npm install
 ```
 
 This project uses a lot of Rust compiled to [WASM](https://webassembly.org/) within it. We have package scripts to run rustup, see `package.json` for reference:
 
 ```
 # macOS/Linux
-yarn install:rust
-yarn install:wasm-pack:sh
+npm run install:rust
+npm run install:wasm-pack:sh
 
 # Windows
-yarn install:rust:windows
-yarn install:wasm-pack:cargo
+npm run install:rust:windows
+npm run install:wasm-pack:cargo
 ```
 
 Then to build the WASM layer, run:
 
 ```
 # macOS/Linux
-yarn build:wasm
+npm run build:wasm
 
 # Windows
-yarn build:wasm:windows
+npm run build:wasm:windows
 ```
 
-Or if you have the `gh` cli installed and want to download the latest main wasm bundle. Note that on Windows, you need to associate .ps1 files with PowerShell, which can be done via the right click menu, selecting `C:\Program Files\PowerShell\7\pwsh.exe`, and you can install tools like `gh` via `yarn install:tools:windows`.
+Or if you have the `gh` cli installed and want to download the latest main wasm bundle. Note that on Windows, you need to associate .ps1 files with PowerShell, which can be done via the right click menu, selecting `C:\Program Files\PowerShell\7\pwsh.exe`, and you can install tools like `gh` via `npm run install:tools:windows`.
 
 ```
 # macOS/Linux
-yarn fetch:wasm
+npm run fetch:wasm
 
 # Windows
-yarn fetch:wasm:windows
+npm run fetch:wasm:windows
 ```
 
 That will build the WASM binary and put in the `public` dir (though gitignored).
@@ -102,7 +102,7 @@ That will build the WASM binary and put in the `public` dir (though gitignored).
 Finally, to run the web app only, run:
 
 ```
-yarn start
+npm start
 ```
 
 If you're not a Zoo employee you won't be able to access the dev environment, you should copy everything from `.env.production` to `.env.development.local` to make it point to production instead, then when you navigate to `localhost:3000` the easiest way to sign in is to paste `localStorage.setItem('TOKEN_PERSIST_KEY', "your-token-from-https://zoo.dev/account/api-tokens")` replacing the with a real token from https://zoo.dev/account/api-tokens of course, then navigate to `localhost:3000` again. Note that navigating to `localhost:3000/signin` removes your token so you will need to set the token again.
@@ -122,17 +122,17 @@ Third-Party Cookies".
 
 ## Desktop
 
-To spin up the desktop app, `yarn install` and `yarn build:wasm` need to have been done before hand then:
+To spin up the desktop app, `npm install` and `npm run build:wasm` need to have been done before hand then:
 
 ```
-yarn tron:start
+npm run tron:start
 ```
 
 This will start the application and hot-reload on changes.
 
 Devtools can be opened with the usual Command-Option-I (macOS) or Ctrl-Shift-I (Linux and Windows).
 
-To package the app for your platform with electron-builder, run `yarn tronb:package:dev` (or `yarn tronb:package:prod` to point to the .env.production variables).
+To package the app for your platform with electron-builder, run `npm run tronb:package:dev` (or `npm run tronb:package:prod` to point to the .env.production variables).
 
 ## Checking out commits / Bisecting
 
@@ -141,9 +141,9 @@ Which commands from setup are one off vs. need to be run every time?
 The following will need to be run when checking out a new commit and guarantees the build is not stale:
 
 ```bash
-yarn install
-yarn build:wasm
-yarn start # or yarn build:local && yarn serve for slower but more production-like build
+npm install
+npm run build:wasm
+npm start # or npm run build:local && npm run serve for slower but more production-like build
 ```
 
 ## Before submitting a PR
@@ -153,10 +153,10 @@ Before you submit a contribution PR to this repo, please ensure that:
 - There is a corresponding issue for the changes you want to make, so that discussion of approach can be had before work begins.
 - You have separated out refactoring commits from feature commits as much as possible
 - You have run all of the following commands locally:
-  - `yarn fmt`
-  - `yarn tsc`
-  - `yarn test`
-  - Here they are all together: `yarn fmt && yarn tsc && yarn test`
+  - `npm run fmt`
+  - `npm run tsc`
+  - `npm run test`
+  - Here they are all together: `npm run fmt && npm run tsc && npm run test`
 
 ## Release a new version
 
@@ -198,13 +198,13 @@ If the prompt doesn't show up, start the app in command line to grab the electro
 
 ```
 # Windows (PowerShell)
-& 'C:\Program Files\Zoo Modeling App\Zoo Modeling App.exe'
+& 'C:\Program Files\Zoo Design Studio\Zoo Design Studio.exe'
 
 # macOS
 /Applications/Zoo\ Modeling\ App.app/Contents/MacOS/Zoo\ Modeling\ App
 
 # Linux
-./Zoo Modeling App-{version}-{arch}-linux.AppImage
+./Zoo Design Studio-{version}-{arch}-linux.AppImage
 ```
 
 #### 4. Publish the release
@@ -250,55 +250,29 @@ You will need a `./e2e/playwright/playwright-secrets.env` file:
 $ touch ./e2e/playwright/playwright-secrets.env
 $ cat ./e2e/playwright/playwright-secrets.env
 token=<dev.zoo.dev/account/api-tokens>
-snapshottoken=<your-snapshot-token>
+snapshottoken=<zoo.dev/account/api-tokens>
 ```
+or use `export` to set the environment variables `token` and `snapshottoken`.
 
-For a portable way to run Playwright you'll need Docker.
+#### Snapshot tests (Google Chrome on Ubuntu only)
 
-#### Generic example
-
-After that, open a terminal and run:
-
-```bash
-docker run --network host  --rm --init -it playwright/chrome:playwright-x.xx.x
+Only Ubunu and Google Chrome is supported for the set of tests evaluating screenshot snapshots.
+If you don't run Ubuntu locally or in a VM, you may use a GitHub Codespace.
 ```
-
-and in another terminal, run:
-
-```bash
-PW_TEST_CONNECT_WS_ENDPOINT=ws://127.0.0.1:4444/ yarn playwright test --project="Google Chrome" <test suite>
+npm run playwright -- install chrome
+npm run test:snapshots
 ```
+You may use `-- --update-snapshots` as needed.
 
-#### Specific example
-
-open a terminal and run:
-
-```bash
-docker run --network host  --rm --init -it playwright/chrome:playwright-1.46.0
-```
-
-and in another terminal, run:
-
-```bash
-PW_TEST_CONNECT_WS_ENDPOINT=ws://127.0.0.1:4444/ yarn playwright test --project="Google Chrome" e2e/playwright/command-bar-tests.spec.ts
-```
-
-run a specific test change the test from `test('...` to `test.only('...`
-(note if you commit this, the tests will instantly fail without running any of the tests)
-
-**Gotcha**: running the docker container with a mismatched image against your `./node_modules/playwright` will cause a failure. Make sure the versions are matched and up to date.
-
-run headed
+#### Electron flow tests (Chromium on Ubuntu, macOS, Windows)
 
 ```
-yarn playwright test --headed
+npm run playwright -- install chromium
+npm run test:playwright:electron:local 
 ```
+You may use `-- -g "my test"` to match specific test titles, or `-- path/to/file.spec.ts` for a test file.
 
-run with step through debugger
-
-```
-PWDEBUG=1 yarn playwright test
-```
+#### Debugger
 
 However, if you want a debugger I recommend using VSCode and the `playwright` extension, as the above command is a cruder debugger that steps into every function call which is annoying.
 With the extension you can set a breakpoint after `waitForDefaultPlanesVisibilityChange` in order to skip app loading, then the vscode debugger's "step over" is much better for being able to stay at the right level of abstraction as you debug the code.
@@ -308,7 +282,7 @@ Or comment out browsers in `playwright.config.ts`.
 
 note chromium has encoder compat issues which is why were testing against the branded 'Google Chrome'
 
-You may consider using the VSCode extension, it's useful for running individual threads, but some some reason the "record a test" is locked to chromium with we can't use. A work around is to us the CI `yarn playwright codegen -b wk --load-storage ./store localhost:3000`
+You may consider using the VSCode extension, it's useful for running individual threads, but some some reason the "record a test" is locked to chromium with we can't use. A work around is to us the CI `npm run playwright codegen -b wk --load-storage ./store localhost:3000`
 
 <details>
 <summary>
@@ -351,21 +325,21 @@ However because much of our tests involve clicking in the stream at specific loc
 If you already haven't, run the following:
 
 ```
-yarn
-yarn build:wasm
-yarn start
+npm
+npm run build:wasm
+npm start
 ```
 
 and finally:
 
 ```
-yarn test:unit
+npm run test:unit
 ```
 
 For individual testing:
 
 ```
-yarn test abstractSyntaxTree -t "unexpected closed curly brace" --silent=false
+npm run test abstractSyntaxTree -t "unexpected closed curly brace" --silent=false
 ```
 
 Which will run our suite of [Vitest unit](https://vitest.dev/) and [React Testing Library E2E](https://testing-library.com/docs/react-testing-library/intro) tests, in interactive mode by default.
@@ -439,16 +413,16 @@ Part of the CI CD pipeline performs static analysis on the code. Use the followi
 The following set of commands should get us closer to one and done commands to instantly retest issues.
 
 ```
-yarn test-setup
+npm run test-setup
 ```
 
 > Gotcha, are packages up to date and is the wasm built?
 
 ```
-yarn tsc
-yarn fmt-check
-yarn lint
-yarn test:unit:local
+npm run tsc
+npm run fmt:check
+npm run lint
+npm run test:unit:local
 ```
 
 > Gotcha: Our unit tests have integration tests in them. You need to run a localhost server to run the unit tests.
@@ -460,10 +434,10 @@ yarn test:unit:local
 These E2E tests run in electron. There are tests that are skipped if they are ran in a windows, linux, or macos environment. We can use playwright tags to implement test skipping.
 
 ```
-yarn test:playwright:electron:local
-yarn test:playwright:electron:windows:local
-yarn test:playwright:electron:macos:local
-yarn test:playwright:electron:ubuntu:local
+npm run test:playwright:electron:local
+npm run test:playwright:electron:windows:local
+npm run test:playwright:electron:macos:local
+npm run test:playwright:electron:ubuntu:local
 ```
 
 > Why does it say local? The CI CD commands that run in the pipeline cannot be ran locally. A single command will not properly setup the testing environment locally.

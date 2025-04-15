@@ -24,8 +24,9 @@ use crate::{
 const TYPES_DIR: &str = "../../docs/kcl/types";
 const LANG_TOPICS: [&str; 5] = ["Types", "Modules", "Settings", "Known Issues", "Constants"];
 // These types are declared in std.
-const DECLARED_TYPES: [&str; 11] = [
-    "number", "string", "tag", "bool", "Sketch", "Solid", "Plane", "Helix", "Face", "Point2d", "Point3d",
+const DECLARED_TYPES: [&str; 14] = [
+    "number", "string", "tag", "bool", "Sketch", "Solid", "Plane", "Helix", "Face", "Edge", "Point2d", "Point3d",
+    "Axis2d", "Axis3d",
 ];
 
 fn init_handlebars() -> Result<handlebars::Handlebars<'static>> {
@@ -241,7 +242,7 @@ fn init_handlebars() -> Result<handlebars::Handlebars<'static>> {
              out: &mut dyn handlebars::Output|
              -> handlebars::HelperResult {
                 let param = h.param(0).and_then(|v| v.value().as_str()).unwrap_or("");
-                let basename = param.split('/').last().unwrap_or("");
+                let basename = param.split('/').next_back().unwrap_or("");
                 out.write(&format!("`{}`", basename))?;
                 Ok(())
             },
@@ -708,7 +709,7 @@ fn add_to_types(
         return Err(anyhow::anyhow!("Empty type name"));
     }
 
-    if DECLARED_TYPES.contains(&name) {
+    if DECLARED_TYPES.contains(&name) || name == "TyF64" {
         return Ok(());
     }
 
@@ -768,7 +769,7 @@ fn generate_type(
     }
 
     // Skip over TagDeclarator and TagIdentifier since they have custom docs.
-    if name == "TagDeclarator" || name == "TagIdentifier" || name == "TagNode" {
+    if name == "TagDeclarator" || name == "TagIdentifier" || name == "TagNode" || name == "TyF64" {
         return Ok(());
     }
 
@@ -929,7 +930,7 @@ fn recurse_and_create_references(
     schema: &schemars::schema::Schema,
     types: &BTreeMap<String, schemars::schema::Schema>,
 ) -> Result<schemars::schema::Schema> {
-    if DECLARED_TYPES.contains(&name) {
+    if DECLARED_TYPES.contains(&name) || name == "TyF64" {
         return Ok(schema.clone());
     }
 
@@ -943,7 +944,7 @@ fn recurse_and_create_references(
     if let Some(reference) = &o.reference {
         let mut obj = o.clone();
         let reference = reference.trim_start_matches("#/components/schemas/");
-        if DECLARED_TYPES.contains(&reference) {
+        if DECLARED_TYPES.contains(&reference) || reference == "TyF64" {
             return Ok(schema.clone());
         }
 

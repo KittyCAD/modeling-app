@@ -89,7 +89,7 @@ test.describe('Test network and connection issues', () => {
   test(
     'Engine disconnect & reconnect in sketch mode',
     { tag: '@skipLocalEngine' },
-    async ({ page, homePage, toolbar }) => {
+    async ({ page, homePage, toolbar, scene, cmdBar }) => {
       test.fixme(orRunWhenFullSuiteEnabled())
       const networkToggle = page.getByTestId('network-toggle')
 
@@ -126,8 +126,9 @@ test.describe('Test network and connection issues', () => {
       await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
       await page.waitForTimeout(100)
 
-      await expect(page.locator('.cm-content'))
-        .toHaveText(`sketch001 = startSketchOn(XZ)profile001 = startProfileAt(${commonPoints.startAt}, sketch001)
+      await expect(
+        page.locator('.cm-content')
+      ).toHaveText(`sketch001 = startSketchOn(XZ)profile001 = startProfileAt(${commonPoints.startAt}, sketch001)
       |> xLine(length = ${commonPoints.num1})`)
 
       // Expect the network to be up
@@ -169,7 +170,7 @@ test.describe('Test network and connection issues', () => {
 
       // Expect the network to be up
       await expect(networkToggle).toContainText('Connected')
-      await expect(page.getByTestId('loading-stream')).not.toBeAttached()
+      await scene.settled(cmdBar)
 
       // Click off the code pane.
       await page.mouse.click(100, 100)
@@ -215,7 +216,8 @@ test.describe('Test network and connection issues', () => {
       await page.waitForTimeout(100)
       // Ensure we can continue sketching
       await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 20)
-      await expect.poll(u.normalisedEditorCode)
+      await expect
+        .poll(u.normalisedEditorCode)
         .toBe(`sketch001 = startSketchOn(XZ)
 profile001 = startProfileAt([12.34, -12.34], sketch001)
   |> xLine(length = 12.34)
@@ -225,7 +227,8 @@ profile001 = startProfileAt([12.34, -12.34], sketch001)
       await page.waitForTimeout(100)
       await page.mouse.click(startXPx, 500 - PUR * 20)
 
-      await expect.poll(u.normalisedEditorCode)
+      await expect
+        .poll(u.normalisedEditorCode)
         .toBe(`sketch001 = startSketchOn(XZ)
 profile001 = startProfileAt([12.34, -12.34], sketch001)
   |> xLine(length = 12.34)

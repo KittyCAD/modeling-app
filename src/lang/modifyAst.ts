@@ -3,13 +3,16 @@ import type { Models } from '@kittycad/lib'
 import type { BodyItem } from '@rust/kcl-lib/bindings/BodyItem'
 import type { Name } from '@rust/kcl-lib/bindings/Name'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
+import type { NonCodeMeta } from '@rust/kcl-lib/bindings/NonCodeMeta'
 
 import {
   createArrayExpression,
-  createCallExpression,
   createCallExpressionStdLib,
   createCallExpressionStdLibKw,
+  createExpressionStatement,
   createIdentifier,
+  createImportAsSelector,
+  createImportStatement,
   createLabeledArg,
   createLiteral,
   createLocalName,
@@ -95,9 +98,11 @@ export function startSketchOnDefault(
   const _name =
     name || findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.SKETCH)
 
-  const startSketchOn = createCallExpressionStdLib('startSketchOn', [
+  const startSketchOn = createCallExpressionStdLibKw(
+    'startSketchOn',
     createLiteral(axis),
-  ])
+    []
+  )
 
   const variableDeclaration = createVariableDeclaration(_name, startSketchOn)
   _node.body = [...node.body, variableDeclaration]
@@ -177,9 +182,11 @@ export function addSketchTo(
   const _name =
     name || findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.SKETCH)
 
-  const startSketchOn = createCallExpressionStdLib('startSketchOn', [
+  const startSketchOn = createCallExpressionStdLibKw(
+    'startSketchOn',
     createLiteral(axis.toUpperCase()),
-  ])
+    []
+  )
   const startProfileAt = createCallExpressionStdLib('startProfileAt', [
     createLiteral('default'),
     createPipeSubstitution(),
@@ -220,6 +227,9 @@ export function addSketchTo(
 Set the keyword argument to the given value.
 Returns true if it overwrote an existing argument.
 Returns false if no argument with the label existed before.
+Also do some checks to see if it's actually trying to set a constraint on
+a sketch line that's already fully constrained, and if so, duplicates the arg.
+WILL BE FIXED SOON.
 */
 export function mutateKwArg(
   label: string,
@@ -244,6 +254,27 @@ export function mutateKwArg(
         })
         return true
       }
+    }
+  }
+  node.arguments.push(createLabeledArg(label, val))
+  return false
+}
+
+/**
+Set the keyword argument to the given value.
+Returns true if it overwrote an existing argument.
+Returns false if no argument with the label existed before.
+*/
+export function mutateKwArgOnly(
+  label: string,
+  node: CallExpressionKw,
+  val: Expr
+): boolean {
+  for (let i = 0; i < node.arguments.length; i++) {
+    const arg = node.arguments[i]
+    if (arg.label.name === label) {
+      node.arguments[i].arg = val
+      return true
     }
   }
   node.arguments.push(createLabeledArg(label, val))
@@ -588,7 +619,7 @@ export function revolveSketch(
     createObjectExpression({
       angle: angle,
       // TODO: hard coded 'X' axis for revolve MVP, should be changed.
-      axis: createLiteral('X'),
+      axis: createLocalName('X'),
     }),
     createLocalName(variableDeclarator.id.name),
   ])
@@ -700,10 +731,11 @@ export function sketchOnExtrudedFace(
   }
   const newSketch = createVariableDeclaration(
     newSketchName,
-    createCallExpressionStdLib('startSketchOn', [
+    createCallExpressionStdLibKw(
+      'startSketchOn',
       createLocalName(extrudeName ? extrudeName : oldSketchName),
-      _tag,
-    ]),
+      [createLabeledArg('face', _tag)]
+    ),
     undefined,
     'const'
   )
@@ -775,6 +807,57 @@ export function addOffsetPlane({
   return {
     modifiedAst,
     pathToNode,
+  }
+}
+
+/**
+ * Add an import call to load a part
+ */
+export function addImportAndInsert({
+  node,
+  path,
+  localName,
+}: {
+  node: Node<Program>
+  path: string
+  localName: string
+}): {
+  modifiedAst: Node<Program>
+  pathToImportNode: PathToNode
+  pathToInsertNode: PathToNode
+} {
+  const modifiedAst = structuredClone(node)
+
+  // Add import statement
+  const importStatement = createImportStatement(
+    createImportAsSelector(localName),
+    { type: 'Kcl', filename: path }
+  )
+  const lastImportIndex = node.body.findLastIndex(
+    (v) => v.type === 'ImportStatement'
+  )
+  const importIndex = lastImportIndex + 1 // either -1 + 1 = 0 or after the last import
+  modifiedAst.body.splice(importIndex, 0, importStatement)
+  const pathToImportNode: PathToNode = [
+    ['body', ''],
+    [importIndex, 'index'],
+    ['path', 'ImportStatement'],
+  ]
+
+  // Add insert statement
+  const insertStatement = createExpressionStatement(createLocalName(localName))
+  const insertIndex = modifiedAst.body.length
+  modifiedAst.body.push(insertStatement)
+  const pathToInsertNode: PathToNode = [
+    ['body', ''],
+    [insertIndex, 'index'],
+    ['expression', 'ExpressionStatement'],
+  ]
+
+  return {
+    modifiedAst,
+    pathToImportNode,
+    pathToInsertNode,
   }
 }
 
@@ -909,9 +992,11 @@ export function sketchOnOffsetPlane(
   )
   const newSketch = createVariableDeclaration(
     newSketchName,
-    createCallExpressionStdLib('startSketchOn', [
+    createCallExpressionStdLibKw(
+      'startSketchOn',
       createLocalName(offsetPlaneName),
-    ]),
+      []
+    ),
     undefined,
     'const'
   )
@@ -1303,7 +1388,9 @@ export async function deleteFromSelection(
       if (!pathToNode) return new Error('Could not find extrude variable')
     } else {
       pathToNode = selection.codeRef.pathToNode
-      if (varDec.node.type !== 'VariableDeclarator') {
+      if (varDec.node.type === 'VariableDeclarator') {
+        extrudeNameToDelete = varDec.node.id.name
+      } else if (varDec.node.type === 'CallExpression') {
         const callExp = getNodeFromPath<CallExpression>(
           astClone,
           pathToNode,
@@ -1312,7 +1399,7 @@ export async function deleteFromSelection(
         if (err(callExp)) return callExp
         extrudeNameToDelete = callExp.node.callee.name.name
       } else {
-        extrudeNameToDelete = varDec.node.id.name
+        return new Error('Could not find extrude variable or call')
       }
     }
 
@@ -1455,32 +1542,32 @@ export async function deleteFromSelection(
             ) {
               continue
             }
-            const expression = createCallExpressionStdLib('startSketchOn', [
+            const expression = createCallExpressionStdLibKw(
+              'startSketchOn',
               createObjectExpression({
-                plane: createObjectExpression({
-                  origin: createObjectExpression({
-                    x: roundLiteral(faceDetails.origin.x),
-                    y: roundLiteral(faceDetails.origin.y),
-                    z: roundLiteral(faceDetails.origin.z),
-                  }),
-                  xAxis: createObjectExpression({
-                    x: roundLiteral(faceDetails.x_axis.x),
-                    y: roundLiteral(faceDetails.x_axis.y),
-                    z: roundLiteral(faceDetails.x_axis.z),
-                  }),
-                  yAxis: createObjectExpression({
-                    x: roundLiteral(faceDetails.y_axis.x),
-                    y: roundLiteral(faceDetails.y_axis.y),
-                    z: roundLiteral(faceDetails.y_axis.z),
-                  }),
-                  zAxis: createObjectExpression({
-                    x: roundLiteral(faceDetails.z_axis.x),
-                    y: roundLiteral(faceDetails.z_axis.y),
-                    z: roundLiteral(faceDetails.z_axis.z),
-                  }),
+                origin: createObjectExpression({
+                  x: roundLiteral(faceDetails.origin.x),
+                  y: roundLiteral(faceDetails.origin.y),
+                  z: roundLiteral(faceDetails.origin.z),
+                }),
+                xAxis: createObjectExpression({
+                  x: roundLiteral(faceDetails.x_axis.x),
+                  y: roundLiteral(faceDetails.x_axis.y),
+                  z: roundLiteral(faceDetails.x_axis.z),
+                }),
+                yAxis: createObjectExpression({
+                  x: roundLiteral(faceDetails.y_axis.x),
+                  y: roundLiteral(faceDetails.y_axis.y),
+                  z: roundLiteral(faceDetails.y_axis.z),
+                }),
+                zAxis: createObjectExpression({
+                  x: roundLiteral(faceDetails.z_axis.x),
+                  y: roundLiteral(faceDetails.z_axis.y),
+                  z: roundLiteral(faceDetails.z_axis.z),
                 }),
               }),
-            ])
+              []
+            )
             if (
               parentInit.type === 'VariableDeclarator' &&
               lastKey === 'init'
@@ -1504,7 +1591,8 @@ export async function deleteFromSelection(
       selection?.artifact?.type === 'segment' && selection?.artifact?.surfaceId
     )
     if (
-      pipeBody[0].type === 'CallExpression' &&
+      (pipeBody[0].type === 'CallExpression' ||
+        pipeBody[0].type === 'CallExpressionKw') &&
       doNotDeleteProfileIfItHasBeenExtruded &&
       (pipeBody[0].callee.name.name === 'startSketchOn' ||
         pipeBody[0].callee.name.name === 'startProfileAt')
@@ -1640,7 +1728,7 @@ export function splitPipedProfile(
     }
   | Error {
   const _ast = structuredClone(ast)
-  const varDec = getNodeFromPath<VariableDeclaration>(
+  const varDec = getNodeFromPath<Node<VariableDeclaration>>(
     _ast,
     pathToPipe,
     'VariableDeclaration'
@@ -1664,26 +1752,53 @@ export function splitPipedProfile(
   const newVarName = findUniqueName(_ast, 'sketch')
   const secondCallArgs = structuredClone(secondCall.arguments)
   secondCallArgs[1] = createLocalName(newVarName)
-  const firstCallOfNewPipe = createCallExpression(
-    'startProfileAt',
-    secondCallArgs
-  )
-  const newSketch = createVariableDeclaration(
-    newVarName,
-    varDec.node.declaration.init.body[0]
-  )
-  const newProfile = createVariableDeclaration(
-    varName,
-    varDec.node.declaration.init.body.length <= 2
-      ? firstCallOfNewPipe
-      : createPipeExpression([
-          firstCallOfNewPipe,
-          ...varDec.node.declaration.init.body.slice(2),
-        ])
-  )
+  const startSketchOnBrokenIntoNewVarDec = structuredClone(varDec.node)
+  const profileBrokenIntoItsOwnVar = structuredClone(varDec.node)
+  if (
+    startSketchOnBrokenIntoNewVarDec.declaration.init.type !== 'PipeExpression'
+  ) {
+    return new Error('clonedVarDec1 is not a PipeExpression')
+  }
+  varDec.node.declaration.init =
+    startSketchOnBrokenIntoNewVarDec.declaration.init.body[0]
+  varDec.node.declaration.id.name = newVarName
+  if (profileBrokenIntoItsOwnVar.declaration.init.type !== 'PipeExpression') {
+    return new Error('clonedVarDec2 is not a PipeExpression')
+  }
+  profileBrokenIntoItsOwnVar.declaration.init.body =
+    profileBrokenIntoItsOwnVar.declaration.init.body.slice(1)
+  if (
+    !(
+      profileBrokenIntoItsOwnVar.declaration.init.body[0].type ===
+        'CallExpression' &&
+      profileBrokenIntoItsOwnVar.declaration.init.body[0].callee.name.name ===
+        'startProfileAt'
+    )
+  ) {
+    return new Error('problem breaking pipe, expect startProfileAt to be first')
+  }
+  profileBrokenIntoItsOwnVar.declaration.init.body[0].arguments[1] =
+    createLocalName(newVarName)
+  profileBrokenIntoItsOwnVar.declaration.id.name = varName
+  profileBrokenIntoItsOwnVar.preComments = [] // we'll duplicate the comments since the new variable will have it to
+
+  // new pipe has one less from the start, so need to decrement comments for them to remain in the same place
+  if (profileBrokenIntoItsOwnVar.declaration.init?.nonCodeMeta?.nonCodeNodes) {
+    let decrementedNonCodeMeta: NonCodeMeta['nonCodeNodes'] = {}
+    decrementedNonCodeMeta =
+      Object.entries(
+        profileBrokenIntoItsOwnVar.declaration.init?.nonCodeMeta?.nonCodeNodes
+      ).reduce((acc, [key, value]) => {
+        acc[Number(key) - 1] = value
+        return acc
+      }, decrementedNonCodeMeta) || {}
+    profileBrokenIntoItsOwnVar.declaration.init.nonCodeMeta.nonCodeNodes =
+      decrementedNonCodeMeta
+  }
+
   const index = getBodyIndex(pathToPipe)
   if (err(index)) return index
-  _ast.body.splice(index, 1, newSketch, newProfile)
+  _ast.body.splice(index + 1, 0, profileBrokenIntoItsOwnVar)
   const pathToPlane = structuredClone(pathToPipe)
   const pathToProfile = structuredClone(pathToPipe)
   pathToProfile[1][0] = index + 1

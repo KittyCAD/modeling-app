@@ -714,18 +714,23 @@ export function findUsesOfTagInPipe(
   traverse(varDec.node, {
     enter: (node) => {
       if (
-        node.type !== 'CallExpression' ||
+        (node.type !== 'CallExpression' && node.type !== 'CallExpressionKw') ||
         !stdlibFunctionsThatTakeTagInputs.includes(node.callee.name.name)
       )
         return
-      const tagArg = node.arguments[0]
-      if (!(tagArg.type === 'TagDeclarator' || tagArg.type === 'Name')) return
-      const tagArgValue =
-        tagArg.type === 'TagDeclarator'
-          ? String(tagArg.value)
-          : tagArg.name.name
-      if (tagArgValue === tag)
-        dependentRanges.push(topLevelRange(node.start, node.end))
+      const tagArg =
+        node.type === 'CallExpression'
+          ? node.arguments[0]
+          : findKwArg(ARG_TAG, node)
+      if (tagArg !== undefined) {
+        if (!(tagArg.type === 'TagDeclarator' || tagArg.type === 'Name')) return
+        const tagArgValue =
+          tagArg.type === 'TagDeclarator'
+            ? String(tagArg.value)
+            : tagArg.name.name
+        if (tagArgValue === tag)
+          dependentRanges.push(topLevelRange(node.start, node.end))
+      }
     },
   })
   return dependentRanges
@@ -929,10 +934,13 @@ export function getBodyIndex(pathToNode: PathToNode): number | Error {
 }
 
 export function isCallExprWithName(
-  expr: Expr | CallExpression,
+  expr: Expr | CallExpression | CallExpressionKw,
   name: string
-): expr is CallExpression {
-  if (expr.type === 'CallExpression' && expr.callee.type === 'Name') {
+): expr is CallExpression | CallExpressionKw {
+  if (
+    (expr.type === 'CallExpression' || expr.type === 'CallExpressionKw') &&
+    expr.callee.type === 'Name'
+  ) {
     return expr.callee.name.name === name
   }
   return false
@@ -987,4 +995,60 @@ function pathToNodeKeys(pathToNode: PathToNode): (string | number)[] {
 
 export function stringifyPathToNode(pathToNode: PathToNode): string {
   return JSON.stringify(pathToNodeKeys(pathToNode))
+}
+
+/**
+ * Updates PathToNodes to account for changes in body indices when variables are added/removed above
+ * This is specifically for handling the common case where a user adds/removes variables above a node,
+ * which changes the body index in the PathToNode
+ * @param oldAst The AST before user edits
+ * @param newAst The AST after user edits
+ * @param pathToUpdate Array of PathToNodes that need to be updated
+ * @returns updated PathToNode, or Error if any path couldn't be updated
+ */
+export function updatePathToNodesAfterEdit(
+  oldAst: Node<Program>,
+  newAst: Node<Program>,
+  pathToUpdate: PathToNode
+): PathToNode | Error {
+  // First, let's find all topLevel the variable declarations in both ASTs
+  // and map their name to their body index
+  const oldVarDecls = new Map<string, number>()
+  const newVarDecls = new Map<string, number>()
+
+  const maxBodyLength = Math.max(oldAst.body.length, newAst.body.length)
+  for (let bodyIndex = 0; bodyIndex < maxBodyLength; bodyIndex++) {
+    const oldNode = oldAst.body[bodyIndex]
+    const newNode = newAst.body[bodyIndex]
+    if (oldNode?.type === 'VariableDeclaration') {
+      oldVarDecls.set(oldNode.declaration.id.name, bodyIndex)
+    }
+    if (newNode?.type === 'VariableDeclaration') {
+      newVarDecls.set(newNode.declaration.id.name, bodyIndex)
+    }
+  }
+
+  // For the path, get the variable name this path points to
+  const oldNodeResult = getNodeFromPath<VariableDeclaration>(
+    oldAst,
+    pathToUpdate,
+    'VariableDeclaration'
+  )
+  if (err(oldNodeResult)) return oldNodeResult
+  const oldNode = oldNodeResult.node
+  const varName = oldNode.declaration.id.name
+  console.log('varName', varName)
+
+  // Find the old and new indices for this variable
+  const oldIndex = oldVarDecls.get(varName)
+  const newIndex = newVarDecls.get(varName)
+
+  if (oldIndex === undefined || newIndex === undefined) {
+    return new Error(`Could not find variable ${varName} in one of the ASTs`)
+  }
+
+  // Create a new path with the updated body index
+  const newPath = structuredClone(pathToUpdate)
+  newPath[1][0] = newIndex // Update the body index
+  return newPath
 }

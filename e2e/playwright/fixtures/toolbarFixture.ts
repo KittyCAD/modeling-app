@@ -10,6 +10,9 @@ import {
   openPane,
 } from '@e2e/playwright/test-utils'
 import { expect } from '@e2e/playwright/zoo-test'
+import { type baseUnitLabels } from '@src/lib/settings/settingsTypes'
+
+type LengthUnitLabel = (typeof baseUnitLabels)[keyof typeof baseUnitLabels]
 
 export class ToolbarFixture {
   public page: Page
@@ -24,6 +27,7 @@ export class ToolbarFixture {
   offsetPlaneButton!: Locator
   helixButton!: Locator
   startSketchBtn!: Locator
+  insertButton!: Locator
   lineBtn!: Locator
   tangentialArcBtn!: Locator
   circleBtn!: Locator
@@ -41,6 +45,7 @@ export class ToolbarFixture {
   featureTreePane!: Locator
   gizmo!: Locator
   gizmoDisabled!: Locator
+  loadButton!: Locator
 
   constructor(page: Page) {
     this.page = page
@@ -55,6 +60,7 @@ export class ToolbarFixture {
     this.offsetPlaneButton = page.getByTestId('plane-offset')
     this.helixButton = page.getByTestId('helix')
     this.startSketchBtn = page.getByTestId('sketch')
+    this.insertButton = page.getByTestId('insert')
     this.lineBtn = page.getByTestId('line')
     this.tangentialArcBtn = page.getByTestId('tangential-arc')
     this.circleBtn = page.getByTestId('circle-center')
@@ -64,6 +70,7 @@ export class ToolbarFixture {
     this.fileTreeBtn = page.locator('[id="files-button-holder"]')
     this.createFileBtn = page.getByTestId('create-file-button')
     this.treeInputField = page.getByTestId('tree-input-field')
+    this.loadButton = page.getByTestId('load-external-model-pane-button')
 
     this.filePane = page.locator('#files-pane')
     this.featureTreePane = page.locator('#feature-tree-pane')
@@ -79,12 +86,6 @@ export class ToolbarFixture {
 
   get logoLink() {
     return this.page.getByTestId('app-logo')
-  }
-
-  get exeIndicator() {
-    return this.page
-      .getByTestId('model-state-indicator-receive-reliable')
-      .or(this.page.getByTestId('model-state-indicator-execution-done'))
   }
 
   startSketchPlaneSelection = async () =>
@@ -162,20 +163,14 @@ export class ToolbarFixture {
     }
   }
   /**
-   * Opens file by it's name and waits for execution to finish
+   * Opens file by it's name
    */
-  openFile = async (
-    fileName: string,
-    { wait }: { wait?: boolean } = { wait: true }
-  ) => {
+  openFile = async (fileName: string) => {
     await this.filePane.getByText(fileName).click()
-    if (wait) {
-      await expect(this.exeIndicator).toBeVisible({ timeout: 15_000 })
-    }
   }
   selectCenterRectangle = async () => {
     await this.page
-      .getByRole('button', { name: 'caret down Corner rectangle:' })
+      .getByRole('button', { name: 'caret down rectangles:' })
       .click()
     await expect(
       this.page.getByTestId('dropdown-center-rectangle')
@@ -184,7 +179,7 @@ export class ToolbarFixture {
   }
   selectBoolean = async (operation: 'union' | 'subtract' | 'intersect') => {
     await this.page
-      .getByRole('button', { name: 'caret down Union: open menu' })
+      .getByRole('button', { name: 'caret down booleans: open menu' })
       .click()
     const operationTestId = `dropdown-boolean-${operation}`
     await expect(this.page.getByTestId(operationTestId)).toBeVisible()
@@ -192,29 +187,28 @@ export class ToolbarFixture {
   }
 
   selectCircleThreePoint = async () => {
-    await this.page
-      .getByRole('button', { name: 'caret down Center circle:' })
-      .click()
+    await this.page.getByRole('button', { name: 'caret down circles:' }).click()
     await expect(
       this.page.getByTestId('dropdown-circle-three-points')
     ).toBeVisible()
     await this.page.getByTestId('dropdown-circle-three-points').click()
   }
   selectArc = async () => {
-    await this.page
-      .getByRole('button', { name: 'caret down Tangential Arc:' })
-      .click()
+    await this.page.getByRole('button', { name: 'caret down arcs:' }).click()
     await expect(this.page.getByTestId('dropdown-arc')).toBeVisible()
     await this.page.getByTestId('dropdown-arc').click()
   }
   selectThreePointArc = async () => {
-    await this.page
-      .getByRole('button', { name: 'caret down Tangential Arc:' })
-      .click()
+    await this.page.getByRole('button', { name: 'caret down arcs:' }).click()
     await expect(
       this.page.getByTestId('dropdown-three-point-arc')
     ).toBeVisible()
     await this.page.getByTestId('dropdown-three-point-arc').click()
+  }
+  selectLine = async () => {
+    await this.page
+      .getByRole('button', { name: 'line Line', exact: true })
+      .click()
   }
 
   async closePane(paneId: SidebarType) {
@@ -235,6 +229,12 @@ export class ToolbarFixture {
   }
   async checkIfFeatureTreePaneIsOpen() {
     return this.checkIfPaneIsOpen(this.featureTreeId)
+  }
+  async selectUnit(unit: LengthUnitLabel) {
+    await this.page.getByTestId('units-menu').click()
+    const optionLocator = this.page.getByRole('button', { name: unit })
+    await expect(optionLocator).toBeVisible()
+    await optionLocator.click()
   }
 
   /**

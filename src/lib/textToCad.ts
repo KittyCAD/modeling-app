@@ -251,19 +251,3 @@ export async function submitAndAwaitTextToKcl({
   )
   return textToCadOutputCreated
 }
-
-export async function sendTelemetry(
-  id: string,
-  feedback: Models['MlFeedback_type'],
-  token?: string
-): Promise<void> {
-  const url =
-    VITE_KC_API_BASE_URL + '/user/text-to-cad/' + id + '?feedback=' + feedback
-  await crossPlatformFetch(
-    url,
-    {
-      method: 'POST',
-    },
-    token
-  )
-}

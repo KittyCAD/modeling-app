@@ -16,17 +16,39 @@ function stdlib(name: string): Operation {
 
 function userCall(name: string): Operation {
   return {
-    type: 'UserDefinedFunctionCall',
-    name,
-    functionSourceRange: defaultSourceRange(),
-    unlabeledArg: null,
-    labeledArgs: {},
+    type: 'GroupBegin',
+    group: {
+      type: 'FunctionCall',
+      name,
+      functionSourceRange: defaultSourceRange(),
+      unlabeledArg: null,
+      labeledArgs: {},
+    },
     sourceRange: defaultSourceRange(),
   }
 }
+
 function userReturn(): Operation {
   return {
-    type: 'UserDefinedFunctionReturn',
+    type: 'GroupEnd',
+  }
+}
+
+function moduleBegin(name: string): Operation {
+  return {
+    type: 'GroupBegin',
+    group: {
+      type: 'ModuleInstance',
+      name,
+      moduleId: 0,
+    },
+    sourceRange: defaultSourceRange(),
+  }
+}
+
+function moduleEnd(): Operation {
+  return {
+    type: 'GroupEnd',
   }
 }
 
@@ -61,6 +83,25 @@ describe('operations filtering', () => {
     ]
     const actual = filterOperations(operations)
     expect(actual).toEqual([stdlib('std1'), stdlib('std2'), stdlib('std3')])
+  })
+  it('does not drop module instances that contain no operations', async () => {
+    const operations = [
+      stdlib('std1'),
+      moduleBegin('foo'),
+      moduleEnd(),
+      stdlib('std2'),
+      moduleBegin('bar'),
+      moduleEnd(),
+      stdlib('std3'),
+    ]
+    const actual = filterOperations(operations)
+    expect(actual).toEqual([
+      stdlib('std1'),
+      moduleBegin('foo'),
+      stdlib('std2'),
+      moduleBegin('bar'),
+      stdlib('std3'),
+    ])
   })
   it('preserves user-defined function calls at the end of the list', async () => {
     const operations = [stdlib('std1'), userCall('foo')]

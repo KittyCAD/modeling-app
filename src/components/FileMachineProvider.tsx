@@ -11,6 +11,8 @@ import type {
 } from 'xstate'
 import { fromPromise } from 'xstate'
 
+import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
+import { useMenuListener } from '@src/hooks/useMenu'
 import { newKclFile } from '@src/lang/project'
 import { createNamedViewsCommand } from '@src/lib/commandBarConfigs/namedViewsConfig'
 import { createRouteCommands } from '@src/lib/commandBarConfigs/routeCommandConfig'
@@ -34,6 +36,7 @@ import { type IndexLoaderData } from '@src/lib/types'
 import { useSettings, useToken } from '@src/machines/appMachine'
 import { commandBarActor } from '@src/machines/commandBarMachine'
 import { fileMachine } from '@src/machines/fileMachine'
+import { modelingMenuCallbackMostActions } from '@src/menu/register'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -60,6 +63,7 @@ export const FileMachineProvider = ({
     []
   )
 
+  const filePath = useAbsoluteFilePath()
   // Only create the native file menus on desktop
   useEffect(() => {
     if (isDesktop()) {
@@ -224,16 +228,30 @@ export const FileMachineProvider = ({
             createdPath = path
             await window.electron.mkdir(createdPath)
           } else {
-            const { name, path } = getNextFileName({
-              entryName: input.targetPathToClone
-                ? window.electron.path.basename(input.targetPathToClone)
-                : createdName,
-              baseDir: input.targetPathToClone
-                ? window.electron.path.dirname(input.targetPathToClone)
-                : input.selectedDirectory.path,
-            })
-            createdName = name
-            createdPath = path
+            const isTargetPathToCloneASubPath =
+              input.targetPathToClone &&
+              input.selectedDirectory.path.indexOf(input.targetPathToClone) > -1
+            if (isTargetPathToCloneASubPath) {
+              const { name, path } = getNextFileName({
+                entryName: input.targetPathToClone
+                  ? window.electron.path.basename(input.targetPathToClone)
+                  : createdName,
+                baseDir: input.targetPathToClone
+                  ? window.electron.path.dirname(input.targetPathToClone)
+                  : input.selectedDirectory.path,
+              })
+              createdName = name
+              createdPath = path
+            } else {
+              const { name, path } = getNextFileName({
+                entryName: input.targetPathToClone
+                  ? window.electron.path.basename(input.targetPathToClone)
+                  : createdName,
+                baseDir: input.selectedDirectory.path,
+              })
+              createdName = name
+              createdPath = path
+            }
             if (input.targetPathToClone) {
               await window.electron.copyFile(
                 input.targetPathToClone,
@@ -414,6 +432,15 @@ export const FileMachineProvider = ({
     }
   )
 
+  const cb = modelingMenuCallbackMostActions(
+    settings,
+    navigate,
+    filePath,
+    project,
+    token
+  )
+  useMenuListener(cb)
+
   const kclCommandMemo = useMemo(
     () =>
       kclCommands({
@@ -424,19 +451,19 @@ export const FileMachineProvider = ({
             settings.modeling.defaultUnit.current ??
             DEFAULT_DEFAULT_LENGTH_UNIT,
         },
-        specialPropsForSampleCommand: {
+        specialPropsForLoadCommand: {
           onSubmit: async (data) => {
-            if (data.method === 'overwrite') {
-              codeManager.updateCodeStateEditor(data.code)
-              await kclManager.executeCode(true)
+            if (data.method === 'overwrite' && data.content) {
+              codeManager.updateCodeStateEditor(data.content)
+              await kclManager.executeCode()
               await codeManager.writeToFile()
             } else if (data.method === 'newFile' && isDesktop()) {
               send({
                 type: 'Create file',
                 data: {
-                  name: data.sampleName,
-                  content: data.code,
+                  ...data,
                   makeDir: false,
+                  shouldSetToRename: false,
                 },
               })
             }
@@ -446,10 +473,30 @@ export const FileMachineProvider = ({
             name: sample.title,
           })),
         },
+        specialPropsForInsertCommand: {
+          providedOptions: (isDesktop() && project?.children
+            ? project.children
+            : []
+          ).flatMap((v) => {
+            // TODO: add support for full tree traversal when KCL support subdir imports
+            const relativeFilePath = v.path.replace(
+              project?.path + window.electron.sep,
+              ''
+            )
+            const isDirectory = v.children
+            const isCurrentFile = v.path === file?.path
+            return isDirectory || isCurrentFile
+              ? []
+              : {
+                  name: relativeFilePath,
+                  value: relativeFilePath,
+                }
+          }),
+        },
       }).filter(
-        (command) => kclSamples.length || command.name !== 'open-kcl-example'
+        (command) => kclSamples.length || command.name !== 'load-external-model'
       ),
-    [codeManager, kclManager, send, kclSamples]
+    [codeManager, kclManager, send, kclSamples, project, file]
   )
 
   useEffect(() => {

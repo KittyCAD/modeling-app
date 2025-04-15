@@ -15,7 +15,7 @@ use crate::{
     parsing::ast::types::{
         DefaultParamVal, FunctionExpression, KclNone, Literal, LiteralValue, Node, TagDeclarator, TagNode,
     },
-    std::StdFnProps,
+    std::{args::TyF64, StdFnProps},
     CompilationError, KclError, ModuleId, SourceRange,
 };
 
@@ -360,15 +360,6 @@ impl KclValue {
         result
     }
 
-    /// Put the number into a KCL value.
-    pub const fn from_number(f: f64, meta: Vec<Metadata>) -> Self {
-        Self::Number {
-            value: f,
-            meta,
-            ty: NumericType::Unknown,
-        }
-    }
-
     pub const fn from_number_with_type(f: f64, ty: NumericType, meta: Vec<Metadata>) -> Self {
         Self::Number { value: f, meta, ty }
     }
@@ -431,21 +422,31 @@ impl KclValue {
     }
 
     pub fn as_array(&self) -> Option<&[KclValue]> {
-        if let KclValue::MixedArray { value, meta: _ } = &self {
-            Some(value)
-        } else {
-            None
+        match self {
+            KclValue::MixedArray { value, .. } | KclValue::HomArray { value, .. } => Some(value),
+            _ => None,
         }
     }
 
-    pub fn as_point2d(&self) -> Option<[f64; 2]> {
+    pub fn as_point2d(&self) -> Option<[TyF64; 2]> {
         let arr = self.as_array()?;
         if arr.len() != 2 {
             return None;
         }
-        let x = arr[0].as_f64()?;
-        let y = arr[1].as_f64()?;
+        let x = arr[0].as_ty_f64()?;
+        let y = arr[1].as_ty_f64()?;
         Some([x, y])
+    }
+
+    pub fn as_point3d(&self) -> Option<[TyF64; 3]> {
+        let arr = self.as_array()?;
+        if arr.len() != 3 {
+            return None;
+        }
+        let x = arr[0].as_ty_f64()?;
+        let y = arr[1].as_ty_f64()?;
+        let z = arr[2].as_ty_f64()?;
+        Some([x, y, z])
     }
 
     pub fn as_uuid(&self) -> Option<uuid::Uuid> {
@@ -495,9 +496,19 @@ impl KclValue {
             None
         }
     }
+
+    #[cfg(test)]
     pub fn as_f64(&self) -> Option<f64> {
         if let KclValue::Number { value, .. } = &self {
             Some(*value)
+        } else {
+            None
+        }
+    }
+
+    pub fn as_ty_f64(&self) -> Option<TyF64> {
+        if let KclValue::Number { value, ty, .. } = &self {
+            Some(TyF64::new(*value, ty.clone()))
         } else {
             None
         }

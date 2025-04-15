@@ -17,10 +17,10 @@ description: Result of parsing import_export.kcl
           "items": [
             {
               "alias": null,
-              "commentStart": 7,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 7,
+                "commentStart": 0,
                 "end": 0,
                 "name": "three",
                 "start": 0,
