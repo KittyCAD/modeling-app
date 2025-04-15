@@ -209,7 +209,6 @@ pub enum SweepSubType {
 pub struct Solid2d {
     pub id: ArtifactId,
     pub path_id: ArtifactId,
-    pub code_ref: CodeRef,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
@@ -278,7 +277,6 @@ pub struct SweepEdge {
     pub sub_type: SweepEdgeSubType,
     pub seg_id: ArtifactId,
     pub sweep_id: ArtifactId,
-    pub code_ref: CodeRef,
 }
 
 #[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, Eq, ts_rs::TS)]
@@ -327,7 +325,6 @@ pub struct EdgeCutEdge {
     pub id: ArtifactId,
     pub edge_cut_id: ArtifactId,
     pub surface_id: ArtifactId,
-    pub code_ref: CodeRef,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
@@ -381,23 +378,23 @@ impl Artifact {
         }
     }
 
-    #[cfg_attr(not(test), expect(dead_code))]
-    pub(crate) fn code_ref(&self) -> &CodeRef {
+    #[expect(dead_code)]
+    pub(crate) fn code_ref(&self) -> Option<&CodeRef> {
         match self {
-            Artifact::CompositeSolid(a) => &a.code_ref,
-            Artifact::Plane(a) => &a.code_ref,
-            Artifact::Path(a) => &a.code_ref,
-            Artifact::Segment(a) => &a.code_ref,
-            Artifact::Solid2d(a) => &a.code_ref,
-            Artifact::StartSketchOnFace(a) => &a.code_ref,
-            Artifact::StartSketchOnPlane(a) => &a.code_ref,
-            Artifact::Sweep(a) => &a.code_ref,
-            Artifact::Wall(a) => &a.face_code_ref,
-            Artifact::Cap(a) => &a.face_code_ref,
-            Artifact::SweepEdge(a) => &a.code_ref,
-            Artifact::EdgeCut(a) => &a.code_ref,
-            Artifact::EdgeCutEdge(a) => &a.code_ref,
-            Artifact::Helix(a) => &a.code_ref,
+            Artifact::CompositeSolid(a) => Some(&a.code_ref),
+            Artifact::Plane(a) => Some(&a.code_ref),
+            Artifact::Path(a) => Some(&a.code_ref),
+            Artifact::Segment(a) => Some(&a.code_ref),
+            Artifact::Solid2d(_) => None,
+            Artifact::StartSketchOnFace(a) => Some(&a.code_ref),
+            Artifact::StartSketchOnPlane(a) => Some(&a.code_ref),
+            Artifact::Sweep(a) => Some(&a.code_ref),
+            Artifact::Wall(_) => None,
+            Artifact::Cap(_) => None,
+            Artifact::SweepEdge(_) => None,
+            Artifact::EdgeCut(a) => Some(&a.code_ref),
+            Artifact::EdgeCutEdge(_) => None,
+            Artifact::Helix(a) => Some(&a.code_ref),
         }
     }
 
@@ -794,10 +791,7 @@ fn artifacts_to_update(
                 surface_id: None,
                 edge_ids: Vec::new(),
                 edge_cut_id: None,
-                code_ref: CodeRef {
-                    range,
-                    path_to_node: path_to_node.clone(),
-                },
+                code_ref: CodeRef { range, path_to_node },
             }));
             let path = artifacts.get(&path_id);
             if let Some(Artifact::Path(path)) = path {
@@ -809,10 +803,6 @@ fn artifacts_to_update(
                 return_arr.push(Artifact::Solid2d(Solid2d {
                     id: close_path.face_id.into(),
                     path_id,
-                    code_ref: CodeRef {
-                        range,
-                        path_to_node: path_to_node.clone(),
-                    },
                 }));
                 if let Some(Artifact::Path(path)) = path {
                     let mut new_path = path.clone();
@@ -1049,10 +1039,6 @@ fn artifacts_to_update(
                 sub_type,
                 seg_id: edge_id,
                 sweep_id: sweep.id,
-                code_ref: CodeRef {
-                    range,
-                    path_to_node: path_to_node.clone(),
-                },
             }));
             let mut new_segment = segment.clone();
             new_segment.edge_ids = vec![response_edge_id];
