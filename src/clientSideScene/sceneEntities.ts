@@ -59,7 +59,6 @@ import {
   CIRCLE_THREE_POINT_SEGMENT,
   DRAFT_DASHED_LINE,
   EXTRA_SEGMENT_HANDLE,
-  getParentGroup,
   PROFILE_START,
   SEGMENT_BODIES,
   SEGMENT_BODIES_PLUS_PROFILE_START,
@@ -70,6 +69,7 @@ import {
   THREE_POINT_ARC_HANDLE2,
   THREE_POINT_ARC_HANDLE3,
   THREE_POINT_ARC_SEGMENT,
+  getParentGroup,
 } from '@src/clientSideScene/sceneConstants'
 import type {
   OnClickCallbackArgs,
@@ -83,13 +83,13 @@ import {
   AXIS_GROUP,
   DRAFT_POINT,
   DRAFT_POINT_GROUP,
-  getSceneScale,
   INTERSECTION_PLANE_LAYER,
   RAYCASTABLE_PLANE,
   SKETCH_GROUP_SEGMENTS,
   SKETCH_LAYER,
   X_AXIS,
   Y_AXIS,
+  getSceneScale,
 } from '@src/clientSideScene/sceneUtils'
 import type { SegmentUtils } from '@src/clientSideScene/segments'
 import {
@@ -99,6 +99,7 @@ import {
   segmentUtils,
 } from '@src/clientSideScene/segments'
 import type EditorManager from '@src/editor/manager'
+import type { KclManager } from '@src/lang/KclSingleton'
 import type CodeManager from '@src/lang/codeManager'
 import { ARG_END, ARG_END_ABSOLUTE } from '@src/lang/constants'
 import {
@@ -113,7 +114,6 @@ import {
   createVariableDeclaration,
   findUniqueName,
 } from '@src/lang/create'
-import type { KclManager } from '@src/lang/KclSingleton'
 import type { ToolTip } from '@src/lang/langHelpers'
 import { executeAstMock } from '@src/lang/langHelpers'
 import { updateModelingState } from '@src/lang/modelingWorkflows'
@@ -3725,7 +3725,6 @@ function prepareTruncatedAst(
       (updatedSrcRangeAst.body[bodyStartIndex] as VariableDeclaration)
         .declaration.init as PipeExpression
     ).body.slice(-1)[0]
-
     ;(
       (_ast.body[bodyStartIndex] as VariableDeclaration).declaration
         .init as PipeExpression
