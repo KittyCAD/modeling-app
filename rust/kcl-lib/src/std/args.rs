@@ -991,20 +991,6 @@ macro_rules! let_field_of {
     };
 }
 
-impl<'a> FromKclValue<'a> for super::sketch::AngledLineThatIntersectsData {
-    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        let obj = arg.as_object()?;
-        let_field_of!(obj, angle);
-        let_field_of!(obj, intersect_tag "intersectTag");
-        let_field_of!(obj, offset?);
-        Some(Self {
-            angle,
-            intersect_tag,
-            offset,
-        })
-    }
-}
-
 impl<'a> FromKclValue<'a> for super::shapes::PolygonData {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let obj = arg.as_object()?;
