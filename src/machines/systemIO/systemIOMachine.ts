@@ -157,8 +157,9 @@ export const systemIOMachine = setup({
     [SystemIOMachineStates.idle]: {
       on: {
         // on can be an action
-        [SystemIOMachineEvents.readFoldersFromProjectDirectory]:
-          SystemIOMachineStates.readingFolders,
+        [SystemIOMachineEvents.readFoldersFromProjectDirectory]: {
+          target: SystemIOMachineStates.readingFolders,
+        },
         [SystemIOMachineEvents.setProjectDirectoryPath]: {
           target: SystemIOMachineStates.readingFolders,
           actions: [SystemIOMachineActions.setProjectDirectoryPath],
