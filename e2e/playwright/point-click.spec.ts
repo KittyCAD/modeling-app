@@ -3924,12 +3924,13 @@ extrude001 = extrude(profile001, length = 100)
             commandName: 'Transform',
           })
           await clickMidPoint()
+          await cmdBar.progressCmdBar()
           await cmdBar.expectState({
             stage: 'arguments',
-            currentArgKey: 'selection',
-            currentArgValue: '1 face',
+            currentArgKey: 'Translate X',
+            currentArgValue: '0',
             headerArguments: {
-              Selection: '1 face',
+              Selection: '1 cap',
               'Translate X': '',
               'Translate Y': '',
               'Translate Z': '',
@@ -3937,10 +3938,9 @@ extrude001 = extrude(profile001, length = 100)
               'Rotate Pitch': '',
               'Rotate Yaw': '',
             },
-            highlightedHeaderArg: 'selection',
+            highlightedHeaderArg: 'Translate X',
             commandName: 'Transform',
           })
-          await cmdBar.progressCmdBar()
           await page.keyboard.insertText('2')
           await cmdBar.progressCmdBar()
           await cmdBar.progressCmdBar()
@@ -3951,7 +3951,7 @@ extrude001 = extrude(profile001, length = 100)
           await cmdBar.expectState({
             stage: 'review',
             headerArguments: {
-              Selection: '1 face',
+              Selection: '1 cap',
               'Translate X': '2',
               'Translate Y': '0',
               'Translate Z': '0',
@@ -3969,9 +3969,8 @@ extrude001 = extrude(profile001, length = 100)
         await toolbar.openPane('code')
         await editor.expectEditor.toContain(
           `
-          extrude001 = extrude(profile001, length = 1)
-            |> translate(x = 2, y = 0, z = 0)
-            |> rotate(roll = 0, pitch = 0, yaw = 0)
+          |> translate(x = 2, y = 0, z = 0)
+          |> rotate(roll = 0, pitch = 0, yaw = 0)
           `,
           { shouldNormalise: true }
         )
