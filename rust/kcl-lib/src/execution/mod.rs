@@ -715,6 +715,11 @@ impl ExecutorContext {
         program: &crate::Program,
         exec_state: &mut ExecState,
     ) -> Result<(EnvironmentRef, Option<ModelingSessionData>), KclErrorWithOutputs> {
+        exec_state.add_root_module_contents(program);
+        self.eval_prelude(exec_state, SourceRange::synthetic())
+            .await
+            .map_err(KclErrorWithOutputs::no_outputs)?;
+
         self.inner_run(program, exec_state, false).await
     }
 
