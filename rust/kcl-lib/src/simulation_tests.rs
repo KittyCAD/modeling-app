@@ -265,7 +265,7 @@ fn assert_common_snapshots(
             .fold(
                 HashMap::<usize, Vec<ArtifactCommand>>::new(),
                 |mut map, (module_id, el)| {
-                    let mut v = map.remove(&module_id).unwrap_or(vec![]);
+                    let mut v = map.remove(&module_id).unwrap_or_default();
                     v.push(el);
                     map.insert(module_id, v);
                     map
@@ -277,8 +277,7 @@ fn assert_common_snapshots(
 
         let artifact_commands: Vec<ArtifactCommand> = artifact_commands_keys
             .iter()
-            .map(|idx| artifact_commands_map.remove(idx).unwrap())
-            .flatten()
+            .flat_map(|idx| artifact_commands_map.remove(idx).unwrap())
             .collect();
 
         assert_eq!(0, artifact_commands_map.len());
