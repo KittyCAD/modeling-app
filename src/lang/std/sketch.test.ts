@@ -14,7 +14,8 @@ import {
 } from '@src/lang/std/sketch'
 import { topLevelRange } from '@src/lang/util'
 import type { CallExpression, CallExpressionKw } from '@src/lang/wasm'
-import { assertParse, initPromise, recast } from '@src/lang/wasm'
+import { assertParse, recast } from '@src/lang/wasm'
+import { initPromise } from '@src/lang/wasmUtils'
 import { enginelessExecutor } from '@src/lib/testHelpers'
 import { err } from '@src/lib/trap'
 
@@ -329,12 +330,12 @@ describe('testing getConstraintInfo', () => {
   |> angledLine(angle = 30, lengthY = 3)
   |> angledLine(angle = 12.14, endAbsoluteX = 12)
   |> angledLine(angle = 30, endAbsoluteY = 10.14)
-  |> angledLineThatIntersects({
+  |> angledLineThatIntersects(
     angle = 3.14,
     intersectTag = a,
-    offset = 0
-  }, %)
-  |> tangentialArcTo([3.14, 13.14], %)`
+    offset = 0,
+  )
+  |> tangentialArc(endAbsolute = [3.14, 13.14])`
     test.each([
       [
         'line',
@@ -597,16 +598,7 @@ describe('testing getConstraintInfo', () => {
             isConstrained: false,
             value: '3.14',
             sourceRange: [expect.any(Number), expect.any(Number), 0],
-            argPosition: { type: 'objectProperty', key: 'angle' },
-            pathToNode: expect.any(Array),
-            stdLibFnName: 'angledLineThatIntersects',
-          },
-          {
-            type: 'intersectionOffset',
-            isConstrained: false,
-            value: '0',
-            sourceRange: [expect.any(Number), expect.any(Number), 0],
-            argPosition: { type: 'objectProperty', key: 'offset' },
+            argPosition: { type: 'labeledArg', key: 'angle' },
             pathToNode: expect.any(Array),
             stdLibFnName: 'angledLineThatIntersects',
           },
@@ -617,24 +609,33 @@ describe('testing getConstraintInfo', () => {
             sourceRange: [expect.any(Number), expect.any(Number), 0],
             argPosition: {
               key: 'intersectTag',
-              type: 'objectProperty',
+              type: 'labeledArg',
             },
+            pathToNode: expect.any(Array),
+            stdLibFnName: 'angledLineThatIntersects',
+          },
+          {
+            type: 'intersectionOffset',
+            isConstrained: false,
+            value: '0',
+            sourceRange: [expect.any(Number), expect.any(Number), 0],
+            argPosition: { type: 'labeledArg', key: 'offset' },
             pathToNode: expect.any(Array),
             stdLibFnName: 'angledLineThatIntersects',
           },
         ],
       ],
       [
-        'tangentialArcTo',
+        'tangentialArc',
         [
           {
             type: 'tangentialWithPrevious',
             isConstrained: true,
-            value: 'tangentialArcTo',
+            value: 'tangentialArc',
             sourceRange: [expect.any(Number), expect.any(Number), 0],
             argPosition: undefined,
             pathToNode: expect.any(Array),
-            stdLibFnName: 'tangentialArcTo',
+            stdLibFnName: 'tangentialArc',
           },
           {
             type: 'xAbsolute',
@@ -643,7 +644,7 @@ describe('testing getConstraintInfo', () => {
             sourceRange: [expect.any(Number), expect.any(Number), 0],
             argPosition: { type: 'arrayItem', index: 0 },
             pathToNode: expect.any(Array),
-            stdLibFnName: 'tangentialArcTo',
+            stdLibFnName: 'tangentialArc',
           },
           {
             type: 'yAbsolute',
@@ -652,7 +653,7 @@ describe('testing getConstraintInfo', () => {
             sourceRange: [expect.any(Number), expect.any(Number), 0],
             argPosition: { type: 'arrayItem', index: 1 },
             pathToNode: expect.any(Array),
-            stdLibFnName: 'tangentialArcTo',
+            stdLibFnName: 'tangentialArc',
           },
         ],
       ],
@@ -695,12 +696,12 @@ describe('testing getConstraintInfo', () => {
     |> angledLine(angle = 30, lengthY = 3)
     |> angledLine(angle = 12, endAbsoluteX = 12)
     |> angledLine(angle = 30, endAbsoluteY = 10)
-    |> angledLineThatIntersects({
+    |> angledLineThatIntersects(
          angle = 3.14,
          intersectTag = a,
-         offset = 0
-       }, %)
-    |> tangentialArcTo([3.14, 13.14], %)`
+         offset = 0,
+       )
+    |> tangentialArc(endAbsolute = [3.14, 13.14])`
     test.each([
       [
         `angledLine.* length = `,
@@ -856,12 +857,12 @@ describe('testing getConstraintInfo', () => {
     |> angledLine(angle = 30 + 0, lengthY = 3 + 0)
     |> angledLine(angle = 12.14 + 0, endAbsoluteX =  12 + 0)
     |> angledLine(angle = 30 + 0, endAbsoluteY =  10.14 + 0)
-    |> angledLineThatIntersects({
+    |> angledLineThatIntersects(
          angle = 3.14 + 0,
          intersectTag = a,
-         offset = 0 + 0
-       }, %)
-    |> tangentialArcTo([3.14 + 0, 13.14 + 0], %)`
+         offset = 0 + 0,
+       )
+    |> tangentialArc(endAbsolute = [3.14 + 0, 13.14 + 0])`
     test.each([
       [
         'line',
@@ -1124,16 +1125,7 @@ describe('testing getConstraintInfo', () => {
             isConstrained: true,
             value: '3.14 + 0',
             sourceRange: [expect.any(Number), expect.any(Number), 0],
-            argPosition: { type: 'objectProperty', key: 'angle' },
-            pathToNode: expect.any(Array),
-            stdLibFnName: 'angledLineThatIntersects',
-          },
-          {
-            type: 'intersectionOffset',
-            isConstrained: true,
-            value: '0 + 0',
-            sourceRange: [expect.any(Number), expect.any(Number), 0],
-            argPosition: { type: 'objectProperty', key: 'offset' },
+            argPosition: { type: 'labeledArg', key: 'angle' },
             pathToNode: expect.any(Array),
             stdLibFnName: 'angledLineThatIntersects',
           },
@@ -1142,23 +1134,32 @@ describe('testing getConstraintInfo', () => {
             isConstrained: false,
             value: 'a',
             sourceRange: [expect.any(Number), expect.any(Number), 0],
-            argPosition: { key: 'intersectTag', type: 'objectProperty' },
+            argPosition: { key: 'intersectTag', type: 'labeledArg' },
+            pathToNode: expect.any(Array),
+            stdLibFnName: 'angledLineThatIntersects',
+          },
+          {
+            type: 'intersectionOffset',
+            isConstrained: true,
+            value: '0 + 0',
+            sourceRange: [expect.any(Number), expect.any(Number), 0],
+            argPosition: { type: 'labeledArg', key: 'offset' },
             pathToNode: expect.any(Array),
             stdLibFnName: 'angledLineThatIntersects',
           },
         ],
       ],
       [
-        'tangentialArcTo',
+        'tangentialArc',
         [
           {
             type: 'tangentialWithPrevious',
             isConstrained: true,
-            value: 'tangentialArcTo',
+            value: 'tangentialArc',
             sourceRange: [expect.any(Number), expect.any(Number), 0],
             argPosition: undefined,
             pathToNode: expect.any(Array),
-            stdLibFnName: 'tangentialArcTo',
+            stdLibFnName: 'tangentialArc',
           },
           {
             type: 'xAbsolute',
@@ -1167,7 +1168,7 @@ describe('testing getConstraintInfo', () => {
             sourceRange: [expect.any(Number), expect.any(Number), 0],
             argPosition: { type: 'arrayItem', index: 0 },
             pathToNode: expect.any(Array),
-            stdLibFnName: 'tangentialArcTo',
+            stdLibFnName: 'tangentialArc',
           },
           {
             type: 'yAbsolute',
@@ -1176,7 +1177,7 @@ describe('testing getConstraintInfo', () => {
             sourceRange: [expect.any(Number), expect.any(Number), 0],
             argPosition: { type: 'arrayItem', index: 1 },
             pathToNode: expect.any(Array),
-            stdLibFnName: 'tangentialArcTo',
+            stdLibFnName: 'tangentialArc',
           },
         ],
       ],

@@ -224,12 +224,8 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
         |> angledLine(angle = -91, lengthY = 19 + 0)
         |> angledLine(angle = 3 + 0, endAbsoluteX = 5 + 26)
         |> angledLine(angle = 89, endAbsoluteY = 20 + 9.14 + 0)
-        |> angledLineThatIntersects({
-        angle = 4.14,
-        intersectTag = a,
-        offset = 9
-      }, %)
-        |> tangentialArcTo([5 + 3.14 + 13, 20 + 3.14], %)
+        |> angledLineThatIntersects(angle = 4.14, intersectTag = a, offset = 9)
+        |> tangentialArc(endAbsolute = [5 + 3.14 + 13, 20 + 3.14])
       `
         )
       })
@@ -472,12 +468,8 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
         |> angledLine(angle = -91, lengthY = 19 + 0)
         |> angledLine(angle = 3 + 0, endAbsoluteX = 26)
         |> angledLine(angle = 89, endAbsoluteY = 9.14 + 0)
-        |> angledLineThatIntersects({
-        angle = 4.14,
-        intersectTag = a,
-        offset = 9
-      }, %)
-        |> tangentialArcTo([3.14 + 13, 3.14], %)
+        |> angledLineThatIntersects(angle = 4.14, intersectTag = a, offset = 9)
+        |> tangentialArc(endAbsolute = [3.14 + 13, 3.14])
       `
         )
         localStorage.setItem('disableAxis', 'true')
@@ -597,12 +589,8 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
         |> angledLine(angle = -91, lengthY = 19 + 0)
         |> angledLine(angle = 3 + 0, endAbsoluteX = 26)
         |> angledLine(angle = 89, endAbsoluteY = 9.14 + 0)
-        |> angledLineThatIntersects({
-        angle = 4.14,
-        intersectTag = a,
-        offset = 9
-      }, %)
-        |> tangentialArcTo([3.14 + 13, 1.14], %)
+        |> angledLineThatIntersects(angle = 4.14, intersectTag = a, offset = 9)
+        |> tangentialArc(endAbsolute = [3.14 + 13, 1.14])
       `
         )
         localStorage.setItem('disableAxis', 'true')
@@ -691,21 +679,9 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
           y: angledLineThatIntersects.y,
         },
         constraintType: 'angle',
-        expectBeforeUnconstrained: `angledLineThatIntersects({
-    angle = 4.14,
-    intersectTag = a,
-    offset = 9
-        }, %)`,
-        expectAfterUnconstrained: `angledLineThatIntersects({
-    angle = angle003,
-    intersectTag = a,
-    offset = 9
-        }, %)`,
-        expectFinal: `angledLineThatIntersects({
-    angle = -176,
-    offset = 9,
-    intersectTag = a
-        }, %)`,
+        expectBeforeUnconstrained: `angledLineThatIntersects(angle = 4.14, intersectTag = a, offset = 9)`,
+        expectAfterUnconstrained: `angledLineThatIntersects(angle = angle003, intersectTag = a,offset = 9)`,
+        expectFinal: `angledLineThatIntersects(angle = -176, offset = 9, intersectTag = a)`,
         ang: ang + 180,
         locator: '[data-overlay-toolbar-index="11"]',
       })
@@ -716,30 +692,14 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
           y: angledLineThatIntersects.y,
         },
         constraintType: 'intersectionOffset',
-        expectBeforeUnconstrained: `angledLineThatIntersects({
-    angle = -176,
-    offset = 9,
-    intersectTag = a
-        }, %)`,
-        expectAfterUnconstrained: `angledLineThatIntersects({
-    angle = -176,
-    offset = perpDist001,
-    intersectTag = a
-        }, %)`,
-        expectFinal: `angledLineThatIntersects({
-    angle = -176,
-    offset = 9,
-    intersectTag = a
-        }, %)`,
+        expectBeforeUnconstrained: `angledLineThatIntersects(angle = -176, offset = 9, intersectTag = a)`,
+        expectAfterUnconstrained: `angledLineThatIntersects(angle = -176, offset = perpDist001, intersectTag = a)`,
+        expectFinal: `angledLineThatIntersects(angle = -176, offset = 9, intersectTag = a)`,
         ang: ang + 180,
         locator: '[data-overlay-toolbar-index="11"]',
       })
     })
-    test('for segment [tangentialArcTo]', async ({
-      page,
-      editor,
-      homePage,
-    }) => {
+    test('for segment [tangentialArc]', async ({ page, editor, homePage }) => {
       await page.addInitScript(async () => {
         localStorage.setItem(
           'persistCode',
@@ -757,12 +717,8 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
         |> angledLine(angle = -91, lengthY = 19 + 0)
         |> angledLine(angle = 3 + 0, endAbsoluteX = 26)
         |> angledLine(angle = 89, endAbsoluteY = 9.14 + 0)
-        |> angledLineThatIntersects({
-        angle = 4.14,
-        intersectTag = a,
-        offset = 9
-      }, %)
-        |> tangentialArcTo([3.14 + 13, -3.14], %)
+        |> angledLineThatIntersects(angle = 4.14, intersectTag = a, offset = 9)
+        |> tangentialArc(endAbsolute = [3.14 + 13, -3.14])
       `
         )
         localStorage.setItem('disableAxis', 'true')
@@ -787,28 +743,29 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
       const clickUnconstrained = _clickUnconstrained(page, editor)
       const clickConstrained = _clickConstrained(page, editor)
 
-      const tangentialArcTo = await u.getBoundingBox(
-        '[data-overlay-index="12"]'
-      )
+      const tangentialArc = await u.getBoundingBox('[data-overlay-index="12"]')
       let ang = await u.getAngle('[data-overlay-index="12"]')
-      console.log('tangentialArcTo')
+      console.log('tangentialArc')
       await clickConstrained({
-        hoverPos: { x: tangentialArcTo.x, y: tangentialArcTo.y },
+        hoverPos: { x: tangentialArc.x, y: tangentialArc.y },
         constraintType: 'xAbsolute',
-        expectBeforeUnconstrained: 'tangentialArcTo([3.14 + 13, -3.14], %)',
-        expectAfterUnconstrained: 'tangentialArcTo([16.14, -3.14], %)',
-        expectFinal: 'tangentialArcTo([xAbs001, -3.14], %)',
+        expectBeforeUnconstrained:
+          'tangentialArc(endAbsolute = [3.14 + 13, -3.14])',
+        expectAfterUnconstrained: 'tangentialArc(endAbsolute = [16.14, -3.14])',
+        expectFinal: 'tangentialArc(endAbsolute = [xAbs001, -3.14])',
         ang: ang + 180,
         steps: 6,
         locator: '[data-overlay-toolbar-index="12"]',
       })
-      console.log('tangentialArcTo2')
+      console.log('tangentialArc2')
       await clickUnconstrained({
-        hoverPos: { x: tangentialArcTo.x, y: tangentialArcTo.y },
+        hoverPos: { x: tangentialArc.x, y: tangentialArc.y },
         constraintType: 'yAbsolute',
-        expectBeforeUnconstrained: 'tangentialArcTo([xAbs001, -3.14], %)',
-        expectAfterUnconstrained: 'tangentialArcTo([xAbs001, yAbs001], %)',
-        expectFinal: 'tangentialArcTo([xAbs001, -3.14], %)',
+        expectBeforeUnconstrained:
+          'tangentialArc(endAbsolute = [xAbs001, -3.14])',
+        expectAfterUnconstrained:
+          'tangentialArc(endAbsolute = [xAbs001, yAbs001])',
+        expectFinal: 'tangentialArc(endAbsolute = [xAbs001, -3.14])',
         ang: ang + 180,
         steps: 10,
         locator: '[data-overlay-toolbar-index="12"]',
@@ -1086,12 +1043,8 @@ part001 = startSketchOn(XZ)
   |> angledLine(angle = -91, lengthY = 19 + 0)
   |> angledLine(angle = 3 + 0, endAbsoluteX = 26)
   |> angledLine(angle = 89, endAbsoluteY = 9.14 + 0)
-  |> angledLineThatIntersects({
-       angle = 4.14,
-       intersectTag = a,
-       offset = 9
-     }, %)
-  |> tangentialArcTo([3.14 + 13, 1.14], %)
+  |> angledLineThatIntersects(angle = 4.14, intersectTag = a, offset = 9)
+  |> tangentialArc(endAbsolute = [3.14 + 13, 1.14])
   |> arcTo({
        interior = [16.25, 5.12],
        end = [21.61, 4.15]
@@ -1161,8 +1114,8 @@ part001 = startSketchOn(XZ)
       ang = await u.getAngle('[data-overlay-index="12"]')
       await deleteSegmentSequence({
         hoverPos: { x: segmentToDelete.x, y: segmentToDelete.y },
-        codeToBeDeleted: 'tangentialArcTo([3.14 + 13, 1.14], %)',
-        stdLibFnName: 'tangentialArcTo',
+        codeToBeDeleted: 'tangentialArc(endAbsolute = [3.14 + 13, 1.14])',
+        stdLibFnName: 'tangentialArc',
         ang: ang + 180,
         steps: 6,
         locator: '[data-overlay-toolbar-index="12"]',
@@ -1172,11 +1125,7 @@ part001 = startSketchOn(XZ)
       ang = await u.getAngle('[data-overlay-index="11"]')
       await deleteSegmentSequence({
         hoverPos: { x: segmentToDelete.x, y: segmentToDelete.y },
-        codeToBeDeleted: `angledLineThatIntersects({
-      angle = 4.14,
-      intersectTag = a,
-      offset = 9
-        }, %)`,
+        codeToBeDeleted: `angledLineThatIntersects(angle = 4.14, intersectTag = a, offset = 9)`,
         stdLibFnName: 'angledLineThatIntersects',
         ang: ang + 180,
         steps: 7,

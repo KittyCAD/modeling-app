@@ -77,11 +77,7 @@ part001 = startSketchOn(-XZ)
      )
   |> xLine(endAbsolute = totalLen, tag = $seg03)
   |> yLine(length = -armThick, tag = $seg01)
-  |> angledLineThatIntersects({
-        angle = turns::HALF_TURN,
-        offset = -armThick,
-        intersectTag = seg04
-      }, %)
+  |> angledLineThatIntersects(angle = turns::HALF_TURN, offset = -armThick, intersectTag = seg04)
   |> angledLine(angle = segAng(seg04, %) + 180, endAbsoluteY = turns::ZERO)
   |> angledLine(
         angle = -bottomAng,
@@ -90,11 +86,7 @@ part001 = startSketchOn(-XZ)
      )
   |> xLine(length = endAbsolute = segEndX(seg03) + 0)
   |> yLine(length = -segLen(seg01, %))
-  |> angledLineThatIntersects({
-        angle = turns::HALF_TURN,
-        offset = -armThick,
-        intersectTag = seg02
-      }, %)
+  |> angledLineThatIntersects(angle = turns::HALF_TURN, offset = -armThick, intersectTag = seg02)
   |> angledLine(angle = segAng(seg02, %) + 180, endAbsoluteY = -baseHeight)
   |> xLine(endAbsolute = turns::ZERO)
   |> close()
@@ -684,7 +676,7 @@ test.describe(
       await page.mouse.click(startXPx + PUR * 30, 500 - PUR * 20)
 
       code += `
-  |> tangentialArcTo([551.2, -62.01], %)`
+  |> tangentialArc(endAbsolute = [551.2, -62.01])`
       await expect(u.codeLocator).toHaveText(code)
 
       // click tangential arc tool again to unequip it
@@ -778,7 +770,7 @@ test.describe(
       await page.mouse.click(startXPx + PUR * 30, 500 - PUR * 20)
 
       code += `
-  |> tangentialArcTo([551.2, -62.01], %)`
+  |> tangentialArc(endAbsolute = [551.2, -62.01])`
       await expect(u.codeLocator).toHaveText(code)
 
       await page
@@ -824,7 +816,7 @@ test(
   |> line(end = [11.91, -10.42])
   |> close()
   |> extrude(length = ${KCL_DEFAULT_LENGTH})
-part002 = startSketchOn(part001, seg01)
+part002 = startSketchOn(part001, face = seg01)
   |> startProfileAt([8, 8], %)
   |> line(end = [4.68, 3.05])
   |> line(end = [0, -7.79])

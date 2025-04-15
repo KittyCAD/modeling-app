@@ -54,6 +54,7 @@ import {
   STRAIGHT_SEGMENT,
   STRAIGHT_SEGMENT_BODY,
   STRAIGHT_SEGMENT_DASH,
+  STRAIGHT_SEGMENT_SNAP_LINE,
   TANGENTIAL_ARC_TO_SEGMENT,
   TANGENTIAL_ARC_TO_SEGMENT_BODY,
   TANGENTIAL_ARC_TO__SEGMENT_DASH,
@@ -216,7 +217,17 @@ class StraightSegment implements SegmentUtils {
       segmentGroup.add(lengthIndicatorGroup)
     }
 
+    if (isDraftSegment) {
+      const snapLine = createLine({
+        from: [0, 0],
+        to: [0, 0],
+        color: 0xcccccc,
+      })
+      snapLine.name = STRAIGHT_SEGMENT_SNAP_LINE
+      segmentGroup.add(snapLine)
+    }
     segmentGroup.add(mesh, extraSegmentGroup)
+
     let updateOverlaysCallback = this.update({
       prevSegment,
       input,
@@ -265,18 +276,37 @@ class StraightSegment implements SegmentUtils {
       isHandlesVisible = !shouldHideHover
     }
 
+    const dir = new Vector3()
+      .subVectors(
+        new Vector3(to[0], to[1], 0),
+        new Vector3(from[0], from[1], 0)
+      )
+      .normalize()
+
     if (arrowGroup) {
       arrowGroup.position.set(to[0], to[1], 0)
-
-      const dir = new Vector3()
-        .subVectors(
-          new Vector3(to[0], to[1], 0),
-          new Vector3(from[0], from[1], 0)
-        )
-        .normalize()
       arrowGroup.quaternion.setFromUnitVectors(new Vector3(0, 1, 0), dir)
       arrowGroup.scale.set(scale, scale, scale)
       arrowGroup.visible = isHandlesVisible
+    }
+
+    const snapLine = group.getObjectByName(STRAIGHT_SEGMENT_SNAP_LINE) as Line
+    if (snapLine) {
+      snapLine.visible = !!input.snap
+      if (snapLine.visible) {
+        const snapLineFrom = to
+        const snapLineTo = new Vector3(to[0], to[1], 0).addScaledVector(
+          dir,
+          // Draw a large enough line that reaches the screen edge
+          // Cleaner way would be to draw in screen space
+          9999999 * scale
+        )
+        updateLine(snapLine, {
+          from: snapLineFrom,
+          to: [snapLineTo.x, snapLineTo.y],
+          scale,
+        })
+      }
     }
 
     const extraSegmentGroup = group.getObjectByName(EXTRA_SEGMENT_HANDLE)
@@ -431,33 +461,10 @@ class TangentialArcToSegment implements SegmentUtils {
     const arrowGroup = group.getObjectByName(ARROWHEAD) as Group
     const extraSegmentGroup = group.getObjectByName(EXTRA_SEGMENT_HANDLE)
 
-    let previousPoint = prevSegment.from
-    if (prevSegment?.type === 'TangentialArcTo') {
-      previousPoint = getTangentPointFromPreviousArc(
-        prevSegment.center,
-        prevSegment.ccw,
-        prevSegment.to
-      )
-    } else if (prevSegment?.type === 'ArcThreePoint') {
-      const arcDetails = calculate_circle_from_3_points(
-        prevSegment.p1[0],
-        prevSegment.p1[1],
-        prevSegment.p2[0],
-        prevSegment.p2[1],
-        prevSegment.p3[0],
-        prevSegment.p3[1]
-      )
-      previousPoint = getTangentPointFromPreviousArc(
-        [arcDetails.center_x, arcDetails.center_y],
-        !isClockwise([prevSegment.p1, prevSegment.p2, prevSegment.p3]),
-        prevSegment.p3
-      )
-    }
-
     const arcInfo = getTangentialArcToInfo({
       arcStartPoint: from,
       arcEndPoint: to,
-      tanPreviousPoint: previousPoint,
+      tanPreviousPoint: getTanPreviousPoint(prevSegment),
       obtuse: true,
     })
 
@@ -505,19 +512,19 @@ class TangentialArcToSegment implements SegmentUtils {
       extraSegmentGroup.visible = isHandlesVisible
     }
 
-    const tangentialArcToSegmentBody = group.children.find(
+    const tangentialArcSegmentBody = group.children.find(
       (child) => child.userData.type === TANGENTIAL_ARC_TO_SEGMENT_BODY
     ) as Mesh
 
-    if (tangentialArcToSegmentBody) {
+    if (tangentialArcSegmentBody) {
       const newGeo = createArcGeometry({ ...arcInfo, scale })
-      tangentialArcToSegmentBody.geometry = newGeo
+      tangentialArcSegmentBody.geometry = newGeo
     }
-    const tangentialArcToSegmentBodyDashed = group.getObjectByName(
+    const tangentialArcSegmentBodyDashed = group.getObjectByName(
       TANGENTIAL_ARC_TO__SEGMENT_DASH
     )
-    if (tangentialArcToSegmentBodyDashed instanceof Mesh) {
-      tangentialArcToSegmentBodyDashed.geometry = createArcGeometry({
+    if (tangentialArcSegmentBodyDashed instanceof Mesh) {
+      tangentialArcSegmentBodyDashed.geometry = createArcGeometry({
         ...arcInfo,
         isDashed: true,
         scale,
@@ -537,6 +544,32 @@ class TangentialArcToSegment implements SegmentUtils {
         hasThreeDotMenu: true,
       })
   }
+}
+
+export function getTanPreviousPoint(prevSegment: Sketch['paths'][number]) {
+  let previousPoint = prevSegment.from
+  if (prevSegment.type === 'TangentialArcTo') {
+    previousPoint = getTangentPointFromPreviousArc(
+      prevSegment.center,
+      prevSegment.ccw,
+      prevSegment.to
+    )
+  } else if (prevSegment.type === 'ArcThreePoint') {
+    const arcDetails = calculate_circle_from_3_points(
+      prevSegment.p1[0],
+      prevSegment.p1[1],
+      prevSegment.p2[0],
+      prevSegment.p2[1],
+      prevSegment.p3[0],
+      prevSegment.p3[1]
+    )
+    previousPoint = getTangentPointFromPreviousArc(
+      [arcDetails.center_x, arcDetails.center_y],
+      !isClockwise([prevSegment.p1, prevSegment.p2, prevSegment.p3]),
+      prevSegment.p3
+    )
+  }
+  return previousPoint
 }
 
 class CircleSegment implements SegmentUtils {
@@ -1018,21 +1051,18 @@ class ArcSegment implements SegmentUtils {
     const centerToFromLine = createLine({
       from: center,
       to: from,
-      scale,
       color: grey, // Light gray color for the line
     })
     centerToFromLine.name = ARC_CENTER_TO_FROM
     const centerToToLine = createLine({
       from: center,
       to,
-      scale,
       color: grey, // Light gray color for the line
     })
     centerToToLine.name = ARC_CENTER_TO_TO
     const angleReferenceLine = createLine({
       from: [center[0] + (ANGLE_INDICATOR_RADIUS - 2) * scale, center[1]],
       to: [center[0] + (ANGLE_INDICATOR_RADIUS + 2) * scale, center[1]],
-      scale,
       color: grey, // Light gray color for the line
     })
     angleReferenceLine.name = ARC_ANGLE_REFERENCE_LINE
@@ -1398,7 +1428,7 @@ class ThreePointArcSegment implements SegmentUtils {
       p3,
       radius,
       center,
-      ccw: false,
+      ccw: !isClockwise([p1, p2, p3]),
       prevSegment,
       pathToNode,
       isSelected,
@@ -1992,12 +2022,10 @@ export function dashedStraight(
 function createLine({
   from,
   to,
-  scale,
   color,
 }: {
   from: [number, number]
   to: [number, number]
-  scale: number
   color: number
 }): Line {
   // Implementation for creating a line
@@ -2091,7 +2119,7 @@ function updateAngleIndicator(
 
 export const segmentUtils = {
   straight: new StraightSegment(),
-  tangentialArcTo: new TangentialArcToSegment(),
+  tangentialArc: new TangentialArcToSegment(),
   circle: new CircleSegment(),
   circleThreePoint: new CircleThreePointSegment(),
   arc: new ArcSegment(),

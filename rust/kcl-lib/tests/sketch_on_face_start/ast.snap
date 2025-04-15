@@ -37,13 +37,20 @@ description: Result of parsing sketch_on_face_start.kcl
                         {
                           "arguments": [
                             {
+                              "abs_path": false,
                               "commentStart": 0,
                               "end": 0,
-                              "raw": "'XY'",
+                              "name": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "name": "XY",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 0,
-                              "type": "Literal",
-                              "type": "Literal",
-                              "value": "XY"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           ],
                           "callee": {
@@ -643,29 +650,23 @@ description: Result of parsing sketch_on_face_start.kcl
               {
                 "arguments": [
                   {
-                    "abs_path": false,
-                    "commentStart": 0,
-                    "end": 0,
-                    "name": {
+                    "type": "LabeledArg",
+                    "label": {
                       "commentStart": 0,
                       "end": 0,
-                      "name": "foo",
+                      "name": "face",
                       "start": 0,
                       "type": "Identifier"
                     },
-                    "path": [],
-                    "start": 0,
-                    "type": "Name",
-                    "type": "Name"
-                  },
-                  {
-                    "commentStart": 0,
-                    "end": 0,
-                    "raw": "\"start\"",
-                    "start": 0,
-                    "type": "Literal",
-                    "type": "Literal",
-                    "value": "start"
+                    "arg": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "raw": "\"start\"",
+                      "start": 0,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": "start"
+                    }
                   }
                 ],
                 "callee": {
@@ -686,8 +687,24 @@ description: Result of parsing sketch_on_face_start.kcl
                 "commentStart": 0,
                 "end": 0,
                 "start": 0,
-                "type": "CallExpression",
-                "type": "CallExpression"
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": {
+                  "abs_path": false,
+                  "commentStart": 0,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "name": "foo",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name",
+                  "type": "Name"
+                }
               },
               {
                 "arguments": [

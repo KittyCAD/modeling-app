@@ -24,7 +24,8 @@ import { codeRefFromRange } from '@src/lang/std/artifactGraph'
 import { addCallExpressionsToPipe, addCloseToPipe } from '@src/lang/std/sketch'
 import { topLevelRange } from '@src/lang/util'
 import type { Identifier, PathToNode } from '@src/lang/wasm'
-import { assertParse, initPromise, recast } from '@src/lang/wasm'
+import { assertParse, recast } from '@src/lang/wasm'
+import { initPromise } from '@src/lang/wasmUtils'
 import { enginelessExecutor } from '@src/lib/testHelpers'
 import { err } from '@src/lib/trap'
 
@@ -487,13 +488,13 @@ describe('Testing hasSketchPipeBeenExtruded', () => {
   |> line(end = [-17.67, 0.85])
   |> close()
 extrude001 = extrude(sketch001, length = 10)
-sketch002 = startSketchOn(extrude001, seg01)
+sketch002 = startSketchOn(extrude001, face = seg01)
   |> startProfileAt([-12.94, 6.6], %)
   |> line(end = [2.45, -0.2])
   |> line(end = [-2, -1.25])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-sketch003 = startSketchOn(extrude001, 'END')
+sketch003 = startSketchOn(extrude001, face = 'END')
   |> startProfileAt([8.14, 2.8], %)
   |> line(end = [-1.24, 4.39])
   |> line(end = [3.79, 1.91])
@@ -564,7 +565,7 @@ describe('Testing doesSceneHaveSweepableSketch', () => {
   |> line(end = [-17.67, 0.85])
   |> close()
 extrude001 = extrude(sketch001, length = 10)
-sketch002 = startSketchOn(extrude001, $seg01)
+sketch002 = startSketchOn(extrude001, face = $seg01)
   |> startProfileAt([-12.94, 6.6], %)
   |> line(end = [2.45, -0.2])
   |> line(end = [-2, -1.25])

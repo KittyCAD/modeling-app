@@ -7,12 +7,8 @@ import {
 } from '@src/lang/std/sketchcombos'
 import { topLevelRange } from '@src/lang/util'
 import type { Sketch, SourceRange } from '@src/lang/wasm'
-import {
-  assertParse,
-  initPromise,
-  recast,
-  sketchFromKclValue,
-} from '@src/lang/wasm'
+import { assertParse, recast, sketchFromKclValue } from '@src/lang/wasm'
+import { initPromise } from '@src/lang/wasmUtils'
 import { enginelessExecutor } from '@src/lib/testHelpers'
 import { err } from '@src/lib/trap'
 

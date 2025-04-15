@@ -19,8 +19,8 @@ import {
 } from '@src/lang/errors'
 import { executeAst, executeAstMock, lintAst } from '@src/lang/langHelpers'
 import { getNodeFromPath, getSettingsAnnotation } from '@src/lang/queryAst'
+import { CommandLogType } from '@src/lang/std/commandLog'
 import type { EngineCommandManager } from '@src/lang/std/engineConnection'
-import { CommandLogType } from '@src/lang/std/engineConnection'
 import { topLevelRange } from '@src/lang/util'
 import type {
   ArtifactGraph,
@@ -30,13 +30,8 @@ import type {
   SourceRange,
   VariableMap,
 } from '@src/lang/wasm'
-import {
-  emptyExecState,
-  getKclVersion,
-  initPromise,
-  parse,
-  recast,
-} from '@src/lang/wasm'
+import { emptyExecState, getKclVersion, parse, recast } from '@src/lang/wasm'
+import { initPromise } from '@src/lang/wasmUtils'
 import type { ArtifactIndex } from '@src/lib/artifactIndex'
 import { buildArtifactIndex } from '@src/lib/artifactIndex'
 import {

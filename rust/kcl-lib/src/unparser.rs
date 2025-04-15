@@ -1728,7 +1728,7 @@ thk = 5
 hole_diam = 5
 // define a rectangular shape func
 fn rectShape(pos, w, l) {
-  rr = startSketchOn('xy')
+  rr = startSketchOn(XY)
     |> startProfileAt([pos[0] - (w / 2), pos[1] - (l / 2)], %)
     |> line(endAbsolute = [pos[0] + w / 2, pos[1] - (l / 2)], tag = $edge1)
     |> line(endAbsolute = [pos[0] + w / 2, pos[1] + l / 2], tag = $edge2)
@@ -2137,16 +2137,13 @@ mySk1 = startSketchOn(XY)
 
     #[test]
     fn test_recast_multiline_object() {
-        let some_program_string = r#"part001 = startSketchOn(XY)
-  |> startProfileAt([-0.01, -0.08], %)
-  |> line([0.62, 4.15], %, $seg01)
-  |> line([2.77, -1.24], %)
-  |> angledLineThatIntersects({
-       angle = 201,
-       offset = -1.35,
-       intersectTag = seg01
-     }, %)
-  |> line([-0.42, -1.72], %)"#;
+        let some_program_string = r#"x = {
+  a = 1000000000,
+  b = 2000000000,
+  c = 3000000000,
+  d = 4000000000,
+  e = 5000000000
+}"#;
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
 
         let recasted = program.recast(&Default::default(), 0);
