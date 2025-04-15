@@ -4497,8 +4497,8 @@ e
 ///      )
 ///   |> yLine(endAbsolute = 0)
 ///   |> close(%)
-///  
-/// example = extrude(5, exampleSketch)
+/// 
+/// example = extrude(exampleSketch, length = 5)
 /// ```
 @(impl = std_rust)
 export fn cos(num: number(rad)): number(_) {}"#;
