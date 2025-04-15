@@ -129,46 +129,46 @@ export const MODELING_PERSIST_KEY = 'MODELING_PERSIST_KEY'
 
 export type SetSelections =
   | {
-  selectionType: 'singleCodeCursor'
-  selection?: Selection
-  scrollIntoView?: boolean
-}
+      selectionType: 'singleCodeCursor'
+      selection?: Selection
+      scrollIntoView?: boolean
+    }
   | {
-  selectionType: 'axisSelection'
-  selection: Axis
-}
+      selectionType: 'axisSelection'
+      selection: Axis
+    }
   | {
-  selectionType: 'defaultPlaneSelection'
-  selection: DefaultPlaneSelection
-}
+      selectionType: 'defaultPlaneSelection'
+      selection: DefaultPlaneSelection
+    }
   | {
-  selectionType: 'completeSelection'
-  selection: Selections
-  updatedSketchEntryNodePath?: PathToNode
-  updatedSketchNodePaths?: PathToNode[]
-  updatedPlaneNodePath?: PathToNode
-}
+      selectionType: 'completeSelection'
+      selection: Selections
+      updatedSketchEntryNodePath?: PathToNode
+      updatedSketchNodePaths?: PathToNode[]
+      updatedPlaneNodePath?: PathToNode
+    }
   | {
-  selectionType: 'mirrorCodeMirrorSelections'
-  selection: Selections
-}
+      selectionType: 'mirrorCodeMirrorSelections'
+      selection: Selections
+    }
 
 export type MouseState =
   | {
-  type: 'idle'
-}
+      type: 'idle'
+    }
   | {
-  type: 'isHovering'
-  on: any
-}
+      type: 'isHovering'
+      on: any
+    }
   | {
-  type: 'isDragging'
-  on: any
-}
+      type: 'isDragging'
+      on: any
+    }
   | {
-  type: 'timeoutEnd'
-  pathToNodeString: string
-}
+      type: 'timeoutEnd'
+      pathToNodeString: string
+    }
 
 export interface SketchDetails {
   // there is no artifactGraph in sketch mode, so this is only used as vital information when entering sketch mode
@@ -227,8 +227,8 @@ export type ExtrudeFacePlane = {
   extrudePathToNode: PathToNode
   faceInfo:
     | {
-    type: 'wall'
-  }
+        type: 'wall'
+      }
     | CapInfo
     | EdgeCutInfo
   faceId: string
@@ -255,19 +255,19 @@ export type OffsetPlane = {
 
 export type SegmentOverlayPayload =
   | {
-  type: 'set-one'
-  pathToNodeString: string
-  seg: SegmentOverlay[]
-}
+      type: 'set-one'
+      pathToNodeString: string
+      seg: SegmentOverlay[]
+    }
   | {
-  type: 'delete-one'
-  pathToNodeString: string
-}
+      type: 'delete-one'
+      pathToNodeString: string
+    }
   | { type: 'clear' }
   | {
-  type: 'add-many'
-  overlays: SegmentOverlays
-}
+      type: 'add-many'
+      overlays: SegmentOverlays
+    }
 
 export interface Store {
   videoElement?: HTMLVideoElement
@@ -287,34 +287,34 @@ export type SketchTool =
 
 export type ModelingMachineEvent =
   | {
-  type: 'Enter sketch'
-  data?: {
-    forceNewSketch?: boolean
-  }
-}
+      type: 'Enter sketch'
+      data?: {
+        forceNewSketch?: boolean
+      }
+    }
   | { type: 'Sketch On Face' }
   | {
-  type: 'Select default plane'
-  data: DefaultPlane | ExtrudeFacePlane | OffsetPlane
-}
+      type: 'Select default plane'
+      data: DefaultPlane | ExtrudeFacePlane | OffsetPlane
+    }
   | {
-  type: 'Set selection'
-  data: SetSelections
-}
+      type: 'Set selection'
+      data: SetSelections
+    }
   | {
-  type: 'Delete selection'
-}
+      type: 'Delete selection'
+    }
   | { type: 'Sketch no face' }
   | { type: 'Toggle gui mode' }
   | { type: 'Cancel'; cleanup?: () => void }
   | { type: 'CancelSketch' }
   | {
-  type: 'Add start point' | 'Continue existing profile'
-  data: {
-    sketchNodePaths: PathToNode[]
-    sketchEntryNodePath: PathToNode
-  }
-}
+      type: 'Add start point' | 'Continue existing profile'
+      data: {
+        sketchNodePaths: PathToNode[]
+        sketchEntryNodePath: PathToNode
+      }
+    }
   | { type: 'Close sketch' }
   | { type: 'Make segment horizontal' }
   | { type: 'Make segment vertical' }
@@ -329,33 +329,33 @@ export type ModelingMachineEvent =
   | { type: 'Constrain snap to X' }
   | { type: 'Constrain snap to Y' }
   | {
-  type: 'Constrain length'
-  data: ModelingCommandSchema['Constrain length']
-}
+      type: 'Constrain length'
+      data: ModelingCommandSchema['Constrain length']
+    }
   | { type: 'Constrain equal length' }
   | { type: 'Constrain parallel' }
   | { type: 'Constrain remove constraints'; data?: PathToNode }
   | {
-  type: 'event.parameter.create'
-  data: ModelingCommandSchema['event.parameter.create']
-}
+      type: 'event.parameter.create'
+      data: ModelingCommandSchema['event.parameter.create']
+    }
   | {
-  type: 'event.parameter.edit'
-  data: ModelingCommandSchema['event.parameter.edit']
-}
+      type: 'event.parameter.edit'
+      data: ModelingCommandSchema['event.parameter.edit']
+    }
   | { type: 'Export'; data: ModelingCommandSchema['Export'] }
   | {
-  type: 'Boolean Subtract'
-  data: ModelingCommandSchema['Boolean Subtract']
-}
+      type: 'Boolean Subtract'
+      data: ModelingCommandSchema['Boolean Subtract']
+    }
   | {
-  type: 'Boolean Union'
-  data: ModelingCommandSchema['Boolean Union']
-}
+      type: 'Boolean Union'
+      data: ModelingCommandSchema['Boolean Union']
+    }
   | {
-  type: 'Boolean Intersect'
-  data: ModelingCommandSchema['Boolean Intersect']
-}
+      type: 'Boolean Intersect'
+      data: ModelingCommandSchema['Boolean Intersect']
+    }
   | { type: 'Make'; data: ModelingCommandSchema['Make'] }
   | { type: 'Extrude'; data?: ModelingCommandSchema['Extrude'] }
   | { type: 'Sweep'; data?: ModelingCommandSchema['Sweep'] }
@@ -369,75 +369,75 @@ export type ModelingMachineEvent =
   | { type: 'Text-to-CAD'; data: ModelingCommandSchema['Text-to-CAD'] }
   | { type: 'Prompt-to-edit'; data: ModelingCommandSchema['Prompt-to-edit'] }
   | {
-  type: 'Delete selection'
-  data: ModelingCommandSchema['Delete selection']
-}
+      type: 'Delete selection'
+      data: ModelingCommandSchema['Delete selection']
+    }
   | { type: 'Appearance'; data: ModelingCommandSchema['Appearance'] }
   | {
-  type:
-    | 'Add circle origin'
-    | 'Add circle center'
-    | 'Add center rectangle origin'
-    | 'click in scene'
-    | 'Add first point'
-  data: [x: number, y: number]
-}
+      type:
+        | 'Add circle origin'
+        | 'Add circle center'
+        | 'Add center rectangle origin'
+        | 'click in scene'
+        | 'Add first point'
+      data: [x: number, y: number]
+    }
   | {
-  type: 'Add second point'
-  data: {
-    p1: [x: number, y: number]
-    p2: [x: number, y: number]
-  }
-}
+      type: 'Add second point'
+      data: {
+        p1: [x: number, y: number]
+        p2: [x: number, y: number]
+      }
+    }
   | {
-  type: 'xstate.done.actor.animate-to-face'
-  output: SketchDetails
-}
+      type: 'xstate.done.actor.animate-to-face'
+      output: SketchDetails
+    }
   | { type: 'xstate.done.actor.animate-to-sketch'; output: SketchDetails }
   | { type: `xstate.done.actor.do-constrain${string}`; output: SetSelections }
   | {
-  type:
-    | 'xstate.done.actor.set-up-draft-circle'
-    | 'xstate.done.actor.set-up-draft-rectangle'
-    | 'xstate.done.actor.set-up-draft-center-rectangle'
-    | 'xstate.done.actor.set-up-draft-circle-three-point'
-    | 'xstate.done.actor.set-up-draft-arc'
-    | 'xstate.done.actor.set-up-draft-arc-three-point'
-    | 'xstate.done.actor.split-sketch-pipe-if-needed'
-    | 'xstate.done.actor.actor-circle-three-point'
-    | 'xstate.done.actor.reeval-node-paths'
+      type:
+        | 'xstate.done.actor.set-up-draft-circle'
+        | 'xstate.done.actor.set-up-draft-rectangle'
+        | 'xstate.done.actor.set-up-draft-center-rectangle'
+        | 'xstate.done.actor.set-up-draft-circle-three-point'
+        | 'xstate.done.actor.set-up-draft-arc'
+        | 'xstate.done.actor.set-up-draft-arc-three-point'
+        | 'xstate.done.actor.split-sketch-pipe-if-needed'
+        | 'xstate.done.actor.actor-circle-three-point'
+        | 'xstate.done.actor.reeval-node-paths'
 
-  output: SketchDetailsUpdate
-}
+      output: SketchDetailsUpdate
+    }
   | {
-  type: 'xstate.done.actor.setup-client-side-sketch-segments9'
-}
+      type: 'xstate.done.actor.setup-client-side-sketch-segments9'
+    }
   | { type: 'Set mouse state'; data: MouseState }
   | { type: 'Set context'; data: Partial<Store> }
   | {
-  type: 'Set Segment Overlays'
-  data: SegmentOverlayPayload
-}
+      type: 'Set Segment Overlays'
+      data: SegmentOverlayPayload
+    }
   | {
-  type: 'Center camera on selection'
-}
+      type: 'Center camera on selection'
+    }
   | {
-  type: 'Delete segment'
-  data: PathToNode
-}
+      type: 'Delete segment'
+      data: PathToNode
+    }
   | {
-  type: 'code edit during sketch'
-}
+      type: 'code edit during sketch'
+    }
   | {
-  type: 'Constrain with named value'
-  data: ModelingCommandSchema['Constrain with named value']
-}
+      type: 'Constrain with named value'
+      data: ModelingCommandSchema['Constrain with named value']
+    }
   | {
-  type: 'change tool'
-  data: {
-    tool: SketchTool
-  }
-}
+      type: 'change tool'
+      data: {
+        tool: SketchTool
+      }
+    }
   | { type: 'Finish rectangle' }
   | { type: 'Finish center rectangle' }
   | { type: 'Finish circle' }
@@ -446,10 +446,10 @@ export type ModelingMachineEvent =
   | { type: 'Artifact graph populated' }
   | { type: 'Artifact graph emptied' }
   | {
-  type: 'Toggle default plane visibility'
-  planeId: string
-  planeKey: string
-}
+      type: 'Toggle default plane visibility'
+      planeId: string
+      planeKey: string
+    }
 
 export type MoveDesc = { line: number; snippet: string }
 
@@ -496,8 +496,7 @@ export const modelingMachineDefaultContext: ModelingMachineContext = {
     machines: [],
     machineApiIp: null,
     currentMachine: null,
-    setCurrentMachine: () => {
-    },
+    setCurrentMachine: () => {},
     noMachinesReason: () => undefined,
   },
   selection: [],
@@ -608,8 +607,8 @@ export const modelingMachine = setup({
       return angleLength.enabled
     },
     'Can constrain perpendicular distance': ({
-                                               context: { selectionRanges },
-                                             }) => {
+      context: { selectionRanges },
+    }) => {
       const info = intersectInfo({ selectionRanges })
       if (err(info)) return false
       return info.enabled
@@ -661,9 +660,9 @@ export const modelingMachine = setup({
       return info.enabled
     },
     'Can constrain remove constraints': ({
-                                           context: { selectionRanges },
-                                           event,
-                                         }) => {
+      context: { selectionRanges },
+      event,
+    }) => {
       if (event.type !== 'Constrain remove constraints') return false
       const info = removeConstrainingValuesInfo({
         selectionRanges,
@@ -680,7 +679,7 @@ export const modelingMachine = setup({
       const isSafeRetVal = isNodeSafeToReplacePath(
         ast.program,
 
-        event.data.currentValue.pathToNode,
+        event.data.currentValue.pathToNode
       )
       if (err(isSafeRetVal)) return false
       return isSafeRetVal.isSafe
@@ -734,7 +733,7 @@ export const modelingMachine = setup({
             sketchEntryNodePath: sketchDetails.sketchEntryNodePath,
           },
         }
-      },
+      }
     ),
     'hide default planes': assign({
       defaultPlaneVisibility: () => {
@@ -802,7 +801,7 @@ export const modelingMachine = setup({
           sketchDetails.zAxis,
           sketchDetails.yAxis,
           sketchDetails.origin,
-          'line',
+          'line'
         )
         .then(() => {
           return codeManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
@@ -828,7 +827,7 @@ export const modelingMachine = setup({
           sketchDetails.zAxis,
           sketchDetails.yAxis,
           sketchDetails.origin,
-          'tangentialArc',
+          'tangentialArc'
         )
         .then(() => {
           return codeManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
@@ -845,16 +844,16 @@ export const modelingMachine = setup({
       if (!sketchDetails) return
       const quaternion = quaternionFromUpNForward(
         new Vector3(...sketchDetails.yAxis),
-        new Vector3(...sketchDetails.zAxis),
+        new Vector3(...sketchDetails.zAxis)
       )
 
       // Position the click raycast plane
 
       sceneEntitiesManager.intersectionPlane.setRotationFromQuaternion(
-        quaternion,
+        quaternion
       )
       sceneEntitiesManager.intersectionPlane.position.copy(
-        new Vector3(...(sketchDetails?.origin || [0, 0, 0])),
+        new Vector3(...(sketchDetails?.origin || [0, 0, 0]))
       )
 
       sceneInfra.setCallbacks({
@@ -868,7 +867,7 @@ export const modelingMachine = setup({
               data: sceneEntitiesManager.getSnappedDragPoint(
                 twoD,
                 args.intersects,
-                args.mouseEvent,
+                args.mouseEvent
               ).snappedPoint,
             })
           } else {
@@ -882,16 +881,16 @@ export const modelingMachine = setup({
       if (!sketchDetails) return
       const quaternion = quaternionFromUpNForward(
         new Vector3(...sketchDetails.yAxis),
-        new Vector3(...sketchDetails.zAxis),
+        new Vector3(...sketchDetails.zAxis)
       )
 
       // Position the click raycast plane
 
       sceneEntitiesManager.intersectionPlane.setRotationFromQuaternion(
-        quaternion,
+        quaternion
       )
       sceneEntitiesManager.intersectionPlane.position.copy(
-        new Vector3(...(sketchDetails?.origin || [0, 0, 0])),
+        new Vector3(...(sketchDetails?.origin || [0, 0, 0]))
       )
 
       sceneInfra.setCallbacks({
@@ -915,16 +914,16 @@ export const modelingMachine = setup({
       if (!sketchDetails) return
       const quaternion = quaternionFromUpNForward(
         new Vector3(...sketchDetails.yAxis),
-        new Vector3(...sketchDetails.zAxis),
+        new Vector3(...sketchDetails.zAxis)
       )
 
       // Position the click raycast plane
 
       sceneEntitiesManager.intersectionPlane.setRotationFromQuaternion(
-        quaternion,
+        quaternion
       )
       sceneEntitiesManager.intersectionPlane.position.copy(
-        new Vector3(...(sketchDetails?.origin || [0, 0, 0])),
+        new Vector3(...(sketchDetails?.origin || [0, 0, 0]))
       )
 
       sceneInfra.setCallbacks({
@@ -949,16 +948,16 @@ export const modelingMachine = setup({
       if (!sketchDetails) return
       const quaternion = quaternionFromUpNForward(
         new Vector3(...sketchDetails.yAxis),
-        new Vector3(...sketchDetails.zAxis),
+        new Vector3(...sketchDetails.zAxis)
       )
 
       // Position the click raycast plane
 
       sceneEntitiesManager.intersectionPlane.setRotationFromQuaternion(
-        quaternion,
+        quaternion
       )
       sceneEntitiesManager.intersectionPlane.position.copy(
-        new Vector3(...(sketchDetails?.origin || [0, 0, 0])),
+        new Vector3(...(sketchDetails?.origin || [0, 0, 0]))
       )
 
       sceneInfra.setCallbacks({
@@ -980,23 +979,23 @@ export const modelingMachine = setup({
       })
     },
     'listen for circle second point': ({
-                                         context: { sketchDetails },
-                                         event,
-                                       }) => {
+      context: { sketchDetails },
+      event,
+    }) => {
       if (!sketchDetails) return
       if (event.type !== 'Add first point') return
       const quaternion = quaternionFromUpNForward(
         new Vector3(...sketchDetails.yAxis),
-        new Vector3(...sketchDetails.zAxis),
+        new Vector3(...sketchDetails.zAxis)
       )
 
       // Position the click raycast plane
 
       sceneEntitiesManager.intersectionPlane.setRotationFromQuaternion(
-        quaternion,
+        quaternion
       )
       sceneEntitiesManager.intersectionPlane.position.copy(
-        new Vector3(...(sketchDetails?.origin || [0, 0, 0])),
+        new Vector3(...(sketchDetails?.origin || [0, 0, 0]))
       )
 
       const dummy = new Mesh()
@@ -1081,8 +1080,8 @@ export const modelingMachine = setup({
       },
     }),
     'setup noPoints onClick listener': ({
-                                          context: { sketchDetails, currentTool },
-                                        }) => {
+      context: { sketchDetails, currentTool },
+    }) => {
       if (!sketchDetails) return
       sceneEntitiesManager.setupNoPointsListener({
         sketchDetails,
@@ -1093,7 +1092,7 @@ export const modelingMachine = setup({
               ? { type: 'Continue existing profile', data }
               : currentTool === 'arc'
                 ? { type: 'Add start point', data }
-                : { type: 'Add start point', data },
+                : { type: 'Add start point', data }
           ),
       })
     },
@@ -1106,7 +1105,7 @@ export const modelingMachine = setup({
         sketchDetails.sketchEntryNodePath || [],
         sketchDetails.zAxis,
         sketchDetails.yAxis,
-        sketchDetails.origin,
+        sketchDetails.origin
       )
 
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -1159,7 +1158,7 @@ export const modelingMachine = setup({
         if (typeof window !== 'undefined') {
           window.localStorage.setItem(
             PERSIST_MODELING_CONTEXT,
-            JSON.stringify(persistedContext),
+            JSON.stringify(persistedContext)
           )
         }
         return result
@@ -1196,7 +1195,7 @@ export const modelingMachine = setup({
       const varDec = getNodeFromPath<VariableDeclaration>(
         kclManager.ast,
         sketchEntryNodePath,
-        'VariableDeclaration',
+        'VariableDeclaration'
       )
       if (err(varDec)) return
       const varName = varDec.node.declaration.id.name
@@ -1220,7 +1219,7 @@ export const modelingMachine = setup({
             sceneEntitiesManager.getSnappedDragPoint(
               intersectionPoint.twoD,
               args.intersects,
-              args.mouseEvent,
+              args.mouseEvent
             )
           if (isSnapped) {
             sceneEntitiesManager.positionDraftPoint({
@@ -1235,7 +1234,7 @@ export const modelingMachine = setup({
           updater(
             group,
             [intersectionPoint.twoD.x, intersectionPoint.twoD.y],
-            orthoFactor,
+            orthoFactor
           )
         },
       })
@@ -1249,24 +1248,15 @@ export const modelingMachine = setup({
         },
       }
     }),
-    'enable copilot': () => {
-    },
-    'disable copilot': () => {
-    },
-    'Set selection': () => {
-    },
-    'Set mouse state': () => {
-    },
-    'Set Segment Overlays': () => {
-    },
-    'Center camera on selection': () => {
-    },
-    'Submit to Text-to-CAD API': () => {
-    },
-    'Set sketchDetails': () => {
-    },
-    'sketch exit execute': () => {
-    },
+    'enable copilot': () => {},
+    'disable copilot': () => {},
+    'Set selection': () => {},
+    'Set mouse state': () => {},
+    'Set Segment Overlays': () => {},
+    'Center camera on selection': () => {},
+    'Submit to Text-to-CAD API': () => {},
+    'Set sketchDetails': () => {},
+    'sketch exit execute': () => {},
     'debug-action': (data) => {
       console.log('re-eval debug-action', data)
     },
@@ -1292,8 +1282,8 @@ export const modelingMachine = setup({
     'show sketch error toast': assign(() => {
       // toast message that stays open until closed programmatically
       const toastId = toast.error(
-        'Error in kcl script, sketch cannot be drawn until it\'s fixed',
-        { duration: Infinity },
+        "Error in kcl script, sketch cannot be drawn until it's fixed",
+        { duration: Infinity }
       )
       return {
         toastId,
@@ -1311,8 +1301,8 @@ export const modelingMachine = setup({
   actors: {
     'do-constrain-remove-constraint': fromPromise(
       async ({
-               input: { selectionRanges, sketchDetails, data },
-             }: {
+        input: { selectionRanges, sketchDetails, data },
+      }: {
         input: Pick<
           ModelingMachineContext,
           'selectionRanges' | 'sketchDetails'
@@ -1332,7 +1322,7 @@ export const modelingMachine = setup({
           constraint.modifiedAst,
           sketchDetails.zAxis,
           sketchDetails.yAxis,
-          sketchDetails.origin,
+          sketchDetails.origin
         )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
@@ -1344,22 +1334,22 @@ export const modelingMachine = setup({
           selection: updateSelections(
             pathToNodeMap,
             selectionRanges,
-            updatedAst.newAst,
+            updatedAst.newAst
           ),
         }
-      },
+      }
     ),
     'do-constrain-horizontally': fromPromise(
       async ({
-               input: { selectionRanges, sketchDetails },
-             }: {
+        input: { selectionRanges, sketchDetails },
+      }: {
         input: Pick<ModelingMachineContext, 'selectionRanges' | 'sketchDetails'>
       }) => {
         const constraint = applyConstraintHorzVert(
           selectionRanges,
           'horizontal',
           kclManager.ast,
-          kclManager.variables,
+          kclManager.variables
         )
         if (trap(constraint)) return false
         const { modifiedAst, pathToNodeMap } = constraint
@@ -1371,7 +1361,7 @@ export const modelingMachine = setup({
           modifiedAst,
           sketchDetails.zAxis,
           sketchDetails.yAxis,
-          sketchDetails.origin,
+          sketchDetails.origin
         )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
@@ -1381,22 +1371,22 @@ export const modelingMachine = setup({
           selection: updateSelections(
             pathToNodeMap,
             selectionRanges,
-            updatedAst.newAst,
+            updatedAst.newAst
           ),
         }
-      },
+      }
     ),
     'do-constrain-vertically': fromPromise(
       async ({
-               input: { selectionRanges, sketchDetails },
-             }: {
+        input: { selectionRanges, sketchDetails },
+      }: {
         input: Pick<ModelingMachineContext, 'selectionRanges' | 'sketchDetails'>
       }) => {
         const constraint = applyConstraintHorzVert(
           selectionRanges,
           'vertical',
           kclManager.ast,
-          kclManager.variables,
+          kclManager.variables
         )
         if (trap(constraint)) return false
         const { modifiedAst, pathToNodeMap } = constraint
@@ -1408,7 +1398,7 @@ export const modelingMachine = setup({
           modifiedAst,
           sketchDetails.zAxis,
           sketchDetails.yAxis,
-          sketchDetails.origin,
+          sketchDetails.origin
         )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
@@ -1418,15 +1408,15 @@ export const modelingMachine = setup({
           selection: updateSelections(
             pathToNodeMap,
             selectionRanges,
-            updatedAst.newAst,
+            updatedAst.newAst
           ),
         }
-      },
+      }
     ),
     'do-constrain-horizontally-align': fromPromise(
       async ({
-               input: { selectionRanges, sketchDetails },
-             }: {
+        input: { selectionRanges, sketchDetails },
+      }: {
         input: Pick<ModelingMachineContext, 'selectionRanges' | 'sketchDetails'>
       }) => {
         const constraint = applyConstraintHorzVertAlign({
@@ -1443,7 +1433,7 @@ export const modelingMachine = setup({
           modifiedAst,
           sketchDetails.zAxis,
           sketchDetails.yAxis,
-          sketchDetails.origin,
+          sketchDetails.origin
         )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
@@ -1451,18 +1441,18 @@ export const modelingMachine = setup({
         const updatedSelectionRanges = updateSelections(
           pathToNodeMap,
           selectionRanges,
-          updatedAst.newAst,
+          updatedAst.newAst
         )
         return {
           selectionType: 'completeSelection',
           selection: updatedSelectionRanges,
         }
-      },
+      }
     ),
     'do-constrain-vertically-align': fromPromise(
       async ({
-               input: { selectionRanges, sketchDetails },
-             }: {
+        input: { selectionRanges, sketchDetails },
+      }: {
         input: Pick<ModelingMachineContext, 'selectionRanges' | 'sketchDetails'>
       }) => {
         const constraint = applyConstraintHorzVertAlign({
@@ -1479,7 +1469,7 @@ export const modelingMachine = setup({
           modifiedAst,
           sketchDetails.zAxis,
           sketchDetails.yAxis,
-          sketchDetails.origin,
+          sketchDetails.origin
         )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
@@ -1487,18 +1477,18 @@ export const modelingMachine = setup({
         const updatedSelectionRanges = updateSelections(
           pathToNodeMap,
           selectionRanges,
-          updatedAst.newAst,
+          updatedAst.newAst
         )
         return {
           selectionType: 'completeSelection',
           selection: updatedSelectionRanges,
         }
-      },
+      }
     ),
     'do-constrain-snap-to-x': fromPromise(
       async ({
-               input: { selectionRanges, sketchDetails },
-             }: {
+        input: { selectionRanges, sketchDetails },
+      }: {
         input: Pick<ModelingMachineContext, 'selectionRanges' | 'sketchDetails'>
       }) => {
         const constraint = applyConstraintAxisAlign({
@@ -1515,7 +1505,7 @@ export const modelingMachine = setup({
           modifiedAst,
           sketchDetails.zAxis,
           sketchDetails.yAxis,
-          sketchDetails.origin,
+          sketchDetails.origin
         )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
@@ -1523,18 +1513,18 @@ export const modelingMachine = setup({
         const updatedSelectionRanges = updateSelections(
           pathToNodeMap,
           selectionRanges,
-          updatedAst.newAst,
+          updatedAst.newAst
         )
         return {
           selectionType: 'completeSelection',
           selection: updatedSelectionRanges,
         }
-      },
+      }
     ),
     'do-constrain-snap-to-y': fromPromise(
       async ({
-               input: { selectionRanges, sketchDetails },
-             }: {
+        input: { selectionRanges, sketchDetails },
+      }: {
         input: Pick<ModelingMachineContext, 'selectionRanges' | 'sketchDetails'>
       }) => {
         const constraint = applyConstraintAxisAlign({
@@ -1551,7 +1541,7 @@ export const modelingMachine = setup({
           modifiedAst,
           sketchDetails.zAxis,
           sketchDetails.yAxis,
-          sketchDetails.origin,
+          sketchDetails.origin
         )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
@@ -1559,18 +1549,18 @@ export const modelingMachine = setup({
         const updatedSelectionRanges = updateSelections(
           pathToNodeMap,
           selectionRanges,
-          updatedAst.newAst,
+          updatedAst.newAst
         )
         return {
           selectionType: 'completeSelection',
           selection: updatedSelectionRanges,
         }
-      },
+      }
     ),
     'do-constrain-parallel': fromPromise(
       async ({
-               input: { selectionRanges, sketchDetails },
-             }: {
+        input: { selectionRanges, sketchDetails },
+      }: {
         input: Pick<ModelingMachineContext, 'selectionRanges' | 'sketchDetails'>
       }) => {
         const constraint = applyConstraintEqualAngle({
@@ -1594,7 +1584,7 @@ export const modelingMachine = setup({
           recastAst.program,
           sketchDetails.zAxis,
           sketchDetails.yAxis,
-          sketchDetails.origin,
+          sketchDetails.origin
         )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
@@ -1603,18 +1593,18 @@ export const modelingMachine = setup({
         const updatedSelectionRanges = updateSelections(
           pathToNodeMap,
           selectionRanges,
-          updatedAst.newAst,
+          updatedAst.newAst
         )
         return {
           selectionType: 'completeSelection',
           selection: updatedSelectionRanges,
         }
-      },
+      }
     ),
     'do-constrain-equal-length': fromPromise(
       async ({
-               input: { selectionRanges, sketchDetails },
-             }: {
+        input: { selectionRanges, sketchDetails },
+      }: {
         input: Pick<ModelingMachineContext, 'selectionRanges' | 'sketchDetails'>
       }) => {
         const constraint = applyConstraintEqualLength({
@@ -1630,7 +1620,7 @@ export const modelingMachine = setup({
           modifiedAst,
           sketchDetails.zAxis,
           sketchDetails.yAxis,
-          sketchDetails.origin,
+          sketchDetails.origin
         )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
@@ -1638,70 +1628,70 @@ export const modelingMachine = setup({
         const updatedSelectionRanges = updateSelections(
           pathToNodeMap,
           selectionRanges,
-          updatedAst.newAst,
+          updatedAst.newAst
         )
         return {
           selectionType: 'completeSelection',
           selection: updatedSelectionRanges,
         }
-      },
+      }
     ),
     'Get vertical info': fromPromise(
       async (_: {
         input: Pick<ModelingMachineContext, 'selectionRanges' | 'sketchDetails'>
       }) => {
         return {} as SetSelections
-      },
+      }
     ),
     'Get ABS X info': fromPromise(
       async (_: {
         input: Pick<ModelingMachineContext, 'selectionRanges' | 'sketchDetails'>
       }) => {
         return {} as SetSelections
-      },
+      }
     ),
     'Get ABS Y info': fromPromise(
       async (_: {
         input: Pick<ModelingMachineContext, 'selectionRanges' | 'sketchDetails'>
       }) => {
         return {} as SetSelections
-      },
+      }
     ),
     'Get angle info': fromPromise(
       async (_: {
         input: Pick<ModelingMachineContext, 'selectionRanges' | 'sketchDetails'>
       }) => {
         return {} as SetSelections
-      },
+      }
     ),
     'Get perpendicular distance info': fromPromise(
       async (_: {
         input: Pick<ModelingMachineContext, 'selectionRanges' | 'sketchDetails'>
       }) => {
         return {} as SetSelections
-      },
+      }
     ),
     'AST-undo-startSketchOn': fromPromise(
       async (_: { input: Pick<ModelingMachineContext, 'sketchDetails'> }) => {
         return undefined
-      },
+      }
     ),
     'animate-to-face': fromPromise(
       async (_: { input?: ExtrudeFacePlane | DefaultPlane | OffsetPlane }) => {
         return {} as ModelingMachineContext['sketchDetails']
-      },
+      }
     ),
     'animate-to-sketch': fromPromise(
       async (_: { input: Pick<ModelingMachineContext, 'selectionRanges'> }) => {
         return {} as ModelingMachineContext['sketchDetails']
-      },
+      }
     ),
     'Get horizontal info': fromPromise(
       async (_: {
         input: Pick<ModelingMachineContext, 'sketchDetails' | 'selectionRanges'>
       }) => {
         return {} as SetSelections
-      },
+      }
     ),
     astConstrainLength: fromPromise(
       async (_: {
@@ -1713,7 +1703,7 @@ export const modelingMachine = setup({
         }
       }) => {
         return {} as SetSelections
-      },
+      }
     ),
     'Apply named value constraint': fromPromise(
       async (_: {
@@ -1725,7 +1715,7 @@ export const modelingMachine = setup({
         }
       }) => {
         return {} as SetSelections
-      },
+      }
     ),
     extrudeAstMod: fromPromise<
       unknown,
@@ -1744,7 +1734,7 @@ export const modelingMachine = setup({
         const extrudeNameNode = getNodeFromPath<VariableDeclaration>(
           ast,
           nodeToEdit,
-          'VariableDeclaration',
+          'VariableDeclaration'
         )
         if (err(extrudeNameNode)) {
           console.error('Error extracting plane name')
@@ -1760,7 +1750,7 @@ export const modelingMachine = setup({
 
       const pathToNode = getNodePathFromSourceRange(
         ast,
-        selection.graphSelections[0]?.codeRef.range,
+        selection.graphSelections[0]?.codeRef.range
       )
       // Add an extrude statement to the AST
       const extrudeSketchRes = extrudeSketch({
@@ -1785,7 +1775,7 @@ export const modelingMachine = setup({
       ) {
         const insertIndex = Math.min(
           pathToExtrudeArg[1][0],
-          distance.insertIndex,
+          distance.insertIndex
         )
         const newBody = [...modifiedAst.body]
         newBody.splice(insertIndex, 0, distance.variableDeclarationAst)
@@ -1804,7 +1794,7 @@ export const modelingMachine = setup({
         },
         {
           focusPath: [pathToExtrudeArg],
-        },
+        }
       )
     }),
     revolveAstMod: fromPromise<
@@ -1823,7 +1813,7 @@ export const modelingMachine = setup({
         const nameNode = getNodeFromPath<VariableDeclaration>(
           ast,
           nodeToEdit,
-          'VariableDeclaration',
+          'VariableDeclaration'
         )
         if (err(nameNode)) {
           console.error('Error extracting plane name')
@@ -1855,7 +1845,7 @@ export const modelingMachine = setup({
       // This is the selection of the sketch that will be revolved
       const pathToNode = getNodePathFromSourceRange(
         ast,
-        selection.graphSelections[0]?.codeRef.range,
+        selection.graphSelections[0]?.codeRef.range
       )
 
       const revolveSketchRes = revolveSketch(
@@ -1866,7 +1856,7 @@ export const modelingMachine = setup({
         axis,
         edge,
         variableName,
-        insertIndex,
+        insertIndex
       )
       if (trap(revolveSketchRes)) return
       const { modifiedAst, pathToRevolveArg } = revolveSketchRes
@@ -1880,13 +1870,13 @@ export const modelingMachine = setup({
         },
         {
           focusPath: [pathToRevolveArg],
-        },
+        }
       )
     }),
     offsetPlaneAstMod: fromPromise(
       async ({
-               input,
-             }: {
+        input,
+      }: {
         input: ModelingCommandSchema['Offset plane'] | undefined
       }) => {
         if (!input) return new Error('No input provided')
@@ -1903,7 +1893,7 @@ export const modelingMachine = setup({
           const planeNameNode = getNodeFromPath<VariableDeclaration>(
             ast,
             nodeToEdit,
-            'VariableDeclaration',
+            'VariableDeclaration'
           )
           if (err(planeNameNode)) {
             console.error('Error extracting plane name')
@@ -1942,7 +1932,7 @@ export const modelingMachine = setup({
         ) {
           const insertIndex = Math.min(
             offsetPlaneResult.pathToNode[1][0],
-            distance.insertIndex,
+            distance.insertIndex
           )
           const newBody = [...offsetPlaneResult.modifiedAst.body]
           newBody.splice(insertIndex, 0, distance.variableDeclarationAst)
@@ -1961,14 +1951,14 @@ export const modelingMachine = setup({
           },
           {
             focusPath: [offsetPlaneResult.pathToNode],
-          },
+          }
         )
-      },
+      }
     ),
     helixAstMod: fromPromise(
       async ({
-               input,
-             }: {
+        input,
+      }: {
         input: ModelingCommandSchema['Helix'] | undefined
       }) => {
         if (!input) return new Error('No input provided')
@@ -1997,7 +1987,7 @@ export const modelingMachine = setup({
           const oldNode = getNodeFromPath<VariableDeclaration>(
             ast,
             nodeToEdit,
-            'VariableDeclaration',
+            'VariableDeclaration'
           )
           if (err(oldNode)) {
             console.error('Error extracting plane name')
@@ -2031,7 +2021,7 @@ export const modelingMachine = setup({
           const extrudeLookupResult = getPathToExtrudeForSegmentSelection(
             clonedAstForGetExtrude,
             cylinder.graphSelections[0],
-            kclManager.artifactGraph,
+            kclManager.artifactGraph
           )
           if (err(extrudeLookupResult)) {
             return extrudeLookupResult
@@ -2039,7 +2029,7 @@ export const modelingMachine = setup({
           const extrudeNode = getNodeFromPath<VariableDeclaration>(
             ast,
             extrudeLookupResult.pathToExtrudeNode,
-            'VariableDeclaration',
+            'VariableDeclaration'
           )
           if (err(extrudeNode)) {
             return extrudeNode
@@ -2053,7 +2043,7 @@ export const modelingMachine = setup({
           axisExpression = getAxisResult.generatedAxis
         } else {
           return new Error(
-            'Generated axis or cylinder declarator selection is missing.',
+            'Generated axis or cylinder declarator selection is missing.'
           )
         }
 
@@ -2075,7 +2065,7 @@ export const modelingMachine = setup({
             newBody.splice(
               variable.insertIndex,
               0,
-              variable.variableDeclarationAst,
+              variable.variableDeclarationAst
             )
             ast.body = newBody
           }
@@ -2109,14 +2099,14 @@ export const modelingMachine = setup({
           },
           {
             focusPath: [pathToNode],
-          },
+          }
         )
-      },
+      }
     ),
     sweepAstMod: fromPromise(
       async ({
-               input,
-             }: {
+        input,
+      }: {
         input: ModelingCommandSchema['Sweep'] | undefined
       }) => {
         if (!input) return new Error('No input provided')
@@ -2132,7 +2122,7 @@ export const modelingMachine = setup({
           const variableNode = getNodeFromPath<VariableDeclaration>(
             ast,
             nodeToEdit,
-            'VariableDeclaration',
+            'VariableDeclaration'
           )
 
           if (err(variableNode)) {
@@ -2151,7 +2141,7 @@ export const modelingMachine = setup({
         // Find the target declaration
         const targetNodePath = getNodePathFromSourceRange(
           ast,
-          target.graphSelections[0].codeRef.range,
+          target.graphSelections[0].codeRef.range
         )
         // Gotchas, not sure why
         // - it seems like in some cases we get a list on edit, especially the state that e2e hits
@@ -2160,7 +2150,7 @@ export const modelingMachine = setup({
           VariableDeclaration | VariableDeclaration[]
         >(ast, targetNodePath, 'VariableDeclaration')
         if (err(targetNode)) {
-          return new Error('Couldn\'t parse profile selection')
+          return new Error("Couldn't parse profile selection")
         }
 
         const targetDeclarator = isArray(targetNode.node)
@@ -2170,16 +2160,16 @@ export const modelingMachine = setup({
         // Find the trajectory (or path) declaration
         const trajectoryNodePath = getNodePathFromSourceRange(
           ast,
-          trajectory.graphSelections[0].codeRef.range,
+          trajectory.graphSelections[0].codeRef.range
         )
         // Also looking for VariableDeclaration for consistency here
         const trajectoryNode = getNodeFromPath<VariableDeclaration>(
           ast,
           trajectoryNodePath,
-          'VariableDeclaration',
+          'VariableDeclaration'
         )
         if (err(trajectoryNode)) {
-          return new Error('Couldn\'t parse path selection')
+          return new Error("Couldn't parse path selection")
         }
 
         const trajectoryDeclarator = trajectoryNode.node.declaration
@@ -2203,14 +2193,14 @@ export const modelingMachine = setup({
           },
           {
             focusPath: [pathToNode],
-          },
+          }
         )
-      },
+      }
     ),
     loftAstMod: fromPromise(
       async ({
-               input,
-             }: {
+        input,
+      }: {
         input: ModelingCommandSchema['Loft'] | undefined
       }) => {
         if (!input) return new Error('No input provided')
@@ -2222,7 +2212,7 @@ export const modelingMachine = setup({
           const nodeFromPath = getNodeFromPath<VariableDeclarator>(
             ast,
             path,
-            'VariableDeclarator',
+            'VariableDeclarator'
           )
           return err(nodeFromPath) ? [] : nodeFromPath.node
         })
@@ -2244,14 +2234,14 @@ export const modelingMachine = setup({
           },
           {
             focusPath: [loftSketchesRes.pathToNode],
-          },
+          }
         )
-      },
+      }
     ),
     shellAstMod: fromPromise(
       async ({
-               input,
-             }: {
+        input,
+      }: {
         input: ModelingCommandSchema['Shell'] | undefined
       }) => {
         if (!input) {
@@ -2270,7 +2260,7 @@ export const modelingMachine = setup({
           const variableNode = getNodeFromPath<VariableDeclaration>(
             ast,
             nodeToEdit,
-            'VariableDeclaration',
+            'VariableDeclaration'
           )
           if (err(variableNode)) {
             console.error('Error extracting name')
@@ -2293,22 +2283,22 @@ export const modelingMachine = setup({
           const extrudeLookupResult = getPathToExtrudeForSegmentSelection(
             clonedAstForGetExtrude,
             graphSelection,
-            kclManager.artifactGraph,
+            kclManager.artifactGraph
           )
           if (err(extrudeLookupResult)) {
             return new Error(
-              'Couldn\'t find extrude paths from getPathToExtrudeForSegmentSelection',
-              { cause: extrudeLookupResult },
+              "Couldn't find extrude paths from getPathToExtrudeForSegmentSelection",
+              { cause: extrudeLookupResult }
             )
           }
 
           const extrudeNode = getNodeFromPath<VariableDeclaration>(
             ast,
             extrudeLookupResult.pathToExtrudeNode,
-            'VariableDeclaration',
+            'VariableDeclaration'
           )
           if (err(extrudeNode)) {
-            return new Error('Couldn\'t find extrude node from selection', {
+            return new Error("Couldn't find extrude node from selection", {
               cause: extrudeNode,
             })
           }
@@ -2316,10 +2306,10 @@ export const modelingMachine = setup({
           const segmentNode = getNodeFromPath<VariableDeclaration>(
             ast,
             extrudeLookupResult.pathToSegmentNode,
-            'VariableDeclaration',
+            'VariableDeclaration'
           )
           if (err(segmentNode)) {
-            return new Error('Couldn\'t find segment node from selection', {
+            return new Error("Couldn't find segment node from selection", {
               cause: segmentNode,
             })
           }
@@ -2335,8 +2325,8 @@ export const modelingMachine = setup({
             pathToExtrudeNode = extrudeLookupResult.pathToSegmentNode
           } else {
             return new Error(
-              'Couldn\'t find extrude node that was either a call expression or a pipe',
-              { cause: segmentNode },
+              "Couldn't find extrude node that was either a call expression or a pipe",
+              { cause: segmentNode }
             )
           }
 
@@ -2352,7 +2342,7 @@ export const modelingMachine = setup({
           } else if (selectedArtifact.type === 'wall') {
             const tagResult = mutateAstWithTagForSketchSegment(
               ast,
-              extrudeLookupResult.pathToSegmentNode,
+              extrudeLookupResult.pathToSegmentNode
             )
             if (err(tagResult)) {
               return tagResult
@@ -2374,10 +2364,10 @@ export const modelingMachine = setup({
         const extrudeNode = getNodeFromPath<VariableDeclarator>(
           ast,
           pathToExtrudeNode,
-          'VariableDeclarator',
+          'VariableDeclarator'
         )
         if (err(extrudeNode)) {
-          return new Error('Couldn\'t find extrude node', { cause: extrudeNode })
+          return new Error("Couldn't find extrude node", { cause: extrudeNode })
         }
 
         // Perform the shell op
@@ -2402,7 +2392,7 @@ export const modelingMachine = setup({
         ) {
           const insertIndex = Math.min(
             addResult.pathToNode[1][0],
-            thickness.insertIndex,
+            thickness.insertIndex
           )
           const newBody = [...addResult.modifiedAst.body]
           newBody.splice(insertIndex, 0, thickness.variableDeclarationAst)
@@ -2421,14 +2411,14 @@ export const modelingMachine = setup({
           },
           {
             focusPath: [addResult.pathToNode],
-          },
+          }
         )
-      },
+      }
     ),
     filletAstMod: fromPromise(
       async ({
-               input,
-             }: {
+        input,
+      }: {
         input: ModelingCommandSchema['Fillet'] | undefined
       }) => {
         if (!input) {
@@ -2461,15 +2451,15 @@ export const modelingMachine = setup({
           ast,
           selection,
           parameters,
-          dependencies,
+          dependencies
         )
         if (err(filletResult)) return filletResult
-      },
+      }
     ),
     'actor.parameter.create': fromPromise(
       async ({
-               input,
-             }: {
+        input,
+      }: {
         input: ModelingCommandSchema['event.parameter.create'] | undefined
       }) => {
         if (!input) return new Error('No input provided')
@@ -2486,12 +2476,12 @@ export const modelingMachine = setup({
           editorManager,
           codeManager,
         })
-      },
+      }
     ),
     'actor.parameter.edit': fromPromise(
       async ({
-               input,
-             }: {
+        input,
+      }: {
         input: ModelingCommandSchema['event.parameter.edit'] | undefined
       }) => {
         if (!input) return new Error('No input provided')
@@ -2500,7 +2490,7 @@ export const modelingMachine = setup({
         const newAst = structuredClone(kclManager.ast)
         const variableNode = getNodeFromPath<Node<VariableDeclarator>>(
           newAst,
-          nodeToEdit,
+          nodeToEdit
         )
 
         if (
@@ -2519,7 +2509,7 @@ export const modelingMachine = setup({
           editorManager,
           kclManager,
         })
-      },
+      }
     ),
     'set-up-draft-circle': fromPromise(
       async (_: {
@@ -2528,7 +2518,7 @@ export const modelingMachine = setup({
         }
       }) => {
         return {} as SketchDetailsUpdate
-      },
+      }
     ),
     'set-up-draft-circle-three-point': fromPromise(
       async (_: {
@@ -2537,7 +2527,7 @@ export const modelingMachine = setup({
         }
       }) => {
         return {} as SketchDetailsUpdate
-      },
+      }
     ),
     'set-up-draft-rectangle': fromPromise(
       async (_: {
@@ -2546,7 +2536,7 @@ export const modelingMachine = setup({
         }
       }) => {
         return {} as SketchDetailsUpdate
-      },
+      }
     ),
     'set-up-draft-center-rectangle': fromPromise(
       async (_: {
@@ -2555,7 +2545,7 @@ export const modelingMachine = setup({
         }
       }) => {
         return {} as SketchDetailsUpdate
-      },
+      }
     ),
     'set-up-draft-arc': fromPromise(
       async (_: {
@@ -2564,7 +2554,7 @@ export const modelingMachine = setup({
         }
       }) => {
         return {} as SketchDetailsUpdate
-      },
+      }
     ),
     'set-up-draft-arc-three-point': fromPromise(
       async (_: {
@@ -2573,24 +2563,24 @@ export const modelingMachine = setup({
         }
       }) => {
         return {} as SketchDetailsUpdate
-      },
+      }
     ),
     'setup-client-side-sketch-segments': fromPromise(
       async (_: {
         input: Pick<ModelingMachineContext, 'sketchDetails' | 'selectionRanges'>
       }) => {
         return undefined
-      },
+      }
     ),
     'split-sketch-pipe-if-needed': fromPromise(
       async (_: { input: Pick<ModelingMachineContext, 'sketchDetails'> }) => {
         return {} as SketchDetailsUpdate
-      },
+      }
     ),
     chamferAstMod: fromPromise(
       async ({
-               input,
-             }: {
+        input,
+      }: {
         input: ModelingCommandSchema['Chamfer'] | undefined
       }) => {
         if (!input) {
@@ -2623,23 +2613,22 @@ export const modelingMachine = setup({
           ast,
           selection,
           parameters,
-          dependencies,
+          dependencies
         )
         if (err(chamferResult)) return chamferResult
-      },
+      }
     ),
     'submit-prompt-edit': fromPromise(
       async ({
-               input,
-             }: {
+        input,
+      }: {
         input: ModelingCommandSchema['Prompt-to-edit']
-      }) => {
-      },
+      }) => {}
     ),
     deleteSelectionAstMod: fromPromise(
       ({
-         input: { selectionRanges },
-       }: {
+        input: { selectionRanges },
+      }: {
         input: { selectionRanges: Selections }
       }) => {
         return new Promise((resolve, reject) => {
@@ -2662,12 +2651,12 @@ export const modelingMachine = setup({
             })
             .catch(reject)
         })
-      },
+      }
     ),
     appearanceAstMod: fromPromise(
       async ({
-               input,
-             }: {
+        input,
+      }: {
         input: ModelingCommandSchema['Appearance'] | undefined
       }) => {
         if (!input) return new Error('No input provided')
@@ -2698,14 +2687,14 @@ export const modelingMachine = setup({
           },
           {
             focusPath: [result.pathToNode],
-          },
+          }
         )
-      },
+      }
     ),
     exportFromEngine: fromPromise(
       async ({}: { input?: ModelingCommandSchema['Export'] }) => {
         return undefined as Error | undefined
-      },
+      }
     ),
     makeFromEngine: fromPromise(
       async ({}: {
@@ -2714,12 +2703,12 @@ export const modelingMachine = setup({
         } & ModelingCommandSchema['Make']
       }) => {
         return undefined as Error | undefined
-      },
+      }
     ),
     boolSubtractAstMod: fromPromise(
       async ({
-               input,
-             }: {
+        input,
+      }: {
         input: ModelingCommandSchema['Boolean Subtract'] | undefined
       }) => {
         if (!input) {
@@ -2740,14 +2729,14 @@ export const modelingMachine = setup({
             codeManager,
             engineCommandManager,
             editorManager,
-          },
+          }
         )
-      },
+      }
     ),
     boolUnionAstMod: fromPromise(
       async ({
-               input,
-             }: {
+        input,
+      }: {
         input: ModelingCommandSchema['Boolean Union'] | undefined
       }) => {
         if (!input) {
@@ -2763,12 +2752,12 @@ export const modelingMachine = setup({
           engineCommandManager,
           editorManager,
         })
-      },
+      }
     ),
     boolIntersectAstMod: fromPromise(
       async ({
-               input,
-             }: {
+        input,
+      }: {
         input: ModelingCommandSchema['Boolean Union'] | undefined
       }) => {
         if (!input) {
@@ -2784,12 +2773,12 @@ export const modelingMachine = setup({
           engineCommandManager,
           editorManager,
         })
-      },
+      }
     ),
     'reeval-node-paths': fromPromise(
       async ({
-               input: { sketchDetails },
-             }: {
+        input: { sketchDetails },
+      }: {
         input: Pick<ModelingMachineContext, 'sketchDetails'>
       }) => {
         const errorMessage =
@@ -2812,7 +2801,7 @@ export const modelingMachine = setup({
         const updatedPlaneNodePath = updatePathToNodesAfterEdit(
           kclManager._lastAst,
           kclManager.ast,
-          sketchDetails.planeNodePath,
+          sketchDetails.planeNodePath
         )
 
         if (err(updatedPlaneNodePath)) {
@@ -2827,7 +2816,7 @@ export const modelingMachine = setup({
               stringifyPathToNode(codeRef.pathToNode) ===
               stringifyPathToNode(updatedPlaneNodePath)
             )
-          },
+          }
         )
         if (
           !maybePlaneArtifact ||
@@ -2857,7 +2846,7 @@ export const modelingMachine = setup({
         const newPaths = getPathsFromPlaneArtifact(
           planeArtifact,
           kclManager.artifactGraph,
-          kclManager.ast,
+          kclManager.ast
         )
 
         return {
@@ -2865,7 +2854,7 @@ export const modelingMachine = setup({
           updatedSketchNodePaths: newPaths,
           updatedPlaneNodePath,
         }
-      },
+      }
     ),
   },
   // end actors
@@ -4483,10 +4472,9 @@ export const modelingMachine = setup({
   },
 })
 
-
 export function isEditingExistingSketch({
-                                          sketchDetails,
-                                        }: {
+  sketchDetails,
+}: {
   sketchDetails: SketchDetails | null
 }): boolean {
   // should check that the variable declaration is a pipeExpression
@@ -4497,7 +4485,7 @@ export function isEditingExistingSketch({
     sketchDetails.sketchEntryNodePath,
     'VariableDeclarator',
     false,
-    true, // suppress noise because we know sketchEntryNodePath might not match up to the ast if the user changed the code
+    true // suppress noise because we know sketchEntryNodePath might not match up to the ast if the user changed the code
     // and is dealt with in `re-eval nodePaths`
   )
   if (variableDeclaration instanceof Error) return false
@@ -4515,31 +4503,31 @@ export function isEditingExistingSketch({
   const hasStartProfileAt = maybePipeExpression.body.some(
     (item) =>
       item.type === 'CallExpression' &&
-      item.callee.name.name === 'startProfileAt',
+      item.callee.name.name === 'startProfileAt'
   )
   const hasCircle =
     maybePipeExpression.body.some(
       (item) =>
-        item.type === 'CallExpressionKw' && item.callee.name.name === 'circle',
+        item.type === 'CallExpressionKw' && item.callee.name.name === 'circle'
     ) ||
     maybePipeExpression.body.some(
       (item) =>
         item.type === 'CallExpressionKw' &&
-        item.callee.name.name === 'circleThreePoint',
+        item.callee.name.name === 'circleThreePoint'
     )
   return (hasStartProfileAt && maybePipeExpression.body.length > 1) || hasCircle
 }
 
 export function pipeHasCircle({
-                                sketchDetails,
-                              }: {
+  sketchDetails,
+}: {
   sketchDetails: SketchDetails | null
 }): boolean {
   if (!sketchDetails?.sketchEntryNodePath) return false
   const variableDeclaration = getNodeFromPath<VariableDeclarator>(
     kclManager.ast,
     sketchDetails.sketchEntryNodePath,
-    'VariableDeclarator',
+    'VariableDeclarator'
   )
   if (err(variableDeclaration)) return false
   if (variableDeclaration.node.type !== 'VariableDeclarator') return false
@@ -4547,20 +4535,20 @@ export function pipeHasCircle({
   if (pipeExpression.type !== 'PipeExpression') return false
   const hasCircle = pipeExpression.body.some(
     (item) =>
-      item.type === 'CallExpressionKw' && item.callee.name.name === 'circle',
+      item.type === 'CallExpressionKw' && item.callee.name.name === 'circle'
   )
   return hasCircle
 }
 
 export function canRectangleOrCircleTool({
-                                           sketchDetails,
-                                         }: {
+  sketchDetails,
+}: {
   sketchDetails: SketchDetails | null
 }): boolean {
   const node = getNodeFromPath<VariableDeclaration>(
     kclManager.ast,
     sketchDetails?.sketchEntryNodePath || [],
-    'VariableDeclaration',
+    'VariableDeclaration'
   )
   // This should not be returning false, and it should be caught
   // but we need to simulate old behavior to move on.
@@ -4570,14 +4558,14 @@ export function canRectangleOrCircleTool({
 
 /** If the sketch contains `close` or `circle` stdlib functions it must be closed */
 export function isClosedSketch({
-                                 sketchDetails,
-                               }: {
+  sketchDetails,
+}: {
   sketchDetails: SketchDetails | null
 }): boolean {
   const node = getNodeFromPath<VariableDeclaration>(
     kclManager.ast,
     sketchDetails?.sketchEntryNodePath || [],
-    'VariableDeclaration',
+    'VariableDeclaration'
   )
   // This should not be returning false, and it should be caught
   // but we need to simulate old behavior to move on.
@@ -4586,6 +4574,6 @@ export function isClosedSketch({
   return node.node.declaration.init.body.some(
     (node) =>
       (node.type === 'CallExpression' || node.type === 'CallExpressionKw') &&
-      (node.callee.name.name === 'close' || node.callee.name.name === 'circle'),
+      (node.callee.name.name === 'close' || node.callee.name.name === 'circle')
   )
 }
