@@ -1,20 +1,24 @@
 import { PATHS } from '@src/lib/paths'
-import { systemIOActor } from '@src/machines/appMachine'
-import { useSelector } from '@xstate/react'
+import { systemIOActor, useSettings } from '@src/machines/appMachine'
+import {
+  useProjectDirectoryPath,
+  useRequestedFileName,
+  useRequestedProjectName,
+  useState as useSystemIOState,
+} from '@src/machines/systemIO/hooks'
+import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-export const useRequestedProjectName = () =>
-  useSelector(systemIOActor, (state) => state.context.requestedProjectName)
-export const useRequestedFileName = () =>
-  useSelector(systemIOActor, (state) => state.context.requestedFileName)
-export const useProjectDirectoryPath = () =>
-  useSelector(systemIOActor, (state) => state.context.projectDirectoryPath)
+import { projectsCommandBarConfig } from '@src/lib/commandBarConfigs/projectsCommandConfig'
+import useStateMachineCommands from '@src/hooks/useStateMachineCommands'
 
 export function SystemIOMachineLogicListener() {
   const requestedProjectName = useRequestedProjectName()
   const requestedFileName = useRequestedFileName()
   const projectDirectoryPath = useProjectDirectoryPath()
   const navigate = useNavigate()
+  const settings = useSettings()
+  const state = useSystemIOState()
 
   // Handle global project name navigation
   useEffect(() => {
@@ -45,6 +49,28 @@ export function SystemIOMachineLogicListener() {
     const requestedPath = `${PATHS.FILE}/${encodeURIComponent(filePath)}`
     navigate(requestedPath)
   }, [requestedFileName])
+
+  // Reload all folders when the project directory path changes
+  useEffect(() => {
+    systemIOActor.send({
+      type: SystemIOMachineEvents.setProjectDirectoryPath,
+      data: {
+        requestedProjectDirectoryPath:
+          settings.app.projectDirectory.current || '',
+      },
+    })
+  }, [settings.app.projectDirectory.current])
+
+  // Implement setting the default project folder name
+  useEffect(() => {
+    systemIOActor.send({
+      type: SystemIOMachineEvents.setDefaultProjectFolderName,
+      data: {
+        requestedDefaultProjectFolderName:
+          settings.projects.defaultProjectName.current || '',
+      },
+    })
+  }, [settings.projects.defaultProjectName.current])
 
   return null
 }

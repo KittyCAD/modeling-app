@@ -62,5 +62,17 @@ describe('systemIOMachine - XState', () => {
         expect(context.projectDirectoryPath).toBe(kclSamplesPath)
       })
     })
+    describe('when setting default project folder name', () => {
+      it('should set a new default project folder name', async () => {
+        const expected = 'coolcoolcoolProjectName'
+        const actor = createActor(systemIOMachineDesktop).start()
+        actor.send({
+          type: SystemIOMachineEvents.setDefaultProjectFolderName,
+          data: { requestedDefaultProjectFolderName: expected },
+        })
+        let context = actor.getSnapshot().context
+        expect(context.defaultProjectFolderName).toBe(expected)
+      })
+    })
   })
 })

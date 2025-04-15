@@ -32,6 +32,7 @@ export enum SystemIOMachineEvents {
   renameProject = 'rename project',
   deleteProject = 'delete project',
   createKCLFile = 'create kcl file',
+  setDefaultProjectFolderName = 'set default project folder name',
 }
 
 export enum SystemIOMachineActions {
@@ -39,6 +40,7 @@ export enum SystemIOMachineActions {
   setProjectDirectoryPath = 'set project directory path',
   setRequestedProjectName = 'set requested project name',
   setRequestedFileName = 'set requested file name',
+  setDefaultProjectFolderName = 'set default project folder name',
 }
 
 export const NO_PROJECT_DIRECTORY = ''

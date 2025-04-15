@@ -58,6 +58,10 @@ export const systemIOMachine = setup({
             requestedFileName: string
             requestedCode: string
           }
+        }
+      | {
+          type: SystemIOMachineEvents.setDefaultProjectFolderName
+          data: { requestedDefaultProjectFolderName: string }
         },
   },
   actions: {
@@ -89,6 +93,12 @@ export const systemIOMachine = setup({
           project: event.data.requestedProjectName,
           file: event.data.requestedFileName,
         }
+      },
+    }),
+    [SystemIOMachineActions.setDefaultProjectFolderName]: assign({
+      defaultProjectFolderName: ({ event }) => {
+        assertEvent(event, SystemIOMachineEvents.setDefaultProjectFolderName)
+        return event.data.requestedDefaultProjectFolderName
       },
     }),
   },
@@ -133,7 +143,8 @@ export const systemIOMachine = setup({
           requestedProjectName: string
           requestedFileName: string
           requestedCode: string
-        }
+
+}
       }) => {}
     ),
   },
@@ -181,6 +192,9 @@ export const systemIOMachine = setup({
         },
         [SystemIOMachineEvents.createKCLFile]: {
           target: SystemIOMachineStates.creatingKCLFile,
+        },
+        [SystemIOMachineEvents.setDefaultProjectFolderName]: {
+          actions: [SystemIOMachineActions.setDefaultProjectFolderName],
         },
       },
     },
