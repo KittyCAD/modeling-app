@@ -122,9 +122,11 @@ export class KclManager {
 
   private _isExecutingCallback: (arg: boolean) => void = () => {}
   private _astCallBack: (arg: Node<Program>) => void = () => {}
-  private _variablesCallBack: (arg: {
-    [key in string]?: KclValue | undefined
-  }) => void = () => {}
+  private _variablesCallBack: (
+    arg: {
+      [key in string]?: KclValue | undefined
+    }
+  ) => void = () => {}
   private _logsCallBack: (arg: string[]) => void = () => {}
   private _kclErrorsCallBack: (errors: KCLError[]) => void = () => {}
   private _diagnosticsCallback: (errors: Diagnostic[]) => void = () => {}

@@ -3,7 +3,7 @@
 }
 
 .folder::after {
-  content: '';
+  content: "";
   width: 1px;
   z-index: -1;
   @apply absolute top-0 bottom-0;

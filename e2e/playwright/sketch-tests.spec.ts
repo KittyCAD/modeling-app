@@ -1,7 +1,7 @@
-import type { Page } from '@playwright/test'
-import { roundOff, uuidv4 } from '@src/lib/utils'
 import fs from 'node:fs/promises'
 import path from 'node:path'
+import type { Page } from '@playwright/test'
+import { roundOff, uuidv4 } from '@src/lib/utils'
 
 import type { CmdBarFixture } from '@e2e/playwright/fixtures/cmdBarFixture'
 import type { HomePageFixture } from '@e2e/playwright/fixtures/homePageFixture'
@@ -161,7 +161,8 @@ sketch001 = startSketchOn(XZ)
       // click to add segment
       await page.mouse.click(700, 200)
 
-      await expect.poll(u.normalisedEditorCode, { timeout: 1000 })
+      await expect
+        .poll(u.normalisedEditorCode, { timeout: 1000 })
         .toBe(`@settings(defaultLengthUnit = in)
 
 
@@ -403,8 +404,9 @@ sketch001 = startProfileAt([12.34, -12.34], sketch002)
       await u.openKclCodePanel()
 
       // expect the code to have changed
-      await expect(page.locator('.cm-content'))
-        .toHaveText(`sketch001 = startSketchOn(XZ)
+      await expect(
+        page.locator('.cm-content')
+      ).toHaveText(`sketch001 = startSketchOn(XZ)
   |> startProfileAt([6.44, -12.07], %)
   |> line(end = [14.72, 1.97])
   |> tangentialArc(endAbsolute = [26.92, -3.32])

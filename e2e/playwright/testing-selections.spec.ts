@@ -78,22 +78,25 @@ test.describe('Testing selections', { tag: ['@skipWin'] }, () => {
     await page.waitForTimeout(100)
     await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
 
-    await expect(page.locator('.cm-content'))
-      .toHaveText(`@settings(defaultLengthUnit = in)sketch001 = startSketchOn(XZ)profile001 = startProfileAt(${commonPoints.startAt}, sketch001)
+    await expect(
+      page.locator('.cm-content')
+    ).toHaveText(`@settings(defaultLengthUnit = in)sketch001 = startSketchOn(XZ)profile001 = startProfileAt(${commonPoints.startAt}, sketch001)
     |> xLine(length = ${commonPoints.num1})`)
 
     await page.waitForTimeout(100)
     await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 20)
-    await expect(page.locator('.cm-content'))
-      .toHaveText(`@settings(defaultLengthUnit = in)sketch001 = startSketchOn(XZ)profile001 = startProfileAt(${
+    await expect(
+      page.locator('.cm-content')
+    ).toHaveText(`@settings(defaultLengthUnit = in)sketch001 = startSketchOn(XZ)profile001 = startProfileAt(${
       commonPoints.startAt
     }, sketch001)
     |> xLine(length = ${commonPoints.num1})
     |> yLine(length = ${commonPoints.num1 + 0.01})`)
     await page.waitForTimeout(100)
     await page.mouse.click(startXPx, 500 - PUR * 20)
-    await expect(page.locator('.cm-content'))
-      .toHaveText(`@settings(defaultLengthUnit = in)sketch001 = startSketchOn(XZ)profile001 = startProfileAt(${
+    await expect(
+      page.locator('.cm-content')
+    ).toHaveText(`@settings(defaultLengthUnit = in)sketch001 = startSketchOn(XZ)profile001 = startProfileAt(${
       commonPoints.startAt
     }, sketch001)
     |> xLine(length = ${commonPoints.num1})

@@ -420,7 +420,7 @@ npm run test-setup
 
 ```
 npm run tsc
-npm run fmt-check
+npm run fmt:check
 npm run lint
 npm run test:unit:local
 ```
