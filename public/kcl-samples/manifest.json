@@ -267,13 +267,6 @@
   },
   {
     "file": "main.kcl",
-    "pathFromProjectDirectoryToFirstFile": "step/main.kcl",
-    "multipleFiles": false,
-    "title": "part001 = startSketchOn(-XZ)",
-    "description": "|> startProfileAt([54.78, -95.91], %)"
-  },
-  {
-    "file": "main.kcl",
     "pathFromProjectDirectoryToFirstFile": "walkie-talkie/main.kcl",
     "multipleFiles": true,
     "title": "Walkie Talkie",
