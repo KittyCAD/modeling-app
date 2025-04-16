@@ -73,6 +73,8 @@ import {
   applyIntersectFromTargetOperatorSelections,
   applySubtractFromTargetOperatorSelections,
   applyUnionFromTargetOperatorSelections,
+  findAllChildrenAndOrderByPlaceInCode,
+  getLastVariable,
 } from '@src/lang/modifyAst/boolean'
 import {
   deleteSelectionPromise,
@@ -2664,11 +2666,18 @@ export const modelingMachine = setup({
         const { x, y, z, nodeToEdit, selection } = input
         let pathToNode = nodeToEdit
         if (!(pathToNode && typeof pathToNode[1][0] === 'number')) {
-          if (selection?.graphSelections[0].codeRef.pathToNode) {
-            pathToNode = getNodePathFromSourceRange(
-              ast,
-              selection.graphSelections[0]?.codeRef.range
+          if (selection?.graphSelections[0].artifact) {
+            const children = findAllChildrenAndOrderByPlaceInCode(
+              selection?.graphSelections[0].artifact,
+              kclManager.artifactGraph
             )
+            const variable = getLastVariable(children, modifiedAst)
+            if (!variable) {
+              return new Error("Couldn't find corresponding path to node")
+            }
+            pathToNode = variable.pathToNode
+          } else if (selection?.graphSelections[0].codeRef.pathToNode) {
+            pathToNode = selection?.graphSelections[0].codeRef.pathToNode
           } else {
             return new Error("Couldn't find corresponding path to node")
           }
