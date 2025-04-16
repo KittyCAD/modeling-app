@@ -3054,6 +3054,7 @@ test.describe('manual edits during sketch mode', () => {
     scene,
     editor,
     toolbar,
+    cmdBar,
   }) => {
     const initialCode = `myVar1 = 5
     myVar2 = 6
@@ -3087,6 +3088,7 @@ test.describe('manual edits during sketch mode', () => {
 
     await homePage.goToModelingScene()
     await scene.connectionEstablished()
+    await scene.settled(cmdBar)
 
     await test.step('Open feature tree and edit second sketch', async () => {
       await toolbar.openFeatureTreePane()
@@ -3128,6 +3130,7 @@ test.describe('manual edits during sketch mode', () => {
         steps: 5,
       })
       await page.mouse.up()
+      await page.waitForTimeout(100)
       await editor.expectEditor.toContain('length = 167.36, angle = -14')
     })
 
@@ -3151,6 +3154,7 @@ test.describe('manual edits during sketch mode', () => {
         steps: 5,
       })
       await page.mouse.up()
+      await page.waitForTimeout(100)
       await editor.expectEditor.toContain('length = 219.2, angle = -56')
     })
 
