@@ -404,6 +404,9 @@ impl kcl_lib::EngineManager for EngineConnection {
         cmd: WebSocketRequest,
         id_to_source_range: HashMap<Uuid, kcl_lib::SourceRange>,
     ) -> Result<(), KclError> {
+        // Pop off the id we care about.
+        self.ids_of_async_commands.write().await.swap_remove(&id);
+
         // Add the response to our responses.
         let response = self
             .inner_send_modeling_cmd(id, source_range, cmd, id_to_source_range)

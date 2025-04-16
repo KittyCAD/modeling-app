@@ -292,9 +292,6 @@ pub async fn send_to_engine(pre: PreImportedGeometry, ctxt: &ExecutorContext) ->
         pre.command.files.iter().map(|f| f.path.to_string()).collect(),
         vec![pre.source_range.into()],
     );
-    if ctxt.no_engine_commands().await {
-        return Ok(imported_geometry);
-    }
 
     ctxt.engine
         .async_modeling_cmd(pre.id, pre.source_range, &ModelingCmd::from(pre.command.clone()))
