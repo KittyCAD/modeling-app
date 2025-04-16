@@ -3229,10 +3229,8 @@ test.describe('manual edits during sketch mode', () => {
     sketch002 = startSketchOn(extrude001, face = seg01)
     profile002 = startProfileAt([83.39, 329.15], sketch002)
       |> angledLine(angle = 0, length = 119.61, tag = $rectangleSegmentA001)
-      |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 156.54, angle = -28)
+      |> angledLine(length = 156.54, angle = -28)
       |> angledLine(
-           angle = segAng(rectangleSegmentA001),
-           length = -segLen(rectangleSegmentA001),
            angle = -151,
            length = 116.27,
          )
