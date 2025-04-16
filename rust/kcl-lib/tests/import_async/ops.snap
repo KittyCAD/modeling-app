@@ -6,6 +6,33 @@ description: Operations executed import_async.kcl
   {
     "type": "GroupBegin",
     "group": {
+      "type": "ModuleInstance",
+      "name": "screw",
+      "moduleId": 5
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "labeledArgs": {
+      "planeOrSolid": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
       "type": "FunctionCall",
       "name": "cos",
       "functionSourceRange": [

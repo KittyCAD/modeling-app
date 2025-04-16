@@ -5,7 +5,11 @@ description: Result of unparsing import_async.kcl
 // Set units
 @settings(defaultLengthUnit = in)
 
-import "../inputs/cube.gltf" as cube
+import "../../e2e/executor/inputs/2-5-long-m8-chc-screw.stl" as screw
+
+screw
+
+surface001 = startSketchOn(XY)
 
 // Define parameters
 nTeeth = 21

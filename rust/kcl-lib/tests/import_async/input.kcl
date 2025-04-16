@@ -1,8 +1,11 @@
-import "../inputs/cube.gltf" as cube
+import "../../e2e/executor/inputs/2-5-long-m8-chc-screw.stl" as screw
 
 // Set units
 @settings(defaultLengthUnit = in)
 
+screw
+
+surface001 = startSketchOn(XY)
 
 // Define parameters
 nTeeth = 21

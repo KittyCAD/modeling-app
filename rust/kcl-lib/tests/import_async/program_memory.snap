@@ -1083,10 +1083,6 @@ description: Variables in memory after executing import_async.kcl
       }
     }
   },
-  "cube": {
-    "type": "Module",
-    "value": 5
-  },
   "deddendum": {
     "type": "Number",
     "value": 0.625,
@@ -3620,6 +3616,10 @@ description: Variables in memory after executing import_async.kcl
       }
     ]
   },
+  "screw": {
+    "type": "Module",
+    "value": 5
+  },
   "start": {
     "type": "Sketch",
     "value": {
@@ -3699,6 +3699,49 @@ description: Variables in memory after executing import_async.kcl
       "type": "Known",
       "type": "Angle",
       "type": "Radians"
+    }
+  },
+  "surface001": {
+    "type": "Plane",
+    "value": {
+      "id": "[uuid]",
+      "artifactId": "[uuid]",
+      "value": "XY",
+      "origin": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0,
+        "units": {
+          "type": "Mm"
+        }
+      },
+      "xAxis": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0,
+        "units": {
+          "type": "Mm"
+        }
+      },
+      "yAxis": {
+        "x": 0.0,
+        "y": 1.0,
+        "z": 0.0,
+        "units": {
+          "type": "Mm"
+        }
+      },
+      "zAxis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0,
+        "units": {
+          "type": "Mm"
+        }
+      },
+      "units": {
+        "type": "Inches"
+      }
     }
   },
   "teeth": {

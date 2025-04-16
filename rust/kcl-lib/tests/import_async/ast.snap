@@ -10,14 +10,14 @@ description: Result of parsing import_async.kcl
         "end": 0,
         "path": {
           "type": "Foreign",
-          "path": "../inputs/cube.gltf"
+          "path": "../../e2e/executor/inputs/2-5-long-m8-chc-screw.stl"
         },
         "selector": {
           "type": "None",
           "alias": {
             "commentStart": 0,
             "end": 0,
-            "name": "cube",
+            "name": "screw",
             "start": 0,
             "type": "Identifier"
           }
@@ -25,6 +25,90 @@ description: Result of parsing import_async.kcl
         "start": 0,
         "type": "ImportStatement",
         "type": "ImportStatement"
+      },
+      {
+        "commentStart": 0,
+        "end": 0,
+        "expression": {
+          "abs_path": false,
+          "commentStart": 0,
+          "end": 0,
+          "name": {
+            "commentStart": 0,
+            "end": 0,
+            "name": "screw",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "path": [],
+          "start": 0,
+          "type": "Name",
+          "type": "Name"
+        },
+        "start": 0,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      },
+      {
+        "commentStart": 0,
+        "declaration": {
+          "commentStart": 0,
+          "end": 0,
+          "id": {
+            "commentStart": 0,
+            "end": 0,
+            "name": "surface001",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "arguments": [
+              {
+                "abs_path": false,
+                "commentStart": 0,
+                "end": 0,
+                "name": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "name": "XY",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
+                "start": 0,
+                "type": "Name",
+                "type": "Name"
+              }
+            ],
+            "callee": {
+              "abs_path": false,
+              "commentStart": 0,
+              "end": 0,
+              "name": {
+                "commentStart": 0,
+                "end": 0,
+                "name": "startSketchOn",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name"
+            },
+            "commentStart": 0,
+            "end": 0,
+            "start": 0,
+            "type": "CallExpression",
+            "type": "CallExpression"
+          },
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
       },
       {
         "commentStart": 0,
@@ -56,6 +140,8 @@ description: Result of parsing import_async.kcl
         "end": 0,
         "kind": "const",
         "preComments": [
+          "",
+          "",
           "// Define parameters"
         ],
         "start": 0,
@@ -4821,7 +4907,7 @@ description: Result of parsing import_async.kcl
             }
           }
         ],
-        "14": [
+        "1": [
           {
             "commentStart": 0,
             "end": 0,
@@ -4844,6 +4930,17 @@ description: Result of parsing import_async.kcl
           }
         ],
         "18": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "20": [
           {
             "commentStart": 0,
             "end": 0,
