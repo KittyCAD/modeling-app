@@ -29,9 +29,7 @@ import {
   createLabeledArg,
   createLiteral,
   createLocalName,
-  createObjectExpression,
   createPipeExpression,
-  createPipeSubstitution,
   createTagDeclarator,
   findUniqueName,
   nonCodeMetaEmpty,
@@ -1705,7 +1703,7 @@ export const arcTo: SketchLineHelperKw = {
         },
         {
           type: 'objectProperty',
-          key: 'end' as InputArgKeys,
+          key: 'endAbsolute' as InputArgKeys,
           argType: 'yAbsolute',
           expr: createLiteral(0) as any, // This is a workaround, the actual value will be set later
         },
