@@ -198,36 +198,51 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         Ok(())
     }
 
+    /// Ensure a specific async command has been completed.
+    async fn ensure_async_command_completed(
+        &self,
+        id: uuid::Uuid,
+        source_range: Option<SourceRange>,
+    ) -> Result<OkWebSocketResponseData, KclError> {
+        let source_range = if let Some(source_range) = source_range {
+            source_range
+        } else {
+            // Look it up if we don't have it.
+            self.ids_of_async_commands()
+                .read()
+                .await
+                .get(&id)
+                .cloned()
+                .unwrap_or_default()
+        };
+
+        let current_time = std::time::Instant::now();
+        while current_time.elapsed().as_secs() < 60 {
+            let responses = self.responses().read().await.clone();
+            let Some(resp) = responses.get(&id) else {
+                continue;
+            };
+
+            // If the response is an error, return it.
+            // Parsing will do that and we can ignore the result, we don't care.
+            let response = self.parse_websocket_response(resp.clone(), source_range)?;
+            return Ok(response);
+        }
+
+        Err(KclError::Engine(KclErrorDetails {
+            message: "async command timed out".to_string(),
+            source_ranges: vec![source_range],
+        }))
+    }
+
+    /// Ensure ALL async commands have been completed.
     async fn ensure_async_commands_completed(&self) -> Result<(), KclError> {
         // Check if all async commands have been completed.
         let ids = self.take_ids_of_async_commands().await;
 
         // Try to get them from the responses.
         for (id, source_range) in ids {
-            let current_time = std::time::Instant::now();
-            let mut found = false;
-            while current_time.elapsed().as_secs() < 60 {
-                let responses = self.responses().read().await.clone();
-                let Some(resp) = responses.get(&id) else {
-                    continue;
-                };
-
-                found = true;
-                // If the response is an error, return it.
-                // Parsing will do that and we can ignore the result, we don't care.
-                self.parse_websocket_response(resp.clone(), source_range)?;
-
-                drop(responses);
-                // Break the loop if we found the response.
-                break;
-            }
-
-            if !found {
-                return Err(KclError::Engine(KclErrorDetails {
-                    message: "async command with timed out".to_string(),
-                    source_ranges: vec![source_range],
-                }));
-            }
+            self.ensure_async_command_completed(id, Some(source_range)).await?;
         }
 
         Ok(())

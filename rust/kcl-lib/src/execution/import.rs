@@ -287,23 +287,20 @@ pub struct PreImportedGeometry {
 }
 
 pub async fn send_to_engine(pre: PreImportedGeometry, ctxt: &ExecutorContext) -> Result<ImportedGeometry, KclError> {
+    let imported_geometry = ImportedGeometry::new(
+        pre.id,
+        pre.command.files.iter().map(|f| f.path.to_string()).collect(),
+        vec![pre.source_range.into()],
+    );
     if ctxt.no_engine_commands().await {
-        return Ok(ImportedGeometry {
-            id: pre.id,
-            value: pre.command.files.iter().map(|f| f.path.to_string()).collect(),
-            meta: vec![pre.source_range.into()],
-        });
+        return Ok(imported_geometry);
     }
 
     ctxt.engine
         .async_modeling_cmd(pre.id, pre.source_range, &ModelingCmd::from(pre.command.clone()))
         .await?;
 
-    Ok(ImportedGeometry {
-        id: pre.id,
-        value: pre.command.files.iter().map(|f| f.path.to_string()).collect(),
-        meta: vec![pre.source_range.into()],
-    })
+    Ok(imported_geometry)
 }
 
 /// Get the source format from the extension.

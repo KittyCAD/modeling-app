@@ -15,6 +15,8 @@ use crate::{
     std::{args::TyF64, sketch::PlaneData},
 };
 
+use super::ExecutorContext;
+
 type Point2D = kcmc::shared::Point2d<f64>;
 type Point3D = kcmc::shared::Point3d<f64>;
 
@@ -76,6 +78,42 @@ pub struct ImportedGeometry {
     pub value: Vec<String>,
     #[serde(skip)]
     pub meta: Vec<Metadata>,
+    /// If the imported geometry has completed.
+    #[serde(skip)]
+    completed: bool,
+}
+
+impl ImportedGeometry {
+    pub fn new(id: uuid::Uuid, value: Vec<String>, meta: Vec<Metadata>) -> Self {
+        Self {
+            id,
+            value,
+            meta,
+            completed: false,
+        }
+    }
+
+    async fn wait_for_finish(&mut self, ctx: &ExecutorContext) -> Result<(), KclError> {
+        if self.completed {
+            return Ok(());
+        }
+
+        ctx.engine
+            .ensure_async_command_completed(self.id, self.meta.first().map(|m| m.source_range))
+            .await?;
+
+        self.completed = true;
+
+        Ok(())
+    }
+
+    pub async fn id(&mut self, ctx: &ExecutorContext) -> Result<uuid::Uuid, KclError> {
+        if !self.completed {
+            self.wait_for_finish(ctx).await?;
+        }
+
+        Ok(self.id)
+    }
 }
 
 /// Data for a solid or an imported geometry.
@@ -128,11 +166,15 @@ impl From<SolidOrSketchOrImportedGeometry> for crate::execution::KclValue {
 }
 
 impl SolidOrSketchOrImportedGeometry {
-    pub(crate) fn ids(&self) -> Vec<uuid::Uuid> {
+    pub(crate) async fn ids(&mut self, ctx: &ExecutorContext) -> Result<Vec<uuid::Uuid>, KclError> {
         match self {
-            SolidOrSketchOrImportedGeometry::ImportedGeometry(s) => vec![s.id],
-            SolidOrSketchOrImportedGeometry::SolidSet(s) => s.iter().map(|s| s.id).collect(),
-            SolidOrSketchOrImportedGeometry::SketchSet(s) => s.iter().map(|s| s.id).collect(),
+            SolidOrSketchOrImportedGeometry::ImportedGeometry(s) => {
+                let id = s.id(ctx).await?;
+
+                Ok(vec![id])
+            }
+            SolidOrSketchOrImportedGeometry::SolidSet(s) => Ok(s.iter().map(|s| s.id).collect()),
+            SolidOrSketchOrImportedGeometry::SketchSet(s) => Ok(s.iter().map(|s| s.id).collect()),
         }
     }
 }
