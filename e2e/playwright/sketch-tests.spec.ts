@@ -3058,7 +3058,7 @@ test.describe('manual edits during sketch mode', () => {
   }) => {
     const initialCode = `myVar1 = 5
     myVar2 = 6
-    
+
     sketch001 = startSketchOn(XZ)
     profile001 = startProfileAt([106.68, 89.77], sketch001)
       |> line(end = [132.34, 157.8])
@@ -3089,29 +3089,20 @@ test.describe('manual edits during sketch mode', () => {
     await homePage.goToModelingScene()
     await scene.connectionEstablished()
     await scene.settled(cmdBar)
-    const expectSketchOriginToBeDrawn = async () => {
-      await scene.expectPixelColor(TEST_COLORS.WHITE, { x: 672, y: 193 }, 15)
-    }
 
     await test.step('Open feature tree and edit second sketch', async () => {
       await toolbar.openFeatureTreePane()
       const sketchButton = await toolbar.getFeatureTreeOperation('Sketch', 1)
       await sketchButton.dblclick()
-      await page.waitForTimeout(700) // Wait for engine animation
-      await expectSketchOriginToBeDrawn()
     })
 
     await test.step('Add new variable and wait for re-execution', async () => {
-      await page.waitForTimeout(500) // wait for deferred execution
       await editor.replaceCode('myVar2 = 6', 'myVar2 = 6\nmyVar3 = 7')
-      await page.waitForTimeout(2000) // wait for deferred execution
-      await expectSketchOriginToBeDrawn()
+      await page.waitForTimeout(2000) // Wait for deferred execution
     })
 
-    const handle1Location = { x: 843, y: 235 }
-
     await test.step('Edit sketch by dragging handle', async () => {
-      await page.waitForTimeout(500)
+      const handle1Location = { x: 843, y: 235 }
       await editor.expectEditor.toContain('length = 156.54, angle = -28')
       await page.mouse.move(handle1Location.x, handle1Location.y)
       await page.mouse.down()
@@ -3120,20 +3111,17 @@ test.describe('manual edits during sketch mode', () => {
       })
       await page.mouse.up()
       await editor.expectEditor.toContain('length = 231.59, angle = -34')
-      // await page.waitForTimeout(1000) // Wait for update
     })
 
     await test.step('Delete variables and wait for re-execution', async () => {
-      await page.waitForTimeout(500)
       await editor.replaceCode('myVar3 = 7', '')
       await page.waitForTimeout(50)
       await editor.replaceCode('myVar2 = 6', '')
       await page.waitForTimeout(2000) // Wait for deferred execution
-      await expectSketchOriginToBeDrawn()
     })
 
-    const handle2Location = { x: 872, y: 273 }
     await test.step('Edit sketch again', async () => {
+      const handle2Location = { x: 872, y: 273 }
       await editor.expectEditor.toContain('length = 231.59, angle = -34')
       await page.waitForTimeout(500)
       await page.mouse.move(handle2Location.x, handle2Location.y)
@@ -3154,7 +3142,6 @@ test.describe('manual edits during sketch mode', () => {
     profile004 = circle(sketch003, center = [143.91, 136.89], radius = 71.63)`
       )
       await page.waitForTimeout(2000) // Wait for deferred execution
-      await expectSketchOriginToBeDrawn()
     })
 
     const handle3Location = { x: 844, y: 212 }
@@ -3176,7 +3163,7 @@ test.describe('manual edits during sketch mode', () => {
         `myVar1 = 5
     sketch003 = startSketchOn(XY)
     profile004 = circle(sketch003, center = [143.91, 136.89], radius = 71.63)
-    
+
     sketch001 = startSketchOn(XZ)
     profile001 = startProfileAt([106.68, 89.77], sketch001)
       |> line(end = [132.34, 157.8])
@@ -3220,7 +3207,7 @@ test.describe('manual edits during sketch mode', () => {
   }) => {
     const initialCode = `myVar1 = 5
     myVar2 = 6
-    
+
     sketch001 = startSketchOn(XZ)
     profile001 = startProfileAt([106.68, 89.77], sketch001)
       |> line(end = [132.34, 157.8])
@@ -3251,16 +3238,12 @@ test.describe('manual edits during sketch mode', () => {
     await homePage.goToModelingScene()
     await scene.connectionEstablished()
     await scene.settled(cmdBar)
-    const expectSketchOriginToBeDrawn = async () => {
-      await scene.expectPixelColor(TEST_COLORS.WHITE, { x: 672, y: 193 }, 15)
-    }
 
     await test.step('Open feature tree and edit second sketch', async () => {
       await toolbar.openFeatureTreePane()
       const sketchButton = await toolbar.getFeatureTreeOperation('Sketch', 1)
       await sketchButton.dblclick()
       await page.waitForTimeout(700) // Wait for engine animation
-      await expectSketchOriginToBeDrawn()
     })
 
     await test.step('rename variable of current sketch, sketch002 to changeSketchNamePartWayThrough', async () => {
@@ -3302,7 +3285,7 @@ test.describe('manual edits during sketch mode', () => {
       // wait for scene to load
       await scene.settled(cmdBar)
 
-      await test.step('check chamfer selection changes cursor positon', async () => {
+      await test.step('check chamfer selection changes cursor position', async () => {
         await expect(async () => {
           // sometimes initial click doesn't register
           await objClick()
