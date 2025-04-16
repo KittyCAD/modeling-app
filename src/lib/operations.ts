@@ -17,7 +17,10 @@ import type {
   ModelingCommandSchema,
 } from '@src/lib/commandBarConfigs/modelingCommandConfig'
 import type { KclExpression } from '@src/lib/commandTypes'
-import { stringToKclExpression } from '@src/lib/kclHelpers'
+import {
+  stringToKclExpression,
+  retrieveArgFromPipedCallExpression,
+} from '@src/lib/kclHelpers'
 import { isDefaultPlaneStr } from '@src/lib/planes'
 import type { Selection, Selections } from '@src/lib/selections'
 import { codeManager, kclManager, rustContext } from '@src/lib/singletons'
@@ -1333,21 +1336,11 @@ export async function enterAppearanceFlow({
 export async function enterTranslateFlow({
   operation,
 }: EnterEditFlowProps): Promise<Error | CommandBarMachineEvent> {
-  if (
-    operation.type !== 'KclStdLibCall' &&
-    operation.type !== 'StdLibCall' &&
-    operation.type !== 'GroupBegin'
-  ) {
-    return new Error(
-      'Unsupported operation type. Please edit in the code editor.'
-    )
-  }
-
-  if (
-    operation.type !== 'GroupBegin' &&
-    stdLibMap[operation.name] &&
-    !stdLibMap[operation.name].supportsTransform
-  ) {
+  const isModuleImport = operation.type === 'GroupBegin'
+  const isSupportedStdLibCall =
+    (operation.type === 'KclStdLibCall' || operation.type === 'StdLibCall') &&
+    stdLibMap[operation.name]?.supportsTransform
+  if (!isModuleImport && !isSupportedStdLibCall) {
     return new Error(
       'Unsupported operation type. Please edit in the code editor.'
     )
@@ -1357,8 +1350,6 @@ export async function enterTranslateFlow({
     kclManager.ast,
     sourceRangeFromRust(operation.sourceRange)
   )
-
-  // TODO: clean up this extreme verbosity
   let x: KclExpression | undefined = undefined
   let y: KclExpression | undefined = undefined
   let z: KclExpression | undefined = undefined
@@ -1372,73 +1363,15 @@ export async function enterTranslateFlow({
       (n) => n.type === 'CallExpressionKw' && n.callee.name.name === 'translate'
     )
     if (translate?.type === 'CallExpressionKw') {
-      const xArg = translate.arguments.find(
-        (a) => a.label.type === 'Identifier' && a.label.name === 'x'
-      )
-      if (
-        xArg?.type === 'LabeledArg' &&
-        (xArg.arg.type === 'Name' || xArg.arg.type === 'Literal')
-      ) {
-        const value =
-          xArg.arg.type === 'Name' ? xArg.arg.name.name : xArg.arg.raw
-        const result = await stringToKclExpression(value)
-        if (!(err(result) || 'errors' in result)) {
-          x = result
-        }
-      }
-
-      const yArg = translate.arguments.find(
-        (a) => a.label.type === 'Identifier' && a.label.name === 'y'
-      )
-      if (
-        yArg?.type === 'LabeledArg' &&
-        (yArg.arg.type === 'Name' || yArg.arg.type === 'Literal')
-      ) {
-        const value =
-          yArg.arg.type === 'Name' ? yArg.arg.name.name : yArg.arg.raw
-        const result = await stringToKclExpression(value)
-        if (!(err(result) || 'errors' in result)) {
-          y = result
-        }
-      }
-
-      const zArg = translate.arguments.find(
-        (a) => a.label.type === 'Identifier' && a.label.name === 'z'
-      )
-      if (
-        zArg?.type === 'LabeledArg' &&
-        (zArg.arg.type === 'Name' || zArg.arg.type === 'Literal')
-      ) {
-        const value =
-          zArg.arg.type === 'Name' ? zArg.arg.name.name : zArg.arg.raw
-        const result = await stringToKclExpression(value)
-        if (!(err(result) || 'errors' in result)) {
-          z = result
-        }
-      }
+      x = await retrieveArgFromPipedCallExpression(translate, 'x')
+      y = await retrieveArgFromPipedCallExpression(translate, 'y')
+      z = await retrieveArgFromPipedCallExpression(translate, 'z')
     }
   }
 
-  // Doesn't matter here, selection is really for point-and-click selection
-  const selection: Selections = {
-    graphSelections: [
-      {
-        codeRef: {
-          range: operation.sourceRange,
-          pathToNode: nodeToEdit,
-        },
-      },
-    ],
-    otherSelections: [],
-  }
-
-  const argDefaultValues = {
-    nodeToEdit,
-    selection,
-    x,
-    y,
-    z,
-  }
+  // Won't be used since we provide nodeToEdit
+  const selection: Selections = { graphSelections: [], otherSelections: [] }
+  const argDefaultValues = { nodeToEdit, selection, x, y, z }
   return {
     type: 'Find and select command',
     data: {
@@ -1452,21 +1385,11 @@ export async function enterTranslateFlow({
 export async function enterRotateFlow({
   operation,
 }: EnterEditFlowProps): Promise<Error | CommandBarMachineEvent> {
-  if (
-    operation.type !== 'KclStdLibCall' &&
-    operation.type !== 'StdLibCall' &&
-    operation.type !== 'GroupBegin'
-  ) {
-    return new Error(
-      'Unsupported operation type. Please edit in the code editor.'
-    )
-  }
-
-  if (
-    operation.type !== 'GroupBegin' &&
-    stdLibMap[operation.name] &&
-    !stdLibMap[operation.name].supportsTransform
-  ) {
+  const isModuleImport = operation.type === 'GroupBegin'
+  const isSupportedStdLibCall =
+    (operation.type === 'KclStdLibCall' || operation.type === 'StdLibCall') &&
+    stdLibMap[operation.name]?.supportsTransform
+  if (!isModuleImport && !isSupportedStdLibCall) {
     return new Error(
       'Unsupported operation type. Please edit in the code editor.'
     )
@@ -1476,8 +1399,6 @@ export async function enterRotateFlow({
     kclManager.ast,
     sourceRangeFromRust(operation.sourceRange)
   )
-
-  // TODO: clean up this extreme verbosity
   let roll: KclExpression | undefined = undefined
   let pitch: KclExpression | undefined = undefined
   let yaw: KclExpression | undefined = undefined
@@ -1491,75 +1412,15 @@ export async function enterRotateFlow({
       (n) => n.type === 'CallExpressionKw' && n.callee.name.name === 'rotate'
     )
     if (rotate?.type === 'CallExpressionKw') {
-      const rollArg = rotate.arguments.find(
-        (a) => a.label.type === 'Identifier' && a.label.name === 'roll'
-      )
-      if (
-        rollArg?.type === 'LabeledArg' &&
-        (rollArg.arg.type === 'Name' || rollArg.arg.type === 'Literal')
-      ) {
-        const value =
-          rollArg.arg.type === 'Name' ? rollArg.arg.name.name : rollArg.arg.raw
-        const result = await stringToKclExpression(value)
-        if (!(err(result) || 'errors' in result)) {
-          roll = result
-        }
-      }
-
-      const pitchArg = rotate.arguments.find(
-        (a) => a.label.type === 'Identifier' && a.label.name === 'pitch'
-      )
-      if (
-        pitchArg?.type === 'LabeledArg' &&
-        (pitchArg.arg.type === 'Name' || pitchArg.arg.type === 'Literal')
-      ) {
-        const value =
-          pitchArg.arg.type === 'Name'
-            ? pitchArg.arg.name.name
-            : pitchArg.arg.raw
-        const result = await stringToKclExpression(value)
-        if (!(err(result) || 'errors' in result)) {
-          pitch = result
-        }
-      }
-
-      const yawArg = rotate.arguments.find(
-        (a) => a.label.type === 'Identifier' && a.label.name === 'yaw'
-      )
-      if (
-        yawArg?.type === 'LabeledArg' &&
-        (yawArg.arg.type === 'Name' || yawArg.arg.type === 'Literal')
-      ) {
-        const value =
-          yawArg.arg.type === 'Name' ? yawArg.arg.name.name : yawArg.arg.raw
-        const result = await stringToKclExpression(value)
-        if (!(err(result) || 'errors' in result)) {
-          yaw = result
-        }
-      }
+      roll = await retrieveArgFromPipedCallExpression(rotate, 'roll')
+      pitch = await retrieveArgFromPipedCallExpression(rotate, 'pitch')
+      yaw = await retrieveArgFromPipedCallExpression(rotate, 'yaw')
     }
   }
 
-  // Doesn't matter here, selection is really for point-and-click selection
-  const selection: Selections = {
-    graphSelections: [
-      {
-        codeRef: {
-          range: operation.sourceRange,
-          pathToNode: nodeToEdit,
-        },
-      },
-    ],
-    otherSelections: [],
-  }
-
-  const argDefaultValues = {
-    nodeToEdit,
-    selection,
-    roll,
-    pitch,
-    yaw,
-  }
+  // Won't be used since we provide nodeToEdit
+  const selection: Selections = { graphSelections: [], otherSelections: [] }
+  const argDefaultValues = { nodeToEdit, selection, roll, pitch, yaw }
   return {
     type: 'Find and select command',
     data: {

@@ -1112,7 +1112,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           'Path to the node in the AST to edit. Never shown to the user.',
         skip: true,
         inputType: 'text',
-        required: false,
+        required: true,
         hidden: true,
       },
       selection: {

@@ -2664,7 +2664,7 @@ export const modelingMachine = setup({
         const { x, y, z, nodeToEdit, selection } = input
         let pathToNode = nodeToEdit
         if (!(pathToNode && typeof pathToNode[1][0] === 'number')) {
-          if (selection.graphSelections[0].codeRef.pathToNode) {
+          if (selection?.graphSelections[0].codeRef.pathToNode) {
             pathToNode = getNodePathFromSourceRange(
               ast,
               selection.graphSelections[0]?.codeRef.range
@@ -2714,7 +2714,7 @@ export const modelingMachine = setup({
         const { roll, pitch, yaw, nodeToEdit, selection } = input
         let pathToNode = nodeToEdit
         if (!(pathToNode && typeof pathToNode[1][0] === 'number')) {
-          if (selection.graphSelections[0].codeRef.pathToNode) {
+          if (selection?.graphSelections[0].codeRef.pathToNode) {
             pathToNode = getNodePathFromSourceRange(
               ast,
               selection.graphSelections[0]?.codeRef.range
