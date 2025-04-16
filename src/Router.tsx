@@ -49,6 +49,8 @@ const router = createRouter([
   {
     id: PATHS.INDEX,
     element: <RootLayout />,
+    // Gotcha: declaring errorElement on the root will unmount the element causing our forever React components to unmount.
+    // Leave errorElement on the child components, this allows for the entire react context on error pages as well.
     children: [
       {
         path: PATHS.INDEX,
