@@ -217,25 +217,32 @@ export const engineStreamMachine = setup({
           ],
         },
         [EngineStreamTransition.StartOrReconfigureEngine]: {
-          target: EngineStreamState.On,
+          target: EngineStreamState.WaitingToStartVideo,
         },
       },
     },
-    [EngineStreamState.On]: {
+    [EngineStreamState.WaitingToStartVideo]: {
       reenter: true,
-      invoke: {
-        src: EngineStreamTransition.StartOrReconfigureEngine,
-        input: (args) => args,
-      },
       on: {
-        // Transition requested by engineConnection
         [EngineStreamTransition.SetMediaStream]: {
-          target: EngineStreamState.On,
+          target: EngineStreamState.WaitingToStartVideo,
           actions: [
             assign({ mediaStream: ({ context, event }) => event.mediaStream }),
           ],
         },
-        [EngineStreamTransition.Play]: {
+        [EngineStreamTransition.SetVideoRef]: {
+          target: EngineStreamState.WaitingToStartVideo,
+          actions: [
+            assign({ videoRef: ({ context, event }) => event.videoRef }),
+          ],
+        },
+        [EngineStreamTransition.SetCanvasRef]: {
+          target: EngineStreamState.WaitingToStartVideo,
+          actions: [
+            assign({ canvasRef: ({ context, event }) => event.canvasRef }),
+          ],
+        },
+        [EngineStreamTransition.PlayVideo]: {
           target: EngineStreamState.Playing,
           actions: [assign({ zoomToFit: () => true })],
         },

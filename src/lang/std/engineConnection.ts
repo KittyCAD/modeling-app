@@ -208,6 +208,9 @@ export enum EngineConnectionEvents {
   // We can eventually use it for more, but one step at a time.
   ConnectionStateChanged = 'connection-state-changed', // (state: EngineConnectionState) => void
 
+  // There are various failure scenarios where we want to try a restart.
+  RestartRequest = 'restart-request',
+
   // These are used for the EngineCommandManager and were created
   // before onConnectionStateChange existed.
   ConnectionStarted = 'connection-started', // (engineConnection: EngineConnection) => void
@@ -243,6 +246,22 @@ class EngineConnection extends EventTarget {
   sdpAnswer?: RTCSessionDescriptionInit
   triggeredStart = false
 
+  onWebSocketOpen = function (event: Event) {}
+  onWebSocketClose = function (event: Event) {}
+  onWebSocketError = function (event: Event) {}
+  onWebSocketMessage = function (event: MessageEvent) {}
+  onIceGatheringStateChange = function (
+    this: RTCPeerConnection,
+    event: Event
+  ) {}
+  onIceConnectionStateChange = function (
+    this: RTCPeerConnection,
+    event: Event
+  ) {}
+  onNegotiationNeeded = function (
+    this: RTCPeerConnection,
+    event: Event
+  ) {}
   onIceCandidate = function (
     this: RTCPeerConnection,
     event: RTCPeerConnectionIceEvent
@@ -252,6 +271,9 @@ class EngineConnection extends EventTarget {
     event: RTCPeerConnectionIceErrorEvent
   ) {}
   onConnectionStateChange = function (this: RTCPeerConnection, event: Event) {}
+  onSignalingStateChange = function (this: RTCDataChannel, event: Event) {}
+
+  onTrack = function (this: RTCPeerConnection, event: RTCTrackEvent) {}
   onDataChannelOpen = function (this: RTCDataChannel, event: Event) {}
   onDataChannelClose = function (this: RTCDataChannel, event: Event) {}
   onDataChannelError = function (this: RTCDataChannel, event: Event) {}
@@ -260,11 +282,7 @@ class EngineConnection extends EventTarget {
     this: RTCPeerConnection,
     event: RTCDataChannelEvent
   ) {}
-  onTrack = function (this: RTCPeerConnection, event: RTCTrackEvent) {}
-  onWebSocketOpen = function (event: Event) {}
-  onWebSocketClose = function (event: Event) {}
-  onWebSocketError = function (event: Event) {}
-  onWebSocketMessage = function (event: MessageEvent) {}
+
   onNetworkStatusReady = () => {}
 
   private _state: EngineConnectionState = {
@@ -389,7 +407,7 @@ class EngineConnection extends EventTarget {
     this.tearDown = () => {}
     this.websocket.addEventListener('open', this.onWebSocketOpen)
 
-    this.websocket?.addEventListener('message', ((event: MessageEvent) => {
+    this.onWebSocketMessage = (event: MessageEvent) => {
       const message: Models['WebSocketResponse_type'] = JSON.parse(event.data)
       const pending =
         this.engineCommandManager.pendingCommands[message.request_id || '']
@@ -460,7 +478,8 @@ class EngineConnection extends EventTarget {
 
       pending.resolve([message])
       delete this.engineCommandManager.pendingCommands[message.request_id || '']
-    }) as EventListener)
+    }
+    this.websocket?.addEventListener('message', this.onWebSocketMessage)
   }
 
   isConnecting() {
@@ -473,7 +492,14 @@ class EngineConnection extends EventTarget {
 
   tearDown(opts?: { idleMode: boolean }) {
     this.idleMode = opts?.idleMode ?? false
+
     clearInterval(this.pingIntervalId)
+    clearTimeout(this.timeoutToForceConnectId)
+
+    // As each network connection (websocket, webrtc, peer connection) is
+    // closed, they will handle removing their own event listeners.
+    // If they didn't then it'd be possible we stop listened to close events
+    // which is what we want to do in the first place :)
 
     this.disconnectAll()
 
@@ -485,6 +511,7 @@ class EngineConnection extends EventTarget {
         },
       }
     }
+
     // Pass the state along
     if (this.state.type === EngineConnectionStateType.Disconnecting) return
     if (this.state.type === EngineConnectionStateType.Disconnected) return
@@ -618,30 +645,30 @@ class EngineConnection extends EventTarget {
           }, 3000)
         }
         this.pc?.addEventListener?.('icecandidate', this.onIceCandidate)
-        this.pc?.addEventListener?.(
-          'icegatheringstatechange',
-          function (_event) {
-            console.log('icegatheringstatechange', this.iceGatheringState)
 
-            if (this.iceGatheringState !== 'complete') return
-            that.initiateConnectionExclusive()
-          }
-        )
+        // Watch out human! The names of the next couple events are really similar!
+        this.onIceGatheringStateChange = (event) => {
+          console.log('icegatheringstatechange', event)
 
-        this.pc?.addEventListener?.(
-          'iceconnectionstatechange',
-          function (_event) {
-            console.log('iceconnectionstatechange', this.iceConnectionState)
-            console.log('iceconnectionstatechange', this.iceGatheringState)
-          }
-        )
-        this.pc?.addEventListener?.('negotiationneeded', function (_event) {
-          console.log('negotiationneeded', this.iceConnectionState)
-          console.log('negotiationneeded', this.iceGatheringState)
-        })
-        this.pc?.addEventListener?.('signalingstatechange', function (event) {
-          console.log('signalingstatechange', this.signalingState)
-        })
+          if (this.iceGatheringState !== 'complete') return
+          that.initiateConnectionExclusive()
+        }
+        this.pc?.addEventListener?.('icegatheringstatechange', this.onIceGatheringStateChange)
+
+        this.onIceConnectionStateChange = (event: Event) => {
+          console.log('iceconnectionstatechange', event)
+        }
+        this.pc?.addEventListener?.('iceconnectionstatechange', this.onIceConnectionStateChange)
+
+        this.onNegotiationNeeded = (event: Event) => {
+          console.log('negotiationneeded', event)
+        }
+        this.pc?.addEventListener?.('negotiationneeded', this.onNegotiationNeeded)
+
+        this.onSignalingStateChange = (event) => {
+          console.log('signalingstatechange', event)
+        }
+        this.pc?.addEventListener?.('signalingstatechange', this.onSignalingStateChange)
 
         this.onIceCandidateError = (_event: Event) => {
           const event = _event as RTCPeerConnectionIceErrorEvent
@@ -668,38 +695,12 @@ class EngineConnection extends EventTarget {
                   detail: { conn: this, mediaStream: this.mediaStream! },
                 })
               )
-
-              setTimeout(() => {
-                // Everything is now connected.
-                this.state = {
-                  type: EngineConnectionStateType.ConnectionEstablished,
-                }
-
-                this.engineCommandManager.inSequence = 1
-
-                this.dispatchEvent(
-                  new CustomEvent(EngineConnectionEvents.Opened, {
-                    detail: this,
-                  })
-                )
-                markOnce('code/endInitialEngineConnect')
-              }, 2000)
               break
+
             case 'connecting':
               break
-            case 'disconnected':
-            case 'failed':
-              this.pc?.removeEventListener('icecandidate', this.onIceCandidate)
-              this.pc?.removeEventListener(
-                'icecandidateerror',
-                this.onIceCandidateError
-              )
-              this.pc?.removeEventListener(
-                'connectionstatechange',
-                this.onConnectionStateChange
-              )
-              this.pc?.removeEventListener('track', this.onTrack)
 
+            case 'failed':
               this.state = {
                 type: EngineConnectionStateType.Disconnecting,
                 value: {
@@ -712,6 +713,20 @@ class EngineConnection extends EventTarget {
               }
               this.disconnectAll()
               break
+
+            case 'disconnected':
+            case 'closed':
+              this.pc?.removeEventListener('icecandidate', this.onIceCandidate)
+              this.pc?.removeEventListener('icegatheringstatechange', this.onIceGatheringStateChange)
+              this.pc?.removeEventListener('iceconnectionstatechange', this.onIceConnectionStateChange)
+              this.pc?.removeEventListener('negotiationneeded', this.onNegotiationNeeded)
+              this.pc?.removeEventListener('signalingstatechange', this.onSignalingStateChange)
+              this.pc?.removeEventListener('icecandidateerror', this.onIceCandidateError)
+              this.pc?.removeEventListener( 'connectionstatechange', this.onConnectionStateChange )
+              this.pc?.removeEventListener('track', this.onTrack)
+              this.pc?.removeEventListener('datachannel', this.onDataChannel)
+              break
+
             default:
               break
           }
@@ -785,9 +800,7 @@ class EngineConnection extends EventTarget {
           // The app is eager to use the MediaStream; as soon as onNewTrack is
           // called, the following sequence happens:
           // EngineConnection.onNewTrack -> StoreState.setMediaStream ->
-          // Stream.tsx reacts to mediaStream change, setting a video element.
-          // We wait until connectionstatechange changes to "connected"
-          // to pass it to the rest of the application.
+          // EngineStream.tsx reacts to mediaStream change, setting a video element.
 
           this.mediaStream = mediaStream
         }
@@ -834,7 +847,6 @@ class EngineConnection extends EventTarget {
               'message',
               this.onDataChannelMessage
             )
-            this.pc?.removeEventListener('datachannel', this.onDataChannel)
             this.disconnectAll()
           }
 
@@ -1230,8 +1242,6 @@ class EngineConnection extends EventTarget {
     )
   }
   disconnectAll() {
-    clearTimeout(this.timeoutToForceConnectId)
-
     if (this.websocket?.readyState === 1) {
       this.websocket?.close()
     }
@@ -1260,20 +1270,22 @@ class EngineConnection extends EventTarget {
       !this.websocket ||
       this.websocket?.readyState === 3
 
-    if (closedPc && closedUDC && closedWS) {
-      if (!this.idleMode) {
-        // Do not notify the rest of the program that we have cut off anything.
-        this.state = { type: EngineConnectionStateType.Disconnected }
-      } else {
-        this.state = {
-          type: EngineConnectionStateType.Disconnecting,
-          value: {
-            type: DisconnectingType.Pause,
-          },
-        }
+    if (!(closedPc && closedUDC && closedWS)) { return }
+
+    // Clean up all the event listeners.
+
+    if (!this.idleMode) {
+      // Do not notify the rest of the program that we have cut off anything.
+      this.state = { type: EngineConnectionStateType.Disconnected }
+    } else {
+      this.state = {
+        type: EngineConnectionStateType.Disconnecting,
+        value: {
+          type: DisconnectingType.Pause,
+        },
       }
-      this.triggeredStart = false
     }
+    this.triggeredStart = false
   }
 }
 
@@ -1300,6 +1312,9 @@ export interface Subscription<T extends ModelTypes> {
 export enum EngineCommandManagerEvents {
   // engineConnection is available but scene setup may not have run
   EngineAvailable = 'engine-available',
+
+  // request a restart of engineConnection
+  EngineRestartRequest = 'engine-restart-request',
 
   // the whole scene is ready (settings loaded)
   SceneReady = 'scene-ready',
@@ -1414,6 +1429,13 @@ export class EngineCommandManager extends EventTarget {
   // The current "manufacturing machine" aka 3D printer, CNC, etc.
   public machineManager: MachineManager | null = null
 
+  // Dispatch to the application the engine needs a restart.
+  private onEngineConnectionRestartRequest = () => {
+    this.dispatchEvent(
+      new CustomEvent(EngineCommandManagerEvents.EngineRestartRequest, {})
+    )
+  }
+
   start({
     setMediaStream,
     setIsStreamReady,
@@ -1478,6 +1500,11 @@ export class EngineCommandManager extends EventTarget {
       new CustomEvent(EngineCommandManagerEvents.EngineAvailable, {
         detail: this.engineConnection,
       })
+    )
+
+    this.engineConnection.addEventListener(
+      EngineConnectionEvents.RestartRequest,
+      this.onEngineConnectionRestartRequest as EventListener
     )
 
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
@@ -1709,7 +1736,15 @@ export class EngineCommandManager extends EventTarget {
       }) as EventListener)
 
       this.onVideoTrackMute = () => {
-        console.error('video track mute: check webrtc internals -> inbound rtp')
+        console.error('video track mute - potentially lost stream for a moment')
+
+        // FIRST: The sequence of events is the following:
+        // engineConnection fires RestartRequest
+        // engineCommandManager fires EngineRestartRequest
+        // EngineStream sends request to restart to engineStreamActor
+        this.engineConnection?.dispatchEvent(
+          new CustomEvent(EngineConnectionEvents.RestartRequest, {})
+        )
       }
 
       this.onEngineConnectionNewTrack = ({

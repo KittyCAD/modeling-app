@@ -1,3 +1,4 @@
+import { markOnce } from '@src/lib/performance'
 import { useAppState } from '@src/AppState'
 import { ClientSideScene } from '@src/clientSideScene/ClientSideSceneComp'
 import { ViewControlContextMenu } from '@src/components/ViewControlMenu'
@@ -5,7 +6,7 @@ import { useModelingContext } from '@src/hooks/useModelingContext'
 import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
 import { getArtifactOfTypes } from '@src/lang/std/artifactGraph'
-import { EngineCommandManagerEvents } from '@src/lang/std/engineConnection'
+import { EngineCommandManagerEvents, EngineConnectionEvents, EngineConnectionStateType } from '@src/lang/std/engineConnection'
 import { btnName } from '@src/lib/cameraControls'
 import { PATHS } from '@src/lib/paths'
 import { sendSelectEventToEngine } from '@src/lib/selections'
@@ -36,16 +37,25 @@ export const EngineStream = (props: {
   authToken: string | undefined
 }) => {
   const { setAppState } = useAppState()
-  const [firstPlay, setFirstPlay] = useState(true)
-
-  const { overallState } = useNetworkContext()
   const settings = useSettings()
-
-  const engineStreamState = useSelector(engineStreamActor, (state) => state)
-
+  const { state: modelingMachineState, send: modelingMachineActorSend } =
+    useModelingContext()
+  const commandBarState = useCommandBarState()
   const { file } = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
   const last = useRef<number>(Date.now())
+
+  const [firstPlay, setFirstPlay] = useState(true)
+  const [attemptTimes, setAttemptTimes] = useState<[number, number]>([0, 1000])
+
+  // These will be passed to the engineStreamActor to handle.
+  const videoRef = useRef<HTMLVideoElement>(null)
+  const canvasRef = useRef<HTMLVideoElement>(null)
+
+  // For attaching right-click menu events
   const videoWrapperRef = useRef<HTMLDivElement>(null)
+
+  const { overallState } = useNetworkContext()
+  const engineStreamState = useSelector(engineStreamActor, (state) => state)
 
   const settingsEngine = {
     theme: settings.app.theme.current,
@@ -55,12 +65,12 @@ export const EngineStream = (props: {
     cameraProjection: settings.modeling.cameraProjection.current,
   }
 
-  const { state: modelingMachineState, send: modelingMachineActorSend } =
-    useModelingContext()
-
-  const commandBarState = useCommandBarState()
-
   const streamIdleMode = settings.app.streamIdleMode.current
+
+  useEffect(() => {
+    engineStreamActor.send({ type: SetVideoRef, videoRef })
+    engineStreamActor.send({ type: SetCanvasRef, canvasRef })
+  }, [videoRef.current, canvasRef.current])
 
   const startOrReconfigureEngine = () => {
     engineStreamActor.send({
@@ -68,8 +78,6 @@ export const EngineStream = (props: {
       modelingMachineActorSend,
       settings: settingsEngine,
       setAppState,
-
-      // It's possible a reconnect happens as we drag the window :')
       onMediaStream(mediaStream: MediaStream) {
         engineStreamActor.send({
           type: EngineStreamTransition.SetMediaStream,
@@ -88,8 +96,12 @@ export const EngineStream = (props: {
     const kmp = kclManager.executeCode().catch(trap)
 
     if (!firstPlay) return
+
     setFirstPlay(false)
-    console.log('scene is ready, fire!')
+    // Reset the restart timeouts
+    setAttemptTimes([0, 1000])
+
+    console.log('scene is ready, execute kcl')
 
     kmp
       .then(() =>
@@ -123,12 +135,26 @@ export const EngineStream = (props: {
     }
   }, [firstPlay])
 
+  // We do a back-off restart, using a fibonacci sequence, since it
+  // has a nice retry time curve (somewhat quick then exponential)
+  const restart = () => {
+    setTimeout(() => {
+      setFirstPlay(false)
+      setAttemptTimes([attemptTimes[1], attemptTimes[0] + attemptTimes[1]])
+      engineCommandManager.tearDown()
+      startOrReconfigureEngine()
+    }, attemptTimes[0] + attemptTimes[1])
+  }
+
   useEffect(() => {
     engineCommandManager.addEventListener(
       EngineCommandManagerEvents.SceneReady,
       play
     )
-
+    engineCommandManager.addEventListener(
+      EngineCommandManagerEvents.EngineRestartRequest,
+      restart
+    )
     engineStreamActor.send({
       type: EngineStreamTransition.SetPool,
       data: { pool: props.pool },
@@ -139,7 +165,7 @@ export const EngineStream = (props: {
     })
 
     return () => {
-      engineCommandManager.tearDown()
+      engineStreamActor.send({ type: EngineStreamTransition.Pause })
     }
   }, [])
 
@@ -150,12 +176,36 @@ export const EngineStream = (props: {
     if (!videoRef) {
       return
     }
-    const play = () => {
+
+    const onCanPlay = () => {
       videoRef.play().catch(console.error)
     }
-    videoRef.addEventListener('canplay', play)
+
+    // I (lee) believe that the engine handles serving video first better
+    // than receiving commands when it's expected to. Only when the
+    // browser reports we're receiving video do we trigger KCL execution.
+    const onPlay = () => {
+      if (!engineCommandManager.engineConnection) { return }
+
+      engineCommandManager.engineConnection.state = {
+        type: EngineConnectionStateType.ConnectionEstablished,
+      }
+
+      engineCommandManager.inSequence = 1
+
+      engineCommandManager.engineConnection.dispatchEvent(
+        new CustomEvent(EngineConnectionEvents.Opened, {
+          detail: engineCommandManager.engineConnection,
+        })
+      )
+      markOnce('code/endInitialEngineConnect')
+    }
+
+    videoRef.addEventListener('canplay', onCanPlay)
+    videoRef.addEventListener('play', onPlay)
     return () => {
-      videoRef.removeEventListener('canplay', play)
+      videoRef.removeEventListener('canplay', onCanPlay)
+      videoRef.removeEventListener('play', onPlay)
     }
   }, [engineStreamState.context.videoRef.current])
 
@@ -184,19 +234,6 @@ export const EngineStream = (props: {
       })
     }).observe(document.body)
   }, [engineStreamState.value])
-
-  // When the video and canvas element references are set, start the engine.
-  useEffect(() => {
-    if (
-      engineStreamState.context.canvasRef.current &&
-      engineStreamState.context.videoRef.current
-    ) {
-      startOrReconfigureEngine()
-    }
-  }, [
-    engineStreamState.context.canvasRef.current,
-    engineStreamState.context.videoRef.current,
-  ])
 
   // On settings change, reconfigure the engine. When paused this gets really tricky,
   // and also requires onMediaStream to be set!
@@ -402,7 +439,7 @@ export const EngineStream = (props: {
         autoPlay
         muted
         key={engineStreamActor.id + 'video'}
-        ref={engineStreamState.context.videoRef}
+        ref={videoRef}
         controls={false}
         className="w-full cursor-pointer h-full"
         disablePictureInPicture
@@ -410,7 +447,7 @@ export const EngineStream = (props: {
       />
       <canvas
         key={engineStreamActor.id + 'canvas'}
-        ref={engineStreamState.context.canvasRef}
+        ref={canvasRef}
         className="cursor-pointer"
         id="freeze-frame"
       >
