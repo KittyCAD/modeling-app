@@ -928,7 +928,9 @@ profile001 = startProfileAt([${roundOff(scale * 69.6)}, ${roundOff(
 
       await page.mouse.move(pointA[0] - 12, pointA[1] + 12, { steps: 10 })
       const pointNotQuiteA = [pointA[0] - 7, pointA[1] + 7]
-      await page.mouse.move(pointNotQuiteA[0], pointNotQuiteA[1], { steps: 10 })
+      await page.mouse.move(pointNotQuiteA[0], pointNotQuiteA[1], {
+        steps: 10,
+      })
 
       await page.mouse.click(pointNotQuiteA[0], pointNotQuiteA[1], {
         delay: 200,
@@ -3049,10 +3051,8 @@ test.describe('manual edits during sketch mode', () => {
     sketch002 = startSketchOn(extrude001, face = seg01)
     profile002 = startProfileAt([83.39, 329.15], sketch002)
       |> angledLine(angle = 0, length = 119.61, tag = $rectangleSegmentA001)
-      |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 156.54, angle = -28)
+      |> angledLine(length = 156.54, angle = -28)
       |> angledLine(
-          angle = segAng(rectangleSegmentA001),
-          length = -segLen(rectangleSegmentA001),
           angle = -151,
           length = 116.27,
         )
@@ -3167,12 +3167,10 @@ test.describe('manual edits during sketch mode', () => {
     sketch002 = startSketchOn(extrude001, face = seg01)
     profile002 = startProfileAt([83.39, 329.15], sketch002)
       |> angledLine(angle = 0, length = 119.61, tag = $rectangleSegmentA001)
-      |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 219.2, angle = -56)
+      |> angledLine(length = 219.2, angle = -56)
       |> angledLine(
-          angle = segAng(rectangleSegmentA001),
-          length = -segLen(rectangleSegmentA001),
           angle = -151,
-          length = 116.27,
+          length = 116.27
         )
       |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
       |> close()
@@ -3211,10 +3209,8 @@ test.describe('manual edits during sketch mode', () => {
     sketch002 = startSketchOn(extrude001, face = seg01)
     profile002 = startProfileAt([83.39, 329.15], sketch002)
       |> angledLine(angle = 0, length = 119.61, tag = $rectangleSegmentA001)
-      |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 156.54, angle = -28)
+      |> angledLine(length = 156.54, angle = -28)
       |> angledLine(
-           angle = segAng(rectangleSegmentA001),
-           length = -segLen(rectangleSegmentA001),
            angle = -151,
            length = 116.27,
          )
