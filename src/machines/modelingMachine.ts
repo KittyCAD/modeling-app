@@ -1309,7 +1309,10 @@ export const modelingMachine = setup({
     'Restore default plane visibility': assign(({ context }) => {
       for (const planeKey in context.savedDefaultPlaneVisibility) {
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        kclManager.setPlaneHidden(planeKey, !context.savedDefaultPlaneVisibility[planeKey])
+        kclManager.setPlaneHidden(
+          planeKey,
+          !context.savedDefaultPlaneVisibility[planeKey]
+        )
       }
 
       return {
@@ -3009,8 +3012,8 @@ export const modelingMachine = setup({
             'Restore default plane visibility',
             'reset camera position',
             'set selection filter to curves only',
-          ]
-        }
+          ],
+        },
       },
 
       entry: [
@@ -3018,7 +3021,7 @@ export const modelingMachine = setup({
         'Restore default plane visibility',
         'reset camera position',
         'set selection filter to curves only',
-      ]
+      ],
     },
 
     Sketch: {

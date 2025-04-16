@@ -709,7 +709,8 @@ export class KclManager {
   }
 
   setPlaneHidden(planeKey: string, hidden: boolean) {
-    const planeId = this.defaultPlanes?.[planeKey as keyof typeof this.defaultPlanes]
+    const planeId =
+      this.defaultPlanes?.[planeKey as keyof typeof this.defaultPlanes]
     if (!planeId) {
       reportError(new Error(`Plane ${planeKey} not found`))
       return
