@@ -35,16 +35,47 @@ const electronZooInstance = new ElectronZoo()
 const playwrightTestFnWithFixtures_ = playwrightTestFn.extend<{
   tronApp?: ElectronZoo
 }>({
-  tronApp: async ({}, use, testInfo) => {
+  tronApp: [async ({}, use, testInfo) => {
     if (process.env.PLATFORM === 'web') {
       await use(undefined)
       return
     }
 
-    await electronZooInstance.createInstanceIfMissing(testInfo)
-    await use(electronZooInstance)
-    await electronZooInstance.makeAvailableAgain()
-  },
+    // Create a single timeout for the entire tronApp setup process
+    // This will ensure tests fail faster if there's an issue with setup
+    // instead of waiting for the full global timeout (120s)
+    const setupTimeout = 30000 // 30 seconds timeout
+    let timeoutId: NodeJS.Timeout | undefined
+    
+    const setupPromise = new Promise<void>((resolve, reject) => {
+      timeoutId = setTimeout(() => {
+        reject(new Error(`tronApp setup timed out after ${setupTimeout}ms`))
+      }, setupTimeout)
+      
+      // Execute the async setup in a separate function
+      const doSetup = async () => {
+        try {
+          await electronZooInstance.createInstanceIfMissing(testInfo)
+          resolve()
+        } catch (error) {
+          reject(error)
+        }
+      }
+      
+      // Start the setup process
+      void doSetup()
+    })
+    
+    try {
+      await setupPromise
+      if (timeoutId) clearTimeout(timeoutId)
+      await use(electronZooInstance)
+      await electronZooInstance.makeAvailableAgain()
+    } catch (error) {
+      if (timeoutId) clearTimeout(timeoutId)
+      throw error
+    }
+  }, { timeout: 30_000 }], // Set fixture-level timeout to 60s as a fallback
 })
 
 const test = playwrightTestFnWithFixtures_.extend<Fixtures>(
