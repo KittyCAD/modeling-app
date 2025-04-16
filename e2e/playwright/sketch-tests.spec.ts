@@ -3350,7 +3350,21 @@ test.describe('manual edits during sketch mode', () => {
         // this checks sketch segments have been drawn
         await verifyArrowHeadColor(arrowHeadWhite)
       })
-      await page.waitForTimeout(100)
+
+      await test.step('make a change to the code and expect pixel color to change', async () => {
+        // defends against a regression where sketch would duplicate in the scene
+        // https://github.com/KittyCAD/modeling-app/issues/6345
+        await editor.replaceCode(
+          'startProfileAt([75.8, 317.2',
+          'startProfileAt([75.8, 217.2'
+        )
+        // expect not white anymore
+        await scene.expectPixelColorNotToBe(
+          TEST_COLORS.WHITE,
+          arrowHeadLocation,
+          15
+        )
+      })
     }
   )
 })
