@@ -224,9 +224,6 @@ const Home = () => {
                     data: {
                       groupId: 'projects',
                       name: 'Create project',
-                      argDefaultValues: {
-                        name: settings.projects.defaultProjectName.current,
-                      },
                     },
                   })
                 }

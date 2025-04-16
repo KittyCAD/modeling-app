@@ -7,7 +7,10 @@ import {
   useRequestedFileName,
   useRequestedProjectName,
 } from '@src/machines/systemIO/hooks'
-import {folderSnapshot} from '@src/machines/systemIO/snapshotContext'
+import {
+  folderSnapshot,
+  defaultProjectFolderNameSnapshot,
+} from '@src/machines/systemIO/snapshotContext'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -23,15 +26,18 @@ export function SystemIOMachineLogicListener() {
   const settings = useSettings()
 
   const openProjectCommand: Command = {
+    icon: 'arrowRight',
     name: 'Open projecct',
     displayName: `Open project`,
-    description:
-    'Open a project',
+    description: 'Open a project',
     groupId: 'projects',
     needsReview: false,
     onSubmit: (record) => {
       if (record) {
-        systemIOActor.send({type:SystemIOMachineEvents.navigateToProject,data:{requestedProjectName: record.name}})
+        systemIOActor.send({
+          type: SystemIOMachineEvents.navigateToProject,
+          data: { requestedProjectName: record.name },
+        })
       }
     },
     args: {
@@ -41,22 +47,45 @@ export function SystemIOMachineLogicListener() {
         options: () => {
           const folders = folderSnapshot()
           const options: CommandArgumentOption<any>[] = []
-          folders.forEach((folder)=>{
+          folders.forEach((folder) => {
             options.push({
               name: folder.name,
               value: folder.name,
-              isCurrent: false
+              isCurrent: false,
             })
           })
           return options
-        } ,
+        },
       },
-  }}
+    },
+  }
+
+  const createProjectCommand: Command = {
+    icon: 'folder',
+    name: 'Create project',
+    displayName: `Create project`,
+    description: 'Create a project',
+    groupId: 'projects',
+    needsReview: false,
+    onSubmit: (record) => {
+      if (record) {
+        systemIOActor.send({
+          type: SystemIOMachineEvents.createProject,
+          data: { requestedProjectName: record.name },
+        })
+      }
+    },
+    args: {
+      name: {
+        required: true,
+        inputType: 'string',
+        defaultValue: defaultProjectFolderNameSnapshot,
+      },
+    },
+  }
 
   useEffect(() => {
-    const commands = [
-      openProjectCommand,
-    ]
+    const commands = [openProjectCommand, createProjectCommand]
     commandBarActor.send({
       type: 'Add commands',
       data: {
