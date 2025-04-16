@@ -3023,7 +3023,7 @@ test.describe('Redirecting to home page and back to the original file should cle
     await click00r(0, 100)
     await click00r(100, 0)
 
-    // draw a line to opposite tangnet direction of previous arc
+    // draw a line to opposite tangent direction of previous arc
     await toolbar.selectLine()
     await click00r(0, 0)
     await click00r(-200, 200)
@@ -3054,7 +3054,6 @@ test.describe('manual edits during sketch mode', () => {
     scene,
     editor,
     toolbar,
-    cmdBar,
   }) => {
     const initialCode = `myVar1 = 5
     myVar2 = 6
@@ -3088,7 +3087,6 @@ test.describe('manual edits during sketch mode', () => {
 
     await homePage.goToModelingScene()
     await scene.connectionEstablished()
-    await scene.settled(cmdBar)
 
     await test.step('Open feature tree and edit second sketch', async () => {
       await toolbar.openFeatureTreePane()
@@ -3101,8 +3099,8 @@ test.describe('manual edits during sketch mode', () => {
       await page.waitForTimeout(2000) // Wait for deferred execution
     })
 
+    const handle1Location = { x: 843, y: 235 }
     await test.step('Edit sketch by dragging handle', async () => {
-      const handle1Location = { x: 843, y: 235 }
       await editor.expectEditor.toContain('length = 156.54, angle = -28')
       await page.mouse.move(handle1Location.x, handle1Location.y)
       await page.mouse.down()
@@ -3120,8 +3118,8 @@ test.describe('manual edits during sketch mode', () => {
       await page.waitForTimeout(2000) // Wait for deferred execution
     })
 
+    const handle2Location = { x: 872, y: 273 }
     await test.step('Edit sketch again', async () => {
-      const handle2Location = { x: 872, y: 273 }
       await editor.expectEditor.toContain('length = 231.59, angle = -34')
       await page.waitForTimeout(500)
       await page.mouse.move(handle2Location.x, handle2Location.y)
