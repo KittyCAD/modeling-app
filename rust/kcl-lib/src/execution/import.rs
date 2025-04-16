@@ -5,10 +5,8 @@ use kcmc::{
     coord::{System, KITTYCAD},
     each_cmd as mcmd,
     format::InputFormat3d,
-    ok_response::OkModelingCmdResponse,
     shared::FileImportFormat,
     units::UnitLength,
-    websocket::OkWebSocketResponseData,
     ImportFile, ModelingCmd,
 };
 use kittycad_modeling_cmds as kcmc;
@@ -297,23 +295,12 @@ pub async fn send_to_engine(pre: PreImportedGeometry, ctxt: &ExecutorContext) ->
         });
     }
 
-    let resp = ctxt
-        .engine
-        .send_modeling_cmd(pre.id, pre.source_range, &ModelingCmd::from(pre.command.clone()))
+    ctxt.engine
+        .async_modeling_cmd(pre.id, pre.source_range, &ModelingCmd::from(pre.command.clone()))
         .await?;
 
-    let OkWebSocketResponseData::Modeling {
-        modeling_response: OkModelingCmdResponse::ImportFiles(imported_files),
-    } = &resp
-    else {
-        return Err(KclError::Engine(KclErrorDetails {
-            message: format!("ImportFiles response was not as expected: {:?}", resp),
-            source_ranges: vec![pre.source_range],
-        }));
-    };
-
     Ok(ImportedGeometry {
-        id: imported_files.object_id,
+        id: pre.id,
         value: pre.command.files.iter().map(|f| f.path.to_string()).collect(),
         meta: vec![pre.source_range.into()],
     })

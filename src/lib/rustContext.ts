@@ -1,12 +1,16 @@
 import toast from 'react-hot-toast'
 
+import { BSON } from 'bson'
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import type { DefaultPlanes } from '@rust/kcl-lib/bindings/DefaultPlanes'
 import type { KclError as RustKclError } from '@rust/kcl-lib/bindings/KclError'
 import type { OutputFormat3d } from '@rust/kcl-lib/bindings/ModelingCmd'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { Program } from '@rust/kcl-lib/bindings/Program'
-import type { Context } from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
+import type {
+  Context,
+  ResponseContext,
+} from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
 
 import type { EngineCommandManager } from '@src/lang/std/engineConnection'
 import { fileSystemManager } from '@src/lang/std/fileSystemManager'
@@ -24,6 +28,7 @@ import { err, reportRejection } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { getModule } from '@src/lib/wasm_lib_wrapper'
+import type { Models } from '@kittycad/lib/dist/types/src'
 
 export default class RustContext {
   private wasmInitFailed: boolean = true
@@ -31,6 +36,8 @@ export default class RustContext {
   private ctxInstance: Context | null = null
   private _defaultPlanes: DefaultPlanes | null = null
   private engineCommandManager: EngineCommandManager
+
+  responseCtxInstance: ResponseContext | null = null
 
   // Initialize the WASM module
   async ensureWasmInit() {
@@ -58,12 +65,18 @@ export default class RustContext {
   // Create a new context instance
   async create(): Promise<Context> {
     this.rustInstance = getModule()
+
+    // Create the new response context instance.
+    const responseCtxInstance = new this.rustInstance.ResponseContext()
+    this.responseCtxInstance = responseCtxInstance
+
     // We need this await here, DO NOT REMOVE it even if your editor says it's
     // unnecessary. The constructor of the module is async and it will not
     // resolve if you don't await it.
     const ctxInstance = await new this.rustInstance.Context(
       this.engineCommandManager,
-      fileSystemManager
+      fileSystemManager,
+      this.responseCtxInstance
     )
 
     return ctxInstance
@@ -201,6 +214,24 @@ export default class RustContext {
       return key
     }
     return this.defaultPlanes[key]
+  }
+
+  // Send a response back to the rust side, that we got back from the engine.
+  async sendResponse(
+    response: Models['WebSocketResponse_type']
+  ): Promise<void> {
+    const instance = this.responseCtxInstance
+
+    if (!instance) {
+      return
+    }
+
+    try {
+      await instance.sendResponse(BSON.serialize(response))
+    } catch (e: any) {
+      const err = errFromErrWithOutputs(e)
+      return Promise.reject(err)
+    }
   }
 
   // Helper to check if context instance exists

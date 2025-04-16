@@ -76,6 +76,9 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
     /// Get the artifact commands that have accumulated so far.
     fn artifact_commands(&self) -> Arc<RwLock<Vec<ArtifactCommand>>>;
 
+    /// Get the ids of the async commands we are waiting for.
+    fn ids_of_async_commands(&self) -> Arc<RwLock<IndexMap<Uuid, SourceRange>>>;
+
     /// Take the batch of commands that have accumulated so far and clear them.
     async fn take_batch(&self) -> Vec<(WebSocketRequest, SourceRange)> {
         std::mem::take(&mut *self.batch().write().await)
@@ -94,6 +97,11 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
     /// Take the artifact commands that have accumulated so far and clear them.
     async fn take_artifact_commands(&self) -> Vec<ArtifactCommand> {
         std::mem::take(&mut *self.artifact_commands().write().await)
+    }
+
+    /// Take the ids of async commands that have accumulated so far and clear them.
+    async fn take_ids_of_async_commands(&self) -> IndexMap<Uuid, SourceRange> {
+        std::mem::take(&mut *self.ids_of_async_commands().write().await)
     }
 
     /// Take the responses that have accumulated so far and clear them.
@@ -136,7 +144,17 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
     async fn clear_queues(&self) {
         self.batch().write().await.clear();
         self.batch_end().write().await.clear();
+        self.ids_of_async_commands().write().await.clear();
     }
+
+    /// Send a modeling command and do not wait for the response message.
+    async fn inner_fire_modeling_cmd(
+        &self,
+        id: uuid::Uuid,
+        source_range: SourceRange,
+        cmd: WebSocketRequest,
+        id_to_source_range: HashMap<Uuid, SourceRange>,
+    ) -> Result<(), crate::errors::KclError>;
 
     /// Send a modeling command and wait for the response message.
     async fn inner_send_modeling_cmd(
@@ -176,6 +194,41 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
 
         // Do the after clear scene hook.
         self.clear_scene_post_hook(id_generator, source_range).await?;
+
+        Ok(())
+    }
+
+    async fn ensure_async_commands_completed(&self) -> Result<(), KclError> {
+        // Check if all async commands have been completed.
+        let ids = self.take_ids_of_async_commands().await;
+
+        // Try to get them from the responses.
+        for (id, source_range) in ids {
+            let current_time = std::time::Instant::now();
+            let mut found = false;
+            while current_time.elapsed().as_secs() < 60 {
+                let responses = self.responses().read().await.clone();
+                let Some(resp) = responses.get(&id) else {
+                    continue;
+                };
+
+                found = true;
+                // If the response is an error, return it.
+                // Parsing will do that and we can ignore the result, we don't care.
+                self.parse_websocket_response(resp.clone(), source_range)?;
+
+                drop(responses);
+                // Break the loop if we found the response.
+                break;
+            }
+
+            if !found {
+                return Err(KclError::Engine(KclErrorDetails {
+                    message: "async command with timed out".to_string(),
+                    source_ranges: vec![source_range],
+                }));
+            }
+        }
 
         Ok(())
     }
@@ -340,6 +393,32 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
 
         // Flush the batch queue.
         self.run_batch(requests, source_range).await
+    }
+
+    /// Send the modeling cmd async and don't wait for the response.
+    /// Add it to our list of async commands.
+    async fn async_modeling_cmd(
+        &self,
+        id: uuid::Uuid,
+        source_range: SourceRange,
+        cmd: &ModelingCmd,
+    ) -> Result<(), crate::errors::KclError> {
+        // Add the command ID to the list of async commands.
+        self.ids_of_async_commands().write().await.insert(id, source_range);
+
+        // Fire off the command now, but don't wait for the response, we don't care about it.
+        self.inner_send_modeling_cmd(
+            id,
+            source_range,
+            WebSocketRequest::ModelingCmdReq(ModelingCmdReq {
+                cmd: cmd.clone(),
+                cmd_id: id.into(),
+            }),
+            HashMap::from([(id, source_range)]),
+        )
+        .await?;
+
+        Ok(())
     }
 
     /// Run the batch for the specific commands.
