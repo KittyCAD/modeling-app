@@ -430,8 +430,11 @@ export const EngineStream = (props: {
         }
         menuTargetElement={videoWrapperRef}
       />
-      {engineCommandManager.engineConnection?.state.type !==
-        EngineConnectionStateType.ConnectionEstablished && (
+      {[
+        EngineStreamState.Off,
+        EngineStreamState.Reconfiguring,
+        EngineStreamState.WaitForMediaStream,
+      ].some((s) => s === engineStreamState.value) && (
         <Loading dataTestId="loading-engine" className="fixed inset-0">
           Connecting to engine
         </Loading>
