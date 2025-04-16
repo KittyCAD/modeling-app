@@ -63,61 +63,21 @@ description: Result of parsing import_whole.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
-                      "name": "faces",
+                      "name": "z",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
                       "commentStart": 0,
-                      "elements": [
-                        {
-                          "commentStart": 0,
-                          "end": 0,
-                          "raw": "'end'",
-                          "start": 0,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": "end"
-                        }
-                      ],
                       "end": 0,
+                      "raw": "1",
                       "start": 0,
-                      "type": "ArrayExpression",
-                      "type": "ArrayExpression"
-                    }
-                  },
-                  {
-                    "type": "LabeledArg",
-                    "label": {
-                      "commentStart": 0,
-                      "end": 0,
-                      "name": "thickness",
-                      "start": 0,
-                      "type": "Identifier"
-                    },
-                    "arg": {
-                      "abs_path": false,
-                      "commentStart": 0,
-                      "end": 0,
-                      "name": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "name": "thickness",
-                        "start": 0,
-                        "type": "Identifier"
-                      },
-                      "path": [
-                        {
-                          "commentStart": 0,
-                          "end": 0,
-                          "name": "foo",
-                          "start": 0,
-                          "type": "Identifier"
-                        }
-                      ],
-                      "start": 0,
-                      "type": "Name",
-                      "type": "Name"
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 1.0,
+                        "suffix": "None"
+                      }
                     }
                   }
                 ],
@@ -128,7 +88,7 @@ description: Result of parsing import_whole.kcl
                   "name": {
                     "commentStart": 0,
                     "end": 0,
-                    "name": "shell",
+                    "name": "translate",
                     "start": 0,
                     "type": "Identifier"
                   },

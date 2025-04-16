@@ -2,12 +2,12 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Error from executing array_elem_pop_empty_fail.kcl
 ---
-[31mKCL Semantic error[0m
+KCL Semantic error
 
-  [31m×[0m semantic: Cannot pop from an empty array
+  × semantic: Cannot pop from an empty array
    ╭─[2:8]
- [2m1[0m │ arr = []
- [2m2[0m │ fail = pop(arr)
-   · [35;1m       ────┬───[0m
-   ·            [35;1m╰── [35;1mtests/array_elem_pop_empty_fail/input.kcl[0m[0m
+ 1 │ arr = []
+ 2 │ fail = pop(arr)
+   ·        ────┬───
+   ·            ╰── tests/array_elem_pop_empty_fail/input.kcl
    ╰────
