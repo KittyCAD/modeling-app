@@ -1104,7 +1104,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   },
   Rotate: {
     description: 'Set rotation on solid or sketch.',
-    icon: 'angle',
+    icon: 'angle', // TODO: likely not the best icon
     needsReview: true,
     args: {
       nodeToEdit: {
