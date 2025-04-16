@@ -9,8 +9,8 @@ description: Operations executed dodecahedron.kcl
       "type": "FunctionCall",
       "name": "createFaceTemplate",
       "functionSourceRange": [
-        447,
-        874,
+        445,
+        872,
         0
       ],
       "unlabeledArg": null,
@@ -74,8 +74,8 @@ description: Operations executed dodecahedron.kcl
       "type": "FunctionCall",
       "name": "createFaceTemplate",
       "functionSourceRange": [
-        447,
-        874,
+        445,
+        872,
         0
       ],
       "unlabeledArg": null,
@@ -139,8 +139,8 @@ description: Operations executed dodecahedron.kcl
       "type": "FunctionCall",
       "name": "createFaceTemplate",
       "functionSourceRange": [
-        447,
-        874,
+        445,
+        872,
         0
       ],
       "unlabeledArg": null,
@@ -204,8 +204,8 @@ description: Operations executed dodecahedron.kcl
       "type": "FunctionCall",
       "name": "createFaceTemplate",
       "functionSourceRange": [
-        447,
-        874,
+        445,
+        872,
         0
       ],
       "unlabeledArg": null,
@@ -269,8 +269,8 @@ description: Operations executed dodecahedron.kcl
       "type": "FunctionCall",
       "name": "createFaceTemplate",
       "functionSourceRange": [
-        447,
-        874,
+        445,
+        872,
         0
       ],
       "unlabeledArg": null,
@@ -334,8 +334,8 @@ description: Operations executed dodecahedron.kcl
       "type": "FunctionCall",
       "name": "createFaceTemplate",
       "functionSourceRange": [
-        447,
-        874,
+        445,
+        872,
         0
       ],
       "unlabeledArg": null,
@@ -399,8 +399,8 @@ description: Operations executed dodecahedron.kcl
       "type": "FunctionCall",
       "name": "createFaceTemplate",
       "functionSourceRange": [
-        447,
-        874,
+        445,
+        872,
         0
       ],
       "unlabeledArg": null,
@@ -464,8 +464,8 @@ description: Operations executed dodecahedron.kcl
       "type": "FunctionCall",
       "name": "createFaceTemplate",
       "functionSourceRange": [
-        447,
-        874,
+        445,
+        872,
         0
       ],
       "unlabeledArg": null,
@@ -529,8 +529,8 @@ description: Operations executed dodecahedron.kcl
       "type": "FunctionCall",
       "name": "createFaceTemplate",
       "functionSourceRange": [
-        447,
-        874,
+        445,
+        872,
         0
       ],
       "unlabeledArg": null,
@@ -594,8 +594,8 @@ description: Operations executed dodecahedron.kcl
       "type": "FunctionCall",
       "name": "createFaceTemplate",
       "functionSourceRange": [
-        447,
-        874,
+        445,
+        872,
         0
       ],
       "unlabeledArg": null,
@@ -659,8 +659,8 @@ description: Operations executed dodecahedron.kcl
       "type": "FunctionCall",
       "name": "createFaceTemplate",
       "functionSourceRange": [
-        447,
-        874,
+        445,
+        872,
         0
       ],
       "unlabeledArg": null,
@@ -724,8 +724,8 @@ description: Operations executed dodecahedron.kcl
       "type": "FunctionCall",
       "name": "createFaceTemplate",
       "functionSourceRange": [
-        447,
-        874,
+        445,
+        872,
         0
       ],
       "unlabeledArg": null,
@@ -789,8 +789,8 @@ description: Operations executed dodecahedron.kcl
       "type": "FunctionCall",
       "name": "createIntersection",
       "functionSourceRange": [
-        1827,
-        2099,
+        1871,
+        2143,
         0
       ],
       "unlabeledArg": null,
@@ -804,8 +804,8 @@ description: Operations executed dodecahedron.kcl
       "type": "FunctionCall",
       "name": "calculateArrayLength",
       "functionSourceRange": [
-        1715,
-        1804,
+        1759,
+        1848,
         0
       ],
       "unlabeledArg": null,
