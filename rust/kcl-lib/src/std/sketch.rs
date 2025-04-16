@@ -1728,7 +1728,7 @@ pub(crate) async fn inner_arc(
     let id = exec_state.next_uuid();
 
     // Relative case
-    match (angle_start, angle_end, radius, end_absolute, interior) {
+    match (angle_start, angle_end, radius, interior, end_absolute) {
         (Some(angle_start), Some(angle_end), Some(radius), None, None) => {
             relative_arc(&args, id, exec_state, sketch, from, angle_start, angle_end, radius, tag).await
         }
