@@ -15,7 +15,8 @@ import type { EnterEditFlowProps } from '@src/lib/operations'
 import {
   enterAppearanceFlow,
   enterEditFlow,
-  enterTransformFlow,
+  enterTranslateFlow,
+  enterRotateFlow,
 } from '@src/lib/operations'
 import { kclManager } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
@@ -43,7 +44,11 @@ type FeatureTreeEvent =
       data: { targetSourceRange: SourceRange; currentOperation: Operation }
     }
   | {
-      type: 'enterTransformFlow'
+      type: 'enterTranslateFlow'
+      data: { targetSourceRange: SourceRange; currentOperation: Operation }
+    }
+  | {
+      type: 'enterRotateFlow'
       data: { targetSourceRange: SourceRange; currentOperation: Operation }
     }
   | { type: 'goToError' }
@@ -116,7 +121,7 @@ export const featureTreeMachine = setup({
         })
       }
     ),
-    prepareTransformCommand: fromPromise(
+    prepareTranslateCommand: fromPromise(
       ({
         input,
       }: {
@@ -126,7 +131,30 @@ export const featureTreeMachine = setup({
       }) => {
         return new Promise((resolve, reject) => {
           const { commandBarSend, ...editFlowProps } = input
-          enterTransformFlow(editFlowProps)
+          enterTranslateFlow(editFlowProps)
+            .then((result) => {
+              if (err(result)) {
+                reject(result)
+                return
+              }
+              input.commandBarSend(result)
+              resolve(result)
+            })
+            .catch(reject)
+        })
+      }
+    ),
+    prepareRotateCommand: fromPromise(
+      ({
+        input,
+      }: {
+        input: EnterEditFlowProps & {
+          commandBarSend: (typeof commandBarActor)['send']
+        }
+      }) => {
+        return new Promise((resolve, reject) => {
+          const { commandBarSend, ...editFlowProps } = input
+          enterRotateFlow(editFlowProps)
             .then((result) => {
               if (err(result)) {
                 reject(result)
@@ -229,8 +257,13 @@ export const featureTreeMachine = setup({
           actions: ['saveTargetSourceRange', 'saveCurrentOperation'],
         },
 
-        enterTransformFlow: {
-          target: 'enteringTransformFlow',
+        enterTranslateFlow: {
+          target: 'enteringTranslateFlow',
+          actions: ['saveTargetSourceRange', 'saveCurrentOperation'],
+        },
+
+        enterRotateFlow: {
+          target: 'enteringRotateFlow',
           actions: ['saveTargetSourceRange', 'saveCurrentOperation'],
         },
 
@@ -399,12 +432,12 @@ export const featureTreeMachine = setup({
       exit: ['clearContext'],
     },
 
-    enteringTransformFlow: {
+    enteringTranslateFlow: {
       states: {
         selecting: {
           on: {
             selected: {
-              target: 'prepareTransformCommand',
+              target: 'prepareTranslateCommand',
               reenter: true,
             },
           },
@@ -414,9 +447,63 @@ export const featureTreeMachine = setup({
           always: '#featureTree.idle',
         },
 
-        prepareTransformCommand: {
+        prepareTranslateCommand: {
           invoke: {
-            src: 'prepareTransformCommand',
+            src: 'prepareTranslateCommand',
+            input: ({ context }) => {
+              const artifact = context.targetSourceRange
+                ? (getArtifactFromRange(
+                    context.targetSourceRange,
+                    kclManager.artifactGraph
+                  ) ?? undefined)
+                : undefined
+              return {
+                // currentOperation is guaranteed to be defined here
+                operation: context.currentOperation!,
+                artifact,
+                commandBarSend: commandBarActor.send,
+              }
+            },
+            onDone: {
+              target: 'done',
+              reenter: true,
+            },
+            onError: {
+              target: 'done',
+              reenter: true,
+              actions: ({ event }) => {
+                if ('error' in event && err(event.error)) {
+                  toast.error(event.error.message)
+                }
+              },
+            },
+          },
+        },
+      },
+
+      initial: 'selecting',
+      entry: 'sendSelectionEvent',
+      exit: ['clearContext'],
+    },
+
+    enteringRotateFlow: {
+      states: {
+        selecting: {
+          on: {
+            selected: {
+              target: 'prepareRotateCommand',
+              reenter: true,
+            },
+          },
+        },
+
+        done: {
+          always: '#featureTree.idle',
+        },
+
+        prepareRotateCommand: {
+          invoke: {
+            src: 'prepareRotateCommand',
             input: ({ context }) => {
               const artifact = context.targetSourceRange
                 ? (getArtifactFromRange(

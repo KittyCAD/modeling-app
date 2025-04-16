@@ -52,6 +52,7 @@ import {
   deleteNodeInExtrudePipe,
   extrudeSketch,
   insertNamedConstant,
+  insertVariableAndOffsetPathToNode,
   loftSketches,
 } from '@src/lang/modifyAst'
 import type {
@@ -78,12 +79,13 @@ import {
   deletionErrorMessage,
 } from '@src/lang/modifyAst/deleteSelection'
 import { setAppearance } from '@src/lang/modifyAst/setAppearance'
-import { setTransform } from '@src/lang/modifyAst/setTransform'
+import { setTranslate, setRotate } from '@src/lang/modifyAst/setTransform'
 import {
   getNodeFromPath,
   isNodeSafeToReplacePath,
   stringifyPathToNode,
   updatePathToNodesAfterEdit,
+  valueOrVariable,
 } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import {
@@ -374,7 +376,8 @@ export type ModelingMachineEvent =
       data: ModelingCommandSchema['Delete selection']
     }
   | { type: 'Appearance'; data: ModelingCommandSchema['Appearance'] }
-  | { type: 'Transform'; data: ModelingCommandSchema['Transform'] }
+  | { type: 'Translate'; data: ModelingCommandSchema['Translate'] }
+  | { type: 'Rotate'; data: ModelingCommandSchema['Rotate'] }
   | {
       type:
         | 'Add circle origin'
@@ -2035,12 +2038,6 @@ export const modelingMachine = setup({
           }
         }
 
-        const valueOrVariable = (variable: KclCommandValue) => {
-          return 'variableName' in variable
-            ? variable.variableIdentifierAst
-            : variable.valueAst
-        }
-
         const { modifiedAst, pathToNode } = addHelix({
           node: ast,
           revolutions: valueOrVariable(revolutions),
@@ -2655,16 +2652,16 @@ export const modelingMachine = setup({
         )
       }
     ),
-    transformAstMod: fromPromise(
+    translateAstMod: fromPromise(
       async ({
         input,
       }: {
-        input: ModelingCommandSchema['Transform'] | undefined
+        input: ModelingCommandSchema['Translate'] | undefined
       }) => {
         if (!input) return new Error('No input provided')
         const ast = kclManager.ast
         const modifiedAst = structuredClone(ast)
-        const { tx, ty, tz, rr, rp, ry, nodeToEdit, selection } = input
+        const { x, y, z, nodeToEdit, selection } = input
         let pathToNode = nodeToEdit
         if (!(pathToNode && typeof pathToNode[1][0] === 'number')) {
           if (selection.graphSelections[0].codeRef.pathToNode) {
@@ -2677,33 +2674,65 @@ export const modelingMachine = setup({
           }
         }
 
-        for (const v of [tx, ty, tz, rr, rp, ry]) {
-          if (v === undefined) {
-            continue
+        insertVariableAndOffsetPathToNode(x, modifiedAst, pathToNode)
+        insertVariableAndOffsetPathToNode(y, modifiedAst, pathToNode)
+        insertVariableAndOffsetPathToNode(z, modifiedAst, pathToNode)
+        const result = setTranslate({
+          pathToNode,
+          modifiedAst,
+          x: valueOrVariable(x),
+          y: valueOrVariable(y),
+          z: valueOrVariable(z),
+        })
+        if (err(result)) {
+          return err(result)
+        }
+
+        await updateModelingState(
+          result.modifiedAst,
+          EXECUTION_TYPE_REAL,
+          {
+            kclManager,
+            editorManager,
+            codeManager,
+          },
+          {
+            focusPath: [result.pathToNode],
           }
-          // Insert the variable if it exists and offset pathToNode
-          if ('variableName' in v && v.variableName) {
-            modifiedAst.body.splice(v.insertIndex, 0, v.variableDeclarationAst)
-            if (typeof pathToNode[1][0] === 'number') {
-              pathToNode[1][0]++
-            }
+        )
+      }
+    ),
+    rotateAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input: ModelingCommandSchema['Rotate'] | undefined
+      }) => {
+        if (!input) return new Error('No input provided')
+        const ast = kclManager.ast
+        const modifiedAst = structuredClone(ast)
+        const { roll, pitch, yaw, nodeToEdit, selection } = input
+        let pathToNode = nodeToEdit
+        if (!(pathToNode && typeof pathToNode[1][0] === 'number')) {
+          if (selection.graphSelections[0].codeRef.pathToNode) {
+            pathToNode = getNodePathFromSourceRange(
+              ast,
+              selection.graphSelections[0]?.codeRef.range
+            )
+          } else {
+            return new Error("Couldn't find corresponding path to node")
           }
         }
 
-        const valueOrVariable = (variable: KclCommandValue) => {
-          return 'variableName' in variable
-            ? variable.variableIdentifierAst
-            : variable.valueAst
-        }
-        const result = setTransform({
+        insertVariableAndOffsetPathToNode(roll, modifiedAst, pathToNode)
+        insertVariableAndOffsetPathToNode(pitch, modifiedAst, pathToNode)
+        insertVariableAndOffsetPathToNode(yaw, modifiedAst, pathToNode)
+        const result = setRotate({
           pathToNode,
           modifiedAst,
-          tx: valueOrVariable(tx),
-          ty: valueOrVariable(ty),
-          tz: valueOrVariable(tz),
-          rr: valueOrVariable(rr),
-          rp: valueOrVariable(rp),
-          ry: valueOrVariable(ry),
+          roll: valueOrVariable(roll),
+          pitch: valueOrVariable(pitch),
+          yaw: valueOrVariable(yaw),
         })
         if (err(result)) {
           return err(result)
@@ -2991,8 +3020,13 @@ export const modelingMachine = setup({
           reenter: true,
         },
 
-        Transform: {
-          target: 'Applying transform',
+        Translate: {
+          target: 'Applying translate',
+          reenter: true,
+        },
+
+        Rotate: {
+          target: 'Applying rotate',
           reenter: true,
         },
 
@@ -4406,12 +4440,25 @@ export const modelingMachine = setup({
       },
     },
 
-    'Applying transform': {
+    'Applying translate': {
       invoke: {
-        src: 'transformAstMod',
-        id: 'transformAstMod',
+        src: 'translateAstMod',
+        id: 'translateAstMod',
         input: ({ event }) => {
-          if (event.type !== 'Transform') return undefined
+          if (event.type !== 'Translate') return undefined
+          return event.data
+        },
+        onDone: ['idle'],
+        onError: ['idle'],
+      },
+    },
+
+    'Applying rotate': {
+      invoke: {
+        src: 'rotateAstMod',
+        id: 'rotateAstMod',
+        input: ({ event }) => {
+          if (event.type !== 'Rotate') return undefined
           return event.data
         },
         onDone: ['idle'],

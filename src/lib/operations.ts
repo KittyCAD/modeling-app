@@ -1300,7 +1300,6 @@ export async function enterEditFlow({
 
 export async function enterAppearanceFlow({
   operation,
-  artifact,
 }: EnterEditFlowProps): Promise<Error | CommandBarMachineEvent> {
   if (operation.type !== 'StdLibCall' && operation.type !== 'KclStdLibCall') {
     return new Error(
@@ -1331,7 +1330,7 @@ export async function enterAppearanceFlow({
   )
 }
 
-export async function enterTransformFlow({
+export async function enterTranslateFlow({
   operation,
 }: EnterEditFlowProps): Promise<Error | CommandBarMachineEvent> {
   if (
@@ -1360,12 +1359,9 @@ export async function enterTransformFlow({
   )
 
   // TODO: clean up this extreme verbosity
-  let tx: KclExpression | undefined = undefined
-  let ty: KclExpression | undefined = undefined
-  let tz: KclExpression | undefined = undefined
-  let rr: KclExpression | undefined = undefined
-  let rp: KclExpression | undefined = undefined
-  let ry: KclExpression | undefined = undefined
+  let x: KclExpression | undefined = undefined
+  let y: KclExpression | undefined = undefined
+  let z: KclExpression | undefined = undefined
   const pipe = getNodeFromPath<PipeExpression>(
     kclManager.ast,
     nodeToEdit,
@@ -1387,7 +1383,7 @@ export async function enterTransformFlow({
           xArg.arg.type === 'Name' ? xArg.arg.name.name : xArg.arg.raw
         const result = await stringToKclExpression(value)
         if (!(err(result) || 'errors' in result)) {
-          tx = result
+          x = result
         }
       }
 
@@ -1402,7 +1398,7 @@ export async function enterTransformFlow({
           yArg.arg.type === 'Name' ? yArg.arg.name.name : yArg.arg.raw
         const result = await stringToKclExpression(value)
         if (!(err(result) || 'errors' in result)) {
-          ty = result
+          y = result
         }
       }
 
@@ -1417,59 +1413,7 @@ export async function enterTransformFlow({
           zArg.arg.type === 'Name' ? zArg.arg.name.name : zArg.arg.raw
         const result = await stringToKclExpression(value)
         if (!(err(result) || 'errors' in result)) {
-          tz = result
-        }
-      }
-    }
-
-    const rotate = pipe.node.body.find(
-      (n) => n.type === 'CallExpressionKw' && n.callee.name.name === 'rotate'
-    )
-    if (rotate?.type === 'CallExpressionKw') {
-      const rollArg = rotate.arguments.find(
-        (a) => a.label.type === 'Identifier' && a.label.name === 'roll'
-      )
-      if (
-        rollArg?.type === 'LabeledArg' &&
-        (rollArg.arg.type === 'Name' || rollArg.arg.type === 'Literal')
-      ) {
-        const value =
-          rollArg.arg.type === 'Name' ? rollArg.arg.name.name : rollArg.arg.raw
-        const result = await stringToKclExpression(value)
-        if (!(err(result) || 'errors' in result)) {
-          rr = result
-        }
-      }
-
-      const pitchArg = rotate.arguments.find(
-        (a) => a.label.type === 'Identifier' && a.label.name === 'pitch'
-      )
-      if (
-        pitchArg?.type === 'LabeledArg' &&
-        (pitchArg.arg.type === 'Name' || pitchArg.arg.type === 'Literal')
-      ) {
-        const value =
-          pitchArg.arg.type === 'Name'
-            ? pitchArg.arg.name.name
-            : pitchArg.arg.raw
-        const result = await stringToKclExpression(value)
-        if (!(err(result) || 'errors' in result)) {
-          rp = result
-        }
-      }
-
-      const yawArg = rotate.arguments.find(
-        (a) => a.label.type === 'Identifier' && a.label.name === 'yaw'
-      )
-      if (
-        yawArg?.type === 'LabeledArg' &&
-        (yawArg.arg.type === 'Name' || yawArg.arg.type === 'Literal')
-      ) {
-        const value =
-          yawArg.arg.type === 'Name' ? yawArg.arg.name.name : yawArg.arg.raw
-        const result = await stringToKclExpression(value)
-        if (!(err(result) || 'errors' in result)) {
-          ry = result
+          z = result
         }
       }
     }
@@ -1491,17 +1435,135 @@ export async function enterTransformFlow({
   const argDefaultValues = {
     nodeToEdit,
     selection,
-    tx,
-    ty,
-    tz,
-    rr,
-    rp,
-    ry,
+    x,
+    y,
+    z,
   }
   return {
     type: 'Find and select command',
     data: {
-      name: 'Transform',
+      name: 'Translate',
+      groupId: 'modeling',
+      argDefaultValues,
+    },
+  }
+}
+
+export async function enterRotateFlow({
+  operation,
+}: EnterEditFlowProps): Promise<Error | CommandBarMachineEvent> {
+  if (
+    operation.type !== 'KclStdLibCall' &&
+    operation.type !== 'StdLibCall' &&
+    operation.type !== 'GroupBegin'
+  ) {
+    return new Error(
+      'Unsupported operation type. Please edit in the code editor.'
+    )
+  }
+
+  if (
+    operation.type !== 'GroupBegin' &&
+    stdLibMap[operation.name] &&
+    !stdLibMap[operation.name].supportsTransform
+  ) {
+    return new Error(
+      'Unsupported operation type. Please edit in the code editor.'
+    )
+  }
+
+  const nodeToEdit = getNodePathFromSourceRange(
+    kclManager.ast,
+    sourceRangeFromRust(operation.sourceRange)
+  )
+
+  // TODO: clean up this extreme verbosity
+  let roll: KclExpression | undefined = undefined
+  let pitch: KclExpression | undefined = undefined
+  let yaw: KclExpression | undefined = undefined
+  const pipe = getNodeFromPath<PipeExpression>(
+    kclManager.ast,
+    nodeToEdit,
+    'PipeExpression'
+  )
+  if (!err(pipe) && pipe.node.body) {
+    const rotate = pipe.node.body.find(
+      (n) => n.type === 'CallExpressionKw' && n.callee.name.name === 'rotate'
+    )
+    if (rotate?.type === 'CallExpressionKw') {
+      const rollArg = rotate.arguments.find(
+        (a) => a.label.type === 'Identifier' && a.label.name === 'roll'
+      )
+      if (
+        rollArg?.type === 'LabeledArg' &&
+        (rollArg.arg.type === 'Name' || rollArg.arg.type === 'Literal')
+      ) {
+        const value =
+          rollArg.arg.type === 'Name' ? rollArg.arg.name.name : rollArg.arg.raw
+        const result = await stringToKclExpression(value)
+        if (!(err(result) || 'errors' in result)) {
+          roll = result
+        }
+      }
+
+      const pitchArg = rotate.arguments.find(
+        (a) => a.label.type === 'Identifier' && a.label.name === 'pitch'
+      )
+      if (
+        pitchArg?.type === 'LabeledArg' &&
+        (pitchArg.arg.type === 'Name' || pitchArg.arg.type === 'Literal')
+      ) {
+        const value =
+          pitchArg.arg.type === 'Name'
+            ? pitchArg.arg.name.name
+            : pitchArg.arg.raw
+        const result = await stringToKclExpression(value)
+        if (!(err(result) || 'errors' in result)) {
+          pitch = result
+        }
+      }
+
+      const yawArg = rotate.arguments.find(
+        (a) => a.label.type === 'Identifier' && a.label.name === 'yaw'
+      )
+      if (
+        yawArg?.type === 'LabeledArg' &&
+        (yawArg.arg.type === 'Name' || yawArg.arg.type === 'Literal')
+      ) {
+        const value =
+          yawArg.arg.type === 'Name' ? yawArg.arg.name.name : yawArg.arg.raw
+        const result = await stringToKclExpression(value)
+        if (!(err(result) || 'errors' in result)) {
+          yaw = result
+        }
+      }
+    }
+  }
+
+  // Doesn't matter here, selection is really for point-and-click selection
+  const selection: Selections = {
+    graphSelections: [
+      {
+        codeRef: {
+          range: operation.sourceRange,
+          pathToNode: nodeToEdit,
+        },
+      },
+    ],
+    otherSelections: [],
+  }
+
+  const argDefaultValues = {
+    nodeToEdit,
+    selection,
+    roll,
+    pitch,
+    yaw,
+  }
+  return {
+    type: 'Find and select command',
+    data: {
+      name: 'Rotate',
       groupId: 'modeling',
       argDefaultValues,
     },

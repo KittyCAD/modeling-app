@@ -167,15 +167,19 @@ export type ModelingCommandSchema = {
     nodeToEdit?: PathToNode
     color: string
   }
-  Transform: {
+  Translate: {
     nodeToEdit?: PathToNode
     selection: Selections
-    tx: KclCommandValue
-    ty: KclCommandValue
-    tz: KclCommandValue
-    rr: KclCommandValue
-    rp: KclCommandValue
-    ry: KclCommandValue
+    x: KclCommandValue
+    y: KclCommandValue
+    z: KclCommandValue
+  }
+  Rotate: {
+    nodeToEdit?: PathToNode
+    selection: Selections
+    roll: KclCommandValue
+    pitch: KclCommandValue
+    yaw: KclCommandValue
   }
   'Boolean Subtract': {
     target: Selections
@@ -1038,9 +1042,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       // Add more fields
     },
   },
-  Transform: {
-    description: 'Set the rotation and translation.',
-    icon: 'angle', // TODO: find proper icon
+  Translate: {
+    description: 'Set tanslation on solid or sketch.',
+    icon: 'dimension', // TODO: likely not the best icon
     needsReview: true,
     args: {
       nodeToEdit: {
@@ -1063,13 +1067,14 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           allowCodeSelection: true,
         },
         selectionTypes: [
+          // TODO: add support for planes
+          // 'plane',
+          // 'path',
+          // 'segment',
+          // 'solid2d',
+          // 'startSketchOnFace',
+          // 'startSketchOnPlane',
           'compositeSolid',
-          'plane',
-          'path',
-          'segment',
-          'solid2d',
-          'startSketchOnFace',
-          'startSketchOnPlane',
           'sweep',
           'wall',
           'cap',
@@ -1079,41 +1084,79 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           'helix',
         ],
       },
-      tx: {
+      x: {
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_TRANSFORM,
         required: true,
-        displayName: 'Translate X',
       },
-      ty: {
+      y: {
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_TRANSFORM,
         required: true,
-        displayName: 'Translate Y',
       },
-      tz: {
+      z: {
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_TRANSFORM,
         required: true,
-        displayName: 'Translate Z',
       },
-      rr: {
-        inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_TRANSFORM,
-        required: true,
-        displayName: 'Rotate Roll',
+    },
+  },
+  Rotate: {
+    description: 'Set rotation on solid or sketch.',
+    icon: 'angle',
+    needsReview: true,
+    args: {
+      nodeToEdit: {
+        description:
+          'Path to the node in the AST to edit. Never shown to the user.',
+        skip: true,
+        inputType: 'text',
+        required: false,
+        hidden: true,
       },
-      rp: {
-        inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_TRANSFORM,
+      selection: {
+        inputType: 'selectionMixed',
+        multiple: false,
         required: true,
-        displayName: 'Rotate Pitch',
+        skip: true,
+        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+        allowNoSelection: false,
+        selectionSource: {
+          allowSceneSelection: true,
+          allowCodeSelection: true,
+        },
+        selectionTypes: [
+          // TODO: add support for planes
+          // 'plane',
+          // 'path',
+          // 'segment',
+          // 'solid2d',
+          // 'startSketchOnFace',
+          // 'startSketchOnPlane',
+          'compositeSolid',
+          'sweep',
+          'wall',
+          'cap',
+          'sweepEdge',
+          'edgeCut',
+          'edgeCutEdge',
+          'helix',
+        ],
       },
-      ry: {
+      roll: {
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_TRANSFORM,
         required: true,
-        displayName: 'Rotate Yaw',
+      },
+      pitch: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_TRANSFORM,
+        required: true,
+      },
+      yaw: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_TRANSFORM,
+        required: true,
       },
     },
   },

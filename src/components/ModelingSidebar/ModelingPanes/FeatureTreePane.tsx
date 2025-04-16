@@ -355,14 +355,30 @@ const OperationItem = (props: {
     }
   }
 
-  function enterTransformFlow() {
+  function enterTranslateFlow() {
     if (
       props.item.type === 'StdLibCall' ||
       props.item.type === 'KclStdLibCall' ||
       props.item.type === 'GroupBegin'
     ) {
       props.send({
-        type: 'enterTransformFlow',
+        type: 'enterTranslateFlow',
+        data: {
+          targetSourceRange: sourceRangeFromRust(props.item.sourceRange),
+          currentOperation: props.item,
+        },
+      })
+    }
+  }
+
+  function enterRotateFlow() {
+    if (
+      props.item.type === 'StdLibCall' ||
+      props.item.type === 'KclStdLibCall' ||
+      props.item.type === 'GroupBegin'
+    ) {
+      props.send({
+        type: 'enterRotateFlow',
         data: {
           targetSourceRange: sourceRangeFromRust(props.item.sourceRange),
           currentOperation: props.item,
@@ -455,14 +471,24 @@ const OperationItem = (props: {
       props.item.type === 'GroupBegin'
         ? [
             <ContextMenuItem
-              onClick={enterTransformFlow}
-              data-testid="context-menu-set-transform"
+              onClick={enterTranslateFlow}
+              data-testid="context-menu-set-translate"
               disabled={
                 props.item.type !== 'GroupBegin' &&
                 !stdLibMap[props.item.name]?.supportsTransform
               }
             >
-              Set transform
+              Set translate
+            </ContextMenuItem>,
+            <ContextMenuItem
+              onClick={enterRotateFlow}
+              data-testid="context-menu-set-rotate"
+              disabled={
+                props.item.type !== 'GroupBegin' &&
+                !stdLibMap[props.item.name]?.supportsTransform
+              }
+            >
+              Set rotate
             </ContextMenuItem>,
             <ContextMenuItem
               onClick={deleteOperation}

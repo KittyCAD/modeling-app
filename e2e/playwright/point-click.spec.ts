@@ -3836,7 +3836,7 @@ extrude001 = extrude(profile001, length = 100)
     })
   })
 
-  const transformExtrudeCases: { variables: boolean }[] = [
+  const translateExtrudeCases: { variables: boolean }[] = [
     {
       variables: false,
     },
@@ -3844,8 +3844,8 @@ extrude001 = extrude(profile001, length = 100)
       variables: true,
     },
   ]
-  transformExtrudeCases.map(({ variables }) => {
-    test(`Set transform on extrude through right-click menu (variables: ${variables})`, async ({
+  translateExtrudeCases.map(({ variables }) => {
+    test(`Set translate on extrude through right-click menu (variables: ${variables})`, async ({
       context,
       page,
       homePage,
@@ -3878,25 +3878,22 @@ extrude001 = extrude(profile001, length = 100)
         await scene.expectPixelColor(bgColor, moreToTheRightPoint, tolerance)
       })
 
-      await test.step('Set transform through command bar flow', async () => {
+      await test.step('Set translate through command bar flow', async () => {
         await toolbar.openPane('feature-tree')
         const op = await toolbar.getFeatureTreeOperation('Extrude', 0)
         await op.click({ button: 'right' })
-        await page.getByTestId('context-menu-set-transform').click()
+        await page.getByTestId('context-menu-set-translate').click()
         await cmdBar.expectState({
           stage: 'arguments',
-          currentArgKey: 'Translate X',
+          currentArgKey: 'x',
           currentArgValue: '0',
           headerArguments: {
-            'Translate X': '',
-            'Translate Y': '',
-            'Translate Z': '',
-            'Rotate Roll': '',
-            'Rotate Pitch': '',
-            'Rotate Yaw': '',
+            X: '',
+            Y: '',
+            Z: '',
           },
-          highlightedHeaderArg: 'Translate X',
-          commandName: 'Transform',
+          highlightedHeaderArg: 'x',
+          commandName: 'Translate',
         })
         await page.keyboard.insertText('3')
         if (variables) {
@@ -3913,6 +3910,134 @@ extrude001 = extrude(profile001, length = 100)
           await cmdBar.createNewVariable()
         }
         await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          stage: 'review',
+          headerArguments: {
+            X: '3',
+            Y: '0.1',
+            Z: '0.2',
+          },
+          commandName: 'Translate',
+        })
+        await cmdBar.progressCmdBar()
+        await toolbar.closePane('feature-tree')
+      })
+
+      await test.step('Confirm code and scene have changed', async () => {
+        await toolbar.openPane('code')
+        if (variables) {
+          await editor.expectEditor.toContain(
+            `
+            z001 = 0.2
+            y001 = 0.1
+            x001 = 3
+            sketch001 = startSketchOn(XZ)
+            profile001 = circle(sketch001, center = [0, 0], radius = 1)
+            extrude001 = extrude(profile001, length = 1)
+              |> translate(x = x001, y = y001, z = z001)
+          `,
+            { shouldNormalise: true }
+          )
+        } else {
+          await editor.expectEditor.toContain(
+            `
+            sketch001 = startSketchOn(XZ)
+            profile001 = circle(sketch001, center = [0, 0], radius = 1)
+            extrude001 = extrude(profile001, length = 1)
+              |> translate(x = 3, y = 0.1, z = 0.2)
+          `,
+            { shouldNormalise: true }
+          )
+        }
+        await scene.expectPixelColor(bgColor, midPoint, tolerance)
+        await scene.expectPixelColor(partColor, moreToTheRightPoint, tolerance)
+      })
+
+      await test.step('Edit translate', async () => {
+        await toolbar.openPane('feature-tree')
+        const op = await toolbar.getFeatureTreeOperation('Extrude', 0)
+        await op.click({ button: 'right' })
+        await page.getByTestId('context-menu-set-translate').click()
+        await cmdBar.expectState({
+          stage: 'arguments',
+          currentArgKey: 'z',
+          currentArgValue: variables ? 'z001' : '0.2',
+          headerArguments: {
+            X: '3',
+            Y: '0.1',
+            Z: '0.2',
+          },
+          highlightedHeaderArg: 'z',
+          commandName: 'Translate',
+        })
+        await page.keyboard.insertText('0.3')
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          stage: 'review',
+          headerArguments: {
+            X: '3',
+            Y: '0.1',
+            Z: '0.3',
+          },
+          commandName: 'Translate',
+        })
+        await cmdBar.progressCmdBar()
+        await toolbar.closePane('feature-tree')
+        await toolbar.openPane('code')
+        await editor.expectEditor.toContain(`z = 0.3`)
+        // Expect almost no change in scene
+        await scene.expectPixelColor(bgColor, midPoint, tolerance)
+        await scene.expectPixelColor(partColor, moreToTheRightPoint, tolerance)
+      })
+    })
+  })
+
+  const rotateExtrudeCases: { variables: boolean }[] = [
+    {
+      variables: false,
+    },
+    {
+      variables: true,
+    },
+  ]
+  rotateExtrudeCases.map(({ variables }) => {
+    test(`Set rotate on extrude through right-click menu (variables: ${variables})`, async ({
+      context,
+      page,
+      homePage,
+      scene,
+      editor,
+      toolbar,
+      cmdBar,
+    }) => {
+      const initialCode = `sketch001 = startSketchOn(XZ)
+    profile001 = circle(sketch001, center = [0, 0], radius = 1)
+    extrude001 = extrude(profile001, length = 1)
+    `
+      await context.addInitScript((initialCode) => {
+        localStorage.setItem('persistCode', initialCode)
+      }, initialCode)
+      await page.setBodyDimensions({ width: 1000, height: 500 })
+      await homePage.goToModelingScene()
+      await scene.settled(cmdBar)
+
+      await test.step('Set rotate through command bar flow', async () => {
+        await toolbar.openPane('feature-tree')
+        const op = await toolbar.getFeatureTreeOperation('Extrude', 0)
+        await op.click({ button: 'right' })
+        await page.getByTestId('context-menu-set-rotate').click()
+        await cmdBar.expectState({
+          stage: 'arguments',
+          currentArgKey: 'roll',
+          currentArgValue: '0',
+          headerArguments: {
+            Roll: '',
+            Pitch: '',
+            Yaw: '',
+          },
+          highlightedHeaderArg: 'roll',
+          commandName: 'Rotate',
+        })
         await page.keyboard.insertText('1.1')
         if (variables) {
           await cmdBar.createNewVariable()
@@ -3931,14 +4056,11 @@ extrude001 = extrude(profile001, length = 100)
         await cmdBar.expectState({
           stage: 'review',
           headerArguments: {
-            'Translate X': '3',
-            'Translate Y': '0.1',
-            'Translate Z': '0.2',
-            'Rotate Roll': '1.1',
-            'Rotate Pitch': '1.2',
-            'Rotate Yaw': '1.3',
+            Roll: '1.1',
+            Pitch: '1.2',
+            Yaw: '1.3',
           },
-          commandName: 'Transform',
+          commandName: 'Rotate',
         })
         await cmdBar.progressCmdBar()
         await toolbar.closePane('feature-tree')
@@ -3949,17 +4071,13 @@ extrude001 = extrude(profile001, length = 100)
         if (variables) {
           await editor.expectEditor.toContain(
             `
-            ry001 = 1.3
-            rp001 = 1.2
-            rr001 = 1.1
-            tz001 = 0.2
-            ty001 = 0.1
-            tx001 = 3
+            yaw001 = 1.3
+            pitch001 = 1.2
+            roll001 = 1.1
             sketch001 = startSketchOn(XZ)
             profile001 = circle(sketch001, center = [0, 0], radius = 1)
             extrude001 = extrude(profile001, length = 1)
-              |> translate(x = tx001, y = ty001, z = tz001)
-              |> rotate(roll = rr001, pitch = rp001, yaw = ry001)
+              |> rotate(roll = roll001, pitch = pitch001, yaw = yaw001)
           `,
             { shouldNormalise: true }
           )
@@ -3969,60 +4087,50 @@ extrude001 = extrude(profile001, length = 100)
             sketch001 = startSketchOn(XZ)
             profile001 = circle(sketch001, center = [0, 0], radius = 1)
             extrude001 = extrude(profile001, length = 1)
-              |> translate(x = 3, y = 0.1, z = 0.2)
               |> rotate(roll = 1.1, pitch = 1.2, yaw = 1.3)
           `,
             { shouldNormalise: true }
           )
         }
-        await scene.expectPixelColor(bgColor, midPoint, tolerance)
-        await scene.expectPixelColor(partColor, moreToTheRightPoint, tolerance)
       })
 
-      await test.step('Edit transform', async () => {
+      await test.step('Edit rotate', async () => {
         await toolbar.openPane('feature-tree')
         const op = await toolbar.getFeatureTreeOperation('Extrude', 0)
         await op.click({ button: 'right' })
-        await page.getByTestId('context-menu-set-transform').click()
+        await page.getByTestId('context-menu-set-rotate').click()
         await cmdBar.expectState({
           stage: 'arguments',
-          currentArgKey: 'Rotate Yaw',
-          currentArgValue: variables ? 'ry001' : '1.3',
+          currentArgKey: 'yaw',
+          currentArgValue: variables ? 'yaw001' : '1.3',
           headerArguments: {
-            'Translate X': '3',
-            'Translate Y': '0.1',
-            'Translate Z': '0.2',
-            'Rotate Roll': '1.1',
-            'Rotate Pitch': '1.2',
-            'Rotate Yaw': '1.3',
+            Roll: '1.1',
+            Pitch: '1.2',
+            Yaw: '1.3',
           },
-          highlightedHeaderArg: 'Rotate Yaw',
-          commandName: 'Transform',
+          highlightedHeaderArg: 'yaw',
+          commandName: 'Rotate',
         })
         await page.keyboard.insertText('13')
         await cmdBar.progressCmdBar()
         await cmdBar.expectState({
           stage: 'review',
           headerArguments: {
-            'Translate X': '3',
-            'Translate Y': '0.1',
-            'Translate Z': '0.2',
-            'Rotate Roll': '1.1',
-            'Rotate Pitch': '1.2',
-            'Rotate Yaw': '13',
+            Roll: '1.1',
+            Pitch: '1.2',
+            Yaw: '13',
           },
-          commandName: 'Transform',
+          commandName: 'Rotate',
         })
         await cmdBar.progressCmdBar()
         await toolbar.closePane('feature-tree')
         await toolbar.openPane('code')
         await editor.expectEditor.toContain(`yaw = 13`)
-        await page.waitForTimeout(2000)
       })
     })
   })
 
-  test(`Set transform on profile through commandbar`, async ({
+  test(`Set translate on profile through commandbar`, async ({
     context,
     page,
     homePage,
@@ -4056,48 +4164,38 @@ extrude001 = extrude(profile001, length = 100)
       await scene.expectPixelColor(bgColor, moreToTheRightPoint, tolerance)
     })
 
-    await test.step('Set transform through command bar flow', async () => {
+    await test.step('Set translate through command bar flow', async () => {
       await cmdBar.openCmdBar()
-      await cmdBar.chooseCommand('Transform')
+      await cmdBar.chooseCommand('Translate')
       await cmdBar.expectState({
         stage: 'arguments',
         currentArgKey: 'selection',
         currentArgValue: '',
         headerArguments: {
           Selection: '',
-          'Translate X': '',
-          'Translate Y': '',
-          'Translate Z': '',
-          'Rotate Roll': '',
-          'Rotate Pitch': '',
-          'Rotate Yaw': '',
+          X: '',
+          Y: '',
+          Z: '',
         },
         highlightedHeaderArg: 'selection',
-        commandName: 'Transform',
+        commandName: 'Translate',
       })
       await clickMidPoint()
       await cmdBar.progressCmdBar()
       await cmdBar.expectState({
         stage: 'arguments',
-        currentArgKey: 'Translate X',
+        currentArgKey: 'x',
         currentArgValue: '0',
         headerArguments: {
           Selection: '1 cap',
-          'Translate X': '',
-          'Translate Y': '',
-          'Translate Z': '',
-          'Rotate Roll': '',
-          'Rotate Pitch': '',
-          'Rotate Yaw': '',
+          X: '',
+          Y: '',
+          Z: '',
         },
-        highlightedHeaderArg: 'Translate X',
-        commandName: 'Transform',
+        highlightedHeaderArg: 'x',
+        commandName: 'Translate',
       })
       await page.keyboard.insertText('2')
-      await cmdBar.progressCmdBar()
-      await cmdBar.progressCmdBar()
-      await cmdBar.progressCmdBar()
-      await page.keyboard.insertText('180')
       await cmdBar.progressCmdBar()
       await cmdBar.progressCmdBar()
       await cmdBar.progressCmdBar()
@@ -4105,14 +4203,11 @@ extrude001 = extrude(profile001, length = 100)
         stage: 'review',
         headerArguments: {
           Selection: '1 cap',
-          'Translate X': '2',
-          'Translate Y': '0',
-          'Translate Z': '0',
-          'Rotate Roll': '180',
-          'Rotate Pitch': '0',
-          'Rotate Yaw': '0',
+          X: '2',
+          Y: '0',
+          Z: '0',
         },
-        commandName: 'Transform',
+        commandName: 'Translate',
       })
       await cmdBar.progressCmdBar()
     })
@@ -4123,7 +4218,6 @@ extrude001 = extrude(profile001, length = 100)
         `
           profile001 = circle(sketch001, center = [0, 0], radius = 1)
             |> translate(x = 2, y = 0, z = 0)
-            |> rotate(roll = 180, pitch = 0, yaw = 0)
           `,
         { shouldNormalise: true }
       )

@@ -81,7 +81,10 @@ import type {
   VariableMap,
 } from '@src/lang/wasm'
 import { isPathToNodeNumber, parse } from '@src/lang/wasm'
-import type { KclExpressionWithVariable } from '@src/lib/commandTypes'
+import type {
+  KclCommandValue,
+  KclExpressionWithVariable,
+} from '@src/lib/commandTypes'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
 import type { DefaultPlaneStr } from '@src/lib/planes'
 import type { Selection } from '@src/lib/selections'
@@ -1823,4 +1826,21 @@ export function createNodeFromExprSnippet(
   const node = program.program?.body[0]
   if (!node) return new Error('No node found')
   return node
+}
+
+export function insertVariableAndOffsetPathToNode(
+  variable: KclCommandValue,
+  modifiedAst: Node<Program>,
+  pathToNode: PathToNode
+) {
+  if ('variableName' in variable && variable.variableName) {
+    modifiedAst.body.splice(
+      variable.insertIndex,
+      0,
+      variable.variableDeclarationAst
+    )
+    if (typeof pathToNode[1][0] === 'number') {
+      pathToNode[1][0]++
+    }
+  }
 }

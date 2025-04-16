@@ -143,27 +143,24 @@ test.describe('Point-and-click assemblies tests', () => {
         await scene.settled(cmdBar)
       })
 
-      await test.step('Set transform on the second part', async () => {
+      await test.step('Set translate on the second part', async () => {
         await toolbar.closePane('code')
         await toolbar.openPane('feature-tree')
 
         const op = await toolbar.getFeatureTreeOperation('bracket', 0)
         await op.click({ button: 'right' })
-        await page.getByTestId('context-menu-set-transform').click()
+        await page.getByTestId('context-menu-set-translate').click()
         await cmdBar.expectState({
           stage: 'arguments',
-          currentArgKey: 'Translate X',
+          currentArgKey: 'x',
           currentArgValue: '0',
           headerArguments: {
-            'Translate X': '',
-            'Translate Y': '',
-            'Translate Z': '',
-            'Rotate Roll': '',
-            'Rotate Pitch': '',
-            'Rotate Yaw': '',
+            X: '',
+            Y: '',
+            Z: '',
           },
-          highlightedHeaderArg: 'Translate X',
-          commandName: 'Transform',
+          highlightedHeaderArg: 'x',
+          commandName: 'Translate',
         })
         await page.keyboard.insertText('1')
         await cmdBar.progressCmdBar()
@@ -171,6 +168,46 @@ test.describe('Point-and-click assemblies tests', () => {
         await cmdBar.progressCmdBar()
         await page.keyboard.insertText('3')
         await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          stage: 'review',
+          headerArguments: {
+            X: '1',
+            Y: '2',
+            Z: '3',
+          },
+          commandName: 'Translate',
+        })
+        await cmdBar.progressCmdBar()
+        await toolbar.closePane('feature-tree')
+        await toolbar.openPane('code')
+        await editor.expectEditor.toContain(
+          `
+        bracket
+          |> translate(x = 1, y = 2, z = 3)
+        `,
+          { shouldNormalise: true }
+        )
+      })
+
+      await test.step('Set rotate on the second part', async () => {
+        await toolbar.closePane('code')
+        await toolbar.openPane('feature-tree')
+
+        const op = await toolbar.getFeatureTreeOperation('bracket', 0)
+        await op.click({ button: 'right' })
+        await page.getByTestId('context-menu-set-rotate').click()
+        await cmdBar.expectState({
+          stage: 'arguments',
+          currentArgKey: 'roll',
+          currentArgValue: '0',
+          headerArguments: {
+            Roll: '',
+            Pitch: '',
+            Yaw: '',
+          },
+          highlightedHeaderArg: 'roll',
+          commandName: 'Translate',
+        })
         await page.keyboard.insertText('4')
         await cmdBar.progressCmdBar()
         await page.keyboard.insertText('5')
@@ -180,14 +217,11 @@ test.describe('Point-and-click assemblies tests', () => {
         await cmdBar.expectState({
           stage: 'review',
           headerArguments: {
-            'Translate X': '1',
-            'Translate Y': '2',
-            'Translate Z': '3',
-            'Rotate Roll': '4',
-            'Rotate Pitch': '5',
-            'Rotate Yaw': '6',
+            Roll: '1',
+            Pitch: '2',
+            Yaw: '3',
           },
-          commandName: 'Transform',
+          commandName: 'Rotate',
         })
         await cmdBar.progressCmdBar()
         await toolbar.closePane('feature-tree')
@@ -195,7 +229,6 @@ test.describe('Point-and-click assemblies tests', () => {
         await editor.expectEditor.toContain(
           `
         bracket
-          |> translate(x = 1, y = 2, z = 3)
           |> rotate(roll = 4, pitch = 5, yaw = 6)
         `,
           { shouldNormalise: true }

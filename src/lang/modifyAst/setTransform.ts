@@ -17,40 +17,24 @@ import type {
 } from '@src/lang/wasm'
 import { err } from '@src/lib/trap'
 
-export function setTransform({
+export function setTranslate({
   modifiedAst,
   pathToNode,
-  tx,
-  ty,
-  tz,
-  rr,
-  rp,
-  ry,
+  x,
+  y,
+  z,
 }: {
   modifiedAst: Node<Program>
   pathToNode: PathToNode
-  tx: Expr
-  ty: Expr
-  tz: Expr
-  rr: Expr
-  rp: Expr
-  ry: Expr
+  x: Expr
+  y: Expr
+  z: Expr
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
   const noPercentSign = null
-  const translateCall = createCallExpressionStdLibKw(
-    'translate',
-    noPercentSign,
-    [
-      createLabeledArg('x', tx),
-      createLabeledArg('y', ty),
-      createLabeledArg('z', tz),
-    ]
-  )
-
-  const rotateCall = createCallExpressionStdLibKw('rotate', noPercentSign, [
-    createLabeledArg('roll', rr),
-    createLabeledArg('pitch', rp),
-    createLabeledArg('yaw', ry),
+  const call = createCallExpressionStdLibKw('translate', noPercentSign, [
+    createLabeledArg('x', x),
+    createLabeledArg('y', y),
+    createLabeledArg('z', z),
   ])
 
   const potentialPipe = getNodeFromPath<PipeExpression>(
@@ -59,66 +43,100 @@ export function setTransform({
     ['PipeExpression']
   )
   if (!err(potentialPipe) && potentialPipe.node.type === 'PipeExpression') {
-    setTransformInPipe(potentialPipe.node, translateCall, rotateCall)
+    setTransformInPipe(potentialPipe.node, call)
   } else {
-    const call = getNodeFromPath<VariableDeclarator | ExpressionStatement>(
-      modifiedAst,
-      pathToNode,
-      ['VariableDeclarator', 'ExpressionStatement']
-    )
-    if (err(call)) {
-      return new Error('Unsupported operation type.')
-    }
-
-    if (call.node.type === 'ExpressionStatement') {
-      call.node.expression = createPipeExpression([
-        call.node.expression,
-        translateCall,
-        rotateCall,
-      ])
-    } else if (call.node.type === 'VariableDeclarator') {
-      call.node.init = createPipeExpression([
-        call.node.init,
-        translateCall,
-        rotateCall,
-      ])
-    } else {
-      return new Error('Unsupported operation type.')
+    const error = createPipeWithTransform(modifiedAst, pathToNode, call)
+    if (err(error)) {
+      return error
     }
   }
 
   return {
     modifiedAst,
-    pathToNode, // TODO: fix
+    pathToNode, // TODO: check if this should be updated
+  }
+}
+
+export function setRotate({
+  modifiedAst,
+  pathToNode,
+  roll,
+  pitch,
+  yaw,
+}: {
+  modifiedAst: Node<Program>
+  pathToNode: PathToNode
+  roll: Expr
+  pitch: Expr
+  yaw: Expr
+}): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
+  const noPercentSign = null
+  const call = createCallExpressionStdLibKw('rotate', noPercentSign, [
+    createLabeledArg('roll', roll),
+    createLabeledArg('pitch', pitch),
+    createLabeledArg('yaw', yaw),
+  ])
+
+  const potentialPipe = getNodeFromPath<PipeExpression>(
+    modifiedAst,
+    pathToNode,
+    ['PipeExpression']
+  )
+  if (!err(potentialPipe) && potentialPipe.node.type === 'PipeExpression') {
+    setTransformInPipe(potentialPipe.node, call)
+  } else {
+    const error = createPipeWithTransform(modifiedAst, pathToNode, call)
+    if (err(error)) {
+      return error
+    }
+  }
+
+  return {
+    modifiedAst,
+    pathToNode, // TODO: check if this should be updated
   }
 }
 
 function setTransformInPipe(
   expression: PipeExpression,
-  translateCall: Node<CallExpressionKw>,
-  rotateCall: Node<CallExpressionKw>
+  call: Node<CallExpressionKw>
 ) {
-  const existingTranslateIndex = expression.body.findIndex(
+  const existingIndex = expression.body.findIndex(
     (v) =>
       v.type === 'CallExpressionKw' &&
       v.callee.type === 'Name' &&
-      v.callee.name.name === 'translate'
+      v.callee.name.name === call.callee.name.name
   )
-  if (existingTranslateIndex > -1) {
-    expression.body[existingTranslateIndex] = translateCall
+  if (existingIndex > -1) {
+    expression.body[existingIndex] = call
   } else {
-    expression.body.push(translateCall)
+    expression.body.push(call)
+  }
+}
+
+function createPipeWithTransform(
+  modifiedAst: Node<Program>,
+  pathToNode: PathToNode,
+  call: Node<CallExpressionKw>
+) {
+  const existingCall = getNodeFromPath<
+    VariableDeclarator | ExpressionStatement
+  >(modifiedAst, pathToNode, ['VariableDeclarator', 'ExpressionStatement'])
+  if (err(existingCall)) {
+    return new Error('Unsupported operation type.')
   }
 
-  const existingRotateIndex = expression.body.findIndex(
-    (v) =>
-      v.type === 'CallExpressionKw' &&
-      v.callee.type === 'Name' &&
-      v.callee.name.name === 'rotate'
-  )
-  if (existingRotateIndex > -1) {
-    expression.body[existingRotateIndex] = rotateCall
+  if (existingCall.node.type === 'ExpressionStatement') {
+    existingCall.node.expression = createPipeExpression([
+      existingCall.node.expression,
+      call,
+    ])
+  } else if (existingCall.node.type === 'VariableDeclarator') {
+    existingCall.node.init = createPipeExpression([
+      existingCall.node.init,
+      call,
+    ])
   } else {
-    expression.body.push(rotateCall)
+    return new Error('Unsupported operation type.')
   }
 }
