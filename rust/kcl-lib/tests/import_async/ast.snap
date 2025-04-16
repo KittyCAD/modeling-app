@@ -8,6 +8,46 @@ description: Result of parsing import_async.kcl
       {
         "commentStart": 0,
         "end": 0,
+        "outerAttrs": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "name": null,
+            "properties": [
+              {
+                "commentStart": 0,
+                "end": 0,
+                "key": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "name": "lengthUnit",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "start": 0,
+                "type": "ObjectProperty",
+                "value": {
+                  "abs_path": false,
+                  "commentStart": 0,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "name": "m",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name",
+                  "type": "Name"
+                }
+              }
+            ],
+            "start": 0,
+            "type": "Annotation"
+          }
+        ],
         "path": {
           "type": "Foreign",
           "path": "../../e2e/executor/inputs/2-5-long-m8-chc-screw.stl"
@@ -28,26 +68,40 @@ description: Result of parsing import_async.kcl
       },
       {
         "commentStart": 0,
-        "end": 0,
-        "expression": {
-          "abs_path": false,
+        "declaration": {
           "commentStart": 0,
           "end": 0,
-          "name": {
+          "id": {
             "commentStart": 0,
             "end": 0,
-            "name": "screw",
+            "name": "myScrew",
             "start": 0,
             "type": "Identifier"
           },
-          "path": [],
+          "init": {
+            "abs_path": false,
+            "commentStart": 0,
+            "end": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "name": "screw",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
+            "start": 0,
+            "type": "Name",
+            "type": "Name"
+          },
           "start": 0,
-          "type": "Name",
-          "type": "Name"
+          "type": "VariableDeclarator"
         },
+        "end": 0,
+        "kind": "const",
         "start": 0,
-        "type": "ExpressionStatement",
-        "type": "ExpressionStatement"
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
       },
       {
         "commentStart": 0,
@@ -4839,6 +4893,85 @@ description: Result of parsing import_async.kcl
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 0,
+        "end": 0,
+        "expression": {
+          "body": [
+            {
+              "abs_path": false,
+              "commentStart": 0,
+              "end": 0,
+              "name": {
+                "commentStart": 0,
+                "end": 0,
+                "name": "myScrew",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name",
+              "type": "Name"
+            },
+            {
+              "arguments": [
+                {
+                  "type": "LabeledArg",
+                  "label": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "name": "y",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "arg": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "raw": "10",
+                    "start": 0,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 10.0,
+                      "suffix": "None"
+                    }
+                  }
+                }
+              ],
+              "callee": {
+                "abs_path": false,
+                "commentStart": 0,
+                "end": 0,
+                "name": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "name": "translate",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
+                "start": 0,
+                "type": "Name"
+              },
+              "commentStart": 0,
+              "end": 0,
+              "start": 0,
+              "type": "CallExpressionKw",
+              "type": "CallExpressionKw",
+              "unlabeled": null
+            }
+          ],
+          "commentStart": 0,
+          "end": 0,
+          "start": 0,
+          "type": "PipeExpression",
+          "type": "PipeExpression"
+        },
+        "start": 0,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
       }
     ],
     "commentStart": 0,
@@ -4879,7 +5012,7 @@ description: Result of parsing import_async.kcl
               "name": {
                 "commentStart": 0,
                 "end": 0,
-                "name": "in",
+                "name": "mm",
                 "start": 0,
                 "type": "Identifier"
               },
@@ -4941,6 +5074,17 @@ description: Result of parsing import_async.kcl
           }
         ],
         "20": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "29": [
           {
             "commentStart": 0,
             "end": 0,

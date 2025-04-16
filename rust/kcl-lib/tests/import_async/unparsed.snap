@@ -3,11 +3,12 @@ source: kcl-lib/src/simulation_tests.rs
 description: Result of unparsing import_async.kcl
 ---
 // Set units
-@settings(defaultLengthUnit = in)
+@settings(defaultLengthUnit = mm)
 
+@(lengthUnit = m)
 import "../../e2e/executor/inputs/2-5-long-m8-chc-screw.stl" as screw
 
-screw
+myScrew = screw
 
 surface001 = startSketchOn(XY)
 
@@ -114,3 +115,6 @@ keyWay = startSketchOn(body, face = END)
      }, %)
   |> close()
   |> extrude(length = -gearHeight)
+
+myScrew
+  |> translate(y = 10)
