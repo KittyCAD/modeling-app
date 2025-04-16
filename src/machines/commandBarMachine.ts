@@ -664,8 +664,6 @@ export const commandBarActor = createActor(commandBarMachine, {
   },
 }).start()
 
-window.commandBarActor = commandBarActor
-
 /** Basic state snapshot selector */
 const cmdBarStateSelector = (state: SnapshotFrom<typeof commandBarActor>) =>
   state

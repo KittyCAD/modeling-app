@@ -13,7 +13,7 @@ import { useNavigate } from 'react-router-dom'
 import { commandBarActor } from '@src/machines/commandBarMachine'
 import { projectCommands } from '@src/lib/commandBarConfigs/projectsCommandConfig'
 
-export function SystemIOMachineLogicListener() {
+export function SystemIOMachineLogicListenerDesktop() {
   const requestedProjectName = useRequestedProjectName()
   const requestedFileName = useRequestedFileName()
   const projectDirectoryPath = useProjectDirectoryPath()

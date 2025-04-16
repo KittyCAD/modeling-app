@@ -2,11 +2,12 @@ import { AppStateProvider } from '@src/AppState'
 import LspProvider from '@src/components/LspProvider'
 import { MachineManagerProvider } from '@src/components/MachineManagerProvider'
 import { OpenInDesktopAppHandler } from '@src/components/OpenInDesktopAppHandler'
-import { SystemIOMachineLogicListener } from '@src/components/Providers/SystemIOProviderDesktop'
+import { SystemIOMachineLogicListenerDesktop } from '@src/components/Providers/SystemIOProviderDesktop'
+import { SystemIOMachineLogicListenerWeb } from '@src/components/Providers/SystemIOProviderWeb'
 import { RouteProvider } from '@src/components/RouteProvider'
 import { KclContextProvider } from '@src/lang/KclProvider'
 import { Outlet } from 'react-router-dom'
-
+import { isDesktop } from '@src/lib/isDesktop'
 // Root component will live for the entire applications runtime
 function RootLayout() {
   return (
@@ -16,7 +17,11 @@ function RootLayout() {
           <KclContextProvider>
             <AppStateProvider>
               <MachineManagerProvider>
-                <SystemIOMachineLogicListener />
+                {isDesktop() ? (
+                  <SystemIOMachineLogicListenerDesktop />
+                ) : (
+                  <SystemIOMachineLogicListenerWeb />
+                )}
                 <Outlet />
               </MachineManagerProvider>
             </AppStateProvider>
