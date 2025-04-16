@@ -24,7 +24,7 @@ kcl-lib = { path = "../kcl-lib" }
 kittycad = { workspace = true }
 kittycad-modeling-cmds = { workspace = true }
 serde_json = { workspace = true }
-tokio = { workspace = true, features = ["sync"] }
+tokio = { workspace = true, features = ["sync", "rt"] }
 toml = "0.8.19"
 tower-lsp = { workspace = true, features = ["runtime-agnostic"] }
 uuid = { workspace = true, features = ["v4", "js", "serde"] }
