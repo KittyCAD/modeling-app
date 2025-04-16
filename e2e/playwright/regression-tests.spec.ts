@@ -1,8 +1,8 @@
+import path from 'path'
 import { bracket } from '@e2e/playwright/fixtures/bracket'
 import type { Page } from '@playwright/test'
 import { reportRejection } from '@src/lib/trap'
 import * as fsp from 'fs/promises'
-import path from 'path'
 
 import { TEST_CODE_TRIGGER_ENGINE_EXPORT_ERROR } from '@e2e/playwright/storageStates'
 import type { TestColor } from '@e2e/playwright/test-utils'
@@ -304,8 +304,9 @@ extrude001 = extrude(sketch001, length = 50)
       await page.keyboard.press('Enter')
       await page.keyboard.press('ArrowLeft')
 
-      await expect(page.locator('.cm-content'))
-        .toContainText(`exampleSketch = startSketchOn("XZ")
+      await expect(
+        page.locator('.cm-content')
+      ).toContainText(`exampleSketch = startSketchOn("XZ")
       |> startProfileAt([0, 0], %)
       |> angledLine(angle = 50, length = 45 )
       |> yLine(endAbsolute = 0)

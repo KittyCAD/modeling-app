@@ -1,6 +1,5 @@
 import { perpendicularDistance } from 'sketch-helpers'
 
-import type { Name } from '@rust/kcl-lib/bindings/Name'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { TagDeclarator } from '@rust/kcl-lib/bindings/TagDeclarator'
 
@@ -12,18 +11,22 @@ import {
   ARG_END_ABSOLUTE,
   ARG_END_ABSOLUTE_X,
   ARG_END_ABSOLUTE_Y,
+  ARG_INTERSECT_TAG,
   ARG_LENGTH,
   ARG_LENGTH_X,
   ARG_LENGTH_Y,
+  ARG_OFFSET,
   ARG_TAG,
   DETERMINING_ARGS,
 } from '@src/lang/constants'
 import {
   createArrayExpression,
+  createBinaryExpression,
   createCallExpression,
   createCallExpressionStdLibKw,
   createLabeledArg,
   createLiteral,
+  createLocalName,
   createObjectExpression,
   createPipeExpression,
   createPipeSubstitution,
@@ -60,6 +63,7 @@ import type {
   SingleValueInput,
   SketchLineHelper,
   SketchLineHelperKw,
+  addCall,
 } from '@src/lang/std/stdTypes'
 import {
   findKwArg,
@@ -128,15 +132,10 @@ export function createFirstArg(
         'angledLineOfYLength',
         'angledLineToX',
         'angledLineToY',
+        'angledLineThatIntersects',
       ].includes(sketchFn)
     )
       return createArrayExpression(val)
-    if (['angledLineThatIntersects'].includes(sketchFn) && val[2])
-      return createObjectExpression({
-        angle: val[0],
-        offset: val[1],
-        intersectTag: val[2],
-      })
   } else {
     if (['xLine', 'xLineTo', 'yLine', 'yLineTo'].includes(sketchFn)) return val
   }
@@ -2324,8 +2323,9 @@ export const circleThreePoint: SketchLineHelperKw = {
     return finalConstraints
   },
 }
+
 export const angledLine: SketchLineHelperKw = {
-  add: ({ node, pathToNode, segmentInput, replaceExistingCallback }) => {
+  add: ({ node, pathToNode, segmentInput, replaceExistingCallback, snaps }) => {
     if (segmentInput.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR
     const { from, to } = segmentInput
     const _node = { ...node }
@@ -2334,11 +2334,27 @@ export const angledLine: SketchLineHelperKw = {
     if (err(_node1)) return _node1
     const { node: pipe } = _node1
 
-    const newAngleVal = createLiteral(roundOff(getAngle(from, to), 0))
+    // When snapping to previous arc's tangent direction, create this expression:
+    //  angledLine({ angle = tangentToEnd(arc001), length = 12 }, %)
+    // Or if snapping to the negative direction:
+    //  angledLine({ angle = tangentToEnd(arc001) + turns::HALF_TURN, length = 12 }, %)
+    const newAngleVal = snaps?.previousArcTag
+      ? snaps.negativeTangentDirection
+        ? createBinaryExpression([
+            createCallExpression('tangentToEnd', [
+              createLocalName(snaps?.previousArcTag),
+            ]),
+            '+',
+            createLocalName('turns::HALF_TURN'),
+          ])
+        : createCallExpression('tangentToEnd', [
+            createLocalName(snaps?.previousArcTag),
+          ])
+      : createLiteral(roundOff(getAngle(from, to), 0))
     const newLengthVal = createLiteral(roundOff(getLength(from, to), 2))
     const newLine = createCallExpressionStdLibKw('angledLine', null, [
-      createLabeledArg('angle', newAngleVal),
-      createLabeledArg('length', newLengthVal),
+      createLabeledArg(ARG_ANGLE, newAngleVal),
+      createLabeledArg(ARG_LENGTH, newLengthVal),
     ])
 
     if (replaceExistingCallback) {
@@ -2348,7 +2364,12 @@ export const angledLine: SketchLineHelperKw = {
           type: 'labeledArg',
           key: 'angle',
           argType: 'angle',
-          expr: newAngleVal,
+          // We cannot pass newAngleVal to expr because it is a Node<Literal>.
+          // We couldn't change that type to be Node<Expr> because there is a lot of code assuming it to be Node<Literal>.
+          // So we added a new optional overrideExpr which can be Node<Expr> and this is used if present in sketchcombos/createNode().
+          expr:
+            newAngleVal.type === 'Literal' ? newAngleVal : createLiteral(''),
+          overrideExpr: newAngleVal,
         },
         {
           type: 'labeledArg',
@@ -2819,7 +2840,7 @@ export const angledLineToY: SketchLineHelperKw = {
     ),
 }
 
-export const angledLineThatIntersects: SketchLineHelper = {
+export const angledLineThatIntersects: SketchLineHelperKw = {
   add: ({
     node,
     pathToNode,
@@ -2858,13 +2879,13 @@ export const angledLineThatIntersects: SketchLineHelper = {
     if (replaceExistingCallback) {
       const result = replaceExistingCallback([
         {
-          type: 'objectProperty',
+          type: 'labeledArg',
           key: 'angle',
           argType: 'angle',
           expr: angle,
         },
         {
-          type: 'objectProperty',
+          type: 'labeledArg',
           key: 'offset',
           argType: 'intersectionOffset',
           expr: offset,
@@ -2886,18 +2907,18 @@ export const angledLineThatIntersects: SketchLineHelper = {
     if (input.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR
     const { to, from } = input
     const _node = { ...node }
-    const nodeMeta = getNodeFromPath<CallExpression>(_node, pathToNode)
+    const nodeMeta = getNodeFromPath<CallExpressionKw>(_node, pathToNode)
     if (err(nodeMeta)) return nodeMeta
 
     const { node: callExpression } = nodeMeta
     const angle = roundOff(getAngle(from, to), 0)
 
-    const firstArg = callExpression.arguments?.[0]
-    const intersectTag =
-      firstArg.type === 'ObjectExpression'
-        ? firstArg.properties.find((p) => p.key.name === 'intersectTag')
-            ?.value || createLiteral('')
-        : createLiteral('')
+    const intersectTag = findKwArg(ARG_INTERSECT_TAG, callExpression)
+    if (intersectTag === undefined) {
+      return new Error(
+        `no ${ARG_INTERSECT_TAG} argument found in angledLineThatIntersect call, which requires it`
+      )
+    }
     const intersectTagName =
       intersectTag.type === 'Name' ? intersectTag.name.name : ''
     const nodeMeta2 = getNodeFromPath<VariableDeclaration>(
@@ -2922,93 +2943,78 @@ export const angledLineThatIntersects: SketchLineHelper = {
       )
     }
 
-    const angleLit = createLiteral(angle)
-
-    mutateObjExpProp(firstArg, angleLit, 'angle')
-    mutateObjExpProp(firstArg, createLiteral(offset), 'offset')
+    mutateKwArg(ARG_ANGLE, callExpression, createLiteral(angle))
+    mutateKwArg(ARG_OFFSET, callExpression, createLiteral(offset))
     return {
       modifiedAst: _node,
       pathToNode,
     }
   },
-  getTag: getTag(),
-  addTag: addTag(),
-  getConstraintInfo: (callExp: CallExpression, code, pathToNode) => {
-    if (callExp.type !== 'CallExpression') return []
-    const firstArg = callExp.arguments?.[0]
-    if (firstArg.type !== 'ObjectExpression') return []
-    const angleIndex = firstArg.properties.findIndex(
-      (p) => p.key.name === 'angle'
-    )
-    const offsetIndex = firstArg.properties.findIndex(
-      (p) => p.key.name === 'offset'
-    )
-    const intersectTag = firstArg.properties.findIndex(
-      (p) => p.key.name === 'intersectTag'
-    )
+  getTag: getTagKwArg(),
+  addTag: addTagKw(),
+  getConstraintInfo: (callExp: CallExpressionKw, code, pathToNode) => {
+    if (callExp.type !== 'CallExpressionKw') return []
+    const angle = findKwArgWithIndex(ARG_ANGLE, callExp)
+    const offset = findKwArgWithIndex(ARG_OFFSET, callExp)
+    const intersectTag = findKwArgWithIndex(ARG_INTERSECT_TAG, callExp)
     const returnVal = []
-    const pathToObjectExp: PathToNode = [
+    const pathToBase: PathToNode = [
       ...pathToNode,
-      ['arguments', 'CallExpression'],
-      [0, 'index'],
-      ['properties', 'ObjectExpression'],
+      ['arguments', 'CallExpressionKw'],
     ]
-    if (angleIndex !== -1) {
-      const angle = firstArg.properties[angleIndex]?.value
+    if (angle !== undefined) {
       const pathToAngleProp: PathToNode = [
-        ...pathToObjectExp,
-        [angleIndex, 'index'],
-        ['value', 'Property'],
+        ...pathToBase,
+        [angle.argIndex, ARG_INDEX_FIELD],
+        ['arg', LABELED_ARG_FIELD],
       ]
       returnVal.push(
         constrainInfo(
           'angle',
-          isNotLiteralArrayOrStatic(angle),
-          code.slice(angle.start, angle.end),
+          isNotLiteralArrayOrStatic(angle.expr),
+          code.slice(angle.expr.start, angle.expr.end),
           'angledLineThatIntersects',
-          'angle',
-          topLevelRange(angle.start, angle.end),
+          { type: 'labeledArg', key: 'angle' },
+          topLevelRange(angle.expr.start, angle.expr.end),
           pathToAngleProp
         )
       )
     }
-    if (offsetIndex !== -1) {
-      const offset = firstArg.properties[offsetIndex]?.value
-      const pathToOffsetProp: PathToNode = [
-        ...pathToObjectExp,
-        [offsetIndex, 'index'],
-        ['value', 'Property'],
-      ]
-      returnVal.push(
-        constrainInfo(
-          'intersectionOffset',
-          isNotLiteralArrayOrStatic(offset),
-          code.slice(offset.start, offset.end),
-          'angledLineThatIntersects',
-          'offset',
-          topLevelRange(offset.start, offset.end),
-          pathToOffsetProp
-        )
-      )
-    }
-    if (intersectTag !== -1) {
-      const tag = firstArg.properties[intersectTag]?.value as Node<Name>
+    if (intersectTag !== undefined) {
       const pathToTagProp: PathToNode = [
-        ...pathToObjectExp,
-        [intersectTag, 'index'],
-        ['value', 'Property'],
+        ...pathToBase,
+        [intersectTag.argIndex, ARG_INDEX_FIELD],
+        ['arg', LABELED_ARG_FIELD],
       ]
       const info = constrainInfo(
         'intersectionTag',
         // This will always be a tag identifier.
         false,
-        code.slice(tag.start, tag.end),
+        code.slice(intersectTag.expr.start, intersectTag.expr.end),
         'angledLineThatIntersects',
-        'intersectTag',
-        topLevelRange(tag.start, tag.end),
+        { type: 'labeledArg', key: 'intersectTag' },
+        topLevelRange(intersectTag.expr.start, intersectTag.expr.end),
         pathToTagProp
       )
       returnVal.push(info)
+    }
+    if (offset !== undefined) {
+      const pathToOffsetProp: PathToNode = [
+        ...pathToBase,
+        [offset.argIndex, ARG_INDEX_FIELD],
+        ['arg', LABELED_ARG_FIELD],
+      ]
+      returnVal.push(
+        constrainInfo(
+          'intersectionOffset',
+          isNotLiteralArrayOrStatic(offset.expr),
+          code.slice(offset.expr.start, offset.expr.end),
+          'angledLineThatIntersects',
+          { type: 'labeledArg', key: 'offset' },
+          topLevelRange(offset.expr.start, offset.expr.end),
+          pathToOffsetProp
+        )
+      )
     }
     return returnVal
   },
@@ -3064,7 +3070,6 @@ export const updateStartProfileAtArgs: SketchLineHelper['updateArgs'] = ({
 }
 
 export const sketchLineHelperMap: { [key: string]: SketchLineHelper } = {
-  angledLineThatIntersects,
   arc,
   arcTo,
 } as const
@@ -3081,6 +3086,7 @@ export const sketchLineHelperMapKw: { [key: string]: SketchLineHelperKw } = {
   angledLine,
   angledLineOfXLength,
   angledLineOfYLength,
+  angledLineThatIntersects,
   angledLineToX,
   angledLineToY,
   tangentialArc,
@@ -3173,6 +3179,7 @@ export function fnNameToTooltip(
       return isAbsolute ? 'xLineTo' : 'xLine'
     case 'yLine':
       return isAbsolute ? 'yLineTo' : 'yLine'
+    case 'angledLineThatIntersects':
     case 'circleThreePoint':
     case 'circle':
     case 'tangentialArc':
@@ -3191,7 +3198,7 @@ export function fnNameToTooltip(
           return tooltip
         }
       }
-      const err = `Unknown angledline arguments, could not map to tooltip. Args were ${argLabels}`
+      const err = `Unknown angledLine arguments, could not map to tooltip. Args were ${argLabels}`
       console.error(err)
       return new Error(err)
     }
@@ -3309,6 +3316,7 @@ interface CreateLineFnCallArgs {
   fnName: ToolTip
   pathToNode: PathToNode
   spliceBetween?: boolean
+  snaps?: addCall['snaps']
 }
 
 export function addNewSketchLn({
@@ -3318,6 +3326,7 @@ export function addNewSketchLn({
   pathToNode,
   input: segmentInput,
   spliceBetween = false,
+  snaps,
 }: CreateLineFnCallArgs):
   | {
       modifiedAst: Node<Program>
@@ -3347,6 +3356,7 @@ export function addNewSketchLn({
     pathToNode,
     segmentInput,
     spliceBetween,
+    snaps,
   })
 }
 
@@ -3893,29 +3903,24 @@ export const getCircle = (
   return new Error('expected the arguments to be for a circle')
 }
 
-const getAngledLineThatIntersects = (
-  callExp: CallExpression
+export const getAngledLineThatIntersects = (
+  callExp: CallExpressionKw
 ):
   | {
       val: [Expr, Expr, Expr]
       tag?: Expr
     }
   | Error => {
-  const firstArg = callExp.arguments[0]
-  if (firstArg.type === 'ObjectExpression') {
-    const tag = firstArg.properties.find((p) => p.key.name === 'tag')?.value
-    const angle = firstArg.properties.find((p) => p.key.name === 'angle')?.value
-    const offset = firstArg.properties.find(
-      (p) => p.key.name === 'offset'
-    )?.value
-    const intersectTag = firstArg.properties.find(
-      (p) => p.key.name === 'intersectTag'
-    )?.value
-    if (angle && offset && intersectTag) {
-      return { val: [angle, offset, intersectTag], tag }
-    }
+  const angle = findKwArg(ARG_ANGLE, callExp)
+  const intersectTag = findKwArg(ARG_INTERSECT_TAG, callExp)
+  const offset = findKwArg(ARG_OFFSET, callExp)
+  if (!angle || !intersectTag || !offset) {
+    return new Error(
+      `angledLineThatIntersects call needs angle, intersectTag, and offset args`
+    )
   }
-  return new Error('expected ArrayExpression or ObjectExpression')
+  const tag = findKwArg(ARG_TAG, callExp)
+  return { val: [angle, intersectTag, offset], tag }
 }
 
 /**
@@ -3946,6 +3951,7 @@ export function isAbsoluteLine(lineCall: CallExpressionKw): boolean | Error {
       return new Error(
         `${name} call has neither ${ARG_END} nor ${ARG_END_ABSOLUTE} params`
       )
+    case 'angledLineThatIntersects':
     case 'circle':
     case 'circleThreePoint':
       return false
@@ -3980,6 +3986,8 @@ export function getArgForEnd(lineCall: CallExpressionKw):
       }
       return getValuesForXYFns(arg)
     }
+    case 'angledLineThatIntersects':
+      return getAngledLineThatIntersects(lineCall)
     case 'yLine':
     case 'xLine': {
       const arg = findKwArgAny(DETERMINING_ARGS, lineCall)
@@ -4038,9 +4046,6 @@ export function getFirstArg(callExp: CallExpression):
   }
   if (['xLine', 'yLine', 'xLineTo', 'yLineTo'].includes(name)) {
     return getFirstArgValuesForXYLineFns(callExp)
-  }
-  if (['angledLineThatIntersects'].includes(name)) {
-    return getAngledLineThatIntersects(callExp)
   }
   if (['tangentialArc'].includes(name)) {
     // TODO probably needs it's own implementation
