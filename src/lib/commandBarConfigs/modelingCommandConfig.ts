@@ -1056,6 +1056,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         hidden: true,
       },
       selection: {
+        // selectionMixed allows for feature tree selection of module imports
         inputType: 'selectionMixed',
         multiple: false,
         required: true,
@@ -1115,6 +1116,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         hidden: true,
       },
       selection: {
+        // selectionMixed allows for feature tree selection of module imports
         inputType: 'selectionMixed',
         multiple: false,
         required: true,
