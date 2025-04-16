@@ -511,5 +511,29 @@ description: Artifact commands sketch_on_face.kcl
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
     }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "set_scene_units",
+      "unit": "mm"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "set_scene_units",
+      "unit": "mm"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "set_scene_units",
+      "unit": "mm"
+    }
   }
 ]
