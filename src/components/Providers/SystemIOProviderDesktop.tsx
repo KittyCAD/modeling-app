@@ -21,94 +21,109 @@ export function SystemIOMachineLogicListener() {
   const navigate = useNavigate()
   const settings = useSettings()
 
-  useEffect(() => {
-    commandBarActor.send({
-      type: 'Add commands',
-      data: {
-        commands: projectCommands,
-      },
-    })
-    return () => {
+  const useAddProjectCommandsToCommandBar = () => {
+    useEffect(() => {
       commandBarActor.send({
-        type: 'Remove commands',
+        type: 'Add commands',
         data: {
           commands: projectCommands,
         },
       })
-    }
-  }, [])
+      return () => {
+        commandBarActor.send({
+          type: 'Remove commands',
+          data: {
+            commands: projectCommands,
+          },
+        })
+      }
+    }, [])
+  }
 
-  // Handle global project name navigation
-  useEffect(() => {
-    if (!requestedProjectName.name) {
-      return
-    }
-    let projectPathWithoutSpecificKCLFile =
-      projectDirectoryPath +
-      window.electron.path.sep +
-      requestedProjectName.name
-
-    const requestedPath = `${PATHS.FILE}/${encodeURIComponent(
-      projectPathWithoutSpecificKCLFile
-    )}`
-    navigate(requestedPath)
-  }, [requestedProjectName])
-
-  // Handle global file name navigation
-  useEffect(() => {
-    if (!requestedFileName.file || !requestedFileName.project) {
-      return
-    }
-    const projectPath = window.electron.join(
-      projectDirectoryPath,
-      requestedFileName.project
-    )
-    const filePath = window.electron.join(projectPath, requestedFileName.file)
-    const requestedPath = `${PATHS.FILE}/${encodeURIComponent(filePath)}`
-    navigate(requestedPath)
-  }, [requestedFileName])
-
-  // Reload all folders when the project directory path changes
-  useEffect(() => {
-    systemIOActor.send({
-      type: SystemIOMachineEvents.setProjectDirectoryPath,
-      data: {
-        requestedProjectDirectoryPath:
-          settings.app.projectDirectory.current || '',
-      },
-    })
-  }, [settings.app.projectDirectory.current])
-
-  // Implement setting the default project folder name
-  useEffect(() => {
-    systemIOActor.send({
-      type: SystemIOMachineEvents.setDefaultProjectFolderName,
-      data: {
-        requestedDefaultProjectFolderName:
-          settings.projects.defaultProjectName.current || '',
-      },
-    })
-  }, [settings.projects.defaultProjectName.current])
-
-  useFileSystemWatcher(
-    async () => {
-      // Gotcha: Chokidar is buggy. It will emit addDir or add on files that did not get created.
-      // This means while the application initialize and Chokidar initializes you cannot tell if
-      // a directory or file is actually created or they are buggy signals. This means you must
-      // ignore all signals during initialization because it is ambiguous. Once those signals settle
-      // you can actually start listening to real signals.
-      // If someone creates folders or files during initialization we ignore those events!
-      if (!hasListedProjects) {
+  const useGlobalProjectNavigation = () => {
+    useEffect(() => {
+      if (!requestedProjectName.name) {
         return
       }
+      let projectPathWithoutSpecificKCLFile =
+        projectDirectoryPath +
+        window.electron.path.sep +
+        requestedProjectName.name
+
+      const requestedPath = `${PATHS.FILE}/${encodeURIComponent(
+        projectPathWithoutSpecificKCLFile
+      )}`
+      navigate(requestedPath)
+    }, [requestedProjectName])
+  }
+
+  const useGlobalFileNavigation = () => {
+    useEffect(() => {
+      if (!requestedFileName.file || !requestedFileName.project) {
+        return
+      }
+      const projectPath = window.electron.join(
+        projectDirectoryPath,
+        requestedFileName.project
+      )
+      const filePath = window.electron.join(projectPath, requestedFileName.file)
+      const requestedPath = `${PATHS.FILE}/${encodeURIComponent(filePath)}`
+      navigate(requestedPath)
+    }, [requestedFileName])
+  }
+
+  const useApplicationProjectDirectory = () => {
+    useEffect(() => {
       systemIOActor.send({
-        type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
+        type: SystemIOMachineEvents.setProjectDirectoryPath,
+        data: {
+          requestedProjectDirectoryPath:
+            settings.app.projectDirectory.current || '',
+        },
       })
-    },
-    settings.app.projectDirectory.current
-      ? [settings.app.projectDirectory.current]
-      : []
-  )
+    }, [settings.app.projectDirectory.current])
+  }
+
+  const useDefaultProjectName = () => {
+    useEffect(() => {
+      systemIOActor.send({
+        type: SystemIOMachineEvents.setDefaultProjectFolderName,
+        data: {
+          requestedDefaultProjectFolderName:
+            settings.projects.defaultProjectName.current || '',
+        },
+      })
+    }, [settings.projects.defaultProjectName.current])
+  }
+
+  const useWatchingApplicationProjectDirectory = () => {
+    useFileSystemWatcher(
+      async () => {
+        // Gotcha: Chokidar is buggy. It will emit addDir or add on files that did not get created.
+        // This means while the application initialize and Chokidar initializes you cannot tell if
+        // a directory or file is actually created or they are buggy signals. This means you must
+        // ignore all signals during initialization because it is ambiguous. Once those signals settle
+        // you can actually start listening to real signals.
+        // If someone creates folders or files during initialization we ignore those events!
+        if (!hasListedProjects) {
+          return
+        }
+        systemIOActor.send({
+          type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
+        })
+      },
+      settings.app.projectDirectory.current
+        ? [settings.app.projectDirectory.current]
+        : []
+    )
+  }
+
+  useAddProjectCommandsToCommandBar()
+  useGlobalProjectNavigation()
+  useGlobalFileNavigation()
+  useApplicationProjectDirectory()
+  useDefaultProjectName()
+  useWatchingApplicationProjectDirectory()
 
   return null
 }
