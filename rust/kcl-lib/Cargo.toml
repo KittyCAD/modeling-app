@@ -122,7 +122,7 @@ criterion = { version = "0.5.1", features = ["async_tokio"] }
 expectorate = "1.1.0"
 handlebars = "6.3.2"
 image = { version = "0.25.6", default-features = false, features = ["png"] }
-insta = { version = "1.41.1", features = ["json", "filters", "redactions"] }
+insta = { version = "1.42.2", features = ["json", "filters", "redactions"] }
 kcl-directory-test-macro = { version = "0.1", path = "../kcl-directory-test-macro" }
 miette = { version = "7.5.0", features = ["fancy"] }
 pretty_assertions = "1.4.1"
