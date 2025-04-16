@@ -1046,7 +1046,7 @@ openSketch = startSketchOn(XY)
   }) => {
     // One dumb hardcoded screen pixel value
     const testPoint = { x: 620, y: 257 }
-    const expectedOutput = `helix001 = helix(  axis = X,  radius = 5,  length = 5,  revolutions = 1,  angleStart = 360,  ccw = false,)`
+    const expectedOutput = `helix001 = helix(  axis = X,  radius = 5,  length = 5,  revolutions = 1,  angleStart = 270,  ccw = false,)`
     const expectedLine = `axis=X,`
 
     await homePage.goToModelingScene()
@@ -1072,6 +1072,23 @@ openSketch = startSketchOn(XY)
       await expect.poll(() => page.getByText('Axis').count()).toBe(6)
       await cmdBar.progressCmdBar()
       await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'arguments',
+        currentArgKey: 'angleStart',
+        highlightedHeaderArg: 'angleStart',
+        currentArgValue: '360',
+        headerArguments: {
+          Mode: 'Axis',
+          Axis: 'X',
+          Revolutions: '1',
+          AngleStart: '',
+          Length: '',
+          Radius: '',
+          CounterClockWise: '',
+        },
+        commandName: 'Helix',
+      })
+      await cmdBar.currentArgumentInput.locator('.cm-content').fill('270')
       await cmdBar.progressCmdBar()
       await cmdBar.progressCmdBar()
       await cmdBar.progressCmdBar()
@@ -1080,7 +1097,7 @@ openSketch = startSketchOn(XY)
         headerArguments: {
           Mode: 'Axis',
           Axis: 'X',
-          AngleStart: '360',
+          AngleStart: '270',
           Revolutions: '1',
           Length: '5',
           Radius: '5',
@@ -1115,7 +1132,7 @@ openSketch = startSketchOn(XY)
         currentArgValue: '',
         headerArguments: {
           Axis: 'X',
-          AngleStart: '360',
+          AngleStart: '270',
           Revolutions: '1',
           Radius: '5',
           Length: initialInput,
@@ -1131,7 +1148,7 @@ openSketch = startSketchOn(XY)
         stage: 'review',
         headerArguments: {
           Axis: 'X',
-          AngleStart: '360',
+          AngleStart: '270',
           Revolutions: '1',
           Radius: '5',
           Length: newInput,
