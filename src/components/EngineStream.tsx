@@ -427,11 +427,9 @@ export const EngineStream = (props: {
         }
         menuTargetElement={videoWrapperRef}
       />
-      {[
-        EngineStreamState.Off,
-        EngineStreamState.Reconfiguring,
-        EngineStreamState.WaitForMediaStream,
-      ].some((s) => s === engineStreamState.value) && (
+      {![EngineStreamState.Playing, EngineStreamState.Paused].some(
+        (s) => s === engineStreamState.value
+      ) && (
         <Loading dataTestId="loading-engine" className="fixed inset-0">
           Connecting to engine
         </Loading>
