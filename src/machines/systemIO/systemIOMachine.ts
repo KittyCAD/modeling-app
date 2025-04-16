@@ -202,7 +202,7 @@ export const systemIOMachine = setup({
   initial: SystemIOMachineStates.idle,
   // Remember, this machine and change its projectDirectory at any point
   // '' will be no project directory, aka clear this machine out!
-  // To be the aboslute root of someones computer we should take the string of path.resolve() in node.js which is different for each OS
+  // To be the absolute root of someones computer we should take the string of path.resolve() in node.js which is different for each OS
   context: () => ({
     folders: [],
     defaultProjectFolderName: DEFAULT_PROJECT_NAME,

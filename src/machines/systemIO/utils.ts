@@ -59,7 +59,7 @@ export type SystemIOContext = {
   defaultProjectFolderName: string
   // working project directory that stores all the project folders
   projectDirectoryPath: string
-  // has the application gone through the initialiation of systemIOMachine at least once.
+  // has the application gone through the initialization of systemIOMachine at least once.
   // this is required to prevent chokidar from spamming invalid events during initialization.
   hasListedProjects: boolean
   requestedProjectName: { name: string }
