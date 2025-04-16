@@ -337,7 +337,6 @@ export const EngineStream = (props: {
     if (modelingMachineState.matches('Sketch')) return
     // Only respect default plane selection if we're on a selection command argument
     if (
-      modelingMachineState.matches({ idle: 'showPlanes' }) &&
       !(
         commandBarState.matches('Gathering arguments') &&
         commandBarState.context.currentArgument?.inputType === 'selection'
@@ -364,7 +363,6 @@ export const EngineStream = (props: {
       !isNetworkOkay ||
       !engineStreamState.context.videoRef.current ||
       modelingMachineState.matches('Sketch') ||
-      modelingMachineState.matches({ idle: 'showPlanes' }) ||
       sceneInfra.camControls.wasDragging === true ||
       !btnName(e.nativeEvent).left
     ) {
