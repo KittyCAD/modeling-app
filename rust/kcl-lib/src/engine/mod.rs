@@ -421,6 +421,10 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         // Add the command ID to the list of async commands.
         self.ids_of_async_commands().write().await.insert(id, source_range);
 
+        // Add to artifact commands.
+        self.handle_artifact_command(cmd, id.into(), &HashMap::from([(id, source_range)]))
+            .await?;
+
         // Fire off the command now, but don't wait for the response, we don't care about it.
         self.inner_fire_modeling_cmd(
             id,
