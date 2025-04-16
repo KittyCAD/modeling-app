@@ -1379,8 +1379,13 @@ export async function enterTransformFlow({
       const xArg = translate.arguments.find(
         (a) => a.label.type === 'Identifier' && a.label.name === 'x'
       )
-      if (xArg?.type === 'LabeledArg' && xArg.arg.type === 'Literal') {
-        const result = await stringToKclExpression(xArg.arg.raw)
+      if (
+        xArg?.type === 'LabeledArg' &&
+        (xArg.arg.type === 'Name' || xArg.arg.type === 'Literal')
+      ) {
+        const value =
+          xArg.arg.type === 'Name' ? xArg.arg.name.name : xArg.arg.raw
+        const result = await stringToKclExpression(value)
         if (!(err(result) || 'errors' in result)) {
           tx = result
         }
@@ -1389,8 +1394,13 @@ export async function enterTransformFlow({
       const yArg = translate.arguments.find(
         (a) => a.label.type === 'Identifier' && a.label.name === 'y'
       )
-      if (yArg?.type === 'LabeledArg' && yArg.arg.type === 'Literal') {
-        const result = await stringToKclExpression(yArg.arg.raw)
+      if (
+        yArg?.type === 'LabeledArg' &&
+        (yArg.arg.type === 'Name' || yArg.arg.type === 'Literal')
+      ) {
+        const value =
+          yArg.arg.type === 'Name' ? yArg.arg.name.name : yArg.arg.raw
+        const result = await stringToKclExpression(value)
         if (!(err(result) || 'errors' in result)) {
           ty = result
         }
@@ -1399,8 +1409,13 @@ export async function enterTransformFlow({
       const zArg = translate.arguments.find(
         (a) => a.label.type === 'Identifier' && a.label.name === 'z'
       )
-      if (zArg?.type === 'LabeledArg' && zArg.arg.type === 'Literal') {
-        const result = await stringToKclExpression(zArg.arg.raw)
+      if (
+        zArg?.type === 'LabeledArg' &&
+        (zArg.arg.type === 'Name' || zArg.arg.type === 'Literal')
+      ) {
+        const value =
+          zArg.arg.type === 'Name' ? zArg.arg.name.name : zArg.arg.raw
+        const result = await stringToKclExpression(value)
         if (!(err(result) || 'errors' in result)) {
           tz = result
         }
@@ -1414,8 +1429,13 @@ export async function enterTransformFlow({
       const rollArg = rotate.arguments.find(
         (a) => a.label.type === 'Identifier' && a.label.name === 'roll'
       )
-      if (rollArg?.type === 'LabeledArg' && rollArg.arg.type === 'Literal') {
-        const result = await stringToKclExpression(rollArg.arg.raw)
+      if (
+        rollArg?.type === 'LabeledArg' &&
+        (rollArg.arg.type === 'Name' || rollArg.arg.type === 'Literal')
+      ) {
+        const value =
+          rollArg.arg.type === 'Name' ? rollArg.arg.name.name : rollArg.arg.raw
+        const result = await stringToKclExpression(value)
         if (!(err(result) || 'errors' in result)) {
           rr = result
         }
@@ -1424,8 +1444,15 @@ export async function enterTransformFlow({
       const pitchArg = rotate.arguments.find(
         (a) => a.label.type === 'Identifier' && a.label.name === 'pitch'
       )
-      if (pitchArg?.type === 'LabeledArg' && pitchArg.arg.type === 'Literal') {
-        const result = await stringToKclExpression(pitchArg.arg.raw)
+      if (
+        pitchArg?.type === 'LabeledArg' &&
+        (pitchArg.arg.type === 'Name' || pitchArg.arg.type === 'Literal')
+      ) {
+        const value =
+          pitchArg.arg.type === 'Name'
+            ? pitchArg.arg.name.name
+            : pitchArg.arg.raw
+        const result = await stringToKclExpression(value)
         if (!(err(result) || 'errors' in result)) {
           rp = result
         }
@@ -1434,8 +1461,13 @@ export async function enterTransformFlow({
       const yawArg = rotate.arguments.find(
         (a) => a.label.type === 'Identifier' && a.label.name === 'yaw'
       )
-      if (yawArg?.type === 'LabeledArg' && yawArg.arg.type === 'Literal') {
-        const result = await stringToKclExpression(yawArg.arg.raw)
+      if (
+        yawArg?.type === 'LabeledArg' &&
+        (yawArg.arg.type === 'Name' || yawArg.arg.type === 'Literal')
+      ) {
+        const value =
+          yawArg.arg.type === 'Name' ? yawArg.arg.name.name : yawArg.arg.raw
+        const result = await stringToKclExpression(value)
         if (!(err(result) || 'errors' in result)) {
           ry = result
         }

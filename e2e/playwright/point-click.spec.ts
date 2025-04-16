@@ -3926,6 +3926,7 @@ extrude001 = extrude(profile001, length = 100)
         await cmdBar.progressCmdBar()
         await toolbar.closePane('feature-tree')
       })
+
       await test.step('Confirm code and scene have changed', async () => {
         await toolbar.openPane('code')
         if (variables) {
@@ -3959,6 +3960,47 @@ extrude001 = extrude(profile001, length = 100)
         }
         await scene.expectPixelColor(bgColor, midPoint, tolerance)
         await scene.expectPixelColor(partColor, moreToTheRightPoint, tolerance)
+      })
+
+      await test.step('Edit transform', async () => {
+        await toolbar.openPane('feature-tree')
+        const op = await toolbar.getFeatureTreeOperation('Extrude', 0)
+        await op.click({ button: 'right' })
+        await page.getByTestId('context-menu-set-transform').click()
+        await cmdBar.expectState({
+          stage: 'arguments',
+          currentArgKey: 'Rotate Yaw',
+          currentArgValue: variables ? 'ry001' : '1.3',
+          headerArguments: {
+            'Translate X': '3',
+            'Translate Y': '0.1',
+            'Translate Z': '0.2',
+            'Rotate Roll': '1.1',
+            'Rotate Pitch': '1.2',
+            'Rotate Yaw': '1.3',
+          },
+          highlightedHeaderArg: 'Rotate Yaw',
+          commandName: 'Transform',
+        })
+        await page.keyboard.insertText('13')
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          stage: 'review',
+          headerArguments: {
+            'Translate X': '3',
+            'Translate Y': '0.1',
+            'Translate Z': '0.2',
+            'Rotate Roll': '1.1',
+            'Rotate Pitch': '1.2',
+            'Rotate Yaw': '13',
+          },
+          commandName: 'Transform',
+        })
+        await cmdBar.progressCmdBar()
+        await toolbar.closePane('feature-tree')
+        await toolbar.openPane('code')
+        await editor.expectEditor.toContain(`yaw = 13`)
+        await page.waitForTimeout(2000)
       })
     })
   })
