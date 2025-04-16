@@ -5,16 +5,10 @@ import { OpenInDesktopAppHandler } from '@src/components/OpenInDesktopAppHandler
 import { SystemIOMachineLogicListener } from '@src/components/Providers/SystemIOProviderDesktop'
 import { RouteProvider } from '@src/components/RouteProvider'
 import { KclContextProvider } from '@src/lang/KclProvider'
-import { useEffect } from 'react'
 import { Outlet } from 'react-router-dom'
-function RootLayout() {
-  useEffect(() => {
-    console.log('MyComponent mounted')
 
-    return () => {
-      console.log('MyComponent unmounted')
-    }
-  }, [])
+// Root component will live for the entire applications runtime
+function RootLayout() {
   return (
     <OpenInDesktopAppHandler>
       <RouteProvider>
