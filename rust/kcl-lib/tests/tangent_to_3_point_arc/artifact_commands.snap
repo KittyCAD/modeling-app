@@ -123,13 +123,13 @@ description: Artifact commands tangent_to_3_point_arc.kcl
       "segment": {
         "type": "arc_to",
         "interior": {
-          "x": 200.0,
-          "y": -100.0,
+          "x": 300.0,
+          "y": 100.0,
           "z": 0.0
         },
         "end": {
-          "x": 300.0,
-          "y": 100.0,
+          "x": 200.0,
+          "y": -100.0,
           "z": 0.0
         },
         "relative": false
@@ -145,8 +145,8 @@ description: Artifact commands tangent_to_3_point_arc.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -54.8737,
-          "y": 83.5995,
+          "x": -99.8038,
+          "y": -6.2608,
           "z": 0.0
         },
         "relative": true

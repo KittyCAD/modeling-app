@@ -1938,13 +1938,13 @@ description: Artifact commands makeup-mirror.kcl
       "segment": {
         "type": "arc_to",
         "interior": {
-          "x": 260.0,
-          "y": 188.5,
+          "x": 170.0,
+          "y": 98.5,
           "z": 0.0
         },
         "end": {
-          "x": 170.0,
-          "y": 98.5,
+          "x": 260.0,
+          "y": 188.5,
           "z": 0.0
         },
         "relative": false
@@ -1977,13 +1977,13 @@ description: Artifact commands makeup-mirror.kcl
       "segment": {
         "type": "arc_to",
         "interior": {
-          "x": 80.0,
-          "y": 188.5,
+          "x": 170.0,
+          "y": 97.5,
           "z": 0.0
         },
         "end": {
-          "x": 170.0,
-          "y": 97.5,
+          "x": 80.0,
+          "y": 188.5,
           "z": 0.0
         },
         "relative": false
@@ -2047,26 +2047,6 @@ description: Artifact commands makeup-mirror.kcl
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
       "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
     }
   },
   {
