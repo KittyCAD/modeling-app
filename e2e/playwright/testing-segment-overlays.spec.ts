@@ -785,10 +785,10 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
 sketch001 = startSketchOn(XZ)
 profile001 = startProfileAt([56.37, 120.33], sketch001)
   |> line(end = [162.86, 106.48])
-  |> arcTo({
+  |> arc(
        interior = [360.16, 231.76],
-       end = [391.48, 131.54]
-     }, %)
+       endAbsolute = [391.48, 131.54],
+     )
   |> yLine(-131.54, %)
   |> arc(angleStart = 33.53, angleEnd = -141.07, radius = 126.46)
 `
@@ -1041,10 +1041,7 @@ part001 = startSketchOn(XZ)
   |> angledLine(angle = 89, endAbsoluteY = 9.14 + 0)
   |> angledLineThatIntersects(angle = 4.14, intersectTag = a, offset = 9)
   |> tangentialArc(endAbsolute = [3.14 + 13, 1.14])
-  |> arcTo({
-       interior = [16.25, 5.12],
-       end = [21.61, 4.15]
-     }, %)
+  |> arc(interior = [16.25, 5.12], endAbsolute = [21.61, 4.15])
   |> arc(angleStart = 40.27, angleEnd = -38.05, radius = 9.03)
 
       `
