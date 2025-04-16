@@ -178,5 +178,29 @@ description: Artifact commands tan_arc_x_line.kcl
         "relative": false
       }
     }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "set_scene_units",
+      "unit": "mm"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "set_scene_units",
+      "unit": "mm"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "set_scene_units",
+      "unit": "mm"
+    }
   }
 ]
