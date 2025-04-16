@@ -44,6 +44,7 @@
         packages =
           (with pkgs; [
             rustToolchain
+            cargo-criterion
             cargo-nextest
             just
             postgresql.lib
