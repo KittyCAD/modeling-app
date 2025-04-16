@@ -450,6 +450,14 @@ export type ModelingMachineEvent =
       planeId: string
       planeKey: string
     }
+  | {
+      type: 'Save default plane visibility'
+      planeId: string
+      planeKey: string
+    }
+  | {
+      type: 'Restore default plane visibility'
+    }
 
 export type MoveDesc = { line: number; snippet: string }
 
@@ -486,6 +494,7 @@ export interface ModelingMachineContext {
   segmentHoverMap: { [pathToNodeString: string]: number }
   store: Store
   defaultPlaneVisibility: Record<string, boolean>
+  savedDefaultPlaneVisibility: Record<string, boolean>
 }
 
 export const modelingMachineDefaultContext: ModelingMachineContext = {
@@ -523,6 +532,12 @@ export const modelingMachineDefaultContext: ModelingMachineContext = {
     openPanes: getPersistedContext().openPanes || ['code'],
   },
   defaultPlaneVisibility: {
+    xy: true,
+    xz: true,
+    yz: true,
+  },
+  // Manually toggled plane visibility is saved and restored when going back to modeling mode
+  savedDefaultPlaneVisibility: {
     xy: true,
     xz: true,
     yz: true,
@@ -772,6 +787,8 @@ export const modelingMachine = setup({
     }),
     'set selection filter to curves only': () => {
       ;(async () => {
+        // This definitely runs but doesn't seem to have an effect
+        console.log('>> set selection to curve only')
         await engineCommandManager.sendSceneCommand({
           type: 'modeling_cmd_req',
           cmd_id: uuidv4(),
@@ -1127,8 +1144,10 @@ export const modelingMachine = setup({
       kclManager.setSelectionFilter(['face', 'object'])
     },
     /** TODO: this action is hiding unawaited asynchronous code */
-    'set selection filter to defaults': () =>
-      kclManager.defaultSelectionFilter(),
+    'set selection filter to defaults': () => {
+      console.log('>>>> defaults')
+      kclManager.defaultSelectionFilter()
+    },
     'Delete segment': ({ context: { sketchDetails }, event }) => {
       if (event.type !== 'Delete segment') return
       if (!sketchDetails || !event.data) return
@@ -1264,7 +1283,6 @@ export const modelingMachine = setup({
       if (event.type !== 'Toggle default plane visibility') return {}
 
       const currentVisibilityMap = context.defaultPlaneVisibility
-
       const currentVisibility = currentVisibilityMap[event.planeKey]
       const newVisibility = !currentVisibility
 
@@ -1276,6 +1294,28 @@ export const modelingMachine = setup({
         defaultPlaneVisibility: {
           ...currentVisibilityMap,
           [event.planeKey]: newVisibility,
+        },
+      }
+    }),
+    // Saves the default plane visibility to be able to restore when going back from sketch mode
+    'Save default plane visibility': assign(({ context, event }) => {
+      console.log('SAVE')
+      return {
+        savedDefaultPlaneVisibility: {
+          ...context.defaultPlaneVisibility,
+        },
+      }
+    }),
+    'Restore default plane visibility': assign(({ context }) => {
+      for (const planeKey in context.savedDefaultPlaneVisibility) {
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        kclManager.setPlaneHidden(planeKey, !context.savedDefaultPlaneVisibility[planeKey])
+      }
+
+      return {
+        defaultPlaneVisibility: {
+          ...context.defaultPlaneVisibility,
+          ...context.savedDefaultPlaneVisibility,
         },
       }
     }),
@@ -2962,38 +3002,23 @@ export const modelingMachine = setup({
         'Boolean Subtract': 'Boolean subtracting',
         'Boolean Union': 'Boolean uniting',
         'Boolean Intersect': 'Boolean intersecting',
-      },
 
-      entry: 'reset client scene mouse handlers',
-
-      states: {
-        hidePlanes: {
-          on: {
-            'Artifact graph populated': {
-              target: 'showPlanes',
-              guard: 'no kcl errors',
-            },
-          },
-
-          entry: 'hide default planes',
-        },
-
-        showPlanes: {
-          on: {
-            'Artifact graph emptied': 'hidePlanes',
-          },
-
-          entry: [
-            'show default planes',
+        // Can only show planes after artifact graph is populated
+        'Artifact graph populated': {
+          actions: [
+            'Restore default plane visibility',
             'reset camera position',
             'set selection filter to curves only',
-          ],
-          description: `We want to disable selections and hover highlights here, because users can't do anything with that information until they actually add something to the scene. The planes are just for orientation here.`,
-          exit: 'set selection filter to defaults',
-        },
+          ]
+        }
       },
 
-      initial: 'hidePlanes',
+      entry: [
+        'reset client scene mouse handlers',
+        'Restore default plane visibility',
+        'reset camera position',
+        'set selection filter to curves only',
+      ]
     },
 
     Sketch: {
@@ -4104,6 +4129,7 @@ export const modelingMachine = setup({
 
     'Sketch no face': {
       entry: [
+        'Save default plane visibility',
         'disable copilot',
         'show default planes',
         'set selection filter to faces only',

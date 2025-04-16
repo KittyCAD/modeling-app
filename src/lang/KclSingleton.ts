@@ -707,6 +707,16 @@ export class KclManager {
     }
     return Promise.all(thePromises)
   }
+
+  setPlaneHidden(planeKey: string, hidden: boolean) {
+    const planeId = this.defaultPlanes?.[planeKey as keyof typeof this.defaultPlanes]
+    if (!planeId) {
+      reportError(new Error(`Plane ${planeKey} not found`))
+      return
+    }
+    return this.engineCommandManager.setPlaneHidden(planeId, hidden)
+  }
+
   /** TODO: this function is hiding unawaited asynchronous work */
   defaultSelectionFilter(selectionsToRestore?: Selections) {
     setSelectionFilterToDefault(this.engineCommandManager, selectionsToRestore)
