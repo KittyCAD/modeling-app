@@ -47,6 +47,7 @@ interface StdLibCallInfo {
     | PrepareToEditCallback
     | PrepareToEditFailurePayload
   supportsAppearance?: boolean
+  supportsTransform?: boolean
 }
 
 /**
@@ -1009,6 +1010,7 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     icon: 'extrude',
     prepareToEdit: prepareToEditExtrude,
     supportsAppearance: true,
+    supportsTransform: true,
   },
   fillet: {
     label: 'Fillet',
@@ -1027,19 +1029,26 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
   hollow: {
     label: 'Hollow',
     icon: 'hollow',
+    supportsAppearance: true,
+    supportsTransform: true,
   },
   import: {
     label: 'Import',
     icon: 'import',
+    supportsAppearance: true,
+    supportsTransform: true,
   },
   intersect: {
     label: 'Intersect',
     icon: 'booleanIntersect',
+    supportsAppearance: true,
+    supportsTransform: true,
   },
   loft: {
     label: 'Loft',
     icon: 'loft',
     supportsAppearance: true,
+    supportsTransform: true,
   },
   offsetPlane: {
     label: 'Offset Plane',
@@ -1053,6 +1062,8 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
   patternCircular3d: {
     label: 'Circular Pattern',
     icon: 'patternCircular3d',
+    supportsAppearance: true,
+    supportsTransform: true,
   },
   patternLinear2d: {
     label: 'Linear Pattern',
@@ -1061,18 +1072,22 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
   patternLinear3d: {
     label: 'Linear Pattern',
     icon: 'patternLinear3d',
+    supportsAppearance: true,
+    supportsTransform: true,
   },
   revolve: {
     label: 'Revolve',
     icon: 'revolve',
     prepareToEdit: prepareToEditRevolve,
     supportsAppearance: true,
+    supportsTransform: true,
   },
   shell: {
     label: 'Shell',
     icon: 'shell',
     prepareToEdit: prepareToEditShell,
     supportsAppearance: true,
+    supportsTransform: true,
   },
   startSketchOn: {
     label: 'Sketch',
@@ -1328,6 +1343,17 @@ export async function enterTransformFlow({
       'Unsupported operation type. Please edit in the code editor.'
     )
   }
+
+  if (
+    operation.type !== 'GroupBegin' &&
+    stdLibMap[operation.name] &&
+    !stdLibMap[operation.name].supportsTransform
+  ) {
+    return new Error(
+      'Unsupported operation type. Please edit in the code editor.'
+    )
+  }
+
   const nodeToEdit = getNodePathFromSourceRange(
     kclManager.ast,
     sourceRangeFromRust(operation.sourceRange)

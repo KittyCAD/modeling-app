@@ -457,6 +457,10 @@ const OperationItem = (props: {
             <ContextMenuItem
               onClick={enterTransformFlow}
               data-testid="context-menu-set-transform"
+              disabled={
+                props.item.type !== 'GroupBegin' &&
+                !stdLibMap[props.item.name]?.supportsTransform
+              }
             >
               Set transform
             </ContextMenuItem>,
