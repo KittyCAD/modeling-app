@@ -10,11 +10,11 @@ This will work on any solid, including extruded solids, revolved solids, and she
 
 ```js
 appearance(
-  solids: [Solid],
+  solids: SolidOrImportedGeometry,
   color: String,
   metalness?: number,
   roughness?: number,
-): [Solid]
+): SolidOrImportedGeometry
 ```
 
 
@@ -22,14 +22,14 @@ appearance(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `solids` | [`[Solid]`](/docs/kcl/types/Solid) | The solid(s) whose appearance is being set | Yes |
+| `solids` | [`SolidOrImportedGeometry`](/docs/kcl/types/SolidOrImportedGeometry) | The solid(s) whose appearance is being set | Yes |
 | `color` | `String` | Color of the new material, a hex string like '#ff0000' | Yes |
 | `metalness` | [`number`](/docs/kcl/types/number) | Metalness of the new material, a percentage like 95.7. | No |
 | `roughness` | [`number`](/docs/kcl/types/number) | Roughness of the new material, a percentage like 95.7. | No |
 
 ### Returns
 
-[`[Solid]`](/docs/kcl/types/Solid)
+[`SolidOrImportedGeometry`](/docs/kcl/types/SolidOrImportedGeometry) - Data for a solid or an imported geometry.
 
 
 ### Examples
