@@ -11,7 +11,7 @@ use uuid::Uuid;
 use wasm_bindgen::prelude::*;
 
 use crate::{
-    engine::{EngineStats, ExecutionKind},
+    engine::EngineStats,
     errors::{KclError, KclErrorDetails},
     execution::{ArtifactCommand, DefaultPlanes, IdGenerator},
     SourceRange,
@@ -42,7 +42,6 @@ pub struct EngineConnection {
     batch_end: Arc<RwLock<IndexMap<uuid::Uuid, (WebSocketRequest, SourceRange)>>>,
     responses: Arc<RwLock<IndexMap<Uuid, WebSocketResponse>>>,
     artifact_commands: Arc<RwLock<Vec<ArtifactCommand>>>,
-    execution_kind: Arc<RwLock<ExecutionKind>>,
     /// The default planes for the scene.
     default_planes: Arc<RwLock<Option<DefaultPlanes>>>,
     stats: EngineStats,
@@ -61,7 +60,6 @@ impl EngineConnection {
             batch_end: Arc::new(RwLock::new(IndexMap::new())),
             responses: Arc::new(RwLock::new(IndexMap::new())),
             artifact_commands: Arc::new(RwLock::new(Vec::new())),
-            execution_kind: Default::default(),
             default_planes: Default::default(),
             stats: Default::default(),
         })
@@ -164,18 +162,6 @@ impl crate::engine::EngineManager for EngineConnection {
         self.artifact_commands.clone()
     }
 
-    async fn execution_kind(&self) -> ExecutionKind {
-        let guard = self.execution_kind.read().await;
-        *guard
-    }
-
-    async fn replace_execution_kind(&self, execution_kind: ExecutionKind) -> ExecutionKind {
-        let mut guard = self.execution_kind.write().await;
-        let original = *guard;
-        *guard = execution_kind;
-        original
-    }
-
     fn get_default_planes(&self) -> Arc<RwLock<Option<DefaultPlanes>>> {
         self.default_planes.clone()
     }
@@ -217,11 +203,6 @@ impl crate::engine::EngineManager for EngineConnection {
         let ws_result = self
             .do_send_modeling_cmd(id, source_range, cmd, id_to_source_range)
             .await?;
-
-        // In isolated mode, we don't save the response.
-        if self.execution_kind().await.is_isolated() {
-            return Ok(ws_result);
-        }
 
         let mut responses = self.responses.write().await;
         responses.insert(id, ws_result.clone());
