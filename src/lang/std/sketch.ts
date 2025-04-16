@@ -1424,16 +1424,13 @@ export const arc: SketchLineHelperKw = {
     const startAngleDegrees = (startAngle * 180) / Math.PI
     const endAngleDegrees = (endAngle * 180) / Math.PI
 
-    // Create the arc call expression
-    const arcObj = createObjectExpression({
-      radius: createLiteral(roundOff(radius)),
-      angleStart: createLiteral(roundOff(startAngleDegrees)),
-      angleEnd: createLiteral(roundOff(endAngleDegrees)),
-    })
-
-    const newArc = createCallExpression('arc', [
-      arcObj,
-      createPipeSubstitution(),
+    const newArc = createCallExpressionStdLibKw('arc', null, [
+      createLabeledArg('radius', createLiteral(roundOff(radius))),
+      createLabeledArg(
+        'angleStart',
+        createLiteral(roundOff(startAngleDegrees))
+      ),
+      createLabeledArg('angleEnd', createLiteral(roundOff(endAngleDegrees))),
     ])
 
     if (
@@ -1534,15 +1531,10 @@ export const arc: SketchLineHelperKw = {
     if (input.type !== 'arc-segment') return ARC_SEGMENT_ERR
     const { center, radius, from, to } = input
     const _node = { ...node }
-    const nodeMeta = getNodeFromPath<CallExpression>(_node, pathToNode)
+    const nodeMeta = getNodeFromPath<CallExpressionKw>(_node, pathToNode)
     if (err(nodeMeta)) return nodeMeta
 
     const { node: callExpression, shallowPath } = nodeMeta
-    const firstArg = callExpression.arguments?.[0]
-
-    if (firstArg.type !== 'ObjectExpression') {
-      return new Error('Expected object expression as first argument')
-    }
 
     // Calculate start angle (from center to 'from' point)
     const startAngle = Math.atan2(from[1] - center[1], from[0] - center[0])
@@ -1554,17 +1546,12 @@ export const arc: SketchLineHelperKw = {
     const startAngleDegrees = (startAngle * 180) / Math.PI
     const endAngleDegrees = (endAngle * 180) / Math.PI
 
-    // Update radius
     const newRadius = createLiteral(roundOff(radius))
-    mutateObjExpProp(firstArg, newRadius, 'radius')
-
-    // Update angleStart
     const newAngleStart = createLiteral(roundOff(startAngleDegrees))
-    mutateObjExpProp(firstArg, newAngleStart, 'angleStart')
-
-    // Update angleEnd
     const newAngleEnd = createLiteral(roundOff(endAngleDegrees))
-    mutateObjExpProp(firstArg, newAngleEnd, 'angleEnd')
+    mutateKwArg('radius', callExpression, newRadius)
+    mutateKwArg('angleStart', callExpression, newAngleStart)
+    mutateKwArg('angleEnd', callExpression, newAngleEnd)
 
     return {
       modifiedAst: _node,
@@ -3048,10 +3035,7 @@ export function changeSketchArguments(
     sourceRangeOrPath.type === 'sourceRange'
       ? getNodePathFromSourceRange(_node, sourceRangeOrPath.sourceRange)
       : sourceRangeOrPath.pathToNode
-  const nodeMeta = getNodeFromPath<CallExpression | CallExpressionKw>(
-    _node,
-    thePath
-  )
+  const nodeMeta = getNodeFromPath<CallExpressionKw>(_node, thePath)
   if (err(nodeMeta)) return nodeMeta
 
   const { node: callExpression, shallowPath } = nodeMeta
