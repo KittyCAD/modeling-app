@@ -1733,7 +1733,7 @@ pub(crate) async fn inner_arc(
             relative_arc(&args, id, exec_state, sketch, from, angle_start, angle_end, radius, tag).await
         }
         (None, None, None, Some(interior), Some(end_absolute)) => {
-            absolute_arc(&args, id, exec_state, sketch, from, interior, end_absolute,tag).await
+            absolute_arc(&args, id, exec_state, sketch, from, interior, end_absolute, tag).await
         }
         _ => {
             Err(KclError::Type(KclErrorDetails {
