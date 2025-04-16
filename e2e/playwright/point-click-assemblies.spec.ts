@@ -143,8 +143,107 @@ test.describe('Point-and-click assemblies tests', () => {
         await scene.settled(cmdBar)
       })
 
-      await test.step('Set translate on the second part', async () => {
+      await test.step('Insert a second time and expect error', async () => {
+        // TODO: revisit once we have clone with #6209
+        await insertPartIntoAssembly(
+          'bracket.kcl',
+          'bracket',
+          toolbar,
+          cmdBar,
+          page
+        )
+        await editor.expectEditor.toContain(
+          `
+        import "cylinder.kcl" as cylinder
+        import "bracket.kcl" as bracket
+        import "bracket.kcl" as bracket
+        cylinder
+        bracket
+        bracket
+      `,
+          { shouldNormalise: true }
+        )
+        await scene.settled(cmdBar)
+        await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
+      })
+    }
+  )
+
+  test(
+    `Insert the bracket part into an assembly and transform it`,
+    { tag: ['@electron'] },
+    async ({
+      context,
+      page,
+      homePage,
+      scene,
+      editor,
+      toolbar,
+      cmdBar,
+      tronApp,
+    }) => {
+      if (!tronApp) {
+        fail()
+      }
+
+      const midPoint = { x: 500, y: 250 }
+      const moreToTheRightPoint = { x: 900, y: 250 }
+      const bgColor: [number, number, number] = [30, 30, 30]
+      const partColor: [number, number, number] = [100, 100, 100]
+      const tolerance = 30
+      const u = await getUtils(page)
+      const gizmo = page.locator('[aria-label*=gizmo]')
+      const resetCameraButton = page.getByRole('button', { name: 'Reset view' })
+
+      await test.step('Setup parts and expect empty assembly scene', async () => {
+        const projectName = 'assembly'
+        await context.folderSetupFn(async (dir) => {
+          const bracketDir = path.join(dir, projectName)
+          await fsp.mkdir(bracketDir, { recursive: true })
+          await Promise.all([
+            fsp.copyFile(
+              path.join('public', 'kcl-samples', 'bracket', 'main.kcl'),
+              path.join(bracketDir, 'bracket.kcl')
+            ),
+            fsp.writeFile(path.join(bracketDir, 'main.kcl'), ''),
+          ])
+        })
+        await page.setBodyDimensions({ width: 1000, height: 500 })
+        await homePage.openProject(projectName)
+        await scene.settled(cmdBar)
         await toolbar.closePane('code')
+      })
+
+      await test.step('Insert kcl as module', async () => {
+        await insertPartIntoAssembly(
+          'bracket.kcl',
+          'bracket',
+          toolbar,
+          cmdBar,
+          page
+        )
+        await toolbar.openPane('code')
+        await editor.expectEditor.toContain(
+          `
+        import "bracket.kcl" as bracket
+        bracket
+      `,
+          { shouldNormalise: true }
+        )
+        await scene.settled(cmdBar)
+
+        // Check scene for changes
+        await toolbar.closePane('code')
+        await u.doAndWaitForCmd(async () => {
+          await gizmo.click({ button: 'right' })
+          await resetCameraButton.click()
+        }, 'zoom_to_fit')
+        await toolbar.closePane('debug')
+        await scene.expectPixelColor(partColor, midPoint, tolerance)
+        await scene.expectPixelColor(bgColor, moreToTheRightPoint, tolerance)
+      })
+
+      await test.step('Set translate on module', async () => {
         await toolbar.openPane('feature-tree')
 
         const op = await toolbar.getFeatureTreeOperation('bracket', 0)
@@ -162,18 +261,18 @@ test.describe('Point-and-click assemblies tests', () => {
           highlightedHeaderArg: 'x',
           commandName: 'Translate',
         })
+        await page.keyboard.insertText('200')
+        await cmdBar.progressCmdBar()
         await page.keyboard.insertText('1')
         await cmdBar.progressCmdBar()
         await page.keyboard.insertText('2')
         await cmdBar.progressCmdBar()
-        await page.keyboard.insertText('3')
-        await cmdBar.progressCmdBar()
         await cmdBar.expectState({
           stage: 'review',
           headerArguments: {
-            X: '1',
-            Y: '2',
-            Z: '3',
+            X: '200',
+            Y: '1',
+            Z: '2',
           },
           commandName: 'Translate',
         })
@@ -183,13 +282,16 @@ test.describe('Point-and-click assemblies tests', () => {
         await editor.expectEditor.toContain(
           `
         bracket
-          |> translate(x = 1, y = 2, z = 3)
+          |> translate(x = 200, y = 1, z = 2)
         `,
           { shouldNormalise: true }
         )
+        // Expect translated part in the scene
+        await scene.expectPixelColor(bgColor, midPoint, tolerance)
+        await scene.expectPixelColor(partColor, moreToTheRightPoint, tolerance)
       })
 
-      await test.step('Set rotate on the second part', async () => {
+      await test.step('Set rotate on module', async () => {
         await toolbar.closePane('code')
         await toolbar.openPane('feature-tree')
 
@@ -206,20 +308,20 @@ test.describe('Point-and-click assemblies tests', () => {
             Yaw: '',
           },
           highlightedHeaderArg: 'roll',
-          commandName: 'Translate',
+          commandName: 'Rotate',
         })
-        await page.keyboard.insertText('4')
+        await page.keyboard.insertText('0.1')
         await cmdBar.progressCmdBar()
-        await page.keyboard.insertText('5')
+        await page.keyboard.insertText('0.2')
         await cmdBar.progressCmdBar()
-        await page.keyboard.insertText('6')
+        await page.keyboard.insertText('0.3')
         await cmdBar.progressCmdBar()
         await cmdBar.expectState({
           stage: 'review',
           headerArguments: {
-            Roll: '1',
-            Pitch: '2',
-            Yaw: '3',
+            Roll: '0.1',
+            Pitch: '0.2',
+            Yaw: '0.3',
           },
           commandName: 'Rotate',
         })
@@ -229,36 +331,14 @@ test.describe('Point-and-click assemblies tests', () => {
         await editor.expectEditor.toContain(
           `
         bracket
-          |> rotate(roll = 4, pitch = 5, yaw = 6)
+          |> translate(x = 200, y = 1, z = 2)
+          |> rotate(roll = 0.1, pitch = 0.2, yaw = 0.3)
         `,
           { shouldNormalise: true }
         )
-      })
-
-      await test.step('Insert a second time and expect error', async () => {
-        // TODO: revisit once we have clone with #6209
-        await insertPartIntoAssembly(
-          'bracket.kcl',
-          'bracket',
-          toolbar,
-          cmdBar,
-          page
-        )
-        await editor.expectEditor.toContain(
-          `
-        import "cylinder.kcl" as cylinder
-        import "bracket.kcl" as bracket
-        import "bracket.kcl" as bracket
-        cylinder
-        bracket
-          |> translate(x = 1, y = 2, z = 3)
-          |> rotate(roll = 4, pitch = 5, yaw = 6)
-        bracket
-      `,
-          { shouldNormalise: true }
-        )
-        await scene.settled(cmdBar)
-        await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
+        // Expect no change in the scene as the rotations are tiny
+        await scene.expectPixelColor(bgColor, midPoint, tolerance)
+        await scene.expectPixelColor(partColor, moreToTheRightPoint, tolerance)
       })
     }
   )
