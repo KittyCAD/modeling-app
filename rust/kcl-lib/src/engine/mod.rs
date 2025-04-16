@@ -407,7 +407,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         self.ids_of_async_commands().write().await.insert(id, source_range);
 
         // Fire off the command now, but don't wait for the response, we don't care about it.
-        self.inner_send_modeling_cmd(
+        self.inner_fire_modeling_cmd(
             id,
             source_range,
             WebSocketRequest::ModelingCmdReq(ModelingCmdReq {
