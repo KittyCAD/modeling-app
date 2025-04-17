@@ -1155,7 +1155,7 @@ sweepPath = startSketchOn(XZ)
 
 sweepSketch = startSketchOn(XY)
   |> startProfileAt([2, 0], %)
-  |> arc(angleStart = 0, angleEnd = 2, radius = 2)
+  |> arc(angleStart = 0, angleEnd = 360, radius = 2)
   |> sweep(path = sweepPath)
   |> appearance(
        color = "#bb00ff",
@@ -1200,7 +1200,7 @@ sweepPath = startSketchOn(XZ)
 
 sweepSketch = startSketchOn(XY)
   |> startProfileAt([2, 0], %)
-  |> arc(angleStart = 0, angleEnd = 2, radius = 2)
+  |> arc(angleStart = 0, angleEnd = 360, radius = 2)
   |> sweep(path = sweepPath)
   |> appearance(
        color = "#bb00ff",
