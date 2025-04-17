@@ -10,8 +10,11 @@ Create a regular polygon with the specified number of sides that is either inscr
 
 ```js
 polygon(
-  data: PolygonData,
   sketchSurfaceOrGroup: SketchOrSurface,
+  radius: number,
+  numSides: u64,
+  center: [number],
+  inscribed?: bool,
   tag?: TagDeclarator,
 ): Sketch
 ```
@@ -21,9 +24,12 @@ polygon(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `data` | [`PolygonData`](/docs/kcl/types/PolygonData) | Data for drawing a polygon | Yes |
-| `sketchSurfaceOrGroup` | [`SketchOrSurface`](/docs/kcl/types/SketchOrSurface) | A sketch surface or a sketch. | Yes |
-| [`tag`](/docs/kcl/types/tag) | [`TagDeclarator`](/docs/kcl/types#tag-declaration) |  | No |
+| `sketchSurfaceOrGroup` | [`SketchOrSurface`](/docs/kcl/types/SketchOrSurface) | Plane or surface to sketch on | Yes |
+| `radius` | [`number`](/docs/kcl/types/number) | The radius of the polygon | Yes |
+| `numSides` | `u64` | The number of sides in the polygon | Yes |
+| `center` | [`[number]`](/docs/kcl/types/number) | The center point of the polygon | Yes |
+| `inscribed` | [`bool`](/docs/kcl/types/bool) | Whether the polygon is inscribed (true) or circumscribed (false) about a circle with the specified radius | No |
+| [`tag`](/docs/kcl/types/tag) | [`TagDeclarator`](/docs/kcl/types#tag-declaration) | Create a new tag which refers to this line | No |
 
 ### Returns
 
@@ -35,12 +41,12 @@ polygon(
 ```js
 // Create a regular hexagon inscribed in a circle of radius 10
 hex = startSketchOn(XY)
-  |> polygon({
+  |> polygon(
        radius = 10,
        numSides = 6,
        center = [0, 0],
-       inscribed = true
-     }, %)
+       inscribed = true,
+     )
 
 example = extrude(hex, length = 5)
 ```
@@ -50,12 +56,12 @@ example = extrude(hex, length = 5)
 ```js
 // Create a square circumscribed around a circle of radius 5
 square = startSketchOn(XY)
-  |> polygon({
+  |> polygon(
        radius = 5.0,
        numSides = 4,
        center = [10, 10],
-       inscribed = false
-     }, %)
+       inscribed = false,
+     )
 example = extrude(square, length = 5)
 ```
 
