@@ -133,7 +133,7 @@ stages—reading, initializing (background render start), and invocation (blocki
    myCube = cube    // <- This line starts background rendering
    ```  
    - Invoking the imported symbol (assignment or plain call) triggers Engine rendering _in the background_.  
-   - This kick‑starts the render pipeline but doesn’t block—you can continue other work while the Engine processes the mesh.
+   - This kick‑starts the render pipeline but doesn’t block—you can continue other work while the Engine processes the model.
 
 3. **Invocation (Blocking) Stage**  
    ```norun
