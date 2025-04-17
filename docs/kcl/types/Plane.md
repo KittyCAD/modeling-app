@@ -1,5 +1,5 @@
 ---
-title: "std::Plane"
+title: "std::types::Plane"
 excerpt: "A plane."
 layout: manual
 ---

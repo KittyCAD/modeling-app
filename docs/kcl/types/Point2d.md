@@ -1,5 +1,5 @@
 ---
-title: "std::Point2d"
+title: "std::types::Point2d"
 excerpt: "A point in two dimensional space."
 layout: manual
 ---
