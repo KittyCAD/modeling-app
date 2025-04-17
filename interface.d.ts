@@ -20,6 +20,7 @@ export interface IElectronAPI {
   open: typeof dialog.showOpenDialog
   save: typeof dialog.showSaveDialog
   openExternal: typeof shell.openExternal
+  openInNewWindow: (name: string) => void
   takeElectronWindowScreenshot: ({
     width,
     height,
