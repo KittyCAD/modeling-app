@@ -1043,7 +1043,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     },
   },
   Translate: {
-    description: 'Set tanslation on solid or sketch.',
+    description: 'Set translation on solid or sketch.',
     icon: 'dimension', // TODO: likely not the best icon
     needsReview: true,
     args: {
