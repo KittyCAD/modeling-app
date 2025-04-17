@@ -264,6 +264,8 @@ export class SceneInfra {
     hasBeenDragged: boolean
   } | null = null
   mouseDownVector: null | Vector2 = null
+  private isRenderingPaused = false
+  private lastFrameTime = 0
 
   constructor(engineCommandManager: EngineCommandManager) {
     // SCENE
@@ -348,8 +350,20 @@ export class SceneInfra {
     TWEEN.update() // This will update all tweens during the animation loop
     if (!this.isFovAnimationInProgress) {
       this.camControls.update()
-      this.renderer.render(this.scene, this.camControls.camera)
-      this.labelRenderer.render(this.scene, this.camControls.camera)
+
+      // If rendering is paused, only render if enough time has passed to maintain smooth animation
+      if (this.isRenderingPaused) {
+        const currentTime = performance.now()
+        if (currentTime - this.lastFrameTime > 1000 / 30) {
+          // Limit to 30fps while paused
+          this.renderer.render(this.scene, this.camControls.camera)
+          this.labelRenderer.render(this.scene, this.camControls.camera)
+          this.lastFrameTime = currentTime
+        }
+      } else {
+        this.renderer.render(this.scene, this.camControls.camera)
+        this.labelRenderer.render(this.scene, this.camControls.camera)
+      }
     }
   }
 
@@ -684,6 +698,15 @@ export class SceneInfra {
     dummy.position.set(0, 0, 0)
     const scale = this.getClientSceneScaleFactor(dummy)
     return getLength(a, b) / scale
+  }
+  pauseRendering() {
+    this.isRenderingPaused = true
+    // Store the current time to prevent unnecessary updates
+    this.lastFrameTime = performance.now()
+  }
+
+  resumeRendering() {
+    this.isRenderingPaused = false
   }
 }
 
