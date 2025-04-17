@@ -387,7 +387,6 @@ function resetAndSetEngineEntitySelectionCmds(
   if (!engineCommandManager.engineConnection?.isReady()) {
     return []
   }
-  console.log('selections', selections)
   return [
     {
       type: 'modeling_cmd_req',
