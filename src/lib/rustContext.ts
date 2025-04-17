@@ -7,10 +7,7 @@ import type { KclError as RustKclError } from '@rust/kcl-lib/bindings/KclError'
 import type { OutputFormat3d } from '@rust/kcl-lib/bindings/ModelingCmd'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { Program } from '@rust/kcl-lib/bindings/Program'
-import type {
-  Context,
-  ResponseContext,
-} from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
+import type { Context } from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
 
 import type { EngineCommandManager } from '@src/lang/std/engineConnection'
 import { fileSystemManager } from '@src/lang/std/fileSystemManager'
