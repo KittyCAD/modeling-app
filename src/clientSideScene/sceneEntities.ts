@@ -669,7 +669,10 @@ export class SceneEntities {
     variableDeclarationName: string
   }> {
     const prepared = this.prepareTruncatedAst(sketchNodePaths, maybeModdedAst)
-    if (err(prepared)) return Promise.reject(prepared)
+    if (err(prepared)) {
+      this.tearDownSketch({ removeAxis: false })
+      return Promise.reject(prepared)
+    }
     const { truncatedAst, variableDeclarationName } = prepared
 
     const { execState } = await executeAstMock({
@@ -695,6 +698,8 @@ export class SceneEntities {
     const scale = this.sceneInfra.getClientSceneScaleFactor(dummy)
 
     const callbacks: (() => SegmentOverlayPayload | null)[] = []
+    this.sceneInfra.pauseRendering()
+    this.tearDownSketch({ removeAxis: false })
 
     for (const sketchInfo of sketchesInfo) {
       const { sketch } = sketchInfo
@@ -766,7 +771,11 @@ export class SceneEntities {
           segPathToNode,
           ['CallExpression', 'CallExpressionKw']
         )
-        if (err(_node1)) return
+        if (err(_node1)) {
+          this.tearDownSketch({ removeAxis: false })
+          this.sceneInfra.resumeRendering()
+          return
+        }
         const callExpName = _node1.node?.callee?.name.name
 
         const initSegment =
@@ -862,6 +871,9 @@ export class SceneEntities {
     )
     position && this.intersectionPlane.position.set(...position)
     this.sceneInfra.scene.add(group)
+
+    this.sceneInfra.resumeRendering()
+
     this.sceneInfra.camControls.enableRotate = false
     this.sceneInfra.overlayCallbacks(callbacks)
 
@@ -967,6 +979,8 @@ export class SceneEntities {
       position: origin,
       maybeModdedAst: modifiedAst,
       draftExpressionsIndices,
+    }).catch(() => {
+      return { truncatedAst: modifiedAst }
     })
     this.sceneInfra.setCallbacks({
       onClick: async (args) => {
