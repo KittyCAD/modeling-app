@@ -2829,19 +2829,20 @@ test.describe(`Click based selection don't brick the app when clicked out of ran
         `sketch001 = startSketchOn(XZ)
   |> startProfileAt([0, 0], %)
   |> line(end = [3.14, 3.14])
-  |> arc(interior = [1, 2], endAbsolute = [4, 2])
-`
+  |> arc(
+       interior = [1, 2],
+       endAbsolute = [4, 2]
+     )`
       )
     })
 
     await homePage.goToModelingScene()
     await scene.settled(cmdBar)
 
+    const formattedArc = `arc(interior = [1, 2], endAbsolute = [4, 2])`
     await test.step(`format the code`, async () => {
       // doesn't contain condensed version
-      await editor.expectEditor.not.toContain(
-        `arc( end = [4, 2], interior = [1, 2] }, %)`
-      )
+      await editor.expectEditor.not.toContain(formattedArc)
       // click the code to enter sketch mode
       await page.getByText(`arc`).click()
       // Format the code.
@@ -2850,9 +2851,7 @@ test.describe(`Click based selection don't brick the app when clicked out of ran
     })
 
     await test.step(`Ensure the code reformatted`, async () => {
-      await editor.expectEditor.toContain(
-        `arc(interior = [1, 2], endAbsolute = [4, 2])`
-      )
+      await editor.expectEditor.toContain(formattedArc)
     })
 
     const [arcClick, arcHover] = scene.makeMouseHelpers(699, 337)
