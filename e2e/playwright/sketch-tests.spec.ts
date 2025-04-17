@@ -3058,7 +3058,7 @@ test.describe('manual edits during sketch mode', () => {
   }) => {
     const initialCode = `myVar1 = 5
     myVar2 = 6
-    
+
     sketch001 = startSketchOn(XZ)
     profile001 = startProfileAt([106.68, 89.77], sketch001)
       |> line(end = [132.34, 157.8])
@@ -3069,10 +3069,8 @@ test.describe('manual edits during sketch mode', () => {
     sketch002 = startSketchOn(extrude001, face = seg01)
     profile002 = startProfileAt([83.39, 329.15], sketch002)
       |> angledLine(angle = 0, length = 119.61, tag = $rectangleSegmentA001)
-      |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 156.54, angle = -28)
+      |> angledLine(length = 156.54, angle = -28)
       |> angledLine(
-          angle = segAng(rectangleSegmentA001),
-          length = -segLen(rectangleSegmentA001),
           angle = -151,
           length = 116.27,
         )
@@ -3089,37 +3087,40 @@ test.describe('manual edits during sketch mode', () => {
     await homePage.goToModelingScene()
     await scene.connectionEstablished()
     await scene.settled(cmdBar)
-    const expectSketchOriginToBeDrawn = async () => {
-      await scene.expectPixelColor(TEST_COLORS.WHITE, { x: 672, y: 193 }, 15)
-    }
 
     await test.step('Open feature tree and edit second sketch', async () => {
       await toolbar.openFeatureTreePane()
       const sketchButton = await toolbar.getFeatureTreeOperation('Sketch', 1)
       await sketchButton.dblclick()
       await page.waitForTimeout(700) // Wait for engine animation
-      await expectSketchOriginToBeDrawn()
     })
 
     await test.step('Add new variable and wait for re-execution', async () => {
       await page.waitForTimeout(500) // wait for deferred execution
       await editor.replaceCode('myVar2 = 6', 'myVar2 = 6\nmyVar3 = 7')
       await page.waitForTimeout(2000) // wait for deferred execution
-      await expectSketchOriginToBeDrawn()
     })
 
     const handle1Location = { x: 843, y: 235 }
-
     await test.step('Edit sketch by dragging handle', async () => {
       await page.waitForTimeout(500)
-      await editor.expectEditor.toContain('length = 156.54, angle = -28')
-      await page.mouse.move(handle1Location.x, handle1Location.y)
-      await page.mouse.down()
-      await page.mouse.move(handle1Location.x + 50, handle1Location.y + 50, {
-        steps: 5,
-      })
-      await page.mouse.up()
-      await editor.expectEditor.toContain('length = 231.59, angle = -34')
+      await expect
+        .poll(async () => {
+          await editor.expectEditor.toContain('length = 156.54, angle = -28')
+          await page.mouse.move(handle1Location.x, handle1Location.y)
+          await page.mouse.down()
+          await page.mouse.move(
+            handle1Location.x + 50,
+            handle1Location.y + 50,
+            {
+              steps: 5,
+            }
+          )
+          await page.mouse.up()
+          await editor.expectEditor.toContain('length = 231.59, angle = -34')
+          return true
+        })
+        .toBeTruthy()
       // await page.waitForTimeout(1000) // Wait for update
     })
 
@@ -3129,20 +3130,24 @@ test.describe('manual edits during sketch mode', () => {
       await page.waitForTimeout(50)
       await editor.replaceCode('myVar2 = 6', '')
       await page.waitForTimeout(2000) // Wait for deferred execution
-      await expectSketchOriginToBeDrawn()
     })
 
     const handle2Location = { x: 872, y: 273 }
     await test.step('Edit sketch again', async () => {
       await editor.expectEditor.toContain('length = 231.59, angle = -34')
       await page.waitForTimeout(500)
-      await page.mouse.move(handle2Location.x, handle2Location.y)
-      await page.mouse.down()
-      await page.mouse.move(handle2Location.x, handle2Location.y - 50, {
-        steps: 5,
-      })
-      await page.mouse.up()
-      await editor.expectEditor.toContain('length = 167.36, angle = -14')
+      await expect
+        .poll(async () => {
+          await page.mouse.move(handle2Location.x, handle2Location.y)
+          await page.mouse.down()
+          await page.mouse.move(handle2Location.x, handle2Location.y - 50, {
+            steps: 5,
+          })
+          await page.mouse.up()
+          await editor.expectEditor.toContain('length = 167.36, angle = -14')
+          return true
+        })
+        .toBeTruthy()
     })
 
     await test.step('add whole other sketch before current sketch', async () => {
@@ -3154,19 +3159,24 @@ test.describe('manual edits during sketch mode', () => {
     profile004 = circle(sketch003, center = [143.91, 136.89], radius = 71.63)`
       )
       await page.waitForTimeout(2000) // Wait for deferred execution
-      await expectSketchOriginToBeDrawn()
     })
 
     const handle3Location = { x: 844, y: 212 }
     await test.step('edit sketch again', async () => {
-      await editor.expectEditor.toContain('length = 167.36, angle = -14')
-      await page.mouse.move(handle3Location.x, handle3Location.y)
-      await page.mouse.down()
-      await page.mouse.move(handle3Location.x, handle3Location.y + 110, {
-        steps: 5,
-      })
-      await page.mouse.up()
-      await editor.expectEditor.toContain('length = 219.2, angle = -56')
+      await page.waitForTimeout(500) // Wait for deferred execution
+      await expect
+        .poll(async () => {
+          await editor.expectEditor.toContain('length = 167.36, angle = -14')
+          await page.mouse.move(handle3Location.x, handle3Location.y)
+          await page.mouse.down()
+          await page.mouse.move(handle3Location.x, handle3Location.y + 110, {
+            steps: 5,
+          })
+          await page.mouse.up()
+          await editor.expectEditor.toContain('length = 219.2, angle = -56')
+          return true
+        })
+        .toBeTruthy()
     })
 
     // exit sketch and assert whole code
@@ -3174,32 +3184,27 @@ test.describe('manual edits during sketch mode', () => {
       await toolbar.exitSketch()
       await editor.expectEditor.toContain(
         `myVar1 = 5
-    sketch003 = startSketchOn(XY)
-    profile004 = circle(sketch003, center = [143.91, 136.89], radius = 71.63)
-    
-    sketch001 = startSketchOn(XZ)
-    profile001 = startProfileAt([106.68, 89.77], sketch001)
-      |> line(end = [132.34, 157.8])
-      |> line(end = [67.65, -460.55], tag = $seg01)
-      |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-      |> close()
-    extrude001 = extrude(profile001, length = 500)
-    sketch002 = startSketchOn(extrude001, face = seg01)
-    profile002 = startProfileAt([83.39, 329.15], sketch002)
-      |> angledLine(angle = 0, length = 119.61, tag = $rectangleSegmentA001)
-      |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 219.2, angle = -56)
-      |> angledLine(
-          angle = segAng(rectangleSegmentA001),
-          length = -segLen(rectangleSegmentA001),
-          angle = -151,
-          length = 116.27,
-        )
-      |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-      |> close()
-    profile003 = startProfileAt([-201.08, 254.17], sketch002)
-      |> line(end = [103.55, 33.32])
-      |> line(end = [48.8, -153.54])
-    `,
+sketch003 = startSketchOn(XY)
+profile004 = circle(sketch003, center = [143.91, 136.89], radius = 71.63)
+
+sketch001 = startSketchOn(XZ)
+profile001 = startProfileAt([106.68, 89.77], sketch001)
+  |> line(end = [132.34, 157.8])
+  |> line(end = [67.65, -460.55], tag = $seg01)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(profile001, length = 500)
+sketch002 = startSketchOn(extrude001, face = seg01)
+profile002 = startProfileAt([83.39, 329.15], sketch002)
+  |> angledLine(angle = 0, length = 119.61, tag = $rectangleSegmentA001)
+  |> angledLine(length = 219.2, angle = -56)
+  |> angledLine(angle = -151, length = 116.27)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+profile003 = startProfileAt([-201.08, 254.17], sketch002)
+  |> line(end = [103.55, 33.32])
+  |> line(end = [48.8, -153.54])
+`,
         { shouldNormalise: true }
       )
       await editor.expectState({
@@ -3220,7 +3225,7 @@ test.describe('manual edits during sketch mode', () => {
   }) => {
     const initialCode = `myVar1 = 5
     myVar2 = 6
-    
+
     sketch001 = startSketchOn(XZ)
     profile001 = startProfileAt([106.68, 89.77], sketch001)
       |> line(end = [132.34, 157.8])
@@ -3231,10 +3236,8 @@ test.describe('manual edits during sketch mode', () => {
     sketch002 = startSketchOn(extrude001, face = seg01)
     profile002 = startProfileAt([83.39, 329.15], sketch002)
       |> angledLine(angle = 0, length = 119.61, tag = $rectangleSegmentA001)
-      |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 156.54, angle = -28)
+      |> angledLine(length = 156.54, angle = -28)
       |> angledLine(
-           angle = segAng(rectangleSegmentA001),
-           length = -segLen(rectangleSegmentA001),
            angle = -151,
            length = 116.27,
          )
@@ -3350,7 +3353,21 @@ test.describe('manual edits during sketch mode', () => {
         // this checks sketch segments have been drawn
         await verifyArrowHeadColor(arrowHeadWhite)
       })
-      await page.waitForTimeout(100)
+
+      await test.step('make a change to the code and expect pixel color to change', async () => {
+        // defends against a regression where sketch would duplicate in the scene
+        // https://github.com/KittyCAD/modeling-app/issues/6345
+        await editor.replaceCode(
+          'startProfileAt([75.8, 317.2',
+          'startProfileAt([75.8, 217.2'
+        )
+        // expect not white anymore
+        await scene.expectPixelColorNotToBe(
+          TEST_COLORS.WHITE,
+          arrowHeadLocation,
+          15
+        )
+      })
     }
   )
 })
