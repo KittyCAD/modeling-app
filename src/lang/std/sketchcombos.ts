@@ -1408,11 +1408,8 @@ export function getRemoveConstraintsTransform(
   }
 
   if (
-    (sketchFnExp.type === 'CallExpressionKw' &&
-      sketchFnExp.callee.name.name === 'circleThreePoint') ||
-    (sketchFnExp.type === 'CallExpression' &&
-      (sketchFnExp.callee.name.name === 'arcTo' ||
-        sketchFnExp.callee.name.name === 'arc'))
+    sketchFnExp.type === 'CallExpressionKw' &&
+    sketchFnExp.callee.name.name === 'circleThreePoint'
   ) {
     return false
   }
