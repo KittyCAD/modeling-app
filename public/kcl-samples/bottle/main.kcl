@@ -1,0 +1,35 @@
+// Bottle
+// A simple bottle with a hollow, watertight interior
+
+// Set Units
+@settings(defaultLengthUnit = mm)
+
+// Input dimensions to define the bottle
+bottleWidth = 80
+bottleLength = 125
+bottleHeight = 220
+neckDepth = 18
+neckDiameter = 45
+wallThickness = 4
+
+// Create a rounded body for the bottle
+bottleBody = startSketchOn(XY)
+  |> startProfileAt([-bottleLength / 2, 0], %)
+  |> yLine(length = bottleWidth / 3)
+  |> arcTo({
+       end = [bottleLength / 2, bottleWidth / 3],
+       interior = [0, bottleWidth / 2]
+     }, %)
+  |> yLine(endAbsolute = 0)
+  |> mirror2d(axis = X)
+  |> close()
+  |> extrude(length = bottleHeight - neckDepth)
+
+// Create a neck centered at the top of the bottle
+bottleNeck = startSketchOn(bottleBody, face = END)
+  |> circle(center = [0, 0], radius = neckDiameter / 2)
+  |> extrude(length = neckDepth)
+
+// Define a shell operation so that the entire body and neck are hollow, with only the top face opened
+bottleShell = shell(bottleNeck, faces = [END], thickness = wallThickness)
+  |> appearance(%, color = "#0078c2")
