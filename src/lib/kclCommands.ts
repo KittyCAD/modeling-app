@@ -153,7 +153,6 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
           EXECUTION_TYPE_REAL,
           { kclManager, editorManager, codeManager },
           {
-            skipUpdateAst: true,
             focusPath: [pathToImportNode, pathToInsertNode],
           }
         ).catch(reportRejection)
