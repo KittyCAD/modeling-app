@@ -1612,9 +1612,6 @@ export const ModelingMachineProvider = ({
           async ({ input: { sketchDetails, selectionRanges } }) => {
             if (!sketchDetails) return
             if (!sketchDetails.sketchEntryNodePath?.length) return
-            if (Object.keys(sceneEntitiesManager.activeSegments).length > 0) {
-              sceneEntitiesManager.tearDownSketch({ removeAxis: false })
-            }
             sceneInfra.resetMouseListeners()
             await sceneEntitiesManager.setupSketch({
               sketchEntryNodePath: sketchDetails?.sketchEntryNodePath || [],
