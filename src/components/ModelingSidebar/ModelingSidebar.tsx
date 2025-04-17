@@ -25,6 +25,7 @@ import { isDesktop } from '@src/lib/isDesktop'
 import { useSettings } from '@src/machines/appMachine'
 import { commandBarActor } from '@src/machines/commandBarMachine'
 import { onboardingPaths } from '@src/routes/Onboarding/paths'
+import { getPlatformString } from '@src/lib/utils'
 
 interface ModelingSidebarProps {
   paneOpacity: '' | 'opacity-20' | 'opacity-40'
@@ -35,10 +36,6 @@ interface BadgeInfoComputed {
   onClick?: MouseEventHandler<any>
   className?: string
   title?: string
-}
-
-function getPlatformString(): 'web' | 'desktop' {
-  return isDesktop() ? 'desktop' : 'web'
 }
 
 export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {

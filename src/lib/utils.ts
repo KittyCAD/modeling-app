@@ -9,6 +9,13 @@ import type { AsyncFn } from '@src/lib/types'
 export const uuidv4 = v4
 
 /**
+ * Get the current platform as a string.
+ */
+export function getPlatformString(): 'web' | 'desktop' {
+  return isDesktop() ? 'desktop' : 'web'
+}
+
+/**
  * Get all labels for a keyword call expression.
  */
 export function allLabels(callExpression: CallExpressionKw): string[] {
