@@ -220,6 +220,9 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         while current_time.elapsed().as_secs() < 60 {
             let responses = self.responses().read().await.clone();
             let Some(resp) = responses.get(&id) else {
+                // Sleep for a little so we don't hog the CPU.
+                // No seriously WE DO NOT WANT TO PAUSE THE WHOLE APP ON THE JS SIDE.
+                tokio::time::sleep(std::time::Duration::from_millis(100)).await;
                 continue;
             };
 
