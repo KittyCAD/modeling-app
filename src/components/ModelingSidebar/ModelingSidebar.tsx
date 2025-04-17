@@ -1,45 +1,28 @@
 import type { IconDefinition } from '@fortawesome/free-solid-svg-icons'
 import { Resizable } from 're-resizable'
 import type { MouseEventHandler } from 'react'
-import { useCallback, useContext, useEffect, useMemo } from 'react'
+import { useCallback, useEffect, useMemo } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 
-import { useAppState } from '@src/AppState'
 import { ActionIcon } from '@src/components/ActionIcon'
 import type { CustomIconName } from '@src/components/CustomIcon'
-import { MachineManagerContext } from '@src/components/MachineManagerProvider'
 import { ModelingPane } from '@src/components/ModelingSidebar/ModelingPane'
-import type {
-  SidebarAction,
-  SidebarType,
-} from '@src/components/ModelingSidebar/ModelingPanes'
+import type { SidebarType } from '@src/components/ModelingSidebar/ModelingPanes'
 import { sidebarPanes } from '@src/components/ModelingSidebar/ModelingPanes'
 import Tooltip from '@src/components/Tooltip'
 import { useModelingContext } from '@src/hooks/useModelingContext'
-import { useNetworkContext } from '@src/hooks/useNetworkContext'
-import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
 import { useKclContext } from '@src/lang/KclProvider'
-import { EngineConnectionStateType } from '@src/lang/std/engineConnection'
 import { SIDEBAR_BUTTON_SUFFIX } from '@src/lib/constants'
-import { isDesktop } from '@src/lib/isDesktop'
 import { useSettings } from '@src/machines/appMachine'
-import { commandBarActor } from '@src/machines/commandBarMachine'
 import { onboardingPaths } from '@src/routes/Onboarding/paths'
 import { getPlatformString } from '@src/lib/utils'
+import { BadgeInfoComputed, ModelingPaneButton } from './ModelingSidebarButton'
 
 interface ModelingSidebarProps {
   paneOpacity: '' | 'opacity-20' | 'opacity-40'
 }
 
-interface BadgeInfoComputed {
-  value: number | boolean | string
-  onClick?: MouseEventHandler<any>
-  className?: string
-  title?: string
-}
-
 export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
-  const machineManager = useContext(MachineManagerContext)
   const kclContext = useKclContext()
   const settings = useSettings()
   const onboardingStatus = settings.app.onboardingStatus
@@ -51,16 +34,6 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
       : 'pointer-events-auto '
   const showDebugPanel = settings.app.showDebugPanel
 
-  const { overallState, immediateState } = useNetworkContext()
-  const { isExecuting } = useKclContext()
-  const { isStreamReady } = useAppState()
-  const reliesOnEngine =
-    (overallState !== NetworkHealthState.Ok &&
-      overallState !== NetworkHealthState.Weak) ||
-    isExecuting ||
-    immediateState.type !== EngineConnectionStateType.ConnectionEstablished ||
-    !isStreamReady
-
   const paneCallbackProps = useMemo(
     () => ({
       kclContext,
@@ -68,70 +41,6 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
       platform: getPlatformString(),
     }),
     [kclContext.diagnostics, settings]
-  )
-
-  const sidebarActions: SidebarAction[] = [
-    {
-      id: 'load-external-model',
-      title: 'Load external model',
-      sidebarName: 'Load external model',
-      icon: 'importFile',
-      keybinding: 'Ctrl + Shift + I',
-      action: () =>
-        commandBarActor.send({
-          type: 'Find and select command',
-          data: { name: 'load-external-model', groupId: 'code' },
-        }),
-    },
-    {
-      id: 'share-link',
-      title: 'Create share link',
-      sidebarName: 'Create share link',
-      icon: 'link',
-      keybinding: 'Mod + Alt + S',
-      action: () =>
-        commandBarActor.send({
-          type: 'Find and select command',
-          data: { name: 'share-file-link', groupId: 'code' },
-        }),
-    },
-    {
-      id: 'export',
-      title: 'Export part',
-      sidebarName: 'Export part',
-      icon: 'floppyDiskArrow',
-      keybinding: 'Ctrl + Shift + E',
-      disable: () =>
-        reliesOnEngine ? 'Need engine connection to export' : undefined,
-      action: () =>
-        commandBarActor.send({
-          type: 'Find and select command',
-          data: { name: 'Export', groupId: 'modeling' },
-        }),
-    },
-    {
-      id: 'make',
-      title: 'Make part',
-      sidebarName: 'Make part',
-      icon: 'printer3d',
-      keybinding: 'Ctrl + Shift + M',
-      // eslint-disable-next-line @typescript-eslint/no-misused-promises
-      action: async () => {
-        commandBarActor.send({
-          type: 'Find and select command',
-          data: { name: 'Make', groupId: 'modeling' },
-        })
-      },
-      hide: () => !isDesktop(),
-      disable: () => {
-        return machineManager.noMachinesReason()
-      },
-    },
-  ]
-  const filteredActions: SidebarAction[] = sidebarActions.filter(
-    (action) =>
-      !action.hide ||
-      (action.hide instanceof Function && !action.hide(paneCallbackProps))
   )
 
   //   // Filter out the debug panel if it's not supposed to be shown
@@ -254,31 +163,6 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
               />
             ))}
           </ul>
-          {filteredActions.length > 0 && (
-            <>
-              <hr className="w-full border-chalkboard-30 dark:border-chalkboard-80" />
-              <ul
-                id="sidebar-actions"
-                className="w-fit p-2 flex flex-col gap-2"
-              >
-                {filteredActions.map((action) => (
-                  <ModelingPaneButton
-                    key={action.id}
-                    paneConfig={{
-                      id: action.id,
-                      sidebarName: action.sidebarName,
-                      icon: action.icon,
-                      keybinding: action.keybinding,
-                      iconClassName: action.iconClassName,
-                      iconSize: 'md',
-                    }}
-                    onClick={action.action}
-                    disabledText={action.disable?.()}
-                  />
-                ))}
-              </ul>
-            </>
-          )}
         </ul>
         <ul
           id="pane-section"
@@ -310,107 +194,5 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
         </ul>
       </div>
     </Resizable>
-  )
-}
-
-interface ModelingPaneButtonProps
-  extends React.HTMLAttributes<HTMLButtonElement> {
-  paneConfig: {
-    id: string
-    sidebarName: string
-    icon: CustomIconName | IconDefinition
-    keybinding: string
-    iconClassName?: string
-    iconSize?: 'sm' | 'md' | 'lg'
-  }
-  onClick: () => void
-  paneIsOpen?: boolean
-  showBadge?: BadgeInfoComputed
-  disabledText?: string
-}
-
-function ModelingPaneButton({
-  paneConfig,
-  onClick,
-  paneIsOpen,
-  showBadge,
-  disabledText,
-  ...props
-}: ModelingPaneButtonProps) {
-  useHotkeys(paneConfig.keybinding, onClick, {
-    scopes: ['modeling'],
-  })
-
-  return (
-    <div id={paneConfig.id + '-button-holder'} className="relative">
-      <button
-        className="group pointer-events-auto flex items-center justify-center border-transparent dark:border-transparent disabled:!border-transparent p-0 m-0 rounded-sm !outline-0 focus-visible:border-primary"
-        onClick={onClick}
-        name={paneConfig.sidebarName}
-        data-testid={paneConfig.id + SIDEBAR_BUTTON_SUFFIX}
-        disabled={disabledText !== undefined}
-        aria-disabled={disabledText !== undefined}
-        {...props}
-      >
-        <ActionIcon
-          icon={paneConfig.icon}
-          className={paneConfig.iconClassName || ''}
-          size={paneConfig.iconSize || 'md'}
-          iconClassName={paneIsOpen ? ' !text-chalkboard-10' : ''}
-          bgClassName={
-            'rounded-sm ' + (paneIsOpen ? '!bg-primary' : '!bg-transparent')
-          }
-        />
-        <span className="sr-only">
-          {paneConfig.sidebarName}
-          {paneIsOpen !== undefined ? ` pane` : ''}
-        </span>
-        <Tooltip
-          position="right"
-          contentClassName="max-w-none flex items-center gap-4"
-          hoverOnly
-        >
-          <span className="flex-1">
-            {paneConfig.sidebarName}
-            {disabledText !== undefined ? ` (${disabledText})` : ''}
-            {paneIsOpen !== undefined ? ` pane` : ''}
-          </span>
-          <kbd className="hotkey text-xs capitalize">
-            {paneConfig.keybinding}
-          </kbd>
-        </Tooltip>
-      </button>
-      {!!showBadge?.value && (
-        <p
-          id={`${paneConfig.id}-badge`}
-          className={
-            showBadge.className
-              ? showBadge.className
-              : 'absolute m-0 p-0 bottom-4 left-4 w-3 h-3 flex items-center justify-center text-[10px] font-semibold text-white bg-primary hue-rotate-90 rounded-full border border-chalkboard-10 dark:border-chalkboard-80 z-50 hover:cursor-pointer hover:scale-[2] transition-transform duration-200'
-          }
-          onClick={showBadge.onClick}
-          title={
-            showBadge.title
-              ? showBadge.title
-              : `Click to view ${showBadge.value} notification${
-                  Number(showBadge.value) > 1 ? 's' : ''
-                }`
-          }
-        >
-          <span className="sr-only">&nbsp;has&nbsp;</span>
-          {typeof showBadge.value === 'number' ||
-          typeof showBadge.value === 'string' ? (
-            <span>{showBadge.value}</span>
-          ) : (
-            <span className="sr-only">a</span>
-          )}
-          {typeof showBadge.value === 'number' && (
-            <span className="sr-only">
-              &nbsp;notification{Number(showBadge.value) > 1 ? 's' : ''}
-            </span>
-          )}
-        </p>
-      )}
-    </div>
   )
 }
