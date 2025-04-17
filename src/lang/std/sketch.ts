@@ -1697,15 +1697,15 @@ export const arcTo: SketchLineHelperKw = {
       const result = replaceExistingCallback([
         {
           type: 'objectProperty',
-          key: 'interior' as InputArgKeys,
+          key: 'interior',
           argType: 'xAbsolute',
-          expr: createLiteral(0) as any, // This is a workaround, the actual value will be set later
+          expr: createLiteral(0), // This is a workaround, the actual value will be set later
         },
         {
           type: 'objectProperty',
-          key: 'endAbsolute' as InputArgKeys,
+          key: 'endAbsolute',
           argType: 'yAbsolute',
-          expr: createLiteral(0) as any, // This is a workaround, the actual value will be set later
+          expr: createLiteral(0), // This is a workaround, the actual value will be set later
         },
       ])
       if (err(result)) return result
