@@ -767,9 +767,7 @@ export const modelingMachine = setup({
       })().catch(reportRejection)
     },
     'tear down client sketch': () => {
-      if (sceneEntitiesManager.activeSegments) {
-        sceneEntitiesManager.tearDownSketch({ removeAxis: false })
-      }
+      sceneEntitiesManager.tearDownSketch({ removeAxis: false })
     },
     'remove sketch grid': () => sceneEntitiesManager.removeSketchGrid(),
     'set up draft line': assign(({ context: { sketchDetails }, event }) => {
@@ -3792,11 +3790,7 @@ export const modelingMachine = setup({
           },
 
           initial: 'splitting sketch pipe',
-          entry: [
-            'assign tool in context',
-            'reset selections',
-            'tear down client sketch',
-          ],
+          entry: ['assign tool in context', 'reset selections'],
         },
         'Circle three point tool': {
           states: {

@@ -816,5 +816,29 @@ description: Artifact commands dodecahedron.kcl
       "object_id": "[uuid]",
       "hidden": true
     }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "set_scene_units",
+      "unit": "mm"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "set_scene_units",
+      "unit": "mm"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "set_scene_units",
+      "unit": "mm"
+    }
   }
 ]
