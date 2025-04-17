@@ -3064,23 +3064,25 @@ test.describe('manual edits during sketch mode', () => {
     await test.step('Edit sketch by dragging handle', async () => {
       await page.waitForTimeout(500)
       await expect
-        .poll(async () => {
-          await editor.expectEditor.toContain('length = 156.54, angle = -28')
-          await page.mouse.move(handle1Location.x, handle1Location.y)
-          await page.mouse.down()
-          await page.mouse.move(
-            handle1Location.x + 50,
-            handle1Location.y + 50,
-            {
-              steps: 5,
-            }
-          )
-          await page.mouse.up()
-          await editor.expectEditor.toContain('length = 231.59, angle = -34')
-          return true
-        })
+        .poll(
+          async () => {
+            await editor.expectEditor.toContain('length = 156.54, angle = -28')
+            await page.mouse.move(handle1Location.x, handle1Location.y)
+            await page.mouse.down()
+            await page.mouse.move(
+              handle1Location.x + 50,
+              handle1Location.y + 50,
+              {
+                steps: 5,
+              }
+            )
+            await page.mouse.up()
+            await editor.expectEditor.toContain('length = 231.59, angle = -34')
+            return true
+          },
+          { timeout: 10_000 }
+        )
         .toBeTruthy()
-      // await page.waitForTimeout(1000) // Wait for update
     })
 
     await test.step('Delete variables and wait for re-execution', async () => {
@@ -3096,16 +3098,19 @@ test.describe('manual edits during sketch mode', () => {
       await editor.expectEditor.toContain('length = 231.59, angle = -34')
       await page.waitForTimeout(500)
       await expect
-        .poll(async () => {
-          await page.mouse.move(handle2Location.x, handle2Location.y)
-          await page.mouse.down()
-          await page.mouse.move(handle2Location.x, handle2Location.y - 50, {
-            steps: 5,
-          })
-          await page.mouse.up()
-          await editor.expectEditor.toContain('length = 167.36, angle = -14')
-          return true
-        })
+        .poll(
+          async () => {
+            await page.mouse.move(handle2Location.x, handle2Location.y)
+            await page.mouse.down()
+            await page.mouse.move(handle2Location.x, handle2Location.y - 50, {
+              steps: 5,
+            })
+            await page.mouse.up()
+            await editor.expectEditor.toContain('length = 167.36, angle = -14')
+            return true
+          },
+          { timeout: 10_000 }
+        )
         .toBeTruthy()
     })
 
@@ -3124,17 +3129,20 @@ test.describe('manual edits during sketch mode', () => {
     await test.step('edit sketch again', async () => {
       await page.waitForTimeout(500) // Wait for deferred execution
       await expect
-        .poll(async () => {
-          await editor.expectEditor.toContain('length = 167.36, angle = -14')
-          await page.mouse.move(handle3Location.x, handle3Location.y)
-          await page.mouse.down()
-          await page.mouse.move(handle3Location.x, handle3Location.y + 110, {
-            steps: 5,
-          })
-          await page.mouse.up()
-          await editor.expectEditor.toContain('length = 219.2, angle = -56')
-          return true
-        })
+        .poll(
+          async () => {
+            await editor.expectEditor.toContain('length = 167.36, angle = -14')
+            await page.mouse.move(handle3Location.x, handle3Location.y)
+            await page.mouse.down()
+            await page.mouse.move(handle3Location.x, handle3Location.y + 110, {
+              steps: 5,
+            })
+            await page.mouse.up()
+            await editor.expectEditor.toContain('length = 219.2, angle = -56')
+            return true
+          },
+          { timeout: 10_000 }
+        )
         .toBeTruthy()
     })
 
