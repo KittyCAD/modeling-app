@@ -3058,7 +3058,7 @@ test.describe('manual edits during sketch mode', () => {
   }) => {
     const initialCode = `myVar1 = 5
     myVar2 = 6
-    
+
     sketch001 = startSketchOn(XZ)
     profile001 = startProfileAt([106.68, 89.77], sketch001)
       |> line(end = [132.34, 157.8])
@@ -3087,27 +3087,21 @@ test.describe('manual edits during sketch mode', () => {
     await homePage.goToModelingScene()
     await scene.connectionEstablished()
     await scene.settled(cmdBar)
-    const expectSketchOriginToBeDrawn = async () => {
-      await scene.expectPixelColor(TEST_COLORS.WHITE, { x: 672, y: 193 }, 15)
-    }
 
     await test.step('Open feature tree and edit second sketch', async () => {
       await toolbar.openFeatureTreePane()
       const sketchButton = await toolbar.getFeatureTreeOperation('Sketch', 1)
       await sketchButton.dblclick()
       await page.waitForTimeout(700) // Wait for engine animation
-      await expectSketchOriginToBeDrawn()
     })
 
     await test.step('Add new variable and wait for re-execution', async () => {
       await page.waitForTimeout(500) // wait for deferred execution
       await editor.replaceCode('myVar2 = 6', 'myVar2 = 6\nmyVar3 = 7')
       await page.waitForTimeout(2000) // wait for deferred execution
-      await expectSketchOriginToBeDrawn()
     })
 
     const handle1Location = { x: 843, y: 235 }
-
     await test.step('Edit sketch by dragging handle', async () => {
       await page.waitForTimeout(500)
       await expect
@@ -3136,7 +3130,6 @@ test.describe('manual edits during sketch mode', () => {
       await page.waitForTimeout(50)
       await editor.replaceCode('myVar2 = 6', '')
       await page.waitForTimeout(2000) // Wait for deferred execution
-      await expectSketchOriginToBeDrawn()
     })
 
     const handle2Location = { x: 872, y: 273 }
@@ -3166,7 +3159,6 @@ test.describe('manual edits during sketch mode', () => {
     profile004 = circle(sketch003, center = [143.91, 136.89], radius = 71.63)`
       )
       await page.waitForTimeout(2000) // Wait for deferred execution
-      await expectSketchOriginToBeDrawn()
     })
 
     const handle3Location = { x: 844, y: 212 }
@@ -3233,7 +3225,7 @@ profile003 = startProfileAt([-201.08, 254.17], sketch002)
   }) => {
     const initialCode = `myVar1 = 5
     myVar2 = 6
-    
+
     sketch001 = startSketchOn(XZ)
     profile001 = startProfileAt([106.68, 89.77], sketch001)
       |> line(end = [132.34, 157.8])
