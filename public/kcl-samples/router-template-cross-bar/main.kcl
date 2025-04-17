@@ -43,7 +43,7 @@ sketch001 = startSketchOn(XZ)
   |> yLine(length = -segLen(seg02))
   |> xLine(length = segLen(seg07))
   |> yLine(length = segLen(seg03))
-  |> arc(angleStart = 180, angleEnd = 10 + templateGap, radius = 10 + templateGap)
+  |> arc(angleStart = 180, angleEnd = 90, radius = 10 + templateGap)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 

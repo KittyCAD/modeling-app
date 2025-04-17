@@ -51,7 +51,7 @@ flipperProfile = startProfileAt([-flipperLength, -32.0], flipperSketch)
   |> line(end = [flipperLength, 2.0])
   |> yLine(length = 60.0, tag = $backEdge)
   |> line(end = [-flipperLength, 2.0])
-  |> arc(angleStart = 163.087610, angleEnd = 110.0, radius = 110.0)
+  |> arc(angleStart = 163.087610, angleEnd = 196.912390, radius = 110.0)
   |> close()
 
 // Create a profile of the middle

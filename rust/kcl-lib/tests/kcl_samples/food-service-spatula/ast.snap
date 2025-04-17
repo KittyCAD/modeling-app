@@ -2723,12 +2723,12 @@ description: Result of parsing food-service-spatula.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
-                      "raw": "110.0",
+                      "raw": "196.912390",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
-                        "value": 110.0,
+                        "value": 196.91239,
                         "suffix": "None"
                       }
                     }

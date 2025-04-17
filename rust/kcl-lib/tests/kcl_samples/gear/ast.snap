@@ -4374,20 +4374,16 @@ description: Result of parsing gear.kcl
                       "type": "Identifier"
                     },
                     "arg": {
-                      "abs_path": false,
                       "commentStart": 0,
                       "end": 0,
-                      "name": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "name": "holeRadius",
-                        "start": 0,
-                        "type": "Identifier"
-                      },
-                      "path": [],
+                      "raw": "180",
                       "start": 0,
-                      "type": "Name",
-                      "type": "Name"
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 180.0,
+                        "suffix": "None"
+                      }
                     }
                   },
                   {
@@ -4473,20 +4469,44 @@ description: Result of parsing gear.kcl
                       "type": "Identifier"
                     },
                     "arg": {
-                      "abs_path": false,
-                      "commentStart": 0,
-                      "end": 0,
-                      "name": {
+                      "arguments": [
+                        {
+                          "abs_path": false,
+                          "commentStart": 0,
+                          "end": 0,
+                          "name": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "name": "startAngle",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
+                          "start": 0,
+                          "type": "Name",
+                          "type": "Name"
+                        }
+                      ],
+                      "callee": {
+                        "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
-                        "name": "holeRadius",
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "name": "toDegrees",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 0,
-                        "type": "Identifier"
+                        "type": "Name"
                       },
-                      "path": [],
+                      "commentStart": 0,
+                      "end": 0,
                       "start": 0,
-                      "type": "Name",
-                      "type": "Name"
+                      "type": "CallExpression",
+                      "type": "CallExpression"
                     }
                   },
                   {

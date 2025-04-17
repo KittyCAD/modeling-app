@@ -1153,38 +1153,14 @@ description: Result of parsing ball-bearing.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
-                      "left": {
-                        "abs_path": false,
-                        "commentStart": 0,
-                        "end": 0,
-                        "name": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "name": "sphereDia",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "path": [],
-                        "start": 0,
-                        "type": "Name",
-                        "type": "Name"
-                      },
-                      "operator": "/",
-                      "right": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "raw": "2",
-                        "start": 0,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 2.0,
-                          "suffix": "None"
-                        }
-                      },
+                      "raw": "0",
                       "start": 0,
-                      "type": "BinaryExpression",
-                      "type": "BinaryExpression"
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 0.0,
+                        "suffix": "None"
+                      }
                     }
                   },
                   {
@@ -1992,38 +1968,14 @@ description: Result of parsing ball-bearing.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
-                      "left": {
-                        "abs_path": false,
-                        "commentStart": 0,
-                        "end": 0,
-                        "name": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "name": "sphereDia",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "path": [],
-                        "start": 0,
-                        "type": "Name",
-                        "type": "Name"
-                      },
-                      "operator": "/",
-                      "right": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "raw": "2",
-                        "start": 0,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 2.0,
-                          "suffix": "None"
-                        }
-                      },
+                      "raw": "60",
                       "start": 0,
-                      "type": "BinaryExpression",
-                      "type": "BinaryExpression"
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 60.0,
+                        "suffix": "None"
+                      }
                     }
                   },
                   {
