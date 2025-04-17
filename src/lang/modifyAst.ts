@@ -81,7 +81,10 @@ import type {
   VariableMap,
 } from '@src/lang/wasm'
 import { isPathToNodeNumber, parse } from '@src/lang/wasm'
-import type { KclExpressionWithVariable } from '@src/lib/commandTypes'
+import type {
+  KclCommandValue,
+  KclExpressionWithVariable,
+} from '@src/lib/commandTypes'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
 import type { DefaultPlaneStr } from '@src/lib/planes'
 import type { Selection } from '@src/lib/selections'
@@ -227,6 +230,8 @@ export function addSketchTo(
 Set the keyword argument to the given value.
 Returns true if it overwrote an existing argument.
 Returns false if no argument with the label existed before.
+Returns 'no-mutate' if the label was found, but the value is constrained and not
+mutated.
 Also do some checks to see if it's actually trying to set a constraint on
 a sketch line that's already fully constrained, and if so, duplicates the arg.
 WILL BE FIXED SOON.
@@ -235,7 +240,7 @@ export function mutateKwArg(
   label: string,
   node: CallExpressionKw,
   val: Expr
-): boolean {
+): boolean | 'no-mutate' {
   for (let i = 0; i < node.arguments.length; i++) {
     const arg = node.arguments[i]
     if (arg.label.name === label) {
@@ -254,6 +259,8 @@ export function mutateKwArg(
         })
         return true
       }
+      // The label was found, but the value is not a literal or static.
+      return 'no-mutate'
     }
   }
   node.arguments.push(createLabeledArg(label, val))
@@ -1823,4 +1830,21 @@ export function createNodeFromExprSnippet(
   const node = program.program?.body[0]
   if (!node) return new Error('No node found')
   return node
+}
+
+export function insertVariableAndOffsetPathToNode(
+  variable: KclCommandValue,
+  modifiedAst: Node<Program>,
+  pathToNode: PathToNode
+) {
+  if ('variableName' in variable && variable.variableName) {
+    modifiedAst.body.splice(
+      variable.insertIndex,
+      0,
+      variable.variableDeclarationAst
+    )
+    if (typeof pathToNode[1][0] === 'number') {
+      pathToNode[1][0]++
+    }
+  }
 }
