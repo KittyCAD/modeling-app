@@ -274,6 +274,19 @@ pub async fn appearance(exec_state: &mut ExecState, args: Args) -> Result<KclVal
 ///         roughness = 50
 ///     )
 /// ```
+///
+/// ```no_run
+/// // Change the appearance of an imported model.
+///
+/// import "tests/inputs/cube.sldprt" as cube
+///
+/// cube
+/// //    |> appearance(
+/// //        color = "#ff0000",
+/// //        metalness = 50,
+/// //        roughness = 50
+/// //    )
+/// ```
 #[stdlib {
     name = "appearance",
     keywords = true,
