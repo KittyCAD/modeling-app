@@ -257,6 +257,14 @@ export class SceneFixture {
     await expectPixelColor(this.page, colour, coords, diff)
   }
 
+  expectPixelColorNotToBe = async (
+    colour: [number, number, number] | [number, number, number][],
+    coords: { x: number; y: number },
+    diff: number
+  ) => {
+    await expectPixelColorNotToBe(this.page, colour, coords, diff)
+  }
+
   get gizmo() {
     return this.page.locator('[aria-label*=gizmo]')
   }
@@ -278,37 +286,69 @@ function isColourArray(
   return isArray(colour[0])
 }
 
-export async function expectPixelColor(
+type PixelColorMatchMode = 'matches' | 'differs'
+
+export async function checkPixelColor(
   page: Page,
   colour: [number, number, number] | [number, number, number][],
   coords: { x: number; y: number },
-  diff: number
+  diff: number,
+  mode: PixelColorMatchMode
 ) {
   let finalValue = colour
+  const isMatchMode = mode === 'matches'
+  const actionText = isMatchMode ? 'expecting' : 'not expecting'
+  const functionName = isMatchMode
+    ? 'ExpectPixelColor'
+    : 'ExpectPixelColourNotToBe'
+
   await expect
     .poll(
       async () => {
         const pixel = (await getPixelRGBs(page)(coords, 1))[0]
         if (!pixel) return null
         finalValue = pixel
+
+        let matches
         if (!isColourArray(colour)) {
-          return pixel.every(
+          matches = pixel.every(
             (channel, index) => Math.abs(channel - colour[index]) < diff
           )
+        } else {
+          matches = colour.some((c) =>
+            c.every((channel, index) => Math.abs(pixel[index] - channel) < diff)
+          )
         }
-        return colour.some((c) =>
-          c.every((channel, index) => Math.abs(pixel[index] - channel) < diff)
-        )
+
+        return isMatchMode ? matches : !matches
       },
       { timeout: 10_000 }
     )
     .toBeTruthy()
     .catch((cause) => {
       throw new Error(
-        `ExpectPixelColor: point ${JSON.stringify(
+        `${functionName}: point ${JSON.stringify(
           coords
-        )} was expecting ${colour} but got ${finalValue}`,
+        )} was ${actionText} ${colour} but got ${finalValue}`,
         { cause }
       )
     })
+}
+
+export async function expectPixelColor(
+  page: Page,
+  colour: [number, number, number] | [number, number, number][],
+  coords: { x: number; y: number },
+  diff: number
+) {
+  await checkPixelColor(page, colour, coords, diff, 'matches')
+}
+
+export async function expectPixelColorNotToBe(
+  page: Page,
+  colour: [number, number, number] | [number, number, number][],
+  coords: { x: number; y: number },
+  diff: number
+) {
+  await checkPixelColor(page, colour, coords, diff, 'differs')
 }
