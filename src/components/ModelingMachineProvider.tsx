@@ -65,6 +65,7 @@ import {
 } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import {
+  getArtifactFromRange,
   getFaceCodeRef,
   getPathsFromArtifact,
   getPlaneFromArtifact,
@@ -1984,7 +1985,21 @@ export const ModelingMachineProvider = ({
   // `navigator.platform` is deprecated, but the alternative `navigator.userAgentData.platform` is not reliable
   const deleteKeys =
     platform() === 'macos' ? ['backspace', 'delete', 'del'] : ['delete', 'del']
+
   useHotkeys(deleteKeys, () => {
+    // When the current selection is a segment, delete that directly ('Delete selection' doesn't seem to support it)
+    const codeRef =
+      modelingState.context.selectionRanges.graphSelections[0]?.codeRef
+    if (codeRef?.pathToNode && codeRef?.range) {
+      const artifact = getArtifactFromRange(
+        codeRef.range,
+        kclManager.artifactGraph
+      )
+      if (artifact?.type === 'segment') {
+        modelingSend({ type: 'Delete segment', data: codeRef.pathToNode })
+        return
+      }
+    }
     modelingSend({ type: 'Delete selection' })
   })
 
