@@ -221,7 +221,7 @@ class StraightSegment implements SegmentUtils {
       const snapLine = createLine({
         from: [0, 0],
         to: [0, 0],
-        color: 0xcccccc,
+        color: 0x555555,
       })
       snapLine.name = STRAIGHT_SEGMENT_SNAP_LINE
       segmentGroup.add(snapLine)
