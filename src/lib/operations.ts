@@ -1,6 +1,7 @@
 import type { OpKclValue, Operation } from '@rust/kcl-lib/bindings/Operation'
 
 import type { CustomIconName } from '@src/components/CustomIcon'
+import { getNodeFromPath } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import type { Artifact } from '@src/lang/std/artifactGraph'
 import {
@@ -10,13 +11,16 @@ import {
   getSweepEdgeCodeRef,
   getWallCodeRef,
 } from '@src/lang/std/artifactGraph'
-import { sourceRangeFromRust } from '@src/lang/wasm'
+import { type PipeExpression, sourceRangeFromRust } from '@src/lang/wasm'
 import type {
   HelixModes,
   ModelingCommandSchema,
 } from '@src/lib/commandBarConfigs/modelingCommandConfig'
 import type { KclExpression } from '@src/lib/commandTypes'
-import { stringToKclExpression } from '@src/lib/kclHelpers'
+import {
+  stringToKclExpression,
+  retrieveArgFromPipedCallExpression,
+} from '@src/lib/kclHelpers'
 import { isDefaultPlaneStr } from '@src/lib/planes'
 import type { Selection, Selections } from '@src/lib/selections'
 import { codeManager, kclManager, rustContext } from '@src/lib/singletons'
@@ -46,6 +50,7 @@ interface StdLibCallInfo {
     | PrepareToEditCallback
     | PrepareToEditFailurePayload
   supportsAppearance?: boolean
+  supportsTransform?: boolean
 }
 
 /**
@@ -1008,6 +1013,7 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     icon: 'extrude',
     prepareToEdit: prepareToEditExtrude,
     supportsAppearance: true,
+    supportsTransform: true,
   },
   fillet: {
     label: 'Fillet',
@@ -1026,19 +1032,26 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
   hollow: {
     label: 'Hollow',
     icon: 'hollow',
+    supportsAppearance: true,
+    supportsTransform: true,
   },
   import: {
     label: 'Import',
     icon: 'import',
+    supportsAppearance: true,
+    supportsTransform: true,
   },
   intersect: {
     label: 'Intersect',
     icon: 'booleanIntersect',
+    supportsAppearance: true,
+    supportsTransform: true,
   },
   loft: {
     label: 'Loft',
     icon: 'loft',
     supportsAppearance: true,
+    supportsTransform: true,
   },
   offsetPlane: {
     label: 'Offset Plane',
@@ -1052,6 +1065,8 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
   patternCircular3d: {
     label: 'Circular Pattern',
     icon: 'patternCircular3d',
+    supportsAppearance: true,
+    supportsTransform: true,
   },
   patternLinear2d: {
     label: 'Linear Pattern',
@@ -1060,18 +1075,22 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
   patternLinear3d: {
     label: 'Linear Pattern',
     icon: 'patternLinear3d',
+    supportsAppearance: true,
+    supportsTransform: true,
   },
   revolve: {
     label: 'Revolve',
     icon: 'revolve',
     prepareToEdit: prepareToEditRevolve,
     supportsAppearance: true,
+    supportsTransform: true,
   },
   shell: {
     label: 'Shell',
     icon: 'shell',
     prepareToEdit: prepareToEditShell,
     supportsAppearance: true,
+    supportsTransform: true,
   },
   startSketchOn: {
     label: 'Sketch',
@@ -1284,7 +1303,6 @@ export async function enterEditFlow({
 
 export async function enterAppearanceFlow({
   operation,
-  artifact,
 }: EnterEditFlowProps): Promise<Error | CommandBarMachineEvent> {
   if (operation.type !== 'StdLibCall' && operation.type !== 'KclStdLibCall') {
     return new Error(
@@ -1300,7 +1318,6 @@ export async function enterAppearanceFlow({
         sourceRangeFromRust(operation.sourceRange)
       ),
     }
-    console.log('argDefaultValues', argDefaultValues)
     return {
       type: 'Find and select command',
       data: {
@@ -1314,4 +1331,102 @@ export async function enterAppearanceFlow({
   return new Error(
     'Appearance setting not yet supported for this operation. Please edit in the code editor.'
   )
+}
+
+export async function enterTranslateFlow({
+  operation,
+}: EnterEditFlowProps): Promise<Error | CommandBarMachineEvent> {
+  const isModuleImport = operation.type === 'GroupBegin'
+  const isSupportedStdLibCall =
+    (operation.type === 'KclStdLibCall' || operation.type === 'StdLibCall') &&
+    stdLibMap[operation.name]?.supportsTransform
+  if (!isModuleImport && !isSupportedStdLibCall) {
+    return new Error(
+      'Unsupported operation type. Please edit in the code editor.'
+    )
+  }
+
+  const nodeToEdit = getNodePathFromSourceRange(
+    kclManager.ast,
+    sourceRangeFromRust(operation.sourceRange)
+  )
+  let x: KclExpression | undefined = undefined
+  let y: KclExpression | undefined = undefined
+  let z: KclExpression | undefined = undefined
+  const pipe = getNodeFromPath<PipeExpression>(
+    kclManager.ast,
+    nodeToEdit,
+    'PipeExpression'
+  )
+  if (!err(pipe) && pipe.node.body) {
+    const translate = pipe.node.body.find(
+      (n) => n.type === 'CallExpressionKw' && n.callee.name.name === 'translate'
+    )
+    if (translate?.type === 'CallExpressionKw') {
+      x = await retrieveArgFromPipedCallExpression(translate, 'x')
+      y = await retrieveArgFromPipedCallExpression(translate, 'y')
+      z = await retrieveArgFromPipedCallExpression(translate, 'z')
+    }
+  }
+
+  // Won't be used since we provide nodeToEdit
+  const selection: Selections = { graphSelections: [], otherSelections: [] }
+  const argDefaultValues = { nodeToEdit, selection, x, y, z }
+  return {
+    type: 'Find and select command',
+    data: {
+      name: 'Translate',
+      groupId: 'modeling',
+      argDefaultValues,
+    },
+  }
+}
+
+export async function enterRotateFlow({
+  operation,
+}: EnterEditFlowProps): Promise<Error | CommandBarMachineEvent> {
+  const isModuleImport = operation.type === 'GroupBegin'
+  const isSupportedStdLibCall =
+    (operation.type === 'KclStdLibCall' || operation.type === 'StdLibCall') &&
+    stdLibMap[operation.name]?.supportsTransform
+  if (!isModuleImport && !isSupportedStdLibCall) {
+    return new Error(
+      'Unsupported operation type. Please edit in the code editor.'
+    )
+  }
+
+  const nodeToEdit = getNodePathFromSourceRange(
+    kclManager.ast,
+    sourceRangeFromRust(operation.sourceRange)
+  )
+  let roll: KclExpression | undefined = undefined
+  let pitch: KclExpression | undefined = undefined
+  let yaw: KclExpression | undefined = undefined
+  const pipe = getNodeFromPath<PipeExpression>(
+    kclManager.ast,
+    nodeToEdit,
+    'PipeExpression'
+  )
+  if (!err(pipe) && pipe.node.body) {
+    const rotate = pipe.node.body.find(
+      (n) => n.type === 'CallExpressionKw' && n.callee.name.name === 'rotate'
+    )
+    if (rotate?.type === 'CallExpressionKw') {
+      roll = await retrieveArgFromPipedCallExpression(rotate, 'roll')
+      pitch = await retrieveArgFromPipedCallExpression(rotate, 'pitch')
+      yaw = await retrieveArgFromPipedCallExpression(rotate, 'yaw')
+    }
+  }
+
+  // Won't be used since we provide nodeToEdit
+  const selection: Selections = { graphSelections: [], otherSelections: [] }
+  const argDefaultValues = { nodeToEdit, selection, roll, pitch, yaw }
+  return {
+    type: 'Find and select command',
+    data: {
+      name: 'Rotate',
+      groupId: 'modeling',
+      argDefaultValues,
+    },
+  }
 }
