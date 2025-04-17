@@ -216,8 +216,8 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
                 .unwrap_or_default()
         };
 
-        let current_time = std::time::Instant::now();
-        while current_time.elapsed().as_secs() < 60 {
+        let current_time = instant::now();
+        while instant::now() - current_time < 60.0 * 1000.0 {
             let responses = self.responses().read().await.clone();
             let Some(resp) = responses.get(&id) else {
                 continue;
