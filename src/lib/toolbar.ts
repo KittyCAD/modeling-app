@@ -368,7 +368,6 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
                 type: 'Find and select command',
                 data: { name: 'Translate', groupId: 'modeling' },
               }),
-            icon: 'dimension', // TODO: likely not the best icon
             status: DEV || IS_NIGHTLY_OR_DEBUG ? 'available' : 'kcl-only',
             title: 'Translate',
             description: 'Apply a translation to a solid or sketch.',
@@ -386,9 +385,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
                 type: 'Find and select command',
                 data: { name: 'Rotate', groupId: 'modeling' },
               }),
-            icon: 'angle',
             status: DEV || IS_NIGHTLY_OR_DEBUG ? 'available' : 'kcl-only',
-            disabled: () => !isDesktop(),
             title: 'Rotate',
             description: 'Apply a rotation to a solid or sketch.',
             links: [
