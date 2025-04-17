@@ -5,10 +5,7 @@ import { useModelingContext } from '@src/hooks/useModelingContext'
 import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
 import { getArtifactOfTypes } from '@src/lang/std/artifactGraph'
-import {
-  EngineCommandManagerEvents,
-  EngineConnectionStateType,
-} from '@src/lang/std/engineConnection'
+import { EngineCommandManagerEvents } from '@src/lang/std/engineConnection'
 import { btnName } from '@src/lib/cameraControls'
 import { PATHS } from '@src/lib/paths'
 import { sendSelectEventToEngine } from '@src/lib/selections'
@@ -430,8 +427,9 @@ export const EngineStream = (props: {
         }
         menuTargetElement={videoWrapperRef}
       />
-      {engineCommandManager.engineConnection?.state.type !==
-        EngineConnectionStateType.ConnectionEstablished && (
+      {![EngineStreamState.Playing, EngineStreamState.Paused].some(
+        (s) => s === engineStreamState.value
+      ) && (
         <Loading dataTestId="loading-engine" className="fixed inset-0">
           Connecting to engine
         </Loading>
