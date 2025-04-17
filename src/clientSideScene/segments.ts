@@ -294,6 +294,8 @@ class StraightSegment implements SegmentUtils {
     if (snapLine) {
       snapLine.visible = !!input.snap
       if (snapLine.visible) {
+        // Without this three.js incorrectly culls the line in some cases when zoomed in too much
+        snapLine.frustumCulled = false
         const snapLineFrom = to
         const snapLineTo = new Vector3(to[0], to[1], 0).addScaledVector(
           dir,
