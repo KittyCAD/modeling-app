@@ -894,7 +894,6 @@ export class SceneEntities {
   ) => {
     if (trap(modifiedAst)) return Promise.reject(modifiedAst)
     const nextAst = await this.kclManager.updateAst(modifiedAst, false)
-    this.tearDownSketch({ removeAxis: false })
     this.sceneInfra.resetMouseListeners()
     await this.setupSketch({
       sketchEntryNodePath,
@@ -968,7 +967,6 @@ export class SceneEntities {
 
     const draftExpressionsIndices = { start: index, end: index }
 
-    if (shouldTearDown) this.tearDownSketch({ removeAxis: false })
     this.sceneInfra.resetMouseListeners()
 
     const { truncatedAst } = await this.setupSketch({
@@ -1838,7 +1836,6 @@ export class SceneEntities {
     const index = sg.paths.length // because we've added a new segment that's not in the memory yet
     const draftExpressionsIndices = { start: index, end: index }
 
-    this.tearDownSketch({ removeAxis: false })
     this.sceneInfra.resetMouseListeners()
 
     const { truncatedAst } = await this.setupSketch({
@@ -2069,7 +2066,6 @@ export class SceneEntities {
     // Get the insertion index from the modified path
     const insertIndex = Number(mod.pathToNode[1][0])
 
-    this.tearDownSketch({ removeAxis: false })
     this.sceneInfra.resetMouseListeners()
 
     const { truncatedAst } = await this.setupSketch({
@@ -2491,7 +2487,6 @@ export class SceneEntities {
     this.sceneInfra.setCallbacks({
       onDragEnd: async () => {
         if (addingNewSegmentStatus !== 'nothing') {
-          this.tearDownSketch({ removeAxis: false })
           // eslint-disable-next-line @typescript-eslint/no-floating-promises
           this.setupSketch({
             sketchEntryNodePath,
@@ -2566,7 +2561,6 @@ export class SceneEntities {
               mod.modifiedAst
             )
             if (err(didReParse)) return
-            this.tearDownSketch({ removeAxis: false })
             // eslint-disable-next-line @typescript-eslint/no-floating-promises
             this.setupSketch({
               sketchEntryNodePath: pathToNode,
