@@ -220,14 +220,11 @@ export default class RustContext {
   async sendResponse(
     response: Models['WebSocketResponse_type']
   ): Promise<void> {
-    const instance = this.responseCtxInstance
-
-    if (!instance) {
-      return
-    }
+    const instance = await this._checkInstance()
 
     try {
-      await instance.sendResponse(BSON.serialize(response))
+      const serialized = BSON.serialize(response)
+      await instance.sendResponse(serialized)
     } catch (e: any) {
       const err = errFromErrWithOutputs(e)
       return Promise.reject(err)

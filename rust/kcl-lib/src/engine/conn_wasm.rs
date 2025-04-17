@@ -47,7 +47,7 @@ extern "C" {
 #[derive(Debug, Clone)]
 pub struct EngineConnection {
     manager: Arc<EngineCommandManager>,
-    response_context: ResponseContext,
+    response_context: Arc<ResponseContext>,
     batch: Arc<RwLock<Vec<(WebSocketRequest, SourceRange)>>>,
     batch_end: Arc<RwLock<IndexMap<uuid::Uuid, (WebSocketRequest, SourceRange)>>>,
     artifact_commands: Arc<RwLock<Vec<ArtifactCommand>>>,
@@ -74,10 +74,7 @@ impl ResponseContext {
 
     // Add a response to the context.
     #[wasm_bindgen(js_name = sendResponse)]
-    pub async fn send_response(&self, value: JsValue) -> Result<(), JsValue> {
-        // Convert JsValue to a Uint8Array
-        let data = js_sys::Uint8Array::from(value);
-
+    pub async fn send_response(&self, data: js_sys::Uint8Array) -> Result<(), JsValue> {
         let ws_result: WebSocketResponse = match bson::from_slice(&data.to_vec()) {
             Ok(res) => res,
             Err(_) => {
@@ -120,7 +117,7 @@ unsafe impl Sync for EngineConnection {}
 impl EngineConnection {
     pub async fn new(
         manager: EngineCommandManager,
-        response_context: ResponseContext,
+        response_context: Arc<ResponseContext>,
     ) -> Result<EngineConnection, JsValue> {
         #[allow(clippy::arc_with_non_send_sync)]
         Ok(EngineConnection {
