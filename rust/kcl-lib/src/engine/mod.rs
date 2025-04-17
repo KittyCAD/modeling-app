@@ -222,7 +222,16 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
             let Some(resp) = responses.get(&id) else {
                 // Sleep for a little so we don't hog the CPU.
                 // No seriously WE DO NOT WANT TO PAUSE THE WHOLE APP ON THE JS SIDE.
-                tokio::time::sleep(std::time::Duration::from_millis(100)).await;
+                let duration = instant::Duration::from_millis(100);
+                #[cfg(target_arch = "wasm32")]
+                wasm_timer::Delay::new(duration).await.map_err(|err| {
+                    KclError::Internal(KclErrorDetails {
+                        message: format!("Failed to sleep: {:?}", err),
+                        source_ranges: vec![source_range],
+                    })
+                })?;
+                #[cfg(not(target_arch = "wasm32"))]
+                tokio::time::sleep(duration).await;
                 continue;
             };
 
