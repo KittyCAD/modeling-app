@@ -807,8 +807,8 @@ description: Operations executed bench.kcl
       "type": "FunctionCall",
       "name": "connector",
       "functionSourceRange": [
-        1966,
-        2129,
+        1962,
+        2125,
         5
       ],
       "unlabeledArg": null,
@@ -823,7 +823,7 @@ description: Operations executed bench.kcl
       "name": "connectorSketch",
       "functionSourceRange": [
         1703,
-        1945,
+        1941,
         5
       ],
       "unlabeledArg": null,
@@ -888,7 +888,7 @@ description: Operations executed bench.kcl
       "name": "connectorSketch",
       "functionSourceRange": [
         1703,
-        1945,
+        1941,
         5
       ],
       "unlabeledArg": null,
@@ -985,8 +985,8 @@ description: Operations executed bench.kcl
       "type": "FunctionCall",
       "name": "seatSlats",
       "functionSourceRange": [
-        2551,
-        2637,
+        2547,
+        2633,
         5
       ],
       "unlabeledArg": null,
@@ -1000,8 +1000,8 @@ description: Operations executed bench.kcl
       "type": "FunctionCall",
       "name": "seatSlatSketch",
       "functionSourceRange": [
-        2148,
-        2530,
+        2144,
+        2526,
         5
       ],
       "unlabeledArg": null,
@@ -1115,8 +1115,8 @@ description: Operations executed bench.kcl
       "type": "FunctionCall",
       "name": "backSlats",
       "functionSourceRange": [
-        3106,
-        3197,
+        3102,
+        3193,
         5
       ],
       "unlabeledArg": null,
@@ -1130,8 +1130,8 @@ description: Operations executed bench.kcl
       "type": "FunctionCall",
       "name": "backSlatsSketch",
       "functionSourceRange": [
-        2657,
-        3085,
+        2653,
+        3081,
         5
       ],
       "unlabeledArg": null,
@@ -1209,8 +1209,8 @@ description: Operations executed bench.kcl
       "type": "FunctionCall",
       "name": "armRest",
       "functionSourceRange": [
-        3743,
-        3931,
+        3739,
+        3927,
         5
       ],
       "unlabeledArg": null,
@@ -1254,8 +1254,8 @@ description: Operations executed bench.kcl
       "type": "FunctionCall",
       "name": "armRestPath",
       "functionSourceRange": [
-        3213,
-        3397,
+        3209,
+        3393,
         5
       ],
       "unlabeledArg": null,
@@ -1317,8 +1317,8 @@ description: Operations executed bench.kcl
       "type": "FunctionCall",
       "name": "armRestProfile",
       "functionSourceRange": [
-        3416,
-        3724,
+        3412,
+        3720,
         5
       ],
       "unlabeledArg": null,
@@ -1378,8 +1378,8 @@ description: Operations executed bench.kcl
       "type": "FunctionCall",
       "name": "armRest",
       "functionSourceRange": [
-        3743,
-        3931,
+        3739,
+        3927,
         5
       ],
       "unlabeledArg": null,
@@ -1423,8 +1423,8 @@ description: Operations executed bench.kcl
       "type": "FunctionCall",
       "name": "armRestPath",
       "functionSourceRange": [
-        3213,
-        3397,
+        3209,
+        3393,
         5
       ],
       "unlabeledArg": null,
@@ -1486,8 +1486,8 @@ description: Operations executed bench.kcl
       "type": "FunctionCall",
       "name": "armRestProfile",
       "functionSourceRange": [
-        3416,
-        3724,
+        3412,
+        3720,
         5
       ],
       "unlabeledArg": null,
