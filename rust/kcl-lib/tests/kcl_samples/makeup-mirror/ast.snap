@@ -2877,7 +2877,7 @@ description: Result of parsing makeup-mirror.kcl
                               "label": {
                                 "commentStart": 0,
                                 "end": 0,
-                                "name": "interior",
+                                "name": "interiorAbsolute",
                                 "start": 0,
                                 "type": "Identifier"
                               },
@@ -3103,7 +3103,7 @@ description: Result of parsing makeup-mirror.kcl
                               "label": {
                                 "commentStart": 0,
                                 "end": 0,
-                                "name": "interior",
+                                "name": "interiorAbsolute",
                                 "start": 0,
                                 "type": "Identifier"
                               },
