@@ -57,7 +57,7 @@ part = rs
        ],
        radius = holeRadius,
      ), %)
-  |> hole(circle(center = [0, 0], radius = centerHoleDiameter), %)
+  |> hole(tool = circle(center = [0, 0], radius = centerHoleDiameter))
   |> extrude(length = plateThickness)
   |> fillet(
        radius = filletRadius,

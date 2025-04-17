@@ -133,7 +133,7 @@ sketch006 = startSketchOn(XZ)
 // Spiral plate
 sketch007 = startSketchOn(offsetPlane(XY, offset = 1.12))
   |> circle(center = [0, 0], radius = carafeDiameter / 2 - 0.24)
-  |> hole(circle(center = [0, 0], radius = .15), %)
+  |> hole(tool = circle(center = [0, 0], radius = .15))
 
 extrude003 = extrude(sketch007, length = 0.050)
 

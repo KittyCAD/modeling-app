@@ -23,7 +23,7 @@ export fn flange() {
   // Create the flange base
   flangeBase = startSketchOn(XY)
     |> circle(%, center = [0, 0], radius = flangeDiameter / 2)
-    |> hole(mountingHoles, %)
+    |> hole(tool = mountingHoles)
     |> extrude(%, length = flangeBaseThickness)
 
   // Create both the raised portions on the front and back of the flange base
