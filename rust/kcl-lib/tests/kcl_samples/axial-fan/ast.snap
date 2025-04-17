@@ -164,7 +164,7 @@ description: Result of parsing axial-fan.kcl
           "// A small axial fan, used to push or draw airflow over components to remove excess heat",
           "",
           "",
-          "// set units"
+          "// Set units"
         ],
         "properties": [
           {
