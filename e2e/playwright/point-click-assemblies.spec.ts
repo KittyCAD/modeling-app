@@ -261,18 +261,18 @@ test.describe('Point-and-click assemblies tests', () => {
           highlightedHeaderArg: 'x',
           commandName: 'Translate',
         })
-        await page.keyboard.insertText('200')
+        await page.keyboard.insertText('5')
         await cmdBar.progressCmdBar()
-        await page.keyboard.insertText('1')
+        await page.keyboard.insertText('0.1')
         await cmdBar.progressCmdBar()
-        await page.keyboard.insertText('2')
+        await page.keyboard.insertText('0.2')
         await cmdBar.progressCmdBar()
         await cmdBar.expectState({
           stage: 'review',
           headerArguments: {
-            X: '200',
-            Y: '1',
-            Z: '2',
+            X: '5',
+            Y: '0.1',
+            Z: '0.2',
           },
           commandName: 'Translate',
         })
@@ -282,7 +282,7 @@ test.describe('Point-and-click assemblies tests', () => {
         await editor.expectEditor.toContain(
           `
         bracket
-          |> translate(x = 200, y = 1, z = 2)
+          |> translate(x = 5, y = 0.1, z = 0.2)
         `,
           { shouldNormalise: true }
         )
@@ -331,7 +331,7 @@ test.describe('Point-and-click assemblies tests', () => {
         await editor.expectEditor.toContain(
           `
         bracket
-          |> translate(x = 200, y = 1, z = 2)
+          |> translate(x = 5, y = 0.1, z = 0.2)
           |> rotate(roll = 0.1, pitch = 0.2, yaw = 0.3)
         `,
           { shouldNormalise: true }
