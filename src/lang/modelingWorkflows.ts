@@ -54,7 +54,6 @@ export async function updateModelingState(
   },
   options?: {
     focusPath?: Array<PathToNode>
-    skipUpdateAst?: boolean
     isDeleting?: boolean
   }
 ): Promise<void> {
@@ -62,16 +61,12 @@ export async function updateModelingState(
     newAst: Node<Program>
     selections?: Selections
   } = { newAst: ast }
-  // TODO: understand why this skip flag is needed for insertAstMod.
-  // It's unclear why we double casts the AST
-  if (!options?.skipUpdateAst) {
-    // Step 1: Update AST without executing (prepare selections)
-    updatedAst = await dependencies.kclManager.updateAst(
-      ast,
-      false, // Execution handled separately for error resilience
-      options
-    )
-  }
+  // Step 1: Update AST without executing (prepare selections)
+  updatedAst = await dependencies.kclManager.updateAst(
+    ast,
+    false, // Execution handled separately for error resilience
+    options
+  )
 
   // Step 2: Update the code editor and save file
   await dependencies.codeManager.updateEditorWithAstAndWriteToFile(
