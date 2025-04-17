@@ -25,6 +25,7 @@ import {
   EngineStreamTransition,
 } from '@src/machines/engineStreamMachine'
 
+import Loading from '@src/components/Loading'
 import { useSelector } from '@xstate/react'
 import type { MouseEventHandler } from 'react'
 import { useEffect, useRef, useState } from 'react'
@@ -426,6 +427,13 @@ export const EngineStream = (props: {
         }
         menuTargetElement={videoWrapperRef}
       />
+      {![EngineStreamState.Playing, EngineStreamState.Paused].some(
+        (s) => s === engineStreamState.value
+      ) && (
+        <Loading dataTestId="loading-engine" className="fixed inset-0">
+          Connecting to engine
+        </Loading>
+      )}
     </div>
   )
 }

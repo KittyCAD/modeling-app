@@ -644,7 +644,7 @@ impl GetTangentialInfoFromPathsResult {
     pub(crate) fn tan_previous_point(&self, last_arc_end: [f64; 2]) -> [f64; 2] {
         match self {
             GetTangentialInfoFromPathsResult::PreviousPoint(p) => *p,
-            GetTangentialInfoFromPathsResult::Arc { center, ccw, .. } => {
+            GetTangentialInfoFromPathsResult::Arc { center, ccw } => {
                 crate::std::utils::get_tangent_point_from_previous_arc(*center, *ccw, last_arc_end)
             }
             // The circle always starts at 0 degrees, so a suitable tangent
@@ -1231,12 +1231,9 @@ impl Path {
             },
             Path::ArcThreePoint { p1, p2, p3, .. } => {
                 let circle_center = crate::std::utils::calculate_circle_from_3_points([*p1, *p2, *p3]);
-                let radius = linear_distance(&[circle_center.center[0], circle_center.center[1]], p1);
-                let center_point = [circle_center.center[0], circle_center.center[1]];
-                GetTangentialInfoFromPathsResult::Circle {
-                    center: center_point,
-                    ccw: true,
-                    radius,
+                GetTangentialInfoFromPathsResult::Arc {
+                    center: circle_center.center,
+                    ccw: crate::std::utils::is_points_ccw(&[*p1, *p2, *p3]) > 0,
                 }
             }
             Path::Circle {
@@ -1252,6 +1249,7 @@ impl Path {
                 let center_point = [circle_center.center[0], circle_center.center[1]];
                 GetTangentialInfoFromPathsResult::Circle {
                     center: center_point,
+                    // Note: a circle is always ccw regardless of the order of points
                     ccw: true,
                     radius,
                 }

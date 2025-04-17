@@ -330,6 +330,13 @@ export const ModelingMachineProvider = ({
             }
             if (setSelections.selectionType === 'singleCodeCursor') {
               if (!setSelections.selection && editorManager.isShiftDown) {
+                // if the user is holding shift, but they didn't select anything
+                // don't nuke their other selections (frustrating to have one bad click ruin your
+                // whole selection)
+                selections = {
+                  graphSelections: selectionRanges.graphSelections,
+                  otherSelections: selectionRanges.otherSelections,
+                }
               } else if (
                 !setSelections.selection &&
                 !editorManager.isShiftDown
@@ -550,6 +557,9 @@ export const ModelingMachineProvider = ({
           if (!isCommandBarClosed) return false
           if (selectionRanges.graphSelections.length <= 0) return false
           return true
+        },
+        'is-error-free': () => {
+          return kclManager.errors.length === 0 && !kclManager.hasErrors()
         },
         'Selection is on face': ({ context: { selectionRanges }, event }) => {
           if (event.type !== 'Enter sketch') return false
@@ -854,6 +864,7 @@ export const ModelingMachineProvider = ({
                 : plane?.pathIds[0]
             let sketch: KclValue | null = null
             let planeVar: Plane | null = null
+
             for (const variable of Object.values(
               kclManager.execState.variables
             )) {
@@ -884,6 +895,7 @@ export const ModelingMachineProvider = ({
                 planeVar = variable.value
               }
             }
+
             if (!sketch || sketch.type !== 'Sketch') {
               if (artifact?.type !== 'plane')
                 return Promise.reject(new Error('No sketch'))
@@ -1482,7 +1494,6 @@ export const ModelingMachineProvider = ({
           async ({ input: { sketchDetails, data } }) => {
             if (!sketchDetails || !data)
               return reject('No sketch details or data')
-            sceneEntitiesManager.tearDownSketch({ removeAxis: false })
 
             const result = await sceneEntitiesManager.setupDraftCircle(
               sketchDetails.sketchEntryNodePath,
@@ -1503,7 +1514,6 @@ export const ModelingMachineProvider = ({
           async ({ input: { sketchDetails, data } }) => {
             if (!sketchDetails || !data)
               return reject('No sketch details or data')
-            sceneEntitiesManager.tearDownSketch({ removeAxis: false })
 
             const result =
               await sceneEntitiesManager.setupDraftCircleThreePoint(
@@ -1526,7 +1536,6 @@ export const ModelingMachineProvider = ({
           async ({ input: { sketchDetails, data } }) => {
             if (!sketchDetails || !data)
               return reject('No sketch details or data')
-            sceneEntitiesManager.tearDownSketch({ removeAxis: false })
 
             const result = await sceneEntitiesManager.setupDraftRectangle(
               sketchDetails.sketchEntryNodePath,
@@ -1547,7 +1556,6 @@ export const ModelingMachineProvider = ({
           async ({ input: { sketchDetails, data } }) => {
             if (!sketchDetails || !data)
               return reject('No sketch details or data')
-            sceneEntitiesManager.tearDownSketch({ removeAxis: false })
             const result = await sceneEntitiesManager.setupDraftCenterRectangle(
               sketchDetails.sketchEntryNodePath,
               sketchDetails.sketchNodePaths,
@@ -1567,7 +1575,6 @@ export const ModelingMachineProvider = ({
           async ({ input: { sketchDetails, data } }) => {
             if (!sketchDetails || !data)
               return reject('No sketch details or data')
-            sceneEntitiesManager.tearDownSketch({ removeAxis: false })
             const result = await sceneEntitiesManager.setupDraftArcThreePoint(
               sketchDetails.sketchEntryNodePath,
               sketchDetails.sketchNodePaths,
@@ -1587,7 +1594,6 @@ export const ModelingMachineProvider = ({
           async ({ input: { sketchDetails, data } }) => {
             if (!sketchDetails || !data)
               return reject('No sketch details or data')
-            sceneEntitiesManager.tearDownSketch({ removeAxis: false })
             const result = await sceneEntitiesManager.setupDraftArc(
               sketchDetails.sketchEntryNodePath,
               sketchDetails.sketchNodePaths,
@@ -1607,9 +1613,6 @@ export const ModelingMachineProvider = ({
           async ({ input: { sketchDetails, selectionRanges } }) => {
             if (!sketchDetails) return
             if (!sketchDetails.sketchEntryNodePath?.length) return
-            if (Object.keys(sceneEntitiesManager.activeSegments).length > 0) {
-              sceneEntitiesManager.tearDownSketch({ removeAxis: false })
-            }
             sceneInfra.resetMouseListeners()
             await sceneEntitiesManager.setupSketch({
               sketchEntryNodePath: sketchDetails?.sketchEntryNodePath || [],
@@ -1910,18 +1913,6 @@ export const ModelingMachineProvider = ({
       }
     }
   }, [modelingActor])
-
-  useEffect(() => {
-    kclManager.registerExecuteCallback(() => {
-      modelingSend({ type: 'Re-execute' })
-    })
-
-    // Before this component unmounts, call the 'Cancel'
-    // event to clean up any state in the modeling machine.
-    return () => {
-      modelingSend({ type: 'Cancel' })
-    }
-  }, [modelingSend])
 
   // Give the state back to the editorManager.
   useEffect(() => {

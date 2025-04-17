@@ -12,7 +12,7 @@ export const Spinner = (props: SVGProps<SVGSVGElement>) => {
         cx="5"
         cy="5"
         r="4"
-        stroke="var(--primary)"
+        stroke="currentColor"
         fill="none"
         strokeDasharray="4, 4"
         className="animate-spin origin-center"

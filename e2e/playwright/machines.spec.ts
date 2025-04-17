@@ -1,5 +1,5 @@
-import fsp from 'fs/promises'
 import { join } from 'path'
+import fsp from 'fs/promises'
 
 import { executorInputPath } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
