@@ -167,6 +167,7 @@ jobs:
     name: playwright:snapshots:ubuntu
     runs-on: runs-on=${{ github.run_id }}/family=i7ie.2xlarge/image=ubuntu22-full-x64
     needs: [conditions, prepare-wasm]
+    timeout-minutes: 10
     steps:
       - uses: actions/create-github-app-token@v1
         if: needs.conditions.outputs.should-run == 'true'
@@ -226,8 +227,8 @@ jobs:
         with:
           shell: bash
           command: npm run test:snapshots
-          timeout_minutes: 30
-          max_attempts: 3
+          timeout_minutes: 5
+          max_attempts: 5
         env:
           token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
           snapshottoken: ${{ secrets.KITTYCAD_API_TOKEN }}
@@ -275,7 +276,7 @@ jobs:
 
   electron:
     needs: [conditions, prepare-wasm]
-    timeout-minutes: 60
+    timeout-minutes: 40
     env:
       OS_NAME: ${{ contains(matrix.os, 'ubuntu') && 'ubuntu' || (contains(matrix.os, 'windows') && 'windows' || 'macos') }}
     name: playwright:electron:${{ contains(matrix.os, 'ubuntu') && 'ubuntu' || (contains(matrix.os, 'windows') && 'windows' || 'macos') }}:${{ matrix.shardIndex }}:${{ matrix.shardTotal }}
@@ -365,7 +366,7 @@ jobs:
         with:
           shell: bash
           command: .github/ci-cd-scripts/playwright-electron.sh ${{matrix.shardIndex}} ${{matrix.shardTotal}} ${{ env.OS_NAME }}
-          timeout_minutes: 30
+          timeout_minutes: 20
           max_attempts: 9
         env:
           FAIL_ON_CONSOLE_ERRORS: true
