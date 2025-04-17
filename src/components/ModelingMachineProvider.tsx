@@ -330,6 +330,13 @@ export const ModelingMachineProvider = ({
             }
             if (setSelections.selectionType === 'singleCodeCursor') {
               if (!setSelections.selection && editorManager.isShiftDown) {
+                // if the user is holding shift, but they didn't select anything
+                // don't nuke their other selections (frustrating to have one bad click ruin your
+                // whole selection)
+                selections = {
+                  graphSelections: selectionRanges.graphSelections,
+                  otherSelections: selectionRanges.otherSelections,
+                }
               } else if (
                 !setSelections.selection &&
                 !editorManager.isShiftDown

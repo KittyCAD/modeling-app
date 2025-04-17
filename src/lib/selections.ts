@@ -45,6 +45,7 @@ import {
 } from '@src/lib/utils'
 import { engineStreamActor } from '@src/machines/appMachine'
 import type { ModelingMachineEvent } from '@src/machines/modelingMachine'
+import { showUnsupportedSelectionToast } from '@src/components/ToastUnsupportedSelection'
 
 export const X_AXIS_UUID = 'ad792545-7fd3-482a-a602-a93924e3055b'
 export const Y_AXIS_UUID = '680fd157-266f-4b8a-984f-cdf46b8bdf01'
@@ -107,6 +108,18 @@ export async function getEventForSelectWithPoint({
   }
 
   let _artifact = kclManager.artifactGraph.get(data.entity_id)
+  if (!_artifact) {
+    // if there's no artifact but there is a data.entity_id, it means we don't recognize the engine entity
+    // we should still return an empty singleCodeCursor to plug into the selection logic
+    // (i.e. if the user is holding shift they can keep selecting)
+    // but we should also put up a toast
+    // toast.error('some edges or faces are not currently selectable')
+    showUnsupportedSelectionToast()
+    return {
+      type: 'Set selection',
+      data: { selectionType: 'singleCodeCursor' },
+    }
+  }
   const codeRefs = getCodeRefsByArtifactId(
     data.entity_id,
     kclManager.artifactGraph
@@ -374,6 +387,7 @@ function resetAndSetEngineEntitySelectionCmds(
   if (!engineCommandManager.engineConnection?.isReady()) {
     return []
   }
+  console.log('selections', selections)
   return [
     {
       type: 'modeling_cmd_req',
