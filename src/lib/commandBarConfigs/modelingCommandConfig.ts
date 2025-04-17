@@ -1094,7 +1094,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           'Path to the node in the AST to edit. Never shown to the user.',
         skip: true,
         inputType: 'text',
-        required: true,
+        required: false,
         hidden: true,
       },
       selection: {
@@ -1103,9 +1103,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         multiple: false,
         required: true,
         skip: true,
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
         selectionTypes: ['path'],
         selectionFilter: ['object'],
+        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       roll: {
         inputType: 'kcl',

@@ -4157,10 +4157,10 @@ extrude001 = extrude(profile001, length = 1)
     const partColor: [number, number, number] = [150, 150, 150]
     const tolerance = 50
     const [clickMidPoint] = scene.makeMouseHelpers(midPoint.x, midPoint.y)
-    // const [clickMoreToTheRightPoint] = scene.makeMouseHelpers(
-    //   moreToTheRightPoint.x,
-    //   moreToTheRightPoint.y
-    // )
+    const [clickMoreToTheRightPoint] = scene.makeMouseHelpers(
+      moreToTheRightPoint.x,
+      moreToTheRightPoint.y
+    )
 
     await test.step('Confirm extrude exists with default appearance', async () => {
       await toolbar.closePane('code')
@@ -4231,75 +4231,73 @@ extrude001 = extrude(profile001, length = 1)
       await scene.expectPixelColor(partColor, moreToTheRightPoint, tolerance)
     })
 
-    // TODO: fix this step, not sure why it doesn't work
-    // await test.step('Set rotate through command bar flow', async () => {
+    await test.step('Set rotate through command bar flow', async () => {
+      // clear selection
+      await clickMidPoint()
+      await cmdBar.openCmdBar()
+      await cmdBar.chooseCommand('Rotate')
+      await cmdBar.expectState({
+        stage: 'arguments',
+        currentArgKey: 'selection',
+        currentArgValue: '',
+        headerArguments: {
+          Selection: '',
+          Roll: '',
+          Pitch: '',
+          Yaw: '',
+        },
+        highlightedHeaderArg: 'selection',
+        commandName: 'Rotate',
+      })
+      await clickMoreToTheRightPoint()
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'arguments',
+        currentArgKey: 'roll',
+        currentArgValue: '0',
+        headerArguments: {
+          Selection: '1 path',
+          Roll: '',
+          Pitch: '',
+          Yaw: '',
+        },
+        highlightedHeaderArg: 'roll',
+        commandName: 'Rotate',
+      })
+      await page.keyboard.insertText('0.1')
+      await cmdBar.progressCmdBar()
+      await page.keyboard.insertText('0.2')
+      await cmdBar.progressCmdBar()
+      await page.keyboard.insertText('0.3')
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'review',
+        headerArguments: {
+          Selection: '1 path',
+          Roll: '0.1',
+          Pitch: '0.2',
+          Yaw: '0.3',
+        },
+        commandName: 'Rotate',
+      })
+      await cmdBar.progressCmdBar()
+    })
 
-    //   // clear selection
-    //   await clickMidPoint()
-    //   await cmdBar.openCmdBar()
-    //   await cmdBar.chooseCommand('Rotate')
-    //   await cmdBar.expectState({
-    //     stage: 'arguments',
-    //     currentArgKey: 'selection',
-    //     currentArgValue: '',
-    //     headerArguments: {
-    //       Selection: '',
-    //       Roll: '',
-    //       Pitch: '',
-    //       Yaw: '',
-    //     },
-    //     highlightedHeaderArg: 'selection',
-    //     commandName: 'Rotate',
-    //   })
-    //   await clickMoreToTheRightPoint()
-    //   await cmdBar.progressCmdBar()
-    //   await cmdBar.expectState({
-    //     stage: 'arguments',
-    //     currentArgKey: 'roll',
-    //     currentArgValue: '0',
-    //     headerArguments: {
-    //       Selection: '1 path',
-    //       Roll: '',
-    //       Pitch: '',
-    //       Yaw: '',
-    //     },
-    //     highlightedHeaderArg: 'roll',
-    //     commandName: 'Rotate',
-    //   })
-    //   await page.keyboard.insertText('0.1')
-    //   await cmdBar.progressCmdBar()
-    //   await page.keyboard.insertText('0.2')
-    //   await cmdBar.progressCmdBar()
-    //   await page.keyboard.insertText('0.3')
-    //   await cmdBar.progressCmdBar()
-    //   await cmdBar.expectState({
-    //     stage: 'review',
-    //     headerArguments: {
-    //       Selection: '1 path',
-    //       Roll: '0.1',
-    //       Pitch: '0.2',
-    //       Yaw: '0.3',
-    //     },
-    //     commandName: 'Rotate',
-    //   })
-    //   await cmdBar.progressCmdBar()
-    // })
-
-    // await test.step('Confirm code has changed', async () => {
-    //   await toolbar.openPane('code')
-    //   await editor.expectEditor.toContain(
-    //     `
-    //     sketch001 = startSketchOn(XZ)
-    //     profile001 = circle(sketch001, center = [0, 0], radius = 1)
-    //     extrude001 = extrude(profile001, length = 1)
-    //       |> translate(x = 2, y = 0, z = 0)
-    //       |> rotate(roll = 0.1, pitch = 0.2, yaw = 0.3)
-    //       `,
-    //     { shouldNormalise: true }
-    //   )
-    //   // No change here since the angles are super small
-    //   await scene.expectPixelColor(bgColor, midPoint, tolerance)
-    //   await scene.expectPixelColor(partColor, moreToTheRightPoint, tolerance)
-    // })
+    await test.step('Confirm code has changed', async () => {
+      await toolbar.openPane('code')
+      await editor.expectEditor.toContain(
+        `
+        sketch001 = startSketchOn(XZ)
+        profile001 = circle(sketch001, center = [0, 0], radius = 1)
+        extrude001 = extrude(profile001, length = 1)
+          |> translate(x = 2, y = 0, z = 0)
+          |> rotate(roll = 0.1, pitch = 0.2, yaw = 0.3)
+          `,
+        { shouldNormalise: true }
+      )
+      // No change here since the angles are super small
+      await scene.expectPixelColor(bgColor, midPoint, tolerance)
+      await scene.expectPixelColor(partColor, moreToTheRightPoint, tolerance)
+    })
   })
 })
