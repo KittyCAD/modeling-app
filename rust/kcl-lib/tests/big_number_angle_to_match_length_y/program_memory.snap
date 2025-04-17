@@ -142,9 +142,6 @@ description: Variables in memory after executing big_number_angle_to_match_lengt
             "units": {
               "type": "Mm"
             }
-          },
-          "units": {
-            "type": "Mm"
           }
         },
         "start": {

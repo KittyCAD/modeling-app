@@ -31,7 +31,6 @@ A sketch type.
 | `xAxis` |[`Point3d`](/docs/kcl/types/Point3d)| What should the plane's X axis be? | No |
 | `yAxis` |[`Point3d`](/docs/kcl/types/Point3d)| What should the plane's Y axis be? | No |
 | `zAxis` |[`Point3d`](/docs/kcl/types/Point3d)| The z-axis (normal). | No |
-| `units` |[`UnitLen`](/docs/kcl/types/UnitLen)| A unit of length. | No |
 
 
 ----

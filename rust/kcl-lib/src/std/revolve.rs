@@ -13,7 +13,7 @@ use super::{args::TyF64, DEFAULT_TOLERANCE};
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
-        types::{PrimitiveType, RuntimeType},
+        types::{NumericType, PrimitiveType, RuntimeType},
         ExecState, KclValue, Sketch, Solid,
     },
     parsing::ast::types::TagNode,
@@ -31,8 +31,8 @@ pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
         ]),
         exec_state,
     )?;
-    let angle: Option<TyF64> = args.get_kw_arg_opt_typed("angle", &RuntimeType::angle(), exec_state)?;
-    let tolerance: Option<TyF64> = args.get_kw_arg_opt_typed("tolerance", &RuntimeType::count(), exec_state)?;
+    let angle: Option<TyF64> = args.get_kw_arg_opt_typed("angle", &RuntimeType::degrees(), exec_state)?;
+    let tolerance: Option<TyF64> = args.get_kw_arg_opt_typed("tolerance", &RuntimeType::length(), exec_state)?;
     let tag_start = args.get_kw_arg_opt("tagStart")?;
     let tag_end = args.get_kw_arg_opt("tagEnd")?;
     let symmetric = args.get_kw_arg_opt("symmetric")?;
@@ -43,7 +43,7 @@ pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
         sketches,
         axis,
         angle.map(|t| t.n),
-        tolerance.map(|t| t.n),
+        tolerance,
         tag_start,
         tag_end,
         symmetric,
@@ -60,7 +60,7 @@ async fn inner_revolve(
     sketches: Vec<Sketch>,
     axis: Axis2dOrEdgeReference,
     angle: Option<f64>,
-    tolerance: Option<f64>,
+    tolerance: Option<TyF64>,
     tag_start: Option<TagNode>,
     tag_end: Option<TagNode>,
     symmetric: Option<bool>,
@@ -140,16 +140,16 @@ async fn inner_revolve(
                         angle,
                         target: sketch.id.into(),
                         axis: Point3d {
-                            x: direction[0].n,
-                            y: direction[1].n,
+                            x: direction[0].to_mm(),
+                            y: direction[1].to_mm(),
                             z: 0.0,
                         },
                         origin: Point3d {
-                            x: LengthUnit(origin[0].n),
-                            y: LengthUnit(origin[1].n),
+                            x: LengthUnit(origin[0].to_mm()),
+                            y: LengthUnit(origin[1].to_mm()),
                             z: LengthUnit(0.0),
                         },
-                        tolerance: LengthUnit(tolerance.unwrap_or(DEFAULT_TOLERANCE)),
+                        tolerance: LengthUnit(tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE)),
                         axis_is_2d: true,
                         opposite: opposite.clone(),
                     }),
@@ -164,7 +164,7 @@ async fn inner_revolve(
                         angle,
                         target: sketch.id.into(),
                         edge_id,
-                        tolerance: LengthUnit(tolerance.unwrap_or(DEFAULT_TOLERANCE)),
+                        tolerance: LengthUnit(tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE)),
                         opposite: opposite.clone(),
                     }),
                 )
@@ -176,7 +176,7 @@ async fn inner_revolve(
             do_post_extrude(
                 sketch,
                 id.into(),
-                0.0,
+                TyF64::new(0.0, NumericType::mm()),
                 false,
                 &super::extrude::NamedCapTags {
                     start: tag_start.as_ref(),

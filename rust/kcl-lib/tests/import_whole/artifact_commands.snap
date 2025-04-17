@@ -33,14 +33,6 @@ description: Artifact commands import_whole.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "set_scene_units",
-      "unit": "mm"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
       "type": "set_object_transform",
       "object_id": "[uuid]",
       "transforms": [
@@ -59,38 +51,6 @@ description: Artifact commands import_whole.kcl
           "scale": null
         }
       ]
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "set_scene_units",
-      "unit": "mm"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "set_scene_units",
-      "unit": "mm"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "set_scene_units",
-      "unit": "mm"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "set_scene_units",
-      "unit": "in"
     }
   },
   {
@@ -148,8 +108,8 @@ description: Artifact commands import_whole.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 15.0,
-        "y": 5.0,
+        "x": 381.0,
+        "y": 127.0,
         "z": 0.0
       }
     }
@@ -170,10 +130,10 @@ description: Artifact commands import_whole.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": 5.0,
-          "y": 5.0
+          "x": 127.0,
+          "y": 127.0
         },
-        "radius": 10.0,
+        "radius": 254.0,
         "start": {
           "unit": "degrees",
           "value": 0.0
@@ -216,7 +176,7 @@ description: Artifact commands import_whole.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 10.0,
+      "distance": 254.0,
       "faces": null,
       "opposite": "None"
     }

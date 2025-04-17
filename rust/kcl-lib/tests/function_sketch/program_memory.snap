@@ -159,9 +159,6 @@ description: Variables in memory after executing function_sketch.kcl
             "units": {
               "type": "Mm"
             }
-          },
-          "units": {
-            "type": "Mm"
           }
         },
         "start": {

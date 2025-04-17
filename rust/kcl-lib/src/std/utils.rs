@@ -4,37 +4,56 @@ use kittycad_modeling_cmds::shared::Angle;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    execution::{types::NumericType, Point2d},
+    execution::types::{NumericType, UnitLen},
     source_range::SourceRange,
 };
 
 use super::args::TyF64;
 
-pub fn untype_point(p: [TyF64; 2]) -> ([f64; 2], NumericType) {
+pub(crate) fn untype_point(p: [TyF64; 2]) -> ([f64; 2], NumericType) {
     let (x, y, ty) = NumericType::combine_eq(p[0].clone(), p[1].clone());
     ([x, y], ty)
 }
 
-pub fn untype_point_3d(p: [TyF64; 3]) -> ([f64; 3], NumericType) {
-    let (arr, ty) = NumericType::combine_eq_array(&[p[0].clone(), p[1].clone(), p[2].clone()]);
-    let mut iter = arr.into_iter();
-    ([iter.next().unwrap(), iter.next().unwrap(), iter.next().unwrap()], ty)
+pub(crate) fn point_to_mm(p: [TyF64; 2]) -> [f64; 2] {
+    [p[0].to_mm(), p[1].to_mm()]
+}
+
+pub(crate) fn untyped_point_to_mm(p: [f64; 2], units: UnitLen) -> [f64; 2] {
+    assert_ne!(units, UnitLen::Unknown);
+    [
+        units.adjust_to(p[0], UnitLen::Mm).0,
+        units.adjust_to(p[1], UnitLen::Mm).0,
+    ]
+}
+
+pub(crate) fn point_to_len_unit(p: [TyF64; 2], len: UnitLen) -> [f64; 2] {
+    [p[0].to_length_units(len), p[1].to_length_units(len)]
+}
+
+/// Precondition, `p` must be in `len` units (this function does no conversion).
+pub(crate) fn point_to_typed(p: [f64; 2], len: UnitLen) -> [TyF64; 2] {
+    [TyF64::new(p[0], len.into()), TyF64::new(p[1], len.into())]
+}
+
+pub(crate) fn point_3d_to_mm(p: [TyF64; 3]) -> [f64; 3] {
+    [p[0].to_mm(), p[1].to_mm(), p[2].to_mm()]
 }
 
 /// Get the distance between two points.
-pub fn distance(a: Coords2d, b: Coords2d) -> f64 {
+pub(crate) fn distance(a: Coords2d, b: Coords2d) -> f64 {
     ((b[0] - a[0]).powi(2) + (b[1] - a[1]).powi(2)).sqrt()
 }
 
 /// Get the angle between these points
-pub fn between(a: Point2d, b: Point2d) -> Angle {
-    let x = b.x - a.x;
-    let y = b.y - a.y;
+pub(crate) fn between(a: Coords2d, b: Coords2d) -> Angle {
+    let x = b[0] - a[0];
+    let y = b[1] - a[1];
     normalize(Angle::from_radians(y.atan2(x)))
 }
 
 /// Normalize the angle
-pub fn normalize(angle: Angle) -> Angle {
+pub(crate) fn normalize(angle: Angle) -> Angle {
     let deg = angle.to_degrees();
     let result = ((deg % 360.0) + 360.0) % 360.0;
     Angle::from_degrees(if result > 180.0 { result - 360.0 } else { result })
@@ -55,7 +74,7 @@ pub fn normalize(angle: Angle) -> Angle {
 ///     Angle::from_radians(PI / 8.0)
 /// );
 /// ```
-pub fn delta(from_angle: Angle, to_angle: Angle) -> Angle {
+pub(crate) fn delta(from_angle: Angle, to_angle: Angle) -> Angle {
     let norm_from_angle = normalize_rad(from_angle.to_radians());
     let norm_to_angle = normalize_rad(to_angle.to_radians());
     let provisional = norm_to_angle - norm_from_angle;
@@ -72,7 +91,7 @@ pub fn delta(from_angle: Angle, to_angle: Angle) -> Angle {
     Angle::default()
 }
 
-pub fn normalize_rad(angle: f64) -> f64 {
+pub(crate) fn normalize_rad(angle: f64) -> f64 {
     let draft = angle % (2.0 * PI);
     if draft < 0.0 {
         draft + 2.0 * PI
@@ -106,7 +125,7 @@ fn intersect(p1: Coords2d, p2: Coords2d, p3: Coords2d, p4: Coords2d) -> Coords2d
     [x, y]
 }
 
-pub fn intersection_with_parallel_line(
+pub(crate) fn intersection_with_parallel_line(
     line1: &[Coords2d; 2],
     line1_offset: f64,
     line2_angle: f64,
@@ -128,7 +147,7 @@ fn offset_line(offset: f64, p1: Coords2d, p2: Coords2d) -> [Coords2d; 2] {
     [[p1[0] + x_offset, p1[1]], [p2[0] + x_offset, p2[1]]]
 }
 
-pub fn get_y_component(angle: Angle, x: f64) -> Coords2d {
+pub(crate) fn get_y_component(angle: Angle, x: f64) -> Coords2d {
     let normalised_angle = ((angle.to_degrees() % 360.0) + 360.0) % 360.0; // between 0 and 360
     let y = x * f64::tan(normalised_angle.to_radians());
     let sign = if normalised_angle > 90.0 && normalised_angle <= 270.0 {
@@ -139,7 +158,7 @@ pub fn get_y_component(angle: Angle, x: f64) -> Coords2d {
     [x * sign, y * sign]
 }
 
-pub fn get_x_component(angle: Angle, y: f64) -> Coords2d {
+pub(crate) fn get_x_component(angle: Angle, y: f64) -> Coords2d {
     let normalised_angle = ((angle.to_degrees() % 360.0) + 360.0) % 360.0; // between 0 and 360
     let x = y / f64::tan(normalised_angle.to_radians());
     let sign = if normalised_angle > 180.0 && normalised_angle <= 360.0 {
@@ -150,7 +169,12 @@ pub fn get_x_component(angle: Angle, y: f64) -> Coords2d {
     [x * sign, y * sign]
 }
 
-pub fn arc_center_and_end(from: Coords2d, start_angle: Angle, end_angle: Angle, radius: f64) -> (Coords2d, Coords2d) {
+pub(crate) fn arc_center_and_end(
+    from: Coords2d,
+    start_angle: Angle,
+    end_angle: Angle,
+    radius: f64,
+) -> (Coords2d, Coords2d) {
     let start_angle = start_angle.to_radians();
     let end_angle = end_angle.to_radians();
 
@@ -167,7 +191,7 @@ pub fn arc_center_and_end(from: Coords2d, start_angle: Angle, end_angle: Angle, 
     (center, end)
 }
 
-pub fn arc_angles(
+pub(crate) fn arc_angles(
     from: Coords2d,
     to: Coords2d,
     center: Coords2d,
@@ -216,7 +240,7 @@ fn is_on_circumference(center: Coords2d, point: Coords2d, radius: f64) -> bool {
 
 // Calculate the center of 3 points using an algebraic method
 // Handles if 3 points lie on the same line (collinear) by returning the average of the points (could return None instead..)
-pub fn calculate_circle_center(p1: [f64; 2], p2: [f64; 2], p3: [f64; 2]) -> [f64; 2] {
+pub(crate) fn calculate_circle_center(p1: [f64; 2], p2: [f64; 2], p3: [f64; 2]) -> [f64; 2] {
     let (x1, y1) = (p1[0], p1[1]);
     let (x2, y2) = (p2[0], p2[1]);
     let (x3, y3) = (p3[0], p3[1]);
@@ -464,7 +488,7 @@ mod tests {
     }
 }
 
-pub type Coords2d = [f64; 2];
+pub(crate) type Coords2d = [f64; 2];
 
 pub fn is_points_ccw_wasm(points: &[f64]) -> i32 {
     // CCW is positive as that the Math convention
@@ -478,7 +502,7 @@ pub fn is_points_ccw_wasm(points: &[f64]) -> i32 {
     sum.signum() as i32
 }
 
-pub fn is_points_ccw(points: &[Coords2d]) -> i32 {
+pub(crate) fn is_points_ccw(points: &[Coords2d]) -> i32 {
     let flattened_points: Vec<f64> = points.iter().flat_map(|&p| vec![p[0], p[1]]).collect();
     is_points_ccw_wasm(&flattened_points)
 }
@@ -587,7 +611,6 @@ pub struct TangentialArcInfoInput {
 }
 
 /// Structure to hold the output data from calculating tangential arc information.
-#[allow(dead_code)]
 pub struct TangentialArcInfoOutput {
     /// The center point of the arc.
     pub center: Coords2d,
@@ -851,7 +874,7 @@ mod get_tangential_arc_to_info_tests {
     }
 }
 
-pub fn get_tangent_point_from_previous_arc(
+pub(crate) fn get_tangent_point_from_previous_arc(
     last_arc_center: Coords2d,
     last_arc_ccw: bool,
     last_arc_end: Coords2d,

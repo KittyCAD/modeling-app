@@ -4,7 +4,11 @@ excerpt: "Converts a number from centimeters to the current default unit."
 layout: manual
 ---
 
+**WARNING:** This function is deprecated.
+
 Converts a number from centimeters to the current default unit.
+
+*DEPRECATED* prefer using explicit numeric suffixes (e.g., `42cm`) or the `to...` conversion functions.
 
 No matter what units the current file uses, this function will always return a number equivalent to the input in centimeters.
 

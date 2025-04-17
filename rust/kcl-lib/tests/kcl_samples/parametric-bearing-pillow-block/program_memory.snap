@@ -169,9 +169,6 @@ description: Variables in memory after executing parametric-bearing-pillow-block
             "units": {
               "type": "Mm"
             }
-          },
-          "units": {
-            "type": "Inches"
           }
         },
         "start": {
@@ -434,9 +431,6 @@ description: Variables in memory after executing parametric-bearing-pillow-block
                       "units": {
                         "type": "Mm"
                       }
-                    },
-                    "units": {
-                      "type": "Inches"
                     }
                   },
                   "start": {
@@ -731,9 +725,6 @@ description: Variables in memory after executing parametric-bearing-pillow-block
                       "units": {
                         "type": "Mm"
                       }
-                    },
-                    "units": {
-                      "type": "Inches"
                     }
                   },
                   "start": {
@@ -1028,9 +1019,6 @@ description: Variables in memory after executing parametric-bearing-pillow-block
                       "units": {
                         "type": "Mm"
                       }
-                    },
-                    "units": {
-                      "type": "Inches"
                     }
                   },
                   "start": {
@@ -1325,9 +1313,6 @@ description: Variables in memory after executing parametric-bearing-pillow-block
                       "units": {
                         "type": "Mm"
                       }
-                    },
-                    "units": {
-                      "type": "Inches"
                     }
                   },
                   "start": {
@@ -1650,9 +1635,6 @@ description: Variables in memory after executing parametric-bearing-pillow-block
                   "units": {
                     "type": "Mm"
                   }
-                },
-                "units": {
-                  "type": "Inches"
                 }
               },
               "start": {
@@ -1950,9 +1932,6 @@ description: Variables in memory after executing parametric-bearing-pillow-block
                       "units": {
                         "type": "Mm"
                       }
-                    },
-                    "units": {
-                      "type": "Inches"
                     }
                   },
                   "start": {
@@ -2247,9 +2226,6 @@ description: Variables in memory after executing parametric-bearing-pillow-block
                       "units": {
                         "type": "Mm"
                       }
-                    },
-                    "units": {
-                      "type": "Inches"
                     }
                   },
                   "start": {
@@ -2544,9 +2520,6 @@ description: Variables in memory after executing parametric-bearing-pillow-block
                       "units": {
                         "type": "Mm"
                       }
-                    },
-                    "units": {
-                      "type": "Inches"
                     }
                   },
                   "start": {
@@ -2841,9 +2814,6 @@ description: Variables in memory after executing parametric-bearing-pillow-block
                       "units": {
                         "type": "Mm"
                       }
-                    },
-                    "units": {
-                      "type": "Inches"
                     }
                   },
                   "start": {

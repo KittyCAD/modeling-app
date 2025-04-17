@@ -2169,26 +2169,18 @@ description: Operations executed car-wheel-assembly.kcl
                   "type": "Number",
                   "value": 2.25,
                   "ty": {
-                    "type": "Default",
-                    "len": {
-                      "type": "Inches"
-                    },
-                    "angle": {
-                      "type": "Degrees"
-                    }
+                    "type": "Known",
+                    "type": "Length",
+                    "type": "Inches"
                   }
                 },
                 "y": {
                   "type": "Number",
                   "value": -1.1811023622047243,
                   "ty": {
-                    "type": "Default",
-                    "len": {
-                      "type": "Inches"
-                    },
-                    "angle": {
-                      "type": "Degrees"
-                    }
+                    "type": "Known",
+                    "type": "Length",
+                    "type": "Inches"
                   }
                 },
                 "z": {

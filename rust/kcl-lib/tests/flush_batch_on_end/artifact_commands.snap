@@ -33,14 +33,6 @@ description: Artifact commands flush_batch_on_end.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "set_scene_units",
-      "unit": "in"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
       "type": "make_plane",
       "origin": {
         "x": 0.0,
@@ -92,7 +84,7 @@ description: Artifact commands flush_batch_on_end.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 0.2734375,
+        "x": 6.9453125,
         "y": 0.0,
         "z": 0.0
       }
@@ -117,7 +109,7 @@ description: Artifact commands flush_batch_on_end.kcl
           "x": 0.0,
           "y": 0.0
         },
-        "radius": 0.2734375,
+        "radius": 6.9453125,
         "start": {
           "unit": "degrees",
           "value": 0.0
@@ -168,7 +160,7 @@ description: Artifact commands flush_batch_on_end.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 0.182,
+        "x": 4.6228,
         "y": 0.0,
         "z": 0.0
       }
@@ -193,7 +185,7 @@ description: Artifact commands flush_batch_on_end.kcl
           "x": 0.0,
           "y": 0.0
         },
-        "radius": 0.182,
+        "radius": 4.6228,
         "start": {
           "unit": "degrees",
           "value": 0.0
@@ -254,7 +246,7 @@ description: Artifact commands flush_batch_on_end.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 1.5,
+      "distance": 38.099999999999994,
       "faces": null,
       "opposite": "None"
     }

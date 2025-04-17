@@ -356,9 +356,6 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             "units": {
               "type": "Mm"
             }
-          },
-          "units": {
-            "type": "Mm"
           }
         },
         "start": {
@@ -928,9 +925,6 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "units": {
             "type": "Mm"
           }
-        },
-        "units": {
-          "type": "Mm"
         }
       },
       "start": {
@@ -1280,9 +1274,6 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             "units": {
               "type": "Mm"
             }
-          },
-          "units": {
-            "type": "Mm"
           }
         },
         "start": {
@@ -1444,9 +1435,6 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             "units": {
               "type": "Mm"
             }
-          },
-          "units": {
-            "type": "Mm"
           }
         },
         "start": {
@@ -2086,9 +2074,6 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -2380,9 +2365,6 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -2679,9 +2661,6 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -2973,9 +2952,6 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {

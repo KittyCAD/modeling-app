@@ -629,9 +629,6 @@ description: Variables in memory after executing exhaust-manifold.kcl
             "units": {
               "type": "Mm"
             }
-          },
-          "units": {
-            "type": "Inches"
           }
         },
         "start": {

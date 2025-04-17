@@ -820,7 +820,7 @@ pub enum Expr {
     UnaryExpression(BoxNode<UnaryExpression>),
     IfExpression(BoxNode<IfExpression>),
     LabelledExpression(BoxNode<LabelledExpression>),
-    AscribedExpression(BoxNode<Ascription>),
+    AscribedExpression(BoxNode<AscribedExpression>),
     None(Node<KclNone>),
 }
 
@@ -1093,7 +1093,7 @@ impl LabelledExpression {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
-pub struct Ascription {
+pub struct AscribedExpression {
     pub expr: Expr,
     pub ty: Node<Type>,
 
@@ -1102,12 +1102,12 @@ pub struct Ascription {
     pub digest: Option<Digest>,
 }
 
-impl Ascription {
-    pub(crate) fn new(expr: Expr, ty: Node<Type>) -> Node<Ascription> {
+impl AscribedExpression {
+    pub(crate) fn new(expr: Expr, ty: Node<Type>) -> Node<AscribedExpression> {
         let start = expr.start();
         let end = ty.end;
         let module_id = expr.module_id();
-        Node::new(Ascription { expr, ty, digest: None }, start, end, module_id)
+        Node::new(AscribedExpression { expr, ty, digest: None }, start, end, module_id)
     }
 }
 
@@ -3081,7 +3081,7 @@ impl PipeExpression {
 #[allow(clippy::large_enum_variant)]
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
-#[serde(tag = "type")]
+#[serde(tag = "p_type")]
 pub enum PrimitiveType {
     /// A string type.
     String,

@@ -276,9 +276,6 @@ description: Variables in memory after executing mounting-plate.kcl
             "units": {
               "type": "Mm"
             }
-          },
-          "units": {
-            "type": "Inches"
           }
         },
         "start": {
@@ -590,9 +587,6 @@ description: Variables in memory after executing mounting-plate.kcl
           "units": {
             "type": "Mm"
           }
-        },
-        "units": {
-          "type": "Inches"
         }
       },
       "start": {

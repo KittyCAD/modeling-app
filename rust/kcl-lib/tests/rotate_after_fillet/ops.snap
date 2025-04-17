@@ -7,6 +7,24 @@ description: Operations executed rotate_after_fillet.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
+      "name": "toRadians",
+      "functionSourceRange": [
+        19251,
+        19300,
+        1
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
       "name": "cos",
       "functionSourceRange": [
         0,

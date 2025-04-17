@@ -40,9 +40,6 @@ description: Variables in memory after executing color-cube.kcl
         "units": {
           "type": "Mm"
         }
-      },
-      "units": {
-        "type": "Mm"
       }
     }
   },
@@ -96,9 +93,6 @@ description: Variables in memory after executing color-cube.kcl
         "units": {
           "type": "Mm"
         }
-      },
-      "units": {
-        "type": "Mm"
       }
     }
   },
@@ -165,9 +159,6 @@ description: Variables in memory after executing color-cube.kcl
         "units": {
           "type": "Mm"
         }
-      },
-      "units": {
-        "type": "Mm"
       }
     }
   },
@@ -208,9 +199,6 @@ description: Variables in memory after executing color-cube.kcl
         "units": {
           "type": "Mm"
         }
-      },
-      "units": {
-        "type": "Mm"
       }
     }
   },
@@ -280,9 +268,6 @@ description: Variables in memory after executing color-cube.kcl
         "units": {
           "type": "Mm"
         }
-      },
-      "units": {
-        "type": "Mm"
       }
     }
   },
@@ -323,9 +308,6 @@ description: Variables in memory after executing color-cube.kcl
         "units": {
           "type": "Mm"
         }
-      },
-      "units": {
-        "type": "Mm"
       }
     }
   }

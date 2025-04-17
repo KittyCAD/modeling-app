@@ -33,11 +33,11 @@ invas = map(angles, fn(a) {
 
 // Map the involute curve
 xs = map([0..cmo], fn(i) {
-  return rs[i] * cos(invas[i])
+  return rs[i] * cos(invas[i]: number(rad))
 })
 
 ys = map([0..cmo], fn(i) {
-  return rs[i] * sin(invas[i])
+  return rs[i] * sin(invas[i]: number(rad))
 })
 
 // Extrude the gear body

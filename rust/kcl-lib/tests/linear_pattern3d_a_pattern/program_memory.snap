@@ -156,9 +156,6 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             "units": {
               "type": "Mm"
             }
-          },
-          "units": {
-            "type": "Mm"
           }
         },
         "start": {
@@ -349,9 +346,6 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -539,9 +533,6 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -729,9 +720,6 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -919,9 +907,6 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -1109,9 +1094,6 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -1299,9 +1281,6 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -1489,9 +1468,6 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -1684,9 +1660,6 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -1874,9 +1847,6 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -2064,9 +2034,6 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -2254,9 +2221,6 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -2444,9 +2408,6 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -2634,9 +2595,6 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -2824,9 +2782,6 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -3014,9 +2969,6 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -3204,9 +3156,6 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -3394,9 +3343,6 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -3584,9 +3530,6 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -3774,9 +3717,6 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -3964,9 +3904,6 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -4154,9 +4091,6 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -4344,9 +4278,6 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -4534,9 +4465,6 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -4724,9 +4652,6 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -4914,9 +4839,6 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -5104,9 +5026,6 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -5294,9 +5213,6 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -5484,9 +5400,6 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -5674,9 +5587,6 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -5864,9 +5774,6 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -6054,9 +5961,6 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -6244,9 +6148,6 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -6434,9 +6335,6 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -6624,9 +6522,6 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -6814,9 +6709,6 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -7004,9 +6896,6 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -7194,9 +7083,6 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -7384,9 +7270,6 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -7574,9 +7457,6 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -7764,9 +7644,6 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -7954,9 +7831,6 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -8144,9 +8018,6 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -8334,9 +8205,6 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -8524,9 +8392,6 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -8714,9 +8579,6 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -8904,9 +8766,6 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -9094,9 +8953,6 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -9284,9 +9140,6 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -9474,9 +9327,6 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -9664,9 +9514,6 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -9854,9 +9701,6 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -10044,9 +9888,6 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -10234,9 +10075,6 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -10424,9 +10262,6 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -10614,9 +10449,6 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -10804,9 +10636,6 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
