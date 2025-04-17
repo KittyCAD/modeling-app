@@ -118,7 +118,7 @@ fn magnetBase(plane) {
     |> yLine(length = binLength, tag = $line002)
     |> xLine(endAbsolute = profileStartX(%), tag = $line003)
     |> close(tag = $line004)
-    |> hole(magnetCenterCutout(plane), %)
+    |> subtract2d(tool = magnetCenterCutout(plane))
   return magnetBaseSketch
 }
 
@@ -134,7 +134,7 @@ magnetsSketch = startSketchOn(XY)
 
 // Create a profile with holes for the magnets
 magnetProfile = magnetBase(XY)
-  |> hole(magnetsSketch, %)
+  |> subtract2d(tool = magnetsSketch)
 
 // Create an extrusion of the magnet cutout with holes
 magnetHolesExtrude = extrude(magnetProfile, length = -magDepth)

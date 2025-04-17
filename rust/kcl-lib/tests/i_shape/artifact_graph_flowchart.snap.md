@@ -44,7 +44,7 @@ flowchart LR
   end
   1["Plane<br>[399, 416, 0]"]
   29["Plane<br>[1908, 1925, 0]"]
-  41["Sweep Extrusion<br>[2398, 2419, 0]"]
+  41["Sweep Extrusion<br>[2408, 2429, 0]"]
   42[Wall]
   43[Wall]
   44[Wall]

@@ -275,8 +275,8 @@ async fn kcl_test_holes() {
   |> line(end = [10, 0])
   |> line(end = [0, -10])
   |> close()
-  |> hole(circle(center = [2, 2], radius= .5), %)
-  |> hole(circle(center = [2, 8], radius= .5), %)
+  |> subtract2d(tool = circle(center = [2, 2], radius= .5))
+  |> subtract2d(tool = circle(center = [2, 8], radius= .5))
   |> extrude(length = 2)
 "#;
 
@@ -328,10 +328,10 @@ holeRadius = 1
 holeIndex = 6
 
 part = roundedRectangle([0, 0], 20, 20, 4)
-  |> hole(circle(center = [-holeIndex, holeIndex], radius= holeRadius), %)
-  |> hole(circle(center = [holeIndex, holeIndex], radius= holeRadius), %)
-  |> hole(circle(center = [-holeIndex, -holeIndex], radius= holeRadius), %)
-  |> hole(circle(center = [holeIndex, -holeIndex], radius= holeRadius), %)
+  |> subtract2d(tool = circle(center = [-holeIndex, holeIndex], radius= holeRadius))
+  |> subtract2d(tool = circle(center = [holeIndex, holeIndex], radius= holeRadius))
+  |> subtract2d(tool = circle(center = [-holeIndex, -holeIndex], radius= holeRadius))
+  |> subtract2d(tool = circle(center = [holeIndex, -holeIndex], radius= holeRadius))
   |> extrude(length = 2)
 "#;
 
@@ -425,7 +425,7 @@ rectangle = startSketchOn(XY)
   |> line(end = [50, 0])
   |> line(end = [0, -50])
   |> close()
-  |> hole(circles, %)
+  |> subtract2d(tool = circles)
   |> extrude(length = 10)
 
 "#;
@@ -780,8 +780,8 @@ async fn kcl_test_stdlib_kcl_error_right_code_path() {
   |> line(end = [10, 0])
   |> line(end = [0, -10])
   |> close()
-  |> hole(circle(), %)
-  |> hole(circle(center = [2, 8], radius= .5), %)
+  |> subtract2d(tool = circle())
+  |> subtract2d(tool = circle(center = [2, 8], radius= .5))
   |> extrude(length = 2)
 "#;
 
@@ -842,10 +842,10 @@ holeIndex = 6
 
 // Create the mounting plate extrusion, holes, and fillets
 part = rectShape([0, 0], 20, 20)
-  |> hole(circle('XY', center = [-holeIndex, holeIndex], radius = holeRadius))
-  |> hole(circle('XY', center = [holeIndex, holeIndex], radius = holeRadius))
-  |> hole(circle('XY', center = [-holeIndex, -holeIndex], radius = holeRadius))
-  |> hole(circle('XY', center = [holeIndex, -holeIndex], radius = holeRadius))
+  |> subtract2d(tool = circle('XY', center = [-holeIndex, holeIndex], radius = holeRadius))
+  |> subtract2d(tool = circle('XY', center = [holeIndex, holeIndex], radius = holeRadius))
+  |> subtract2d(tool = circle('XY', center = [-holeIndex, -holeIndex], radius = holeRadius))
+  |> subtract2d(tool = circle('XY', center = [holeIndex, -holeIndex], radius = holeRadius))
   |> extrude(length = 2)
   |> fillet(
        radius = 4,
@@ -1378,7 +1378,7 @@ fn squareHole = (l, w) => {
 
 extrusion = startSketchOn(XY)
   |> circle(center = [0, 0], radius= dia/2 )
-  |> hole(squareHole(length, width, height), %)
+  |> subtract2d(tool = squareHole(length, width, height))
   |> extrude(length = height)
 "#;
 

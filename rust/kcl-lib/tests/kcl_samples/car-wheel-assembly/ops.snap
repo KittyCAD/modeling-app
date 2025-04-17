@@ -8,7 +8,7 @@ description: Operations executed car-wheel-assembly.kcl
     "group": {
       "type": "ModuleInstance",
       "name": "carRotor",
-      "moduleId": 7
+      "moduleId": 6
     },
     "sourceRange": []
   },
@@ -718,7 +718,7 @@ description: Operations executed car-wheel-assembly.kcl
     "group": {
       "type": "ModuleInstance",
       "name": "carWheel",
-      "moduleId": 6
+      "moduleId": 5
     },
     "sourceRange": []
   },
@@ -739,16 +739,7 @@ description: Operations executed car-wheel-assembly.kcl
   },
   {
     "labeledArgs": {
-      "holeSketch": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "sketch": {
+      "tool": {
         "value": {
           "type": "Sketch",
           "value": {
@@ -758,10 +749,18 @@ description: Operations executed car-wheel-assembly.kcl
         "sourceRange": []
       }
     },
-    "name": "hole",
+    "name": "subtract2d",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
   },
   {
     "labeledArgs": {
@@ -820,16 +819,7 @@ description: Operations executed car-wheel-assembly.kcl
   },
   {
     "labeledArgs": {
-      "holeSketch": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "sketch": {
+      "tool": {
         "value": {
           "type": "Sketch",
           "value": {
@@ -839,10 +829,18 @@ description: Operations executed car-wheel-assembly.kcl
         "sourceRange": []
       }
     },
-    "name": "hole",
+    "name": "subtract2d",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
   },
   {
     "labeledArgs": {
@@ -1252,9 +1250,9 @@ description: Operations executed car-wheel-assembly.kcl
       "type": "FunctionCall",
       "name": "spoke",
       "functionSourceRange": [
-        2572,
-        4111,
-        6
+        2656,
+        4201,
+        5
       ],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -1643,9 +1641,9 @@ description: Operations executed car-wheel-assembly.kcl
       "type": "FunctionCall",
       "name": "spoke",
       "functionSourceRange": [
-        2572,
-        4111,
-        6
+        2656,
+        4201,
+        5
       ],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -2137,7 +2135,7 @@ description: Operations executed car-wheel-assembly.kcl
     "group": {
       "type": "ModuleInstance",
       "name": "lugNut",
-      "moduleId": 9
+      "moduleId": 8
     },
     "sourceRange": []
   },
@@ -2149,7 +2147,7 @@ description: Operations executed car-wheel-assembly.kcl
       "functionSourceRange": [
         637,
         1240,
-        9
+        8
       ],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -2594,7 +2592,7 @@ description: Operations executed car-wheel-assembly.kcl
     "group": {
       "type": "ModuleInstance",
       "name": "brakeCaliper",
-      "moduleId": 8
+      "moduleId": 7
     },
     "sourceRange": []
   },
@@ -2728,7 +2726,7 @@ description: Operations executed car-wheel-assembly.kcl
     "group": {
       "type": "ModuleInstance",
       "name": "carTire",
-      "moduleId": 10
+      "moduleId": 9
     },
     "sourceRange": []
   },

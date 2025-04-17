@@ -26,19 +26,19 @@ fn caster = (originStart) => {
     |> xLine(length = -3.543)
     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
     |> close()
-    |> hole(circle(center = [
+    |> subtract2d(tool = circle(center = [
          (3.543 - 2.756) / 2,
          (3.543 - 2.756) / 2
        ], radius= 8.8 / 2 / 25.4), %)
-    |> hole(circle(center = [
+    |> subtract2d(tool = circle(center = [
          (3.543 - 2.756) / 2 + 2.756,
          (3.543 - 2.756) / 2
        ], radius= 8.8 / 2 / 25.4), %)
-    |> hole(circle(center = [
+    |> subtract2d(tool = circle(center = [
          (3.543 - 2.756) / 2,
          (3.543 - 2.756) / 2 + 2.756
        ], radius= 8.8 / 2 / 25.4), %)
-    |> hole(circle(center = [
+    |> subtract2d(tool = circle(center = [
          (3.543 - 2.756) / 2 + 2.756,
          (3.543 - 2.756) / 2 + 2.756
        ], radius= 8.8 / 2 / 25.4), %)

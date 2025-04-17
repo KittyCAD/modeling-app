@@ -508,8 +508,8 @@ pub trait StdLibFn: std::fmt::Debug + Send + Sync {
             return Ok("subtract([${0:extrude001}], tools = [${1:extrude002}])".to_string());
         } else if self.name() == "intersect" {
             return Ok("intersect([${0:extrude001}, ${1:extrude002}])".to_string());
-        } else if self.name() == "hole" {
-            return Ok("hole(${0:holeSketch}, ${1:%})".to_string());
+        } else if self.name() == "subtract2D" {
+            return Ok("subtract2d(${0:holeSketch}, tool = ${1:%})".to_string());
         }
         let in_keyword_fn = self.keyword_arguments();
         let mut args = Vec::new();
@@ -1011,9 +1011,9 @@ mod tests {
 
     #[test]
     fn get_autocomplete_snippet_hole() {
-        let hole_fn: Box<dyn StdLibFn> = Box::new(crate::std::sketch::Hole);
-        let snippet = hole_fn.to_autocomplete_snippet().unwrap();
-        assert_eq!(snippet, r#"hole(${0:holeSketch}, ${1:%})"#);
+        let f: Box<dyn StdLibFn> = Box::new(crate::std::sketch::Subtract2D);
+        let snippet = f.to_autocomplete_snippet().unwrap();
+        assert_eq!(snippet, r#"subtract2d(${0:holeSketch}, tool = ${1:%})"#);
     }
 
     #[test]

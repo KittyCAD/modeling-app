@@ -76,7 +76,7 @@ const tabsR = startSketchOn(tabPlane)
   |> line(end = [0, -tabLength / 3 * 2], tag = $edge12)
   |> line(end = [-tabWidth, -tabLength / 3], tag = $edge13)
   |> close(tag = $edge14)
-  |> hole(circle(
+  |> subtract2d(tool = circle(
        center= [
          width / 2 + thk + tabWidth / 2,
          length / 2 + thk - (tabLength / (3 / 2))
@@ -104,7 +104,7 @@ const tabsL = startSketchOn(tabPlane)
   |> line(end = [0, -tabLength / 3 * 2], tag = $edge22)
   |> line(end = [tabWidth, -tabLength / 3], tag = $edge23)
   |> close(tag = $edge24)
-  |> hole(circle(
+  |> subtract2d(tool = circle(
        center= [
          -width / 2 - thk - (tabWidth / 2),
          length / 2 + thk - (tabLength / (3 / 2))

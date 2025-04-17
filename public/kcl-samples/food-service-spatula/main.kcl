@@ -65,9 +65,9 @@ slotProfile002 = slot(flipperSketch, [-25, -18], [-55, -19], flipperSlotWidth)
 
 // Create a profile with slots for the spatula
 spatulaProfile = flipperProfile
-  |> hole(slotProfile000, %)
-  |> hole(slotProfile001, %)
-  |> hole(slotProfile002, %)
+  |> subtract2d(tool = slotProfile000)
+  |> subtract2d(tool = slotProfile001)
+  |> subtract2d(tool = slotProfile002)
 
 // Extrude the profile to create the spatula flipper
 flipper = extrude(spatulaProfile, length = flipperThickness)

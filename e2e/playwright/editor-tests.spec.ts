@@ -704,7 +704,7 @@ sketch_001 = startSketchOn(XY)
     await page.keyboard.press('Enter')
     await page.keyboard.type(`extrusion = startSketchOn(XY)
   |> circle(center: [0, 0], radius: dia/2)
-    |> hole(squareHole(length, width, height), %)
+    |> subtract2d(tool = squareHole(length, width, height))
     |> extrude(length = height)`)
 
     // error in gutter

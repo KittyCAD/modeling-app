@@ -86,7 +86,7 @@ lazy_static! {
         Box::new(crate::std::sketch::Arc),
         Box::new(crate::std::sketch::TangentialArc),
         Box::new(crate::std::sketch::BezierCurve),
-        Box::new(crate::std::sketch::Hole),
+        Box::new(crate::std::sketch::Subtract2D),
         Box::new(crate::std::patterns::PatternLinear2D),
         Box::new(crate::std::patterns::PatternLinear3D),
         Box::new(crate::std::patterns::PatternCircular2D),

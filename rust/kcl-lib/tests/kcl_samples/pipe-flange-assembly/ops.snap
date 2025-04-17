@@ -46,8 +46,8 @@ description: Operations executed pipe-flange-assembly.kcl
       "name": "flange",
       "functionSourceRange": [
         509,
-        1743,
-        8
+        1753,
+        7
       ],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -86,7 +86,7 @@ description: Operations executed pipe-flange-assembly.kcl
   },
   {
     "labeledArgs": {
-      "holeSketch": {
+      "tool": {
         "value": {
           "type": "Array",
           "value": [
@@ -117,21 +117,20 @@ description: Operations executed pipe-flange-assembly.kcl
           ]
         },
         "sourceRange": []
-      },
-      "sketch": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
       }
     },
-    "name": "hole",
+    "name": "subtract2d",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
   },
   {
     "labeledArgs": {
@@ -340,8 +339,8 @@ description: Operations executed pipe-flange-assembly.kcl
       "name": "flange",
       "functionSourceRange": [
         509,
-        1743,
-        8
+        1753,
+        7
       ],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -380,7 +379,7 @@ description: Operations executed pipe-flange-assembly.kcl
   },
   {
     "labeledArgs": {
-      "holeSketch": {
+      "tool": {
         "value": {
           "type": "Array",
           "value": [
@@ -411,21 +410,20 @@ description: Operations executed pipe-flange-assembly.kcl
           ]
         },
         "sourceRange": []
-      },
-      "sketch": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
       }
     },
-    "name": "hole",
+    "name": "subtract2d",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
   },
   {
     "labeledArgs": {
@@ -632,7 +630,7 @@ description: Operations executed pipe-flange-assembly.kcl
     "group": {
       "type": "ModuleInstance",
       "name": "gasket",
-      "moduleId": 7
+      "moduleId": 6
     },
     "sourceRange": []
   },
@@ -749,7 +747,7 @@ description: Operations executed pipe-flange-assembly.kcl
       "functionSourceRange": [
         331,
         757,
-        9
+        8
       ],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -1136,7 +1134,7 @@ description: Operations executed pipe-flange-assembly.kcl
       "functionSourceRange": [
         358,
         1507,
-        10
+        9
       ],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -1509,7 +1507,7 @@ description: Operations executed pipe-flange-assembly.kcl
       "functionSourceRange": [
         344,
         1123,
-        11
+        10
       ],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -1778,7 +1776,7 @@ description: Operations executed pipe-flange-assembly.kcl
       "functionSourceRange": [
         256,
         675,
-        12
+        11
       ],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -1898,7 +1896,7 @@ description: Operations executed pipe-flange-assembly.kcl
       "functionSourceRange": [
         256,
         675,
-        12
+        11
       ],
       "unlabeledArg": null,
       "labeledArgs": {}

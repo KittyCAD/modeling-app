@@ -85,7 +85,7 @@ fn rail8020(originStart, railHeight, railLength) {
     |> close()
 
     // Sketch center hole of profile
-    |> hole(circle(
+    |> subtract2d(tool = circle(
          center = [
            .5 * railHeight + originStart[0],
            .5 * railHeight + originStart[1]

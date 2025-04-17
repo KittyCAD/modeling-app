@@ -6,12 +6,12 @@ flowchart LR
     4[Solid2d]
   end
   subgraph path5 [Path]
-    5["Path<br>[784, 835, 0]"]
-    6["Segment<br>[784, 835, 0]"]
+    5["Path<br>[797, 848, 0]"]
+    6["Segment<br>[797, 848, 0]"]
     7[Solid2d]
   end
   1["Plane<br>[699, 716, 0]"]
-  8["Sweep Extrusion<br>[850, 894, 0]"]
+  8["Sweep Extrusion<br>[860, 904, 0]"]
   9[Wall]
   10["Cap Start"]
   11["Cap End"]
