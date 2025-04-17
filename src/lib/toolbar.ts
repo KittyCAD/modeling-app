@@ -362,17 +362,33 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             ],
           },
           {
-            id: 'transform',
-            icon: 'angle',
-            status: 'kcl-only',
-            title: 'Transform',
-            description: 'Apply a translation and/or rotation to a module',
-            onClick: () => undefined,
+            id: 'translate',
+            onClick: () =>
+              commandBarActor.send({
+                type: 'Find and select command',
+                data: { name: 'Translate', groupId: 'modeling' },
+              }),
+            status: DEV || IS_NIGHTLY_OR_DEBUG ? 'available' : 'kcl-only',
+            title: 'Translate',
+            description: 'Apply a translation to a solid or sketch.',
             links: [
               {
                 label: 'API docs',
                 url: 'https://zoo.dev/docs/kcl/translate',
               },
+            ],
+          },
+          {
+            id: 'rotate',
+            onClick: () =>
+              commandBarActor.send({
+                type: 'Find and select command',
+                data: { name: 'Rotate', groupId: 'modeling' },
+              }),
+            status: DEV || IS_NIGHTLY_OR_DEBUG ? 'available' : 'kcl-only',
+            title: 'Rotate',
+            description: 'Apply a rotation to a solid or sketch.',
+            links: [
               {
                 label: 'API docs',
                 url: 'https://zoo.dev/docs/kcl/rotate',

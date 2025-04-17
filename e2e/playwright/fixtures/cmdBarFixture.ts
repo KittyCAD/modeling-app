@@ -179,6 +179,13 @@ export class CmdBarFixture {
   }
 
   /**
+   * Clicks the Create new variable button for kcl input
+   */
+  createNewVariable = async () => {
+    await this.page.getByRole('button', { name: 'Create new variable' }).click()
+  }
+
+  /**
    * Captures a snapshot of the request sent to the text-to-cad API endpoint
    * and saves it to a file named after the current test.
    *
