@@ -28,7 +28,7 @@ polygon(
 | `radius` | [`number`](/docs/kcl/types/number) | The radius of the polygon | Yes |
 | `numSides` | `u64` | The number of sides in the polygon | Yes |
 | `center` | [`[number]`](/docs/kcl/types/number) | The center point of the polygon | Yes |
-| `inscribed` | [`bool`](/docs/kcl/types/bool) | Whether the polygon is inscribed (true) or circumscribed (false) about a circle with the specified radius | No |
+| `inscribed` | [`bool`](/docs/kcl/types/bool) | Whether the polygon is inscribed (true, the default) or circumscribed (false) about a circle with the specified radius | No |
 | [`tag`](/docs/kcl/types/tag) | [`TagDeclarator`](/docs/kcl/types#tag-declaration) | Create a new tag which refers to this line | No |
 
 ### Returns
