@@ -16,7 +16,7 @@ arc(
   angleStart?: number,
   angleEnd?: number,
   radius?: number,
-  interior?: [number],
+  interiorAbsolute?: [number],
   endAbsolute?: [number],
   tag?: TagDeclarator,
 ): Sketch
@@ -31,8 +31,8 @@ arc(
 | `angleStart` | [`number`](/docs/kcl/types/number) | Where along the circle should this arc start? | No |
 | `angleEnd` | [`number`](/docs/kcl/types/number) | Where along the circle should this arc end? | No |
 | `radius` | [`number`](/docs/kcl/types/number) | How large should the circle be? | No |
-| `interior` | [`[number]`](/docs/kcl/types/number) | Any point between the arc's start and end? Requires `endAbsolute`. Incompatible with `angleStart` or `angleEnd` | No |
-| `endAbsolute` | [`[number]`](/docs/kcl/types/number) | Where should this arc end? Requires `interior`. Incompatible with `angleStart` or `angleEnd` | No |
+| `interiorAbsolute` | [`[number]`](/docs/kcl/types/number) | Any point between the arc's start and end? Requires `endAbsolute`. Incompatible with `angleStart` or `angleEnd` | No |
+| `endAbsolute` | [`[number]`](/docs/kcl/types/number) | Where should this arc end? Requires `interiorAbsolute`. Incompatible with `angleStart` or `angleEnd` | No |
 | [`tag`](/docs/kcl/types/tag) | [`TagDeclarator`](/docs/kcl/types#tag-declaration) | Create a new tag which refers to this line | No |
 
 ### Returns
@@ -56,7 +56,7 @@ example = extrude(exampleSketch, length = 10)
 ```js
 exampleSketch = startSketchOn(XZ)
   |> startProfileAt([0, 0], %)
-  |> arc(endAbsolute = [10, 0], interior = [5, 5])
+  |> arc(endAbsolute = [10, 0], interiorAbsolute = [5, 5])
   |> close()
 example = extrude(exampleSketch, length = 10)
 ```
