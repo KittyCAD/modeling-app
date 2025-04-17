@@ -19,7 +19,7 @@ import {
   ARG_OFFSET,
   ARG_TAG,
   DETERMINING_ARGS,
-  ARG_INTERIOR,
+  ARG_INTERIOR_ABSOLUTE,
 } from '@src/lang/constants'
 import {
   createArrayExpression,
@@ -1681,9 +1681,9 @@ export const arcTo: SketchLineHelperKw = {
     const { node: pipe } = nodeMeta
 
     // p1 is the start point (from the previous segment)
-    // p2 is the interior point
+    // p2 is the interiorAbsolute point
     // p3 is the end point
-    const interior = createArrayExpression([
+    const interiorAbsolute = createArrayExpression([
       createLiteral(roundOff(p2[0], 2)),
       createLiteral(roundOff(p2[1], 2)),
     ])
@@ -1697,7 +1697,7 @@ export const arcTo: SketchLineHelperKw = {
       const result = replaceExistingCallback([
         {
           type: 'objectProperty',
-          key: 'interior',
+          key: 'interiorAbsolute',
           argType: 'xAbsolute',
           expr: createLiteral(0), // This is a workaround, the actual value will be set later
         },
@@ -1728,7 +1728,7 @@ export const arcTo: SketchLineHelperKw = {
     }
 
     const newLine = createCallExpressionStdLibKw('arc', null, [
-      createLabeledArg(ARG_INTERIOR, interior),
+      createLabeledArg(ARG_INTERIOR_ABSOLUTE, interiorAbsolute),
       createLabeledArg(ARG_END_ABSOLUTE, end),
     ])
 
@@ -1780,9 +1780,9 @@ export const arcTo: SketchLineHelperKw = {
 
     const { node: callExpression } = nodeMeta
 
-    // Update the first argument which should be an object with interior and end properties
+    // Update the first argument which should be an object with interiorAbsolute and end properties
 
-    const interiorPoint = createArrayExpression([
+    const interiorAbsolutePoint = createArrayExpression([
       createLiteral(roundOff(p2[0], 2)),
       createLiteral(roundOff(p2[1], 2)),
     ])
@@ -1792,7 +1792,7 @@ export const arcTo: SketchLineHelperKw = {
       createLiteral(roundOff(p3[1], 2)),
     ])
 
-    mutateKwArg(ARG_INTERIOR, callExpression, interiorPoint)
+    mutateKwArg(ARG_INTERIOR_ABSOLUTE, callExpression, interiorAbsolutePoint)
     mutateKwArg(ARG_END_ABSOLUTE, callExpression, endPoint)
 
     return {
@@ -1807,21 +1807,25 @@ export const arcTo: SketchLineHelperKw = {
     const args = callExp.arguments
     if (args.length < 1) return []
 
-    // Find interior and end properties
-    const interiorProp = findKwArgWithIndex(ARG_INTERIOR, callExp)
+    // Find interiorAbsolute and end properties
+    const interiorAbsoluteProp = findKwArgWithIndex(
+      ARG_INTERIOR_ABSOLUTE,
+      callExp
+    )
     const endProp = findKwArgWithIndex(ARG_END_ABSOLUTE, callExp)
 
-    if (!interiorProp || !endProp) return []
+    if (!interiorAbsoluteProp || !endProp) return []
     if (
-      interiorProp.expr.type !== 'ArrayExpression' ||
+      interiorAbsoluteProp.expr.type !== 'ArrayExpression' ||
       endProp.expr.type !== 'ArrayExpression'
     )
       return []
 
-    const interiorArr = interiorProp.expr
+    const interiorAbsoluteArr = interiorAbsoluteProp.expr
     const endArr = endProp.expr
 
-    if (interiorArr.elements.length < 2 || endArr.elements.length < 2) return []
+    if (interiorAbsoluteArr.elements.length < 2 || endArr.elements.length < 2)
+      return []
 
     const pathToBase: PathToNode = [
       ...pathToNode,
@@ -1830,7 +1834,7 @@ export const arcTo: SketchLineHelperKw = {
 
     const pathToInteriorValue: PathToNode = [
       ...pathToBase,
-      [interiorProp.argIndex, ARG_INDEX_FIELD],
+      [interiorAbsoluteProp.argIndex, ARG_INDEX_FIELD],
       ['arg', LABELED_ARG_FIELD],
     ]
 
@@ -1867,43 +1871,47 @@ export const arcTo: SketchLineHelperKw = {
     const constraints: (ConstrainInfo & { filterValue: string })[] = [
       {
         type: 'xAbsolute',
-        isConstrained: isNotLiteralArrayOrStatic(interiorArr.elements[0]),
+        isConstrained: isNotLiteralArrayOrStatic(
+          interiorAbsoluteArr.elements[0]
+        ),
         value: code.slice(
-          interiorArr.elements[0].start,
-          interiorArr.elements[0].end
+          interiorAbsoluteArr.elements[0].start,
+          interiorAbsoluteArr.elements[0].end
         ),
         stdLibFnName: 'arc',
         argPosition: {
           type: 'arrayInObject',
-          key: 'interior',
+          key: 'interiorAbsolute',
           index: 0,
         },
         sourceRange: topLevelRange(
-          interiorArr.elements[0].start,
-          interiorArr.elements[0].end
+          interiorAbsoluteArr.elements[0].start,
+          interiorAbsoluteArr.elements[0].end
         ),
         pathToNode: pathToInteriorX,
-        filterValue: 'interior',
+        filterValue: 'interiorAbsolute',
       },
       {
         type: 'yAbsolute',
-        isConstrained: isNotLiteralArrayOrStatic(interiorArr.elements[1]),
+        isConstrained: isNotLiteralArrayOrStatic(
+          interiorAbsoluteArr.elements[1]
+        ),
         value: code.slice(
-          interiorArr.elements[1].start,
-          interiorArr.elements[1].end
+          interiorAbsoluteArr.elements[1].start,
+          interiorAbsoluteArr.elements[1].end
         ),
         stdLibFnName: 'arc',
         argPosition: {
           type: 'arrayInObject',
-          key: 'interior',
+          key: 'interiorAbsolute',
           index: 1,
         },
         sourceRange: topLevelRange(
-          interiorArr.elements[1].start,
-          interiorArr.elements[1].end
+          interiorAbsoluteArr.elements[1].start,
+          interiorAbsoluteArr.elements[1].end
         ),
         pathToNode: pathToInteriorY,
-        filterValue: 'interior',
+        filterValue: 'interiorAbsolute',
       },
       {
         type: 'xAbsolute',

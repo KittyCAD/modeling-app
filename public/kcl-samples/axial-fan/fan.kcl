@@ -45,7 +45,7 @@ fn fanBlade(offsetHeight, startAngle) {
            fanSize * 22 / 50 * cos(toRadians(startAngle - 20)),
            fanSize * 22 / 50 * sin(toRadians(startAngle - 20))
          ],
-         interior = [
+         interiorAbsolute = [
            fanSize * 11 / 50 * cos(toRadians(startAngle + 3)),
            fanSize * 11 / 50 * sin(toRadians(startAngle + 3))
          ],
@@ -55,14 +55,14 @@ fn fanBlade(offsetHeight, startAngle) {
            fanSize * 22 / 50 * cos(toRadians(startAngle - 24)),
            fanSize * 22 / 50 * sin(toRadians(startAngle - 24))
          ],
-         interior = [
+         interiorAbsolute = [
            fanSize * 22 / 50 * cos(toRadians(startAngle - 22)),
            fanSize * 22 / 50 * sin(toRadians(startAngle - 22))
          ],
        )
     |> arc(
          endAbsolute = [profileStartX(%), profileStartY(%)],
-         interior = [
+         interiorAbsolute = [
            fanSize * 11 / 50 * cos(toRadians(startAngle - 5)),
            fanSize * 11 / 50 * sin(toRadians(startAngle - 5))
          ],

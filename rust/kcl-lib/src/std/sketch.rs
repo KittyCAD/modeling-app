@@ -1646,14 +1646,14 @@ pub async fn arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
     let radius: Option<TyF64> = args.get_kw_arg_opt_typed("radius", &RuntimeType::length(), exec_state)?;
     let end_absolute: Option<[TyF64; 2]> =
         args.get_kw_arg_opt_typed("endAbsolute", &RuntimeType::point2d(), exec_state)?;
-    let interior: Option<[TyF64; 2]> = args.get_kw_arg_opt_typed("interior", &RuntimeType::point2d(), exec_state)?;
+    let interior_absolute: Option<[TyF64; 2]> = args.get_kw_arg_opt_typed("interiorAbsolute", &RuntimeType::point2d(), exec_state)?;
     let tag = args.get_kw_arg_opt(NEW_TAG_KW)?;
     let new_sketch = inner_arc(
         sketch,
         angle_start,
         angle_end,
         radius,
-        interior,
+        interior_absolute,
         end_absolute,
         tag,
         exec_state,
@@ -1693,7 +1693,7 @@ pub async fn arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
 ///   |> startProfileAt([0, 0], %)
 ///   |> arc(
 ///         endAbsolute = [10,0],
-///         interior = [5,5]
+///         interiorAbsolute = [5,5]
 ///      )
 ///   |> close()
 /// example = extrude(exampleSketch, length = 10)
@@ -1707,8 +1707,8 @@ pub async fn arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
         angle_start = { docs = "Where along the circle should this arc start?", include_in_snippet = true },
         angle_end = { docs = "Where along the circle should this arc end?", include_in_snippet = true },
         radius = { docs = "How large should the circle be?", include_in_snippet = true },
-        interior = { docs = "Any point between the arc's start and end? Requires `endAbsolute`. Incompatible with `angleStart` or `angleEnd`" },
-        end_absolute = { docs = "Where should this arc end? Requires `interior`. Incompatible with `angleStart` or `angleEnd`" },
+        interior_absolute = { docs = "Any point between the arc's start and end? Requires `endAbsolute`. Incompatible with `angleStart` or `angleEnd`" },
+        end_absolute = { docs = "Where should this arc end? Requires `interiorAbsolute`. Incompatible with `angleStart` or `angleEnd`" },
         tag = { docs = "Create a new tag which refers to this line"},
     }
 }]
@@ -1718,7 +1718,7 @@ pub(crate) async fn inner_arc(
     angle_start: Option<TyF64>,
     angle_end: Option<TyF64>,
     radius: Option<TyF64>,
-    interior: Option<[TyF64; 2]>,
+    interior_absolute: Option<[TyF64; 2]>,
     end_absolute: Option<[TyF64; 2]>,
     tag: Option<TagNode>,
     exec_state: &mut ExecState,
@@ -1728,17 +1728,17 @@ pub(crate) async fn inner_arc(
     let id = exec_state.next_uuid();
 
     // Relative case
-    match (angle_start, angle_end, radius, interior, end_absolute) {
+    match (angle_start, angle_end, radius, interior_absolute, end_absolute) {
         (Some(angle_start), Some(angle_end), Some(radius), None, None) => {
             relative_arc(&args, id, exec_state, sketch, from, angle_start, angle_end, radius, tag).await
         }
-        (None, None, None, Some(interior), Some(end_absolute)) => {
-            absolute_arc(&args, id, exec_state, sketch, from, interior, end_absolute, tag).await
+        (None, None, None, Some(interior_absolute), Some(end_absolute)) => {
+            absolute_arc(&args, id, exec_state, sketch, from, interior_absolute, end_absolute, tag).await
         }
         _ => {
             Err(KclError::Type(KclErrorDetails {
                 message:
-                    "Invalid combination of arguments. Either provide (angleStart, angleEnd, radius) or (endAbsolute, interior)"
+                    "Invalid combination of arguments. Either provide (angleStart, angleEnd, radius) or (endAbsolute, interiorAbsolute)"
                         .to_string(),
                 source_ranges: vec![args.source_range],
             }))
@@ -1753,7 +1753,7 @@ pub async fn absolute_arc(
     exec_state: &mut ExecState,
     sketch: Sketch,
     from: Point2d,
-    interior: [TyF64; 2],
+    interior_absolute: [TyF64; 2],
     end_absolute: [TyF64; 2],
     tag: Option<TagNode>,
 ) -> Result<Sketch, KclError> {
@@ -1769,8 +1769,8 @@ pub async fn absolute_arc(
                     z: LengthUnit(0.0),
                 },
                 interior: kcmc::shared::Point3d {
-                    x: LengthUnit(interior[0].n),
-                    y: LengthUnit(interior[1].n),
+                    x: LengthUnit(interior_absolute[0].n),
+                    y: LengthUnit(interior_absolute[1].n),
                     z: LengthUnit(0.0),
                 },
                 relative: false,
@@ -1795,7 +1795,7 @@ pub async fn absolute_arc(
             },
         },
         p1: start,
-        p2: untype_point(interior).0,
+        p2: untype_point(interior_absolute).0,
         p3: untyped_end.0,
     };
 

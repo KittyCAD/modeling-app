@@ -1026,10 +1026,10 @@ pub enum Path {
         /// Point 1 of the arc (base on the end of previous segment)
         #[ts(type = "[number, number]")]
         p1: [f64; 2],
-        /// Point 2 of the arc (interior kwarg)
+        /// Point 2 of the arc (interiorAbsolute kwarg)
         #[ts(type = "[number, number]")]
         p2: [f64; 2],
-        /// Point 3 of the arc (end kwarg)
+        /// Point 3 of the arc (endAbsolute kwarg)
         #[ts(type = "[number, number]")]
         p3: [f64; 2],
     },

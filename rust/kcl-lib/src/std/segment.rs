@@ -531,7 +531,7 @@ pub async fn tangent_to_end(exec_state: &mut ExecState, args: Args) -> Result<Kc
 ///   |> startProfileAt([0, 0], %)
 ///   |> arc(
 ///        endAbsolute = [10, 10],
-///        interior = [5, 1],
+///        interiorAbsolute = [5, 1],
 ///        tag = $arc1,
 ///      )
 ///   |> angledLine(angle = tangentToEnd(arc1), length = 20)

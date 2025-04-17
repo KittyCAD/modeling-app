@@ -2,7 +2,7 @@ sketch001 = startSketchOn(XZ)
 profile001 = startProfileAt([100.0, 0.0], sketch001)
   |> line(end = [0.0, 120.0])
   |> arc(
-       interior = [300.0, 100.0],
+       interiorAbsolute = [300.0, 100.0],
        endAbsolute = [200.00, -100.00],
        tag = $seg01,
      )

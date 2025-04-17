@@ -58,10 +58,10 @@ fn mirrorFn(plane, offsetX, offsetY, altitude, radius, tiefe, gestellR, gestellD
 
   archBody = startProfileAt([offsetX - gestellR, altitude], armPlane)
     |> xLine(length = gestellD)
-    |> arc(interior = [offsetX, altitude - gestellR], endAbsolute = [offsetX + gestellR, altitude])
+    |> arc(interiorAbsolute = [offsetX, altitude - gestellR], endAbsolute = [offsetX + gestellR, altitude])
     |> xLine(length = gestellD)
     |> arc(
-         interior = [
+         interiorAbsolute = [
            offsetX,
            altitude - gestellR - gestellD
          ],

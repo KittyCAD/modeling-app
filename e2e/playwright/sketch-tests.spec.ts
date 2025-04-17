@@ -206,7 +206,7 @@ sketch001 = startProfileAt([12.34, -12.34], sketch002)
       |> startProfileAt([4.61, -14.01], %)
       |> line(end = [12.73, -0.09])
       |> tangentialArc(endAbsolute = [24.95, -5.38])
-      |> arc(interior = [20.18, -1.7], endAbsolute = [11.82, -1.16])
+      |> arc(interiorAbsolute = [20.18, -1.7], endAbsolute = [11.82, -1.16])
       |> arc(angleStart = -89.36, angleEnd = 135.81, radius = 5.92)
       |> close()`
         )
@@ -249,7 +249,7 @@ sketch001 = startProfileAt([12.34, -12.34], sketch002)
       |> startProfileAt([4.61, -14.01], %)
       |> line(end = [12.73, -0.09])
       |> tangentialArc(endAbsolute = [24.95, -5.38])
-      |> arc(interior = [20.18, -1.7], endAbsolute = [11.82, -1.16])
+      |> arc(interiorAbsolute = [20.18, -1.7], endAbsolute = [11.82, -1.16])
       |> arc(angleStart = -89.36, angleEnd = 135.81, radius = 5.92)
       |> close()
 `)
@@ -316,7 +316,7 @@ sketch001 = startProfileAt([12.34, -12.34], sketch002)
         await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
       }
 
-      // drag arcTo interior handle (three point arc)
+      // drag arcTo interiorAbsolute handle (three point arc)
       const arcToHandle = await u.getBoundingBox('[data-overlay-index="2"]')
       await page.mouse.move(arcToHandle.x, arcToHandle.y - 5)
       await page.mouse.down()
@@ -388,7 +388,7 @@ sketch001 = startProfileAt([12.34, -12.34], sketch002)
   |> startProfileAt([6.44, -12.07], %)
   |> line(end = [14.72, 1.97])
   |> tangentialArc(endAbsolute = [26.92, -3.32])
-  |> arc(interior = [18.11, -3.73], endAbsolute = [9.77, -3.19])
+  |> arc(interiorAbsolute = [18.11, -3.73], endAbsolute = [9.77, -3.19])
   |> arc(angleStart = -58.29, angleEnd = 161.17, radius = 3.75)
   |> close()
 `)
@@ -1815,7 +1815,7 @@ profile003 = startProfileAt([206.63, -56.73], sketch001)
 
       // Verify the three-point arc was created correctly
       await editor.expectEditor.toContain(`arc(`)
-      await editor.expectEditor.toContain(`interior`)
+      await editor.expectEditor.toContain(`interiorAbsolute`)
       await editor.expectEditor.toContain(`endAbsolute`)
 
       // Switch back to line tool to continue
@@ -2036,7 +2036,7 @@ profile003 = startProfileAt([206.63, -56.73], sketch001)
       // Verify the first three-point arc was created correctly
       await editor.expectEditor.toContain(
         `profile011 = startProfileAt([13.56, -9.97], sketch001)
-  |> arc(interior = [15.19, -6.51], endAbsolute = [19.33, -11.19])`,
+  |> arc(interiorAbsolute = [15.19, -6.51], endAbsolute = [19.33, -11.19])`,
         { shouldNormalise: true }
       )
 
@@ -2053,8 +2053,8 @@ profile003 = startProfileAt([206.63, -56.73], sketch001)
 
       // Verify the second three-point arc was created correctly
       await editor.expectEditor.toContain(
-        `  |> arc(interior = [19.8, 1.7], endAbsolute = [21.7, 2.92])
-  |> arc(interior = [27.47, 1.42], endAbsolute = [27.57, 1.52])`,
+        `  |> arc(interiorAbsolute = [19.8, 1.7], endAbsolute = [21.7, 2.92])
+  |> arc(interiorAbsolute = [27.47, 1.42], endAbsolute = [27.57, 1.52])`,
         { shouldNormalise: true }
       )
     })
@@ -2830,7 +2830,7 @@ test.describe(`Click based selection don't brick the app when clicked out of ran
   |> startProfileAt([0, 0], %)
   |> line(end = [3.14, 3.14])
   |> arc(
-       interior = [1, 2],
+       interiorAbsolute = [1, 2],
        endAbsolute = [4, 2]
      )`
       )
@@ -2839,7 +2839,7 @@ test.describe(`Click based selection don't brick the app when clicked out of ran
     await homePage.goToModelingScene()
     await scene.settled(cmdBar)
 
-    const formattedArc = `arc(interior = [1, 2], endAbsolute = [4, 2])`
+    const formattedArc = `arc(interiorAbsolute = [1, 2], endAbsolute = [4, 2])`
     await test.step(`format the code`, async () => {
       // doesn't contain condensed version
       await editor.expectEditor.not.toContain(formattedArc)
@@ -2862,7 +2862,7 @@ test.describe(`Click based selection don't brick the app when clicked out of ran
       await editor.expectState({
         activeLines: ['sketch001=startSketchOn(XZ)'],
         diagnostics: [],
-        highlightedCode: 'arc(interior = [1, 2], endAbsolute = [4, 2])',
+        highlightedCode: 'arc(interiorAbsolute = [1, 2], endAbsolute = [4, 2])',
       })
     })
 
@@ -2884,7 +2884,7 @@ test.describe(`Click based selection don't brick the app when clicked out of ran
       await editor.expectState({
         activeLines: [],
         diagnostics: [],
-        highlightedCode: 'arc(interior = [1, 2], endAbsolute = [4, 2])',
+        highlightedCode: 'arc(interiorAbsolute = [1, 2], endAbsolute = [4, 2])',
       })
     })
   })
@@ -2998,7 +2998,7 @@ profile001 = startProfileAt([0, 0], sketch001)
   |> line(end = [191.39, 191.39])
   |> tangentialArc(endAbsolute = [287.08, 95.69], tag = $seg01)
   |> angledLine(angle = tangentToEnd(seg01), length = 135.34)
-  |> arc(interior = [191.39, -95.69], endAbsolute = [287.08, -95.69], tag = $seg02)
+  |> arc(interiorAbsolute = [191.39, -95.69], endAbsolute = [287.08, -95.69], tag = $seg02)
   |> angledLine(angle = tangentToEnd(seg02) + turns::HALF_TURN, length = 270.67)
 `.replaceAll('\n', '')
     )
