@@ -1646,7 +1646,8 @@ pub async fn arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
     let radius: Option<TyF64> = args.get_kw_arg_opt_typed("radius", &RuntimeType::length(), exec_state)?;
     let end_absolute: Option<[TyF64; 2]> =
         args.get_kw_arg_opt_typed("endAbsolute", &RuntimeType::point2d(), exec_state)?;
-    let interior_absolute: Option<[TyF64; 2]> = args.get_kw_arg_opt_typed("interiorAbsolute", &RuntimeType::point2d(), exec_state)?;
+    let interior_absolute: Option<[TyF64; 2]> =
+        args.get_kw_arg_opt_typed("interiorAbsolute", &RuntimeType::point2d(), exec_state)?;
     let tag = args.get_kw_arg_opt(NEW_TAG_KW)?;
     let new_sketch = inner_arc(
         sketch,
