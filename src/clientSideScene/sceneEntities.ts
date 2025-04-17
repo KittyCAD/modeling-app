@@ -2672,8 +2672,8 @@ export class SceneEntities {
         if (prev && ARC_SEGMENT_TYPES.includes(prev.userData.type)) {
           const snapDirection = findTangentDirection(prev)
           if (snapDirection) {
-            const SNAP_TOLERANCE_PIXELS = 12 * window.devicePixelRatio
-            const SNAP_MIN_DISTANCE_PIXELS = 5 * window.devicePixelRatio
+            const SNAP_TOLERANCE_PIXELS = 8 * window.devicePixelRatio
+            const SNAP_MIN_DISTANCE_PIXELS = 10 * window.devicePixelRatio
             const orthoFactor = orthoScale(this.sceneInfra.camControls.camera)
 
             // See if snapDirection intersects with any of the axes
