@@ -27,6 +27,7 @@ interface ModelingPaneButtonProps
   paneIsOpen?: boolean
   showBadge?: BadgeInfoComputed
   disabledText?: string
+  tooltipPosition?: 'right' | 'left'
 }
 
 export function ModelingPaneButton({
@@ -35,6 +36,7 @@ export function ModelingPaneButton({
   paneIsOpen,
   showBadge,
   disabledText,
+  tooltipPosition = 'right',
   ...props
 }: ModelingPaneButtonProps) {
   useHotkeys(paneConfig.keybinding, onClick, {
@@ -66,7 +68,7 @@ export function ModelingPaneButton({
           {paneIsOpen !== undefined ? ` pane` : ''}
         </span>
         <Tooltip
-          position="right"
+          position={tooltipPosition}
           contentClassName="max-w-none flex items-center gap-4"
           hoverOnly
         >
