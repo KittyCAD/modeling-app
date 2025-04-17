@@ -4244,6 +4244,7 @@ export const modelingMachine = setup({
 
     parameter: {
       type: 'parallel',
+
       states: {
         creating: {
           invoke: {

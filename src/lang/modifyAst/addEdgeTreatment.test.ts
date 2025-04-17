@@ -473,8 +473,13 @@ extrude001 = extrude(sketch001, length = -15)`
   |> line(end = [-20, 0])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-extrude001 = extrude(sketch001, length = -15)
-  |> ${edgeTreatmentType}(${parameterName} = 3, tags = [seg01])`
+extrude001 = extrude(sketch001, length = -15, tagEnd = $capEnd001)
+  |> ${edgeTreatmentType}(
+       ${parameterName} = 3,
+       tags = [
+         getCommonEdge(faces = [seg01, capEnd001])
+       ],
+     )`
 
         await runModifyAstCloneWithEdgeTreatmentAndTag(
           code,
@@ -500,8 +505,13 @@ extrude001 = extrude(sketch001, length = -15)
   |> line(end = [-20, 0])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-  |> extrude(length = -15)
-  |> ${edgeTreatmentType}(${parameterName} = 3, tags = [seg01])`
+  |> extrude(length = -15, tagEnd = $capEnd001)
+  |> ${edgeTreatmentType}(
+       ${parameterName} = 3,
+       tags = [
+         getCommonEdge(faces = [seg01, capEnd001])
+       ],
+     )`
 
         await runModifyAstCloneWithEdgeTreatmentAndTag(
           code,
@@ -527,8 +537,13 @@ extrude001 = extrude(sketch001, length = -15)`
   |> line(end = [-20, 0])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-extrude001 = extrude(sketch001, length = -15)
-  |> ${edgeTreatmentType}(${parameterName} = 3, tags = [seg01])`
+extrude001 = extrude(sketch001, length = -15, tagEnd = $capEnd001)
+  |> ${edgeTreatmentType}(
+       ${parameterName} = 3,
+       tags = [
+         getCommonEdge(faces = [seg01, capEnd001])
+       ],
+     )`
 
         await runModifyAstCloneWithEdgeTreatmentAndTag(
           code,
@@ -554,8 +569,13 @@ extrude001 = extrude(sketch001, length = -15)`
   |> line(end = [-20, 0], tag = $seg02)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-extrude001 = extrude(sketch001, length = -15)
-  |> ${edgeTreatmentType}(${parameterName} = 3, tags = [seg02])`
+extrude001 = extrude(sketch001, length = -15, tagEnd = $capEnd001)
+  |> ${edgeTreatmentType}(
+       ${parameterName} = 3,
+       tags = [
+         getCommonEdge(faces = [seg02, capEnd001])
+       ],
+     )`
 
         await runModifyAstCloneWithEdgeTreatmentAndTag(
           code,
@@ -572,8 +592,13 @@ extrude001 = extrude(sketch001, length = -15)
   |> line(end = [-20, 0])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-extrude001 = extrude(sketch001, length = -15)
-  |> fillet( radius = 5, tags = [seg01] )`
+extrude001 = extrude(sketch001, length = -15, tagEnd = $capEnd001)
+  |> fillet(
+       radius = 3,
+       tags = [
+         getCommonEdge(faces = [seg01, capEnd001])
+       ],
+     )`
         const segmentSnippets = ['line(end = [-20, 0])']
         const expectedCode = `sketch001 = startSketchOn(XY)
   |> startProfileAt([-10, 10], %)
@@ -582,9 +607,19 @@ extrude001 = extrude(sketch001, length = -15)
   |> line(end = [-20, 0], tag = $seg02)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-extrude001 = extrude(sketch001, length = -15)
-  |> fillet(radius = 5, tags = [seg01])
-  |> ${edgeTreatmentType}(${parameterName} = 3, tags = [seg02])`
+extrude001 = extrude(sketch001, length = -15, tagEnd = $capEnd001)
+  |> fillet(
+       radius = 3,
+       tags = [
+         getCommonEdge(faces = [seg01, capEnd001])
+       ],
+     )
+  |> ${edgeTreatmentType}(
+       ${parameterName} = 3,
+       tags = [
+         getCommonEdge(faces = [seg02, capEnd001])
+       ],
+     )`
 
         await runModifyAstCloneWithEdgeTreatmentAndTag(
           code,
@@ -601,8 +636,13 @@ extrude001 = extrude(sketch001, length = -15)
   |> line(end = [-20, 0])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-extrude001 = extrude(sketch001, length = -15)
-  |> chamfer(length = 5, tags = [seg01])`
+extrude001 = extrude(sketch001, length = -15, tagEnd = $capEnd001)
+  |> chamfer(
+       length = 3,
+       tags = [
+         getCommonEdge(faces = [seg01, capEnd001])
+       ],
+     )`
         const segmentSnippets = ['line(end = [-20, 0])']
         const expectedCode = `sketch001 = startSketchOn(XY)
   |> startProfileAt([-10, 10], %)
@@ -611,9 +651,19 @@ extrude001 = extrude(sketch001, length = -15)
   |> line(end = [-20, 0], tag = $seg02)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-extrude001 = extrude(sketch001, length = -15)
-  |> chamfer(length = 5, tags = [seg01])
-  |> ${edgeTreatmentType}(${parameterName} = 3, tags = [seg02])`
+extrude001 = extrude(sketch001, length = -15, tagEnd = $capEnd001)
+  |> chamfer(
+       length = 3,
+       tags = [
+         getCommonEdge(faces = [seg01, capEnd001])
+       ],
+     )
+  |> ${edgeTreatmentType}(
+       ${parameterName} = 3,
+       tags = [
+         getCommonEdge(faces = [seg02, capEnd001])
+       ],
+     )`
 
         await runModifyAstCloneWithEdgeTreatmentAndTag(
           code,
@@ -639,8 +689,14 @@ extrude001 = extrude(sketch001, length = -15)`
   |> line(end = [-20, 0], tag = $seg02)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-extrude001 = extrude(sketch001, length = -15)
-  |> ${edgeTreatmentType}(${parameterName} = 3, tags = [seg01, seg02])`
+extrude001 = extrude(sketch001, length = -15, tagEnd = $capEnd001)
+  |> ${edgeTreatmentType}(
+       ${parameterName} = 3,
+       tags = [
+         getCommonEdge(faces = [seg01, capEnd001]),
+         getCommonEdge(faces = [seg02, capEnd001])
+       ],
+     )`
 
         await runModifyAstCloneWithEdgeTreatmentAndTag(
           code,
@@ -678,8 +734,14 @@ extrude002 = extrude(sketch002, length = -25)` // <--- body 2
   |> line(end = [-20, 0], tag = $seg02)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-extrude001 = extrude(sketch001, length = -15)
-  |> ${edgeTreatmentType}(${parameterName} = 3, tags = [seg01, seg02])
+extrude001 = extrude(sketch001, length = -15, tagEnd = $capEnd001)
+  |> ${edgeTreatmentType}(
+       ${parameterName} = 3,
+       tags = [
+         getCommonEdge(faces = [seg01, capEnd001]),
+         getCommonEdge(faces = [seg02, capEnd001])
+       ],
+     )
 sketch002 = startSketchOn(XY)
   |> startProfileAt([30, 10], %)
   |> line(end = [15, 0])
@@ -687,8 +749,13 @@ sketch002 = startSketchOn(XY)
   |> line(end = [-15, 0])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-extrude002 = extrude(sketch002, length = -25)
-  |> ${edgeTreatmentType}(${parameterName} = 3, tags = [seg03])` // <-- able to add a new one
+extrude002 = extrude(sketch002, length = -25, tagEnd = $capEnd002)
+  |> ${edgeTreatmentType}(
+       ${parameterName} = 3,
+       tags = [
+         getCommonEdge(faces = [seg03, capEnd002])
+       ],
+     )`
 
         await runModifyAstCloneWithEdgeTreatmentAndTag(
           code,

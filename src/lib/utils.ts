@@ -419,6 +419,10 @@ export function isClockwise(points: [number, number][]): boolean {
   return sum > 0
 }
 
+/** Capitalise a string's first character */
+export function capitaliseFC(str: string): string {
+  return str.charAt(0).toUpperCase() + str.slice(1)
+
 /**
  * Converts a binary buffer to a UUID string.
  *
