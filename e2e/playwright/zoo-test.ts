@@ -50,7 +50,7 @@ const playwrightTestFnWithFixtures_ = playwrightTestFn.extend<{
       // This will ensure tests fail faster if there's an issue with setup
       // instead of waiting for the full global timeout (120s)
       // First runs need more time especially on Mac for window creation
-      const setupTimeout = isFirstRun ? 90000 : 30000 // 90s for first run, 30s after that
+      const setupTimeout = isFirstRun ? 120_000 : 30_000 // 90s for first run, 30s after that
       let timeoutId: NodeJS.Timeout | undefined
 
       const setupPromise = new Promise<void>((resolve, reject) => {
