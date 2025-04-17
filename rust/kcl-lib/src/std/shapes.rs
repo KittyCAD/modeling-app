@@ -322,6 +322,7 @@ pub async fn polygon(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
         tag = { docs = "Create a new tag which refers to this line" },
     }
 }]
+#[allow(clippy::too_many_arguments)]
 async fn inner_polygon(
     sketch_surface_or_group: SketchOrSurface,
     radius: TyF64,
