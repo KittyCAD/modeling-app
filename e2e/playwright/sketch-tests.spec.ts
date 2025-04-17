@@ -1473,12 +1473,12 @@ profile002 = startProfileAt([117.2, 56.08], sketch001)
         await circle3Point1()
         await page.waitForTimeout(200)
         await circle3Point2()
-        await editor.expectEditor.toContain('arcTo({')
+        await editor.expectEditor.toContain('arc(')
       })
 
       await test.step('equip line tool and verify three-point-arc code is removed after second click', async () => {
         await toolbar.lineBtn.click()
-        await editor.expectEditor.not.toContain('arcTo({')
+        await editor.expectEditor.not.toContain('arc(')
       })
 
       const [cornerRectPoint1] = scene.makeMouseHelpers(600, 300)
@@ -1515,9 +1515,9 @@ profile002 = startProfileAt([117.2, 56.08], sketch001)
         await continueProfile2Clk()
         await page.waitForTimeout(200)
         await circle3Point1()
-        await editor.expectEditor.toContain('arcTo({')
+        await editor.expectEditor.toContain('arc(')
         await toolbar.lineBtn.click()
-        await editor.expectEditor.not.toContain('arcTo({')
+        await editor.expectEditor.not.toContain('arc(')
         await editor.expectEditor.toContain('profile002')
       })
     }
@@ -2840,10 +2840,10 @@ test.describe(`Click based selection don't brick the app when clicked out of ran
     await test.step(`format the code`, async () => {
       // doesn't contain condensed version
       await editor.expectEditor.not.toContain(
-        `arcTo({ end = [4, 2], interior = [1, 2] }, %)`
+        `arc( end = [4, 2], interior = [1, 2] }, %)`
       )
       // click the code to enter sketch mode
-      await page.getByText(`arcTo`).click()
+      await page.getByText(`arc`).click()
       // Format the code.
       await page.locator('#code-pane button:first-child').click()
       await page.locator('button:has-text("Format code")').click()
@@ -2851,7 +2851,7 @@ test.describe(`Click based selection don't brick the app when clicked out of ran
 
     await test.step(`Ensure the code reformatted`, async () => {
       await editor.expectEditor.toContain(
-        `arcTo({ end = [4, 2], interior = [1, 2] }, %)`
+        `arc(interior = [1, 2], endAbsolute = [4, 2])`
       )
     })
 
@@ -2863,7 +2863,7 @@ test.describe(`Click based selection don't brick the app when clicked out of ran
       await editor.expectState({
         activeLines: ['sketch001=startSketchOn(XZ)'],
         diagnostics: [],
-        highlightedCode: 'arcTo({end = [4, 2], interior = [1, 2]}, %)',
+        highlightedCode: 'arc(interior = [1, 2], endAbsolute = [4, 2])',
       })
     })
 
@@ -2885,7 +2885,7 @@ test.describe(`Click based selection don't brick the app when clicked out of ran
       await editor.expectState({
         activeLines: [],
         diagnostics: [],
-        highlightedCode: 'arcTo({end = [4, 2], interior = [1, 2]}, %)',
+        highlightedCode: 'arc(interior = [1, 2], endAbsolute = [4, 2])',
       })
     })
   })

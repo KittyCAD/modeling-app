@@ -820,18 +820,9 @@ profile001 = startProfileAt([56.37, 120.33], sketch001)
       await clickUnconstrained({
         hoverPos: { x: arcTo.x, y: arcTo.y },
         constraintType: 'xAbsolute',
-        expectBeforeUnconstrained: `arcTo({
-       interior = [360.16, 231.76],
-       end = [391.48, 131.54]
-     }, %)`,
-        expectAfterUnconstrained: `arcTo({
-       interior = [360.16, 231.76],
-       end = [391.48, 131.54]
-     }, %)`,
-        expectFinal: `arcTo({
-       interior = [xAbs001, 231.76],
-       end = [391.48, 131.54]
-     }, %)`,
+        expectBeforeUnconstrained: `arc(interior = [360.16, 231.76], endAbsolute = [391.48, 131.54])`,
+        expectAfterUnconstrained: `arc(interior = [360.16, 231.76], endAbsolute = [391.48, 131.54])`,
+        expectFinal: `arc(interior = [xAbs001, 231.76], endAbsolute = [391.48, 131.54])`,
         ang: ang,
         steps: 6,
         locator: '[data-overlay-toolbar-index="1"]',
@@ -841,18 +832,9 @@ profile001 = startProfileAt([56.37, 120.33], sketch001)
       await clickUnconstrained({
         hoverPos: { x: arcTo.x, y: arcTo.y },
         constraintType: 'yAbsolute',
-        expectBeforeUnconstrained: `arcTo({
-       interior = [xAbs001, 231.76],
-       end = [391.48, 131.54]
-     }, %)`,
-        expectAfterUnconstrained: `arcTo({
-       interior = [xAbs001, yAbs001],
-       end = [391.48, 131.54]
-     }, %)`,
-        expectFinal: `arcTo({
-       interior = [xAbs001, 231.76],
-       end = [391.48, 131.54]
-     }, %)`,
+        expectBeforeUnconstrained: `arc(interior = [xAbs001, 231.76], endAbsolute = [391.48, 131.54])`,
+        expectAfterUnconstrained: `arc(interior = [xAbs001, yAbs001], endAbsolute = [391.48, 131.54])`,
+        expectFinal: `arc(interior = [xAbs001, 231.76], endAbsolute = [391.48, 131.54])`,
         ang: ang,
         steps: 10,
         locator: '[data-overlay-toolbar-index="1"]',
@@ -862,18 +844,9 @@ profile001 = startProfileAt([56.37, 120.33], sketch001)
       await clickConstrained({
         hoverPos: { x: arcTo.x, y: arcTo.y },
         constraintType: 'xAbsolute',
-        expectBeforeUnconstrained: `arcTo({
-       interior = [xAbs001, 231.76],
-       end = [391.48, 131.54]
-     }, %)`,
-        expectAfterUnconstrained: `arcTo({
-       interior = [xAbs001, 231.76],
-       end = [391.48, 131.54]
-     }, %)`,
-        expectFinal: `arcTo({
-       interior = [xAbs001, 231.76],
-       end = [xAbs002, 131.54]
-     }, %)`,
+        expectBeforeUnconstrained: `arc(interior = [xAbs001, 231.76], endAbsolute = [391.48, 131.54])`,
+        expectAfterUnconstrained: `arc(interior = [xAbs001, 231.76], endAbsolute = [391.48, 131.54])`,
+        expectFinal: `arc(interior = [xAbs001, 231.76], endAbsolute = [xAbs002, 131.54])`,
         ang: ang + 180,
         steps: 6,
         locator: '[data-overlay-toolbar-index="1"]',
@@ -883,18 +856,9 @@ profile001 = startProfileAt([56.37, 120.33], sketch001)
       await clickUnconstrained({
         hoverPos: { x: arcTo.x, y: arcTo.y },
         constraintType: 'yAbsolute',
-        expectBeforeUnconstrained: `arcTo({
-       interior = [xAbs001, 231.76],
-       end = [xAbs002, 131.54]
-     }, %)`,
-        expectAfterUnconstrained: `arcTo({
-       interior = [xAbs001, 231.76],
-       end = [xAbs002, yAbs002]
-     }, %)`,
-        expectFinal: `arcTo({
-       interior = [xAbs001, 231.76],
-       end = [xAbs002, 131.54]
-     }, %)`,
+        expectBeforeUnconstrained: `arc(interior = [xAbs001, 231.76], endAbsolute = [xAbs002, 131.54])`,
+        expectAfterUnconstrained: `arc(interior = [xAbs001, 231.76], endAbsolute = [xAbs002, yAbs002])`,
+        expectFinal: `arc(interior = [xAbs001, 231.76], endAbsolute = [xAbs002, 131.54])`,
         ang: ang + 180,
         steps: 10,
         locator: '[data-overlay-toolbar-index="1"]',
@@ -1086,11 +1050,8 @@ part001 = startSketchOn(XZ)
       ang = await u.getAngle('[data-overlay-index="13"]')
       await deleteSegmentSequence({
         hoverPos: { x: segmentToDelete.x, y: segmentToDelete.y },
-        codeToBeDeleted: `arcTo({
-       interior = [16.25, 5.12],
-       end = [21.61, 4.15]
-     }, %)`,
-        stdLibFnName: 'arcTo',
+        codeToBeDeleted: `arc(interior = [16.25, 5.12], endAbsolute = [21.61, 4.15])`,
+        stdLibFnName: 'arc',
         ang: ang,
         steps: 6,
         locator: '[data-overlay-toolbar-index="13"]',
