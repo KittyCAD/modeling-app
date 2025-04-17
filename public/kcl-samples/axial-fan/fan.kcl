@@ -90,4 +90,3 @@ loft([
        arcDegrees = 360,
        rotateDuplicates = true,
      )
-

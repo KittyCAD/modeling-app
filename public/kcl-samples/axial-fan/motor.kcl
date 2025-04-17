@@ -9,6 +9,7 @@ import * from "parameters.kcl"
 
 // Model the motor body and stem
 
+
 topFacePlane = offsetPlane(XY, offset = 4)
 motorBody = startSketchOn(topFacePlane)
   |> circle(center = [0, 0], radius = 10, tag = $seg04)
