@@ -104,23 +104,17 @@ const Part001 = startSketchOn('XY')
   |> startProfileAt([pipeLargeDia - (thickness / 2), 38], %)
   |> line([thickness, 0], %)
   |> line([0, -1], %)
-  |> angledLineToX({
-       angle: 60,
-       to: pipeSmallDia + thickness
-     }, %)
+  |> angledLine(angle = 60, endAbsoluteX = pipeSmallDia + thickness)
   |> line([0, -pipeLength], %)
-  |> angledLineToX({
-       angle: -60,
-       to: pipeLargeDia + thickness
-     }, %)
+  |> angledLine(angle = -60, endAbsoluteX = pipeLargeDia + thickness)
   |> line([0, -1], %)
   |> line([-thickness, 0], %)
   |> line([0, 1], %)
-  |> angledLineToX({ angle: 120, to: pipeSmallDia }, %)
+  |> angledLine(angle = 120, endAbsoluteX = pipeSmallDia)
   |> line([0, pipeLength], %)
-  |> angledLineToX({ angle: 60, to: pipeLargeDia }, %)
+  |> angledLine(angle = 60, endAbsoluteX = pipeLargeDia)
   |> close()
-  |> revolve({ axis: 'y' }, %)
+  |> revolve({ axis = Y }, %)
 "
     );
 
@@ -140,23 +134,17 @@ const part001 = startSketchOn('XY')
   |> startProfileAt([pipeLargeDia - (thickness / 2), 38], %)
   |> line([thickness, 0], %)
   |> line([0, -1], %)
-  |> angledLineToX({
-       angle: 60,
-       to: pipeSmallDia + thickness
-     }, %)
+  |> angledLine(angle = 60, endAbsoluteX = pipeSmallDia + thickness)
   |> line([0, -pipeLength], %)
-  |> angledLineToX({
-       angle: -60,
-       to: pipeLargeDia + thickness
-     }, %)
+  |> angledLine(angle = -60, endAbsoluteX = pipeLargeDia + thickness)
   |> line([0, -1], %)
   |> line([-thickness, 0], %)
   |> line([0, 1], %)
-  |> angledLineToX({ angle: 120, to: pipeSmallDia }, %)
+  |> angledLine(angle = 120, endAbsoluteX = pipeSmallDia)
   |> line([0, pipeLength], %)
-  |> angledLineToX({ angle: 60, to: pipeLargeDia }, %)
+  |> angledLine(angle = 60, endAbsoluteX = pipeLargeDia)
   |> close()
-  |> revolve({ axis: 'y' }, %)
+  |> revolve({ axis = Y }, %)
 "
     );
 

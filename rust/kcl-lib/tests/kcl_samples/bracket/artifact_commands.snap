@@ -33,6 +33,14 @@ description: Artifact commands bracket.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "set_scene_units",
+      "unit": "in"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "make_plane",
       "origin": {
         "x": 0.0,
@@ -106,7 +114,7 @@ description: Artifact commands bracket.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 4.6487,
+          "x": 4.6151,
           "y": 0.0,
           "z": 0.0
         },
@@ -124,7 +132,7 @@ description: Artifact commands bracket.kcl
         "type": "line",
         "end": {
           "x": 0.0,
-          "y": 0.3513,
+          "y": 0.3849,
           "z": 0.0
         },
         "relative": true
@@ -158,7 +166,7 @@ description: Artifact commands bracket.kcl
         "type": "line",
         "end": {
           "x": 0.0,
-          "y": -2.0,
+          "y": -2.25,
           "z": 0.0
         },
         "relative": true
@@ -174,7 +182,7 @@ description: Artifact commands bracket.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 0.3513,
+          "x": 0.3849,
           "y": 0.0,
           "z": 0.0
         },
@@ -229,8 +237,9 @@ description: Artifact commands bracket.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 6.0,
-      "faces": null
+      "distance": 5.0,
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -381,118 +390,6 @@ description: Artifact commands bracket.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_fillet_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "radius": 0.601324026261472,
-      "tolerance": 0.0000001,
-      "cut_type": "fillet"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_fillet_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "radius": 0.25,
-      "tolerance": 0.0000001,
-      "cut_type": "fillet"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_fillet_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "radius": 0.25,
-      "tolerance": 0.0000001,
-      "cut_type": "fillet"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_fillet_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "radius": 0.25,
-      "tolerance": 0.0000001,
-      "cut_type": "fillet"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_fillet_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "radius": 0.25,
-      "tolerance": 0.0000001,
-      "cut_type": "fillet"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_fillet_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "radius": 0.25,
-      "tolerance": 0.0000001,
-      "cut_type": "fillet"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
       "ortho": false,
@@ -515,8 +412,8 @@ description: Artifact commands bracket.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": -1.0,
-        "y": 1.0,
+        "x": -0.75,
+        "y": 0.75,
         "z": 0.0
       }
     }
@@ -537,8 +434,8 @@ description: Artifact commands bracket.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": -1.25,
-          "y": 1.0
+          "x": -1.0,
+          "y": 0.75
         },
         "radius": 0.25,
         "start": {
@@ -572,7 +469,7 @@ description: Artifact commands bracket.kcl
         [
           {
             "translate": {
-              "x": -2.5,
+              "x": -2.8651438116461088,
               "y": 0.0,
               "z": 0.0
             },
@@ -613,7 +510,7 @@ description: Artifact commands bracket.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": 4.0,
+              "y": 3.5,
               "z": 0.0
             },
             "scale": {
@@ -653,7 +550,7 @@ description: Artifact commands bracket.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": 4.0,
+              "y": 3.5,
               "z": 0.0
             },
             "scale": {
@@ -699,8 +596,9 @@ description: Artifact commands bracket.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": -0.361324026261472,
-      "faces": null
+      "distance": -0.39485618835389114,
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -765,8 +663,9 @@ description: Artifact commands bracket.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": -0.361324026261472,
-      "faces": null
+      "distance": -0.39485618835389114,
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -831,8 +730,9 @@ description: Artifact commands bracket.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": -0.361324026261472,
-      "faces": null
+      "distance": -0.39485618835389114,
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -897,8 +797,9 @@ description: Artifact commands bracket.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": -0.361324026261472,
-      "faces": null
+      "distance": -0.39485618835389114,
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -971,8 +872,8 @@ description: Artifact commands bracket.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 1.25,
-        "y": -1.0,
+        "x": 1.375,
+        "y": 0.9375,
         "z": 0.0
       }
     }
@@ -993,10 +894,10 @@ description: Artifact commands bracket.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": 1.0,
-          "y": -1.0
+          "x": 1.0625,
+          "y": 0.9375
         },
-        "radius": 0.25,
+        "radius": 0.3125,
         "start": {
           "unit": "degrees",
           "value": 0.0
@@ -1028,8 +929,8 @@ description: Artifact commands bracket.kcl
         [
           {
             "translate": {
-              "x": 4.0,
-              "y": 0.0,
+              "x": 0.0,
+              "y": 3.125,
               "z": 0.0
             },
             "scale": {
@@ -1075,8 +976,9 @@ description: Artifact commands bracket.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": -0.45132402626147194,
-      "faces": null
+      "distance": -0.4848561883538911,
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -1141,8 +1043,9 @@ description: Artifact commands bracket.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": -0.45132402626147194,
-      "faces": null
+      "distance": -0.4848561883538911,
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -1187,6 +1090,142 @@ description: Artifact commands bracket.kcl
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_fillet_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "radius": 0.6348561883538911,
+      "tolerance": 0.0000001,
+      "cut_type": "fillet"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_fillet_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "radius": 0.25,
+      "tolerance": 0.0000001,
+      "cut_type": "fillet"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_fillet_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "radius": 0.5,
+      "tolerance": 0.0000001,
+      "cut_type": "fillet"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_fillet_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "radius": 0.5,
+      "tolerance": 0.0000001,
+      "cut_type": "fillet"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_fillet_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "radius": 0.5,
+      "tolerance": 0.0000001,
+      "cut_type": "fillet"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_fillet_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "radius": 0.5,
+      "tolerance": 0.0000001,
+      "cut_type": "fillet"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "set_scene_units",
+      "unit": "mm"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "set_scene_units",
+      "unit": "mm"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "set_scene_units",
+      "unit": "mm"
     }
   }
 ]

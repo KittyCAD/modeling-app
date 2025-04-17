@@ -1,30 +1,38 @@
-import { Models } from '@kittycad/lib'
-import { angleLengthInfo } from 'components/Toolbar/setAngleLength'
-import { transformAstSketchLines } from 'lang/std/sketchcombos'
-import {
-  isPathToNode,
+import type { Models } from '@kittycad/lib'
+import { DEV } from '@src/env'
+
+import { angleLengthInfo } from '@src/components/Toolbar/angleLengthInfo'
+import { getNodeFromPath } from '@src/lang/queryAst'
+import { getVariableDeclaration } from '@src/lang/queryAst/getVariableDeclaration'
+import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
+import { transformAstSketchLines } from '@src/lang/std/sketchcombos'
+import type {
   PathToNode,
   SourceRange,
   VariableDeclarator,
-} from 'lang/wasm'
-import { StateMachineCommandSetConfig, KclCommandValue } from 'lib/commandTypes'
-import { KCL_DEFAULT_LENGTH, KCL_DEFAULT_DEGREE } from 'lib/constants'
-import { components } from 'lib/machine-api'
-import { Selections } from 'lib/selections'
-import { codeManager, kclManager } from 'lib/singletons'
-import { err } from 'lib/trap'
-import { modelingMachine, SketchTool } from 'machines/modelingMachine'
+} from '@src/lang/wasm'
+import { isPathToNode } from '@src/lang/wasm'
 import {
   loftValidator,
   revolveAxisValidator,
   shellValidator,
   sweepValidator,
-} from './validators'
-import { getVariableDeclaration } from 'lang/queryAst/getVariableDeclaration'
-import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
-import { getNodeFromPath } from 'lang/queryAst'
-import { IS_NIGHTLY_OR_DEBUG } from 'routes/Settings'
-import { DEV } from 'env'
+} from '@src/lib/commandBarConfigs/validators'
+import type {
+  KclCommandValue,
+  StateMachineCommandSetConfig,
+} from '@src/lib/commandTypes'
+import {
+  KCL_DEFAULT_DEGREE,
+  KCL_DEFAULT_LENGTH,
+  KCL_DEFAULT_TRANSFORM,
+} from '@src/lib/constants'
+import type { components } from '@src/lib/machine-api'
+import type { Selections } from '@src/lib/selections'
+import { codeManager, kclManager } from '@src/lib/singletons'
+import { err } from '@src/lib/trap'
+import type { SketchTool, modelingMachine } from '@src/machines/modelingMachine'
+import { IS_NIGHTLY_OR_DEBUG } from '@src/routes/utils'
 
 type OutputFormat = Models['OutputFormat3d_type']
 type OutputTypeKey = OutputFormat['type']
@@ -158,6 +166,20 @@ export type ModelingCommandSchema = {
   Appearance: {
     nodeToEdit?: PathToNode
     color: string
+  }
+  Translate: {
+    nodeToEdit?: PathToNode
+    selection: Selections
+    x: KclCommandValue
+    y: KclCommandValue
+    z: KclCommandValue
+  }
+  Rotate: {
+    nodeToEdit?: PathToNode
+    selection: Selections
+    roll: KclCommandValue
+    pitch: KclCommandValue
+    yaw: KclCommandValue
   }
   'Boolean Subtract': {
     target: Selections
@@ -781,7 +803,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     displayName: 'Create parameter',
     description: 'Add a named constant to use in geometry',
     icon: 'make-variable',
-    status: 'development',
     needsReview: false,
     args: {
       value: {
@@ -797,7 +818,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     displayName: 'Edit parameter',
     description: 'Edit the value of a named constant',
     icon: 'make-variable',
-    status: 'development',
     needsReview: false,
     args: {
       nodeToEdit: {
@@ -1020,6 +1040,88 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         ],
       },
       // Add more fields
+    },
+  },
+  Translate: {
+    description: 'Set translation on solid or sketch.',
+    icon: 'dimension', // TODO: likely not the best icon
+    needsReview: true,
+    hide: DEV || IS_NIGHTLY_OR_DEBUG ? undefined : 'both',
+    args: {
+      nodeToEdit: {
+        description:
+          'Path to the node in the AST to edit. Never shown to the user.',
+        skip: true,
+        inputType: 'text',
+        required: false,
+        hidden: true,
+      },
+      selection: {
+        // selectionMixed allows for feature tree selection of module imports
+        inputType: 'selectionMixed',
+        multiple: false,
+        required: true,
+        skip: true,
+        selectionTypes: ['path'],
+        selectionFilter: ['object'],
+        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+      },
+      x: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_TRANSFORM,
+        required: true,
+      },
+      y: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_TRANSFORM,
+        required: true,
+      },
+      z: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_TRANSFORM,
+        required: true,
+      },
+    },
+  },
+  Rotate: {
+    description: 'Set rotation on solid or sketch.',
+    icon: 'angle', // TODO: likely not the best icon
+    needsReview: true,
+    hide: DEV || IS_NIGHTLY_OR_DEBUG ? undefined : 'both',
+    args: {
+      nodeToEdit: {
+        description:
+          'Path to the node in the AST to edit. Never shown to the user.',
+        skip: true,
+        inputType: 'text',
+        required: false,
+        hidden: true,
+      },
+      selection: {
+        // selectionMixed allows for feature tree selection of module imports
+        inputType: 'selectionMixed',
+        multiple: false,
+        required: true,
+        skip: true,
+        selectionTypes: ['path'],
+        selectionFilter: ['object'],
+        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+      },
+      roll: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_TRANSFORM,
+        required: true,
+      },
+      pitch: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_TRANSFORM,
+        required: true,
+      },
+      yaw: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_TRANSFORM,
+        required: true,
+      },
     },
   },
 }

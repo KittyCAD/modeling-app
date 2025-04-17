@@ -1,12 +1,19 @@
-import { SourceRange } from '../lang/wasm'
-
+import type { Binary as BSONBinary } from 'bson'
 import { v4 } from 'uuid'
-import { isDesktop } from './isDesktop'
-import { AnyMachineSnapshot } from 'xstate'
-import { AsyncFn } from './types'
-import { Binary as BSONBinary } from 'bson'
+import type { AnyMachineSnapshot } from 'xstate'
+
+import type { CallExpressionKw, SourceRange } from '@src/lang/wasm'
+import { isDesktop } from '@src/lib/isDesktop'
+import type { AsyncFn } from '@src/lib/types'
 
 export const uuidv4 = v4
+
+/**
+ * Get all labels for a keyword call expression.
+ */
+export function allLabels(callExpression: CallExpressionKw): string[] {
+  return callExpression.arguments.map((a) => a.label.name)
+}
 
 /**
  * A safer type guard for arrays since the built-in Array.isArray() asserts `any[]`.
@@ -14,6 +21,10 @@ export const uuidv4 = v4
 export function isArray(val: any): val is unknown[] {
   // eslint-disable-next-line no-restricted-syntax
   return Array.isArray(val)
+}
+
+export type SafeArray<T> = Omit<Array<T>, number> & {
+  [index: number]: T | undefined
 }
 
 /**
@@ -468,4 +479,30 @@ export function binaryToUuid(
     hexValues.slice(8, 10).join(''),
     hexValues.slice(10, 16).join(''),
   ].join('-')
+}
+
+export function getModuleId(sourceRange: SourceRange) {
+  return sourceRange[2]
+}
+
+export function getInVariableCase(name: string, prefixIfDigit = 'm') {
+  // As of 2025-04-08, standard case for KCL variables is camelCase
+  const startsWithANumber = !Number.isNaN(Number(name.charAt(0)))
+  const paddedName = startsWithANumber ? `${prefixIfDigit}${name}` : name
+
+  // From https://www.30secondsofcode.org/js/s/string-case-conversion/#word-boundary-identification
+  const r = /[A-Z]{2,}(?=[A-Z][a-z]+[0-9]*|\b)|[A-Z]?[a-z]+[0-9]*|[A-Z]|[0-9]+/g
+  const boundaryIdentification = paddedName.match(r)
+  if (!boundaryIdentification) {
+    return undefined
+  }
+
+  const likelyPascalCase = boundaryIdentification
+    .map((x) => x.slice(0, 1).toUpperCase() + x.slice(1).toLowerCase())
+    .join('')
+  if (!likelyPascalCase) {
+    return undefined
+  }
+
+  return likelyPascalCase.slice(0, 1).toLowerCase() + likelyPascalCase.slice(1)
 }

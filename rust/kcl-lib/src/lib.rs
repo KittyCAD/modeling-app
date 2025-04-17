@@ -76,12 +76,12 @@ pub mod std;
 pub mod test_server;
 mod thread;
 mod unparser;
-mod walk;
+pub mod walk;
 #[cfg(target_arch = "wasm32")]
 mod wasm;
 
 pub use coredump::CoreDump;
-pub use engine::{EngineManager, EngineStats, ExecutionKind};
+pub use engine::{EngineManager, EngineStats};
 pub use errors::{
     CompilationError, ConnectionError, ExecError, KclError, KclErrorWithOutputs, Report, ReportWithOutputs,
 };
@@ -131,10 +131,35 @@ pub mod pretty {
     pub use crate::{parsing::token::NumericSuffix, unparser::format_number};
 }
 
+#[cfg(feature = "cli")]
+use clap::ValueEnum;
 use serde::{Deserialize, Serialize};
 
 #[allow(unused_imports)]
 use crate::log::{log, logln};
+
+lazy_static::lazy_static! {
+
+    pub static ref IMPORT_FILE_EXTENSIONS: Vec<String> = {
+        let mut import_file_extensions = vec!["stp".to_string(), "glb".to_string(), "fbxb".to_string()];
+        #[cfg(feature = "cli")]
+        let named_extensions = kittycad::types::FileImportFormat::value_variants()
+            .iter()
+            .map(|x| format!("{}", x))
+            .collect::<Vec<String>>();
+        #[cfg(not(feature = "cli"))]
+        let named_extensions = vec![]; // We don't really need this outside of the CLI.
+        // Add all the default import formats.
+        import_file_extensions.extend_from_slice(&named_extensions);
+        import_file_extensions
+    };
+
+    pub static ref RELEVANT_FILE_EXTENSIONS: Vec<String> = {
+        let mut relevant_extensions = IMPORT_FILE_EXTENSIONS.clone();
+        relevant_extensions.push("kcl".to_string());
+        relevant_extensions
+    };
+}
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Program {

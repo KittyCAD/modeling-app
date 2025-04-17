@@ -1,54 +1,57 @@
-import { ToolTip } from 'lang/langHelpers'
-import { Selection, Selections } from 'lib/selections'
+import type { FunctionExpression } from '@rust/kcl-lib/bindings/FunctionExpression'
+import type { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
+import type { Node } from '@rust/kcl-lib/bindings/Node'
+import type { TypeDeclaration } from '@rust/kcl-lib/bindings/TypeDeclaration'
+
+import { ARG_TAG } from '@src/lang/constants'
+import { createLocalName } from '@src/lang/create'
+import type { ToolTip } from '@src/lang/langHelpers'
+import { splitPathAtLastIndex } from '@src/lang/modifyAst'
+import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
+import { codeRefFromRange } from '@src/lang/std/artifactGraph'
+import { getArgForEnd, getFirstArg } from '@src/lang/std/sketch'
+import { getSketchSegmentFromSourceRange } from '@src/lang/std/sketchConstraints'
 import {
+  getConstraintLevelFromSourceRange,
+  getConstraintType,
+} from '@src/lang/std/sketchcombos'
+import { findKwArg, topLevelRange } from '@src/lang/util'
+import type {
   ArrayExpression,
+  ArtifactGraph,
   BinaryExpression,
   CallExpression,
   CallExpressionKw,
   Expr,
   ExpressionStatement,
+  Identifier,
   ObjectExpression,
   ObjectProperty,
   PathToNode,
   PipeExpression,
   Program,
   ReturnStatement,
-  sketchFromKclValue,
-  sketchFromKclValueOptional,
   SourceRange,
   SyntaxType,
-  topLevelRange,
   VariableDeclaration,
   VariableDeclarator,
-  recast,
-  ArtifactGraph,
-  kclSettings,
-  unitLenToUnitLength,
-  unitAngToUnitAngle,
   VariableMap,
-  Identifier,
-} from './wasm'
-import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
-import { createLocalName, splitPathAtLastIndex } from './modifyAst'
-import { getSketchSegmentFromSourceRange } from './std/sketchConstraints'
-import { getAngle, isArray } from '../lib/utils'
-import { ARG_TAG, getArgForEnd, getFirstArg } from './std/sketch'
+} from '@src/lang/wasm'
 import {
-  getConstraintLevelFromSourceRange,
-  getConstraintType,
-} from './std/sketchcombos'
-import { err, Reason } from 'lib/trap'
-import { Node } from '@rust/kcl-lib/bindings/Node'
-import { findKwArg } from './util'
-import { codeRefFromRange } from './std/artifactGraph'
-import { FunctionExpression } from '@rust/kcl-lib/bindings/FunctionExpression'
-import { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
-import { KclSettingsAnnotation } from 'lib/settings/settingsTypes'
-import { TypeDeclaration } from '@rust/kcl-lib/bindings/TypeDeclaration'
+  kclSettings,
+  recast,
+  sketchFromKclValue,
+  sketchFromKclValueOptional,
+  unitAngToUnitAngle,
+  unitLenToUnitLength,
+} from '@src/lang/wasm'
+import type { Selection, Selections } from '@src/lib/selections'
+import type { KclSettingsAnnotation } from '@src/lib/settings/settingsTypes'
+import { Reason, err } from '@src/lib/trap'
+import { getAngle, isArray } from '@src/lib/utils'
 
-export const LABELED_ARG_FIELD = 'LabeledArg -> Arg'
-export const UNLABELED_ARG = 'unlabeled first arg'
-export const ARG_INDEX_FIELD = 'arg index'
+import { ARG_INDEX_FIELD, LABELED_ARG_FIELD } from '@src/lang/queryAstConstants'
+import type { KclCommandValue } from '@src/lib/commandTypes'
 
 /**
  * Retrieves a node from a given path within a Program node structure, optionally stopping at a specified node type.
@@ -712,18 +715,23 @@ export function findUsesOfTagInPipe(
   traverse(varDec.node, {
     enter: (node) => {
       if (
-        node.type !== 'CallExpression' ||
+        (node.type !== 'CallExpression' && node.type !== 'CallExpressionKw') ||
         !stdlibFunctionsThatTakeTagInputs.includes(node.callee.name.name)
       )
         return
-      const tagArg = node.arguments[0]
-      if (!(tagArg.type === 'TagDeclarator' || tagArg.type === 'Name')) return
-      const tagArgValue =
-        tagArg.type === 'TagDeclarator'
-          ? String(tagArg.value)
-          : tagArg.name.name
-      if (tagArgValue === tag)
-        dependentRanges.push(topLevelRange(node.start, node.end))
+      const tagArg =
+        node.type === 'CallExpression'
+          ? node.arguments[0]
+          : findKwArg(ARG_TAG, node)
+      if (tagArg !== undefined) {
+        if (!(tagArg.type === 'TagDeclarator' || tagArg.type === 'Name')) return
+        const tagArgValue =
+          tagArg.type === 'TagDeclarator'
+            ? String(tagArg.value)
+            : tagArg.name.name
+        if (tagArgValue === tag)
+          dependentRanges.push(topLevelRange(node.start, node.end))
+      }
     },
   })
   return dependentRanges
@@ -927,10 +935,13 @@ export function getBodyIndex(pathToNode: PathToNode): number | Error {
 }
 
 export function isCallExprWithName(
-  expr: Expr | CallExpression,
+  expr: Expr | CallExpression | CallExpressionKw,
   name: string
-): expr is CallExpression {
-  if (expr.type === 'CallExpression' && expr.callee.type === 'Name') {
+): expr is CallExpression | CallExpressionKw {
+  if (
+    (expr.type === 'CallExpression' || expr.type === 'CallExpressionKw') &&
+    expr.callee.type === 'Name'
+  ) {
     return expr.callee.name.name === name
   }
   return false
@@ -985,4 +996,66 @@ function pathToNodeKeys(pathToNode: PathToNode): (string | number)[] {
 
 export function stringifyPathToNode(pathToNode: PathToNode): string {
   return JSON.stringify(pathToNodeKeys(pathToNode))
+}
+
+/**
+ * Updates PathToNodes to account for changes in body indices when variables are added/removed above
+ * This is specifically for handling the common case where a user adds/removes variables above a node,
+ * which changes the body index in the PathToNode
+ * @param oldAst The AST before user edits
+ * @param newAst The AST after user edits
+ * @param pathToUpdate Array of PathToNodes that need to be updated
+ * @returns updated PathToNode, or Error if any path couldn't be updated
+ */
+export function updatePathToNodesAfterEdit(
+  oldAst: Node<Program>,
+  newAst: Node<Program>,
+  pathToUpdate: PathToNode
+): PathToNode | Error {
+  // First, let's find all topLevel the variable declarations in both ASTs
+  // and map their name to their body index
+  const oldVarDecls = new Map<string, number>()
+  const newVarDecls = new Map<string, number>()
+
+  const maxBodyLength = Math.max(oldAst.body.length, newAst.body.length)
+  for (let bodyIndex = 0; bodyIndex < maxBodyLength; bodyIndex++) {
+    const oldNode = oldAst.body[bodyIndex]
+    const newNode = newAst.body[bodyIndex]
+    if (oldNode?.type === 'VariableDeclaration') {
+      oldVarDecls.set(oldNode.declaration.id.name, bodyIndex)
+    }
+    if (newNode?.type === 'VariableDeclaration') {
+      newVarDecls.set(newNode.declaration.id.name, bodyIndex)
+    }
+  }
+
+  // For the path, get the variable name this path points to
+  const oldNodeResult = getNodeFromPath<VariableDeclaration>(
+    oldAst,
+    pathToUpdate,
+    'VariableDeclaration'
+  )
+  if (err(oldNodeResult)) return oldNodeResult
+  const oldNode = oldNodeResult.node
+  const varName = oldNode.declaration.id.name
+  console.log('varName', varName)
+
+  // Find the old and new indices for this variable
+  const oldIndex = oldVarDecls.get(varName)
+  const newIndex = newVarDecls.get(varName)
+
+  if (oldIndex === undefined || newIndex === undefined) {
+    return new Error(`Could not find variable ${varName} in one of the ASTs`)
+  }
+
+  // Create a new path with the updated body index
+  const newPath = structuredClone(pathToUpdate)
+  newPath[1][0] = newIndex // Update the body index
+  return newPath
+}
+
+export const valueOrVariable = (variable: KclCommandValue) => {
+  return 'variableName' in variable
+    ? variable.variableIdentifierAst
+    : variable.valueAst
 }

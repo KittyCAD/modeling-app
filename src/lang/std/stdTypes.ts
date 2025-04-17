@@ -1,18 +1,27 @@
-import { ToolTip } from 'lang/langHelpers'
-import {
-  Path,
-  SourceRange,
-  Program,
-  Expr,
-  PathToNode,
-  CallExpression,
-  Literal,
+import type { Node } from '@rust/kcl-lib/bindings/Node'
+
+import type {
+  ARG_END_ABSOLUTE,
+  ARG_END_ABSOLUTE_X,
+  ARG_END_ABSOLUTE_Y,
+  ARG_LENGTH,
+  ARG_LENGTH_X,
+  ARG_LENGTH_Y,
+} from '@src/lang/constants'
+import type { ToolTip } from '@src/lang/langHelpers'
+import type { LineInputsType } from '@src/lang/std/sketchcombos'
+import type {
   BinaryPart,
+  CallExpression,
   CallExpressionKw,
+  Expr,
+  Literal,
+  Path,
+  PathToNode,
+  Program,
+  SourceRange,
   VariableMap,
-} from '../wasm'
-import { LineInputsType } from './sketchcombos'
-import { Node } from '@rust/kcl-lib/bindings/Node'
+} from '@src/lang/wasm'
 
 export interface ModifyAstBase {
   node: Node<Program>
@@ -28,17 +37,18 @@ export interface AddTagInfo {
 
 /** Inputs for all straight segments, to and from are absolute values, as this gives a
  * consistent base that can be converted to all of the line, angledLine, etc segment types
- * One notable exception to "straight segment" is that tangentialArcTo is included in this
+ * One notable exception to "straight segment" is that tangentialArc is included in this
  * Input type since it too only takes x-y values and is able to get extra info it needs
  * to be tangential from the previous segment */
 interface StraightSegmentInput {
   type: 'straight-segment'
   from: [number, number]
   to: [number, number]
+  snap?: boolean
 }
 
-/** Inputs for arcs, excluding tangentialArcTo for reasons explain in
- * the @straightSegmentInput comment */
+/** Inputs for arcs, excluding tangentialArc for reasons explain in the
+ * @straightSegmentInput comment */
 interface ArcSegmentInput {
   type: 'arc-segment'
   from: [number, number]
@@ -83,6 +93,12 @@ export interface addCall extends ModifyAstBase {
   ) => CreatedSketchExprResult | Error
   referencedSegment?: Path
   spliceBetween?: boolean
+  snaps?: {
+    previousArcTag?: string
+    negativeTangentDirection: boolean
+    xAxis?: boolean
+    yAxis?: boolean
+  }
 }
 
 interface updateArgs extends ModifyAstBase {
@@ -92,7 +108,6 @@ interface updateArgs extends ModifyAstBase {
 export type InputArgKeys =
   | 'angle'
   | 'offset'
-  | 'length'
   | 'to'
   | 'intersectTag'
   | 'radius'
@@ -102,23 +117,32 @@ export type InputArgKeys =
   | 'p3'
   | 'end'
   | 'interior'
+  | typeof ARG_END_ABSOLUTE
+  | typeof ARG_END_ABSOLUTE_X
+  | typeof ARG_END_ABSOLUTE_Y
+  | typeof ARG_LENGTH_X
+  | typeof ARG_LENGTH_Y
+  | typeof ARG_LENGTH
   | `angle${'Start' | 'End'}`
 export interface SingleValueInput<T> {
   type: 'singleValue'
   argType: LineInputsType
   expr: T
+  overrideExpr?: Node<Expr>
 }
 export interface ArrayItemInput<T> {
   type: 'arrayItem'
   index: 0 | 1
   argType: LineInputsType
   expr: T
+  overrideExpr?: Node<Expr>
 }
 export interface ObjectPropertyInput<T> {
   type: 'objectProperty'
   key: InputArgKeys
   argType: LineInputsType
   expr: T
+  overrideExpr?: Node<Expr>
 }
 
 interface ArrayOrObjItemInput<T> {
@@ -127,6 +151,7 @@ interface ArrayOrObjItemInput<T> {
   index: 0 | 1
   argType: LineInputsType
   expr: T
+  overrideExpr?: Node<Expr>
 }
 
 interface ArrayInObject<T> {
@@ -135,6 +160,15 @@ interface ArrayInObject<T> {
   argType: LineInputsType
   index: 0 | 1
   expr: T
+  overrideExpr?: Node<Expr>
+}
+
+interface LabeledArg<T> {
+  type: 'labeledArg'
+  key: InputArgKeys
+  argType: LineInputsType
+  expr: T
+  overrideExpr?: Node<Expr>
 }
 
 type _InputArg<T> =
@@ -143,6 +177,7 @@ type _InputArg<T> =
   | ObjectPropertyInput<T>
   | ArrayOrObjItemInput<T>
   | ArrayInObject<T>
+  | LabeledArg<T>
 
 /**
  * {@link RawArg.expr} is the current expression for each of the args for a segment
@@ -185,9 +220,10 @@ export type SimplifiedArgDetails =
   | Omit<ObjectPropertyInput<null>, 'expr' | 'argType'>
   | Omit<ArrayOrObjItemInput<null>, 'expr' | 'argType'>
   | Omit<ArrayInObject<null>, 'expr' | 'argType'>
+  | Omit<LabeledArg<null>, 'expr' | 'argType'>
 
 /**
- * Represents the result of creating a sketch expression (line, tangentialArcTo, angledLine, circle, etc.).
+ * Represents the result of creating a sketch expression (line, tangentialArc, angledLine, circle, etc.).
  *
  * @property {Expr} callExp - This is the main result; recasting the expression should give the user the new function call.
  * @property {number} [valueUsedInTransform] - Aside from `callExp`, we also return the number used in the transform, which is useful for constraints.

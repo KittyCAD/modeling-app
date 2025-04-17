@@ -81,18 +81,18 @@
 }
 
 .tooltip::before {
-  content: '; Has tooltip: ';
+  content: "; Has tooltip: ";
 }
 
 /* Sometimes there's no visible label,
  * so we'll use the tooltip as the label
 */
 .tooltip:only-child::before {
-  content: '';
+  content: "";
 }
 
 .tooltip:only-child::after {
-  content: ' (tooltip)';
+  content: " (tooltip)";
 }
 
 .top,

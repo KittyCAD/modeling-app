@@ -1,9 +1,12 @@
-import { ActionIcon, ActionIconProps } from './ActionIcon'
-import { openExternalBrowserIfDesktop } from 'lib/openWindow'
-import React, { ForwardedRef, forwardRef } from 'react'
-import { PATHS } from 'lib/paths'
-import { Link } from 'react-router-dom'
+import type { ForwardedRef } from 'react'
+import React, { forwardRef } from 'react'
 import type { LinkProps } from 'react-router-dom'
+import { Link } from 'react-router-dom'
+
+import type { ActionIconProps } from '@src/components/ActionIcon'
+import { ActionIcon } from '@src/components/ActionIcon'
+import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
+import { PATHS } from '@src/lib/paths'
 
 interface BaseActionButtonProps {
   iconStart?: ActionIconProps
@@ -41,14 +44,14 @@ export type ActionButtonProps =
   | ActionButtonAsElement
 
 export const ActionButton = forwardRef((props: ActionButtonProps, ref) => {
-  const classNames = `action-button p-0 m-0 group mono text-xs leading-none flex items-center gap-2 rounded-sm border-solid border border-chalkboard-30 hover:border-chalkboard-40 enabled:dark:border-chalkboard-70 dark:hover:border-chalkboard-60 dark:bg-chalkboard-90/50 text-chalkboard-100 dark:text-chalkboard-10 ${
+  const classNames = `action-button leading-[0.7] p-0 m-0 group mono text-xs leading-none flex items-center gap-2 rounded-sm border-solid border border-chalkboard-30 hover:border-chalkboard-40 enabled:dark:border-chalkboard-70 dark:hover:border-chalkboard-60 dark:bg-chalkboard-90/50 text-chalkboard-100 dark:text-chalkboard-10 ${
     props.iconStart
       ? props.iconEnd
         ? 'px-0' // No padding if both icons are present
         : 'pr-2' // Padding on the right if only the start icon is present
       : props.iconEnd
-      ? 'pl-2' // Padding on the left if only the end icon is present
-      : 'px-2' // Padding on both sides if no icons are present
+        ? 'pl-2' // Padding on the left if only the end icon is present
+        : 'px-2' // Padding on both sides if no icons are present
   } ${props.className ? props.className : ''}`
 
   switch (props.Element) {
@@ -68,6 +71,7 @@ export const ActionButton = forwardRef((props: ActionButtonProps, ref) => {
         <button
           ref={ref as ForwardedRef<HTMLButtonElement>}
           className={classNames}
+          tabIndex={-1}
           {...rest}
         >
           {iconStart && <ActionIcon {...iconStart} />}

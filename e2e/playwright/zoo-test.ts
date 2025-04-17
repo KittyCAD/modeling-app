@@ -1,12 +1,11 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-
 import { test as playwrightTestFn } from '@playwright/test'
 
+import type { Fixtures } from '@e2e/playwright/fixtures/fixtureSetup'
 import {
-  fixturesBasedOnProcessEnvPlatform,
-  Fixtures,
   ElectronZoo,
-} from './fixtures/fixtureSetup'
+  fixturesBasedOnProcessEnvPlatform,
+} from '@e2e/playwright/fixtures/fixtureSetup'
 
 export { expect } from '@playwright/test'
 
@@ -18,7 +17,6 @@ declare module '@playwright/test' {
   }
   interface Page {
     dir: string
-    TEST_SETTINGS_FILE_KEY?: string
     setBodyDimensions: (dims: {
       width: number
       height: number

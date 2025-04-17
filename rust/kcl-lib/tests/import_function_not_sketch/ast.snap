@@ -6,7 +6,7 @@ description: Result of parsing import_function_not_sketch.kcl
   "Ok": {
     "body": [
       {
-        "commentStart": 33,
+        "commentStart": 0,
         "end": 0,
         "path": {
           "type": "Kcl",
@@ -17,10 +17,10 @@ description: Result of parsing import_function_not_sketch.kcl
           "items": [
             {
               "alias": null,
-              "commentStart": 42,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 42,
+                "commentStart": 0,
                 "end": 0,
                 "name": "two",
                 "start": 0,
@@ -36,12 +36,12 @@ description: Result of parsing import_function_not_sketch.kcl
         "type": "ImportStatement"
       },
       {
-        "commentStart": 69,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 81,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 81,
+            "commentStart": 0,
             "end": 0,
             "name": "one",
             "start": 0,
@@ -52,16 +52,16 @@ description: Result of parsing import_function_not_sketch.kcl
               "body": [
                 {
                   "argument": {
-                    "commentStart": 98,
+                    "commentStart": 0,
                     "end": 0,
                     "left": {
                       "arguments": [],
                       "callee": {
                         "abs_path": false,
-                        "commentStart": 98,
+                        "commentStart": 0,
                         "end": 0,
                         "name": {
-                          "commentStart": 98,
+                          "commentStart": 0,
                           "end": 0,
                           "name": "two",
                           "start": 0,
@@ -71,7 +71,7 @@ description: Result of parsing import_function_not_sketch.kcl
                         "start": 0,
                         "type": "Name"
                       },
-                      "commentStart": 98,
+                      "commentStart": 0,
                       "end": 0,
                       "start": 0,
                       "type": "CallExpression",
@@ -79,7 +79,7 @@ description: Result of parsing import_function_not_sketch.kcl
                     },
                     "operator": "-",
                     "right": {
-                      "commentStart": 106,
+                      "commentStart": 0,
                       "end": 0,
                       "raw": "1",
                       "start": 0,
@@ -94,18 +94,18 @@ description: Result of parsing import_function_not_sketch.kcl
                     "type": "BinaryExpression",
                     "type": "BinaryExpression"
                   },
-                  "commentStart": 91,
+                  "commentStart": 0,
                   "end": 0,
                   "start": 0,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
                 }
               ],
-              "commentStart": 87,
+              "commentStart": 0,
               "end": 0,
               "start": 0
             },
-            "commentStart": 84,
+            "commentStart": 0,
             "end": 0,
             "params": [],
             "start": 0,
@@ -130,7 +130,7 @@ description: Result of parsing import_function_not_sketch.kcl
         "commentStart": 0,
         "end": 0,
         "name": {
-          "commentStart": 1,
+          "commentStart": 0,
           "end": 0,
           "name": "settings",
           "start": 0,
@@ -138,10 +138,10 @@ description: Result of parsing import_function_not_sketch.kcl
         },
         "properties": [
           {
-            "commentStart": 10,
+            "commentStart": 0,
             "end": 0,
             "key": {
-              "commentStart": 10,
+              "commentStart": 0,
               "end": 0,
               "name": "defaultLengthUnit",
               "start": 0,
@@ -151,10 +151,10 @@ description: Result of parsing import_function_not_sketch.kcl
             "type": "ObjectProperty",
             "value": {
               "abs_path": false,
-              "commentStart": 30,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 30,
+                "commentStart": 0,
                 "end": 0,
                 "name": "in",
                 "start": 0,
@@ -175,7 +175,7 @@ description: Result of parsing import_function_not_sketch.kcl
       "nonCodeNodes": {
         "0": [
           {
-            "commentStart": 69,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -187,7 +187,7 @@ description: Result of parsing import_function_not_sketch.kcl
       },
       "startNodes": [
         {
-          "commentStart": 33,
+          "commentStart": 0,
           "end": 0,
           "start": 0,
           "type": "NonCodeNode",

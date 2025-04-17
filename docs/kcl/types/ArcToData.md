@@ -16,7 +16,7 @@ Data to draw a three point arc (arcTo).
 
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
-| `end` |`[number, number]`| End point of the arc. A point in 3D space | No |
-| `interior` |`[number, number]`| Interior point of the arc. A point in 3D space | No |
+| `end` |`[, `TyF64`, `TyF64`]`| End point of the arc. A point in 3D space | No |
+| `interior` |`[, `TyF64`, `TyF64`]`| Interior point of the arc. A point in 3D space | No |
 
 

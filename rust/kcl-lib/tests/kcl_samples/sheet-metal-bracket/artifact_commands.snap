@@ -502,7 +502,8 @@ description: Artifact commands sheet-metal-bracket.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 5.5,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -1128,7 +1129,8 @@ description: Artifact commands sheet-metal-bracket.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -0.125,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -1194,7 +1196,8 @@ description: Artifact commands sheet-metal-bracket.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -0.125,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -1372,7 +1375,8 @@ description: Artifact commands sheet-metal-bracket.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -0.125,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -1438,7 +1442,8 @@ description: Artifact commands sheet-metal-bracket.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -0.125,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -1696,7 +1701,8 @@ description: Artifact commands sheet-metal-bracket.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -0.125,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -1762,7 +1768,8 @@ description: Artifact commands sheet-metal-bracket.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -0.125,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -1828,7 +1835,8 @@ description: Artifact commands sheet-metal-bracket.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -0.125,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -1894,7 +1902,8 @@ description: Artifact commands sheet-metal-bracket.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -0.125,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -2032,7 +2041,8 @@ description: Artifact commands sheet-metal-bracket.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -0.125,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -2077,6 +2087,30 @@ description: Artifact commands sheet-metal-bracket.kcl
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "set_scene_units",
+      "unit": "mm"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "set_scene_units",
+      "unit": "mm"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "set_scene_units",
+      "unit": "mm"
     }
   }
 ]

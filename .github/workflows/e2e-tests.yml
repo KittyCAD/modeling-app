@@ -97,11 +97,11 @@ jobs:
         if: needs.conditions.outputs.should-run == 'true'
         with:
           node-version-file: '.nvmrc'
-          cache: 'yarn'
+          cache: 'npm'
 
       - name: Install dependencies
         if: needs.conditions.outputs.should-run == 'true'
-        run: yarn
+        run: npm install
 
       - name: Download Wasm Cache
         id: download-wasm
@@ -140,7 +140,7 @@ jobs:
         with:
           cache: false # Configured below.
 
-      - uses: taiki-e/install-action@37bdc826eaedac215f638a96472df572feab0f9b
+      - uses: taiki-e/install-action@d4635f2de61c8b8104d59cd4aede2060638378cc
         if: ${{ needs.conditions.outputs.should-run == 'true' && steps.wasm.outputs.should-build-wasm == 'true' }}
         with:
           tool: wasm-pack
@@ -154,7 +154,7 @@ jobs:
       - name: Build Wasm
         if: ${{ needs.conditions.outputs.should-run == 'true' && steps.wasm.outputs.should-build-wasm == 'true' }}
         shell: bash
-        run: yarn build:wasm
+        run: npm run build:wasm
 
       - uses: actions/upload-artifact@v4
         if: needs.conditions.outputs.should-run == 'true'
@@ -197,12 +197,12 @@ jobs:
         if: needs.conditions.outputs.should-run == 'true'
         with:
           node-version-file: '.nvmrc'
-          cache: 'yarn'
+          cache: 'npm'
 
       - name: Install dependencies
         id: deps-install
         if: needs.conditions.outputs.should-run == 'true'
-        run: yarn
+        run: npm install
 
       - name: Cache Playwright Browsers
         if: needs.conditions.outputs.should-run == 'true'
@@ -210,27 +210,32 @@ jobs:
         with:
           path: |
             ~/.cache/ms-playwright/
-          key: ${{ runner.os }}-playwright-${{ hashFiles('yarn.lock') }}
+          key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
 
       - name: Install Playwright Browsers
         if: needs.conditions.outputs.should-run == 'true'
-        run: yarn playwright install --with-deps
+        run: npm run playwright install --with-deps
 
       - name: build web
         if: needs.conditions.outputs.should-run == 'true'
-        run: yarn tronb:vite:dev
+        run: npm run tronb:vite:dev
 
       - name: Run ubuntu/chrome snapshots
         if: needs.conditions.outputs.should-run == 'true'
         uses: nick-fields/retry@v3.0.2
         with:
           shell: bash
-          command: yarn test:snapshots
+          command: npm run test:snapshots
           timeout_minutes: 30
           max_attempts: 3
         env:
           token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
           snapshottoken: ${{ secrets.KITTYCAD_API_TOKEN }}
+          TAB_API_URL: ${{ secrets.TAB_API_URL }}
+          TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
+          CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
+          CI_PR_NUMBER: ${{ github.event.pull_request.number }}
+          TARGET: web
 
       - uses: actions/upload-artifact@v4
         if: ${{ needs.conditions.outputs.should-run == 'true' && !cancelled() && (success() || failure()) }}
@@ -280,8 +285,8 @@ jobs:
         # TODO: enable namespace-profile-windows-latest once available
         os:
           - "runs-on=${{ github.run_id }}/family=i7ie.2xlarge/image=ubuntu22-full-x64"
-          - namespace-profile-macos-8-cores
-          - windows-latest
+          - namespace-profile-macos-6-cores
+          - windows-latest-8-cores
         shardIndex: [1, 2, 3, 4]
         shardTotal: [4]
         # Disable macos and windows tests on hourly e2e tests since we only care
@@ -290,9 +295,9 @@ jobs:
         isScheduled:
           - ${{ github.event_name == 'schedule' }}
         exclude:
-          - os: namespace-profile-macos-8-cores
+          - os: namespace-profile-macos-6-cores
             isScheduled: true
-          - os: windows-latest
+          - os: windows-latest-8-cores
             isScheduled: true
         # TODO: add ref here for main and latest release tag
     runs-on: ${{ matrix.os }}
@@ -316,12 +321,12 @@ jobs:
         if: needs.conditions.outputs.should-run == 'true'
         with:
           node-version-file: '.nvmrc'
-          cache: 'yarn'
+          cache: 'npm'
 
       - name: Install dependencies
         id: deps-install
         if: needs.conditions.outputs.should-run == 'true'
-        run: yarn
+        run: npm install
 
       - name: Cache Playwright Browsers
         if: needs.conditions.outputs.should-run == 'true'
@@ -329,32 +334,22 @@ jobs:
         with:
           path: |
             ~/.cache/ms-playwright/
-          key: ${{ runner.os }}-playwright-${{ hashFiles('yarn.lock') }}
+          key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
 
       - name: Install Playwright Browsers
         if: needs.conditions.outputs.should-run == 'true'
-        run: yarn playwright install --with-deps
+        run: npm run playwright install --with-deps
 
       - name: Build web
         if: needs.conditions.outputs.should-run == 'true'
-        run: yarn tronb:vite:dev
+        run: npm run tronb:vite:dev
 
-      - name: Install vector
-        if: ${{ needs.conditions.outputs.should-run == 'true' && contains(matrix.os, 'ubuntu') }}
-        shell: bash
-        run: |
-          curl --proto '=https' --tlsv1.2 -sSfL https://sh.vector.dev > /tmp/vector.sh
-          chmod +x /tmp/vector.sh
-          /tmp/vector.sh -y -no-modify-path
-          mkdir -p /tmp/vector
-          cp .github/workflows/vector.toml /tmp/vector.toml
-          sed -i "s#GITHUB_WORKFLOW#${GITHUB_WORKFLOW}#g" /tmp/vector.toml
-          sed -i "s#GITHUB_REPOSITORY#${GITHUB_REPOSITORY}#g" /tmp/vector.toml
-          sed -i "s#GITHUB_SHA#${GITHUB_SHA}#g" /tmp/vector.toml
-          sed -i "s#GITHUB_REF_NAME#${GITHUB_REF_NAME}#g" /tmp/vector.toml
-          sed -i "s#GH_ACTIONS_AXIOM_TOKEN#${{secrets.GH_ACTIONS_AXIOM_TOKEN}}#g" /tmp/vector.toml
-          cat /tmp/vector.toml
-          ${HOME}/.vector/bin/vector --config /tmp/vector.toml &
+      - name: Start Vector
+        if: ${{ needs.conditions.outputs.should-run == 'true' && !contains(matrix.os, 'windows') }}
+        run: .github/ci-cd-scripts/start-vector-${{ env.OS_NAME }}.sh
+        env:
+          GH_ACTIONS_AXIOM_TOKEN: ${{ secrets.GH_ACTIONS_AXIOM_TOKEN }}
+          OS_NAME: ${{ env.OS_NAME }}
 
       - uses: actions/download-artifact@v4
         if: ${{ needs.conditions.outputs.should-run == 'true' && !cancelled() && (success() || failure()) }}
@@ -370,11 +365,16 @@ jobs:
         with:
           shell: bash
           command: .github/ci-cd-scripts/playwright-electron.sh ${{matrix.shardIndex}} ${{matrix.shardTotal}} ${{ env.OS_NAME }}
-          timeout_minutes: 45
-          max_attempts: 15
+          timeout_minutes: 30
+          max_attempts: 9
         env:
           FAIL_ON_CONSOLE_ERRORS: true
           token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
+          TAB_API_URL: ${{ secrets.TAB_API_URL }}
+          TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
+          CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
+          CI_PR_NUMBER: ${{ github.event.pull_request.number }}
+          TARGET: desktop
 
       - uses: actions/upload-artifact@v4
         if: ${{ needs.conditions.outputs.should-run == 'true' && always() }}

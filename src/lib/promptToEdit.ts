@@ -1,17 +1,20 @@
-import { Models } from '@kittycad/lib'
-import { VITE_KC_API_BASE_URL } from 'env'
-import crossPlatformFetch from './crossPlatformFetch'
-import { err, reportRejection } from './trap'
-import { Selections } from './selections'
-import { getArtifactOfTypes } from 'lang/std/artifactGraph'
-import { ArtifactGraph, SourceRange, topLevelRange } from 'lang/wasm'
-import toast from 'react-hot-toast'
-import { codeManager, editorManager, kclManager } from './singletons'
-import { ToastPromptToEditCadSuccess } from 'components/ToastTextToCad'
-import { uuidv4 } from './utils'
+import type { SelectionRange } from '@codemirror/state'
+import { EditorSelection, Transaction } from '@codemirror/state'
+import type { Models } from '@kittycad/lib'
+import { VITE_KC_API_BASE_URL } from '@src/env'
 import { diffLines } from 'diff'
-import { Transaction, EditorSelection, SelectionRange } from '@codemirror/state'
-import { modelingMachineEvent } from 'editor/manager'
+import toast from 'react-hot-toast'
+
+import { ToastPromptToEditCadSuccess } from '@src/components/ToastTextToCad'
+import { modelingMachineEvent } from '@src/editor/manager'
+import { getArtifactOfTypes } from '@src/lang/std/artifactGraph'
+import { topLevelRange } from '@src/lang/util'
+import type { ArtifactGraph, SourceRange } from '@src/lang/wasm'
+import crossPlatformFetch from '@src/lib/crossPlatformFetch'
+import type { Selections } from '@src/lib/selections'
+import { codeManager, editorManager, kclManager } from '@src/lib/singletons'
+import { err, reportRejection } from '@src/lib/trap'
+import { uuidv4 } from '@src/lib/utils'
 
 function sourceIndexToLineColumn(
   code: string,
@@ -78,7 +81,7 @@ export async function submitPromptToEditToQueue({
 The source range most likely refers to "startProfileAt" simply because this is the start of the profile that was swept.
 If you need to operate on this cap, for example for sketching on the face, you can use the special string ${
             artifact.subType === 'end' ? 'END' : 'START'
-          } i.e. \`startSketchOn(someSweepVariable, ${
+          } i.e. \`startSketchOn(someSweepVariable, face = ${
             artifact.subType === 'end' ? 'END' : 'START'
           })\`
 When they made this selection they main have intended this surface directly or meant something more general like the sweep body.
@@ -99,7 +102,7 @@ See later source ranges for more context.`,
       if (artifact?.type === 'wall') {
         prompts.push({
           prompt: `The users main selection is the wall of a general-sweep (that is an extrusion, revolve, sweep or loft).
-The source range though is for the original segment before it was extruded, you can add a tag to that segment in order to refer to this wall, for example "startSketchOn(someSweepVariable, segmentTag)"
+The source range though is for the original segment before it was extruded, you can add a tag to that segment in order to refer to this wall, for example "startSketchOn(someSweepVariable, face = segmentTag)"
 But it's also worth bearing in mind that the user may have intended to select the sweep itself, not this individual wall, see later source ranges for more context. about the sweep`,
           range: convertAppRangeToApiRange(selection.codeRef.range, code),
         })

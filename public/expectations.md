@@ -4,9 +4,9 @@
 
 First off, thank you so much for your interest in being a part of the closed Alpha program! We are thrilled to have others use our product and see what you build with it (and truthfully, how you break it too).
 
-### Zoo Modeling App (ZMA)
+### Zoo Design Studio (ZMA)
 
-What we are introducing to you is our Zoo Modeling App (ZMA). ZMA is a CAD application that expresses a hybrid style of traditional CAD interface along with a code-CAD interface. ZMA is a great way for us to test our own APIs as well as inspire others to develop their own applications.
+What we are introducing to you is our Zoo Design Studio (ZMA). ZMA is a CAD application that expresses a hybrid style of traditional CAD interface along with a code-CAD interface. ZMA is a great way for us to test our own APIs as well as inspire others to develop their own applications.
 
 ### Why Code?
 

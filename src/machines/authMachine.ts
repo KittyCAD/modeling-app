@@ -1,22 +1,25 @@
-import { assign, setup, fromPromise } from 'xstate'
-import { Models } from '@kittycad/lib'
-import withBaseURL from '../lib/withBaseURL'
-import { isDesktop } from 'lib/isDesktop'
+import type { Models } from '@kittycad/lib'
 import {
+  DEV,
   VITE_KC_API_BASE_URL,
   VITE_KC_DEV_TOKEN,
   VITE_KC_SKIP_AUTH,
-  DEV,
-} from 'env'
+} from '@src/env'
+import { assign, fromPromise, setup } from 'xstate'
+
+import { COOKIE_NAME } from '@src/lib/constants'
 import {
   getUser as getUserDesktop,
   readTokenFile,
   writeTokenFile,
-} from 'lib/desktop'
-import { COOKIE_NAME } from 'lib/constants'
-import { markOnce } from 'lib/performance'
-import { ACTOR_IDS } from './machineConstants'
-import withBaseUrl from '../lib/withBaseURL'
+} from '@src/lib/desktop'
+import { isDesktop } from '@src/lib/isDesktop'
+import { markOnce } from '@src/lib/performance'
+import {
+  default as withBaseURL,
+  default as withBaseUrl,
+} from '@src/lib/withBaseURL'
+import { ACTOR_IDS } from '@src/machines/machineConstants'
 
 const SKIP_AUTH = VITE_KC_SKIP_AUTH === 'true' && DEV
 
@@ -235,8 +238,9 @@ async function getAndSyncStoredToken(input: {
   if (token) {
     // has just logged in, update storage
     localStorage.setItem(TOKEN_PERSIST_KEY, token)
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    isDesktop() && writeTokenFile(token)
+    if (isDesktop()) {
+      await writeTokenFile(token)
+    }
     return token
   }
   if (!isDesktop()) return ''

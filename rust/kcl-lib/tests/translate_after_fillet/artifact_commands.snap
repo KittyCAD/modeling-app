@@ -153,7 +153,8 @@ description: Artifact commands translate_after_fillet.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -0.625,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -385,7 +386,8 @@ description: Artifact commands translate_after_fillet.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -0.46875,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -623,7 +625,8 @@ description: Artifact commands translate_after_fillet.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 2.5,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -731,6 +734,30 @@ description: Artifact commands translate_after_fillet.kcl
           "scale": null
         }
       ]
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "set_scene_units",
+      "unit": "mm"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "set_scene_units",
+      "unit": "mm"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "set_scene_units",
+      "unit": "mm"
     }
   }
 ]

@@ -1,33 +1,37 @@
-import { defaultSourceRange, SourceRange } from 'lang/wasm'
-import { VITE_KC_API_WS_MODELING_URL, VITE_KC_DEV_TOKEN } from 'env'
-import { Models } from '@kittycad/lib'
-import { uuidv4, binaryToUuid } from 'lib/utils'
+import type { Models } from '@kittycad/lib'
+import { VITE_KC_API_WS_MODELING_URL, VITE_KC_DEV_TOKEN } from '@src/env'
+import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { BSON } from 'bson'
+
+import type { MachineManager } from '@src/components/MachineManagerProvider'
+import type { useModelingContext } from '@src/hooks/useModelingContext'
+import type { KclManager } from '@src/lang/KclSingleton'
+import type CodeManager from '@src/lang/codeManager'
+import type { EngineCommand, ResponseMap } from '@src/lang/std/artifactGraph'
+import type { CommandLog } from '@src/lang/std/commandLog'
+import { CommandLogType } from '@src/lang/std/commandLog'
+import type { SourceRange } from '@src/lang/wasm'
+import { defaultSourceRange } from '@src/lang/wasm'
+import { EXECUTE_AST_INTERRUPT_ERROR_MESSAGE } from '@src/lib/constants'
+import { markOnce } from '@src/lib/performance'
+import type RustContext from '@src/lib/rustContext'
+import type { SettingsViaQueryString } from '@src/lib/settings/settingsTypes'
 import {
   Themes,
-  getThemeColorForEngine,
-  getOppositeTheme,
   darkModeMatcher,
-} from 'lib/theme'
-import { EngineCommand, ResponseMap } from 'lang/std/artifactGraph'
-import { useModelingContext } from 'hooks/useModelingContext'
-import { SettingsViaQueryString } from 'lib/settings/settingsTypes'
-import { EXECUTE_AST_INTERRUPT_ERROR_MESSAGE } from 'lib/constants'
-import { KclManager } from 'lang/KclSingleton'
-import { reportRejection } from 'lib/trap'
-import { markOnce } from 'lib/performance'
-import { MachineManager } from 'components/MachineManagerProvider'
+  getOppositeTheme,
+  getThemeColorForEngine,
+} from '@src/lib/theme'
+import { reportRejection } from '@src/lib/trap'
+import { binaryToUuid, uuidv4 } from '@src/lib/utils'
 
-// TODO(paultag): This ought to be tweakable.
-const pingIntervalMs = 5_000
+const pingIntervalMs = 1_000
 
 function isHighlightSetEntity_type(
   data: any
 ): data is Models['HighlightSetEntity_type'] {
   return data.entity_id && data.sequence
 }
-
-type OkWebSocketResponseData = Models['OkWebSocketResponseData_type']
 
 interface NewTrackArgs {
   conn: EngineConnection
@@ -36,20 +40,11 @@ interface NewTrackArgs {
 
 type ClientMetrics = Models['ClientMetrics_type']
 
-interface WebRTCClientMetrics extends ClientMetrics {
-  rtc_frame_height: number
-  rtc_frame_width: number
-  rtc_packets_lost: number
-  rtc_pli_count: number
-  rtc_pause_count: number
-  rtc_total_pauses_duration_sec: number
-}
-
 type Value<T, U> = U extends undefined
   ? { type: T; value: U }
   : U extends void
-  ? { type: T }
-  : { type: T; value: U }
+    ? { type: T }
+    : { type: T; value: U }
 
 type State<T, U> = Value<T, U>
 
@@ -72,6 +67,7 @@ export enum DisconnectingType {
 export enum ConnectionError {
   Unset = 0,
   LongLoadingTime,
+  VeryLongLoadingTime,
 
   ICENegotiate,
   DataChannelError,
@@ -83,6 +79,7 @@ export enum ConnectionError {
   MissingAuthToken,
   BadAuthToken,
   TooManyConnections,
+  Outage,
 
   // An unknown error is the most severe because it has not been classified
   // or encountered before.
@@ -93,6 +90,8 @@ export const CONNECTION_ERROR_TEXT: Record<ConnectionError, string> = {
   [ConnectionError.Unset]: '',
   [ConnectionError.LongLoadingTime]:
     'Loading is taking longer than expected...',
+  [ConnectionError.VeryLongLoadingTime]:
+    'Loading seems stuck. Do you have a firewall turned on?',
   [ConnectionError.ICENegotiate]: 'ICE negotiation failed.',
   [ConnectionError.DataChannelError]: 'The data channel signaled an error.',
   [ConnectionError.WebSocketError]: 'The websocket signaled an error.',
@@ -102,7 +101,10 @@ export const CONNECTION_ERROR_TEXT: Record<ConnectionError, string> = {
     'Your authorization token is missing; please login again.',
   [ConnectionError.BadAuthToken]:
     'Your authorization token is invalid; please login again.',
-  [ConnectionError.TooManyConnections]: 'There are too many connections.',
+  [ConnectionError.TooManyConnections]:
+    'There are too many open engine connections associated with your account.',
+  [ConnectionError.Outage]:
+    'We seem to be experiencing an outage. Please visit [status.zoo.dev](https://status.zoo.dev) for updates.',
   [ConnectionError.Unknown]:
     'An unexpected error occurred. Please report this to us.',
 }
@@ -197,8 +199,6 @@ export type EngineConnectionState =
   | State<EngineConnectionStateType.ConnectionEstablished, void>
   | State<EngineConnectionStateType.Disconnecting, DisconnectingValue>
   | State<EngineConnectionStateType.Disconnected, void>
-
-export type PingPongState = 'OK' | 'TIMEOUT'
 
 export enum EngineConnectionEvents {
   // Fires for each ping-pong success or failure.
@@ -305,13 +305,20 @@ class EngineConnection extends EventTarget {
   private readonly token?: string
 
   // TODO: actual type is ClientMetrics
-  public webrtcStatsCollector?: () => Promise<WebRTCClientMetrics>
+  public webrtcStatsCollector?: () => Promise<ClientMetrics>
   private engineCommandManager: EngineCommandManager
 
-  private pingPongSpan: { ping?: Date; pong?: Date }
-  private pingIntervalId: ReturnType<typeof setInterval> = setInterval(() => {},
-  60_000)
+  private pingPongSpan: { ping?: number; pong?: number }
+  private pingIntervalId: ReturnType<typeof setInterval> = setInterval(
+    () => {},
+    60_000
+  )
   isUsingConnectionLite: boolean = false
+
+  timeoutToForceConnectId: ReturnType<typeof setTimeout> = setTimeout(
+    () => {},
+    3000
+  )
 
   constructor({
     engineCommandManager,
@@ -338,74 +345,26 @@ class EngineConnection extends EventTarget {
       return
     }
 
-    // Without an interval ping, our connection will timeout.
-    // If this.idleMode is true we skip this logic so only reconnect
-    // happens on mouse move
     this.pingIntervalId = setInterval(() => {
-      if (this.idleMode) return
+      // Only start a new ping when the other is fulfilled.
+      if (this.pingPongSpan.ping) {
+        return
+      }
 
-      switch (this.state.type as EngineConnectionStateType) {
-        case EngineConnectionStateType.ConnectionEstablished:
-          // If there was no reply to the last ping, report a timeout and
-          // teardown the connection.
-          if (this.pingPongSpan.ping && !this.pingPongSpan.pong) {
-            this.dispatchEvent(
-              new CustomEvent(EngineConnectionEvents.PingPongChanged, {
-                detail: 'TIMEOUT',
-              })
-            )
-            this.state = {
-              type: EngineConnectionStateType.Disconnecting,
-              value: {
-                type: DisconnectingType.Timeout,
-              },
-            }
-            this.disconnectAll()
+      // Don't start pinging until we're connected.
+      if (this.state.type !== EngineConnectionStateType.ConnectionEstablished) {
+        return
+      }
 
-            // Otherwise check the time between was >= pingIntervalMs,
-            // and if it was, then it's bad network health.
-          } else if (this.pingPongSpan.ping && this.pingPongSpan.pong) {
-            if (
-              Math.abs(
-                this.pingPongSpan.pong.valueOf() -
-                  this.pingPongSpan.ping.valueOf()
-              ) >= pingIntervalMs
-            ) {
-              this.dispatchEvent(
-                new CustomEvent(EngineConnectionEvents.PingPongChanged, {
-                  detail: 'TIMEOUT',
-                })
-              )
-            } else {
-              this.dispatchEvent(
-                new CustomEvent(EngineConnectionEvents.PingPongChanged, {
-                  detail: 'OK',
-                })
-              )
-            }
-          }
-
-          this.send({ type: 'ping' })
-          this.pingPongSpan.ping = new Date()
-          this.pingPongSpan.pong = undefined
-          break
-        case EngineConnectionStateType.Disconnecting:
-        case EngineConnectionStateType.Disconnected:
-          // We will do reconnection elsewhere, because we basically need
-          // to destroy this EngineConnection, and this setInterval loop
-          // lives inside it. (lee) I might change this in the future so it's
-          // outside this class.
-          break
-        default:
-          if (this.isConnecting()) break
-          // Means we never could do an initial connection. Reconnect everything.
-          if (!this.pingPongSpan.ping) this.connect().catch(reportRejection)
-          break
+      this.send({ type: 'ping' })
+      this.pingPongSpan = {
+        ping: Date.now(),
+        pong: undefined,
       }
     }, pingIntervalMs)
 
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    this.connect()
+    this.connect({ reconnect: false })
   }
 
   // SHOULD ONLY BE USED FOR VITESTS
@@ -516,7 +475,9 @@ class EngineConnection extends EventTarget {
     this.idleMode = opts?.idleMode ?? false
     clearInterval(this.pingIntervalId)
 
-    if (opts?.idleMode) {
+    this.disconnectAll()
+
+    if (this.idleMode) {
       this.state = {
         type: EngineConnectionStateType.Disconnecting,
         value: {
@@ -535,8 +496,6 @@ class EngineConnection extends EventTarget {
         type: DisconnectingType.Quit,
       },
     }
-
-    this.disconnectAll()
   }
 
   initiateConnectionExclusive(): boolean {
@@ -590,8 +549,8 @@ class EngineConnection extends EventTarget {
    * This will attempt the full handshake, and retry if the connection
    * did not establish.
    */
-  connect(reconnecting?: boolean): Promise<void> {
-    // eslint-disable-next-line @typescript-eslint/no-this-alias
+  connect(args: { reconnect: boolean }): Promise<void> {
+    // eslint-disable-next-line
     const that = this
     return new Promise((resolve) => {
       if (this.isConnecting() || this.isReady()) {
@@ -652,7 +611,7 @@ class EngineConnection extends EventTarget {
 
           // Sometimes the remote end doesn't report the end of candidates.
           // They have 3 seconds to.
-          setTimeout(() => {
+          this.timeoutToForceConnectId = setTimeout(() => {
             if (that.initiateConnectionExclusive()) {
               console.warn('connected after 3 second delay')
             }
@@ -709,6 +668,22 @@ class EngineConnection extends EventTarget {
                   detail: { conn: this, mediaStream: this.mediaStream! },
                 })
               )
+
+              setTimeout(() => {
+                // Everything is now connected.
+                this.state = {
+                  type: EngineConnectionStateType.ConnectionEstablished,
+                }
+
+                this.engineCommandManager.inSequence = 1
+
+                this.dispatchEvent(
+                  new CustomEvent(EngineConnectionEvents.Opened, {
+                    detail: this,
+                  })
+                )
+                markOnce('code/endInitialEngineConnect')
+              }, 2000)
               break
             case 'connecting':
               break
@@ -756,70 +731,53 @@ class EngineConnection extends EventTarget {
             },
           }
 
-          this.webrtcStatsCollector = (): Promise<WebRTCClientMetrics> => {
+          this.webrtcStatsCollector = (): Promise<ClientMetrics> => {
             return new Promise((resolve, reject) => {
               if (mediaStream.getVideoTracks().length !== 1) {
                 reject(new Error('too many video tracks to report'))
                 return
               }
+              const inboundVideoTrack = mediaStream.getVideoTracks()[0]
 
-              let videoTrack = mediaStream.getVideoTracks()[0]
-              void this.pc?.getStats(videoTrack).then((videoTrackStats) => {
-                let client_metrics: WebRTCClientMetrics = {
-                  rtc_frames_decoded: 0,
-                  rtc_frames_dropped: 0,
-                  rtc_frames_received: 0,
-                  rtc_frames_per_second: 0,
-                  rtc_freeze_count: 0,
-                  rtc_jitter_sec: 0.0,
-                  rtc_keyframes_decoded: 0,
-                  rtc_total_freezes_duration_sec: 0.0,
-                  rtc_frame_height: 0,
-                  rtc_frame_width: 0,
-                  rtc_packets_lost: 0,
-                  rtc_pli_count: 0,
-                  rtc_pause_count: 0,
-                  rtc_total_pauses_duration_sec: 0.0,
-                }
+              void this.pc?.getStats().then((stats) => {
+                let metrics: ClientMetrics = {}
 
-                // TODO(paultag): Since we can technically have multiple WebRTC
-                // video tracks (even if the Server doesn't at the moment), we
-                // ought to send stats for every video track(?), and add the stream
-                // ID into it.  This raises the cardinality of collected metrics
-                // when/if we do, but for now, just report the one stream.
+                stats.forEach((report, id) => {
+                  if (report.type === 'candidate-pair') {
+                    if (report.state == 'succeeded') {
+                      const rtt = report.currentRoundTripTime
+                      metrics.rtc_stun_rtt_sec = rtt
+                    }
+                  } else if (report.type === 'inbound-rtp') {
+                    // TODO(paultag): Since we can technically have multiple WebRTC
+                    // video tracks (even if the Server doesn't at the moment), we
+                    // ought to send stats for every video track(?), and add the stream
+                    // ID into it.  This raises the cardinality of collected metrics
+                    // when/if we do.
+                    // For now we just take one of the video tracks.
+                    if (report.trackIdentifier !== inboundVideoTrack.id) {
+                      return
+                    }
 
-                videoTrackStats.forEach((videoTrackReport) => {
-                  if (videoTrackReport.type === 'inbound-rtp') {
-                    client_metrics.rtc_frames_decoded =
-                      videoTrackReport.framesDecoded || 0
-                    client_metrics.rtc_frames_dropped =
-                      videoTrackReport.framesDropped || 0
-                    client_metrics.rtc_frames_received =
-                      videoTrackReport.framesReceived || 0
-                    client_metrics.rtc_frames_per_second =
-                      videoTrackReport.framesPerSecond || 0
-                    client_metrics.rtc_freeze_count =
-                      videoTrackReport.freezeCount || 0
-                    client_metrics.rtc_jitter_sec =
-                      videoTrackReport.jitter || 0.0
-                    client_metrics.rtc_keyframes_decoded =
-                      videoTrackReport.keyFramesDecoded || 0
-                    client_metrics.rtc_total_freezes_duration_sec =
-                      videoTrackReport.totalFreezesDuration || 0
-                    client_metrics.rtc_frame_height =
-                      videoTrackReport.frameHeight || 0
-                    client_metrics.rtc_frame_width =
-                      videoTrackReport.frameWidth || 0
-                    client_metrics.rtc_packets_lost =
-                      videoTrackReport.packetsLost || 0
-                    client_metrics.rtc_pli_count =
-                      videoTrackReport.pliCount || 0
-                  } else if (videoTrackReport.type === 'transport') {
-                    // videoTrackReport.bytesReceived,
-                    // videoTrackReport.bytesSent,
+                    metrics.rtc_frames_decoded = report.framesDecoded
+                    metrics.rtc_frames_dropped = report.framesDropped
+                    metrics.rtc_frames_received = report.framesReceived
+                    metrics.rtc_frames_per_second = report.framesPerSecond
+                    metrics.rtc_freeze_count = report.freezeCount
+                    metrics.rtc_jitter_sec = report.jitter
+                    metrics.rtc_keyframes_decoded = report.keyFramesDecoded
+                    metrics.rtc_total_freezes_duration_sec =
+                      report.totalFreezesDuration
+                    metrics.rtc_frame_height = report.frameHeight
+                    metrics.rtc_frame_width = report.frameWidth
+                    metrics.rtc_packets_lost = report.packetsLost
+                    metrics.rtc_pli_count = report.pliCount
                   }
+                  // The following report types exist, but are unused:
+                  // data-channel, transport, certificate, peer-connection, local-candidate, remote-candidate, codec
                 })
-                resolve(client_metrics)
+
+                resolve(metrics)
               })
             })
           }
@@ -853,18 +811,6 @@ class EngineConnection extends EventTarget {
                 type: ConnectingType.DataChannelEstablished,
               },
             }
-
-            // Everything is now connected.
-            this.state = {
-              type: EngineConnectionStateType.ConnectionEstablished,
-            }
-
-            this.engineCommandManager.inSequence = 1
-
-            this.dispatchEvent(
-              new CustomEvent(EngineConnectionEvents.Opened, { detail: this })
-            )
-            markOnce('code/endInitialEngineConnect')
           }
           this.unreliableDataChannel?.addEventListener(
             'open',
@@ -980,7 +926,7 @@ class EngineConnection extends EventTarget {
 
           // Send an initial ping
           this.send({ type: 'ping' })
-          this.pingPongSpan.ping = new Date()
+          this.pingPongSpan.ping = Date.now()
         }
         this.websocket.addEventListener('open', this.onWebSocketOpen)
 
@@ -1063,6 +1009,20 @@ class EngineConnection extends EventTarget {
               }
               this.disconnectAll()
             }
+
+            if (firstError.error_code === 'internal_api') {
+              this.state = {
+                type: EngineConnectionStateType.Disconnecting,
+                value: {
+                  type: DisconnectingType.Error,
+                  value: {
+                    error: ConnectionError.Outage,
+                    context: firstError.message,
+                  },
+                },
+              }
+              this.disconnectAll()
+            }
             return
           }
 
@@ -1075,7 +1035,20 @@ class EngineConnection extends EventTarget {
 
           switch (resp.type) {
             case 'pong':
-              this.pingPongSpan.pong = new Date()
+              this.pingPongSpan.pong = Date.now()
+              this.dispatchEvent(
+                new CustomEvent(EngineConnectionEvents.PingPongChanged, {
+                  detail: Math.min(
+                    999,
+                    Math.floor(
+                      this.pingPongSpan.pong - (this.pingPongSpan.ping ?? 0)
+                    )
+                  ),
+                })
+              )
+              // Clear the initial ping so our interval ping loop can fire again
+              // But only after using it above!
+              this.pingPongSpan.ping = undefined
               break
 
             case 'modeling_session_data':
@@ -1219,7 +1192,7 @@ class EngineConnection extends EventTarget {
         this.websocket.addEventListener('message', this.onWebSocketMessage)
       }
 
-      if (reconnecting) {
+      if (args.reconnect) {
         createWebSocketConnection()
       } else {
         this.onNetworkStatusReady = () => {
@@ -1232,9 +1205,12 @@ class EngineConnection extends EventTarget {
       }
     })
   }
+
   // Do not change this back to an object or any, we should only be sending the
   // WebSocketRequest type!
   unreliableSend(message: Models['WebSocketRequest_type']) {
+    if (this.unreliableDataChannel?.readyState !== 'open') return
+
     // TODO(paultag): Add in logic to determine the connection state and
     // take actions if needed?
     this.unreliableDataChannel?.send(
@@ -1245,7 +1221,7 @@ class EngineConnection extends EventTarget {
   // WebSocketRequest type!
   send(message: Models['WebSocketRequest_type']) {
     // Not connected, don't send anything
-    if (this.websocket?.readyState === 3) return
+    if (this.websocket?.readyState !== 1) return
 
     // TODO(paultag): Add in logic to determine the connection state and
     // take actions if needed?
@@ -1254,6 +1230,8 @@ class EngineConnection extends EventTarget {
     )
   }
   disconnectAll() {
+    clearTimeout(this.timeoutToForceConnectId)
+
     if (this.websocket?.readyState === 1) {
       this.websocket?.close()
     }
@@ -1283,8 +1261,17 @@ class EngineConnection extends EventTarget {
       this.websocket?.readyState === 3
 
     if (closedPc && closedUDC && closedWS) {
-      // Do not notify the rest of the program that we have cut off anything.
-      this.state = { type: EngineConnectionStateType.Disconnected }
+      if (!this.idleMode) {
+        // Do not notify the rest of the program that we have cut off anything.
+        this.state = { type: EngineConnectionStateType.Disconnected }
+      } else {
+        this.state = {
+          type: EngineConnectionStateType.Disconnecting,
+          value: {
+            type: DisconnectingType.Pause,
+          },
+        }
+      }
       this.triggeredStart = false
     }
   }
@@ -1310,26 +1297,6 @@ export interface Subscription<T extends ModelTypes> {
   ) => void
 }
 
-export type CommandLog =
-  | {
-      type: 'send-modeling'
-      data: EngineCommand
-    }
-  | {
-      type: 'send-scene'
-      data: EngineCommand
-    }
-  | {
-      type: 'receive-reliable'
-      data: OkWebSocketResponseData
-      id: string
-      cmd_type?: string
-    }
-  | {
-      type: 'execution-done'
-      data: null
-    }
-
 export enum EngineCommandManagerEvents {
   // engineConnection is available but scene setup may not have run
   EngineAvailable = 'engine-available',
@@ -1339,7 +1306,7 @@ export enum EngineCommandManagerEvents {
 }
 
 /**
- * The EngineCommandManager is the main interface to the Engine for Modeling App.
+ * The EngineCommandManager is the main interface to the Engine for Design Studio.
  *
  * It is responsible for sending commands to the Engine, and managing the state
  * of those commands. It also sets up and tears down the connection to the Engine
@@ -1393,8 +1360,6 @@ export class EngineCommandManager extends EventTarget {
     height: 1337,
   }
 
-  elVideo: HTMLVideoElement | null = null
-
   _commandLogCallBack: (command: CommandLog[]) => void = () => {}
 
   subscriptions: {
@@ -1432,6 +1397,7 @@ export class EngineCommandManager extends EventTarget {
 
   private onEngineConnectionOpened = () => {}
   private onEngineConnectionClosed = () => {}
+  private onVideoTrackMute = () => {}
   private onDarkThemeMediaQueryChange = (e: MediaQueryListEvent) => {
     this.setTheme(e.matches ? Themes.Dark : Themes.Light).catch(reportRejection)
   }
@@ -1442,6 +1408,8 @@ export class EngineCommandManager extends EventTarget {
   modelingSend: ReturnType<typeof useModelingContext>['send'] =
     (() => {}) as any
   kclManager: null | KclManager = null
+  codeManager?: CodeManager
+  rustContext?: RustContext
 
   // The current "manufacturing machine" aka 3D printer, CNC, etc.
   public machineManager: MachineManager | null = null
@@ -1514,6 +1482,11 @@ export class EngineCommandManager extends EventTarget {
 
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
     this.onEngineConnectionOpened = async () => {
+      await this.rustContext?.clearSceneAndBustCache(
+        { settings: await jsAppSettings() },
+        this.codeManager?.currentFilePath || undefined
+      )
+
       // Set the stream's camera projection type
       // We don't send a command to the engine if in perspective mode because
       // for now it's the engine's default.
@@ -1547,6 +1520,7 @@ export class EngineCommandManager extends EventTarget {
       })
 
       this._camControlsCameraChange()
+
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       this.sendSceneCommand({
         // CameraControls subscribes to default_camera_get_settings response events
@@ -1557,6 +1531,7 @@ export class EngineCommandManager extends EventTarget {
           type: 'default_camera_get_settings',
         },
       })
+
       setIsStreamReady(true)
 
       // Other parts of the application should use this to react on scene ready.
@@ -1668,7 +1643,7 @@ export class EngineCommandManager extends EventTarget {
           message.request_id
         ) {
           this.addCommandLog({
-            type: 'receive-reliable',
+            type: CommandLogType.ReceiveReliable,
             data: message.resp,
             id: message?.request_id || '',
             cmd_type: pending?.command?.cmd?.type,
@@ -1702,7 +1677,7 @@ export class EngineCommandManager extends EventTarget {
               if (!command) return
               if (command.type === 'modeling_cmd_req')
                 this.addCommandLog({
-                  type: 'receive-reliable',
+                  type: CommandLogType.ReceiveReliable,
                   data: {
                     type: 'modeling',
                     data: {
@@ -1727,15 +1702,17 @@ export class EngineCommandManager extends EventTarget {
         delete this.pendingCommands[message.request_id || '']
       }) as EventListener)
 
+      this.onVideoTrackMute = () => {
+        console.error('video track mute: check webrtc internals -> inbound rtp')
+      }
+
       this.onEngineConnectionNewTrack = ({
         detail: { mediaStream },
       }: CustomEvent<NewTrackArgs>) => {
-        mediaStream.getVideoTracks()[0].addEventListener('mute', () => {
-          console.error(
-            'video track mute: check webrtc internals -> inbound rtp'
-          )
-        })
-
+        // Engine side had an oopsie (client sent trickle_ice, engine no happy)
+        mediaStream
+          .getVideoTracks()[0]
+          .addEventListener('mute', this.onVideoTrackMute)
         setMediaStream(mediaStream)
       }
       this.engineConnection?.addEventListener(
@@ -1744,7 +1721,7 @@ export class EngineCommandManager extends EventTarget {
       )
 
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      this.engineConnection?.connect()
+      this.engineConnection?.connect({ reconnect: false })
     }
     this.engineConnection.addEventListener(
       EngineConnectionEvents.ConnectionStarted,
@@ -1770,7 +1747,7 @@ export class EngineCommandManager extends EventTarget {
       cmd: {
         type: 'reconfigure_stream',
         ...this.streamDimensions,
-        fps: 60,
+        fps: 60, // This is required but it does next to nothing
       },
     }
     this.engineConnection?.send(resizeCmd)
@@ -1811,7 +1788,10 @@ export class EngineCommandManager extends EventTarget {
     } else if (this.engineCommandManager?.engineConnection) {
       // @ts-ignore
       this.engineCommandManager?.engineConnection?.tearDown(opts)
+      // @ts-ignore
+      this.engineCommandManager.engineConnection = null
     }
+    this.engineConnection = undefined
   }
   async startNewSession() {
     this.responseMap = {}
@@ -1886,7 +1866,7 @@ export class EngineCommandManager extends EventTarget {
     ) {
       // highlight_set_entity, mouse_move and camera_drag_move are sent over the unreliable channel and are too noisy
       this.addCommandLog({
-        type: 'send-scene',
+        type: CommandLogType.SendScene,
         data: command,
       })
     }

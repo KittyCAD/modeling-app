@@ -1,28 +1,29 @@
-import { DEFAULT_PROJECT_NAME } from 'lib/constants'
+import { useRef } from 'react'
+
+import type { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
+import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
+import type { NamedView } from '@rust/kcl-lib/bindings/NamedView'
+import type { OnboardingStatus } from '@rust/kcl-lib/bindings/OnboardingStatus'
+
+import { CustomIcon } from '@src/components/CustomIcon'
+import Tooltip from '@src/components/Tooltip'
+import type { CameraSystem } from '@src/lib/cameraControls'
+import { cameraMouseDragGuards, cameraSystems } from '@src/lib/cameraControls'
 import {
+  DEFAULT_DEFAULT_LENGTH_UNIT,
+  DEFAULT_PROJECT_NAME,
+} from '@src/lib/constants'
+import { isDesktop } from '@src/lib/isDesktop'
+import type {
   BaseUnit,
   SettingProps,
   SettingsLevel,
-  baseUnitsUnion,
-} from 'lib/settings/settingsTypes'
-import { Themes } from 'lib/theme'
-import { isEnumMember } from 'lib/types'
-import {
-  CameraSystem,
-  cameraMouseDragGuards,
-  cameraSystems,
-} from 'lib/cameraControls'
-import { isDesktop } from 'lib/isDesktop'
-import { useRef } from 'react'
-import { CustomIcon } from 'components/CustomIcon'
-import Tooltip from 'components/Tooltip'
-import { isArray, toSync } from 'lib/utils'
-import { reportRejection } from 'lib/trap'
-import { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
-import { OnboardingStatus } from '@rust/kcl-lib/bindings/OnboardingStatus'
-import { NamedView } from '@rust/kcl-lib/bindings/NamedView'
-import { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
-import { DEFAULT_DEFAULT_LENGTH_UNIT } from 'lib/constants'
+} from '@src/lib/settings/settingsTypes'
+import { baseUnitsUnion } from '@src/lib/settings/settingsTypes'
+import { Themes } from '@src/lib/theme'
+import { reportRejection } from '@src/lib/trap'
+import { isEnumMember } from '@src/lib/types'
+import { isArray, toSync } from '@src/lib/utils'
 
 /**
  * A setting that can be set at the user or project level
@@ -91,8 +92,8 @@ export class Setting<T = unknown> {
     return this._project !== undefined
       ? this._project
       : this._user !== undefined
-      ? this._user
-      : this._default
+        ? this._user
+        : this._default
   }
   /**
    * @param {SettingsLevel} level - The level to get the fallback for
@@ -121,6 +122,8 @@ export class Setting<T = unknown> {
     return level === 'project' ? 'user' : 'default'
   }
 }
+
+const MS_IN_MINUTE = 1000 * 60
 
 export function createSettings() {
   return {
@@ -207,12 +210,42 @@ export function createSettings() {
       /**
        * Stream resource saving behavior toggle
        */
-      streamIdleMode: new Setting<boolean>({
-        defaultValue: false,
-        description: 'Toggle stream idling, saving bandwidth and battery',
-        validate: (v) => typeof v === 'boolean',
+      streamIdleMode: new Setting<number | undefined>({
+        defaultValue: undefined,
+        hideOnLevel: 'project',
+        description: 'Save bandwidth & battery',
+        validate: (v) =>
+          String(v) == 'undefined' ||
+          (Number(v) >= 0 && Number(v) <= 60 * MS_IN_MINUTE),
         commandConfig: {
-          inputType: 'boolean',
+          inputType: 'options',
+          defaultValueFromContext: (context) =>
+            context.app.streamIdleMode.current,
+          options: (cmdContext, settingsContext) =>
+            [
+              undefined,
+              5 * 1000,
+              30 * 1000,
+              1 * MS_IN_MINUTE,
+              2 * MS_IN_MINUTE,
+              5 * MS_IN_MINUTE,
+              15 * MS_IN_MINUTE,
+              30 * MS_IN_MINUTE,
+              60 * MS_IN_MINUTE,
+            ].map((v) => ({
+              name:
+                v === undefined
+                  ? 'Off'
+                  : v < MS_IN_MINUTE
+                    ? `${Math.floor(v / 1000)} seconds`
+                    : `${Math.floor(v / MS_IN_MINUTE)} minutes`,
+              value: v,
+              isCurrent:
+                v ===
+                settingsContext.app.streamIdleMode[
+                  cmdContext.argumentsToSubmit.level as SettingsLevel
+                ],
+            })),
         },
       }),
       allowOrbitInSketchMode: new Setting<boolean>({

@@ -1,5 +1,6 @@
-import { OnboardingButtons } from '.'
-import { onboardingPaths } from 'routes/Onboarding/paths'
+import { onboardingPaths } from '@src/routes/Onboarding/paths'
+
+import { OnboardingButtons } from '@src/routes/Onboarding/utils'
 
 export default function Streaming() {
   return (
@@ -19,7 +20,7 @@ export default function Streaming() {
           </p>
           <p className="my-4">
             Instead, our infrastructure spins up our Geometry Engine on a remote
-            GPU, Modeling App sends it a series of commands{' '}
+            GPU, Design Studio sends it a series of commands{' '}
             <a
               href="https://zoo.dev/blog/cad-webrtc"
               rel="noopener noreferrer"
@@ -30,7 +31,7 @@ export default function Streaming() {
             , and the Geometry Engine sends back a video stream of the 3D view.
           </p>
           <p className="my-4">
-            This means that you could run our Modeling App on nearly any device
+            This means that you could run our Design Studio on nearly any device
             with a good internet connection.
           </p>
           <p className="my-4">

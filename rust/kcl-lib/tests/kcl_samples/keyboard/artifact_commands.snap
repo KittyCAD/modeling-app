@@ -204,7 +204,8 @@ description: Artifact commands keyboard.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 13.6,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -703,7 +704,8 @@ description: Artifact commands keyboard.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.15,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -769,7 +771,8 @@ description: Artifact commands keyboard.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.15,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -835,7 +838,8 @@ description: Artifact commands keyboard.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.15,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -901,7 +905,8 @@ description: Artifact commands keyboard.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.15,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -1188,7 +1193,8 @@ description: Artifact commands keyboard.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.1,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -1642,7 +1648,8 @@ description: Artifact commands keyboard.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.1,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -2155,7 +2162,8 @@ description: Artifact commands keyboard.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.1,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -2609,7 +2617,8 @@ description: Artifact commands keyboard.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.1,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -3063,7 +3072,8 @@ description: Artifact commands keyboard.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.1,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -3517,7 +3527,8 @@ description: Artifact commands keyboard.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.1,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -3971,7 +3982,8 @@ description: Artifact commands keyboard.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.1,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -4425,7 +4437,8 @@ description: Artifact commands keyboard.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.1,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -4879,7 +4892,8 @@ description: Artifact commands keyboard.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.1,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -5595,7 +5609,8 @@ description: Artifact commands keyboard.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.1,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -6049,7 +6064,8 @@ description: Artifact commands keyboard.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.1,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -6503,7 +6519,8 @@ description: Artifact commands keyboard.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.1,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -7248,7 +7265,8 @@ description: Artifact commands keyboard.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.1,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -7702,7 +7720,8 @@ description: Artifact commands keyboard.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.1,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -8156,7 +8175,8 @@ description: Artifact commands keyboard.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.1,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -8930,7 +8950,8 @@ description: Artifact commands keyboard.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.1,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -9384,7 +9405,8 @@ description: Artifact commands keyboard.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.1,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -10187,7 +10209,8 @@ description: Artifact commands keyboard.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.1,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -10641,7 +10664,8 @@ description: Artifact commands keyboard.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.1,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -11095,7 +11119,8 @@ description: Artifact commands keyboard.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.1,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -11869,7 +11894,8 @@ description: Artifact commands keyboard.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.1,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -12437,7 +12463,8 @@ description: Artifact commands keyboard.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -0.03,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -12967,7 +12994,8 @@ description: Artifact commands keyboard.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -0.03,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -13257,7 +13285,8 @@ description: Artifact commands keyboard.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -0.03,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -13547,7 +13576,8 @@ description: Artifact commands keyboard.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -0.03,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -13837,7 +13867,8 @@ description: Artifact commands keyboard.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -0.03,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -14193,6 +14224,30 @@ description: Artifact commands keyboard.kcl
       "type": "object_visible",
       "object_id": "[uuid]",
       "hidden": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "set_scene_units",
+      "unit": "mm"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "set_scene_units",
+      "unit": "mm"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "set_scene_units",
+      "unit": "mm"
     }
   }
 ]

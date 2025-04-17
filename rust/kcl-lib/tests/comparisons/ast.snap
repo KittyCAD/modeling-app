@@ -11,10 +11,10 @@ description: Result of parsing comparisons.kcl
         "expression": {
           "arguments": [
             {
-              "commentStart": 7,
+              "commentStart": 0,
               "end": 0,
               "left": {
-                "commentStart": 7,
+                "commentStart": 0,
                 "end": 0,
                 "raw": "3",
                 "start": 0,
@@ -27,7 +27,7 @@ description: Result of parsing comparisons.kcl
               },
               "operator": "==",
               "right": {
-                "commentStart": 12,
+                "commentStart": 0,
                 "end": 0,
                 "raw": "3",
                 "start": 0,
@@ -43,7 +43,7 @@ description: Result of parsing comparisons.kcl
               "type": "BinaryExpression"
             },
             {
-              "commentStart": 15,
+              "commentStart": 0,
               "end": 0,
               "raw": "\"equality\"",
               "start": 0,
@@ -78,15 +78,15 @@ description: Result of parsing comparisons.kcl
         "type": "ExpressionStatement"
       },
       {
-        "commentStart": 27,
+        "commentStart": 0,
         "end": 0,
         "expression": {
           "arguments": [
             {
-              "commentStart": 34,
+              "commentStart": 0,
               "end": 0,
               "left": {
-                "commentStart": 34,
+                "commentStart": 0,
                 "end": 0,
                 "raw": "3.0",
                 "start": 0,
@@ -99,7 +99,7 @@ description: Result of parsing comparisons.kcl
               },
               "operator": "==",
               "right": {
-                "commentStart": 41,
+                "commentStart": 0,
                 "end": 0,
                 "raw": "3.0",
                 "start": 0,
@@ -115,7 +115,7 @@ description: Result of parsing comparisons.kcl
               "type": "BinaryExpression"
             },
             {
-              "commentStart": 46,
+              "commentStart": 0,
               "end": 0,
               "raw": "\"equality of floats\"",
               "start": 0,
@@ -126,10 +126,10 @@ description: Result of parsing comparisons.kcl
           ],
           "callee": {
             "abs_path": false,
-            "commentStart": 27,
+            "commentStart": 0,
             "end": 0,
             "name": {
-              "commentStart": 27,
+              "commentStart": 0,
               "end": 0,
               "name": "assert",
               "start": 0,
@@ -139,7 +139,7 @@ description: Result of parsing comparisons.kcl
             "start": 0,
             "type": "Name"
           },
-          "commentStart": 27,
+          "commentStart": 0,
           "end": 0,
           "start": 0,
           "type": "CallExpression",
@@ -150,15 +150,15 @@ description: Result of parsing comparisons.kcl
         "type": "ExpressionStatement"
       },
       {
-        "commentStart": 68,
+        "commentStart": 0,
         "end": 0,
         "expression": {
           "arguments": [
             {
-              "commentStart": 75,
+              "commentStart": 0,
               "end": 0,
               "left": {
-                "commentStart": 75,
+                "commentStart": 0,
                 "end": 0,
                 "raw": "3",
                 "start": 0,
@@ -171,7 +171,7 @@ description: Result of parsing comparisons.kcl
               },
               "operator": "!=",
               "right": {
-                "commentStart": 80,
+                "commentStart": 0,
                 "end": 0,
                 "raw": "4",
                 "start": 0,
@@ -187,7 +187,7 @@ description: Result of parsing comparisons.kcl
               "type": "BinaryExpression"
             },
             {
-              "commentStart": 83,
+              "commentStart": 0,
               "end": 0,
               "raw": "\"non-equality\"",
               "start": 0,
@@ -198,10 +198,10 @@ description: Result of parsing comparisons.kcl
           ],
           "callee": {
             "abs_path": false,
-            "commentStart": 68,
+            "commentStart": 0,
             "end": 0,
             "name": {
-              "commentStart": 68,
+              "commentStart": 0,
               "end": 0,
               "name": "assert",
               "start": 0,
@@ -211,7 +211,7 @@ description: Result of parsing comparisons.kcl
             "start": 0,
             "type": "Name"
           },
-          "commentStart": 68,
+          "commentStart": 0,
           "end": 0,
           "start": 0,
           "type": "CallExpression",
@@ -222,15 +222,15 @@ description: Result of parsing comparisons.kcl
         "type": "ExpressionStatement"
       },
       {
-        "commentStart": 99,
+        "commentStart": 0,
         "end": 0,
         "expression": {
           "arguments": [
             {
-              "commentStart": 106,
+              "commentStart": 0,
               "end": 0,
               "left": {
-                "commentStart": 106,
+                "commentStart": 0,
                 "end": 0,
                 "raw": "3.0",
                 "start": 0,
@@ -243,7 +243,7 @@ description: Result of parsing comparisons.kcl
               },
               "operator": "!=",
               "right": {
-                "commentStart": 113,
+                "commentStart": 0,
                 "end": 0,
                 "raw": "4.0",
                 "start": 0,
@@ -259,7 +259,7 @@ description: Result of parsing comparisons.kcl
               "type": "BinaryExpression"
             },
             {
-              "commentStart": 118,
+              "commentStart": 0,
               "end": 0,
               "raw": "\"non-equality of floats\"",
               "start": 0,
@@ -270,10 +270,10 @@ description: Result of parsing comparisons.kcl
           ],
           "callee": {
             "abs_path": false,
-            "commentStart": 99,
+            "commentStart": 0,
             "end": 0,
             "name": {
-              "commentStart": 99,
+              "commentStart": 0,
               "end": 0,
               "name": "assert",
               "start": 0,
@@ -283,7 +283,7 @@ description: Result of parsing comparisons.kcl
             "start": 0,
             "type": "Name"
           },
-          "commentStart": 99,
+          "commentStart": 0,
           "end": 0,
           "start": 0,
           "type": "CallExpression",
@@ -294,15 +294,15 @@ description: Result of parsing comparisons.kcl
         "type": "ExpressionStatement"
       },
       {
-        "commentStart": 144,
+        "commentStart": 0,
         "end": 0,
         "expression": {
           "arguments": [
             {
-              "commentStart": 151,
+              "commentStart": 0,
               "end": 0,
               "left": {
-                "commentStart": 151,
+                "commentStart": 0,
                 "end": 0,
                 "raw": "3",
                 "start": 0,
@@ -315,7 +315,7 @@ description: Result of parsing comparisons.kcl
               },
               "operator": "<",
               "right": {
-                "commentStart": 155,
+                "commentStart": 0,
                 "end": 0,
                 "raw": "4",
                 "start": 0,
@@ -331,7 +331,7 @@ description: Result of parsing comparisons.kcl
               "type": "BinaryExpression"
             },
             {
-              "commentStart": 158,
+              "commentStart": 0,
               "end": 0,
               "raw": "\"lt\"",
               "start": 0,
@@ -342,10 +342,10 @@ description: Result of parsing comparisons.kcl
           ],
           "callee": {
             "abs_path": false,
-            "commentStart": 144,
+            "commentStart": 0,
             "end": 0,
             "name": {
-              "commentStart": 144,
+              "commentStart": 0,
               "end": 0,
               "name": "assert",
               "start": 0,
@@ -355,7 +355,7 @@ description: Result of parsing comparisons.kcl
             "start": 0,
             "type": "Name"
           },
-          "commentStart": 144,
+          "commentStart": 0,
           "end": 0,
           "start": 0,
           "type": "CallExpression",
@@ -366,15 +366,15 @@ description: Result of parsing comparisons.kcl
         "type": "ExpressionStatement"
       },
       {
-        "commentStart": 164,
+        "commentStart": 0,
         "end": 0,
         "expression": {
           "arguments": [
             {
-              "commentStart": 171,
+              "commentStart": 0,
               "end": 0,
               "left": {
-                "commentStart": 171,
+                "commentStart": 0,
                 "end": 0,
                 "raw": "3",
                 "start": 0,
@@ -387,7 +387,7 @@ description: Result of parsing comparisons.kcl
               },
               "operator": "<=",
               "right": {
-                "commentStart": 176,
+                "commentStart": 0,
                 "end": 0,
                 "raw": "4",
                 "start": 0,
@@ -403,7 +403,7 @@ description: Result of parsing comparisons.kcl
               "type": "BinaryExpression"
             },
             {
-              "commentStart": 179,
+              "commentStart": 0,
               "end": 0,
               "raw": "\"lte but actually lt\"",
               "start": 0,
@@ -414,10 +414,10 @@ description: Result of parsing comparisons.kcl
           ],
           "callee": {
             "abs_path": false,
-            "commentStart": 164,
+            "commentStart": 0,
             "end": 0,
             "name": {
-              "commentStart": 164,
+              "commentStart": 0,
               "end": 0,
               "name": "assert",
               "start": 0,
@@ -427,7 +427,7 @@ description: Result of parsing comparisons.kcl
             "start": 0,
             "type": "Name"
           },
-          "commentStart": 164,
+          "commentStart": 0,
           "end": 0,
           "start": 0,
           "type": "CallExpression",
@@ -438,15 +438,15 @@ description: Result of parsing comparisons.kcl
         "type": "ExpressionStatement"
       },
       {
-        "commentStart": 202,
+        "commentStart": 0,
         "end": 0,
         "expression": {
           "arguments": [
             {
-              "commentStart": 209,
+              "commentStart": 0,
               "end": 0,
               "left": {
-                "commentStart": 209,
+                "commentStart": 0,
                 "end": 0,
                 "raw": "4",
                 "start": 0,
@@ -459,7 +459,7 @@ description: Result of parsing comparisons.kcl
               },
               "operator": "<=",
               "right": {
-                "commentStart": 214,
+                "commentStart": 0,
                 "end": 0,
                 "raw": "4",
                 "start": 0,
@@ -475,7 +475,7 @@ description: Result of parsing comparisons.kcl
               "type": "BinaryExpression"
             },
             {
-              "commentStart": 217,
+              "commentStart": 0,
               "end": 0,
               "raw": "\"lte but actually eq\"",
               "start": 0,
@@ -486,10 +486,10 @@ description: Result of parsing comparisons.kcl
           ],
           "callee": {
             "abs_path": false,
-            "commentStart": 202,
+            "commentStart": 0,
             "end": 0,
             "name": {
-              "commentStart": 202,
+              "commentStart": 0,
               "end": 0,
               "name": "assert",
               "start": 0,
@@ -499,7 +499,7 @@ description: Result of parsing comparisons.kcl
             "start": 0,
             "type": "Name"
           },
-          "commentStart": 202,
+          "commentStart": 0,
           "end": 0,
           "start": 0,
           "type": "CallExpression",
@@ -510,15 +510,15 @@ description: Result of parsing comparisons.kcl
         "type": "ExpressionStatement"
       },
       {
-        "commentStart": 240,
+        "commentStart": 0,
         "end": 0,
         "expression": {
           "arguments": [
             {
-              "commentStart": 247,
+              "commentStart": 0,
               "end": 0,
               "left": {
-                "commentStart": 247,
+                "commentStart": 0,
                 "end": 0,
                 "raw": "4",
                 "start": 0,
@@ -531,7 +531,7 @@ description: Result of parsing comparisons.kcl
               },
               "operator": ">",
               "right": {
-                "commentStart": 251,
+                "commentStart": 0,
                 "end": 0,
                 "raw": "3",
                 "start": 0,
@@ -547,7 +547,7 @@ description: Result of parsing comparisons.kcl
               "type": "BinaryExpression"
             },
             {
-              "commentStart": 254,
+              "commentStart": 0,
               "end": 0,
               "raw": "\"gt\"",
               "start": 0,
@@ -558,10 +558,10 @@ description: Result of parsing comparisons.kcl
           ],
           "callee": {
             "abs_path": false,
-            "commentStart": 240,
+            "commentStart": 0,
             "end": 0,
             "name": {
-              "commentStart": 240,
+              "commentStart": 0,
               "end": 0,
               "name": "assert",
               "start": 0,
@@ -571,7 +571,7 @@ description: Result of parsing comparisons.kcl
             "start": 0,
             "type": "Name"
           },
-          "commentStart": 240,
+          "commentStart": 0,
           "end": 0,
           "start": 0,
           "type": "CallExpression",
@@ -582,15 +582,15 @@ description: Result of parsing comparisons.kcl
         "type": "ExpressionStatement"
       },
       {
-        "commentStart": 260,
+        "commentStart": 0,
         "end": 0,
         "expression": {
           "arguments": [
             {
-              "commentStart": 267,
+              "commentStart": 0,
               "end": 0,
               "left": {
-                "commentStart": 267,
+                "commentStart": 0,
                 "end": 0,
                 "raw": "4",
                 "start": 0,
@@ -603,7 +603,7 @@ description: Result of parsing comparisons.kcl
               },
               "operator": ">=",
               "right": {
-                "commentStart": 272,
+                "commentStart": 0,
                 "end": 0,
                 "raw": "3",
                 "start": 0,
@@ -619,7 +619,7 @@ description: Result of parsing comparisons.kcl
               "type": "BinaryExpression"
             },
             {
-              "commentStart": 275,
+              "commentStart": 0,
               "end": 0,
               "raw": "\"gte but actually gt\"",
               "start": 0,
@@ -630,10 +630,10 @@ description: Result of parsing comparisons.kcl
           ],
           "callee": {
             "abs_path": false,
-            "commentStart": 260,
+            "commentStart": 0,
             "end": 0,
             "name": {
-              "commentStart": 260,
+              "commentStart": 0,
               "end": 0,
               "name": "assert",
               "start": 0,
@@ -643,7 +643,7 @@ description: Result of parsing comparisons.kcl
             "start": 0,
             "type": "Name"
           },
-          "commentStart": 260,
+          "commentStart": 0,
           "end": 0,
           "start": 0,
           "type": "CallExpression",
@@ -654,15 +654,15 @@ description: Result of parsing comparisons.kcl
         "type": "ExpressionStatement"
       },
       {
-        "commentStart": 298,
+        "commentStart": 0,
         "end": 0,
         "expression": {
           "arguments": [
             {
-              "commentStart": 305,
+              "commentStart": 0,
               "end": 0,
               "left": {
-                "commentStart": 305,
+                "commentStart": 0,
                 "end": 0,
                 "raw": "3",
                 "start": 0,
@@ -675,7 +675,7 @@ description: Result of parsing comparisons.kcl
               },
               "operator": ">=",
               "right": {
-                "commentStart": 310,
+                "commentStart": 0,
                 "end": 0,
                 "raw": "3",
                 "start": 0,
@@ -691,7 +691,7 @@ description: Result of parsing comparisons.kcl
               "type": "BinaryExpression"
             },
             {
-              "commentStart": 313,
+              "commentStart": 0,
               "end": 0,
               "raw": "\"gte but actually eq\"",
               "start": 0,
@@ -702,10 +702,10 @@ description: Result of parsing comparisons.kcl
           ],
           "callee": {
             "abs_path": false,
-            "commentStart": 298,
+            "commentStart": 0,
             "end": 0,
             "name": {
-              "commentStart": 298,
+              "commentStart": 0,
               "end": 0,
               "name": "assert",
               "start": 0,
@@ -715,7 +715,7 @@ description: Result of parsing comparisons.kcl
             "start": 0,
             "type": "Name"
           },
-          "commentStart": 298,
+          "commentStart": 0,
           "end": 0,
           "start": 0,
           "type": "CallExpression",
@@ -726,15 +726,15 @@ description: Result of parsing comparisons.kcl
         "type": "ExpressionStatement"
       },
       {
-        "commentStart": 335,
+        "commentStart": 0,
         "end": 0,
         "expression": {
           "arguments": [
             {
-              "commentStart": 344,
+              "commentStart": 0,
               "end": 0,
               "left": {
-                "commentStart": 344,
+                "commentStart": 0,
                 "end": 0,
                 "raw": "0.0",
                 "start": 0,
@@ -747,7 +747,7 @@ description: Result of parsing comparisons.kcl
               },
               "operator": "==",
               "right": {
-                "commentStart": 351,
+                "commentStart": 0,
                 "end": 0,
                 "raw": "0.0",
                 "start": 0,
@@ -763,7 +763,7 @@ description: Result of parsing comparisons.kcl
               "type": "BinaryExpression"
             },
             {
-              "commentStart": 356,
+              "commentStart": 0,
               "end": 0,
               "raw": "\"equality of zero\"",
               "start": 0,
@@ -774,10 +774,10 @@ description: Result of parsing comparisons.kcl
           ],
           "callee": {
             "abs_path": false,
-            "commentStart": 337,
+            "commentStart": 0,
             "end": 0,
             "name": {
-              "commentStart": 337,
+              "commentStart": 0,
               "end": 0,
               "name": "assert",
               "start": 0,
@@ -787,7 +787,7 @@ description: Result of parsing comparisons.kcl
             "start": 0,
             "type": "Name"
           },
-          "commentStart": 337,
+          "commentStart": 0,
           "end": 0,
           "start": 0,
           "type": "CallExpression",
@@ -798,15 +798,15 @@ description: Result of parsing comparisons.kcl
         "type": "ExpressionStatement"
       },
       {
-        "commentStart": 376,
+        "commentStart": 0,
         "end": 0,
         "expression": {
           "arguments": [
             {
-              "commentStart": 383,
+              "commentStart": 0,
               "end": 0,
               "left": {
-                "commentStart": 383,
+                "commentStart": 0,
                 "end": 0,
                 "raw": "0.0",
                 "start": 0,
@@ -820,7 +820,7 @@ description: Result of parsing comparisons.kcl
               "operator": "==",
               "right": {
                 "argument": {
-                  "commentStart": 391,
+                  "commentStart": 0,
                   "end": 0,
                   "raw": "0.0",
                   "start": 0,
@@ -831,7 +831,7 @@ description: Result of parsing comparisons.kcl
                     "suffix": "None"
                   }
                 },
-                "commentStart": 390,
+                "commentStart": 0,
                 "end": 0,
                 "operator": "-",
                 "start": 0,
@@ -843,7 +843,7 @@ description: Result of parsing comparisons.kcl
               "type": "BinaryExpression"
             },
             {
-              "commentStart": 396,
+              "commentStart": 0,
               "end": 0,
               "raw": "\"equality of zero and neg zero\"",
               "start": 0,
@@ -854,10 +854,10 @@ description: Result of parsing comparisons.kcl
           ],
           "callee": {
             "abs_path": false,
-            "commentStart": 376,
+            "commentStart": 0,
             "end": 0,
             "name": {
-              "commentStart": 376,
+              "commentStart": 0,
               "end": 0,
               "name": "assert",
               "start": 0,
@@ -867,7 +867,7 @@ description: Result of parsing comparisons.kcl
             "start": 0,
             "type": "Name"
           },
-          "commentStart": 376,
+          "commentStart": 0,
           "end": 0,
           "start": 0,
           "type": "CallExpression",
@@ -884,7 +884,7 @@ description: Result of parsing comparisons.kcl
       "nonCodeNodes": {
         "9": [
           {
-            "commentStart": 335,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",

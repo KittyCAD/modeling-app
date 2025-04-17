@@ -1,6 +1,6 @@
 ---
 title: "KCL Types"
-excerpt: "Documentation of types for the KCL standard library for the Zoo Modeling App."
+excerpt: "Documentation of types for the KCL standard library for the Zoo Design Studio."
 layout: manual
 ---
 
@@ -145,7 +145,7 @@ This helps keep your code neat and avoid unnecessary declarations.
 Say you have a long pipeline of sketch functions, like this:
 
 ```norun
-startSketchOn('XZ')
+startSketchOn(XZ)
   |> line(%, end = [3, 4])
   |> line(%, end = [10, 10])
   |> line(%, end = [-13, -14])
@@ -160,7 +160,7 @@ means that `|> line(%, end = [3, 4])` and `|> line(end = [3, 4])` are equivalent
 could be rewritten as 
 
 ```norun
-startSketchOn('XZ')
+startSketchOn(XZ)
  |> line(end = [3, 4])
  |> line(end = [10, 10])
  |> line(end = [-13, -14])
@@ -182,17 +182,19 @@ The syntax for declaring a tag is `$myTag` you would use it in the following
 way:
 
 ```norun
-startSketchOn('XZ')
+startSketchOn(XZ)
   |> startProfileAt(origin, %)
-  |> angledLine({angle = 0, length = 191.26}, %, $rectangleSegmentA001)
-  |> angledLine({
+  |> angledLine(angle = 0, length = 191.26, tag = $rectangleSegmentA001)
+  |> angledLine(
        angle = segAng(rectangleSegmentA001) - 90,
        length = 196.99,
-     }, %, $rectangleSegmentB001)
-  |> angledLine({
+       tag = $rectangleSegmentB001,
+     )
+  |> angledLine(
        angle = segAng(rectangleSegmentA001),
        length = -segLen(rectangleSegmentA001),
-     }, %, $rectangleSegmentC001)
+       tag = $rectangleSegmentC001,
+     )
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 ```
@@ -215,17 +217,19 @@ However if the code was written like this:
 
 ```norun
 fn rect(origin) {
-  return startSketchOn('XZ')
+  return startSketchOn(XZ)
     |> startProfileAt(origin, %)
-    |> angledLine({angle = 0, length = 191.26}, %, $rectangleSegmentA001)
-    |> angledLine({
+    |> angledLine(angle = 0, length = 191.26, tag = $rectangleSegmentA001)
+    |> angledLine(
          angle = segAng(rectangleSegmentA001) - 90,
-         length = 196.99
-       }, %, $rectangleSegmentB001)
-    |> angledLine({
+         length = 196.99,
+         tag = $rectangleSegmentB001,
+       )
+    |> angledLine(
          angle = segAng(rectangleSegmentA001),
-         length = -segLen(rectangleSegmentA001)
-       }, %, $rectangleSegmentC001)
+         length = -segLen(rectangleSegmentA001),
+         tag = $rectangleSegmentC001,
+       )
     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
     |> close()
 }
@@ -243,17 +247,19 @@ For example the following code works.
 
 ```norun
 fn rect(origin) {
-  return startSketchOn('XZ')
+  return startSketchOn(XZ)
     |> startProfileAt(origin, %)
-    |> angledLine({angle = 0, length = 191.26}, %, $rectangleSegmentA001)
-    |> angledLine({
+    |> angledLine(angle = 0, length = 191.26, tag = $rectangleSegmentA001)
+    |> angledLine(
          angle = segAng(rectangleSegmentA001) - 90,
-         length = 196.99
-       }, %, $rectangleSegmentB001)
-    |> angledLine({
+         length = 196.99,
+         tag = $rectangleSegmentB001,
+       )
+    |> angledLine(
          angle = segAng(rectangleSegmentA001),
-         length = -segLen(rectangleSegmentA001)
-       }, %, $rectangleSegmentC001)
+         length = -segLen(rectangleSegmentA001),
+         tag = $rectangleSegmentC001,
+       )
     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
     |> close()
 }
@@ -262,11 +268,8 @@ rect([0, 0])
 myRect = rect([20, 0])
 
 myRect
-  |> extrude(10, %)
-  |> fillet(
-       radius = 0.5,
-       tags = [myRect.tags.rectangleSegmentA001]
-     )
+  |> extrude(length = 10)
+  |> fillet(radius = 0.5, tags = [myRect.tags.rectangleSegmentA001])
 ```
 
 See how we use the tag `rectangleSegmentA001` in the `fillet` function outside

@@ -1,12 +1,17 @@
 import { Dialog } from '@headlessui/react'
-import { ActionButton } from './ActionButton'
 import { useState } from 'react'
-import { useSettings } from 'machines/appMachine'
+
+import { ActionButton } from '@src/components/ActionButton'
+import { CREATE_FILE_URL_PARAM } from '@src/lib/constants'
+import { useSettings } from '@src/machines/appMachine'
+import { useSearchParams } from 'react-router-dom'
 
 const DownloadAppBanner = () => {
+  const [searchParams] = useSearchParams()
   const settings = useSettings()
   const [isBannerDismissed, setIsBannerDismissed] = useState(
-    settings.app.dismissWebBanner.current
+    searchParams.has(CREATE_FILE_URL_PARAM) ||
+      settings.app.dismissWebBanner.current
   )
 
   return (
@@ -20,7 +25,7 @@ const DownloadAppBanner = () => {
         <div className="max-w-3xl mx-auto">
           <h2 className="text-2xl font-bold mb-4">Be warned!</h2>
           <p>
-            Zoo Modeling App Desktop is more reliable! The web app is not
+            Zoo Design Studio Desktop is more reliable! The web app is not
             officially supported.
           </p>
           {!navigator?.userAgent.includes('Chrome') && (
@@ -42,7 +47,7 @@ const DownloadAppBanner = () => {
             <ActionButton
               Element="externalLink"
               to="https://zoo.dev/modeling-app/download"
-              className="group text-warn-10 dark:!text-warn-10 pr-1 border-warn-70 hover:border-warn-80 dark:!border-warn-70 dark:hover:!border-warn-80 bg-warn-70 group-hover:bg-warn-80 dark:bg-warn-70 dark:group-hover:bg-warn-80"
+              className="group !text-warn-10 pr-1 border-warn-70 hover:border-warn-80 dark:!border-warn-70 dark:hover:!border-warn-80 bg-warn-70 group-hover:bg-warn-80 dark:bg-warn-70 dark:group-hover:bg-warn-80"
               iconEnd={{
                 icon: 'arrowRight',
                 iconClassName: 'text-warn-10 dark:text-warn-10',

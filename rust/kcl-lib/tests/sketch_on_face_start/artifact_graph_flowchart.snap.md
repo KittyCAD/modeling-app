@@ -1,23 +1,23 @@
 ```mermaid
 flowchart LR
   subgraph path2 [Path]
-    2["Path<br>[56, 78, 0]"]
-    3["Segment<br>[86, 108, 0]"]
-    4["Segment<br>[116, 138, 0]"]
-    5["Segment<br>[146, 169, 0]"]
-    6["Segment<br>[217, 225, 0]"]
+    2["Path<br>[54, 76, 0]"]
+    3["Segment<br>[84, 106, 0]"]
+    4["Segment<br>[114, 136, 0]"]
+    5["Segment<br>[144, 167, 0]"]
+    6["Segment<br>[215, 223, 0]"]
     7[Solid2d]
   end
   subgraph path23 [Path]
-    23["Path<br>[303, 328, 0]"]
-    24["Segment<br>[334, 353, 0]"]
-    25["Segment<br>[359, 378, 0]"]
-    26["Segment<br>[384, 404, 0]"]
-    27["Segment<br>[410, 418, 0]"]
+    23["Path<br>[308, 333, 0]"]
+    24["Segment<br>[339, 358, 0]"]
+    25["Segment<br>[364, 383, 0]"]
+    26["Segment<br>[389, 409, 0]"]
+    27["Segment<br>[415, 423, 0]"]
     28[Solid2d]
   end
-  1["Plane<br>[29, 48, 0]"]
-  8["Sweep Extrusion<br>[231, 251, 0]"]
+  1["Plane<br>[29, 46, 0]"]
+  8["Sweep Extrusion<br>[229, 249, 0]"]
   9[Wall]
   10[Wall]
   11[Wall]
@@ -32,7 +32,7 @@ flowchart LR
   20["SweepEdge Adjacent"]
   21["SweepEdge Opposite"]
   22["SweepEdge Adjacent"]
-  29["Sweep Extrusion<br>[424, 443, 0]"]
+  29["Sweep Extrusion<br>[429, 448, 0]"]
   30[Wall]
   31[Wall]
   32[Wall]
@@ -47,7 +47,7 @@ flowchart LR
   41["SweepEdge Adjacent"]
   42["SweepEdge Opposite"]
   43["SweepEdge Adjacent"]
-  44["StartSketchOnFace<br>[270, 297, 0]"]
+  44["StartSketchOnFace<br>[268, 302, 0]"]
   1 --- 2
   2 --- 3
   2 --- 4

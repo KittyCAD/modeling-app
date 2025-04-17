@@ -1,20 +1,21 @@
-import { ActionButton } from '../components/ActionButton'
-import { isDesktop } from '../lib/isDesktop'
-import { VITE_KC_SITE_BASE_URL, VITE_KC_API_BASE_URL } from '../env'
-import { Themes, getSystemTheme } from '../lib/theme'
-import { PATHS } from 'lib/paths'
-import { APP_NAME } from 'lib/constants'
-import { CSSProperties, useCallback, useState } from 'react'
-import { Logo } from 'components/Logo'
-import { CustomIcon } from 'components/CustomIcon'
-import { Link } from 'react-router-dom'
-import { APP_VERSION } from './Settings'
-import { openExternalBrowserIfDesktop } from 'lib/openWindow'
-import { toSync } from 'lib/utils'
-import { reportRejection } from 'lib/trap'
+import type { CSSProperties } from 'react'
+import { useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
-import { authActor } from 'machines/appMachine'
-import { useSettings } from 'machines/appMachine'
+import { Link } from 'react-router-dom'
+
+import { ActionButton } from '@src/components/ActionButton'
+import { CustomIcon } from '@src/components/CustomIcon'
+import { Logo } from '@src/components/Logo'
+import { VITE_KC_API_BASE_URL, VITE_KC_SITE_BASE_URL } from '@src/env'
+import { APP_NAME } from '@src/lib/constants'
+import { isDesktop } from '@src/lib/isDesktop'
+import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
+import { PATHS } from '@src/lib/paths'
+import { Themes, getSystemTheme } from '@src/lib/theme'
+import { reportRejection } from '@src/lib/trap'
+import { toSync } from '@src/lib/utils'
+import { authActor, useSettings } from '@src/machines/appMachine'
+import { APP_VERSION, IS_NIGHTLY } from '@src/routes/utils'
 
 const subtleBorder =
   'border border-solid border-chalkboard-30 dark:border-chalkboard-80'
@@ -48,8 +49,8 @@ const SignIn = () => {
           ? '-dark'
           : ''
         : shouldContrast
-        ? ''
-        : '-dark',
+          ? ''
+          : '-dark',
     [theme.current]
   )
 
@@ -81,16 +82,14 @@ const SignIn = () => {
       style={
         isDesktop()
           ? ({
-              '-webkit-app-region': 'drag',
+              WebkitAppRegion: 'drag',
             } as CSSProperties)
           : {}
       }
     >
       <div
         style={
-          isDesktop()
-            ? ({ '-webkit-app-region': 'no-drag' } as CSSProperties)
-            : {}
+          isDesktop() ? ({ WebkitAppRegion: 'no-drag' } as CSSProperties) : {}
         }
         className="body-bg py-5 px-12 rounded-lg grid place-items-center overflow-y-auto"
       >
@@ -100,7 +99,7 @@ const SignIn = () => {
               <Logo className="text-primary h-10 lg:h-12 xl:h-16 relative translate-y-1 mr-4 lg:mr-6 xl:mr-8" />
               <h1 className="text-3xl lg:text-4xl xl:text-5xl">{APP_NAME}</h1>
               <span className="px-3 py-1 text-base rounded-full bg-primary/10 text-primary self-start">
-                alpha v{APP_VERSION}
+                {IS_NIGHTLY ? 'nightly' : ''} v{APP_VERSION}
               </span>
             </div>
             <p className="my-4 text-lg xl:text-xl">
@@ -232,7 +231,7 @@ const SignIn = () => {
               <div className="flex gap-4 flex-wrap items-center">
                 <ActionButton
                   Element="externalLink"
-                  to="https://zoo.dev/docs/kcl-samples/a-parametric-bearing-pillow-block"
+                  to="https://zoo.dev/docs/kcl-samples/parametric-bearing-pillow-block"
                   iconStart={{
                     icon: 'settings',
                     bgClassName: '!bg-transparent',

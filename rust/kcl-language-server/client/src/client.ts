@@ -1,6 +1,6 @@
 /* eslint suggest-no-throw/suggest-no-throw: 0 */
-import * as lc from 'vscode-languageclient/node'
 import type * as vscode from 'vscode'
+import * as lc from 'vscode-languageclient/node'
 
 export async function createClient(
   traceOutputChannel: vscode.OutputChannel,
@@ -9,7 +9,10 @@ export async function createClient(
   serverOptions: lc.ServerOptions
 ): Promise<lc.LanguageClient> {
   const clientOptions: lc.LanguageClientOptions = {
-    documentSelector: [{ scheme: 'file', language: 'kcl' }],
+    documentSelector: [
+      { scheme: 'file', language: 'kcl' },
+      { scheme: 'untitled', language: 'kcl' },
+    ],
     initializationOptions,
     traceOutputChannel,
     outputChannel,

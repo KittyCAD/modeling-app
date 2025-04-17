@@ -1,14 +1,14 @@
-import { test, expect } from './zoo-test'
+import { join } from 'path'
+import { uuidv4 } from '@src/lib/utils'
 import fsp from 'fs/promises'
-import { uuidv4 } from 'lib/utils'
+
 import {
+  TEST_COLORS,
   executorInputPath,
   getUtils,
   orRunWhenFullSuiteEnabled,
-  TEST_COLORS,
-} from './test-utils'
-
-import { join } from 'path'
+} from '@e2e/playwright/test-utils'
+import { expect, test } from '@e2e/playwright/zoo-test'
 
 test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
   test('can comment out code with ctrl+/', async ({ page, homePage }) => {
@@ -78,12 +78,14 @@ sketch001 = startSketchOn(XY)
 
     // Ensure we execute the first time.
     await u.openDebugPanel()
-    await expect(
-      page.locator('[data-receive-command-type="scene_clear_all"]')
-    ).toHaveCount(1)
-    await expect(
-      page.locator('[data-message-type="execution-done"]')
-    ).toHaveCount(2)
+    await expect
+      .poll(() =>
+        page.locator('[data-receive-command-type="scene_clear_all"]').count()
+      )
+      .toBe(2)
+    await expect
+      .poll(() => page.locator('[data-message-type="execution-done"]').count())
+      .toBe(2)
 
     // Add whitespace to the end of the code.
     await u.codeLocator.click()
@@ -104,18 +106,20 @@ sketch001 = startSketchOn(XY)
     ).toHaveCount(3)
     await expect(
       page.locator('[data-receive-command-type="scene_clear_all"]')
-    ).toHaveCount(1)
+    ).toHaveCount(2)
   })
 
   test('ensure we use the cache, and do not clear on append', async ({
     homePage,
     page,
+    scene,
+    cmdBar,
   }) => {
     const u = await getUtils(page)
     await page.setBodyDimensions({ width: 1000, height: 500 })
 
     await homePage.goToModelingScene()
-    await u.waitForPageLoad()
+    await scene.settled(cmdBar)
 
     await u.codeLocator.click()
     await page.keyboard.type(`sketch001 = startSketchOn(XY)
@@ -129,7 +133,7 @@ sketch001 = startSketchOn(XY)
     await u.openDebugPanel()
     await expect(
       page.locator('[data-receive-command-type="scene_clear_all"]')
-    ).toHaveCount(1)
+    ).toHaveCount(2)
     await expect(
       page.locator('[data-message-type="execution-done"]')
     ).toHaveCount(2)
@@ -157,7 +161,7 @@ sketch001 = startSketchOn(XY)
     ).toHaveCount(3)
     await expect(
       page.locator('[data-receive-command-type="scene_clear_all"]')
-    ).toHaveCount(1)
+    ).toHaveCount(2)
   })
 
   test('if you click the format button it formats your code', async ({
@@ -405,8 +409,9 @@ sketch_001 = startSketchOn(XY)
     // Hit alt+shift+f to format the code
     await page.keyboard.press('Alt+Shift+KeyF')
 
-    await expect(page.locator('.cm-content'))
-      .toHaveText(`sketch001 = startSketchOn(XY)
+    await expect(
+      page.locator('.cm-content')
+    ).toHaveText(`sketch001 = startSketchOn(XY)
   |> startProfileAt([-10, -10], %)
   |> line(end = [20, 0])
   |> line(end = [0, 20])
@@ -458,8 +463,9 @@ sketch_001 = startSketchOn(XY)
     await u.expectCmdLog('[data-message-type="execution-done"]')
     await u.closeDebugPanel()
 
-    await expect(page.locator('.cm-content'))
-      .toHaveText(`sketch_001 = startSketchOn(XY)
+    await expect(
+      page.locator('.cm-content')
+    ).toHaveText(`sketch_001 = startSketchOn(XY)
   |> startProfileAt([-10, -10], %)
   |> line(end = [20, 0])
   |> line(end = [0, 20])
@@ -499,7 +505,7 @@ sketch_001 = startSketchOn(XY)
     await page.keyboard.press('ArrowLeft')
     await page.keyboard.press('ArrowRight')
 
-    await scene.waitForExecutionDone()
+    await scene.connectionEstablished()
 
     // error in guter
     await expect(page.locator('.cm-lint-marker-info').first()).toBeVisible()
@@ -727,7 +733,7 @@ sketch_001 = startSketchOn(XY)
     |> close()
     |> extrude(length = 10)
 
-    sketch001 = startSketchOn(box, revolveAxis)
+    sketch001 = startSketchOn(box, face = revolveAxis)
     |> startProfileAt([5, 10], %)
     |> line(end = [0, -10])
     |> line(end = [2, 0])
@@ -916,7 +922,7 @@ sketch001 = startSketchOn(XZ)
         `sketch001 = startSketchOn(XZ)
   |> startProfileAt([4.61, -14.01], %)
   |> line(end = [12.73, -0.09])
-  |> tangentialArcTo([24.95, -5.38], %)
+  |> tangentialArc(endAbsolute = [24.95, -5.38])
   |> close()`
       )
     })
@@ -965,7 +971,7 @@ sketch001 = startSketchOn(XZ)
 
     // expect the code to have changed
     await expect(page.locator('.cm-content')).toHaveText(
-      `sketch001 = startSketchOn(XZ)  |> startProfileAt([4.61, -14.01], %)  |> line(end = [12.73, -0.09])  |> tangentialArcTo([24.95, -5.38], %)  |> close()extrude001 = extrude(sketch001, length = 5)`
+      `sketch001 = startSketchOn(XZ)  |> startProfileAt([4.61, -14.01], %)  |> line(end = [12.73, -0.09])  |> tangentialArc(endAbsolute = [24.95, -5.38])  |> close()extrude001 = extrude(sketch001, length = 5)`
     )
 
     // Now hit undo
@@ -974,26 +980,28 @@ sketch001 = startSketchOn(XZ)
     await page.keyboard.up('Control')
 
     await page.waitForTimeout(100)
-    await expect(page.locator('.cm-content'))
-      .toHaveText(`sketch001 = startSketchOn(XZ)
+    await expect(
+      page.locator('.cm-content')
+    ).toHaveText(`sketch001 = startSketchOn(XZ)
   |> startProfileAt([4.61, -14.01], %)
   |> line(end = [12.73, -0.09])
-  |> tangentialArcTo([24.95, -5.38], %)
+  |> tangentialArc(endAbsolute = [24.95, -5.38])
   |> close()`)
   })
 
   test(
     'Can undo a sketch modification with ctrl+z',
     { tag: ['@skipWin'] },
-    async ({ page, homePage }) => {
+    async ({ page, homePage, editor }) => {
       const u = await getUtils(page)
       await page.addInitScript(async () => {
         localStorage.setItem(
           'persistCode',
-          `sketch001 = startSketchOn(XZ)
+          `@settings(defaultLengthUnit=in)
+sketch001 = startSketchOn(XZ)
   |> startProfileAt([4.61, -10.01], %)
   |> line(end = [12.73, -0.09])
-  |> tangentialArcTo([24.95, -0.38], %)
+  |> tangentialArc(endAbsolute = [24.95, -0.38])
   |> close()
   |> extrude(length = 5)`
         )
@@ -1067,7 +1075,7 @@ sketch001 = startSketchOn(XZ)
       // we wait so it saves the code
       await page.waitForTimeout(800)
 
-      // drag tangentialArcTo handle
+      // drag tangentialArc handle
       const tangentEnd = await u.getBoundingBox('[data-overlay-index="1"]')
       await page.dragAndDrop('#stream', '#stream', {
         sourcePosition: { x: tangentEnd.x + 10, y: tangentEnd.y - 5 },
@@ -1080,41 +1088,45 @@ sketch001 = startSketchOn(XZ)
       await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
 
       // expect the code to have changed
-      await expect(page.locator('.cm-content'))
-        .toHaveText(`sketch001 = startSketchOn(XZ)
+      await editor.expectEditor.toContain(
+        `sketch001 = startSketchOn(XZ)
     |> startProfileAt([2.71, -2.71], %)
     |> line(end = [15.4, -2.78])
-    |> tangentialArcTo([27.6, -3.05], %)
+    |> tangentialArc(endAbsolute = [27.6, -3.05])
     |> close()
-    |> extrude(length = 5)
-  `)
+    |> extrude(length = 5)`,
+        { shouldNormalise: true }
+      )
 
       // Hit undo
       await page.keyboard.down('Control')
       await page.keyboard.press('KeyZ')
       await page.keyboard.up('Control')
 
-      await expect(page.locator('.cm-content'))
-        .toHaveText(`sketch001 = startSketchOn(XZ)
+      await editor.expectEditor.toContain(
+        `sketch001 = startSketchOn(XZ)
     |> startProfileAt([2.71, -2.71], %)
     |> line(end = [15.4, -2.78])
-    |> tangentialArcTo([24.95, -0.38], %)
+    |> tangentialArc(endAbsolute = [24.95, -0.38])
     |> close()
-    |> extrude(length = 5)`)
+    |> extrude(length = 5)`,
+        { shouldNormalise: true }
+      )
 
       // Hit undo again.
       await page.keyboard.down('Control')
       await page.keyboard.press('KeyZ')
       await page.keyboard.up('Control')
 
-      await expect(page.locator('.cm-content'))
-        .toHaveText(`sketch001 = startSketchOn(XZ)
+      await editor.expectEditor.toContain(
+        `sketch001 = startSketchOn(XZ)
     |> startProfileAt([2.71, -2.71], %)
     |> line(end = [12.73, -0.09])
-    |> tangentialArcTo([24.95, -0.38], %)
+    |> tangentialArc(endAbsolute = [24.95, -0.38])
     |> close()
-    |> extrude(length = 5)
-  `)
+    |> extrude(length = 5)`,
+        { shouldNormalise: true }
+      )
 
       // Hit undo again.
       await page.keyboard.down('Control')
@@ -1122,18 +1134,20 @@ sketch001 = startSketchOn(XZ)
       await page.keyboard.up('Control')
 
       await page.waitForTimeout(100)
-      await expect(page.locator('.cm-content'))
-        .toHaveText(`sketch001 = startSketchOn(XZ)
-  |> startProfileAt([4.61, -10.01], %)
-  |> line(end = [12.73, -0.09])
-  |> tangentialArcTo([24.95, -0.38], %)
-  |> close()
-  |> extrude(length = 5)`)
+      await editor.expectEditor.toContain(
+        `sketch001 = startSketchOn(XZ)
+    |> startProfileAt([4.61, -10.01], %)
+    |> line(end = [12.73, -0.09])
+    |> tangentialArc(endAbsolute = [24.95, -0.38])
+    |> close()
+    |> extrude(length = 5)`,
+        { shouldNormalise: true }
+      )
     }
   )
 
   test(
-    `Can use the import stdlib function on a local OBJ file`,
+    `Can import a local OBJ file`,
     { tag: '@electron' },
     async ({ page, context }, testInfo) => {
       test.fixme(orRunWhenFullSuiteEnabled())
@@ -1183,7 +1197,7 @@ sketch001 = startSketchOn(XZ)
           .toBeLessThan(15)
       })
       await test.step(`Write the import function line`, async () => {
-        await u.codeLocator.fill(`import('cube.obj')`)
+        await u.codeLocator.fill(`import 'cube.obj'\ncube`)
         await page.waitForTimeout(800)
       })
       await test.step(`Reset the camera before checking`, async () => {
@@ -1265,6 +1279,128 @@ sketch001 = startSketchOn(XZ)
     await test.step(`Verify center rectangle panning`, async () => {
       await toolbar.selectCenterRectangle()
       await middleMousePan(800, 200, 900, 300)
+    })
+  })
+
+  test('Can select lines on the main axis', async ({
+    page,
+    homePage,
+    toolbar,
+  }) => {
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `sketch001 = startSketchOn(XZ)
+  profile001 = startProfileAt([100.00, 100.0], sketch001)
+    |> yLine(length = -100.0)
+    |> xLine(length = 200.0)
+    |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+    |> close()`
+      )
+    })
+
+    const width = 1200
+    const height = 800
+    const viewportSize = { width, height }
+    await page.setBodyDimensions(viewportSize)
+
+    await homePage.goToModelingScene()
+
+    const u = await getUtils(page)
+    await u.waitForPageLoad()
+
+    await toolbar.editSketch(0)
+
+    await page.waitForTimeout(1000)
+
+    // Click on the bottom segment that lies on the x axis
+    await page.mouse.click(width * 0.85, height / 2)
+
+    await page.waitForTimeout(1000)
+
+    // Verify segment is selected (you can check for visual indicators or state)
+    const element = page.locator('[data-overlay-index="1"]')
+    await expect(element).toHaveAttribute('data-overlay-visible', 'true')
+  })
+
+  test(`Only show axis planes when there are no errors`, async ({
+    page,
+    homePage,
+    scene,
+    cmdBar,
+  }) => {
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `sketch001 = startSketchOn(XZ)
+    profile001 = circle(sketch001, center = [-100.0, -100.0], radius = 50.0)
+
+    sketch002 = startSketchOn(XZ)
+    profile002 = circle(sketch002, center = [-100.0, 100.0], radius = 50.0)
+    extrude001 = extrude(profile002, length = 0)` // length = 0 is causing the error
+      )
+    })
+
+    const viewportSize = { width: 1200, height: 800 }
+    await page.setBodyDimensions(viewportSize)
+
+    await homePage.goToModelingScene()
+
+    await scene.connectionEstablished()
+    await scene.settled(cmdBar)
+
+    await scene.expectPixelColor(
+      TEST_COLORS.DARK_MODE_BKGD,
+      // This is a position where the blue part of the axis plane is visible if its rendered
+      { x: viewportSize.width * 0.75, y: viewportSize.height * 0.2 },
+      15
+    )
+  })
+
+  test(`test-toolbar-buttons`, async ({
+    page,
+    homePage,
+    toolbar,
+    scene,
+    cmdBar,
+  }) => {
+    await test.step('Load an empty file', async () => {
+      await page.addInitScript(async () => {
+        localStorage.setItem('persistCode', '')
+      })
+      await page.setBodyDimensions({ width: 1200, height: 500 })
+      await homePage.goToModelingScene()
+
+      // wait until scene is ready to be interacted with
+      await scene.connectionEstablished()
+      await scene.settled(cmdBar)
+    })
+
+    await test.step('Test toolbar button correct selection', async () => {
+      await toolbar.expectToolbarMode.toBe('modeling')
+
+      await toolbar.startSketchPlaneSelection()
+
+      // Click on a default plane
+      await page.mouse.click(700, 200)
+
+      // tools cannot be selected immediately, couldn't find an event to await instead.
+      await page.waitForTimeout(1000)
+
+      await toolbar.selectCenterRectangle()
+
+      await expect(page.getByTestId('center-rectangle')).toHaveAttribute(
+        'aria-pressed',
+        'true'
+      )
+    })
+
+    await test.step('Test Toolbar dropdown remembering last selection', async () => {
+      // Select another tool
+      await page.getByTestId('circle-center').click()
+
+      // center-rectangle should still be the active option in the rectangle dropdown
+      await expect(page.getByTestId('center-rectangle')).toBeVisible()
     })
   })
 })

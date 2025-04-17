@@ -1,8 +1,8 @@
 /* eslint suggest-no-throw/suggest-no-throw: 0 */
-import * as vscode from 'vscode'
 import { strict as nativeAssert } from 'assert'
-import { exec, type ExecOptions, spawnSync } from 'child_process'
+import { type ExecOptions, exec, spawnSync } from 'child_process'
 import { inspect } from 'util'
+import * as vscode from 'vscode'
 
 export interface Env {
   [name: string]: string

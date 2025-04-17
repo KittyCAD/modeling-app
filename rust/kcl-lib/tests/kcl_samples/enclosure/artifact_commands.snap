@@ -204,7 +204,8 @@ description: Artifact commands enclosure.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 70.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -630,7 +631,8 @@ description: Artifact commands enclosure.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 67.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -915,7 +917,8 @@ description: Artifact commands enclosure.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 67.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -1200,7 +1203,8 @@ description: Artifact commands enclosure.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 67.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -1485,7 +1489,8 @@ description: Artifact commands enclosure.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 67.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -2095,7 +2100,8 @@ description: Artifact commands enclosure.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 3.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -2864,7 +2870,8 @@ description: Artifact commands enclosure.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 3.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -3209,6 +3216,30 @@ description: Artifact commands enclosure.kcl
       "radius": 9.0,
       "tolerance": 0.0000001,
       "cut_type": "fillet"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "set_scene_units",
+      "unit": "mm"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "set_scene_units",
+      "unit": "mm"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "set_scene_units",
+      "unit": "mm"
     }
   }
 ]

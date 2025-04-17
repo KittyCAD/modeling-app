@@ -11,13 +11,13 @@ description: Result of parsing comparisons_multiple.kcl
         "expression": {
           "arguments": [
             {
-              "commentStart": 7,
+              "commentStart": 0,
               "end": 0,
               "left": {
-                "commentStart": 7,
+                "commentStart": 0,
                 "end": 0,
                 "left": {
-                  "commentStart": 7,
+                  "commentStart": 0,
                   "end": 0,
                   "raw": "3",
                   "start": 0,
@@ -30,7 +30,7 @@ description: Result of parsing comparisons_multiple.kcl
                 },
                 "operator": "==",
                 "right": {
-                  "commentStart": 12,
+                  "commentStart": 0,
                   "end": 0,
                   "raw": "3",
                   "start": 0,
@@ -47,7 +47,7 @@ description: Result of parsing comparisons_multiple.kcl
               },
               "operator": "==",
               "right": {
-                "commentStart": 17,
+                "commentStart": 0,
                 "end": 0,
                 "raw": "3",
                 "start": 0,
@@ -63,7 +63,7 @@ description: Result of parsing comparisons_multiple.kcl
               "type": "BinaryExpression"
             },
             {
-              "commentStart": 20,
+              "commentStart": 0,
               "end": 0,
               "raw": "\"this should not compile\"",
               "start": 0,

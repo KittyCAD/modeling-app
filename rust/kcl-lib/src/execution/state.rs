@@ -7,6 +7,7 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
+use super::types::NumericType;
 use crate::{
     errors::{KclError, KclErrorDetails, Severity},
     execution::{
@@ -226,6 +227,17 @@ impl ExecState {
         debug_assert!(self.global.path_to_source_id.contains_key(&path));
         let module_info = ModuleInfo { id, repr, path };
         self.global.module_infos.insert(id, module_info);
+    }
+
+    pub fn get_module(&mut self, id: ModuleId) -> Option<&ModuleInfo> {
+        self.global.module_infos.get(&id)
+    }
+
+    pub fn current_default_units(&self) -> NumericType {
+        NumericType::Default {
+            len: self.length_unit(),
+            angle: self.angle_unit(),
+        }
     }
 
     pub fn length_unit(&self) -> UnitLen {

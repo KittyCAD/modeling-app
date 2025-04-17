@@ -1,6 +1,6 @@
-import dts from 'rollup-plugin-dts'
 import { lezer } from '@lezer/generator/rollup'
 import typescript from '@rollup/plugin-typescript'
+import dts from 'rollup-plugin-dts'
 
 export default [
   {

@@ -1,36 +1,52 @@
 import { useEffect, useMemo, useRef } from 'react'
-import { useHotKeyListener } from './hooks/useHotKeyListener'
-import { Stream } from './components/Stream'
-import { AppHeader } from './components/AppHeader'
-import { useHotkeys } from 'react-hotkeys-hook'
-import { useLoaderData, useNavigate } from 'react-router-dom'
-import { type IndexLoaderData } from 'lib/types'
-import { PATHS } from 'lib/paths'
-import { onboardingPaths } from 'routes/Onboarding/paths'
-import { useEngineConnectionSubscriptions } from 'hooks/useEngineConnectionSubscriptions'
-import { codeManager, engineCommandManager } from 'lib/singletons'
-import { useAbsoluteFilePath } from 'hooks/useAbsoluteFilePath'
-import { isDesktop } from 'lib/isDesktop'
-import { useLspContext } from 'components/LspProvider'
-import { ModelingSidebar } from 'components/ModelingSidebar/ModelingSidebar'
-import { LowerRightControls } from 'components/LowerRightControls'
-import ModalContainer from 'react-modal-promise'
-import useHotkeyWrapper from 'lib/hotkeyWrapper'
-import Gizmo from 'components/Gizmo'
-import { CoreDumpManager } from 'lib/coredump'
-import { UnitsMenu } from 'components/UnitsMenu'
-import { CameraProjectionToggle } from 'components/CameraProjectionToggle'
-import { useCreateFileLinkQuery } from 'hooks/useCreateFileLinkQueryWatcher'
-import { maybeWriteToDisk } from 'lib/telemetry'
-import { takeScreenshotOfVideoStreamCanvas } from 'lib/screenshot'
-import { writeProjectThumbnailFile } from 'lib/desktop'
-import { useRouteLoaderData } from 'react-router-dom'
-import { useEngineCommands } from 'components/EngineCommands'
-import { commandBarActor } from 'machines/commandBarMachine'
-import { useToken } from 'machines/appMachine'
-import { useSettings } from 'machines/appMachine'
-import { rustContext } from 'lib/singletons'
 import toast from 'react-hot-toast'
+import { useHotkeys } from 'react-hotkeys-hook'
+import ModalContainer from 'react-modal-promise'
+import {
+  useLoaderData,
+  useNavigate,
+  useRouteLoaderData,
+  useSearchParams,
+} from 'react-router-dom'
+
+import { AppHeader } from '@src/components/AppHeader'
+import { useEngineCommands } from '@src/components/EngineCommands'
+import { EngineStream } from '@src/components/EngineStream'
+import Gizmo from '@src/components/Gizmo'
+import { LowerRightControls } from '@src/components/LowerRightControls'
+import { useLspContext } from '@src/components/LspProvider'
+import { ModelingSidebar } from '@src/components/ModelingSidebar/ModelingSidebar'
+import { UnitsMenu } from '@src/components/UnitsMenu'
+import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
+import { useCreateFileLinkQuery } from '@src/hooks/useCreateFileLinkQueryWatcher'
+import { useEngineConnectionSubscriptions } from '@src/hooks/useEngineConnectionSubscriptions'
+import { useHotKeyListener } from '@src/hooks/useHotKeyListener'
+import { CoreDumpManager } from '@src/lib/coredump'
+import { writeProjectThumbnailFile } from '@src/lib/desktop'
+import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
+import { isDesktop } from '@src/lib/isDesktop'
+import { PATHS } from '@src/lib/paths'
+import { takeScreenshotOfVideoStreamCanvas } from '@src/lib/screenshot'
+import {
+  codeManager,
+  engineCommandManager,
+  rustContext,
+  sceneInfra,
+} from '@src/lib/singletons'
+import { maybeWriteToDisk } from '@src/lib/telemetry'
+import { type IndexLoaderData } from '@src/lib/types'
+import {
+  engineStreamActor,
+  useSettings,
+  useToken,
+} from '@src/machines/appMachine'
+import { commandBarActor } from '@src/machines/commandBarMachine'
+import { EngineStreamTransition } from '@src/machines/engineStreamMachine'
+import { onboardingPaths } from '@src/routes/Onboarding/paths'
+
+// CYCLIC REF
+sceneInfra.camControls.engineStreamActor = engineStreamActor
+
 maybeWriteToDisk()
   .then(() => {})
   .catch(() => {})
@@ -57,6 +73,10 @@ export function App() {
   // the coredump.
   const ref = useRef<HTMLDivElement>(null)
 
+  // Stream related refs and data
+  let [searchParams] = useSearchParams()
+  const pool = searchParams.get('pool')
+
   const projectName = project?.name || null
   const projectPath = project?.path || null
 
@@ -71,7 +91,7 @@ export function App() {
   useHotKeyListener()
 
   const settings = useSettings()
-  const token = useToken()
+  const authToken = useToken()
 
   const coreDumpManager = useMemo(
     () =>
@@ -79,7 +99,7 @@ export function App() {
         engineCommandManager,
         codeManager,
         rustContext,
-        token
+        authToken
       ),
     []
   )
@@ -133,6 +153,13 @@ export function App() {
     }
   }, [lastCommandType])
 
+  useEffect(() => {
+    // When leaving the modeling scene, cut the engine stream.
+    return () => {
+      engineStreamActor.send({ type: EngineStreamTransition.Pause })
+    }
+  }, [])
+
   return (
     <div className="relative h-full flex flex-col" ref={ref}>
       <AppHeader
@@ -142,12 +169,11 @@ export function App() {
       />
       <ModalContainer />
       <ModelingSidebar paneOpacity={paneOpacity} />
-      <Stream />
+      <EngineStream pool={pool} authToken={authToken} />
       {/* <CamToggle /> */}
       <LowerRightControls coreDumpManager={coreDumpManager}>
         <UnitsMenu />
         <Gizmo />
-        <CameraProjectionToggle />
       </LowerRightControls>
     </div>
   )

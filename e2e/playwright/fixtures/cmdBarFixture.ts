@@ -1,9 +1,9 @@
-import type { Page, Locator, Route, Request } from '@playwright/test'
-import { expect, TestInfo } from '@playwright/test'
 import * as fs from 'fs'
 import * as path from 'path'
+import type { Locator, Page, Request, Route, TestInfo } from '@playwright/test'
+import { expect } from '@playwright/test'
 
-type CmdBarSerialised =
+export type CmdBarSerialised =
   | {
       stage: 'commandBarClosed'
     }
@@ -112,22 +112,16 @@ export class CmdBarFixture {
    * and assumes we are past the `pickCommand` step.
    */
   progressCmdBar = async (shouldFuzzProgressMethod = true) => {
-    // FIXME: Progressing the command bar is a race condition. We have an async useEffect that reports the final state via useCalculateKclExpression. If this does not run quickly enough, it will not "fail" the continue because you can press continue if the state is not ready. E2E tests do not know this.
-    // Wait 1250ms to assume the await executeAst of the KCL input field is finished
-    await this.page.waitForTimeout(1250)
-    if (shouldFuzzProgressMethod || Math.random() > 0.5) {
-      const arrowButton = this.page.getByRole('button', {
-        name: 'arrow right Continue',
-      })
-      if (await arrowButton.isVisible()) {
-        await arrowButton.click()
-      } else {
-        await this.page
-          .getByRole('button', { name: 'checkmark Submit command' })
-          .click()
-      }
+    await this.page.waitForTimeout(2000)
+    const arrowButton = this.page.getByRole('button', {
+      name: 'arrow right Continue',
+    })
+    if (await arrowButton.isVisible()) {
+      await arrowButton.click()
     } else {
-      await this.page.keyboard.press('Enter')
+      await this.page
+        .getByRole('button', { name: 'checkmark Submit command' })
+        .click()
     }
   }
 
@@ -182,6 +176,13 @@ export class CmdBarFixture {
    */
   selectOption = (options: Parameters<typeof this.page.getByRole>[1]) => {
     return this.page.getByRole('option', options)
+  }
+
+  /**
+   * Clicks the Create new variable button for kcl input
+   */
+  createNewVariable = async () => {
+    await this.page.getByRole('button', { name: 'Create new variable' }).click()
   }
 
   /**

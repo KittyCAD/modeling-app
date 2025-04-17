@@ -18,7 +18,7 @@ description: Result of parsing object_prop_not_found.kcl
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 6,
+            "commentStart": 0,
             "end": 0,
             "properties": [],
             "start": 0,
@@ -35,23 +35,23 @@ description: Result of parsing object_prop_not_found.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 11,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 11,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 11,
+            "commentStart": 0,
             "end": 0,
             "name": "k",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 15,
+            "commentStart": 0,
             "computed": false,
             "end": 0,
             "object": {
-              "commentStart": 15,
+              "commentStart": 0,
               "end": 0,
               "name": "obj",
               "start": 0,
@@ -59,7 +59,7 @@ description: Result of parsing object_prop_not_found.kcl
               "type": "Identifier"
             },
             "property": {
-              "commentStart": 19,
+              "commentStart": 0,
               "end": 0,
               "raw": "\"age\"",
               "start": 0,

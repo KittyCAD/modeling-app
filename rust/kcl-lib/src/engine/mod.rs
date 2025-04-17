@@ -37,7 +37,7 @@ use uuid::Uuid;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    execution::{ArtifactCommand, DefaultPlanes, IdGenerator, Point3d},
+    execution::{types::UnitLen, ArtifactCommand, DefaultPlanes, IdGenerator, Point3d},
     SourceRange,
 };
 
@@ -45,23 +45,6 @@ lazy_static::lazy_static! {
     pub static ref GRID_OBJECT_ID: uuid::Uuid = uuid::Uuid::parse_str("cfa78409-653d-4c26-96f1-7c45fb784840").unwrap();
 
     pub static ref GRID_SCALE_TEXT_OBJECT_ID: uuid::Uuid = uuid::Uuid::parse_str("10782f33-f588-4668-8bcd-040502d26590").unwrap();
-}
-
-/// The mode of execution.  When isolated, like during an import, attempting to
-/// send a command results in an error.
-#[derive(Debug, Default, Clone, Copy, Deserialize, Serialize, PartialEq, Eq, ts_rs::TS, JsonSchema)]
-#[ts(export)]
-#[serde(rename_all = "camelCase")]
-pub enum ExecutionKind {
-    #[default]
-    Normal,
-    Isolated,
-}
-
-impl ExecutionKind {
-    pub fn is_isolated(&self) -> bool {
-        matches!(self, ExecutionKind::Isolated)
-    }
 }
 
 #[derive(Default, Debug)]
@@ -93,6 +76,16 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
     /// Get the artifact commands that have accumulated so far.
     fn artifact_commands(&self) -> Arc<RwLock<Vec<ArtifactCommand>>>;
 
+    /// Take the batch of commands that have accumulated so far and clear them.
+    async fn take_batch(&self) -> Vec<(WebSocketRequest, SourceRange)> {
+        std::mem::take(&mut *self.batch().write().await)
+    }
+
+    /// Take the batch of end commands that have accumulated so far and clear them.
+    async fn take_batch_end(&self) -> IndexMap<Uuid, (WebSocketRequest, SourceRange)> {
+        std::mem::take(&mut *self.batch_end().write().await)
+    }
+
     /// Clear all artifact commands that have accumulated so far.
     async fn clear_artifact_commands(&self) {
         self.artifact_commands().write().await.clear();
@@ -107,13 +100,6 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
     async fn take_responses(&self) -> IndexMap<Uuid, WebSocketResponse> {
         std::mem::take(&mut *self.responses().write().await)
     }
-
-    /// Get the current execution kind.
-    async fn execution_kind(&self) -> ExecutionKind;
-
-    /// Replace the current execution kind with a new value and return the
-    /// existing value.
-    async fn replace_execution_kind(&self, execution_kind: ExecutionKind) -> ExecutionKind;
 
     /// Get the default planes.
     fn get_default_planes(&self) -> Arc<RwLock<Option<DefaultPlanes>>>;
@@ -279,11 +265,6 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         source_range: SourceRange,
         cmd: &ModelingCmd,
     ) -> Result<(), crate::errors::KclError> {
-        // In isolated mode, we don't send the command to the engine.
-        if self.execution_kind().await.is_isolated() {
-            return Ok(());
-        }
-
         let req = WebSocketRequest::ModelingCmdReq(ModelingCmdReq {
             cmd: cmd.clone(),
             cmd_id: id.into(),
@@ -305,11 +286,6 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         source_range: SourceRange,
         cmds: &[ModelingCmdReq],
     ) -> Result<(), crate::errors::KclError> {
-        // In isolated mode, we don't send the command to the engine.
-        if self.execution_kind().await.is_isolated() {
-            return Ok(());
-        }
-
         // Add cmds to the batch.
         let mut extended_cmds = Vec::with_capacity(cmds.len());
         for cmd in cmds {
@@ -332,11 +308,6 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         source_range: SourceRange,
         cmd: &ModelingCmd,
     ) -> Result<(), crate::errors::KclError> {
-        // In isolated mode, we don't send the command to the engine.
-        if self.execution_kind().await.is_isolated() {
-            return Ok(());
-        }
-
         let req = WebSocketRequest::ModelingCmdReq(ModelingCmdReq {
             cmd: cmd.clone(),
             cmd_id: id.into(),
@@ -355,36 +326,36 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         source_range: SourceRange,
         cmd: &ModelingCmd,
     ) -> Result<OkWebSocketResponseData, crate::errors::KclError> {
-        self.batch_modeling_cmd(id, source_range, cmd).await?;
+        let mut requests = self.take_batch().await.clone();
+
+        // Add the command to the batch.
+        requests.push((
+            WebSocketRequest::ModelingCmdReq(ModelingCmdReq {
+                cmd: cmd.clone(),
+                cmd_id: id.into(),
+            }),
+            source_range,
+        ));
+        self.stats().commands_batched.fetch_add(1, Ordering::Relaxed);
 
         // Flush the batch queue.
-        self.flush_batch(false, source_range).await
+        self.run_batch(requests, source_range).await
     }
 
-    /// Force flush the batch queue.
-    async fn flush_batch(
+    /// Run the batch for the specific commands.
+    async fn run_batch(
         &self,
-        // Whether or not to flush the end commands as well.
-        // We only do this at the very end of the file.
-        batch_end: bool,
+        orig_requests: Vec<(WebSocketRequest, SourceRange)>,
         source_range: SourceRange,
     ) -> Result<OkWebSocketResponseData, crate::errors::KclError> {
-        let all_requests = if batch_end {
-            let mut requests = self.batch().read().await.clone();
-            requests.extend(self.batch_end().read().await.values().cloned());
-            requests
-        } else {
-            self.batch().read().await.clone()
-        };
-
         // Return early if we have no commands to send.
-        if all_requests.is_empty() {
+        if orig_requests.is_empty() {
             return Ok(OkWebSocketResponseData::Modeling {
                 modeling_response: OkModelingCmdResponse::Empty {},
             });
         }
 
-        let requests: Vec<ModelingCmdReq> = all_requests
+        let requests: Vec<ModelingCmdReq> = orig_requests
             .iter()
             .filter_map(|(val, _)| match val {
                 WebSocketRequest::ModelingCmdReq(ModelingCmdReq { cmd, cmd_id }) => Some(ModelingCmdReq {
@@ -401,9 +372,9 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
             responses: true,
         });
 
-        let final_req = if all_requests.len() == 1 {
+        let final_req = if orig_requests.len() == 1 {
             // We can unwrap here because we know the batch has only one element.
-            all_requests.first().unwrap().0.clone()
+            orig_requests.first().unwrap().0.clone()
         } else {
             batched_requests
         };
@@ -411,7 +382,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         // Create the map of original command IDs to source range.
         // This is for the wasm side, kurt needs it for selections.
         let mut id_to_source_range = HashMap::new();
-        for (req, range) in all_requests.iter() {
+        for (req, range) in orig_requests.iter() {
             match req {
                 WebSocketRequest::ModelingCmdReq(ModelingCmdReq { cmd: _, cmd_id }) => {
                     id_to_source_range.insert(Uuid::from(*cmd_id), *range);
@@ -426,7 +397,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         }
 
         // Do the artifact commands.
-        for (req, _) in all_requests.iter() {
+        for (req, _) in orig_requests.iter() {
             match &req {
                 WebSocketRequest::ModelingCmdBatchReq(ModelingBatch { requests, .. }) => {
                     for request in requests {
@@ -442,11 +413,6 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
             }
         }
 
-        // Throw away the old batch queue.
-        self.batch().write().await.clear();
-        if batch_end {
-            self.batch_end().write().await.clear();
-        }
         self.stats().batches_sent.fetch_add(1, Ordering::Relaxed);
 
         // We pop off the responses to cleanup our mappings.
@@ -501,6 +467,25 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         }
     }
 
+    /// Force flush the batch queue.
+    async fn flush_batch(
+        &self,
+        // Whether or not to flush the end commands as well.
+        // We only do this at the very end of the file.
+        batch_end: bool,
+        source_range: SourceRange,
+    ) -> Result<OkWebSocketResponseData, crate::errors::KclError> {
+        let all_requests = if batch_end {
+            let mut requests = self.take_batch().await.clone();
+            requests.extend(self.take_batch_end().await.values().cloned());
+            requests
+        } else {
+            self.take_batch().await.clone()
+        };
+
+        self.run_batch(all_requests, source_range).await
+    }
+
     async fn make_default_plane(
         &self,
         plane_id: uuid::Uuid,
@@ -512,7 +497,13 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
     ) -> Result<uuid::Uuid, KclError> {
         // Create new default planes.
         let default_size = 100.0;
-        let default_origin = Point3d { x: 0.0, y: 0.0, z: 0.0 }.into();
+        let default_origin = Point3d {
+            x: 0.0,
+            y: 0.0,
+            z: 0.0,
+            units: UnitLen::Mm,
+        }
+        .into();
 
         self.batch_modeling_cmd(
             plane_id,
@@ -550,8 +541,18 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
             (
                 PlaneName::Xy,
                 id_generator.next_uuid(),
-                Point3d { x: 1.0, y: 0.0, z: 0.0 },
-                Point3d { x: 0.0, y: 1.0, z: 0.0 },
+                Point3d {
+                    x: 1.0,
+                    y: 0.0,
+                    z: 0.0,
+                    units: UnitLen::Mm,
+                },
+                Point3d {
+                    x: 0.0,
+                    y: 1.0,
+                    z: 0.0,
+                    units: UnitLen::Mm,
+                },
                 Some(Color {
                     r: 0.7,
                     g: 0.28,
@@ -562,8 +563,18 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
             (
                 PlaneName::Yz,
                 id_generator.next_uuid(),
-                Point3d { x: 0.0, y: 1.0, z: 0.0 },
-                Point3d { x: 0.0, y: 0.0, z: 1.0 },
+                Point3d {
+                    x: 0.0,
+                    y: 1.0,
+                    z: 0.,
+                    units: UnitLen::Mm,
+                },
+                Point3d {
+                    x: 0.0,
+                    y: 0.0,
+                    z: 1.0,
+                    units: UnitLen::Mm,
+                },
                 Some(Color {
                     r: 0.28,
                     g: 0.7,
@@ -574,8 +585,18 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
             (
                 PlaneName::Xz,
                 id_generator.next_uuid(),
-                Point3d { x: 1.0, y: 0.0, z: 0.0 },
-                Point3d { x: 0.0, y: 0.0, z: 1.0 },
+                Point3d {
+                    x: 1.0,
+                    y: 0.0,
+                    z: 0.0,
+                    units: UnitLen::Mm,
+                },
+                Point3d {
+                    x: 0.0,
+                    y: 0.0,
+                    z: 1.0,
+                    units: UnitLen::Mm,
+                },
                 Some(Color {
                     r: 0.28,
                     g: 0.28,
@@ -590,8 +611,14 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
                     x: -1.0,
                     y: 0.0,
                     z: 0.0,
+                    units: UnitLen::Mm,
                 },
-                Point3d { x: 0.0, y: 1.0, z: 0.0 },
+                Point3d {
+                    x: 0.0,
+                    y: 1.0,
+                    z: 0.0,
+                    units: UnitLen::Mm,
+                },
                 None,
             ),
             (
@@ -601,8 +628,14 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
                     x: 0.0,
                     y: -1.0,
                     z: 0.0,
+                    units: UnitLen::Mm,
                 },
-                Point3d { x: 0.0, y: 0.0, z: 1.0 },
+                Point3d {
+                    x: 0.0,
+                    y: 0.0,
+                    z: 1.0,
+                    units: UnitLen::Mm,
+                },
                 None,
             ),
             (
@@ -612,8 +645,14 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
                     x: -1.0,
                     y: 0.0,
                     z: 0.0,
+                    units: UnitLen::Mm,
                 },
-                Point3d { x: 0.0, y: 0.0, z: 1.0 },
+                Point3d {
+                    x: 0.0,
+                    y: 0.0,
+                    z: 1.0,
+                    units: UnitLen::Mm,
+                },
                 None,
             ),
         ];

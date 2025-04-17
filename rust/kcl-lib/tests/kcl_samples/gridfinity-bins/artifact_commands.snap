@@ -235,7 +235,8 @@ description: Artifact commands gridfinity-bins.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 34.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -579,7 +580,8 @@ description: Artifact commands gridfinity-bins.kcl
         "unit": "degrees",
         "value": -90.0
       },
-      "tolerance": 0.0000001
+      "tolerance": 0.0000001,
+      "opposite": "None"
     }
   },
   {
@@ -870,7 +872,8 @@ description: Artifact commands gridfinity-bins.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 4.75,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -1177,7 +1180,8 @@ description: Artifact commands gridfinity-bins.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -2.4,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -1243,7 +1247,8 @@ description: Artifact commands gridfinity-bins.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -2.4,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -1309,7 +1314,8 @@ description: Artifact commands gridfinity-bins.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -2.4,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -1375,7 +1381,8 @@ description: Artifact commands gridfinity-bins.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -2.4,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -3188,7 +3195,8 @@ description: Artifact commands gridfinity-bins.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 14.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -3421,6 +3429,30 @@ description: Artifact commands gridfinity-bins.kcl
       "type": "object_visible",
       "object_id": "[uuid]",
       "hidden": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "set_scene_units",
+      "unit": "mm"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "set_scene_units",
+      "unit": "mm"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "set_scene_units",
+      "unit": "mm"
     }
   }
 ]

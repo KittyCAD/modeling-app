@@ -243,7 +243,7 @@ fn generate_changed_program(old_ast: Node<Program>, mut new_ast: Node<Program>, 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::execution::{parse_execute, ExecTestResults};
+    use crate::execution::{parse_execute, parse_execute_with_project_dir, ExecTestResults};
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_get_changed_program_same_code() {
@@ -257,7 +257,7 @@ firstSketch = startSketchOn('XY')
   |> extrude(length = 6)
 
 // Remove the end face for the extrusion.
-shell(firstSketch, faces = ['end'], thickness = 0.25)"#;
+shell(firstSketch, faces = [END], thickness = 0.25)"#;
 
         let ExecTestResults { program, exec_ctxt, .. } = parse_execute(new).await.unwrap();
 
@@ -288,7 +288,7 @@ firstSketch = startSketchOn('XY')
   |> extrude(length = 6)
 
 // Remove the end face for the extrusion.
-shell(firstSketch, faces = ['end'], thickness = 0.25) "#;
+shell(firstSketch, faces = [END], thickness = 0.25) "#;
 
         let new = r#"// Remove the end face for the extrusion.
 firstSketch = startSketchOn('XY')
@@ -300,7 +300,7 @@ firstSketch = startSketchOn('XY')
   |> extrude(length = 6)
 
 // Remove the end face for the extrusion.
-shell(firstSketch, faces = ['end'], thickness = 0.25)"#;
+shell(firstSketch, faces = [END], thickness = 0.25)"#;
 
         let ExecTestResults { program, exec_ctxt, .. } = parse_execute(old).await.unwrap();
 
@@ -333,7 +333,7 @@ firstSketch = startSketchOn('XY')
   |> extrude(length = 6)
 
 // Remove the end face for the extrusion.
-shell(firstSketch, faces = ['end'], thickness = 0.25) "#;
+shell(firstSketch, faces = [END], thickness = 0.25) "#;
 
         let new = r#"// Remove the end face for the extrusion.
 firstSketch = startSketchOn('XY')
@@ -345,7 +345,7 @@ firstSketch = startSketchOn('XY')
   |> extrude(length = 6)
 
 // Remove the end face for the extrusion.
-shell(firstSketch, faces = ['end'], thickness = 0.25)"#;
+shell(firstSketch, faces = [END], thickness = 0.25)"#;
 
         let ExecTestResults { program, exec_ctxt, .. } = parse_execute(old).await.unwrap();
 
@@ -380,7 +380,7 @@ firstSketch = startSketchOn('XY')
   |> extrude(length = 6)
 
 // Remove the end face for the extrusion.
-shell(firstSketch, faces = ['end'], thickness = 0.25) "#;
+shell(firstSketch, faces = [END], thickness = 0.25) "#;
 
         let new = r#"@foo(whatever = 42)
 @baz
@@ -394,7 +394,7 @@ firstSketch = startSketchOn('XY')
   |> extrude(length = 6)
 
 // Remove the end face for the extrusion.
-shell(firstSketch, faces = ['end'], thickness = 0.25)"#;
+shell(firstSketch, faces = [END], thickness = 0.25)"#;
 
         let ExecTestResults { program, exec_ctxt, .. } = parse_execute(old).await.unwrap();
 
@@ -428,7 +428,7 @@ firstSketch = startSketchOn('XY')
   |> extrude(length = 6)
 
 // Remove the end face for the extrusion.
-shell(firstSketch, faces = ['end'], thickness = 0.25)"#;
+shell(firstSketch, faces = [END], thickness = 0.25)"#;
 
         let ExecTestResults {
             program, mut exec_ctxt, ..
@@ -465,7 +465,7 @@ firstSketch = startSketchOn('XY')
   |> extrude(length = 6)
 
 // Remove the end face for the extrusion.
-shell(firstSketch, faces = ['end'], thickness = 0.25)"#;
+shell(firstSketch, faces = [END], thickness = 0.25)"#;
 
         let ExecTestResults {
             program, mut exec_ctxt, ..
@@ -599,5 +599,65 @@ startSketchOn('XY')
                 program: new_program.ast
             }
         );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_multi_file_no_changes_does_not_reexecute() {
+        let code = r#"import "toBeImported.kcl" as importedCube
+
+importedCube
+
+sketch001 = startSketchOn(XZ)
+profile001 = startProfileAt([-134.53, -56.17], sketch001)
+  |> angledLine(angle = 0, length = 79.05, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 76.28)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $seg01)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg02)
+  |> close()
+extrude001 = extrude(profile001, length = 100)
+sketch003 = startSketchOn(extrude001, face = seg02)
+sketch002 = startSketchOn(extrude001, face = seg01)
+"#;
+
+        let other_file = (
+            std::path::PathBuf::from("toBeImported.kcl"),
+            r#"sketch001 = startSketchOn(XZ)
+profile001 = startProfileAt([281.54, 305.81], sketch001)
+  |> angledLine(angle = 0, length = 123.43, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 85.99)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude(profile001, length = 100)"#
+                .to_string(),
+        );
+
+        let tmp_dir = std::env::temp_dir();
+        let tmp_dir = tmp_dir.join(uuid::Uuid::new_v4().to_string());
+
+        // Create a temporary file for each of the other files.
+        let tmp_file = tmp_dir.join(other_file.0);
+        std::fs::create_dir_all(tmp_file.parent().unwrap()).unwrap();
+        std::fs::write(tmp_file, other_file.1).unwrap();
+
+        let ExecTestResults { program, exec_ctxt, .. } =
+            parse_execute_with_project_dir(code, Some(tmp_dir)).await.unwrap();
+
+        let mut new_program = crate::Program::parse_no_errs(code).unwrap();
+        new_program.compute_digest();
+
+        let result = get_changed_program(
+            CacheInformation {
+                ast: &program.ast,
+                settings: &exec_ctxt.settings,
+            },
+            CacheInformation {
+                ast: &new_program.ast,
+                settings: &exec_ctxt.settings,
+            },
+        )
+        .await;
+
+        assert_eq!(result, CacheResult::NoAction(false));
     }
 }

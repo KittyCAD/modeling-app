@@ -1,5 +1,5 @@
-import { useAuthState } from 'machines/appMachine'
-import Loading from './components/Loading'
+import Loading from '@src/components/Loading'
+import { useAuthState } from '@src/machines/appMachine'
 
 // Wrapper around protected routes, used in src/Router.tsx
 export const Auth = ({ children }: React.PropsWithChildren) => {
@@ -8,7 +8,7 @@ export const Auth = ({ children }: React.PropsWithChildren) => {
 
   return isLoggingIn ? (
     <Loading>
-      <span data-testid="initial-load">Loading Modeling App...</span>
+      <span data-testid="initial-load">Loading Design Studio...</span>
     </Loading>
   ) : (
     <>{children}</>

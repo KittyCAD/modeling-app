@@ -1,13 +1,15 @@
-import { ipcRenderer, contextBridge, IpcRendererEvent } from 'electron'
-import path from 'path'
+import fsSync from 'node:fs'
 import fs from 'node:fs/promises'
 import os from 'node:os'
-import fsSync from 'node:fs'
-import packageJson from '../package.json'
-import { MachinesListing } from 'components/MachineManagerProvider'
+import path from 'path'
+import packageJson from '@root/package.json'
+import type { MachinesListing } from '@src/components/MachineManagerProvider'
 import chokidar from 'chokidar'
-import type { Channel } from './channels'
-import type { WebContentSendPayload } from './menu/channels'
+import type { IpcRendererEvent } from 'electron'
+import { contextBridge, ipcRenderer } from 'electron'
+
+import type { Channel } from '@src/channels'
+import type { WebContentSendPayload } from '@src/menu/channels'
 
 const typeSafeIpcRendererOn = (
   channel: Channel,
@@ -278,6 +280,7 @@ contextBridge.exposeInMainWorld('electron', {
         'VITE_KC_SKIP_AUTH',
         'VITE_KC_CONNECTION_TIMEOUT_MS',
         'VITE_KC_DEV_TOKEN',
+
         'IS_PLAYWRIGHT',
 
         // Really we shouldn't use these and our code should use NODE_ENV
