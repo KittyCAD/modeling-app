@@ -41,7 +41,6 @@ gltf-json = "1.4.1"
 http = { workspace = true }
 image = { version = "0.25.6", default-features = false, features = ["png"] }
 indexmap = { workspace = true, features = ["serde"] }
-instant = "0.1.13"
 itertools = "0.13.0"
 kcl-derive-docs = { version = "0.1", path = "../kcl-derive-docs" }
 kittycad = { workspace = true }
@@ -90,6 +89,7 @@ winnow = "=0.6.24"
 zip = { workspace = true }
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
+instant = { version = "0.1.13", features = ["wasm-bindgen", "inaccurate"] }
 js-sys = { version = "0.3.72" }
 tokio = { workspace = true, features = ["sync", "time"] }
 tower-lsp = { workspace = true, features = ["runtime-agnostic"] }
@@ -98,6 +98,7 @@ wasm-bindgen-futures = "0.4.49"
 web-sys = { version = "0.3.76", features = ["console"] }
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+instant = "0.1.13"
 tokio = { workspace = true, features = ["full"] }
 tokio-tungstenite = { version = "0.24.0", features = [
     "rustls-tls-native-roots",

@@ -46,6 +46,7 @@
             rustToolchain
             cargo-criterion
             cargo-nextest
+            cargo-sort
             just
             postgresql.lib
             openssl
