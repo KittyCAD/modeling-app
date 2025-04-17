@@ -3,14 +3,11 @@ use std::ops::{Add, AddAssign, Mul};
 use anyhow::Result;
 use indexmap::IndexMap;
 use kittycad_modeling_cmds as kcmc;
-use kittycad_modeling_cmds::ok_response::OkModelingCmdResponse;
-use kittycad_modeling_cmds::websocket::OkWebSocketResponseData;
 use kittycad_modeling_cmds::{each_cmd as mcmd, length_unit::LengthUnit, websocket::ModelingCmdReq, ModelingCmd};
 use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
-use crate::errors::KclErrorDetails;
 use crate::{
     errors::KclError,
     execution::{types::NumericType, ArtifactId, ExecState, Metadata, TagEngineInfo, TagIdentifier, UnitLen},
@@ -101,24 +98,11 @@ impl ImportedGeometry {
             return Ok(());
         }
 
-        let resp = ctx
-            .engine
+        ctx.engine
             .ensure_async_command_completed(self.id, self.meta.first().map(|m| m.source_range))
             .await?;
 
-        let OkWebSocketResponseData::Modeling {
-            modeling_response: OkModelingCmdResponse::ImportFiles(imported_files),
-        } = &resp
-        else {
-            return Err(KclError::Engine(KclErrorDetails {
-                message: format!("ImportFiles response was not as expected: {:?}", resp),
-                source_ranges: vec![self.meta.first().map(|m| m.source_range).unwrap_or_default()],
-            }));
-        };
-
         self.completed = true;
-        // TODO: we can remove this once katie uses the id we give in the cmd_id
-        self.id = imported_files.object_id;
 
         Ok(())
     }

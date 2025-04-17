@@ -20,12 +20,10 @@ impl Context {
     pub async fn new(
         engine_manager: kcl_lib::wasm_engine::EngineCommandManager,
         fs_manager: kcl_lib::wasm_engine::FileSystemManager,
-        response_context: kcl_lib::wasm_engine::ResponseContext,
     ) -> Result<Self, JsValue> {
         console_error_panic_hook::set_once();
 
-        let response_context = Arc::new(response_context);
-
+        let response_context = Arc::new(kcl_lib::wasm_engine::ResponseContext::new());
         Ok(Self {
             engine: Arc::new(Box::new(
                 kcl_lib::wasm_engine::EngineConnection::new(engine_manager, response_context.clone())

@@ -37,8 +37,6 @@ export default class RustContext {
   private _defaultPlanes: DefaultPlanes | null = null
   private engineCommandManager: EngineCommandManager
 
-  responseCtxInstance: ResponseContext | null = null
-
   // Initialize the WASM module
   async ensureWasmInit() {
     try {
@@ -66,17 +64,12 @@ export default class RustContext {
   async create(): Promise<Context> {
     this.rustInstance = getModule()
 
-    // Create the new response context instance.
-    const responseCtxInstance = new this.rustInstance.ResponseContext()
-    this.responseCtxInstance = responseCtxInstance
-
     // We need this await here, DO NOT REMOVE it even if your editor says it's
     // unnecessary. The constructor of the module is async and it will not
     // resolve if you don't await it.
     const ctxInstance = await new this.rustInstance.Context(
       this.engineCommandManager,
-      fileSystemManager,
-      this.responseCtxInstance
+      fileSystemManager
     )
 
     return ctxInstance

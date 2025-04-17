@@ -66,14 +66,13 @@ pub struct ResponseContext {
 #[wasm_bindgen]
 impl ResponseContext {
     #[wasm_bindgen(constructor)]
-    pub fn new() -> Result<Self, JsValue> {
-        Ok(Self {
+    pub fn new() -> Self {
+        Self {
             responses: Arc::new(RwLock::new(IndexMap::new())),
-        })
+        }
     }
 
     // Add a response to the context.
-    #[wasm_bindgen(js_name = sendResponse)]
     pub async fn send_response(&self, data: js_sys::Uint8Array) -> Result<(), JsValue> {
         let ws_result: WebSocketResponse = match bson::from_slice(&data.to_vec()) {
             Ok(res) => res,
