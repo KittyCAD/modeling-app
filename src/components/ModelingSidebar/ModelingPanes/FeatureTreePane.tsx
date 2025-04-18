@@ -349,6 +349,38 @@ const OperationItem = (props: {
     }
   }
 
+  function enterTranslateFlow() {
+    if (
+      props.item.type === 'StdLibCall' ||
+      props.item.type === 'KclStdLibCall' ||
+      props.item.type === 'GroupBegin'
+    ) {
+      props.send({
+        type: 'enterTranslateFlow',
+        data: {
+          targetSourceRange: sourceRangeFromRust(props.item.sourceRange),
+          currentOperation: props.item,
+        },
+      })
+    }
+  }
+
+  function enterRotateFlow() {
+    if (
+      props.item.type === 'StdLibCall' ||
+      props.item.type === 'KclStdLibCall' ||
+      props.item.type === 'GroupBegin'
+    ) {
+      props.send({
+        type: 'enterRotateFlow',
+        data: {
+          targetSourceRange: sourceRangeFromRust(props.item.sourceRange),
+          currentOperation: props.item,
+        },
+      })
+    }
+  }
+
   function deleteOperation() {
     if (
       props.item.type === 'StdLibCall' ||
@@ -413,28 +445,54 @@ const OperationItem = (props: {
       props.item.type === 'KclStdLibCall'
         ? [
             <ContextMenuItem
-              disabled={!stdLibMap[props.item.name]?.supportsAppearance}
-              onClick={enterAppearanceFlow}
-              data-testid="context-menu-set-appearance"
-            >
-              Set appearance
-            </ContextMenuItem>,
-            <ContextMenuItem
               disabled={!stdLibMap[props.item.name]?.prepareToEdit}
               onClick={enterEditFlow}
               hotkey="Double click"
             >
               Edit
             </ContextMenuItem>,
+            <ContextMenuItem
+              disabled={!stdLibMap[props.item.name]?.supportsAppearance}
+              onClick={enterAppearanceFlow}
+              data-testid="context-menu-set-appearance"
+            >
+              Set appearance
+            </ContextMenuItem>,
           ]
         : []),
-      <ContextMenuItem
-        onClick={deleteOperation}
-        hotkey="Delete"
-        data-testid="context-menu-delete"
-      >
-        Delete
-      </ContextMenuItem>,
+      ...(props.item.type === 'StdLibCall' ||
+      props.item.type === 'KclStdLibCall' ||
+      props.item.type === 'GroupBegin'
+        ? [
+            <ContextMenuItem
+              onClick={enterTranslateFlow}
+              data-testid="context-menu-set-translate"
+              disabled={
+                props.item.type !== 'GroupBegin' &&
+                !stdLibMap[props.item.name]?.supportsTransform
+              }
+            >
+              Set translate
+            </ContextMenuItem>,
+            <ContextMenuItem
+              onClick={enterRotateFlow}
+              data-testid="context-menu-set-rotate"
+              disabled={
+                props.item.type !== 'GroupBegin' &&
+                !stdLibMap[props.item.name]?.supportsTransform
+              }
+            >
+              Set rotate
+            </ContextMenuItem>,
+            <ContextMenuItem
+              onClick={deleteOperation}
+              hotkey="Delete"
+              data-testid="context-menu-delete"
+            >
+              Delete
+            </ContextMenuItem>,
+          ]
+        : []),
     ],
     [props.item, props.send]
   )

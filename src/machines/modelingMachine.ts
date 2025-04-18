@@ -52,6 +52,7 @@ import {
   deleteNodeInExtrudePipe,
   extrudeSketch,
   insertNamedConstant,
+  insertVariableAndOffsetPathToNode,
   loftSketches,
 } from '@src/lang/modifyAst'
 import type {
@@ -72,17 +73,21 @@ import {
   applyIntersectFromTargetOperatorSelections,
   applySubtractFromTargetOperatorSelections,
   applyUnionFromTargetOperatorSelections,
+  findAllChildrenAndOrderByPlaceInCode,
+  getLastVariable,
 } from '@src/lang/modifyAst/boolean'
 import {
   deleteSelectionPromise,
   deletionErrorMessage,
 } from '@src/lang/modifyAst/deleteSelection'
 import { setAppearance } from '@src/lang/modifyAst/setAppearance'
+import { setTranslate, setRotate } from '@src/lang/modifyAst/setTransform'
 import {
   getNodeFromPath,
   isNodeSafeToReplacePath,
   stringifyPathToNode,
   updatePathToNodesAfterEdit,
+  valueOrVariable,
 } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import {
@@ -373,6 +378,8 @@ export type ModelingMachineEvent =
       data: ModelingCommandSchema['Delete selection']
     }
   | { type: 'Appearance'; data: ModelingCommandSchema['Appearance'] }
+  | { type: 'Translate'; data: ModelingCommandSchema['Translate'] }
+  | { type: 'Rotate'; data: ModelingCommandSchema['Rotate'] }
   | {
       type:
         | 'Add circle origin'
@@ -800,9 +807,7 @@ export const modelingMachine = setup({
       })().catch(reportRejection)
     },
     'tear down client sketch': () => {
-      if (sceneEntitiesManager.activeSegments) {
-        sceneEntitiesManager.tearDownSketch({ removeAxis: false })
-      }
+      sceneEntitiesManager.tearDownSketch({ removeAxis: false })
     },
     'remove sketch grid': () => sceneEntitiesManager.removeSketchGrid(),
     'set up draft line': assign(({ context: { sketchDetails }, event }) => {
@@ -2114,12 +2119,6 @@ export const modelingMachine = setup({
           }
         }
 
-        const valueOrVariable = (variable: KclCommandValue) => {
-          return 'variableName' in variable
-            ? variable.variableIdentifierAst
-            : variable.valueAst
-        }
-
         const { modifiedAst, pathToNode } = addHelix({
           node: ast,
           revolutions: valueOrVariable(revolutions),
@@ -2734,6 +2733,120 @@ export const modelingMachine = setup({
         )
       }
     ),
+    translateAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input: ModelingCommandSchema['Translate'] | undefined
+      }) => {
+        if (!input) return new Error('No input provided')
+        const ast = kclManager.ast
+        const modifiedAst = structuredClone(ast)
+        const { x, y, z, nodeToEdit, selection } = input
+        let pathToNode = nodeToEdit
+        if (!(pathToNode && typeof pathToNode[1][0] === 'number')) {
+          if (selection?.graphSelections[0].artifact) {
+            const children = findAllChildrenAndOrderByPlaceInCode(
+              selection?.graphSelections[0].artifact,
+              kclManager.artifactGraph
+            )
+            const variable = getLastVariable(children, modifiedAst)
+            if (!variable) {
+              return new Error("Couldn't find corresponding path to node")
+            }
+            pathToNode = variable.pathToNode
+          } else if (selection?.graphSelections[0].codeRef.pathToNode) {
+            pathToNode = selection?.graphSelections[0].codeRef.pathToNode
+          } else {
+            return new Error("Couldn't find corresponding path to node")
+          }
+        }
+
+        insertVariableAndOffsetPathToNode(x, modifiedAst, pathToNode)
+        insertVariableAndOffsetPathToNode(y, modifiedAst, pathToNode)
+        insertVariableAndOffsetPathToNode(z, modifiedAst, pathToNode)
+        const result = setTranslate({
+          pathToNode,
+          modifiedAst,
+          x: valueOrVariable(x),
+          y: valueOrVariable(y),
+          z: valueOrVariable(z),
+        })
+        if (err(result)) {
+          return err(result)
+        }
+
+        await updateModelingState(
+          result.modifiedAst,
+          EXECUTION_TYPE_REAL,
+          {
+            kclManager,
+            editorManager,
+            codeManager,
+          },
+          {
+            focusPath: [result.pathToNode],
+          }
+        )
+      }
+    ),
+    rotateAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input: ModelingCommandSchema['Rotate'] | undefined
+      }) => {
+        if (!input) return new Error('No input provided')
+        const ast = kclManager.ast
+        const modifiedAst = structuredClone(ast)
+        const { roll, pitch, yaw, nodeToEdit, selection } = input
+        let pathToNode = nodeToEdit
+        if (!(pathToNode && typeof pathToNode[1][0] === 'number')) {
+          if (selection?.graphSelections[0].artifact) {
+            const children = findAllChildrenAndOrderByPlaceInCode(
+              selection?.graphSelections[0].artifact,
+              kclManager.artifactGraph
+            )
+            const variable = getLastVariable(children, modifiedAst)
+            if (!variable) {
+              return new Error("Couldn't find corresponding path to node")
+            }
+            pathToNode = variable.pathToNode
+          } else if (selection?.graphSelections[0].codeRef.pathToNode) {
+            pathToNode = selection?.graphSelections[0].codeRef.pathToNode
+          } else {
+            return new Error("Couldn't find corresponding path to node")
+          }
+        }
+
+        insertVariableAndOffsetPathToNode(roll, modifiedAst, pathToNode)
+        insertVariableAndOffsetPathToNode(pitch, modifiedAst, pathToNode)
+        insertVariableAndOffsetPathToNode(yaw, modifiedAst, pathToNode)
+        const result = setRotate({
+          pathToNode,
+          modifiedAst,
+          roll: valueOrVariable(roll),
+          pitch: valueOrVariable(pitch),
+          yaw: valueOrVariable(yaw),
+        })
+        if (err(result)) {
+          return err(result)
+        }
+
+        await updateModelingState(
+          result.modifiedAst,
+          EXECUTION_TYPE_REAL,
+          {
+            kclManager,
+            editorManager,
+            codeManager,
+          },
+          {
+            focusPath: [result.pathToNode],
+          }
+        )
+      }
+    ),
     exportFromEngine: fromPromise(
       async ({}: { input?: ModelingCommandSchema['Export'] }) => {
         return undefined as Error | undefined
@@ -2999,6 +3112,16 @@ export const modelingMachine = setup({
 
         Appearance: {
           target: 'Applying appearance',
+          reenter: true,
+        },
+
+        Translate: {
+          target: 'Applying translate',
+          reenter: true,
+        },
+
+        Rotate: {
+          target: 'Applying rotate',
           reenter: true,
         },
 
@@ -3858,11 +3981,7 @@ export const modelingMachine = setup({
           },
 
           initial: 'splitting sketch pipe',
-          entry: [
-            'assign tool in context',
-            'reset selections',
-            'tear down client sketch',
-          ],
+          entry: ['assign tool in context', 'reset selections'],
         },
         'Circle three point tool': {
           states: {
@@ -4391,6 +4510,32 @@ export const modelingMachine = setup({
         id: 'appearanceAstMod',
         input: ({ event }) => {
           if (event.type !== 'Appearance') return undefined
+          return event.data
+        },
+        onDone: ['idle'],
+        onError: ['idle'],
+      },
+    },
+
+    'Applying translate': {
+      invoke: {
+        src: 'translateAstMod',
+        id: 'translateAstMod',
+        input: ({ event }) => {
+          if (event.type !== 'Translate') return undefined
+          return event.data
+        },
+        onDone: ['idle'],
+        onError: ['idle'],
+      },
+    },
+
+    'Applying rotate': {
+      invoke: {
+        src: 'rotateAstMod',
+        id: 'rotateAstMod',
+        input: ({ event }) => {
+          if (event.type !== 'Rotate') return undefined
           return event.data
         },
         onDone: ['idle'],

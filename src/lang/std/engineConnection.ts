@@ -1617,6 +1617,12 @@ export class EngineCommandManager extends EventTarget {
           return
         }
 
+        // In either case we want to send the response back over the wire to
+        // the rust side.
+        this.rustContext?.sendResponse(message).catch((err) => {
+          console.error('Error sending response to rust', err)
+        })
+
         const pending = this.pendingCommands[message.request_id || '']
 
         if (pending && !message.success) {
@@ -1930,6 +1936,46 @@ export class EngineCommandManager extends EventTarget {
         /*noop*/
         return e
       })
+  }
+  /**
+   * A wrapper around the sendCommand where all inputs are JSON strings
+   *
+   * This one does not wait for a response.
+   */
+  fireModelingCommandFromWasm(
+    id: string,
+    rangeStr: string,
+    commandStr: string,
+    idToRangeStr: string
+  ): void | Error {
+    if (this.engineConnection === undefined)
+      return new Error('engineConnection is undefined')
+    if (
+      !this.engineConnection?.isReady() &&
+      !this.engineConnection.isUsingConnectionLite
+    )
+      return new Error('engineConnection is not ready')
+    if (id === undefined) return new Error('id is undefined')
+    if (rangeStr === undefined) return new Error('rangeStr is undefined')
+    if (commandStr === undefined) return new Error('commandStr is undefined')
+    const range: SourceRange = JSON.parse(rangeStr)
+    const command: EngineCommand = JSON.parse(commandStr)
+    const idToRangeMap: { [key: string]: SourceRange } =
+      JSON.parse(idToRangeStr)
+
+    // Current executeAst is stale, going to interrupt, a new executeAst will trigger
+    // Used in conjunction with rejectAllModelingCommands
+    if (this?.kclManager?.executeIsStale) {
+      return new Error(EXECUTE_AST_INTERRUPT_ERROR_MESSAGE)
+    }
+
+    // We purposely don't wait for a response here
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    this.sendCommand(id, {
+      command,
+      range,
+      idToRangeMap,
+    })
   }
   /**
    * A wrapper around the sendCommand where all inputs are JSON strings

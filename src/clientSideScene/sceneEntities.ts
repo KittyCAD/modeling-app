@@ -669,7 +669,10 @@ export class SceneEntities {
     variableDeclarationName: string
   }> {
     const prepared = this.prepareTruncatedAst(sketchNodePaths, maybeModdedAst)
-    if (err(prepared)) return Promise.reject(prepared)
+    if (err(prepared)) {
+      this.tearDownSketch({ removeAxis: false })
+      return Promise.reject(prepared)
+    }
     const { truncatedAst, variableDeclarationName } = prepared
 
     const { execState } = await executeAstMock({
@@ -695,6 +698,8 @@ export class SceneEntities {
     const scale = this.sceneInfra.getClientSceneScaleFactor(dummy)
 
     const callbacks: (() => SegmentOverlayPayload | null)[] = []
+    this.sceneInfra.pauseRendering()
+    this.tearDownSketch({ removeAxis: false })
 
     for (const sketchInfo of sketchesInfo) {
       const { sketch } = sketchInfo
@@ -766,7 +771,11 @@ export class SceneEntities {
           segPathToNode,
           ['CallExpression', 'CallExpressionKw']
         )
-        if (err(_node1)) return
+        if (err(_node1)) {
+          this.tearDownSketch({ removeAxis: false })
+          this.sceneInfra.resumeRendering()
+          return
+        }
         const callExpName = _node1.node?.callee?.name.name
 
         const initSegment =
@@ -862,6 +871,9 @@ export class SceneEntities {
     )
     position && this.intersectionPlane.position.set(...position)
     this.sceneInfra.scene.add(group)
+
+    this.sceneInfra.resumeRendering()
+
     this.sceneInfra.camControls.enableRotate = false
     this.sceneInfra.overlayCallbacks(callbacks)
 
@@ -882,7 +894,6 @@ export class SceneEntities {
   ) => {
     if (trap(modifiedAst)) return Promise.reject(modifiedAst)
     const nextAst = await this.kclManager.updateAst(modifiedAst, false)
-    this.tearDownSketch({ removeAxis: false })
     this.sceneInfra.resetMouseListeners()
     await this.setupSketch({
       sketchEntryNodePath,
@@ -956,7 +967,6 @@ export class SceneEntities {
 
     const draftExpressionsIndices = { start: index, end: index }
 
-    if (shouldTearDown) this.tearDownSketch({ removeAxis: false })
     this.sceneInfra.resetMouseListeners()
 
     const { truncatedAst } = await this.setupSketch({
@@ -967,6 +977,8 @@ export class SceneEntities {
       position: origin,
       maybeModdedAst: modifiedAst,
       draftExpressionsIndices,
+    }).catch(() => {
+      return { truncatedAst: modifiedAst }
     })
     this.sceneInfra.setCallbacks({
       onClick: async (args) => {
@@ -1824,7 +1836,6 @@ export class SceneEntities {
     const index = sg.paths.length // because we've added a new segment that's not in the memory yet
     const draftExpressionsIndices = { start: index, end: index }
 
-    this.tearDownSketch({ removeAxis: false })
     this.sceneInfra.resetMouseListeners()
 
     const { truncatedAst } = await this.setupSketch({
@@ -2055,7 +2066,6 @@ export class SceneEntities {
     // Get the insertion index from the modified path
     const insertIndex = Number(mod.pathToNode[1][0])
 
-    this.tearDownSketch({ removeAxis: false })
     this.sceneInfra.resetMouseListeners()
 
     const { truncatedAst } = await this.setupSketch({
@@ -2477,7 +2487,6 @@ export class SceneEntities {
     this.sceneInfra.setCallbacks({
       onDragEnd: async () => {
         if (addingNewSegmentStatus !== 'nothing') {
-          this.tearDownSketch({ removeAxis: false })
           // eslint-disable-next-line @typescript-eslint/no-floating-promises
           this.setupSketch({
             sketchEntryNodePath,
@@ -2552,7 +2561,6 @@ export class SceneEntities {
               mod.modifiedAst
             )
             if (err(didReParse)) return
-            this.tearDownSketch({ removeAxis: false })
             // eslint-disable-next-line @typescript-eslint/no-floating-promises
             this.setupSketch({
               sketchEntryNodePath: pathToNode,
@@ -2664,8 +2672,8 @@ export class SceneEntities {
         if (prev && ARC_SEGMENT_TYPES.includes(prev.userData.type)) {
           const snapDirection = findTangentDirection(prev)
           if (snapDirection) {
-            const SNAP_TOLERANCE_PIXELS = 12 * window.devicePixelRatio
-            const SNAP_MIN_DISTANCE_PIXELS = 5 * window.devicePixelRatio
+            const SNAP_TOLERANCE_PIXELS = 8 * window.devicePixelRatio
+            const SNAP_MIN_DISTANCE_PIXELS = 10 * window.devicePixelRatio
             const orthoFactor = orthoScale(this.sceneInfra.camControls.camera)
 
             // See if snapDirection intersects with any of the axes
