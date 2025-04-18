@@ -377,8 +377,7 @@ test.describe(
   'extrude on default planes should be stable',
   { tag: '@snapshot' },
   () => {
-    // FIXME: Skip on macos its being weird.
-    test.skip(process.platform === 'darwin', 'Skip on macos')
+    test.fixme(orRunWhenFullSuiteEnabled())
 
     test('XY', async ({ page, context, cmdBar, scene }) => {
       await extrudeDefaultPlane(context, page, cmdBar, scene, 'XY')
@@ -410,6 +409,7 @@ test(
   'Draft segments should look right',
   { tag: '@snapshot' },
   async ({ page, scene, toolbar }) => {
+    test.fixme(orRunWhenFullSuiteEnabled())
     const u = await getUtils(page)
     await page.setViewportSize({ width: 1200, height: 500 })
     const PUR = 400 / 37.5 //pixeltoUnitRatio
@@ -534,8 +534,7 @@ test(
   'Draft rectangles should look right',
   { tag: '@snapshot' },
   async ({ page, context, cmdBar, scene }) => {
-    // FIXME: Skip on macos its being weird.
-    test.skip(process.platform === 'darwin', 'Skip on macos')
+    test.fixme(orRunWhenFullSuiteEnabled())
 
     const u = await getUtils(page)
     await page.setViewportSize({ width: 1200, height: 500 })
@@ -629,8 +628,7 @@ test.describe(
   'Client side scene scale should match engine scale',
   { tag: '@snapshot' },
   () => {
-    // FIXME: Skip on macos its being weird.
-    test.skip(process.platform === 'darwin', 'Skip on macos')
+    test.fixme(orRunWhenFullSuiteEnabled())
 
     test('Inch scale', async ({ page, cmdBar, scene }) => {
       const u = await getUtils(page)
@@ -868,8 +866,7 @@ test(
   'Zoom to fit on load - solid 2d',
   { tag: '@snapshot' },
   async ({ page, context, cmdBar, scene }) => {
-    // FIXME: Skip on macos its being weird.
-    test.skip(process.platform === 'darwin', 'Skip on macos')
+    test.fixme(orRunWhenFullSuiteEnabled())
 
     const u = await getUtils(page)
     await context.addInitScript(async () => {
@@ -907,8 +904,7 @@ test(
   'Zoom to fit on load - solid 3d',
   { tag: '@snapshot' },
   async ({ page, context, cmdBar, scene }) => {
-    // FIXME: Skip on macos its being weird.
-    test.skip(process.platform === 'darwin', 'Skip on macos')
+    test.fixme(orRunWhenFullSuiteEnabled())
 
     const u = await getUtils(page)
     await context.addInitScript(async () => {
@@ -949,6 +945,7 @@ test.describe('Grid visibility', { tag: '@snapshot' }, () => {
     cmdBar,
     scene,
   }) => {
+    test.fixme(orRunWhenFullSuiteEnabled())
     const u = await getUtils(page)
     const stream = page.getByTestId('stream')
 
