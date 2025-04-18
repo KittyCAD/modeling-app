@@ -1005,6 +1005,7 @@ test.describe('Grid visibility', { tag: '@snapshot' }, () => {
   })
 
   test('Grid turned off', async ({ page, cmdBar, scene }) => {
+    test.fixme(orRunWhenFullSuiteEnabled())
     const u = await getUtils(page)
     const stream = page.getByTestId('stream')
 
