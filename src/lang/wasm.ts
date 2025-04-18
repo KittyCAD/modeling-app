@@ -217,8 +217,6 @@ export const parse = (code: string | Error): ParseResult | Error => {
     let errs = splitErrors(parsed[1])
     return new ParseResult(parsed[0], errs.errors, errs.warnings)
   } catch (e: any) {
-    // throw e
-    console.error(e.toString())
     const parsed: RustKclError = parseJson(e.toString())
     return new KCLError(
       parsed.kind,
