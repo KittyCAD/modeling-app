@@ -132,7 +132,8 @@
     "tronb:package:prod": "npm run tronb:vite:prod && electron-builder --config electron-builder.yml --publish always",
     "test-setup": "npm install && npm run build:wasm",
     "test": "vitest --mode development",
-    "test:snapshots": "PLATFORM=web NODE_ENV=development playwright test --config=playwright.config.ts --grep=@snapshot --trace=on --shard=1/1",
+    "test:snapshots": "PLATFORM=web playwright test --config=playwright.config.ts --grep=@snapshot --trace=on --shard=1/1",
+    "test:snapshots:local": "PLATFORM=web NODE_ENV=development playwright test --config=playwright.config.ts --grep=@snapshot --trace=on --shard=1/1",
     "test:unit": "vitest run --mode development --exclude **/kclSamples.test.ts",
     "test:unit:kcl-samples": "vitest run --mode development ./src/lang/kclSamples.test.ts",
     "test:playwright:electron": "playwright test --config=playwright.electron.config.ts --grep-invert='@snapshot'",
@@ -148,7 +149,11 @@
     "test:unit:kcl-samples:local": "npm run simpleserver:bg && npm run test:unit:kcl-samples; kill-port 3000"
   },
   "browserslist": {
-    "production": [">0.2%", "not dead", "not op_mini all"],
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
     "development": [
       "last 1 chrome version",
       "last 1 firefox version",
