@@ -8,5 +8,7 @@ export const DETERMINING_ARGS = [ARG_LENGTH, ARG_END, ARG_END_ABSOLUTE]
 export const ARG_LENGTH_X = 'lengthX'
 export const ARG_LENGTH_Y = 'lengthY'
 export const ARG_ANGLE = 'angle'
+export const ARG_OFFSET = 'offset'
 export const ARG_END_ABSOLUTE_X = 'endAbsoluteX'
 export const ARG_END_ABSOLUTE_Y = 'endAbsoluteY'
+export const ARG_INTERSECT_TAG = 'intersectTag'

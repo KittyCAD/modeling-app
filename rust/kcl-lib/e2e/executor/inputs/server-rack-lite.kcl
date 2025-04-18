@@ -150,11 +150,7 @@ const extrude005l = extrude(sketch005l, length = 1)
 
 const sketch006l = startSketchOn(plane001)
   |> startProfileAt([1, 1], %)
-  |> angledLineThatIntersects({
-       angle: 70,
-       intersectTag: lineToIntersect4,
-       offset: 0
-     }, %)
+  |> angledLineThatIntersects(angle = 70, intersectTag = lineToIntersect4, offset = 0)
   |> angledLine(angle = -70, length = 1.414 )
   |> angledLine(angle = 70 + 180, endAbsoluteY = 2 - 1)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
@@ -166,11 +162,7 @@ const sketch007l = startSketchOn(plane001)
        serverDepth - 1.2,
        railHeight * 1.75 + 1
      ], %)
-  |> angledLineThatIntersects({
-       angle: 70,
-       intersectTag: lineToIntersect5,
-       offset: 0
-     }, %)
+  |> angledLineThatIntersects(angle = 70, intersectTag = lineToIntersect5, offset = 0)
   |> angledLine(angle = -70, length = 1.414 )
   |> angledLine(angle = 70 + 180, endAbsoluteY = railHeight * 1.75 + 1)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
@@ -241,11 +233,12 @@ const sketch006w = startSketchOn(plane002)
      ], %)
   |> angledLine(angle = -23 + 90, endAbsoluteX = depth - 1)
   |> yLine(length = 2.56)
-  |> angledLineThatIntersects({
-       angle: -23 + 90 + 180,
-       intersectTag: lineToIntersect,
-       offset: 0
-     }, %, $lineToIntersect2)
+  |> angledLineThatIntersects(
+       angle = -23 + 90 + 180,
+       intersectTag = lineToIntersect,
+       offset = 0,
+       tag = $lineToIntersect2,
+     )
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 const extrude006w = extrude(sketch006w, length = 1)
@@ -254,28 +247,28 @@ const sketch007w = startSketchOn(plane002)
   |> startProfileAt([depth - 1, 60.65 + 1.75 / 2], %)
   |> angledLine(angle = -23 + 180, length = 34.93 , tag = $lineToIntersect3)
   |> angledLine(angle = 23 - 90, length = 1.414 )
-  |> angledLineThatIntersects({
-       angle: -23 + 180,
-       intersectTag: lineToIntersect2,
-       offset: 0
-     }, %)
+  |> angledLineThatIntersects(
+       angle = -23 + 180,
+       intersectTag = lineToIntersect2,
+       offset = 0,
+     )
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 const extrude007w = extrude(sketch007w, length = 1)
 
 const sketch008w = startSketchOn(plane002)
   |> startProfileAt([1, 41.7 + 1.75 / 2], %)
-  |> angledLineThatIntersects({
-       angle: -23 + 90,
-       intersectTag: lineToIntersect3,
-       offset: 0
-     }, %)
+  |> angledLineThatIntersects(
+       angle = -23 + 90,
+       intersectTag = lineToIntersect3,
+       offset = 0,
+     )
   |> angledLine(angle = -23 - 45, length = 1.414 )
-  |> angledLineThatIntersects({
-       angle: -23 - 90,
-       intersectTag: lineToIntersect,
-       offset: 0
-     }, %)
+  |> angledLineThatIntersects(
+       angle = -23 - 90,
+       intersectTag = lineToIntersect,
+       offset = 0,
+     )
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 const extrude008w = extrude(sketch008w, length = 1)

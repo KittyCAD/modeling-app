@@ -101,7 +101,10 @@ export function SettingsFieldInput({
               type: `set.${category}.${settingName}`,
               data: {
                 level: settingsLevel,
-                value: e.target.value,
+                // undefined is the only special string due to no way to
+                // encode it in the string-only options.
+                value:
+                  e.target.value === 'undefined' ? undefined : e.target.value,
               },
             } as unknown as EventFrom<WildcardSetEvent>)
           }

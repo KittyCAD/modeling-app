@@ -285,7 +285,7 @@ jobs:
         # TODO: enable namespace-profile-windows-latest once available
         os:
           - "runs-on=${{ github.run_id }}/family=i7ie.2xlarge/image=ubuntu22-full-x64"
-          - namespace-profile-macos-8-cores
+          - namespace-profile-macos-6-cores
           - windows-latest-8-cores
         shardIndex: [1, 2, 3, 4]
         shardTotal: [4]
@@ -295,7 +295,7 @@ jobs:
         isScheduled:
           - ${{ github.event_name == 'schedule' }}
         exclude:
-          - os: namespace-profile-macos-8-cores
+          - os: namespace-profile-macos-6-cores
             isScheduled: true
           - os: windows-latest-8-cores
             isScheduled: true

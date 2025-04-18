@@ -44,7 +44,12 @@ export const kclManager = new KclManager(engineCommandManager, {
 // CYCLIC REF
 editorManager.kclManager = kclManager
 
+// These are all late binding because of their circular dependency.
+// TODO: proper dependency injection.
 engineCommandManager.kclManager = kclManager
+engineCommandManager.codeManager = codeManager
+engineCommandManager.rustContext = rustContext
+
 kclManager.sceneInfraBaseUnitMultiplierSetter = (unit: BaseUnit) => {
   sceneInfra.baseUnit = unit
 }

@@ -2,8 +2,8 @@ import { bracketWidthConstantLine } from '@src/lib/exampleKcl'
 import { onboardingPaths } from '@src/routes/Onboarding/paths'
 
 import {
-  kbdClasses,
   OnboardingButtons,
+  kbdClasses,
   useDemoCode,
 } from '@src/routes/Onboarding/utils'
 

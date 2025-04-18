@@ -153,11 +153,7 @@ fn z(origin, scale, depth) {
     |> yLine(length = segLen(seg3))
     |> xLine(endAbsolute = 0 + origin[0])
     |> yLine(length = -0.225 * scale)
-    |> angledLineThatIntersects({
-         angle = 0,
-         intersectTag = seg2,
-         offset = 0
-       }, %)
+    |> angledLineThatIntersects(angle = 0, intersectTag = seg2, offset = 0)
     |> close()
     |> extrude(length = -depth)
     |> appearance(color = baseColor)

@@ -1,9 +1,9 @@
-import type { Locator, Page, Request, Route, TestInfo } from '@playwright/test'
-import { expect } from '@playwright/test'
 import * as fs from 'fs'
 import * as path from 'path'
+import type { Locator, Page, Request, Route, TestInfo } from '@playwright/test'
+import { expect } from '@playwright/test'
 
-type CmdBarSerialised =
+export type CmdBarSerialised =
   | {
       stage: 'commandBarClosed'
     }
@@ -176,6 +176,13 @@ export class CmdBarFixture {
    */
   selectOption = (options: Parameters<typeof this.page.getByRole>[1]) => {
     return this.page.getByRole('option', options)
+  }
+
+  /**
+   * Clicks the Create new variable button for kcl input
+   */
+  createNewVariable = async () => {
+    await this.page.getByRole('button', { name: 'Create new variable' }).click()
   }
 
   /**

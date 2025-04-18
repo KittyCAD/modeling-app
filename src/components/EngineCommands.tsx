@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 
-import type { CommandLog } from '@src/lang/std/engineConnection'
+import type { CommandLog } from '@src/lang/std/commandLog'
 import { engineCommandManager } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
 

@@ -1,6 +1,6 @@
-import type { Locator, Page } from '@playwright/test'
 import fs from 'node:fs/promises'
 import path from 'node:path'
+import type { Locator, Page } from '@playwright/test'
 
 import type { EditorFixture } from '@e2e/playwright/fixtures/editorFixture'
 import type { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
@@ -1046,7 +1046,7 @@ openSketch = startSketchOn(XY)
   }) => {
     // One dumb hardcoded screen pixel value
     const testPoint = { x: 620, y: 257 }
-    const expectedOutput = `helix001 = helix(  axis = X,  radius = 5,  length = 5,  revolutions = 1,  angleStart = 360,  ccw = false,)`
+    const expectedOutput = `helix001 = helix(  axis = X,  radius = 5,  length = 5,  revolutions = 1,  angleStart = 270,  ccw = false,)`
     const expectedLine = `axis=X,`
 
     await homePage.goToModelingScene()
@@ -1072,6 +1072,23 @@ openSketch = startSketchOn(XY)
       await expect.poll(() => page.getByText('Axis').count()).toBe(6)
       await cmdBar.progressCmdBar()
       await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'arguments',
+        currentArgKey: 'angleStart',
+        highlightedHeaderArg: 'angleStart',
+        currentArgValue: '360',
+        headerArguments: {
+          Mode: 'Axis',
+          Axis: 'X',
+          Revolutions: '1',
+          AngleStart: '',
+          Length: '',
+          Radius: '',
+          CounterClockWise: '',
+        },
+        commandName: 'Helix',
+      })
+      await cmdBar.currentArgumentInput.locator('.cm-content').fill('270')
       await cmdBar.progressCmdBar()
       await cmdBar.progressCmdBar()
       await cmdBar.progressCmdBar()
@@ -1080,7 +1097,7 @@ openSketch = startSketchOn(XY)
         headerArguments: {
           Mode: 'Axis',
           Axis: 'X',
-          AngleStart: '360',
+          AngleStart: '270',
           Revolutions: '1',
           Length: '5',
           Radius: '5',
@@ -1115,7 +1132,7 @@ openSketch = startSketchOn(XY)
         currentArgValue: '',
         headerArguments: {
           Axis: 'X',
-          AngleStart: '360',
+          AngleStart: '270',
           Revolutions: '1',
           Radius: '5',
           Length: initialInput,
@@ -1131,7 +1148,7 @@ openSketch = startSketchOn(XY)
         stage: 'review',
         headerArguments: {
           Axis: 'X',
-          AngleStart: '360',
+          AngleStart: '270',
           Revolutions: '1',
           Radius: '5',
           Length: newInput,
@@ -3816,6 +3833,471 @@ extrude001 = extrude(profile001, length = 100)
         'default',
         initialColor
       )
+    })
+  })
+
+  const translateExtrudeCases: { variables: boolean }[] = [
+    {
+      variables: false,
+    },
+    {
+      variables: true,
+    },
+  ]
+  translateExtrudeCases.map(({ variables }) => {
+    test(`Set translate on extrude through right-click menu (variables: ${variables})`, async ({
+      context,
+      page,
+      homePage,
+      scene,
+      editor,
+      toolbar,
+      cmdBar,
+    }) => {
+      const initialCode = `sketch001 = startSketchOn(XZ)
+    profile001 = circle(sketch001, center = [0, 0], radius = 1)
+    extrude001 = extrude(profile001, length = 1)
+    `
+      await context.addInitScript((initialCode) => {
+        localStorage.setItem('persistCode', initialCode)
+      }, initialCode)
+      await page.setBodyDimensions({ width: 1000, height: 500 })
+      await homePage.goToModelingScene()
+      await scene.settled(cmdBar)
+
+      // One dumb hardcoded screen pixel value
+      const midPoint = { x: 500, y: 250 }
+      const moreToTheRightPoint = { x: 800, y: 250 }
+      const bgColor: [number, number, number] = [50, 50, 50]
+      const partColor: [number, number, number] = [150, 150, 150]
+      const tolerance = 50
+
+      await test.step('Confirm extrude exists with default appearance', async () => {
+        await toolbar.closePane('code')
+        await scene.expectPixelColor(partColor, midPoint, tolerance)
+        await scene.expectPixelColor(bgColor, moreToTheRightPoint, tolerance)
+      })
+
+      await test.step('Set translate through command bar flow', async () => {
+        await toolbar.openPane('feature-tree')
+        const op = await toolbar.getFeatureTreeOperation('Extrude', 0)
+        await op.click({ button: 'right' })
+        await page.getByTestId('context-menu-set-translate').click()
+        await cmdBar.expectState({
+          stage: 'arguments',
+          currentArgKey: 'x',
+          currentArgValue: '0',
+          headerArguments: {
+            X: '',
+            Y: '',
+            Z: '',
+          },
+          highlightedHeaderArg: 'x',
+          commandName: 'Translate',
+        })
+        await page.keyboard.insertText('3')
+        if (variables) {
+          await cmdBar.createNewVariable()
+        }
+        await cmdBar.progressCmdBar()
+        await page.keyboard.insertText('0.1')
+        if (variables) {
+          await cmdBar.createNewVariable()
+        }
+        await cmdBar.progressCmdBar()
+        await page.keyboard.insertText('0.2')
+        if (variables) {
+          await cmdBar.createNewVariable()
+        }
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          stage: 'review',
+          headerArguments: {
+            X: '3',
+            Y: '0.1',
+            Z: '0.2',
+          },
+          commandName: 'Translate',
+        })
+        await cmdBar.progressCmdBar()
+        await toolbar.closePane('feature-tree')
+      })
+
+      await test.step('Confirm code and scene have changed', async () => {
+        await toolbar.openPane('code')
+        if (variables) {
+          await editor.expectEditor.toContain(
+            `
+            z001 = 0.2
+            y001 = 0.1
+            x001 = 3
+            sketch001 = startSketchOn(XZ)
+            profile001 = circle(sketch001, center = [0, 0], radius = 1)
+            extrude001 = extrude(profile001, length = 1)
+              |> translate(x = x001, y = y001, z = z001)
+          `,
+            { shouldNormalise: true }
+          )
+        } else {
+          await editor.expectEditor.toContain(
+            `
+            sketch001 = startSketchOn(XZ)
+            profile001 = circle(sketch001, center = [0, 0], radius = 1)
+            extrude001 = extrude(profile001, length = 1)
+              |> translate(x = 3, y = 0.1, z = 0.2)
+          `,
+            { shouldNormalise: true }
+          )
+        }
+        await scene.expectPixelColor(bgColor, midPoint, tolerance)
+        await scene.expectPixelColor(partColor, moreToTheRightPoint, tolerance)
+      })
+
+      await test.step('Edit translate', async () => {
+        await toolbar.openPane('feature-tree')
+        const op = await toolbar.getFeatureTreeOperation('Extrude', 0)
+        await op.click({ button: 'right' })
+        await page.getByTestId('context-menu-set-translate').click()
+        await cmdBar.expectState({
+          stage: 'arguments',
+          currentArgKey: 'z',
+          currentArgValue: variables ? 'z001' : '0.2',
+          headerArguments: {
+            X: '3',
+            Y: '0.1',
+            Z: '0.2',
+          },
+          highlightedHeaderArg: 'z',
+          commandName: 'Translate',
+        })
+        await page.keyboard.insertText('0.3')
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          stage: 'review',
+          headerArguments: {
+            X: '3',
+            Y: '0.1',
+            Z: '0.3',
+          },
+          commandName: 'Translate',
+        })
+        await cmdBar.progressCmdBar()
+        await toolbar.closePane('feature-tree')
+        await toolbar.openPane('code')
+        await editor.expectEditor.toContain(`z = 0.3`)
+        // Expect almost no change in scene
+        await scene.expectPixelColor(bgColor, midPoint, tolerance)
+        await scene.expectPixelColor(partColor, moreToTheRightPoint, tolerance)
+      })
+    })
+  })
+
+  const rotateExtrudeCases: { variables: boolean }[] = [
+    {
+      variables: false,
+    },
+    {
+      variables: true,
+    },
+  ]
+  rotateExtrudeCases.map(({ variables }) => {
+    test(`Set rotate on extrude through right-click menu (variables: ${variables})`, async ({
+      context,
+      page,
+      homePage,
+      scene,
+      editor,
+      toolbar,
+      cmdBar,
+    }) => {
+      const initialCode = `sketch001 = startSketchOn(XZ)
+    profile001 = circle(sketch001, center = [0, 0], radius = 1)
+    extrude001 = extrude(profile001, length = 1)
+    `
+      await context.addInitScript((initialCode) => {
+        localStorage.setItem('persistCode', initialCode)
+      }, initialCode)
+      await page.setBodyDimensions({ width: 1000, height: 500 })
+      await homePage.goToModelingScene()
+      await scene.settled(cmdBar)
+
+      await test.step('Set rotate through command bar flow', async () => {
+        await toolbar.openPane('feature-tree')
+        const op = await toolbar.getFeatureTreeOperation('Extrude', 0)
+        await op.click({ button: 'right' })
+        await page.getByTestId('context-menu-set-rotate').click()
+        await cmdBar.expectState({
+          stage: 'arguments',
+          currentArgKey: 'roll',
+          currentArgValue: '0',
+          headerArguments: {
+            Roll: '',
+            Pitch: '',
+            Yaw: '',
+          },
+          highlightedHeaderArg: 'roll',
+          commandName: 'Rotate',
+        })
+        await page.keyboard.insertText('1.1')
+        if (variables) {
+          await cmdBar.createNewVariable()
+        }
+        await cmdBar.progressCmdBar()
+        await page.keyboard.insertText('1.2')
+        if (variables) {
+          await cmdBar.createNewVariable()
+        }
+        await cmdBar.progressCmdBar()
+        await page.keyboard.insertText('1.3')
+        if (variables) {
+          await cmdBar.createNewVariable()
+        }
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          stage: 'review',
+          headerArguments: {
+            Roll: '1.1',
+            Pitch: '1.2',
+            Yaw: '1.3',
+          },
+          commandName: 'Rotate',
+        })
+        await cmdBar.progressCmdBar()
+        await toolbar.closePane('feature-tree')
+      })
+
+      await test.step('Confirm code and scene have changed', async () => {
+        await toolbar.openPane('code')
+        if (variables) {
+          await editor.expectEditor.toContain(
+            `
+            yaw001 = 1.3
+            pitch001 = 1.2
+            roll001 = 1.1
+            sketch001 = startSketchOn(XZ)
+            profile001 = circle(sketch001, center = [0, 0], radius = 1)
+            extrude001 = extrude(profile001, length = 1)
+              |> rotate(roll = roll001, pitch = pitch001, yaw = yaw001)
+          `,
+            { shouldNormalise: true }
+          )
+        } else {
+          await editor.expectEditor.toContain(
+            `
+            sketch001 = startSketchOn(XZ)
+            profile001 = circle(sketch001, center = [0, 0], radius = 1)
+            extrude001 = extrude(profile001, length = 1)
+              |> rotate(roll = 1.1, pitch = 1.2, yaw = 1.3)
+          `,
+            { shouldNormalise: true }
+          )
+        }
+      })
+
+      await test.step('Edit rotate', async () => {
+        await toolbar.openPane('feature-tree')
+        const op = await toolbar.getFeatureTreeOperation('Extrude', 0)
+        await op.click({ button: 'right' })
+        await page.getByTestId('context-menu-set-rotate').click()
+        await cmdBar.expectState({
+          stage: 'arguments',
+          currentArgKey: 'yaw',
+          currentArgValue: variables ? 'yaw001' : '1.3',
+          headerArguments: {
+            Roll: '1.1',
+            Pitch: '1.2',
+            Yaw: '1.3',
+          },
+          highlightedHeaderArg: 'yaw',
+          commandName: 'Rotate',
+        })
+        await page.keyboard.insertText('13')
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          stage: 'review',
+          headerArguments: {
+            Roll: '1.1',
+            Pitch: '1.2',
+            Yaw: '13',
+          },
+          commandName: 'Rotate',
+        })
+        await cmdBar.progressCmdBar()
+        await toolbar.closePane('feature-tree')
+        await toolbar.openPane('code')
+        await editor.expectEditor.toContain(`yaw = 13`)
+      })
+    })
+  })
+
+  test(`Set translate and rotate on extrude through selection`, async ({
+    context,
+    page,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+    cmdBar,
+  }) => {
+    const initialCode = `sketch001 = startSketchOn(XZ)
+profile001 = circle(sketch001, center = [0, 0], radius = 1)
+extrude001 = extrude(profile001, length = 1)
+  `
+    await context.addInitScript((initialCode) => {
+      localStorage.setItem('persistCode', initialCode)
+    }, initialCode)
+    await page.setBodyDimensions({ width: 1000, height: 500 })
+    await homePage.goToModelingScene()
+    await scene.settled(cmdBar)
+
+    // One dumb hardcoded screen pixel value
+    const midPoint = { x: 500, y: 250 }
+    const moreToTheRightPoint = { x: 800, y: 250 }
+    const bgColor: [number, number, number] = [50, 50, 50]
+    const partColor: [number, number, number] = [150, 150, 150]
+    const tolerance = 50
+    const [clickMidPoint] = scene.makeMouseHelpers(midPoint.x, midPoint.y)
+    const [clickMoreToTheRightPoint] = scene.makeMouseHelpers(
+      moreToTheRightPoint.x,
+      moreToTheRightPoint.y
+    )
+
+    await test.step('Confirm extrude exists with default appearance', async () => {
+      await toolbar.closePane('code')
+      await scene.expectPixelColor(partColor, midPoint, tolerance)
+      await scene.expectPixelColor(bgColor, moreToTheRightPoint, tolerance)
+    })
+
+    await test.step('Set translate through command bar flow', async () => {
+      await cmdBar.openCmdBar()
+      await cmdBar.chooseCommand('Translate')
+      await cmdBar.expectState({
+        stage: 'arguments',
+        currentArgKey: 'selection',
+        currentArgValue: '',
+        headerArguments: {
+          Selection: '',
+          X: '',
+          Y: '',
+          Z: '',
+        },
+        highlightedHeaderArg: 'selection',
+        commandName: 'Translate',
+      })
+      await clickMidPoint()
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'arguments',
+        currentArgKey: 'x',
+        currentArgValue: '0',
+        headerArguments: {
+          Selection: '1 path',
+          X: '',
+          Y: '',
+          Z: '',
+        },
+        highlightedHeaderArg: 'x',
+        commandName: 'Translate',
+      })
+      await page.keyboard.insertText('2')
+      await cmdBar.progressCmdBar()
+      await cmdBar.progressCmdBar()
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'review',
+        headerArguments: {
+          Selection: '1 path',
+          X: '2',
+          Y: '0',
+          Z: '0',
+        },
+        commandName: 'Translate',
+      })
+      await cmdBar.progressCmdBar()
+    })
+
+    await test.step('Confirm code and scene have changed', async () => {
+      await toolbar.openPane('code')
+      await editor.expectEditor.toContain(
+        `
+        sketch001 = startSketchOn(XZ)
+        profile001 = circle(sketch001, center = [0, 0], radius = 1)
+        extrude001 = extrude(profile001, length = 1)
+          |> translate(x = 2, y = 0, z = 0)
+          `,
+        { shouldNormalise: true }
+      )
+      await scene.expectPixelColor(bgColor, midPoint, tolerance)
+      await scene.expectPixelColor(partColor, moreToTheRightPoint, tolerance)
+    })
+
+    await test.step('Set rotate through command bar flow', async () => {
+      // clear selection
+      await clickMidPoint()
+      await cmdBar.openCmdBar()
+      await cmdBar.chooseCommand('Rotate')
+      await cmdBar.expectState({
+        stage: 'arguments',
+        currentArgKey: 'selection',
+        currentArgValue: '',
+        headerArguments: {
+          Selection: '',
+          Roll: '',
+          Pitch: '',
+          Yaw: '',
+        },
+        highlightedHeaderArg: 'selection',
+        commandName: 'Rotate',
+      })
+      await clickMoreToTheRightPoint()
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'arguments',
+        currentArgKey: 'roll',
+        currentArgValue: '0',
+        headerArguments: {
+          Selection: '1 path',
+          Roll: '',
+          Pitch: '',
+          Yaw: '',
+        },
+        highlightedHeaderArg: 'roll',
+        commandName: 'Rotate',
+      })
+      await page.keyboard.insertText('0.1')
+      await cmdBar.progressCmdBar()
+      await page.keyboard.insertText('0.2')
+      await cmdBar.progressCmdBar()
+      await page.keyboard.insertText('0.3')
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'review',
+        headerArguments: {
+          Selection: '1 path',
+          Roll: '0.1',
+          Pitch: '0.2',
+          Yaw: '0.3',
+        },
+        commandName: 'Rotate',
+      })
+      await cmdBar.progressCmdBar()
+    })
+
+    await test.step('Confirm code has changed', async () => {
+      await toolbar.openPane('code')
+      await editor.expectEditor.toContain(
+        `
+        sketch001 = startSketchOn(XZ)
+        profile001 = circle(sketch001, center = [0, 0], radius = 1)
+        extrude001 = extrude(profile001, length = 1)
+          |> translate(x = 2, y = 0, z = 0)
+          |> rotate(roll = 0.1, pitch = 0.2, yaw = 0.3)
+          `,
+        { shouldNormalise: true }
+      )
+      // No change here since the angles are super small
+      await scene.expectPixelColor(bgColor, midPoint, tolerance)
+      await scene.expectPixelColor(partColor, moreToTheRightPoint, tolerance)
     })
   })
 })

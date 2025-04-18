@@ -617,12 +617,12 @@ pub async fn angled_line(exec_state: &mut ExecState, args: Args) -> Result<KclVa
     unlabeled_first = true,
     args = {
         sketch = { docs = "Which sketch should this path be added to?"},
-    angle = { docs = "Which angle should the line be drawn at?" },
-    length = { docs = "Draw the line this distance along the given angle. Only one of `length`, `lengthX`, `lengthY`, `endAbsoluteX`, `endAbsoluteY` can be given."},
-    length_x = { docs = "Draw the line this distance along the X axis. Only one of `length`, `lengthX`, `lengthY`, `endAbsoluteX`, `endAbsoluteY` can be given."},
-    length_y = { docs = "Draw the line this distance along the Y axis. Only one of `length`, `lengthX`, `lengthY`, `endAbsoluteX`, `endAbsoluteY` can be given."},
-    end_absolute_x = { docs = "Draw the line along the given angle until it reaches this point along the X axis. Only one of `length`, `lengthX`, `lengthY`, `endAbsoluteX`, `endAbsoluteY` can be given."},
-    end_absolute_y = { docs = "Draw the line along the given angle until it reaches this point along the Y axis. Only one of `length`, `lengthX`, `lengthY`, `endAbsoluteX`, `endAbsoluteY` can be given."},
+        angle = { docs = "Which angle should the line be drawn at?" },
+        length = { docs = "Draw the line this distance along the given angle. Only one of `length`, `lengthX`, `lengthY`, `endAbsoluteX`, `endAbsoluteY` can be given."},
+        length_x = { docs = "Draw the line this distance along the X axis. Only one of `length`, `lengthX`, `lengthY`, `endAbsoluteX`, `endAbsoluteY` can be given."},
+        length_y = { docs = "Draw the line this distance along the Y axis. Only one of `length`, `lengthX`, `lengthY`, `endAbsoluteX`, `endAbsoluteY` can be given."},
+        end_absolute_x = { docs = "Draw the line along the given angle until it reaches this point along the X axis. Only one of `length`, `lengthX`, `lengthY`, `endAbsoluteX`, `endAbsoluteY` can be given."},
+        end_absolute_y = { docs = "Draw the line along the given angle until it reaches this point along the Y axis. Only one of `length`, `lengthX`, `lengthY`, `endAbsoluteX`, `endAbsoluteY` can be given."},
         tag = { docs = "Create a new tag which refers to this line"},
     }
 }]
@@ -871,25 +871,16 @@ async fn inner_angled_line_to_y(
     Ok(new_sketch)
 }
 
-/// Data for drawing an angled line that intersects with a given line.
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-#[ts(export)]
-#[serde(rename_all = "camelCase")]
-// TODO: make sure the docs on the args below are correct.
-pub struct AngledLineThatIntersectsData {
-    /// The angle of the line.
-    pub angle: TyF64,
-    /// The tag of the line to intersect with.
-    pub intersect_tag: TagIdentifier,
-    /// The offset from the intersecting line.
-    pub offset: Option<TyF64>,
-}
-
 /// Draw an angled line that intersects with a given line.
 pub async fn angled_line_that_intersects(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (data, sketch, tag): (AngledLineThatIntersectsData, Sketch, Option<TagNode>) =
-        args.get_data_and_sketch_and_tag(exec_state)?;
-    let new_sketch = inner_angled_line_that_intersects(data, sketch, tag, exec_state, args).await?;
+    let sketch =
+        args.get_unlabeled_kw_arg_typed("sketch", &RuntimeType::Primitive(PrimitiveType::Sketch), exec_state)?;
+    let angle: TyF64 = args.get_kw_arg("angle")?;
+    let intersect_tag: TagIdentifier = args.get_kw_arg("intersectTag")?;
+    let offset: Option<TyF64> = args.get_kw_arg_opt("offset")?;
+    let tag: Option<TagNode> = args.get_kw_arg_opt("tag")?;
+    let new_sketch =
+        inner_angled_line_that_intersects(sketch, angle, intersect_tag, offset, tag, exec_state, args).await?;
     Ok(KclValue::Sketch {
         value: Box::new(new_sketch),
     })
@@ -905,26 +896,37 @@ pub async fn angled_line_that_intersects(exec_state: &mut ExecState, args: Args)
 ///   |> line(endAbsolute = [5, 10])
 ///   |> line(endAbsolute = [-10, 10], tag = $lineToIntersect)
 ///   |> line(endAbsolute = [0, 20])
-///   |> angledLineThatIntersects({
+///   |> angledLineThatIntersects(
 ///        angle = 80,
 ///        intersectTag = lineToIntersect,
-///        offset = 10
-///      }, %)
+///        offset = 10,
+///      )
 ///   |> close()
 ///
 /// example = extrude(exampleSketch, length = 10)
 /// ```
 #[stdlib {
     name = "angledLineThatIntersects",
+    keywords = true,
+    unlabeled_first = true,
+    args = {
+        sketch = { docs = "Which sketch should this path be added to?"},
+        angle = { docs = "Which angle should the line be drawn at?" },
+        intersect_tag = { docs = "The tag of the line to intersect with" },
+        offset = { docs = "The offset from the intersecting line. Defaults to 0." },
+        tag = { docs = "Create a new tag which refers to this line"},
+    }
 }]
 pub async fn inner_angled_line_that_intersects(
-    data: AngledLineThatIntersectsData,
     sketch: Sketch,
+    angle: TyF64,
+    intersect_tag: TagIdentifier,
+    offset: Option<TyF64>,
     tag: Option<TagNode>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
-    let intersect_path = args.get_tag_engine_info(exec_state, &data.intersect_tag)?;
+    let intersect_path = args.get_tag_engine_info(exec_state, &intersect_tag)?;
     let path = intersect_path.path.clone().ok_or_else(|| {
         KclError::Type(KclErrorDetails {
             message: format!("Expected an intersect path with a path, found `{:?}`", intersect_path),
@@ -935,13 +937,12 @@ pub async fn inner_angled_line_that_intersects(
     let from = sketch.current_pen_position()?;
     let to = intersection_with_parallel_line(
         &[untype_point(path.get_from()).0, untype_point(path.get_to()).0],
-        data.offset.map(|t| t.n).unwrap_or_default(),
-        data.angle.n,
+        offset.map(|t| t.n).unwrap_or_default(),
+        angle.n,
         from.into(),
     );
 
-    let new_sketch = straight_line(StraightLineParams::absolute(to, sketch, tag), exec_state, args).await?;
-    Ok(new_sketch)
+    straight_line(StraightLineParams::absolute(to, sketch, tag), exec_state, args).await
 }
 
 /// Data for start sketch on.

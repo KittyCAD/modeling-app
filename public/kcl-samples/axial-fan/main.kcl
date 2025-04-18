@@ -1,0 +1,15 @@
+// PC Fan
+// A small axial fan, used to push or draw airflow over components to remove excess heat
+
+// Set units
+@settings(defaultLengthUnit = mm)
+
+// Import all parts into assembly file
+import "fan-housing.kcl" as fanHousing
+import "motor.kcl" as motor
+import "fan.kcl" as fan
+
+// Produce the model for each imported part
+fanHousing
+motor
+fan

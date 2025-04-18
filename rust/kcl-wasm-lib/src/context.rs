@@ -9,6 +9,7 @@ use wasm_bindgen::prelude::*;
 #[wasm_bindgen]
 pub struct Context {
     engine: Arc<Box<dyn EngineManager>>,
+    response_context: Arc<kcl_lib::wasm_engine::ResponseContext>,
     fs: Arc<FileManager>,
     mock_engine: Arc<Box<dyn EngineManager>>,
 }
@@ -22,9 +23,10 @@ impl Context {
     ) -> Result<Self, JsValue> {
         console_error_panic_hook::set_once();
 
+        let response_context = Arc::new(kcl_lib::wasm_engine::ResponseContext::new());
         Ok(Self {
             engine: Arc::new(Box::new(
-                kcl_lib::wasm_engine::EngineConnection::new(engine_manager)
+                kcl_lib::wasm_engine::EngineConnection::new(engine_manager, response_context.clone())
                     .await
                     .map_err(|e| format!("{:?}", e))?,
             )),
@@ -34,6 +36,7 @@ impl Context {
                     .await
                     .map_err(|e| format!("{:?}", e))?,
             )),
+            response_context,
         })
     }
 
@@ -98,6 +101,12 @@ impl Context {
             Ok(outcome) => JsValue::from_serde(&outcome).map_err(|e| e.to_string()),
             Err(err) => Err(serde_json::to_string(&err).map_err(|serde_err| serde_err.to_string())?),
         }
+    }
+
+    /// Send a response to kcl lib's engine.
+    #[wasm_bindgen(js_name = sendResponse)]
+    pub async fn send_response(&self, data: js_sys::Uint8Array) -> Result<(), JsValue> {
+        self.response_context.send_response(data).await
     }
 
     /// Execute a program in mock mode.

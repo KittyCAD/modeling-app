@@ -50,13 +50,12 @@ jobs:
       - name: Build the benchmark target(s)
         run: |
           cd rust
-          cargo codspeed build --measurement-mode walltime
+          cargo codspeed build
       - name: Run the benchmarks
         uses: CodSpeedHQ/action@v3
         with:
           working-directory: rust
           run: cargo codspeed run
           token: ${{ secrets.CODSPEED_TOKEN }}
-          mode: walltime
         env:
           KITTYCAD_API_TOKEN: ${{ secrets.KITTYCAD_API_TOKEN }}

@@ -76,12 +76,12 @@ pub mod std;
 pub mod test_server;
 mod thread;
 mod unparser;
-mod walk;
+pub mod walk;
 #[cfg(target_arch = "wasm32")]
 mod wasm;
 
 pub use coredump::CoreDump;
-pub use engine::{EngineManager, EngineStats, ExecutionKind};
+pub use engine::{EngineManager, EngineStats};
 pub use errors::{
     CompilationError, ConnectionError, ExecError, KclError, KclErrorWithOutputs, Report, ReportWithOutputs,
 };
@@ -109,7 +109,7 @@ pub mod exec {
 pub mod wasm_engine {
     pub use crate::{
         coredump::wasm::{CoreDumpManager, CoreDumper},
-        engine::conn_wasm::{EngineCommandManager, EngineConnection},
+        engine::conn_wasm::{EngineCommandManager, EngineConnection, ResponseContext},
         fs::wasm::{FileManager, FileSystemManager},
     };
 }

@@ -66,11 +66,7 @@ part001 = startSketchOn(-XZ)
    )
 |> xLine(endAbsolute = totalLen, tag = $seg03)
 |> yLine(length = -armThick, tag = $seg01)
-|> angledLineThatIntersects({
-      angle = turns::HALF_TURN,
-      offset = -armThick,
-      intersectTag = seg04
-    }, %)
+|> angledLineThatIntersects(angle = turns::HALF_TURN, offset = -armThick, intersectTag = seg04)
 |> angledLine(angle = segAng(seg04) + 180, endAbsoluteY = turns::ZERO)
 |> angledLine(
       angle = -bottomAng,
@@ -79,11 +75,7 @@ part001 = startSketchOn(-XZ)
    )
 |> xLine(endAbsolute = segEndX(seg03) + 0)
 |> yLine(length = -segLen(seg01))
-|> angledLineThatIntersects({
-      angle = turns::HALF_TURN,
-      offset = -armThick,
-      intersectTag = seg02
-    }, %)
+|> angledLineThatIntersects(angle = turns::HALF_TURN, offset = -armThick, intersectTag = seg02)
 |> angledLine(angle = segAng(seg02) + 180, endAbsoluteY = -baseHeight)
 |> xLine(endAbsolute = turns::ZERO)
 |> close()

@@ -9,6 +9,7 @@ export const ARC_SEGMENT_DASH = 'arc-segment-dash'
 export const STRAIGHT_SEGMENT = 'straight-segment'
 export const STRAIGHT_SEGMENT_BODY = 'straight-segment-body'
 export const STRAIGHT_SEGMENT_DASH = 'straight-segment-body-dashed'
+export const STRAIGHT_SEGMENT_SNAP_LINE = 'straight-segment-snap-line'
 export const CIRCLE_SEGMENT = 'circle-segment'
 export const CIRCLE_SEGMENT_BODY = 'circle-segment-body'
 export const CIRCLE_SEGMENT_DASH = 'circle-segment-body-dashed'
@@ -60,6 +61,12 @@ export const SEGMENT_BODIES = [
 export const SEGMENT_BODIES_PLUS_PROFILE_START = [
   ...SEGMENT_BODIES,
   PROFILE_START,
+]
+
+export const ARC_SEGMENT_TYPES = [
+  TANGENTIAL_ARC_TO_SEGMENT,
+  THREE_POINT_ARC_SEGMENT,
+  ARC_SEGMENT,
 ]
 
 // Helper functions

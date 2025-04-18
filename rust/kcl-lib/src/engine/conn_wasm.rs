@@ -11,7 +11,7 @@ use uuid::Uuid;
 use wasm_bindgen::prelude::*;
 
 use crate::{
-    engine::{EngineStats, ExecutionKind},
+    engine::EngineStats,
     errors::{KclError, KclErrorDetails},
     execution::{ArtifactCommand, DefaultPlanes, IdGenerator},
     SourceRange,
@@ -21,6 +21,15 @@ use crate::{
 extern "C" {
     #[derive(Debug, Clone)]
     pub type EngineCommandManager;
+
+    #[wasm_bindgen(method, js_name = fireModelingCommandFromWasm, catch)]
+    fn fire_modeling_cmd_from_wasm(
+        this: &EngineCommandManager,
+        id: String,
+        rangeStr: String,
+        cmdStr: String,
+        idToRangeStr: String,
+    ) -> Result<(), js_sys::Error>;
 
     #[wasm_bindgen(method, js_name = sendModelingCommandFromWasm, catch)]
     fn send_modeling_cmd_from_wasm(
@@ -38,14 +47,66 @@ extern "C" {
 #[derive(Debug, Clone)]
 pub struct EngineConnection {
     manager: Arc<EngineCommandManager>,
+    response_context: Arc<ResponseContext>,
     batch: Arc<RwLock<Vec<(WebSocketRequest, SourceRange)>>>,
     batch_end: Arc<RwLock<IndexMap<uuid::Uuid, (WebSocketRequest, SourceRange)>>>,
-    responses: Arc<RwLock<IndexMap<Uuid, WebSocketResponse>>>,
     artifact_commands: Arc<RwLock<Vec<ArtifactCommand>>>,
-    execution_kind: Arc<RwLock<ExecutionKind>>,
+    ids_of_async_commands: Arc<RwLock<IndexMap<Uuid, SourceRange>>>,
     /// The default planes for the scene.
     default_planes: Arc<RwLock<Option<DefaultPlanes>>>,
     stats: EngineStats,
+}
+
+#[wasm_bindgen]
+#[derive(Debug, Clone)]
+pub struct ResponseContext {
+    responses: Arc<RwLock<IndexMap<Uuid, WebSocketResponse>>>,
+}
+
+#[wasm_bindgen]
+impl ResponseContext {
+    #[wasm_bindgen(constructor)]
+    pub fn new() -> Self {
+        Self {
+            responses: Arc::new(RwLock::new(IndexMap::new())),
+        }
+    }
+
+    // Add a response to the context.
+    pub async fn send_response(&self, data: js_sys::Uint8Array) -> Result<(), JsValue> {
+        let ws_result: WebSocketResponse = match bson::from_slice(&data.to_vec()) {
+            Ok(res) => res,
+            Err(_) => {
+                // We don't care about the error if we can't parse it.
+                return Ok(());
+            }
+        };
+
+        let id = match &ws_result {
+            WebSocketResponse::Success(res) => res.request_id,
+            WebSocketResponse::Failure(res) => res.request_id,
+        };
+
+        let Some(id) = id else {
+            // We only care if we have an id.
+            return Ok(());
+        };
+
+        // Add this response to our responses.
+        self.add(id, ws_result.clone()).await;
+
+        Ok(())
+    }
+}
+
+impl ResponseContext {
+    pub async fn add(&self, id: Uuid, response: WebSocketResponse) {
+        self.responses.write().await.insert(id, response);
+    }
+
+    pub fn responses(&self) -> Arc<RwLock<IndexMap<Uuid, WebSocketResponse>>> {
+        self.responses.clone()
+    }
 }
 
 // Safety: WebAssembly will only ever run in a single-threaded context.
@@ -53,18 +114,59 @@ unsafe impl Send for EngineConnection {}
 unsafe impl Sync for EngineConnection {}
 
 impl EngineConnection {
-    pub async fn new(manager: EngineCommandManager) -> Result<EngineConnection, JsValue> {
+    pub async fn new(
+        manager: EngineCommandManager,
+        response_context: Arc<ResponseContext>,
+    ) -> Result<EngineConnection, JsValue> {
         #[allow(clippy::arc_with_non_send_sync)]
         Ok(EngineConnection {
             manager: Arc::new(manager),
             batch: Arc::new(RwLock::new(Vec::new())),
             batch_end: Arc::new(RwLock::new(IndexMap::new())),
-            responses: Arc::new(RwLock::new(IndexMap::new())),
+            response_context,
             artifact_commands: Arc::new(RwLock::new(Vec::new())),
-            execution_kind: Default::default(),
+            ids_of_async_commands: Arc::new(RwLock::new(IndexMap::new())),
             default_planes: Default::default(),
             stats: Default::default(),
         })
+    }
+
+    async fn do_fire_modeling_cmd(
+        &self,
+        id: uuid::Uuid,
+        source_range: SourceRange,
+        cmd: WebSocketRequest,
+        id_to_source_range: HashMap<uuid::Uuid, SourceRange>,
+    ) -> Result<(), KclError> {
+        let source_range_str = serde_json::to_string(&source_range).map_err(|e| {
+            KclError::Engine(KclErrorDetails {
+                message: format!("Failed to serialize source range: {:?}", e),
+                source_ranges: vec![source_range],
+            })
+        })?;
+        let cmd_str = serde_json::to_string(&cmd).map_err(|e| {
+            KclError::Engine(KclErrorDetails {
+                message: format!("Failed to serialize modeling command: {:?}", e),
+                source_ranges: vec![source_range],
+            })
+        })?;
+        let id_to_source_range_str = serde_json::to_string(&id_to_source_range).map_err(|e| {
+            KclError::Engine(KclErrorDetails {
+                message: format!("Failed to serialize id to source range: {:?}", e),
+                source_ranges: vec![source_range],
+            })
+        })?;
+
+        self.manager
+            .fire_modeling_cmd_from_wasm(id.to_string(), source_range_str, cmd_str, id_to_source_range_str)
+            .map_err(|e| {
+                KclError::Engine(KclErrorDetails {
+                    message: e.to_string().into(),
+                    source_ranges: vec![source_range],
+                })
+            })?;
+
+        Ok(())
     }
 
     async fn do_send_modeling_cmd(
@@ -153,7 +255,7 @@ impl crate::engine::EngineManager for EngineConnection {
     }
 
     fn responses(&self) -> Arc<RwLock<IndexMap<Uuid, WebSocketResponse>>> {
-        self.responses.clone()
+        self.response_context.responses.clone()
     }
 
     fn stats(&self) -> &EngineStats {
@@ -164,16 +266,8 @@ impl crate::engine::EngineManager for EngineConnection {
         self.artifact_commands.clone()
     }
 
-    async fn execution_kind(&self) -> ExecutionKind {
-        let guard = self.execution_kind.read().await;
-        *guard
-    }
-
-    async fn replace_execution_kind(&self, execution_kind: ExecutionKind) -> ExecutionKind {
-        let mut guard = self.execution_kind.write().await;
-        let original = *guard;
-        *guard = execution_kind;
-        original
+    fn ids_of_async_commands(&self) -> Arc<RwLock<IndexMap<Uuid, SourceRange>>> {
+        self.ids_of_async_commands.clone()
     }
 
     fn get_default_planes(&self) -> Arc<RwLock<Option<DefaultPlanes>>> {
@@ -207,6 +301,19 @@ impl crate::engine::EngineManager for EngineConnection {
         Ok(())
     }
 
+    async fn inner_fire_modeling_cmd(
+        &self,
+        id: uuid::Uuid,
+        source_range: SourceRange,
+        cmd: WebSocketRequest,
+        id_to_source_range: HashMap<Uuid, SourceRange>,
+    ) -> Result<(), KclError> {
+        self.do_fire_modeling_cmd(id, source_range, cmd, id_to_source_range)
+            .await?;
+
+        Ok(())
+    }
+
     async fn inner_send_modeling_cmd(
         &self,
         id: uuid::Uuid,
@@ -218,14 +325,7 @@ impl crate::engine::EngineManager for EngineConnection {
             .do_send_modeling_cmd(id, source_range, cmd, id_to_source_range)
             .await?;
 
-        // In isolated mode, we don't save the response.
-        if self.execution_kind().await.is_isolated() {
-            return Ok(ws_result);
-        }
-
-        let mut responses = self.responses.write().await;
-        responses.insert(id, ws_result.clone());
-        drop(responses);
+        self.response_context.add(id, ws_result.clone()).await;
 
         Ok(ws_result)
     }

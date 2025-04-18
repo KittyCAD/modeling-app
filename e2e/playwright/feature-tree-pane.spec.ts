@@ -1,5 +1,5 @@
-import * as fsp from 'fs/promises'
 import { join } from 'path'
+import * as fsp from 'fs/promises'
 
 import { expect, test } from '@e2e/playwright/zoo-test'
 

@@ -4,13 +4,13 @@ use anyhow::Result;
 use schemars::JsonSchema;
 use serde::Serialize;
 
-use super::{types::UnitLen, EnvironmentRef, ExecState, MetaSettings};
 use crate::{
     errors::KclErrorDetails,
     execution::{
         annotations::{SETTINGS, SETTINGS_UNIT_LENGTH},
-        types::{NumericType, PrimitiveType, RuntimeType},
-        Face, Helix, ImportedGeometry, Metadata, Plane, Sketch, Solid, TagIdentifier,
+        types::{NumericType, PrimitiveType, RuntimeType, UnitLen},
+        EnvironmentRef, ExecState, Face, Helix, ImportedGeometry, MetaSettings, Metadata, Plane, Sketch, Solid,
+        TagIdentifier,
     },
     parsing::ast::types::{
         DefaultParamVal, FunctionExpression, KclNone, Literal, LiteralValue, Node, TagDeclarator, TagNode,

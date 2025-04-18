@@ -11,14 +11,14 @@ kcl_dir = os.path.join(
 )
 tests_dir = os.path.join(kcl_dir, "tests")
 lego_file = os.path.join(kcl_dir, "e2e", "executor", "inputs", "lego.kcl")
-walkie_talkie_dir = os.path.join(
+car_wheel_dir = os.path.join(
     os.path.dirname(os.path.realpath(__file__)),
     "..",
     "..",
     "..",
     "public",
     "kcl-samples",
-    "walkie-talkie",
+    "car-wheel-assembly",
 )
 
 
@@ -83,7 +83,7 @@ async def test_kcl_execute_code_and_export():
 @pytest.mark.asyncio
 async def test_kcl_execute_dir_assembly():
     # Read from a file.
-    await kcl.execute(walkie_talkie_dir)
+    await kcl.execute(car_wheel_dir)
 
 
 @pytest.mark.asyncio
@@ -98,7 +98,7 @@ async def test_kcl_execute_and_snapshot():
 async def test_kcl_execute_and_snapshot_dir():
     # Read from a file.
     image_bytes = await kcl.execute_and_snapshot(
-        walkie_talkie_dir, kcl.ImageFormat.Jpeg
+        car_wheel_dir, kcl.ImageFormat.Jpeg
     )
     assert image_bytes is not None
     assert len(image_bytes) > 0
@@ -131,7 +131,7 @@ def test_kcl_format():
 
 @pytest.mark.asyncio
 async def test_kcl_format_dir():
-    await kcl.format_dir(walkie_talkie_dir)
+    await kcl.format_dir(car_wheel_dir)
 
 def test_kcl_lint():
     # Read from a file.

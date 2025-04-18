@@ -45,6 +45,7 @@ fn run_benchmarks(c: &mut Criterion) {
 
     let benchmark_dirs = discover_benchmark_dirs(&base_dir);
 
+    #[cfg(feature = "benchmark-execution")]
     let rt = tokio::runtime::Runtime::new().unwrap();
 
     for dir in benchmark_dirs {
@@ -67,12 +68,14 @@ fn run_benchmarks(c: &mut Criterion) {
             .sample_size(10)
             .measurement_time(std::time::Duration::from_secs(1)); // Short measurement time to keep it from running in parallel
 
+        #[cfg(feature = "benchmark-execution")]
         let program = kcl_lib::Program::parse_no_errs(&input_content).unwrap();
 
         group.bench_function(format!("parse_{}", dir_name), |b| {
             b.iter(|| kcl_lib::Program::parse_no_errs(black_box(&input_content)).unwrap())
         });
 
+        #[cfg(feature = "benchmark-execution")]
         group.bench_function(format!("execute_{}", dir_name), |b| {
             b.iter(|| {
                 if let Err(err) = rt.block_on(async {

@@ -1338,11 +1338,11 @@ mod test {
                 value: Box::new(Plane::from_plane_data(crate::std::sketch::PlaneData::XY, exec_state)),
             },
             // No easy way to make a Face, Sketch, Solid, or Helix
-            KclValue::ImportedGeometry(crate::execution::ImportedGeometry {
-                id: uuid::Uuid::nil(),
-                value: Vec::new(),
-                meta: Vec::new(),
-            }),
+            KclValue::ImportedGeometry(crate::execution::ImportedGeometry::new(
+                uuid::Uuid::nil(),
+                Vec::new(),
+                Vec::new(),
+            )),
             // Other values don't have types
         ]
     }

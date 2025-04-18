@@ -171,7 +171,8 @@ async fn inner_scale(
         args.flush_batch_for_solids(exec_state, solids).await?;
     }
 
-    for object_id in objects.ids() {
+    let mut objects = objects.clone();
+    for object_id in objects.ids(&args.ctx).await? {
         let id = exec_state.next_uuid();
 
         args.batch_modeling_cmd(
@@ -409,7 +410,8 @@ async fn inner_translate(
         args.flush_batch_for_solids(exec_state, solids).await?;
     }
 
-    for object_id in objects.ids() {
+    let mut objects = objects.clone();
+    for object_id in objects.ids(&args.ctx).await? {
         let id = exec_state.next_uuid();
 
         args.batch_modeling_cmd(
@@ -774,7 +776,8 @@ async fn inner_rotate(
         args.flush_batch_for_solids(exec_state, solids).await?;
     }
 
-    for object_id in objects.ids() {
+    let mut objects = objects.clone();
+    for object_id in objects.ids(&args.ctx).await? {
         let id = exec_state.next_uuid();
 
         if let (Some(axis), Some(angle)) = (axis, angle) {

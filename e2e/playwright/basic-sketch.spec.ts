@@ -66,15 +66,17 @@ async function doBasicSketch(
   await page.waitForTimeout(500)
 
   if (openPanes.includes('code')) {
-    await expect(u.codeLocator)
-      .toHaveText(`sketch001 = startSketchOn(XZ)profile001 = startProfileAt(${commonPoints.startAt}, sketch001)
+    await expect(
+      u.codeLocator
+    ).toHaveText(`sketch001 = startSketchOn(XZ)profile001 = startProfileAt(${commonPoints.startAt}, sketch001)
   |> xLine(length = ${commonPoints.num1})`)
   }
   await page.waitForTimeout(500)
   await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 20)
   if (openPanes.includes('code')) {
-    await expect(u.codeLocator)
-      .toHaveText(`sketch001 = startSketchOn(XZ)profile001 = startProfileAt(${
+    await expect(
+      u.codeLocator
+    ).toHaveText(`sketch001 = startSketchOn(XZ)profile001 = startProfileAt(${
       commonPoints.startAt
     }, sketch001)
   |> xLine(length = ${commonPoints.num1})
@@ -85,8 +87,9 @@ async function doBasicSketch(
   await page.waitForTimeout(200)
   await page.mouse.click(startXPx, 500 - PUR * 20)
   if (openPanes.includes('code')) {
-    await expect(u.codeLocator)
-      .toHaveText(`@settings(defaultLengthUnit = in)sketch001 = startSketchOn(XZ)profile001 = startProfileAt(${
+    await expect(
+      u.codeLocator
+    ).toHaveText(`@settings(defaultLengthUnit = in)sketch001 = startSketchOn(XZ)profile001 = startProfileAt(${
       commonPoints.startAt
     }, sketch001)
   |> xLine(length = ${commonPoints.num1})
@@ -142,8 +145,9 @@ async function doBasicSketch(
 
   // Open the code pane.
   await u.openKclCodePanel()
-  await expect(u.codeLocator)
-    .toHaveText(`@settings(defaultLengthUnit = in)sketch001 = startSketchOn(XZ)profile001 = startProfileAt(${
+  await expect(
+    u.codeLocator
+  ).toHaveText(`@settings(defaultLengthUnit = in)sketch001 = startSketchOn(XZ)profile001 = startProfileAt(${
     commonPoints.startAt
   }, sketch001)
   |> xLine(length = ${commonPoints.num1}, tag = $seg01)

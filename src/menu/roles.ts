@@ -21,13 +21,12 @@ type FileRoleLabel =
   | 'Sign out'
   | 'Theme'
   | 'Theme color'
-  | 'Insert from project file'
   | 'Export current part'
   | 'Create new file'
   | 'Create new folder'
   | 'Share current part (via Zoo link)'
   | 'Project settings'
-  | 'Load a sample model'
+  | 'Load external model'
   | 'User default units'
 
 type EditRoleLabel =
@@ -82,6 +81,7 @@ type ViewRoleLabel =
 type DesignRoleLabel =
   | 'Design'
   | 'Create a parameter'
+  | 'Insert from project file'
   | 'Create with Zoo Text-To-CAD'
   | 'Start sketch'
   | 'Create an offset plane'

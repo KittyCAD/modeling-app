@@ -1,5 +1,5 @@
-import fsp from 'fs/promises'
 import path from 'path'
+import fsp from 'fs/promises'
 
 import {
   executorInputPath,

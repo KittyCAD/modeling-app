@@ -44,6 +44,7 @@ export class SceneFixture {
   public page: Page
   public streamWrapper!: Locator
   public networkToggleConnected!: Locator
+  public engineConnectionsSpinner!: Locator
   public startEditSketchBtn!: Locator
 
   constructor(page: Page) {
@@ -52,6 +53,7 @@ export class SceneFixture {
     this.networkToggleConnected = page
       .getByTestId('network-toggle-ok')
       .or(page.getByTestId('network-toggle-other'))
+    this.engineConnectionsSpinner = page.getByTestId(`loading-engine`)
     this.startEditSketchBtn = page
       .getByRole('button', { name: 'Start Sketch' })
       .or(page.getByRole('button', { name: 'Edit Sketch' }))
@@ -228,6 +230,7 @@ export class SceneFixture {
   connectionEstablished = async () => {
     const timeout = 30000
     await expect(this.networkToggleConnected).toBeVisible({ timeout })
+    await expect(this.engineConnectionsSpinner).not.toBeVisible()
   }
 
   settled = async (cmdBar: CmdBarFixture) => {
@@ -235,6 +238,7 @@ export class SceneFixture {
 
     await expect(this.startEditSketchBtn).not.toBeDisabled({ timeout: 15_000 })
     await expect(this.startEditSketchBtn).toBeVisible()
+    await expect(this.engineConnectionsSpinner).not.toBeVisible()
 
     await cmdBar.openCmdBar()
     await cmdBar.chooseCommand('Settings · app · show debug panel')
@@ -251,6 +255,14 @@ export class SceneFixture {
     diff: number
   ) => {
     await expectPixelColor(this.page, colour, coords, diff)
+  }
+
+  expectPixelColorNotToBe = async (
+    colour: [number, number, number] | [number, number, number][],
+    coords: { x: number; y: number },
+    diff: number
+  ) => {
+    await expectPixelColorNotToBe(this.page, colour, coords, diff)
   }
 
   get gizmo() {
@@ -274,37 +286,69 @@ function isColourArray(
   return isArray(colour[0])
 }
 
-export async function expectPixelColor(
+type PixelColorMatchMode = 'matches' | 'differs'
+
+export async function checkPixelColor(
   page: Page,
   colour: [number, number, number] | [number, number, number][],
   coords: { x: number; y: number },
-  diff: number
+  diff: number,
+  mode: PixelColorMatchMode
 ) {
   let finalValue = colour
+  const isMatchMode = mode === 'matches'
+  const actionText = isMatchMode ? 'expecting' : 'not expecting'
+  const functionName = isMatchMode
+    ? 'ExpectPixelColor'
+    : 'ExpectPixelColourNotToBe'
+
   await expect
     .poll(
       async () => {
         const pixel = (await getPixelRGBs(page)(coords, 1))[0]
         if (!pixel) return null
         finalValue = pixel
+
+        let matches
         if (!isColourArray(colour)) {
-          return pixel.every(
+          matches = pixel.every(
             (channel, index) => Math.abs(channel - colour[index]) < diff
           )
+        } else {
+          matches = colour.some((c) =>
+            c.every((channel, index) => Math.abs(pixel[index] - channel) < diff)
+          )
         }
-        return colour.some((c) =>
-          c.every((channel, index) => Math.abs(pixel[index] - channel) < diff)
-        )
+
+        return isMatchMode ? matches : !matches
       },
       { timeout: 10_000 }
     )
     .toBeTruthy()
     .catch((cause) => {
       throw new Error(
-        `ExpectPixelColor: point ${JSON.stringify(
+        `${functionName}: point ${JSON.stringify(
           coords
-        )} was expecting ${colour} but got ${finalValue}`,
+        )} was ${actionText} ${colour} but got ${finalValue}`,
         { cause }
       )
     })
+}
+
+export async function expectPixelColor(
+  page: Page,
+  colour: [number, number, number] | [number, number, number][],
+  coords: { x: number; y: number },
+  diff: number
+) {
+  await checkPixelColor(page, colour, coords, diff, 'matches')
+}
+
+export async function expectPixelColorNotToBe(
+  page: Page,
+  colour: [number, number, number] | [number, number, number][],
+  coords: { x: number; y: number },
+  diff: number
+) {
+  await checkPixelColor(page, colour, coords, diff, 'differs')
 }

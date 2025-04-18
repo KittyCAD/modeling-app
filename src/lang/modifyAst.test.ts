@@ -642,7 +642,7 @@ ${!replace1 ? `  |> ${line}\n` : ''}  |> angledLine(angle = -65, length = ${
       ],
       [
         'angledLineThatIntersects',
-        `angledLineThatIntersects({ angle = 45.5, intersectTag = b, offset = 198.85 }, %, $a)`,
+        `angledLineThatIntersects(angle = 45.5, intersectTag = b, offset = 198.85, tag = $a)`,
         ['918.4', '45.5'],
       ],
     ])(`%s`, async (_, line, [replace1, replace2]) => {
@@ -684,11 +684,7 @@ describe('Testing removeSingleConstraintInfo', () => {
   |> /*2*/ angledLine(angle = 30 + 0, lengthY = 3 + 0)
   |> /*3*/ angledLine(angle = 12.14 + 0, endAbsoluteX =  12 + 0)
   |> /*4*/ angledLine(angle = 30 + 0, endAbsoluteY =  10.14 + 0)
-  |> angledLineThatIntersects({
-        angle = 3.14 + 0,
-        intersectTag = a,
-        offset = 0 + 0
-      }, %)
+  |> angledLineThatIntersects(angle = 3.14 + 0, intersectTag = a, offset = 0 + 0)
   |> tangentialArc(endAbsolute = [3.14 + 0, 13.14 + 0])`
     test.each([
       [' line(end = [3 + 0, 4])', 'arrayIndex', 1, ''],
@@ -728,12 +724,8 @@ describe('Testing removeSingleConstraintInfo', () => {
         '',
       ],
       [
-        `angledLineThatIntersects({
-       angle = 3.14 + 0,
-       offset = 0,
-       intersectTag = a
-     }, %)`,
-        'objectProperty',
+        `angledLineThatIntersects(angle = 3.14 + 0, intersectTag = a, offset = 0)`,
+        'labeledArg',
         'offset',
         '',
       ],
@@ -761,11 +753,6 @@ describe('Testing removeSingleConstraintInfo', () => {
           argPosition = {
             type: 'arrayItem',
             index: value === 0 ? 0 : 1,
-          }
-        } else if (key === 'objectProperty' && typeof value === 'string') {
-          argPosition = {
-            type: 'objectProperty',
-            key: value,
           }
         } else if (key === '') {
           argPosition = {

@@ -33,7 +33,7 @@ translate(
 
 ### Returns
 
-[`SolidOrSketchOrImportedGeometry`](/docs/kcl/types/SolidOrSketchOrImportedGeometry) - Data for a solid or an imported geometry.
+[`SolidOrSketchOrImportedGeometry`](/docs/kcl/types/SolidOrSketchOrImportedGeometry) - Data for a solid, sketch, or an imported geometry.
 
 
 ### Examples

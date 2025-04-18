@@ -90,13 +90,13 @@ export const KclEditorMenu = ({ children }: PropsWithChildren) => {
                   type: 'Find and select command',
                   data: {
                     groupId: 'code',
-                    name: 'open-kcl-example',
+                    name: 'load-external-model',
                   },
                 })
               }}
               className={styles.button}
             >
-              <span>Load a sample model</span>
+              <span>Load external model</span>
             </button>
           </Menu.Item>
           <Menu.Item>

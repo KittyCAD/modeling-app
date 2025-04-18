@@ -1,10 +1,10 @@
 ---
 title: "SolidOrSketchOrImportedGeometry"
-excerpt: "Data for a solid or an imported geometry."
+excerpt: "Data for a solid, sketch, or an imported geometry."
 layout: manual
 ---
 
-Data for a solid or an imported geometry.
+Data for a solid, sketch, or an imported geometry.
 
 
 

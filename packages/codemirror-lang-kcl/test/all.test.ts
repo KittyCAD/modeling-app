@@ -1,6 +1,6 @@
-import { fileTests } from '@lezer/generator/dist/test'
 import * as fs from 'fs'
 import * as path from 'path'
+import { fileTests } from '@lezer/generator/dist/test'
 
 import { KclLanguage } from '../src/index'
 

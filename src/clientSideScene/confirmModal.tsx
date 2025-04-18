@@ -1,5 +1,5 @@
 import { Fragment } from 'react'
-import { create, type InstanceProps } from 'react-modal-promise'
+import { type InstanceProps, create } from 'react-modal-promise'
 
 import { Dialog, Transition } from '@headlessui/react'
 import { ActionButton } from '@src/components/ActionButton'

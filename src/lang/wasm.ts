@@ -28,8 +28,8 @@ import type { UnitLen } from '@rust/kcl-lib/bindings/UnitLen'
 import { KCLError } from '@src/lang/errors'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import {
-  defaultArtifactGraph,
   type Artifact,
+  defaultArtifactGraph,
 } from '@src/lang/std/artifactGraph'
 import type { Coords2d } from '@src/lang/std/sketch'
 import {

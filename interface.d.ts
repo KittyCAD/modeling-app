@@ -1,10 +1,10 @@
 import { MachinesListing } from 'components/MachineManagerProvider'
 import 'electron'
+import fs from 'node:fs/promises'
+import path from 'path'
 import { dialog, shell } from 'electron'
 import type { WebContentSendPayload } from 'menu/channels'
 import { ZooLabel } from 'menu/roles'
-import fs from 'node:fs/promises'
-import path from 'path'
 
 // Extend the interface with additional custom properties
 declare module 'electron' {

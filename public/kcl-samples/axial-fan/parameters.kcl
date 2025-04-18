@@ -1,0 +1,10 @@
+// Global parameters for the axial fan
+
+// Set units
+@settings(defaultLengthUnit = mm)
+
+// Define Parameters
+export fanSize = 120
+export fanHeight = 25
+export mountingHoleSpacing = 105
+export mountingHoleSize = 4.5

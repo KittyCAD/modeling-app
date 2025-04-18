@@ -1,5 +1,5 @@
-import type { BrowserWindow } from 'electron'
 import os from 'node:os'
+import type { BrowserWindow } from 'electron'
 
 import { typeSafeWebContentsSend } from '@src/menu/channels'
 import type { ZooMenuItemConstructorOptions } from '@src/menu/roles'
@@ -148,21 +148,11 @@ export const modelingFileRole = (
       // Appears to be only Windows and Mac OS specific. Linux does not have support
       { type: 'separator' },
       {
-        label: 'Load a sample model',
-        id: 'File.Load a sample model',
+        label: 'Load external model',
+        id: 'File.Load external model',
         click: () => {
           typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-            menuLabel: 'File.Load a sample model',
-          })
-        },
-      },
-      { type: 'separator' },
-      {
-        label: 'Insert from project file',
-        id: 'File.Insert from project file',
-        click: () => {
-          typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-            menuLabel: 'File.Insert from project file',
+            menuLabel: 'File.Load external model',
           })
         },
       },

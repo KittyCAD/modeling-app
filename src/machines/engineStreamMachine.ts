@@ -1,10 +1,4 @@
-import { jsAppSettings } from '@src/lib/settings/settingsUtils'
-import {
-  codeManager,
-  engineCommandManager,
-  rustContext,
-  sceneInfra,
-} from '@src/lib/singletons'
+import { engineCommandManager, sceneInfra } from '@src/lib/singletons'
 import type { MutableRefObject } from 'react'
 import type { ActorRefFrom } from 'xstate'
 import { assign, fromPromise, setup } from 'xstate'
@@ -128,14 +122,6 @@ export const engineStreamMachine = setup({
 
         await holdOntoVideoFrameInCanvas(video, canvas)
         video.style.display = 'none'
-
-        // Before doing anything else clear the cache
-        // Originally I (lee) had this on the reconnect but it was interfering
-        // with kclManager.executeCode()?
-        await rustContext.clearSceneAndBustCache(
-          { settings: await jsAppSettings() },
-          codeManager.currentFilePath || undefined
-        )
 
         await sceneInfra.camControls.saveRemoteCameraState()
 

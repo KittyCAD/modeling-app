@@ -17,9 +17,7 @@
     "cad",
     "manufacturing"
   ],
-  "categories": [
-    "Programming Languages"
-  ],
+  "categories": ["Programming Languages"],
   "repository": {
     "url": "https://github.com/kittycad/modeling-app.git",
     "type": "git"
@@ -28,17 +26,13 @@
     "vscode": "^1.97.0"
   },
   "enabledApiProposals": [],
-  "activationEvents": [
-    "onLanguage:kcl"
-  ],
+  "activationEvents": ["onLanguage:kcl"],
   "main": "./dist/main.js",
   "contributes": {
     "languages": [
       {
         "id": "kcl",
-        "extensions": [
-          ".kcl"
-        ]
+        "extensions": [".kcl"]
       }
     ],
     "configuration": {
@@ -46,10 +40,7 @@
       "title": "kcl-language-server",
       "properties": {
         "kcl-language-server.server.path": {
-          "type": [
-            "null",
-            "string"
-          ],
+          "type": ["null", "string"],
           "scope": "machine-overridable",
           "default": null,
           "markdownDescription": "Path to kcl-language-server executable (points to bundled binary by default)."
@@ -57,16 +48,8 @@
         "kcl-language-server.trace.server": {
           "type": "string",
           "scope": "window",
-          "enum": [
-            "off",
-            "messages",
-            "verbose"
-          ],
-          "enumDescriptions": [
-            "No traces",
-            "Error only",
-            "Full log"
-          ],
+          "enum": ["off", "messages", "verbose"],
+          "enumDescriptions": ["No traces", "Error only", "Full log"],
           "default": "off",
           "description": "Trace requests to the kcl-language-server (this is usually overly verbose and not recommended for regular users)."
         },

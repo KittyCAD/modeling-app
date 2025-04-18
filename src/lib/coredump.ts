@@ -5,10 +5,8 @@ import type { OsInfo } from '@rust/kcl-lib/bindings/OsInfo'
 import type { WebrtcStats } from '@rust/kcl-lib/bindings/WebrtcStats'
 
 import type CodeManager from '@src/lang/codeManager'
-import type {
-  CommandLog,
-  EngineCommandManager,
-} from '@src/lang/std/engineConnection'
+import type { CommandLog } from '@src/lang/std/commandLog'
+import type { EngineCommandManager } from '@src/lang/std/engineConnection'
 import { isDesktop } from '@src/lib/isDesktop'
 import type RustContext from '@src/lib/rustContext'
 import screenshot from '@src/lib/screenshot'

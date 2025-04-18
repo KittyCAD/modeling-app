@@ -1,7 +1,7 @@
+import { join } from 'path'
 import { bracket } from '@e2e/playwright/fixtures/bracket'
 import { onboardingPaths } from '@src/routes/Onboarding/paths'
 import fsp from 'fs/promises'
-import { join } from 'path'
 
 import { expectPixelColor } from '@e2e/playwright/fixtures/sceneFixture'
 import {

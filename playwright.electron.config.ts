@@ -1,5 +1,5 @@
-import { defineConfig, devices } from '@playwright/test'
 import os from 'os'
+import { defineConfig, devices } from '@playwright/test'
 
 const platform = os.platform() // 'linux' (Ubuntu), 'darwin' (macOS), 'win32' (Windows)
 
@@ -20,7 +20,7 @@ if (process.env.E2E_WORKERS) {
     case 'darwin':
     case 'win32':
     default:
-      workers = '25%' // Lower concurrency for heavier Electron processes
+      workers = '40%' // Lower concurrency for heavier Electron processes
       break
   }
 }

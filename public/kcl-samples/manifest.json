@@ -8,6 +8,13 @@
   },
   {
     "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "axial-fan/main.kcl",
+    "multipleFiles": true,
+    "title": "PC Fan",
+    "description": "A small axial fan, used to push or draw airflow over components to remove excess heat"
+  },
+  {
+    "file": "main.kcl",
     "pathFromProjectDirectoryToFirstFile": "ball-bearing/main.kcl",
     "multipleFiles": false,
     "title": "Ball Bearing",
@@ -19,6 +26,13 @@
     "multipleFiles": true,
     "title": "Bench",
     "description": "This is a slight remix of Depep1's original 3D Boaty (https://www.printables.com/model/1141963-3d-boaty). This is a tool used for benchmarking 3D FDM printers for bed adhesion, overhangs, bridging and top surface quality. The name of this file is a bit of misnomer, the shape of the object is a typical park bench."
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "bottle/main.kcl",
+    "multipleFiles": false,
+    "title": "Bottle",
+    "description": "A simple bottle with a hollow, watertight interior"
   },
   {
     "file": "main.kcl",

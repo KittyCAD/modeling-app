@@ -117,7 +117,6 @@ export default function CommandBarSelectionMixedInput({
             Continue without selection
           </button>
         )}
-
         <span data-testid="cmd-bar-arg-name" className="sr-only">
           {arg.name}
         </span>

@@ -84,3 +84,4 @@ dist
 venv
 
 .vscode-test
+.biome/

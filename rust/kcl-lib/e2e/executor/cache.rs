@@ -7,6 +7,7 @@ use kittycad_modeling_cmds as kcmc;
 #[derive(Debug)]
 struct Variation<'a> {
     code: &'a str,
+    other_files: Vec<(std::path::PathBuf, std::string::String)>,
     settings: &'a kcl_lib::ExecutorSettings,
 }
 
@@ -31,7 +32,31 @@ async fn cache_test(
         // set the new settings.
         ctx.settings = variation.settings.clone();
 
-        let outcome = ctx.run_with_caching(program).await.unwrap();
+        if !variation.other_files.is_empty() {
+            let tmp_dir = std::env::temp_dir();
+            let tmp_dir = tmp_dir
+                .join(format!("kcl_test_{}", test_name))
+                .join(uuid::Uuid::new_v4().to_string());
+
+            // Create a temporary file for each of the other files.
+            for (variant_path, variant_code) in &variation.other_files {
+                let tmp_file = tmp_dir.join(variant_path);
+                std::fs::create_dir_all(tmp_file.parent().unwrap()).unwrap();
+                std::fs::write(tmp_file, variant_code).unwrap();
+            }
+
+            ctx.settings.project_directory = Some(tmp_dir.clone());
+        }
+
+        let outcome = match ctx.run_with_caching(program).await {
+            Ok(outcome) => outcome,
+            Err(error) => {
+                let report = error.clone().into_miette_report_with_outputs(variation.code).unwrap();
+                let report = miette::Report::new(report);
+                panic!("{:?}", report);
+            }
+        };
+
         let snapshot_png_bytes = ctx.prepare_snapshot().await.unwrap().contents.0;
 
         // Decode the snapshot, return it.
@@ -68,6 +93,7 @@ async fn kcl_test_cache_change_grid_visualizes_grid_off_to_on() {
         vec![
             Variation {
                 code,
+                other_files: vec![],
                 settings: &kcl_lib::ExecutorSettings {
                     show_grid: false,
                     ..Default::default()
@@ -75,6 +101,7 @@ async fn kcl_test_cache_change_grid_visualizes_grid_off_to_on() {
             },
             Variation {
                 code,
+                other_files: vec![],
                 settings: &kcl_lib::ExecutorSettings {
                     show_grid: true,
                     ..Default::default()
@@ -107,6 +134,7 @@ async fn kcl_test_cache_change_grid_visualizes_grid_on_to_off() {
         vec![
             Variation {
                 code,
+                other_files: vec![],
                 settings: &kcl_lib::ExecutorSettings {
                     show_grid: true,
                     ..Default::default()
@@ -114,6 +142,7 @@ async fn kcl_test_cache_change_grid_visualizes_grid_on_to_off() {
             },
             Variation {
                 code,
+                other_files: vec![],
                 settings: &kcl_lib::ExecutorSettings {
                     show_grid: false,
                     ..Default::default()
@@ -146,6 +175,7 @@ async fn kcl_test_cache_change_highlight_edges_changes_visual() {
         vec![
             Variation {
                 code,
+                other_files: vec![],
                 settings: &kcl_lib::ExecutorSettings {
                     highlight_edges: true,
                     ..Default::default()
@@ -153,6 +183,7 @@ async fn kcl_test_cache_change_highlight_edges_changes_visual() {
             },
             Variation {
                 code,
+                other_files: vec![],
                 settings: &kcl_lib::ExecutorSettings {
                     highlight_edges: false,
                     ..Default::default()
@@ -166,6 +197,58 @@ async fn kcl_test_cache_change_highlight_edges_changes_visual() {
     let second = result.last().unwrap();
 
     assert!(first.1 != second.1);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn kcl_test_cache_multi_file_same_code_dont_reexecute() {
+    let code = r#"import "toBeImported.kcl" as importedCube
+
+importedCube
+
+sketch001 = startSketchOn(XZ)
+profile001 = startProfileAt([-134.53, -56.17], sketch001)
+  |> angledLine(angle = 0, length = 79.05, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 76.28)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $seg01)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg02)
+  |> close()
+extrude001 = extrude(profile001, length = 100)
+sketch003 = startSketchOn(extrude001, face = seg02)
+sketch002 = startSketchOn(extrude001, face = seg01)
+"#;
+
+    let other_file = (
+        std::path::PathBuf::from("toBeImported.kcl"),
+        r#"sketch001 = startSketchOn(XZ)
+profile001 = startProfileAt([281.54, 305.81], sketch001)
+  |> angledLine(angle = 0, length = 123.43, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 85.99)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude(profile001, length = 100)"#
+            .to_string(),
+    );
+
+    let result = cache_test(
+        "multi_file_same_code_dont_reexecute",
+        vec![
+            Variation {
+                code,
+                other_files: vec![other_file.clone()],
+                settings: &Default::default(),
+            },
+            Variation {
+                code,
+                other_files: vec![other_file],
+                settings: &Default::default(),
+            },
+        ],
+    )
+    .await;
+
+    result.first().unwrap();
+    result.last().unwrap();
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -190,10 +273,12 @@ extrude(sketch001, length = 4)
         vec![
             Variation {
                 code,
+                other_files: vec![],
                 settings: &Default::default(),
             },
             Variation {
                 code: code_with_extrude.as_str(),
+                other_files: vec![],
                 settings: &Default::default(),
             },
         ],
@@ -281,4 +366,110 @@ async fn kcl_test_cache_empty_file_pop_cache_empty_file_planes_work() {
         .unwrap();
 
     ctx.close().await;
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn kcl_test_cache_multi_file_after_empty_with_export() {
+    let code = r#"import importedCube from "toBeImported.kcl"
+
+importedCube
+
+sketch001 = startSketchOn(XZ)
+profile001 = startProfileAt([-134.53, -56.17], sketch001)
+  |> angledLine(angle = 0, length = 79.05, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 76.28)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $seg01)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg02)
+  |> close()
+extrude001 = extrude(profile001, length = 100)
+sketch003 = startSketchOn(extrude001, face = seg02)
+sketch002 = startSketchOn(extrude001, face = seg01)
+"#;
+
+    let other_file = (
+        std::path::PathBuf::from("toBeImported.kcl"),
+        r#"sketch001 = startSketchOn(XZ)
+profile001 = startProfileAt([281.54, 305.81], sketch001)
+  |> angledLine(angle = 0, length = 123.43, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 85.99)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+export importedCube = extrude(profile001, length = 100)
+"#
+        .to_string(),
+    );
+
+    let result = cache_test(
+        "multi_file_after_empty",
+        vec![
+            Variation {
+                code: "",
+                other_files: vec![],
+                settings: &Default::default(),
+            },
+            Variation {
+                code,
+                other_files: vec![other_file],
+                settings: &Default::default(),
+            },
+        ],
+    )
+    .await;
+
+    result.first().unwrap();
+    result.last().unwrap();
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn kcl_test_cache_multi_file_after_empty_with_woo() {
+    let code = r#"import "toBeImported.kcl" as importedCube
+
+importedCube
+
+sketch001 = startSketchOn(XZ)
+profile001 = startProfileAt([-134.53, -56.17], sketch001)
+  |> angledLine(angle = 0, length = 79.05, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 76.28)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $seg01)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg02)
+  |> close()
+extrude001 = extrude(profile001, length = 100)
+sketch003 = startSketchOn(extrude001, face = seg02)
+sketch002 = startSketchOn(extrude001, face = seg01)
+"#;
+
+    let other_file = (
+        std::path::PathBuf::from("toBeImported.kcl"),
+        r#"sketch001 = startSketchOn(XZ)
+profile001 = startProfileAt([281.54, 305.81], sketch001)
+  |> angledLine(angle = 0, length = 123.43, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 85.99)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude(profile001, length = 100)
+"#
+        .to_string(),
+    );
+
+    let result = cache_test(
+        "multi_file_after_empty",
+        vec![
+            Variation {
+                code: "",
+                other_files: vec![],
+                settings: &Default::default(),
+            },
+            Variation {
+                code,
+                other_files: vec![other_file],
+                settings: &Default::default(),
+            },
+        ],
+    )
+    .await;
+
+    result.first().unwrap();
+    result.last().unwrap();
 }

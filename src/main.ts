@@ -1,3 +1,5 @@
+import os from 'node:os'
+import path from 'path'
 // Some of the following was taken from bits and pieces of the vite-typescript
 // template that ElectronJS provides.
 // @ts-ignore: TS1343
@@ -18,9 +20,7 @@ import {
   systemPreferences,
 } from 'electron'
 import electronUpdater, { type AppUpdater } from 'electron-updater'
-import os from 'node:os'
 import { Issuer } from 'openid-client'
-import path from 'path'
 
 import {
   argvFromYargs,

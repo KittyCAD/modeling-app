@@ -133,6 +133,7 @@ impl StdLibFnArg {
             || self.type_ == "[Solid]"
             || self.type_ == "SketchSurface"
             || self.type_ == "SketchOrSurface"
+            || self.type_ == "SolidOrImportedGeometry"
             || self.type_ == "SolidOrSketchOrImportedGeometry")
             && (self.required || self.include_in_snippet)
         {

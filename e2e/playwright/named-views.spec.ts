@@ -1,6 +1,6 @@
+import { join } from 'path'
 import { PROJECT_SETTINGS_FILE_NAME } from '@src/lib/constants'
 import * as fsp from 'fs/promises'
-import { join } from 'path'
 
 import type { NamedView } from '@rust/kcl-lib/bindings/NamedView'
 

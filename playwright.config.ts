@@ -1,5 +1,5 @@
-import { defineConfig, devices } from '@playwright/test'
 import os from 'os'
+import { defineConfig, devices } from '@playwright/test'
 
 const platform = os.platform() // 'linux' (Ubuntu), 'darwin' (macOS), 'win32' (Windows)
 
