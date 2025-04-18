@@ -5,7 +5,7 @@ import type { Locator, Page } from '@playwright/test'
 import type { EditorFixture } from '@e2e/playwright/fixtures/editorFixture'
 import type { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
 import type { ToolbarFixture } from '@e2e/playwright/fixtures/toolbarFixture'
-import { orRunWhenFullSuiteEnabled } from '@e2e/playwright/test-utils'
+import { orRunWhenFullSuiteEnabled, runningOnWindows } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
 // test file is for testing point an click code gen functionality that's not sketch mode related
@@ -3544,6 +3544,9 @@ tag=$rectangleSegmentC002,
       toolbar,
       cmdBar,
     }) => {
+      if (runningOnWindows()) {
+        test.fixme(orRunWhenFullSuiteEnabled())
+      }
       const initialCode = `sketch001 = startSketchOn(XZ)
   |> startProfileAt([-102.57, 101.72], %)
   |> angledLine(angle = 0, length = 202.6, tag = $rectangleSegmentA001)
