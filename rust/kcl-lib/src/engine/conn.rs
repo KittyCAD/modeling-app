@@ -45,6 +45,7 @@ pub struct EngineConnection {
     batch: Arc<RwLock<Vec<(WebSocketRequest, SourceRange)>>>,
     batch_end: Arc<RwLock<IndexMap<uuid::Uuid, (WebSocketRequest, SourceRange)>>>,
     artifact_commands: Arc<RwLock<Vec<ArtifactCommand>>>,
+    ids_of_async_commands: Arc<RwLock<IndexMap<Uuid, SourceRange>>>,
 
     /// The default planes for the scene.
     default_planes: Arc<RwLock<Option<DefaultPlanes>>>,
@@ -112,6 +113,17 @@ impl Drop for TcpReadHandle {
     fn drop(&mut self) {
         // Drop the read handle.
         self.handle.abort();
+    }
+}
+
+struct ResponsesInformation {
+    /// The responses from the engine.
+    responses: Arc<RwLock<IndexMap<uuid::Uuid, WebSocketResponse>>>,
+}
+
+impl ResponsesInformation {
+    pub async fn add(&self, id: Uuid, response: WebSocketResponse) {
+        self.responses.write().await.insert(id, response);
     }
 }
 
@@ -227,10 +239,13 @@ impl EngineConnection {
         let session_data: Arc<RwLock<Option<ModelingSessionData>>> = Arc::new(RwLock::new(None));
         let session_data2 = session_data.clone();
         let responses: Arc<RwLock<IndexMap<uuid::Uuid, WebSocketResponse>>> = Arc::new(RwLock::new(IndexMap::new()));
-        let responses_clone = responses.clone();
+        let ids_of_async_commands: Arc<RwLock<IndexMap<Uuid, SourceRange>>> = Arc::new(RwLock::new(IndexMap::new()));
         let socket_health = Arc::new(RwLock::new(SocketHealth::Active));
         let pending_errors = Arc::new(RwLock::new(Vec::new()));
         let pending_errors_clone = pending_errors.clone();
+        let responses_information = ResponsesInformation {
+            responses: responses.clone(),
+        };
 
         let socket_health_tcp_read = socket_health.clone();
         let tcp_read_handle = tokio::spawn(async move {
@@ -244,8 +259,7 @@ impl EngineConnection {
                             WebSocketResponse::Success(SuccessWebSocketResponse {
                                 resp: OkWebSocketResponseData::ModelingBatch { responses },
                                 ..
-                            }) =>
-                            {
+                            }) => {
                                 #[expect(
                                     clippy::iter_over_hash_type,
                                     reason = "modeling command uses a HashMap and keys are random, so we don't really have a choice"
@@ -254,26 +268,32 @@ impl EngineConnection {
                                     let id: uuid::Uuid = (*resp_id).into();
                                     match batch_response {
                                         BatchResponse::Success { response } => {
-                                            responses_clone.write().await.insert(
-                                                id,
-                                                WebSocketResponse::Success(SuccessWebSocketResponse {
-                                                    success: true,
-                                                    request_id: Some(id),
-                                                    resp: OkWebSocketResponseData::Modeling {
-                                                        modeling_response: response.clone(),
-                                                    },
-                                                }),
-                                            );
+                                            // If the id is in our ids of async commands, remove
+                                            // it.
+                                            responses_information
+                                                .add(
+                                                    id,
+                                                    WebSocketResponse::Success(SuccessWebSocketResponse {
+                                                        success: true,
+                                                        request_id: Some(id),
+                                                        resp: OkWebSocketResponseData::Modeling {
+                                                            modeling_response: response.clone(),
+                                                        },
+                                                    }),
+                                                )
+                                                .await;
                                         }
                                         BatchResponse::Failure { errors } => {
-                                            responses_clone.write().await.insert(
-                                                id,
-                                                WebSocketResponse::Failure(FailureWebSocketResponse {
-                                                    success: false,
-                                                    request_id: Some(id),
-                                                    errors: errors.clone(),
-                                                }),
-                                            );
+                                            responses_information
+                                                .add(
+                                                    id,
+                                                    WebSocketResponse::Failure(FailureWebSocketResponse {
+                                                        success: false,
+                                                        request_id: Some(id),
+                                                        errors: errors.clone(),
+                                                    }),
+                                                )
+                                                .await;
                                         }
                                     }
                                 }
@@ -291,14 +311,16 @@ impl EngineConnection {
                                 errors,
                             }) => {
                                 if let Some(id) = request_id {
-                                    responses_clone.write().await.insert(
-                                        *id,
-                                        WebSocketResponse::Failure(FailureWebSocketResponse {
-                                            success: false,
-                                            request_id: *request_id,
-                                            errors: errors.clone(),
-                                        }),
-                                    );
+                                    responses_information
+                                        .add(
+                                            *id,
+                                            WebSocketResponse::Failure(FailureWebSocketResponse {
+                                                success: false,
+                                                request_id: *request_id,
+                                                errors: errors.clone(),
+                                            }),
+                                        )
+                                        .await;
                                 } else {
                                     // Add it to our pending errors.
                                     let mut pe = pending_errors_clone.write().await;
@@ -314,7 +336,7 @@ impl EngineConnection {
                         }
 
                         if let Some(id) = id {
-                            responses_clone.write().await.insert(id, ws_resp.clone());
+                            responses_information.add(id, ws_resp.clone()).await;
                         }
                     }
                     Err(e) => {
@@ -341,6 +363,7 @@ impl EngineConnection {
             batch: Arc::new(RwLock::new(Vec::new())),
             batch_end: Arc::new(RwLock::new(IndexMap::new())),
             artifact_commands: Arc::new(RwLock::new(Vec::new())),
+            ids_of_async_commands,
             default_planes: Default::default(),
             session_data,
             stats: Default::default(),
@@ -366,6 +389,10 @@ impl EngineManager for EngineConnection {
         self.artifact_commands.clone()
     }
 
+    fn ids_of_async_commands(&self) -> Arc<RwLock<IndexMap<Uuid, SourceRange>>> {
+        self.ids_of_async_commands.clone()
+    }
+
     fn stats(&self) -> &EngineStats {
         &self.stats
     }
@@ -386,13 +413,13 @@ impl EngineManager for EngineConnection {
         Ok(())
     }
 
-    async fn inner_send_modeling_cmd(
+    async fn inner_fire_modeling_cmd(
         &self,
-        id: uuid::Uuid,
+        _id: uuid::Uuid,
         source_range: SourceRange,
         cmd: WebSocketRequest,
         _id_to_source_range: HashMap<Uuid, SourceRange>,
-    ) -> Result<WebSocketResponse, KclError> {
+    ) -> Result<(), KclError> {
         let (tx, rx) = oneshot::channel();
 
         // Send the request to the engine, via the actor.
@@ -423,6 +450,19 @@ impl EngineManager for EngineConnection {
                     source_ranges: vec![source_range],
                 })
             })?;
+
+        Ok(())
+    }
+
+    async fn inner_send_modeling_cmd(
+        &self,
+        id: uuid::Uuid,
+        source_range: SourceRange,
+        cmd: WebSocketRequest,
+        id_to_source_range: HashMap<Uuid, SourceRange>,
+    ) -> Result<WebSocketResponse, KclError> {
+        self.inner_fire_modeling_cmd(id, source_range, cmd, id_to_source_range)
+            .await?;
 
         // Wait for the response.
         let current_time = std::time::Instant::now();
