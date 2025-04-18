@@ -23,6 +23,7 @@ pub struct EngineConnection {
     batch: Arc<RwLock<Vec<(WebSocketRequest, kcl_lib::SourceRange)>>>,
     batch_end: Arc<RwLock<IndexMap<uuid::Uuid, (WebSocketRequest, kcl_lib::SourceRange)>>>,
     core_test: Arc<RwLock<String>>,
+    ids_of_async_commands: Arc<RwLock<IndexMap<Uuid, kcl_lib::SourceRange>>>,
     /// The default planes for the scene.
     default_planes: Arc<RwLock<Option<DefaultPlanes>>>,
     stats: EngineStats,
@@ -37,6 +38,7 @@ impl EngineConnection {
             batch_end: Arc::new(RwLock::new(IndexMap::new())),
             core_test: result,
             default_planes: Default::default(),
+            ids_of_async_commands: Arc::new(RwLock::new(IndexMap::new())),
             stats: Default::default(),
         })
     }
@@ -379,6 +381,10 @@ impl kcl_lib::EngineManager for EngineConnection {
         Arc::new(RwLock::new(Vec::new()))
     }
 
+    fn ids_of_async_commands(&self) -> Arc<RwLock<IndexMap<Uuid, kcl_lib::SourceRange>>> {
+        self.ids_of_async_commands.clone()
+    }
+
     fn get_default_planes(&self) -> Arc<RwLock<Option<DefaultPlanes>>> {
         self.default_planes.clone()
     }
@@ -388,6 +394,25 @@ impl kcl_lib::EngineManager for EngineConnection {
         _id_generator: &mut IdGenerator,
         _source_range: kcl_lib::SourceRange,
     ) -> Result<(), KclError> {
+        Ok(())
+    }
+
+    async fn inner_fire_modeling_cmd(
+        &self,
+        id: uuid::Uuid,
+        source_range: kcl_lib::SourceRange,
+        cmd: WebSocketRequest,
+        id_to_source_range: HashMap<Uuid, kcl_lib::SourceRange>,
+    ) -> Result<(), KclError> {
+        // Pop off the id we care about.
+        self.ids_of_async_commands.write().await.swap_remove(&id);
+
+        // Add the response to our responses.
+        let response = self
+            .inner_send_modeling_cmd(id, source_range, cmd, id_to_source_range)
+            .await?;
+        self.responses().write().await.insert(id, response);
+
         Ok(())
     }
 
