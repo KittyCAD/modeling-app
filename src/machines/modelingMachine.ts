@@ -3145,7 +3145,7 @@ export const modelingMachine = setup({
 
       entry: [
         'reset client scene mouse handlers',
-        'Restore default plane visibility',
+        //'Restore default plane visibility',
         'reset camera position',
         'set selection filter to curves only',
       ],
