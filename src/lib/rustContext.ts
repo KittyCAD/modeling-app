@@ -190,7 +190,7 @@ export default class RustContext {
       // Return the result.
       return outcome
     } catch (e: any) {
-      console.log('Error in clearSceneAndBustCache', e)
+      console.error('Error in clearSceneAndBustCache', e)
       const err = errFromErrWithOutputs(e)
       this._defaultPlanes = err.defaultPlanes
       return Promise.reject(err)
