@@ -947,7 +947,7 @@ impl ExecutorContext {
                 exec_state.global.artifact_graph.clone(),
                 module_id_to_module_path,
                 exec_state.global.id_to_source.clone(),
-                default_planes,
+                default_planes.clone(),
             )
         })?;
 
@@ -957,6 +957,7 @@ impl ExecutorContext {
             cache::write_old_memory((mem, exec_state.global.module_infos.clone())).await;
         }
         let session_data = self.engine.get_session_data().await;
+
         Ok((env_ref, session_data))
     }
 
@@ -983,6 +984,9 @@ impl ExecutorContext {
                 &ModulePath::Main,
             )
             .await;
+
+        // Ensure all the async commands completed.
+        self.engine.ensure_async_commands_completed().await?;
 
         // If we errored out and early-returned, there might be commands which haven't been executed
         // and should be dropped.
