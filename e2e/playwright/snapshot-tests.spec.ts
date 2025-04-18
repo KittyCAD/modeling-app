@@ -1027,6 +1027,7 @@ test.describe('Grid visibility', { tag: '@snapshot' }, () => {
   })
 
   test('Grid turned on', async ({ page, context, cmdBar, scene }) => {
+    test.fixme(orRunWhenFullSuiteEnabled())
     await context.addInitScript(
       async ({ settingsKey, settings }) => {
         localStorage.setItem(settingsKey, settings)
