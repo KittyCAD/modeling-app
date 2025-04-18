@@ -46,7 +46,7 @@ fn function001(originStart) {
   // Create a pillar with a fasterner hole at the center
   sketch002 = startSketchOn(plane001)
     |> circle(center = [originStart[0], originStart[1]], radius = holeDia + wallThickness)
-    |> hole(circle(center = [originStart[0], originStart[1]], radius = holeDia), %)
+    |> hole(tool = circle(center = [originStart[0], originStart[1]], radius = holeDia))
   extrude002 = extrude(sketch002, length = height - wallThickness)
 
   return extrude002

@@ -25,7 +25,7 @@ fn cycloidalGear(gearPitch, gearHeight, holeDiameter, helixAngle) {
       |> tangentialArc(radius = gearPitch, angle = -180)
       |> tangentialArc(endAbsolute = [profileStartX(%), profileStartY(%)])
       |> close(%)
-      |> hole(circle(center = [0, 0], radius = holeDiameter / 2), %)
+      |> hole(tool = circle(center = [0, 0], radius = holeDiameter / 2))
     return gearProfile
   }
 

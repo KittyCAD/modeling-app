@@ -10,8 +10,8 @@ Use a 2-dimensional sketch to cut a hole in another 2-dimensional sketch.
 
 ```js
 hole(
-  holeSketch: [Sketch],
   sketch: Sketch,
+  tool: [Sketch],
 ): Sketch
 ```
 
@@ -20,8 +20,8 @@ hole(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `holeSketch` | [`[Sketch]`](/docs/kcl/types/Sketch) |  | Yes |
-| `sketch` | [`Sketch`](/docs/kcl/types/Sketch) |  | Yes |
+| `sketch` | [`Sketch`](/docs/kcl/types/Sketch) | Which sketch should this path be added to? | Yes |
+| `tool` | [`[Sketch]`](/docs/kcl/types/Sketch) | The shape(s) which should be cut out of the sketch. | Yes |
 
 ### Returns
 
@@ -37,8 +37,8 @@ exampleSketch = startSketchOn(XY)
   |> line(end = [5, 0])
   |> line(end = [0, -5])
   |> close()
-  |> hole(circle(center = [1, 1], radius = .25), %)
-  |> hole(circle(center = [1, 4], radius = .25), %)
+  |> hole(tool = circle(center = [1, 1], radius = .25))
+  |> hole(tool = circle(center = [1, 4], radius = .25))
 
 example = extrude(exampleSketch, length = 1)
 ```
@@ -58,7 +58,7 @@ fn squareHoleSketch() {
 
 exampleSketch = startSketchOn(-XZ)
   |> circle(center = [0, 0], radius = 3)
-  |> hole(squareHoleSketch(), %)
+  |> hole(tool = squareHoleSketch())
 example = extrude(exampleSketch, length = 1)
 ```
 

@@ -57,7 +57,7 @@ test.describe('Sketch tests', { tag: ['@skipWin'] }, () => {
   |> yLine(length = height)
   |> xLine(length = -width * .5)
   |> close()
-  |> hole(screwHole, %)
+  |> hole(tool = screwHole)
   |> extrude(length = thickness)
 
   part002 = startSketchOn(-XZ)
