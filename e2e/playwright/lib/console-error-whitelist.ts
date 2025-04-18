@@ -64,6 +64,16 @@ export const isErrorWhitelisted = (exception: Error) => {
       project: 'Google Chrome',
     },
     {
+      name: '',
+      message: 'fE',
+      stack: `
+     at ET (file:///Users/runner/work/modeling-app/modeling-app/.vite/renderer/main_window/assets/index-DduzBCVE.js:49875:12)
+     at HGe.clearSceneAndBustCache (file:///Users/runner/work/modeling-app/modeling-app/.vite/renderer/main_window/assets/index-DduzBCVE.js:91941:19)
+     at async a.onEngineConnectionOpened (file:///Users/runner/work/modeling-app/modeling-app/.vite/renderer/main_window/assets/index-DduzBCVE.js:91538:9)`,
+      foundInSpec: 'e2e/playwright/testing-constraints.spec.ts',
+      project: 'Google Chrome',
+    },
+    {
       name: 'RangeError',
       message: 'Position 160 is out of range for changeset of length 0',
       stack: `RangeError: Position 160 is out of range for changeset of length 0
