@@ -1,5 +1,5 @@
 import { expect, test } from '@e2e/playwright/zoo-test'
-import { orRunWhenFullSuiteEnabled } from './test-utils'
+import { orRunWhenFullSuiteEnabled } from '@e2e/playwright/test-utils'
 
 /* eslint-disable jest/no-conditional-expect */
 
