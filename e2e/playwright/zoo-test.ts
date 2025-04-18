@@ -30,21 +30,68 @@ declare module '@playwright/test' {
 // *for one worker*.
 const electronZooInstance = new ElectronZoo()
 
+// Track whether this is the first run for this worker process
+// Mac needs more time for the first window creation
+let isFirstRun = true
+
 // Our custom decorated Zoo test object. Makes it easier to add fixtures, and
 // switch between web and electron if needed.
 const playwrightTestFnWithFixtures_ = playwrightTestFn.extend<{
   tronApp?: ElectronZoo
 }>({
-  tronApp: async ({}, use, testInfo) => {
-    if (process.env.PLATFORM === 'web') {
-      await use(undefined)
-      return
-    }
+  tronApp: [
+    async ({}, use, testInfo) => {
+      if (process.env.PLATFORM === 'web') {
+        await use(undefined)
+        return
+      }
 
-    await electronZooInstance.createInstanceIfMissing(testInfo)
-    await use(electronZooInstance)
-    await electronZooInstance.makeAvailableAgain()
-  },
+      // Create a single timeout for the entire tronApp setup process
+      // This will ensure tests fail faster if there's an issue with setup
+      // instead of waiting for the full global timeout (120s)
+      // First runs need more time especially on Mac for window creation
+      const setupTimeout = isFirstRun ? 120_000 : 30_000
+      let timeoutId: NodeJS.Timeout | undefined
+
+      const setupPromise = new Promise<void>((resolve, reject) => {
+        timeoutId = setTimeout(() => {
+          reject(
+            new Error(
+              `tronApp setup timed out after ${setupTimeout}ms${isFirstRun ? ' (first run)' : ' (subsequent run)'}`
+            )
+          )
+        }, setupTimeout)
+
+        // Execute the async setup in a separate function
+        const doSetup = async () => {
+          try {
+            await electronZooInstance.createInstanceIfMissing(testInfo)
+            resolve()
+          } catch (error) {
+            reject(error)
+          }
+        }
+
+        // Start the setup process
+        void doSetup()
+      })
+
+      try {
+        await setupPromise
+        if (timeoutId) clearTimeout(timeoutId)
+
+        // First run is complete at this point
+        isFirstRun = false
+
+        await use(electronZooInstance)
+        await electronZooInstance.makeAvailableAgain()
+      } catch (error) {
+        if (timeoutId) clearTimeout(timeoutId)
+        throw error
+      }
+    },
+    { timeout: 120_000 }, // Keep the global timeout as fallback
+  ],
 })
 
 const test = playwrightTestFnWithFixtures_.extend<Fixtures>(
