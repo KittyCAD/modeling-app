@@ -1182,6 +1182,7 @@ sweepSketch = startSketchOn(XY)
     scene,
     cmdBar,
   }) => {
+    test.fixme(orRunWhenFullSuiteEnabled())
     const u = await getUtils(page)
     await context.addInitScript(async () => {
       localStorage.setItem(
