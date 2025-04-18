@@ -1154,11 +1154,7 @@ sweepPath = startSketchOn(XZ)
 
 sweepSketch = startSketchOn(XY)
   |> startProfileAt([2, 0], %)
-  |> arc({
-       angleEnd = 360,
-       angleStart = 0,
-       radius = 2
-     }, %)
+  |> arc(angleStart = 0, angleEnd = 360, radius = 2)
   |> sweep(path = sweepPath)
   |> appearance(
        color = "#bb00ff",
@@ -1186,6 +1182,7 @@ sweepSketch = startSketchOn(XY)
     scene,
     cmdBar,
   }) => {
+    test.fixme(orRunWhenFullSuiteEnabled())
     const u = await getUtils(page)
     await context.addInitScript(async () => {
       localStorage.setItem(
@@ -1203,11 +1200,7 @@ sweepPath = startSketchOn(XZ)
 
 sweepSketch = startSketchOn(XY)
   |> startProfileAt([2, 0], %)
-  |> arc({
-       angleEnd = 360,
-       angleStart = 0,
-       radius = 2
-     }, %)
+  |> arc(angleStart = 0, angleEnd = 360, radius = 2)
   |> sweep(path = sweepPath)
   |> appearance(
        color = "#bb00ff",

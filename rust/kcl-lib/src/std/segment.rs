@@ -529,10 +529,11 @@ pub async fn tangent_to_end(exec_state: &mut ExecState, args: Args) -> Result<Kc
 /// ```no_run
 /// bottom = startSketchOn("XY")
 ///   |> startProfileAt([0, 0], %)
-///   |> arcTo({
-///        end: [10, 10],
-///        interior: [5, 1]
-///      }, %, $arc1)
+///   |> arc(
+///        endAbsolute = [10, 10],
+///        interiorAbsolute = [5, 1],
+///        tag = $arc1,
+///      )
 ///   |> angledLine(angle = tangentToEnd(arc1), length = 20)
 ///   |> close()
 /// ```

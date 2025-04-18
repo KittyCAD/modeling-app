@@ -21,11 +21,12 @@ distanceToInsideEdge = slateWidthHalf + templateThickness + templateGap
 sketch001 = startSketchOn(XZ)
   |> startProfileAt([0, depth + templateGap], %)
   |> xLine(length = slateWidthHalf - radius, tag = $seg01)
-  |> arc({
-       angleEnd = 0,
+  |> arc(
        angleStart = 90,
-       radius = 10 + templateGap
-     }, %, $seg09)
+       angleEnd = 0,
+       radius = 10 + templateGap,
+       tag = $seg09,
+     )
   |> yLine(endAbsolute = -templateThickness, tag = $seg03)
   |> xLine(length = templateThickness, tag = $seg07)
   |> yLine(endAbsolute = (segEndY(seg01) + templateThickness) / 2 - templateThickness, tag = $seg02)
@@ -42,11 +43,7 @@ sketch001 = startSketchOn(XZ)
   |> yLine(length = -segLen(seg02))
   |> xLine(length = segLen(seg07))
   |> yLine(length = segLen(seg03))
-  |> arc({
-       angleEnd = 90,
-       angleStart = 180,
-       radius = 10 + templateGap
-     }, %)
+  |> arc(angleStart = 180, angleEnd = 90, radius = 10 + templateGap)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 
