@@ -23,7 +23,7 @@ import {
   getThemeColorForEngine,
 } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
-import { binaryToUuid, uuidv4 } from '@src/lib/utils'
+import { binaryToUuid, parseJson, uuidv4 } from '@src/lib/utils'
 
 const pingIntervalMs = 1_000
 
@@ -390,7 +390,7 @@ class EngineConnection extends EventTarget {
     this.websocket.addEventListener('open', this.onWebSocketOpen)
 
     this.websocket?.addEventListener('message', ((event: MessageEvent) => {
-      const message: Models['WebSocketResponse_type'] = JSON.parse(event.data)
+      const message: Models['WebSocketResponse_type'] = parseJson(event.data)
       const pending =
         this.engineCommandManager.pendingCommands[message.request_id || '']
       if (!('resp' in message)) return
@@ -862,7 +862,7 @@ class EngineConnection extends EventTarget {
           )
 
           this.onDataChannelMessage = (event) => {
-            const result: UnreliableResponses = JSON.parse(event.data)
+            const result: UnreliableResponses = parseJson(event.data)
             Object.values(
               this.engineCommandManager.unreliableSubscriptions[result.type] ||
                 {}
@@ -976,7 +976,7 @@ class EngineConnection extends EventTarget {
             return
           }
 
-          const message: Models['WebSocketResponse_type'] = JSON.parse(
+          const message: Models['WebSocketResponse_type'] = parseJson(
             event.data
           )
 
@@ -1564,7 +1564,7 @@ export class EngineCommandManager extends EventTarget {
           unreliableDataChannel.addEventListener(
             'message',
             (event: MessageEvent) => {
-              const result: UnreliableResponses = JSON.parse(event.data)
+              const result: UnreliableResponses = parseJson(event.data)
               Object.values(
                 this.unreliableSubscriptions[result.type] || {}
               ).forEach(
@@ -1608,7 +1608,7 @@ export class EngineCommandManager extends EventTarget {
             message.request_id = binaryToUuid(message.request_id)
           }
         } else {
-          message = JSON.parse(event.data)
+          message = parseJson(event.data)
         }
 
         if (message === null) {

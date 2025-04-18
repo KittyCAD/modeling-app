@@ -40,7 +40,7 @@ import type { CoreDumpManager } from '@src/lib/coredump'
 import openWindow from '@src/lib/openWindow'
 import { Reason, err } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
-import { isArray } from '@src/lib/utils'
+import { isArray, parseJson } from '@src/lib/utils'
 import {
   base64_decode,
   change_kcl_settings,
@@ -219,7 +219,7 @@ export const parse = (code: string | Error): ParseResult | Error => {
   } catch (e: any) {
     // throw e
     console.error(e.toString())
-    const parsed: RustKclError = JSON.parse(e.toString())
+    const parsed: RustKclError = parseJson(e.toString())
     return new KCLError(
       parsed.kind,
       parsed.msg,
@@ -381,7 +381,7 @@ export function sketchFromKclValue(
 }
 
 export const errFromErrWithOutputs = (e: any): KCLError => {
-  const parsed: KclErrorWithOutputs = JSON.parse(e.toString())
+  const parsed: KclErrorWithOutputs = parseJson(e.toString())
   return new KCLError(
     parsed.error.kind,
     parsed.error.msg,

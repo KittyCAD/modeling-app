@@ -4,6 +4,7 @@ import path from 'node:path'
 import { assertParse } from '@src/lang/wasm'
 import { initPromise } from '@src/lang/wasmUtils'
 import { enginelessExecutor } from '@src/lib/testHelpers'
+import { parseJson } from '@src/lib/utils'
 
 // The purpose of these tests is to act as a first line of defense
 // if something gets real screwy with our KCL ecosystem.
@@ -27,7 +28,7 @@ const manifestJsonStr = await fs.readFile(
   path.resolve(DIR_KCL_SAMPLES, 'manifest.json'),
   'utf-8'
 )
-const manifest = JSON.parse(manifestJsonStr)
+const manifest: KclSampleFile[] = parseJson(manifestJsonStr)
 
 process.chdir(DIR_KCL_SAMPLES)
 

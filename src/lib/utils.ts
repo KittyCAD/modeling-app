@@ -60,6 +60,26 @@ export function isNonNullable<T>(val: T): val is NonNullable<T> {
   return val !== null && val !== undefined
 }
 
+/**
+ * Same as JSON.parse() but if it fails, includes the string that was attempted
+ * to be parsed in the error message.  This is useful since a lot of times this
+ * is called on a string that isn't actually JSON, like another error message.
+ *
+ * You can also use the type parameter to assert the expected type of the parsed
+ * object.
+ */
+export function parseJson<T>(
+  text: string,
+  reviver?: (this: any, key: string, value: any) => any
+): T {
+  try {
+    return JSON.parse(text, reviver)
+  } catch (e) {
+    // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+    throw new Error(`Failed to parse JSON: ${text}`, { cause: e })
+  }
+}
+
 export function isOverlap(a: SourceRange, b: SourceRange) {
   const [startingRange, secondRange] = a[0] < b[0] ? [a, b] : [b, a]
   const [lastOfFirst, firstOfSecond] = [startingRange[1], secondRange[0]]

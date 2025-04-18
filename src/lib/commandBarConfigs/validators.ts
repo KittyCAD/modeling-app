@@ -3,7 +3,7 @@ import type { ApiError_type } from '@kittycad/lib/dist/types/src/models'
 
 import type { Selections } from '@src/lib/selections'
 import { engineCommandManager, kclManager } from '@src/lib/singletons'
-import { uuidv4 } from '@src/lib/utils'
+import { parseJson, uuidv4 } from '@src/lib/utils'
 import type { CommandBarContext } from '@src/machines/commandBarMachine'
 
 export const disableDryRunWithRetry = async (numberOfRetries = 3) => {
@@ -54,7 +54,7 @@ export function parseEngineErrorMessage(engineError: string) {
     return undefined
   }
 
-  const errors = JSON.parse(parts[1]) as ApiError_type[]
+  const errors = parseJson<ApiError_type[]>(parts[1])
   if (!errors[0]) {
     return undefined
   }

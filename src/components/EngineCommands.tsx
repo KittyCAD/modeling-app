@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import type { CommandLog } from '@src/lang/std/commandLog'
 import { engineCommandManager } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
+import { parseJson } from '@src/lib/utils'
 
 export function useEngineCommands(): [CommandLog[], () => void] {
   const [engineCommands, setEngineCommands] = useState<CommandLog[]>(
@@ -84,7 +85,7 @@ export const EngineCommands = () => {
         data-testid="custom-cmd-send-button"
         onClick={() => {
           engineCommandManager
-            .sendSceneCommand(JSON.parse(customCmd))
+            .sendSceneCommand(parseJson(customCmd))
             .catch(reportRejection)
         }}
       >

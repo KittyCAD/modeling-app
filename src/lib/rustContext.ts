@@ -26,6 +26,7 @@ import type { DeepPartial } from '@src/lib/types'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { getModule } from '@src/lib/wasm_lib_wrapper'
 import type { Models } from '@kittycad/lib/dist/types/src'
+import { parseJson } from '@src/lib/utils'
 
 export default class RustContext {
   private wasmInitFailed: boolean = true
@@ -140,7 +141,7 @@ export default class RustContext {
         JSON.stringify(settings)
       )
     } catch (e: any) {
-      const parsed: RustKclError = JSON.parse(e.toString())
+      const parsed: RustKclError = parseJson(e.toString())
       toast.error(parsed.msg, { id: toastId })
       return
     }
