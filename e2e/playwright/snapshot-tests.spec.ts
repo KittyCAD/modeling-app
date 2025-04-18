@@ -805,8 +805,7 @@ test(
   'Sketch on face with none z-up',
   { tag: '@snapshot' },
   async ({ page, context, cmdBar, scene }) => {
-    // FIXME: Skip on macos its being weird.
-    test.skip(process.platform === 'darwin', 'Skip on macos')
+    test.fixme(orRunWhenFullSuiteEnabled())
 
     const u = await getUtils(page)
     await context.addInitScript(async (KCL_DEFAULT_LENGTH) => {
@@ -1137,6 +1136,7 @@ test('theme persists', async ({ page, context }) => {
 
 test.describe('code color goober', { tag: '@snapshot' }, () => {
   test('code color goober', async ({ page, context, scene, cmdBar }) => {
+    test.fixme(orRunWhenFullSuiteEnabled())
     const u = await getUtils(page)
     await context.addInitScript(async () => {
       localStorage.setItem(
