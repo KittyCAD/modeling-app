@@ -714,7 +714,12 @@ class EngineConnection extends EventTarget {
               this.disconnectAll()
               break
 
+            // The remote end broke up with us! :(
             case 'disconnected':
+              this.engineConnection?.dispatchEvent(
+                new CustomEvent(EngineConnectionEvents.RestartRequest, {})
+              )
+              break
             case 'closed':
               this.pc?.removeEventListener('icecandidate', this.onIceCandidate)
               this.pc?.removeEventListener('icegatheringstatechange', this.onIceGatheringStateChange)
@@ -824,6 +829,25 @@ class EngineConnection extends EventTarget {
                 type: ConnectingType.DataChannelEstablished,
               },
             }
+
+            // Start firing off engine commands at this point.
+            // They could be fired at an earlier time, onWebSocketOpen,
+            // but DataChannel can offer some benefits like speed,
+            // and it's nice to say everything's connected before interacting
+            // with the server.
+
+            engineCommandManager.engineConnection.state = {
+              type: EngineConnectionStateType.ConnectionEstablished,
+            }
+
+            engineCommandManager.inSequence = 1
+
+            engineCommandManager.engineConnection.dispatchEvent(
+              new CustomEvent(EngineConnectionEvents.Opened, {
+                detail: engineCommandManager.engineConnection,
+              })
+            )
+            markOnce('code/endInitialEngineConnect')
           }
           this.unreliableDataChannel?.addEventListener(
             'open',
@@ -1509,15 +1533,30 @@ export class EngineCommandManager extends EventTarget {
 
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
     this.onEngineConnectionOpened = async () => {
-      await this.rustContext?.clearSceneAndBustCache(
-        { settings: await jsAppSettings() },
-        this.codeManager?.currentFilePath || undefined
-      )
+      console.log("onEngineConnectionOpened")
+
+      try {
+        console.log("clearing scene and busting cache")
+        await this.rustContext?.clearSceneAndBustCache(
+          { settings: await jsAppSettings() },
+          this.codeManager?.currentFilePath || undefined
+        )
+      } catch(e) {
+        // If this happens shit's actually gone south aka the websocket closed.
+        // Let's restart.
+        console.warn("shit's gone south")
+        console.warn(e)
+        this.engineConnection?.dispatchEvent(
+          new CustomEvent(EngineConnectionEvents.RestartRequest, {})
+        )
+        return
+      }
 
       // Set the stream's camera projection type
       // We don't send a command to the engine if in perspective mode because
       // for now it's the engine's default.
       if (settings.cameraProjection === 'orthographic') {
+        console.log("Setting camera to orthographic")
         this.sendSceneCommand({
           type: 'modeling_cmd_req',
           cmd_id: uuidv4(),
@@ -1528,8 +1567,10 @@ export class EngineCommandManager extends EventTarget {
       }
 
       // Set the theme
+      console.log("Setting theme")
       this.setTheme(this.settings.theme).catch(reportRejection)
       // Set up a listener for the dark theme media query
+      console.log("Setup theme media query change")
       darkModeMatcher?.addEventListener(
         'change',
         this.onDarkThemeMediaQueryChange
@@ -1537,6 +1578,7 @@ export class EngineCommandManager extends EventTarget {
 
       // Set the edge lines visibility
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      console.log("setting edge_lines_visible")
       this.sendSceneCommand({
         type: 'modeling_cmd_req',
         cmd_id: uuidv4(),
@@ -1546,9 +1588,11 @@ export class EngineCommandManager extends EventTarget {
         },
       })
 
+      console.log("camControlsCameraChange")
       this._camControlsCameraChange()
 
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      console.log("call default_camera_get_settings")
       this.sendSceneCommand({
         // CameraControls subscribes to default_camera_get_settings response events
         // firing this at connection ensure the camera's are synced initially
@@ -1561,6 +1605,7 @@ export class EngineCommandManager extends EventTarget {
 
       setIsStreamReady(true)
 
+      console.log("Dispatching SceneReady")
       // Other parts of the application should use this to react on scene ready.
       this.dispatchEvent(
         new CustomEvent(EngineCommandManagerEvents.SceneReady, {

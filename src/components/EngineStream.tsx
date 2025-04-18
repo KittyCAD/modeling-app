@@ -49,7 +49,7 @@ export const EngineStream = (props: {
 
   // These will be passed to the engineStreamActor to handle.
   const videoRef = useRef<HTMLVideoElement>(null)
-  const canvasRef = useRef<HTMLVideoElement>(null)
+  const canvasRef = useRef<HTMLCanvasElement>(null)
 
   // For attaching right-click menu events
   const videoWrapperRef = useRef<HTMLDivElement>(null)
@@ -68,10 +68,31 @@ export const EngineStream = (props: {
   const streamIdleMode = settings.app.streamIdleMode.current
 
   useEffect(() => {
-    engineStreamActor.send({ type: SetVideoRef, videoRef })
-    engineStreamActor.send({ type: SetCanvasRef, canvasRef })
-  }, [videoRef.current, canvasRef.current])
+    engineStreamActor.send({ type: EngineStreamTransition.SetVideoRef, videoRef })
+  }, [videoRef.current])
 
+  useEffect(() => {
+    engineStreamActor.send({ type: EngineStreamTransition.SetCanvasRef, canvasRef })
+  }, [canvasRef.current])
+
+  useEffect(() => {
+    engineStreamActor.send({
+      type: EngineStreamTransition.SetPool,
+      pool: props.pool,
+    })
+  }, [props.pool])
+
+  useEffect(() => {
+    engineStreamActor.send({
+      type: EngineStreamTransition.SetAuthToken,
+      authToken: props.authToken,
+    })
+  }, [props.authToken])
+
+  // We have to call this here because of the dependencies:
+  // modelingMachineActorSend, setAppState, settingsEngine
+  // It's possible to pass these in earlier but I (lee) don't want to
+  // restructure this further at the moment.
   const startOrReconfigureEngine = () => {
     engineStreamActor.send({
       type: EngineStreamTransition.StartOrReconfigureEngine,
@@ -87,12 +108,39 @@ export const EngineStream = (props: {
     })
   }
 
-  // When the scene is ready play the stream and execute!
+  useEffect(() => {
+    if (engineStreamState.value !== EngineStreamState.Configuring) return
+    startOrReconfigureEngine()
+  }, [engineStreamState, setAppState])
+
+  // ...Object.values(settingsEngine), 
+
+  // I would inline this but it needs to be a function for removeEventListener.
   const play = () => {
     engineStreamActor.send({
       type: EngineStreamTransition.Play,
     })
+  }
 
+  useEffect(() => {
+    engineCommandManager.addEventListener(
+      EngineCommandManagerEvents.SceneReady,
+      play
+    )
+    return () => {
+      engineCommandManager.removeEventListener(
+        EngineCommandManagerEvents.SceneReady,
+        play
+      )
+    }
+  }, [])
+   
+  // When the scene is ready play the stream and execute!
+  const executeKcl = () => {
+    // It's ok to position the camera before modeling commands
+    sceneInfra.camControls.restoreRemoteCameraStateAndTriggerSync().catch(trap)
+
+    console.log('scene is ready, execute kcl')
     const kmp = kclManager.executeCode().catch(trap)
 
     if (!firstPlay) return
@@ -101,7 +149,7 @@ export const EngineStream = (props: {
     // Reset the restart timeouts
     setAttemptTimes([0, 1000])
 
-    console.log('scene is ready, execute kcl')
+    console.log('firstPlay true, zoom to fit')
 
     kmp
       .then(() =>
@@ -125,91 +173,39 @@ export const EngineStream = (props: {
   useEffect(() => {
     engineCommandManager.addEventListener(
       EngineCommandManagerEvents.SceneReady,
-      play
+      executeKcl
     )
-    return () => {
-      engineCommandManager.removeEventListener(
-        EngineCommandManagerEvents.SceneReady,
-        play
-      )
-    }
-  }, [firstPlay])
-
-  // We do a back-off restart, using a fibonacci sequence, since it
-  // has a nice retry time curve (somewhat quick then exponential)
-  const restart = () => {
-    setTimeout(() => {
-      setFirstPlay(false)
-      setAttemptTimes([attemptTimes[1], attemptTimes[0] + attemptTimes[1]])
-      engineCommandManager.tearDown()
-      startOrReconfigureEngine()
-    }, attemptTimes[0] + attemptTimes[1])
-  }
-
-  useEffect(() => {
-    engineCommandManager.addEventListener(
-      EngineCommandManagerEvents.SceneReady,
-      play
-    )
-    engineCommandManager.addEventListener(
-      EngineCommandManagerEvents.EngineRestartRequest,
-      restart
-    )
-    engineStreamActor.send({
-      type: EngineStreamTransition.SetPool,
-      data: { pool: props.pool },
-    })
-    engineStreamActor.send({
-      type: EngineStreamTransition.SetAuthToken,
-      data: { authToken: props.authToken },
-    })
-
     return () => {
       engineStreamActor.send({ type: EngineStreamTransition.Pause })
     }
   }, [])
 
-  // In the past we'd try to play immediately, but the proper thing is to way
-  // for the 'canplay' event to tell us data is ready.
   useEffect(() => {
-    const videoRef = engineStreamState.context.videoRef.current
-    if (!videoRef) {
-      return
+    // We do a back-off restart, using a fibonacci sequence, since it
+    // has a nice retry time curve (somewhat quick then exponential)
+    const restart = () => {
+      setTimeout(() => {
+        setFirstPlay(false)
+        setAttemptTimes([attemptTimes[1], attemptTimes[0] + attemptTimes[1]])
+        engineStreamState.context.videoRef.current.pause()
+        engineCommandManager.tearDown()
+        startOrReconfigureEngine()
+      }, attemptTimes[0] + attemptTimes[1])
     }
 
-    const onCanPlay = () => {
-      videoRef.play().catch(console.error)
-    }
-
-    // I (lee) believe that the engine handles serving video first better
-    // than receiving commands when it's expected to. Only when the
-    // browser reports we're receiving video do we trigger KCL execution.
-    const onPlay = () => {
-      if (!engineCommandManager.engineConnection) { return }
-
-      engineCommandManager.engineConnection.state = {
-        type: EngineConnectionStateType.ConnectionEstablished,
-      }
-
-      engineCommandManager.inSequence = 1
-
-      engineCommandManager.engineConnection.dispatchEvent(
-        new CustomEvent(EngineConnectionEvents.Opened, {
-          detail: engineCommandManager.engineConnection,
-        })
-      )
-      markOnce('code/endInitialEngineConnect')
-    }
-
-    videoRef.addEventListener('canplay', onCanPlay)
-    videoRef.addEventListener('play', onPlay)
+    engineCommandManager.addEventListener(
+      EngineCommandManagerEvents.EngineRestartRequest,
+      restart
+    )
     return () => {
-      videoRef.removeEventListener('canplay', onCanPlay)
-      videoRef.removeEventListener('play', onPlay)
+      engineCommandManager.removeEventListener(
+        EngineCommandManagerEvents.EngineRestartRequest,
+        restart
+      )
     }
-  }, [engineStreamState.context.videoRef.current])
+  }, [engineStreamState, attemptTimes])
 
-  useEffect(() => {
+   useEffect(() => {
     if (engineStreamState.value === EngineStreamState.Reconfiguring) return
     const video = engineStreamState.context.videoRef?.current
     if (!video) return
@@ -234,12 +230,6 @@ export const EngineStream = (props: {
       })
     }).observe(document.body)
   }, [engineStreamState.value])
-
-  // On settings change, reconfigure the engine. When paused this gets really tricky,
-  // and also requires onMediaStream to be set!
-  useEffect(() => {
-    startOrReconfigureEngine()
-  }, Object.values(settingsEngine))
 
   /**
    * Subscribe to execute code when the file changes
@@ -316,18 +306,7 @@ export const EngineStream = (props: {
       }
 
       if (engineStreamState.value === EngineStreamState.Paused) {
-        engineStreamActor.send({
-          type: EngineStreamTransition.StartOrReconfigureEngine,
-          modelingMachineActorSend,
-          settings: settingsEngine,
-          setAppState,
-          onMediaStream(mediaStream: MediaStream) {
-            engineStreamActor.send({
-              type: EngineStreamTransition.SetMediaStream,
-              mediaStream,
-            })
-          },
-        })
+        startOrReconfigureEngine()
       }
 
       timeoutStart.current = Date.now()
