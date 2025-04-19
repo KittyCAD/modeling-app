@@ -809,19 +809,6 @@ impl Args {
             source_ranges: vec![self.source_range],
         }))
     }
-
-    pub(crate) fn get_polygon_args(
-        &self,
-    ) -> Result<
-        (
-            crate::std::shapes::PolygonData,
-            crate::std::shapes::SketchOrSurface,
-            Option<TagNode>,
-        ),
-        KclError,
-    > {
-        FromArgs::from_args(self, 0)
-    }
 }
 
 /// Types which impl this trait can be read out of the `Args` passed into a KCL function.
@@ -995,28 +982,6 @@ macro_rules! let_field_of {
     ($obj:ident, $field:ident $(, $annotation:ty)?) => {
         let $field $(: $annotation)? = $obj.get(stringify!($field)).and_then(FromKclValue::from_kcl_val)?;
     };
-}
-
-impl<'a> FromKclValue<'a> for super::shapes::PolygonData {
-    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        let obj = arg.as_object()?;
-        let_field_of!(obj, radius);
-        let_field_of!(obj, num_sides "numSides");
-        let_field_of!(obj, center);
-        let_field_of!(obj, inscribed);
-        let polygon_type = if inscribed {
-            PolygonType::Inscribed
-        } else {
-            PolygonType::Circumscribed
-        };
-        Some(Self {
-            radius,
-            num_sides,
-            center,
-            polygon_type,
-            inscribed,
-        })
-    }
 }
 
 impl<'a> FromKclValue<'a> for crate::execution::Plane {

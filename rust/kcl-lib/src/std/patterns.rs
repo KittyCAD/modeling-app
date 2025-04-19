@@ -245,12 +245,12 @@ pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Res
 /// }
 /// startSketchOn('XY')
 ///   |> startProfileAt([0, 0], %)
-///   |> polygon({
-///        radius: 10,
-///        numSides: 4,
-///        center: [0, 0],
-///        inscribed: false
-///      }, %)
+///   |> polygon(
+///        radius = 10,
+///        numSides = 4,
+///        center = [0, 0],
+///        inscribed = false,
+///      )
 ///   |> extrude(length = 4)
 ///   |> patternTransform(instances = 3, transform = transform)
 /// ```

@@ -46,12 +46,12 @@ export fn divider(plane) {
 fn connectorSketch(plane, start) {
   sketch001 = startSketchOn(plane)
     |> startProfileAt(start, %)
-    |> polygon({
+    |> polygon(
          radius = 1.2,
          numSides = 6,
          center = profileStart(%),
-         inscribed = false
-       }, %)
+         inscribed = false,
+       )
   return sketch001
 }
 
