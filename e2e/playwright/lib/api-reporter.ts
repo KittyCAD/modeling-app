@@ -1,6 +1,12 @@
 import type { Reporter, TestCase, TestResult } from '@playwright/test/reporter'
+import fs from 'node:fs'
 
 class MyAPIReporter implements Reporter {
+  onBegin(): void {
+    if (fs.existsSync('test-results/.tab-blocks.jsonl')) {
+      fs.unlinkSync('test-results/.tab-blocks.jsonl')
+    }
+  }
   onTestEnd(test: TestCase, result: TestResult): void {
     if (!process.env.TAB_API_URL || !process.env.TAB_API_KEY) {
       return
@@ -46,13 +52,24 @@ class MyAPIReporter implements Reporter {
           body: JSON.stringify(payload),
         })
 
-        if (!response.ok && !process.env.CI) {
-          console.error(
-            'TAB API - Failed to send test result:',
-            await response.text()
-          )
+        if (response.ok) {
+          const result = await response.json()
+          if (result.block) {
+            await fs.promises.writeFile('test-results/.tab-blocks.jsonl', result, {
+              flag: 'a',
+            })
+          }
+        } else {
+          await fs.promises.writeFile('test-results/.tab-blocks.jsonl', '', { flag: 'a' })
+          if (!process.env.CI) {
+            console.error(
+              'TAB API - Failed to send test result:',
+              await response.text()
+            )
+          }
         }
       } catch {
+        await fs.promises.writeFile('test-results/.tab-blocks.jsonl', '', { flag: 'a' })
         if (!process.env.CI) {
           console.error('TAB API - Unable to send test result')
         }

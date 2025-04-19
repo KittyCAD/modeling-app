@@ -172,3 +172,12 @@ test.describe('Basic sketch', { tag: ['@skipWin'] }, () => {
     await doBasicSketch(page, homePage, [])
   })
 })
+
+test.describe('TAB API examples', () => {
+  test('good', async () => {
+    await expect(1).toBe(1)
+  })
+  test('bad', async () => {
+    await expect(1).toBe(2)
+  })
+})
