@@ -17,7 +17,7 @@ jobs:
     name: cargo test
     runs-on: ubuntu-latest-8-cores
     steps:
-      - uses: actions/create-github-app-token@v1
+      - uses: actions/create-github-app-token@v2
         id: app-token
         with:
           app-id: ${{ secrets.MODELING_APP_GH_APP_ID }}

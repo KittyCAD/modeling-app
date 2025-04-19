@@ -106,7 +106,7 @@ jobs:
       - name: Download Wasm Cache
         id: download-wasm
         if: ${{ needs.conditions.outputs.should-run == 'true' && github.event_name != 'schedule' && steps.filter.outputs.rust == 'false' }}
-        uses: dawidd6/action-download-artifact@v7
+        uses: dawidd6/action-download-artifact@v9
         continue-on-error: true
         with:
           github_token: ${{secrets.GITHUB_TOKEN}}
@@ -168,7 +168,7 @@ jobs:
     runs-on: runs-on=${{ github.run_id }}/family=i7ie.2xlarge/image=ubuntu22-full-x64
     needs: [conditions, prepare-wasm]
     steps:
-      - uses: actions/create-github-app-token@v1
+      - uses: actions/create-github-app-token@v2
         if: needs.conditions.outputs.should-run == 'true'
         id: app-token
         with:
