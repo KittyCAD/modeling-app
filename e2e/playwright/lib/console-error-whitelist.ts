@@ -65,12 +65,14 @@ export const isErrorWhitelisted = (exception: Error) => {
     },
     {
       name: 'fE',
-      message: 'engine: Failed to wait for promise from send modeling command: JsValue("no connection to send on")',
+      message:
+        'engine: Failed to wait for promise from send modeling command: JsValue("no connection to send on")',
       stack: `fE: engine: Failed to wait for promise from send modeling command: JsValue("no connection to send on")
      at ET (file:///home/runner/_work/modeling-app/modeling-app/.vite/renderer/main_window/assets/index-BvtRFNLF.js:49875:12)
      at WGe.clearSceneAndBustCache (file:///home/runner/_work/modeling-app/modeling-app/.vite/renderer/main_window/assets/index-BvtRFNLF.js:91886:19)
      at async a.onEngineConnectionOpened (file:///home/runner/_work/modeling-app/modeling-app/.vite/renderer/main_window/assets/index-BvtRFNLF.js:91483:9)`,
-      foundInSpec: 'e2e/playwright/testing-constraints.spec.ts is frequent but could be any spec',
+      foundInSpec:
+        'e2e/playwright/testing-constraints.spec.ts is frequent but could be any spec',
       project: 'Google Chrome',
     },
     {
