@@ -10,8 +10,10 @@ Draw a smooth, continuous, curved line segment from the current origin to the de
 
 ```js
 bezierCurve(
-  data: BezierData,
   sketch: Sketch,
+  control1: [number],
+  control2: [number],
+  end: [number],
   tag?: TagDeclarator,
 ): Sketch
 ```
@@ -21,9 +23,11 @@ bezierCurve(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `data` | [`BezierData`](/docs/kcl/types/BezierData) | Data to draw a bezier curve. | Yes |
-| `sketch` | [`Sketch`](/docs/kcl/types/Sketch) |  | Yes |
-| [`tag`](/docs/kcl/types/tag) | [`TagDeclarator`](/docs/kcl/types#tag-declaration) |  | No |
+| `sketch` | [`Sketch`](/docs/kcl/types/Sketch) | Which sketch should this path be added to? | Yes |
+| `control1` | [`[number]`](/docs/kcl/types/number) | First control point for the cubic | Yes |
+| `control2` | [`[number]`](/docs/kcl/types/number) | Second control point for the cubic | Yes |
+| `end` | [`[number]`](/docs/kcl/types/number) | How far away (along the X and Y axes) should this line go? | Yes |
+| [`tag`](/docs/kcl/types/tag) | [`TagDeclarator`](/docs/kcl/types#tag-declaration) | Create a new tag which refers to this line | No |
 
 ### Returns
 
@@ -36,11 +40,7 @@ bezierCurve(
 exampleSketch = startSketchOn(XZ)
   |> startProfileAt([0, 0], %)
   |> line(end = [0, 10])
-  |> bezierCurve({
-       to = [10, 10],
-       control1 = [5, 0],
-       control2 = [5, 10]
-     }, %)
+  |> bezierCurve(control1 = [5, 0], control2 = [5, 10], end = [10, 10])
   |> line(endAbsolute = [10, 0])
   |> close()
 
