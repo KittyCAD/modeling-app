@@ -43,6 +43,7 @@ import {
 import { commandBarActor } from '@src/machines/commandBarMachine'
 import { EngineStreamTransition } from '@src/machines/engineStreamMachine'
 import { onboardingPaths } from '@src/routes/Onboarding/paths'
+import { ActionSidebar } from './components/ModelingSidebar/ActionSidebar'
 
 // CYCLIC REF
 sceneInfra.camControls.engineStreamActor = engineStreamActor
@@ -168,7 +169,10 @@ export function App() {
         enableMenu={true}
       />
       <ModalContainer />
-      <ModelingSidebar paneOpacity={paneOpacity} />
+      <div className="relative flex-1 flex flex-col">
+        <ModelingSidebar paneOpacity={paneOpacity} />
+        <ActionSidebar />
+      </div>
       <EngineStream pool={pool} authToken={authToken} />
       {/* <CamToggle /> */}
       <LowerRightControls coreDumpManager={coreDumpManager}>
