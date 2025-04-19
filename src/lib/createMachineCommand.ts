@@ -211,6 +211,13 @@ export function buildCommandArgument<
       defaultValue: arg.defaultValue,
       ...baseCommandArgument,
     } satisfies CommandArgument<O, T> & { inputType: 'kcl' }
+  } else if (arg.inputType === 'string') {
+    return {
+      inputType: arg.inputType,
+      defaultValue: arg.defaultValue,
+      validation: arg.validation,
+      ...baseCommandArgument,
+    } satisfies CommandArgument<O, T> & { inputType: 'string' }
   } else {
     return {
       inputType: arg.inputType,
