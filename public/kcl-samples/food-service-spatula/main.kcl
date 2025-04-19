@@ -51,11 +51,7 @@ flipperProfile = startProfileAt([-flipperLength, -32.0], flipperSketch)
   |> line(end = [flipperLength, 2.0])
   |> yLine(length = 60.0, tag = $backEdge)
   |> line(end = [-flipperLength, 2.0])
-  |> arc({
-       angleEnd = 196.912390,
-       angleStart = 163.087610,
-       radius = 110.0
-     }, %)
+  |> arc(angleStart = 163.087610, angleEnd = 196.912390, radius = 110.0)
   |> close()
 
 // Create a profile of the middle
@@ -126,29 +122,13 @@ gripSketch = startSketchOn(handlePlane)
 // Create a profile of the grip
 gripProfile = startProfileAt([-26.806746, -10.0], gripSketch)
   |> xLine(length = gripWidth - (2 * gripFilletRadius))
-  |> arc({
-       angleStart = -90.0,
-       angleEnd = 0.0,
-       radius = gripFilletRadius
-     }, %)
+  |> arc(angleStart = -90.0, angleEnd = 0.0, radius = gripFilletRadius)
   |> yLine(length = gripHeight - (2 * gripFilletRadius))
-  |> arc({
-       angleStart = 0.0,
-       angleEnd = 90.0,
-       radius = gripFilletRadius
-     }, %)
+  |> arc(angleStart = 0.0, angleEnd = 90.0, radius = gripFilletRadius)
   |> xLine(length = -(gripWidth - (2 * gripFilletRadius)))
-  |> arc({
-       angleStart = 90.0,
-       angleEnd = 180.0,
-       radius = gripFilletRadius
-     }, %)
+  |> arc(angleStart = 90.0, angleEnd = 180.0, radius = gripFilletRadius)
   |> yLine(length = -(gripHeight - (2 * gripFilletRadius)), tag = $gripEdgeTop)
-  |> arc({
-       angleStart = 180.0,
-       angleEnd = 270.0,
-       radius = gripFilletRadius
-     }, %)
+  |> arc(angleStart = 180.0, angleEnd = 270.0, radius = gripFilletRadius)
   |> close()
 
 // Extrude the grip profile to create the grip
