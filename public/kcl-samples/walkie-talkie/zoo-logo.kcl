@@ -33,17 +33,9 @@ export fn oLogo(surface, origin, scale) {
          .788 * scale + origin[0],
          .921 * scale + origin[1]
        ], %)
-    |> arc({
-         angleStart = 47.15 + 6,
-         angleEnd = 47.15 - 6 + 180,
-         radius = .525 * scale
-       }, %)
+    |> arc(angleStart = 47.15 + 6, angleEnd = 47.15 - 6 + 180, radius = .525 * scale)
     |> angledLine(angle = 47.15, length = .24 * scale)
-    |> arc({
-         angleStart = 47.15 - 11 + 180,
-         angleEnd = 47.15 + 11,
-         radius = .288 * scale
-       }, %)
+    |> arc(angleStart = 47.15 - 11 + 180, angleEnd = 47.15 + 11, radius = .288 * scale)
     |> close()
   return oSketch001
 }
@@ -54,17 +46,9 @@ export fn oLogo2(surface, origin, scale) {
          .16 * scale + origin[0],
          .079 * scale + origin[1]
        ], %)
-    |> arc({
-         angleStart = 47.15 + 6 - 180,
-         angleEnd = 47.15 - 6,
-         radius = .525 * scale
-       }, %)
+    |> arc(angleStart = 47.15 + 6 - 180, angleEnd = 47.15 - 6, radius = .525 * scale)
     |> angledLine(angle = 47.15, length = -.24 * scale)
-    |> arc({
-         angleStart = 47.15 - 11,
-         angleEnd = 47.15 + 11 - 180,
-         radius = .288 * scale
-       }, %)
+    |> arc(angleStart = 47.15 - 11, angleEnd = 47.15 + 11 - 180, radius = .288 * scale)
     |> close()
   return oSketch002
 }

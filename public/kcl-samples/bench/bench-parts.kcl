@@ -107,11 +107,7 @@ fn armRestPath(plane) {
   sketch005 = startSketchOn(plane)
     |> startProfileAt([20, 33], %)
     |> xLine(length = -20)
-    |> arc({
-         angleStart = 90,
-         angleEnd = 180,
-         radius = 10
-       }, %)
+    |> arc(angleStart = 90, angleEnd = 180, radius = 10)
   return sketch005
 }
 

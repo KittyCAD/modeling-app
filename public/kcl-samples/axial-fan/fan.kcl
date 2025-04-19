@@ -39,38 +39,34 @@ fn fanBlade(offsetHeight, startAngle) {
          15 * cos(toRadians(startAngle)),
          15 * sin(toRadians(startAngle))
        ], %)
-    |> arc({
-         angleStart = startAngle,
-         angleEnd = startAngle + 14,
-         radius = 15
-       }, %)
-    |> arcTo({
-         end = [
+    |> arc(angleStart = startAngle, angleEnd = startAngle + 14, radius = 15)
+    |> arc(
+         endAbsolute = [
            fanSize * 22 / 50 * cos(toRadians(startAngle - 20)),
            fanSize * 22 / 50 * sin(toRadians(startAngle - 20))
          ],
-         interior = [
+         interiorAbsolute = [
            fanSize * 11 / 50 * cos(toRadians(startAngle + 3)),
            fanSize * 11 / 50 * sin(toRadians(startAngle + 3))
-         ]
-       }, %)
-    |> arcTo({
-         end = [
+         ],
+       )
+    |> arc(
+         endAbsolute = [
            fanSize * 22 / 50 * cos(toRadians(startAngle - 24)),
            fanSize * 22 / 50 * sin(toRadians(startAngle - 24))
          ],
-         interior = [
+         interiorAbsolute = [
            fanSize * 22 / 50 * cos(toRadians(startAngle - 22)),
            fanSize * 22 / 50 * sin(toRadians(startAngle - 22))
-         ]
-       }, %)
-    |> arcTo({
-         end = [profileStartX(%), profileStartY(%)],
-         interior = [
+         ],
+       )
+    |> arc(
+         endAbsolute = [profileStartX(%), profileStartY(%)],
+         interiorAbsolute = [
            fanSize * 11 / 50 * cos(toRadians(startAngle - 5)),
            fanSize * 11 / 50 * sin(toRadians(startAngle - 5))
-         ]
-       }, %)
+         ],
+       )
     |> close()
   return fanBlade
 }

@@ -64,11 +64,11 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 /// example = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> line(end = [10, 0])
-///   |> arc({
+///   |> arc(
 ///     angleStart = 120,
 ///     angleEnd = 0,
 ///     radius = 5,
-///   }, %)
+///   )
 ///   |> line(end = [5, 0])
 ///   |> line(end = [0, 10])
 ///   |> bezierCurve({
@@ -84,11 +84,11 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 /// ```no_run
 /// exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([-10, 0], %)
-///   |> arc({
+///   |> arc(
 ///     angleStart = 120,
 ///     angleEnd = -60,
 ///     radius = 5,
-///   }, %)
+///   )
 ///   |> line(end = [10, 0])
 ///   |> line(end = [5, 0])
 ///   |> bezierCurve({
@@ -106,11 +106,11 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 /// ```no_run
 /// exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([-10, 0], %)
-///   |> arc({
+///   |> arc(
 ///     angleStart = 120,
 ///     angleEnd = -60,
 ///     radius = 5,
-///   }, %)
+///   )
 ///   |> line(end = [10, 0])
 ///   |> line(end = [5, 0])
 ///   |> bezierCurve({
@@ -128,11 +128,11 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 /// ```no_run
 /// exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([-10, 0], %)
-///   |> arc({
+///   |> arc(
 ///     angleStart = 120,
 ///     angleEnd = -60,
 ///     radius = 5,
-///   }, %)
+///   )
 ///   |> line(end = [10, 0])
 ///   |> line(end = [5, 0])
 ///   |> bezierCurve({
