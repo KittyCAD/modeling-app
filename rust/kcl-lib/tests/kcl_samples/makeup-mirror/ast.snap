@@ -2873,176 +2873,154 @@ description: Result of parsing makeup-mirror.kcl
                         {
                           "arguments": [
                             {
-                              "commentStart": 0,
-                              "end": 0,
-                              "properties": [
-                                {
-                                  "commentStart": 0,
-                                  "end": 0,
-                                  "key": {
+                              "type": "LabeledArg",
+                              "label": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "name": "interiorAbsolute",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "arg": {
+                                "commentStart": 0,
+                                "elements": [
+                                  {
+                                    "abs_path": false,
                                     "commentStart": 0,
                                     "end": 0,
-                                    "name": "interior",
+                                    "name": {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "name": "offsetX",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 0,
-                                    "type": "Identifier"
+                                    "type": "Name",
+                                    "type": "Name"
                                   },
-                                  "start": 0,
-                                  "type": "ObjectProperty",
-                                  "value": {
+                                  {
                                     "commentStart": 0,
-                                    "elements": [
-                                      {
-                                        "abs_path": false,
+                                    "end": 0,
+                                    "left": {
+                                      "abs_path": false,
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "name": {
                                         "commentStart": 0,
                                         "end": 0,
-                                        "name": {
-                                          "commentStart": 0,
-                                          "end": 0,
-                                          "name": "offsetX",
-                                          "start": 0,
-                                          "type": "Identifier"
-                                        },
-                                        "path": [],
+                                        "name": "altitude",
                                         "start": 0,
-                                        "type": "Name",
-                                        "type": "Name"
+                                        "type": "Identifier"
                                       },
-                                      {
+                                      "path": [],
+                                      "start": 0,
+                                      "type": "Name",
+                                      "type": "Name"
+                                    },
+                                    "operator": "-",
+                                    "right": {
+                                      "abs_path": false,
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "name": {
                                         "commentStart": 0,
                                         "end": 0,
-                                        "left": {
-                                          "abs_path": false,
-                                          "commentStart": 0,
-                                          "end": 0,
-                                          "name": {
-                                            "commentStart": 0,
-                                            "end": 0,
-                                            "name": "altitude",
-                                            "start": 0,
-                                            "type": "Identifier"
-                                          },
-                                          "path": [],
-                                          "start": 0,
-                                          "type": "Name",
-                                          "type": "Name"
-                                        },
-                                        "operator": "-",
-                                        "right": {
-                                          "abs_path": false,
-                                          "commentStart": 0,
-                                          "end": 0,
-                                          "name": {
-                                            "commentStart": 0,
-                                            "end": 0,
-                                            "name": "gestellR",
-                                            "start": 0,
-                                            "type": "Identifier"
-                                          },
-                                          "path": [],
-                                          "start": 0,
-                                          "type": "Name",
-                                          "type": "Name"
-                                        },
+                                        "name": "gestellR",
                                         "start": 0,
-                                        "type": "BinaryExpression",
-                                        "type": "BinaryExpression"
-                                      }
-                                    ],
-                                    "end": 0,
-                                    "start": 0,
-                                    "type": "ArrayExpression",
-                                    "type": "ArrayExpression"
-                                  }
-                                },
-                                {
-                                  "commentStart": 0,
-                                  "end": 0,
-                                  "key": {
-                                    "commentStart": 0,
-                                    "end": 0,
-                                    "name": "end",
-                                    "start": 0,
-                                    "type": "Identifier"
-                                  },
-                                  "start": 0,
-                                  "type": "ObjectProperty",
-                                  "value": {
-                                    "commentStart": 0,
-                                    "elements": [
-                                      {
-                                        "commentStart": 0,
-                                        "end": 0,
-                                        "left": {
-                                          "abs_path": false,
-                                          "commentStart": 0,
-                                          "end": 0,
-                                          "name": {
-                                            "commentStart": 0,
-                                            "end": 0,
-                                            "name": "offsetX",
-                                            "start": 0,
-                                            "type": "Identifier"
-                                          },
-                                          "path": [],
-                                          "start": 0,
-                                          "type": "Name",
-                                          "type": "Name"
-                                        },
-                                        "operator": "+",
-                                        "right": {
-                                          "abs_path": false,
-                                          "commentStart": 0,
-                                          "end": 0,
-                                          "name": {
-                                            "commentStart": 0,
-                                            "end": 0,
-                                            "name": "gestellR",
-                                            "start": 0,
-                                            "type": "Identifier"
-                                          },
-                                          "path": [],
-                                          "start": 0,
-                                          "type": "Name",
-                                          "type": "Name"
-                                        },
-                                        "start": 0,
-                                        "type": "BinaryExpression",
-                                        "type": "BinaryExpression"
+                                        "type": "Identifier"
                                       },
-                                      {
-                                        "abs_path": false,
-                                        "commentStart": 0,
-                                        "end": 0,
-                                        "name": {
-                                          "commentStart": 0,
-                                          "end": 0,
-                                          "name": "altitude",
-                                          "start": 0,
-                                          "type": "Identifier"
-                                        },
-                                        "path": [],
-                                        "start": 0,
-                                        "type": "Name",
-                                        "type": "Name"
-                                      }
-                                    ],
-                                    "end": 0,
+                                      "path": [],
+                                      "start": 0,
+                                      "type": "Name",
+                                      "type": "Name"
+                                    },
                                     "start": 0,
-                                    "type": "ArrayExpression",
-                                    "type": "ArrayExpression"
+                                    "type": "BinaryExpression",
+                                    "type": "BinaryExpression"
                                   }
-                                }
-                              ],
-                              "start": 0,
-                              "type": "ObjectExpression",
-                              "type": "ObjectExpression"
+                                ],
+                                "end": 0,
+                                "start": 0,
+                                "type": "ArrayExpression",
+                                "type": "ArrayExpression"
+                              }
                             },
                             {
-                              "commentStart": 0,
-                              "end": 0,
-                              "start": 0,
-                              "type": "PipeSubstitution",
-                              "type": "PipeSubstitution"
+                              "type": "LabeledArg",
+                              "label": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "name": "endAbsolute",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "arg": {
+                                "commentStart": 0,
+                                "elements": [
+                                  {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "left": {
+                                      "abs_path": false,
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "name": {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "name": "offsetX",
+                                        "start": 0,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
+                                      "start": 0,
+                                      "type": "Name",
+                                      "type": "Name"
+                                    },
+                                    "operator": "+",
+                                    "right": {
+                                      "abs_path": false,
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "name": {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "name": "gestellR",
+                                        "start": 0,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
+                                      "start": 0,
+                                      "type": "Name",
+                                      "type": "Name"
+                                    },
+                                    "start": 0,
+                                    "type": "BinaryExpression",
+                                    "type": "BinaryExpression"
+                                  },
+                                  {
+                                    "abs_path": false,
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "name": {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "name": "altitude",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
+                                    "start": 0,
+                                    "type": "Name",
+                                    "type": "Name"
+                                  }
+                                ],
+                                "end": 0,
+                                "start": 0,
+                                "type": "ArrayExpression",
+                                "type": "ArrayExpression"
+                              }
                             }
                           ],
                           "callee": {
@@ -3052,7 +3030,7 @@ description: Result of parsing makeup-mirror.kcl
                             "name": {
                               "commentStart": 0,
                               "end": 0,
-                              "name": "arcTo",
+                              "name": "arc",
                               "start": 0,
                               "type": "Identifier"
                             },
@@ -3063,8 +3041,9 @@ description: Result of parsing makeup-mirror.kcl
                           "commentStart": 0,
                           "end": 0,
                           "start": 0,
-                          "type": "CallExpression",
-                          "type": "CallExpression"
+                          "type": "CallExpressionKw",
+                          "type": "CallExpressionKw",
+                          "unlabeled": null
                         },
                         {
                           "arguments": [
@@ -3120,32 +3099,47 @@ description: Result of parsing makeup-mirror.kcl
                         {
                           "arguments": [
                             {
-                              "commentStart": 0,
-                              "end": 0,
-                              "properties": [
-                                {
-                                  "commentStart": 0,
-                                  "end": 0,
-                                  "key": {
+                              "type": "LabeledArg",
+                              "label": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "name": "interiorAbsolute",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "arg": {
+                                "commentStart": 0,
+                                "elements": [
+                                  {
+                                    "abs_path": false,
                                     "commentStart": 0,
                                     "end": 0,
-                                    "name": "interior",
+                                    "name": {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "name": "offsetX",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 0,
-                                    "type": "Identifier"
+                                    "type": "Name",
+                                    "type": "Name"
                                   },
-                                  "start": 0,
-                                  "type": "ObjectProperty",
-                                  "value": {
+                                  {
                                     "commentStart": 0,
-                                    "elements": [
-                                      {
+                                    "end": 0,
+                                    "left": {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "left": {
                                         "abs_path": false,
                                         "commentStart": 0,
                                         "end": 0,
                                         "name": {
                                           "commentStart": 0,
                                           "end": 0,
-                                          "name": "offsetX",
+                                          "name": "altitude",
                                           "start": 0,
                                           "type": "Identifier"
                                         },
@@ -3154,172 +3148,135 @@ description: Result of parsing makeup-mirror.kcl
                                         "type": "Name",
                                         "type": "Name"
                                       },
-                                      {
+                                      "operator": "-",
+                                      "right": {
+                                        "abs_path": false,
                                         "commentStart": 0,
                                         "end": 0,
-                                        "left": {
+                                        "name": {
                                           "commentStart": 0,
                                           "end": 0,
-                                          "left": {
-                                            "abs_path": false,
-                                            "commentStart": 0,
-                                            "end": 0,
-                                            "name": {
-                                              "commentStart": 0,
-                                              "end": 0,
-                                              "name": "altitude",
-                                              "start": 0,
-                                              "type": "Identifier"
-                                            },
-                                            "path": [],
-                                            "start": 0,
-                                            "type": "Name",
-                                            "type": "Name"
-                                          },
-                                          "operator": "-",
-                                          "right": {
-                                            "abs_path": false,
-                                            "commentStart": 0,
-                                            "end": 0,
-                                            "name": {
-                                              "commentStart": 0,
-                                              "end": 0,
-                                              "name": "gestellR",
-                                              "start": 0,
-                                              "type": "Identifier"
-                                            },
-                                            "path": [],
-                                            "start": 0,
-                                            "type": "Name",
-                                            "type": "Name"
-                                          },
+                                          "name": "gestellR",
                                           "start": 0,
-                                          "type": "BinaryExpression",
-                                          "type": "BinaryExpression"
+                                          "type": "Identifier"
                                         },
-                                        "operator": "-",
-                                        "right": {
-                                          "abs_path": false,
-                                          "commentStart": 0,
-                                          "end": 0,
-                                          "name": {
-                                            "commentStart": 0,
-                                            "end": 0,
-                                            "name": "gestellD",
-                                            "start": 0,
-                                            "type": "Identifier"
-                                          },
-                                          "path": [],
-                                          "start": 0,
-                                          "type": "Name",
-                                          "type": "Name"
-                                        },
+                                        "path": [],
                                         "start": 0,
-                                        "type": "BinaryExpression",
-                                        "type": "BinaryExpression"
-                                      }
-                                    ],
-                                    "end": 0,
-                                    "start": 0,
-                                    "type": "ArrayExpression",
-                                    "type": "ArrayExpression"
-                                  }
-                                },
-                                {
-                                  "commentStart": 0,
-                                  "end": 0,
-                                  "key": {
-                                    "commentStart": 0,
-                                    "end": 0,
-                                    "name": "end",
-                                    "start": 0,
-                                    "type": "Identifier"
-                                  },
-                                  "start": 0,
-                                  "type": "ObjectProperty",
-                                  "value": {
-                                    "commentStart": 0,
-                                    "elements": [
-                                      {
-                                        "arguments": [
-                                          {
-                                            "commentStart": 0,
-                                            "end": 0,
-                                            "start": 0,
-                                            "type": "PipeSubstitution",
-                                            "type": "PipeSubstitution"
-                                          }
-                                        ],
-                                        "callee": {
-                                          "abs_path": false,
-                                          "commentStart": 0,
-                                          "end": 0,
-                                          "name": {
-                                            "commentStart": 0,
-                                            "end": 0,
-                                            "name": "profileStartX",
-                                            "start": 0,
-                                            "type": "Identifier"
-                                          },
-                                          "path": [],
-                                          "start": 0,
-                                          "type": "Name"
-                                        },
-                                        "commentStart": 0,
-                                        "end": 0,
-                                        "start": 0,
-                                        "type": "CallExpression",
-                                        "type": "CallExpression"
+                                        "type": "Name",
+                                        "type": "Name"
                                       },
-                                      {
-                                        "arguments": [
-                                          {
-                                            "commentStart": 0,
-                                            "end": 0,
-                                            "start": 0,
-                                            "type": "PipeSubstitution",
-                                            "type": "PipeSubstitution"
-                                          }
-                                        ],
-                                        "callee": {
-                                          "abs_path": false,
-                                          "commentStart": 0,
-                                          "end": 0,
-                                          "name": {
-                                            "commentStart": 0,
-                                            "end": 0,
-                                            "name": "profileStartY",
-                                            "start": 0,
-                                            "type": "Identifier"
-                                          },
-                                          "path": [],
-                                          "start": 0,
-                                          "type": "Name"
-                                        },
+                                      "start": 0,
+                                      "type": "BinaryExpression",
+                                      "type": "BinaryExpression"
+                                    },
+                                    "operator": "-",
+                                    "right": {
+                                      "abs_path": false,
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "name": {
                                         "commentStart": 0,
                                         "end": 0,
+                                        "name": "gestellD",
                                         "start": 0,
-                                        "type": "CallExpression",
-                                        "type": "CallExpression"
-                                      }
-                                    ],
-                                    "end": 0,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
+                                      "start": 0,
+                                      "type": "Name",
+                                      "type": "Name"
+                                    },
                                     "start": 0,
-                                    "type": "ArrayExpression",
-                                    "type": "ArrayExpression"
+                                    "type": "BinaryExpression",
+                                    "type": "BinaryExpression"
                                   }
-                                }
-                              ],
-                              "start": 0,
-                              "type": "ObjectExpression",
-                              "type": "ObjectExpression"
+                                ],
+                                "end": 0,
+                                "start": 0,
+                                "type": "ArrayExpression",
+                                "type": "ArrayExpression"
+                              }
                             },
                             {
-                              "commentStart": 0,
-                              "end": 0,
-                              "start": 0,
-                              "type": "PipeSubstitution",
-                              "type": "PipeSubstitution"
+                              "type": "LabeledArg",
+                              "label": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "name": "endAbsolute",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "arg": {
+                                "commentStart": 0,
+                                "elements": [
+                                  {
+                                    "arguments": [
+                                      {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "start": 0,
+                                        "type": "PipeSubstitution",
+                                        "type": "PipeSubstitution"
+                                      }
+                                    ],
+                                    "callee": {
+                                      "abs_path": false,
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "name": {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "name": "profileStartX",
+                                        "start": 0,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
+                                      "start": 0,
+                                      "type": "Name"
+                                    },
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "start": 0,
+                                    "type": "CallExpression",
+                                    "type": "CallExpression"
+                                  },
+                                  {
+                                    "arguments": [
+                                      {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "start": 0,
+                                        "type": "PipeSubstitution",
+                                        "type": "PipeSubstitution"
+                                      }
+                                    ],
+                                    "callee": {
+                                      "abs_path": false,
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "name": {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "name": "profileStartY",
+                                        "start": 0,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
+                                      "start": 0,
+                                      "type": "Name"
+                                    },
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "start": 0,
+                                    "type": "CallExpression",
+                                    "type": "CallExpression"
+                                  }
+                                ],
+                                "end": 0,
+                                "start": 0,
+                                "type": "ArrayExpression",
+                                "type": "ArrayExpression"
+                              }
                             }
                           ],
                           "callee": {
@@ -3329,7 +3286,7 @@ description: Result of parsing makeup-mirror.kcl
                             "name": {
                               "commentStart": 0,
                               "end": 0,
-                              "name": "arcTo",
+                              "name": "arc",
                               "start": 0,
                               "type": "Identifier"
                             },
@@ -3340,8 +3297,9 @@ description: Result of parsing makeup-mirror.kcl
                           "commentStart": 0,
                           "end": 0,
                           "start": 0,
-                          "type": "CallExpression",
-                          "type": "CallExpression"
+                          "type": "CallExpressionKw",
+                          "type": "CallExpressionKw",
+                          "unlabeled": null
                         },
                         {
                           "arguments": [],
