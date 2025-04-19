@@ -325,7 +325,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
     },
     {
       name: 'share-file-link',
-      displayName: 'Share current part (via Zoo link)',
+      displayName: 'Share part via Zoo link',
       description: 'Create a link that contains a copy of the current file.',
       groupId: 'code',
       needsReview: false,

@@ -79,7 +79,7 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
       title: 'Load external model',
       sidebarName: 'Load external model',
       icon: 'importFile',
-      keybinding: 'Ctrl + Shift + I',
+      keybinding: 'Mod + Alt + L',
       action: () =>
         commandBarActor.send({
           type: 'Find and select command',
@@ -88,8 +88,8 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
     },
     {
       id: 'share-link',
-      title: 'Create share link',
-      sidebarName: 'Create share link',
+      title: 'Share part via Zoo link',
+      sidebarName: 'Share part via Zoo link',
       icon: 'link',
       keybinding: 'Mod + Alt + S',
       action: () =>
