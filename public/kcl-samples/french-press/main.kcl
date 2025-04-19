@@ -149,11 +149,7 @@ sketch011 = startSketchOn(XZ)
   |> xLine(length = 0.3)
   |> yLine(length = 0.4)
   |> line(end = [-0.02, 0.02])
-  |> bezierCurve({
-       to = [-carafeDiameter / 2 - 0.1, 1],
-       control1 = [-0.3, 0],
-       control2 = [carafeDiameter / 10, 1]
-     }, %)
+  |> bezierCurve(control1 = [-0.3, 0], control2 = [carafeDiameter / 10, 1], end = [-carafeDiameter / 2 - 0.1, 1])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
   |> revolve(axis = Y)
