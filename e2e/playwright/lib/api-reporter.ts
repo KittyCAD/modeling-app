@@ -2,6 +2,11 @@ import type { Reporter, TestCase, TestResult } from '@playwright/test/reporter'
 import fs from 'node:fs'
 
 class MyAPIReporter implements Reporter {
+  onBegin(): void {
+    if (fs.existsSync('test-results/.tab-blocks.jsonl')) {
+      fs.unlinkSync('test-results/.tab-blocks.jsonl')
+    }
+  }
   onTestEnd(test: TestCase, result: TestResult): void {
     if (!process.env.TAB_API_URL || !process.env.TAB_API_KEY) {
       return

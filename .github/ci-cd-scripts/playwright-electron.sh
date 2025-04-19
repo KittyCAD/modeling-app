@@ -6,7 +6,6 @@ set -euo pipefail
 if [[ ! -f "test-results/.last-run.json" ]]; then
     # If no last run artifact, than run Playwright normally
     echo "run playwright normally"
-    rm -f test-results/.tab-blocks.jsonl
     if [[ "$3" == *ubuntu* ]]; then
         xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- npm run test:playwright:electron:ubuntu -- --shard=$1/$2 || true
     elif [[ "$3" == *windows* ]]; then
@@ -31,7 +30,6 @@ while [[ $retry -le $max_retries ]]; do
         if [[ $failed_tests -gt 0 ]]; then
             echo "retried=true" >>$GITHUB_OUTPUT
             echo "run playwright with last failed tests and retry $retry"
-            rm -f test-results/.tab-blocks.jsonl
             if [[ "$3" == *ubuntu* ]]; then
                 xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- npm run test:playwright:electron:ubuntu -- --last-failed || true
             elif [[ "$3" == *windows* ]]; then
@@ -57,6 +55,12 @@ done
 
 echo "retried=false" >>$GITHUB_OUTPUT
 
-if [[ -f "test-results/.tab-blocks.jsonl" ]]; then
-    exit 1
+if [[ -f "test-results/.last-run.json" ]] && [[ -f "test-results/.tab-blocks.jsonl" ]]; then
+    failed_tests=$(jq '.failedTests | length' test-results/.last-run.json)
+    if [[ $failed_tests -gt 0 ]]; then
+        # If it still fails after 3 retries, then fail the job
+        exit 1
+    fi
 fi
+
+exit 0
