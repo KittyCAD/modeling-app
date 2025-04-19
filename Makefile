@@ -15,8 +15,8 @@ ifdef WINDOWS
 CARGO ?= $(USERPROFILE)/.cargo/bin/cargo.exe
 WASM_PACK ?= $(USERPROFILE)/.cargo/bin/wasm-pack.exe
 else
-CARGO ?= ~/.cargo/bin/cargo
-WASM_PACK ?= ~/.cargo/bin/wasm-pack
+CARGO ?= $(shell which cargo || echo ~/.cargo/bin/cargo)
+WASM_PACK ?= $(shell which wasm-pack || echo ~/.cargo/bin/wasm-pack)
 endif
 
 .PHONY: install

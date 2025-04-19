@@ -63,11 +63,7 @@ fn rightInvolute(i, sg) {
 start = startSketchOn(XY)
   |> startProfileAt([xs[101], ys[101]], %)
 teeth = reduce([0..100], start, leftInvolute)
-  |> arc({
-       angleStart = 0,
-       angleEnd = toothAngle,
-       radius = baseDiameter / 2
-     }, %)
+  |> arc(angleStart = 0, angleEnd = toothAngle, radius = baseDiameter / 2)
   |> reduce([1..101], %, rightInvolute)
   |> close()
   |> extrude(length = gearHeight)
@@ -95,15 +91,7 @@ keyWay = startSketchOn(body, face = END)
   |> xLine(length = keywayDepth)
   |> yLine(length = -keywayWidth)
   |> xLine(length = -keywayDepth)
-  |> arc({
-       angleEnd = 180,
-       angleStart = -1 * toDegrees(startAngle) + 360,
-       radius = holeRadius
-     }, %)
-  |> arc({
-       angleEnd = toDegrees(startAngle),
-       angleStart = 180,
-       radius = holeRadius
-     }, %)
+  |> arc(angleStart = -1 * toDegrees(startAngle) + 360, angleEnd = 180, radius = holeRadius)
+  |> arc(angleStart = 180, angleEnd = toDegrees(startAngle), radius = holeRadius)
   |> close()
   |> extrude(length = -gearHeight)

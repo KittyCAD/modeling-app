@@ -39,6 +39,7 @@ import {
   fnNameToTooltip,
   getAngledLine,
   getAngledLineThatIntersects,
+  getArc,
   getArgForEnd,
   getCircle,
   getConstraintInfo,
@@ -1407,11 +1408,8 @@ export function getRemoveConstraintsTransform(
   }
 
   if (
-    (sketchFnExp.type === 'CallExpressionKw' &&
-      sketchFnExp.callee.name.name === 'circleThreePoint') ||
-    (sketchFnExp.type === 'CallExpression' &&
-      (sketchFnExp.callee.name.name === 'arcTo' ||
-        sketchFnExp.callee.name.name === 'arc'))
+    sketchFnExp.type === 'CallExpressionKw' &&
+    sketchFnExp.callee.name.name === 'circleThreePoint'
   ) {
     return false
   }
@@ -2343,6 +2341,9 @@ export function getConstraintLevelFromSourceRange(
           }
           if (name === 'angledLineThatIntersects') {
             return getAngledLineThatIntersects(nodeMeta.node)
+          }
+          if (name === 'arc') {
+            return getArc(nodeMeta.node)
           }
           const arg = findKwArgAny(DETERMINING_ARGS, nodeMeta.node)
           if (arg === undefined) {

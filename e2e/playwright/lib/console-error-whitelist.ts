@@ -64,13 +64,15 @@ export const isErrorWhitelisted = (exception: Error) => {
       project: 'Google Chrome',
     },
     {
-      name: '',
-      message: 'fE',
-      stack: `
-     at ET (file:///Users/runner/work/modeling-app/modeling-app/.vite/renderer/main_window/assets/index-DduzBCVE.js:49875:12)
-     at HGe.clearSceneAndBustCache (file:///Users/runner/work/modeling-app/modeling-app/.vite/renderer/main_window/assets/index-DduzBCVE.js:91941:19)
-     at async a.onEngineConnectionOpened (file:///Users/runner/work/modeling-app/modeling-app/.vite/renderer/main_window/assets/index-DduzBCVE.js:91538:9)`,
-      foundInSpec: 'e2e/playwright/testing-constraints.spec.ts',
+      name: 'fE',
+      message:
+        'engine: Failed to wait for promise from send modeling command: JsValue("no connection to send on")',
+      stack: `fE: engine: Failed to wait for promise from send modeling command: JsValue("no connection to send on")
+     at ET (file:///home/runner/_work/modeling-app/modeling-app/.vite/renderer/main_window/assets/index-BvtRFNLF.js:49875:12)
+     at WGe.clearSceneAndBustCache (file:///home/runner/_work/modeling-app/modeling-app/.vite/renderer/main_window/assets/index-BvtRFNLF.js:91886:19)
+     at async a.onEngineConnectionOpened (file:///home/runner/_work/modeling-app/modeling-app/.vite/renderer/main_window/assets/index-BvtRFNLF.js:91483:9)`,
+      foundInSpec:
+        'e2e/playwright/testing-constraints.spec.ts is frequent but could be any spec',
       project: 'Google Chrome',
     },
     {
