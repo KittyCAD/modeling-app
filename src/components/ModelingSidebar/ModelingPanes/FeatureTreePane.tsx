@@ -1,7 +1,7 @@
 import type { Diagnostic } from '@codemirror/lint'
 import { useMachine, useSelector } from '@xstate/react'
 import type { ComponentProps } from 'react'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef } from 'react'
 import type { Actor, Prop } from 'xstate'
 
 import type { Operation } from '@rust/kcl-lib/bindings/Operation'
@@ -23,7 +23,7 @@ import {
   getOperationLabel,
   stdLibMap,
 } from '@src/lib/operations'
-import { editorManager, kclManager } from '@src/lib/singletons'
+import { editorManager, kclManager, rustContext } from '@src/lib/singletons'
 import {
   featureTreeMachine,
   featureTreeMachineDefaultContext,
@@ -160,6 +160,7 @@ export const FeatureTreePane = () => {
           <Loading className="h-full">Building feature tree...</Loading>
         ) : (
           <>
+            {!modelingState.matches('Sketch') && <DefaultPlanes />}
             {parseErrors.length > 0 && (
               <div
                 className={`absolute inset-0 rounded-lg p-2 ${
@@ -204,28 +205,21 @@ export const FeatureTreePane = () => {
   )
 }
 
-export const visibilityMap = new Map<string, boolean>()
-
 interface VisibilityToggleProps {
-  entityId: string
-  initialVisibility: boolean
-  onVisibilityChange?: () => void
+  visible: boolean
+  onVisibilityChange: () => unknown
 }
 
 /**
  * A button that toggles the visibility of an entity
  * tied to an artifact in the feature tree.
- * TODO: this is unimplemented and will be used for
- * default planes after we fix them and add them to the artifact graph / feature tree
+ * For now just used for default planes.
  */
 const VisibilityToggle = (props: VisibilityToggleProps) => {
-  const [visible, setVisible] = useState(props.initialVisibility)
-
-  function handleToggleVisible() {
-    setVisible(!visible)
-    visibilityMap.set(props.entityId, !visible)
-    props.onVisibilityChange?.()
-  }
+  const visible = props.visible
+  const handleToggleVisible = useCallback(() => {
+    props.onVisibilityChange()
+  }, [props.onVisibilityChange])
 
   return (
     <button
@@ -512,5 +506,41 @@ const OperationItem = (props: {
       onDoubleClick={enterEditFlow}
       errors={errors}
     />
+  )
+}
+
+const DefaultPlanes = () => {
+  const { state: modelingState, send } = useModelingContext()
+
+  const defaultPlanes = rustContext.defaultPlanes
+  if (!defaultPlanes) return null
+
+  const planes = [
+    { name: 'Front plane', id: defaultPlanes.xz, key: 'xz' },
+    { name: 'Top plane', id: defaultPlanes.xy, key: 'xy' },
+    { name: 'Side plane', id: defaultPlanes.yz, key: 'yz' },
+  ]
+
+  return (
+    <div className="mb-2">
+      {planes.map((plane) => (
+        <OperationItemWrapper
+          key={plane.key}
+          icon={'plane'}
+          name={plane.name}
+          visibilityToggle={{
+            visible: modelingState.context.defaultPlaneVisibility[plane.key],
+            onVisibilityChange: () => {
+              send({
+                type: 'Toggle default plane visibility',
+                planeId: plane.id,
+                planeKey: plane.key,
+              })
+            },
+          }}
+        />
+      ))}
+      <div className="h-px bg-chalkboard-50/20 my-2" />
+    </div>
   )
 }
