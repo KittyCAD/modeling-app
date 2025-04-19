@@ -32,43 +32,19 @@ sketch002 = startSketchOn(plane001)
   |> startProfileAt([carafeDiameter / 2, 5.7], %)
   |> xLine(length = 0.1)
   |> yLine(length = -5.2, tag = $edge1)
-  |> arc({
-       angleStart = 180,
-       angleEnd = 205,
-       radius = 0.3
-     }, %)
+  |> arc(angleStart = 180, angleEnd = 205, radius = 0.3)
   |> angledLine(angle = -60, length = 0.6, tag = $edge2)
-  |> arc({
-       angleStart = 30,
-       angleEnd = -120,
-       radius = 0.6
-     }, %)
+  |> arc(angleStart = 30, angleEnd = -120, radius = 0.6)
   |> angledLine(angle = 150, endAbsoluteY = -0.2, tag = $edge3)
-  |> arc({
-       angleStart = 60,
-       angleEnd = 90,
-       radius = 0.5
-     }, %)
+  |> arc(angleStart = 60, angleEnd = 90, radius = 0.5)
   |> xLine(endAbsolute = 0.1, tag = $edgeLen)
   |> yLine(length = 0.1)
   |> xLine(length = segLen(edgeLen) + 0.035, tag = $edge4)
-  |> arc({
-       angleStart = 90,
-       angleEnd = 60,
-       radius = 0.6
-     }, %)
+  |> arc(angleStart = 90, angleEnd = 60, radius = 0.6)
   |> angledLine(angle = 150, length = -segLen(edge3) + 0.035, tag = $edge5)
-  |> arc({
-       angleStart = -120,
-       angleEnd = 30,
-       radius = 0.5
-     }, %)
+  |> arc(angleStart = -120, angleEnd = 30, radius = 0.5)
   |> angledLine(angle = -60, length = -segLen(edge2) + 0.035, tag = $edge6)
-  |> arc({
-       angleStart = 205,
-       angleEnd = 180,
-       radius = 0.6
-     }, %)
+  |> arc(angleStart = 205, angleEnd = 180, radius = 0.6)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
   |> extrude(length = 0.75)
@@ -89,11 +65,7 @@ extrude001 = extrude(sketch003, length = 0.050)
 sketch004 = startSketchOn(extrude001, face = END)
   |> startProfileAt([0.3, 0.17], %)
   |> yLine(length = 1.2)
-  |> arc({
-       angleStart = 90,
-       angleEnd = -30,
-       radius = 1.2
-     }, %)
+  |> arc(angleStart = 90, angleEnd = -30, radius = 1.2)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
   |> patternCircular2d(

@@ -11,17 +11,9 @@ sketch017 = startSketchOn(plane002)
        1.75 + axisJ2ArmLength * cos(toRadians(axisJ2)) - (axisJ3CArmWidth / 2 * sin(toRadians(axisJ3C))),
        8 + axisJ2ArmLength * sin(toRadians(axisJ2)) + axisJ3CArmWidth / 2 * cos(toRadians(axisJ3C))
      ], %)
-  |> arc({
-       angleStart = 90 + axisJ3C,
-       angleEnd = 270 + axisJ3C,
-       radius = axisJ3CArmWidth / 2
-     }, %)
+  |> arc(angleStart = 90 + axisJ3C, angleEnd = 270 + axisJ3C, radius = axisJ3CArmWidth / 2)
   |> angledLine(angle = axisJ3C, length = axisJ3CArmLength)
-  |> arc({
-       angleStart = 270 + axisJ3C,
-       angleEnd = 90 + axisJ3C,
-       radius = axisJ3CArmWidth / 2
-     }, %)
+  |> arc(angleStart = 270 + axisJ3C, angleEnd = 90 + axisJ3C, radius = axisJ3CArmWidth / 2)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg01)
   |> close()
 extrude017 = extrude(sketch017, length = axisJ3CArmThickness)
@@ -97,11 +89,7 @@ sketch023 = startSketchOn(extrude022, face = START)
        8 + axisJ2ArmLength * sin(toRadians(axisJ2)) + axisJ3CArmLength * sin(toRadians(axisJ3C))
      ], %)
   |> angledLine(angle = axisJ3C + axisJ4 / 2, length = grabberLength / 4)
-  |> arc({
-       angleStart = 150 + axisJ3C + axisJ4 / 2,
-       angleEnd = 30 + axisJ3C + axisJ4 / 2,
-       radius = grabberLength / 3
-     }, %)
+  |> arc(angleStart = 150 + axisJ3C + axisJ4 / 2, angleEnd = 30 + axisJ3C + axisJ4 / 2, radius = grabberLength / 3)
   |> angledLine(angle = axisJ3C + axisJ4 / 2, length = grabberLength / 6)
   |> angledLine(angle = axisJ3C + axisJ4 / 2 + 132, length = grabberLength / 3.5)
   |> angledLine(angle = axisJ3C + axisJ4 / 2 + 160, length = grabberLength / 3.5)
@@ -118,11 +106,7 @@ sketch024 = startSketchOn(extrude022, face = START)
        8 + axisJ2ArmLength * sin(toRadians(axisJ2)) + axisJ3CArmLength * sin(toRadians(axisJ3C))
      ], %)
   |> angledLine(angle = axisJ3C - (axisJ4 / 2), length = grabberLength / 4)
-  |> arc({
-       angleStart = 210 + axisJ3C - (axisJ4 / 2),
-       angleEnd = 330 + axisJ3C - (axisJ4 / 2),
-       radius = grabberLength / 3
-     }, %)
+  |> arc(angleStart = 210 + axisJ3C - (axisJ4 / 2), angleEnd = 330 + axisJ3C - (axisJ4 / 2), radius = grabberLength / 3)
   |> angledLine(angle = axisJ3C - (axisJ4 / 2), length = grabberLength / 6)
   |> angledLine(angle = axisJ3C - (axisJ4 / 2) - 132, length = grabberLength / 3.5)
   |> angledLine(angle = axisJ3C - (axisJ4 / 2) - 160, length = grabberLength / 3.5)
