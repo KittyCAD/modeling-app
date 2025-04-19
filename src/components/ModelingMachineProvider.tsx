@@ -206,6 +206,18 @@ export const ModelingMachineProvider = ({
                 store.videoElement?.play().catch((e) => {
                   console.warn('Video playing was prevented', e)
                 })
+
+                // Setting selection filter only works after kclManager.executeCode() completes,as it will
+                // set the selection filter itself.
+                // eslint-disable-next-line @typescript-eslint/no-floating-promises
+                engineCommandManager.sendSceneCommand({
+                  type: 'modeling_cmd_req',
+                  cmd_id: uuidv4(),
+                  cmd: {
+                    type: 'set_selection_filter',
+                    filter: ['curve'],
+                  },
+                })
               })
               .catch(reportRejection)
           })().catch(reportRejection)
