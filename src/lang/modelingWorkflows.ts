@@ -54,6 +54,7 @@ export async function updateModelingState(
   },
   options?: {
     focusPath?: Array<PathToNode>
+    isDeleting?: boolean
   }
 ): Promise<void> {
   let updatedAst: {
@@ -69,7 +70,10 @@ export async function updateModelingState(
 
   // Step 2: Update the code editor and save file
   await dependencies.codeManager.updateEditorWithAstAndWriteToFile(
-    updatedAst.newAst
+    updatedAst.newAst,
+    {
+      isDeleting: options?.isDeleting,
+    }
   )
 
   // Step 3: Set focus on the newly added code if needed
