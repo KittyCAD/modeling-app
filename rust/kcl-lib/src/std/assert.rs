@@ -24,132 +24,123 @@ async fn _assert(value: bool, message: &str, args: &Args) -> Result<(), KclError
 /// Check that the provided value is true, or raise a [KclError]
 /// with the provided description.
 pub async fn assert(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (data, description): (bool, String) = args.get_data()?;
-    inner_assert(data, &description, &args).await?;
+    let actual = args.get_unlabeled_kw_arg("actual")?;
+    let gt = args.get_kw_arg_opt("isGreaterThan")?;
+    let lt = args.get_kw_arg_opt("isLessThan")?;
+    let gte = args.get_kw_arg_opt("isGreaterThanOrEqual")?;
+    let lte = args.get_kw_arg_opt("isLessThanOrEqual")?;
+    let eq = args.get_kw_arg_opt("isEqualTo")?;
+    let epsilon = args.get_kw_arg_opt("epsilon")?;
+    let error = args.get_kw_arg_opt("error")?;
+    inner_assert(actual, gt, lt, gte, lte, eq, epsilon, error, &args).await?;
     Ok(KclValue::none())
 }
 
-/// Check a value at runtime, and raise an error if the argument provided
-/// is false.
+/// Check a value meets some expected conditions at runtime. Program terminates with an error if conditions aren't met.
+/// If you provide multiple conditions, they will all be checked and all must be met.
 ///
 /// ```no_run
-/// myVar = true
-/// assert(myVar, "should always be true")
+/// n = 10
+/// assert(n, isEqualTo = 10)
+/// assert(n, isGreaterThanOrEqual = 0, isLessThan = 100, error = "number should be between 0 and 100")
+/// assert(1.0000000000012, isEqualTo = 1, epsilon = 0.0001, error = "number should be almost exactly 1")
 /// ```
 #[stdlib {
     name = "assert",
-}]
-async fn inner_assert(data: bool, message: &str, args: &Args) -> Result<(), KclError> {
-    _assert(data, message, args).await
-}
-
-pub async fn assert_lt(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (left, right, description): (TyF64, TyF64, String) = args.get_data()?;
-    inner_assert_lt(left.n, right.n, &description, &args).await?;
-    Ok(KclValue::none())
-}
-
-/// Check that a numerical value is less than to another at runtime,
-/// otherwise raise an error.
-///
-/// ```no_run
-/// assertLessThan(1, 2, "1 is less than 2")
-/// ```
-#[stdlib {
-    name = "assertLessThan",
-}]
-async fn inner_assert_lt(left: f64, right: f64, message: &str, args: &Args) -> Result<(), KclError> {
-    _assert(left < right, message, args).await
-}
-
-pub async fn assert_gt(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (left, right, description): (TyF64, TyF64, String) = args.get_data()?;
-    inner_assert_gt(left.n, right.n, &description, &args).await?;
-    Ok(KclValue::none())
-}
-
-/// Check that a numerical value equals another at runtime,
-/// otherwise raise an error.
-///
-/// ```no_run
-/// n = 1.0285
-/// o = 1.0286
-/// assertEqual(n, o, 0.01, "n is within the given tolerance for o")
-/// ```
-#[stdlib {
-    name = "assertEqual",
-}]
-async fn inner_assert_equal(left: f64, right: f64, epsilon: f64, message: &str, args: &Args) -> Result<(), KclError> {
-    if epsilon <= 0.0 {
-        Err(KclError::Type(KclErrorDetails {
-            message: "assertEqual epsilon must be greater than zero".to_owned(),
-            source_ranges: vec![args.source_range],
-        }))
-    } else if (right - left).abs() < epsilon {
-        Ok(())
-    } else {
-        Err(KclError::Type(KclErrorDetails {
-            message: format!("assert failed because {left} != {right}: {message}"),
-            source_ranges: vec![args.source_range],
-        }))
+    keywords = true,
+    unlabeled_first = true,
+    args = {
+        actual = { docs = "Value to check. It will be compared with one of the comparison arguments." },
+        is_greater_than = { docs = "Comparison argument. If given, checks the `actual` value is greater than this." },
+        is_less_than = { docs = "Comparison argument. If given, checks the `actual` value is less than this." },
+        is_greater_than_or_equal = { docs = "Comparison argument. If given, checks the `actual` value is greater than or equal to this." },
+        is_less_than_or_equal = { docs = "Comparison argument. If given, checks the `actual` value is less than or equal to this." },
+        is_equal_to = { docs = "Comparison argument. If given, checks the `actual` value is less than or equal to this.", include_in_snippet = true },
+        epsilon = { docs = "If `isEqualTo` is used, this is the tolerance to allow for the comparison. This tolerance is used because KCL's number system has some floating-point imprecision when used with very large decimal places." },
+        error = { docs = "If the value was false, the program will terminate with this error message" },
     }
-}
-
-pub async fn assert_equal(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (left, right, epsilon, description): (TyF64, TyF64, TyF64, String) = args.get_data()?;
-    inner_assert_equal(left.n, right.n, epsilon.n, &description, &args).await?;
-    Ok(KclValue::none())
-}
-
-/// Check that a numerical value is greater than another at runtime,
-/// otherwise raise an error.
-///
-/// ```no_run
-/// assertGreaterThan(2, 1, "2 is greater than 1")
-/// ```
-#[stdlib {
-    name = "assertGreaterThan",
 }]
-async fn inner_assert_gt(left: f64, right: f64, message: &str, args: &Args) -> Result<(), KclError> {
-    _assert(left > right, message, args).await
-}
-
-pub async fn assert_lte(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (left, right, description): (TyF64, TyF64, String) = args.get_data()?;
-    inner_assert_lte(left.n, right.n, &description, &args).await?;
-    Ok(KclValue::none())
-}
-
-/// Check that a numerical value is less than or equal to another at runtime,
-/// otherwise raise an error.
-///
-/// ```no_run
-/// assertLessThanOrEq(1, 2, "1 is less than 2")
-/// assertLessThanOrEq(1, 1, "1 is equal to 1")
-/// ```
-#[stdlib {
-    name = "assertLessThanOrEq",
-}]
-async fn inner_assert_lte(left: f64, right: f64, message: &str, args: &Args) -> Result<(), KclError> {
-    _assert(left <= right, message, args).await
-}
-
-pub async fn assert_gte(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (left, right, description): (TyF64, TyF64, String) = args.get_data()?;
-    inner_assert_gte(left.n, right.n, &description, &args).await?;
-    Ok(KclValue::none())
-}
-
-/// Check that a numerical value is greater than or equal to another at runtime,
-/// otherwise raise an error.
-///
-/// ```no_run
-/// assertGreaterThanOrEq(2, 1, "2 is greater than 1")
-/// assertGreaterThanOrEq(1, 1, "1 is equal to 1")
-/// ```
-#[stdlib {
-    name = "assertGreaterThanOrEq",
-}]
-async fn inner_assert_gte(left: f64, right: f64, message: &str, args: &Args) -> Result<(), KclError> {
-    _assert(left >= right, message, args).await
+async fn inner_assert(
+    actual: TyF64,
+    is_greater_than: Option<TyF64>,
+    is_less_than: Option<TyF64>,
+    is_greater_than_or_equal: Option<TyF64>,
+    is_less_than_or_equal: Option<TyF64>,
+    is_equal_to: Option<TyF64>,
+    epsilon: Option<TyF64>,
+    error: Option<String>,
+    args: &Args,
+) -> Result<(), KclError> {
+    let no_condition_given = [
+        &is_greater_than,
+        &is_less_than,
+        &is_greater_than_or_equal,
+        &is_less_than_or_equal,
+        &is_equal_to,
+    ]
+    .iter()
+    .all(|cond| cond.is_none());
+    if no_condition_given {
+        return Err(KclError::Type(KclErrorDetails {
+            message: format!("You must provide at least one condition in this assert (for example, isEqualTo)"),
+            source_ranges: vec![args.source_range],
+        }));
+    }
+    let suffix = if let Some(err_string) = error {
+        format!(" {err_string}")
+    } else {
+        Default::default()
+    };
+    let actual = actual.n;
+    if let Some(exp) = is_greater_than {
+        let exp = exp.n;
+        _assert(
+            actual > exp,
+            &format!("Expected {actual} to be greater than {exp} but it wasn't{suffix}"),
+            args,
+        )
+        .await?;
+    }
+    if let Some(exp) = is_less_than {
+        let exp = exp.n;
+        _assert(
+            actual < exp,
+            &format!("Expected {actual} to be less than {exp} but it wasn't{suffix}"),
+            args,
+        )
+        .await?;
+    }
+    if let Some(exp) = is_greater_than_or_equal {
+        let exp = exp.n;
+        _assert(
+            actual >= exp,
+            &format!("Expected {actual} to be greater than or equal to {exp} but it wasn't{suffix}"),
+            args,
+        )
+        .await?;
+    }
+    if let Some(exp) = is_less_than_or_equal {
+        let exp = exp.n;
+        _assert(
+            actual <= exp,
+            &format!("Expected {actual} to be less than or equal to {exp} but it wasn't{suffix}"),
+            args,
+        )
+        .await?;
+    }
+    if let Some(exp) = is_equal_to {
+        let exp = exp.n;
+        let cond = if let Some(epsilon) = epsilon {
+            (actual - exp).abs() < epsilon.n
+        } else {
+            actual == exp
+        };
+        _assert(
+            cond,
+            &format!("Expected {actual} to be equal to {exp} but it wasn't{suffix}"),
+            args,
+        )
+        .await?;
+    }
+    Ok(())
 }
