@@ -42,11 +42,7 @@ extrude(
 example = startSketchOn(XZ)
   |> startProfileAt([0, 0], %)
   |> line(end = [10, 0])
-  |> arc({
-       angleStart = 120,
-       angleEnd = 0,
-       radius = 5
-     }, %)
+  |> arc(angleStart = 120, angleEnd = 0, radius = 5)
   |> line(end = [5, 0])
   |> line(end = [0, 10])
   |> bezierCurve({
@@ -64,11 +60,7 @@ example = startSketchOn(XZ)
 ```js
 exampleSketch = startSketchOn(XZ)
   |> startProfileAt([-10, 0], %)
-  |> arc({
-       angleStart = 120,
-       angleEnd = -60,
-       radius = 5
-     }, %)
+  |> arc(angleStart = 120, angleEnd = -60, radius = 5)
   |> line(end = [10, 0])
   |> line(end = [5, 0])
   |> bezierCurve({
@@ -88,11 +80,7 @@ example = extrude(exampleSketch, length = 10)
 ```js
 exampleSketch = startSketchOn(XZ)
   |> startProfileAt([-10, 0], %)
-  |> arc({
-       angleStart = 120,
-       angleEnd = -60,
-       radius = 5
-     }, %)
+  |> arc(angleStart = 120, angleEnd = -60, radius = 5)
   |> line(end = [10, 0])
   |> line(end = [5, 0])
   |> bezierCurve({
@@ -112,11 +100,7 @@ example = extrude(exampleSketch, length = 20, symmetric = true)
 ```js
 exampleSketch = startSketchOn(XZ)
   |> startProfileAt([-10, 0], %)
-  |> arc({
-       angleStart = 120,
-       angleEnd = -60,
-       radius = 5
-     }, %)
+  |> arc(angleStart = 120, angleEnd = -60, radius = 5)
   |> line(end = [10, 0])
   |> line(end = [5, 0])
   |> bezierCurve({

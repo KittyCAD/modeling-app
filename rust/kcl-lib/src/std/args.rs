@@ -28,6 +28,9 @@ use crate::{
     ModuleId,
 };
 
+const ERROR_STRING_SKETCH_TO_SOLID_HELPER: &str =
+    "You can convert a sketch (2D) into a Solid (3D) by calling a function like `extrude` or `revolve`";
+
 #[derive(Debug, Clone)]
 pub struct Arg {
     /// The evaluated argument.
@@ -220,18 +223,19 @@ impl Args {
                 ty.human_friendly_type(),
             );
             let suggestion = match (ty, actual_type_name) {
-                (RuntimeType::Primitive(PrimitiveType::Solid), "Sketch") => Some(
-                    "You can convert a sketch (2D) into a Solid (3D) by calling a function like `extrude` or `revolve`",
-                ),
-                (RuntimeType::Array(t, _), "Sketch") if **t == RuntimeType::Primitive(PrimitiveType::Solid) => Some(
-                    "You can convert a sketch (2D) into a Solid (3D) by calling a function like `extrude` or `revolve`",
-                ),
+                (RuntimeType::Primitive(PrimitiveType::Solid), "Sketch") => Some(ERROR_STRING_SKETCH_TO_SOLID_HELPER),
+                (RuntimeType::Array(t, _), "Sketch") if **t == RuntimeType::Primitive(PrimitiveType::Solid) => {
+                    Some(ERROR_STRING_SKETCH_TO_SOLID_HELPER)
+                }
                 _ => None,
             };
-            let message = match suggestion {
+            let mut message = match suggestion {
                 None => msg_base,
                 Some(sugg) => format!("{msg_base}. {sugg}"),
             };
+            if message.contains("one or more Solids or imported geometry but it's actually of type Sketch") {
+                message = format!("{message}. {ERROR_STRING_SKETCH_TO_SOLID_HELPER}");
+            }
             KclError::Semantic(KclErrorDetails {
                 source_ranges: arg.source_ranges(),
                 message,
@@ -343,18 +347,20 @@ impl Args {
                 ty.human_friendly_type(),
             );
             let suggestion = match (ty, actual_type_name) {
-                (RuntimeType::Primitive(PrimitiveType::Solid), "Sketch") => Some(
-                    "You can convert a sketch (2D) into a Solid (3D) by calling a function like `extrude` or `revolve`",
-                ),
-                (RuntimeType::Array(ty, _), "Sketch") if **ty == RuntimeType::Primitive(PrimitiveType::Solid) => Some(
-                    "You can convert a sketch (2D) into a Solid (3D) by calling a function like `extrude` or `revolve`",
-                ),
+                (RuntimeType::Primitive(PrimitiveType::Solid), "Sketch") => Some(ERROR_STRING_SKETCH_TO_SOLID_HELPER),
+                (RuntimeType::Array(ty, _), "Sketch") if **ty == RuntimeType::Primitive(PrimitiveType::Solid) => {
+                    Some(ERROR_STRING_SKETCH_TO_SOLID_HELPER)
+                }
                 _ => None,
             };
-            let message = match suggestion {
+            let mut message = match suggestion {
                 None => msg_base,
                 Some(sugg) => format!("{msg_base}. {sugg}"),
             };
+
+            if message.contains("one or more Solids or imported geometry but it's actually of type Sketch") {
+                message = format!("{message}. {ERROR_STRING_SKETCH_TO_SOLID_HELPER}");
+            }
             KclError::Semantic(KclErrorDetails {
                 source_ranges: arg.source_ranges(),
                 message,
@@ -1114,39 +1120,6 @@ impl<'a> FromKclValue<'a> for FaceTag {
     }
 }
 
-impl<'a> FromKclValue<'a> for super::sketch::ArcData {
-    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        let obj = arg.as_object()?;
-        let case1 = || {
-            let angle_start = obj.get("angleStart")?.as_ty_f64()?;
-            let angle_end = obj.get("angleEnd")?.as_ty_f64()?;
-            let_field_of!(obj, radius, TyF64);
-            Some(Self::AnglesAndRadius {
-                angle_start,
-                angle_end,
-                radius,
-            })
-        };
-        let case2 = || {
-            let obj = arg.as_object()?;
-            let_field_of!(obj, to);
-            let_field_of!(obj, center);
-            let_field_of!(obj, radius, TyF64);
-            Some(Self::CenterToRadius { center, to, radius })
-        };
-        case1().or_else(case2)
-    }
-}
-
-impl<'a> FromKclValue<'a> for super::sketch::ArcToData {
-    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        let obj = arg.as_object()?;
-        let_field_of!(obj, end);
-        let_field_of!(obj, interior);
-        Some(Self { end, interior })
-    }
-}
-
 impl<'a> FromKclValue<'a> for super::sketch::TangentialArcData {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let obj = arg.as_object()?;
@@ -1389,6 +1362,26 @@ impl<'a> FromKclValue<'a> for crate::execution::SolidOrSketchOrImportedGeometry 
                 } else {
                     Some(Self::SketchSet(sketches))
                 }
+            }
+            KclValue::ImportedGeometry(value) => Some(Self::ImportedGeometry(Box::new(value.clone()))),
+            _ => None,
+        }
+    }
+}
+
+impl<'a> FromKclValue<'a> for crate::execution::SolidOrImportedGeometry {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        match arg {
+            KclValue::Solid { value } => Some(Self::SolidSet(vec![(**value).clone()])),
+            KclValue::HomArray { value, .. } => {
+                let mut solids = vec![];
+                for item in value {
+                    match item {
+                        KclValue::Solid { value } => solids.push((**value).clone()),
+                        _ => return None,
+                    }
+                }
+                Some(Self::SolidSet(solids))
             }
             KclValue::ImportedGeometry(value) => Some(Self::ImportedGeometry(Box::new(value.clone()))),
             _ => None,

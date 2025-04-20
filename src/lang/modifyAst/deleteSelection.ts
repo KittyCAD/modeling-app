@@ -38,9 +38,16 @@ export async function deleteSelectionPromise(
   if (testExecute.errors.length) {
     return new Error(deletionErrorMessage)
   }
-  await updateModelingState(modifiedAst, EXECUTION_TYPE_REAL, {
-    kclManager,
-    editorManager,
-    codeManager,
-  })
+  await updateModelingState(
+    modifiedAst,
+    EXECUTION_TYPE_REAL,
+    {
+      kclManager,
+      editorManager,
+      codeManager,
+    },
+    {
+      isDeleting: true,
+    }
+  )
 }

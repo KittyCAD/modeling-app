@@ -5327,17 +5327,6 @@ mod snapshot_tests {
         }"
     );
     snapshot_test!(
-        ba,
-        r#"
-sketch001 = startSketchOn('XY')
-  // |> arc({
-  //   angleEnd: 270,
-  //   angleStart: 450,
-  // }, %)
-  |> startProfileAt(%)
-"#
-    );
-    snapshot_test!(
         bb,
         r#"
 my14 = 4 ^ 2 - 3 ^ 2 * 2

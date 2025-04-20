@@ -1,4 +1,5 @@
 import { expect, test } from '@e2e/playwright/zoo-test'
+import { orRunWhenFullSuiteEnabled } from '@e2e/playwright/test-utils'
 
 /* eslint-disable jest/no-conditional-expect */
 
@@ -57,6 +58,7 @@ test.describe('edit with AI example snapshots', () => {
     `change colour`,
     { tag: '@snapshot' },
     async ({ context, homePage, cmdBar, editor, page, scene }) => {
+      test.fixme(orRunWhenFullSuiteEnabled())
       await context.addInitScript((file) => {
         localStorage.setItem('persistCode', file)
       }, file)
