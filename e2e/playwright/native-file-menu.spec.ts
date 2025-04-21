@@ -21,8 +21,9 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
                 if (!app || !app.applicationMenu) {
                   return false
                 }
-                const newProject =
-                  app.applicationMenu.getMenuItemById('File.New project')
+                const newProject = app.applicationMenu.getMenuItemById(
+                  'File.Create project'
+                )
                 if (!newProject) return false
                 newProject.click()
                 return true
@@ -484,8 +485,9 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
           if (!app || !app.applicationMenu) fail()
-          const newProject =
-            app.applicationMenu.getMenuItemById('File.New project')
+          const newProject = app.applicationMenu.getMenuItemById(
+            'File.Create project'
+          )
           if (!newProject) fail()
           newProject.click()
         })
@@ -608,7 +610,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         const expected = 'Export'
         expect(actual).toBe(expected)
       })
-      test('Modeling.File.Share current part (via Zoo link)', async ({
+      test('Modeling.File.Share part via Zoo link', async ({
         tronApp,
         cmdBar,
         page,
@@ -629,10 +631,10 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
             throw new Error('app or app.applicationMenu is missing')
           }
           const openProject = app.applicationMenu.getMenuItemById(
-            'File.Share current part (via Zoo link)'
+            'File.Share part via Zoo link'
           )
           if (!openProject) {
-            throw new Error('File.Share current part (via Zoo link)')
+            throw new Error('File.Share part via Zoo link')
           }
           openProject.click()
         })
