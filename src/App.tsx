@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import toast from 'react-hot-toast'
 import { useHotkeys } from 'react-hotkeys-hook'
 import ModalContainer from 'react-modal-promise'
@@ -21,18 +21,12 @@ import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
 import { useCreateFileLinkQuery } from '@src/hooks/useCreateFileLinkQueryWatcher'
 import { useEngineConnectionSubscriptions } from '@src/hooks/useEngineConnectionSubscriptions'
 import { useHotKeyListener } from '@src/hooks/useHotKeyListener'
-import { CoreDumpManager } from '@src/lib/coredump'
 import { writeProjectThumbnailFile } from '@src/lib/desktop'
 import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
 import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
 import { takeScreenshotOfVideoStreamCanvas } from '@src/lib/screenshot'
-import {
-  codeManager,
-  engineCommandManager,
-  rustContext,
-  sceneInfra,
-} from '@src/lib/singletons'
+import { sceneInfra } from '@src/lib/singletons'
 import { maybeWriteToDisk } from '@src/lib/telemetry'
 import { type IndexLoaderData } from '@src/lib/types'
 import {
@@ -92,17 +86,6 @@ export function App() {
 
   const settings = useSettings()
   const authToken = useToken()
-
-  const coreDumpManager = useMemo(
-    () =>
-      new CoreDumpManager(
-        engineCommandManager,
-        codeManager,
-        rustContext,
-        authToken
-      ),
-    []
-  )
 
   const {
     app: { onboardingStatus },
@@ -171,7 +154,7 @@ export function App() {
       <ModelingSidebar paneOpacity={paneOpacity} />
       <EngineStream pool={pool} authToken={authToken} />
       {/* <CamToggle /> */}
-      <LowerRightControls coreDumpManager={coreDumpManager}>
+      <LowerRightControls>
         <UnitsMenu />
         <Gizmo />
       </LowerRightControls>
