@@ -1,7 +1,6 @@
 let triangleHeight = 200
 let plumbusLen = 100
 let radius = 80
-let circ = {angle_start: 0, angle_end: 360, radius: radius}
 
 let triangleLen = 500
 const p = startSketchOn(XY)
@@ -14,7 +13,12 @@ const p = startSketchOn(XY)
 fn circl = (x, face) => {
 return startSketchOn(p, face = face)
   |> startProfileAt([x + radius, triangleHeight/2], %)
-  |> arc(circ, %,  $arc_tag)
+    |> arc(
+         angleStart = 0,
+         angleEnd = 360,
+         radius = radius,
+         tag = $arc_tag,
+       )
   |> close()
 }
 

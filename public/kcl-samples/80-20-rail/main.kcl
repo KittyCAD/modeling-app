@@ -12,22 +12,10 @@ fn rail8020(originStart, railHeight, railLength) {
          originStart[0],
          0.1 * railHeight + originStart[1]
        ], %)
-    |> arc({
-         angleStart = 180,
-         angleEnd = 270,
-         radius = 0.1 * railHeight
-       }, %)
-    |> arc({
-         angleStart = 180,
-         angleEnd = 0,
-         radius = 0.072 / 4 * railHeight
-       }, %)
+    |> arc(angleStart = 180, angleEnd = 270, radius = 0.1 * railHeight)
+    |> arc(angleStart = 180, angleEnd = 0, radius = 0.072 / 4 * railHeight)
     |> xLine(length = 0.1 * railHeight)
-    |> arc({
-         angleStart = 180,
-         angleEnd = 0,
-         radius = 0.072 / 4 * railHeight
-       }, %)
+    |> arc(angleStart = 180, angleEnd = 0, radius = 0.072 / 4 * railHeight)
     |> xLine(length = 0.06 * railHeight, tag = $edge1)
     |> yLine(length = 0.087 * railHeight, tag = $edge2)
     |> xLine(length = -0.183 * railHeight, tag = $edge3)
@@ -37,35 +25,15 @@ fn rail8020(originStart, railHeight, railLength) {
     |> xLine(length = -0.183 * railHeight, tag = $edge7)
     |> yLine(length = -0.087 * railHeight, tag = $edge8)
     |> xLine(length = 0.06 * railHeight)
-    |> arc({
-         angleStart = 180,
-         angleEnd = 0,
-         radius = 0.072 / 4 * railHeight
-       }, %)
+    |> arc(angleStart = 180, angleEnd = 0, radius = 0.072 / 4 * railHeight)
     |> xLine(length = 0.1 * railHeight)
-    |> arc({
-         angleStart = 180,
-         angleEnd = 0,
-         radius = 0.072 / 4 * railHeight
-       }, %)
-    |> arc({
-         angleStart = -90,
-         angleEnd = 0,
-         radius = 0.1 * railHeight
-       }, %)
+    |> arc(angleStart = 180, angleEnd = 0, radius = 0.072 / 4 * railHeight)
+    |> arc(angleStart = -90, angleEnd = 0, radius = 0.1 * railHeight)
 
     // Sketch side 2 of profile
-    |> arc({
-         angleStart = 270,
-         angleEnd = 90,
-         radius = 0.072 / 4 * railHeight
-       }, %)
+    |> arc(angleStart = 270, angleEnd = 90, radius = 0.072 / 4 * railHeight)
     |> yLine(length = 0.1 * railHeight)
-    |> arc({
-         angleStart = 270,
-         angleEnd = 90,
-         radius = 0.072 / 4 * railHeight
-       }, %)
+    |> arc(angleStart = 270, angleEnd = 90, radius = 0.072 / 4 * railHeight)
     |> yLine(length = 0.06 * railHeight, tag = $edge9)
     |> xLine(length = -0.087 * railHeight, tag = $edge10)
     |> yLine(length = -0.183 * railHeight, tag = $edge11) // edge11
@@ -75,35 +43,15 @@ fn rail8020(originStart, railHeight, railLength) {
     |> yLine(length = -0.183 * railHeight, tag = $edge15) // 15
     |> xLine(length = 0.087 * railHeight, tag = $edge16)
     |> yLine(length = 0.06 * railHeight)
-    |> arc({
-         angleStart = 270,
-         angleEnd = 90,
-         radius = 0.072 / 4 * railHeight
-       }, %)
+    |> arc(angleStart = 270, angleEnd = 90, radius = 0.072 / 4 * railHeight)
     |> yLine(length = 0.1 * railHeight)
-    |> arc({
-         angleStart = 270,
-         angleEnd = 90,
-         radius = 0.072 / 4 * railHeight
-       }, %)
+    |> arc(angleStart = 270, angleEnd = 90, radius = 0.072 / 4 * railHeight)
 
     // Sketch side 3 of profile
-    |> arc({
-         angleStart = 0,
-         angleEnd = 90,
-         radius = 0.1 * railHeight
-       }, %)
-    |> arc({
-         angleStart = 0,
-         angleEnd = -180,
-         radius = 0.072 / 4 * railHeight
-       }, %)
+    |> arc(angleStart = 0, angleEnd = 90, radius = 0.1 * railHeight)
+    |> arc(angleStart = 0, angleEnd = -180, radius = 0.072 / 4 * railHeight)
     |> xLine(length = -0.1 * railHeight)
-    |> arc({
-         angleStart = 0,
-         angleEnd = -180,
-         radius = 0.072 / 4 * railHeight
-       }, %)
+    |> arc(angleStart = 0, angleEnd = -180, radius = 0.072 / 4 * railHeight)
     |> xLine(length = -0.06 * railHeight, tag = $edge17)
     |> yLine(length = -0.087 * railHeight, tag = $edge18)
     |> xLine(length = 0.183 * railHeight, tag = $edge19)
@@ -113,35 +61,15 @@ fn rail8020(originStart, railHeight, railLength) {
     |> xLine(length = 0.183 * railHeight, tag = $edge23)
     |> yLine(length = 0.087 * railHeight, tag = $edge24)
     |> xLine(length = -0.06 * railHeight)
-    |> arc({
-         angleStart = 0,
-         angleEnd = -180,
-         radius = 0.072 / 4 * railHeight
-       }, %)
+    |> arc(angleStart = 0, angleEnd = -180, radius = 0.072 / 4 * railHeight)
     |> xLine(length = -0.1 * railHeight)
-    |> arc({
-         angleStart = 0,
-         angleEnd = -180,
-         radius = 0.072 / 4 * railHeight
-       }, %)
-    |> arc({
-         angleStart = 90,
-         angleEnd = 180,
-         radius = 0.1 * railHeight
-       }, %)
+    |> arc(angleStart = 0, angleEnd = -180, radius = 0.072 / 4 * railHeight)
+    |> arc(angleStart = 90, angleEnd = 180, radius = 0.1 * railHeight)
 
     // Sketch side 4 of profile
-    |> arc({
-         angleStart = 90,
-         angleEnd = -90,
-         radius = 0.072 / 4 * railHeight
-       }, %)
+    |> arc(angleStart = 90, angleEnd = -90, radius = 0.072 / 4 * railHeight)
     |> yLine(length = -0.1 * railHeight)
-    |> arc({
-         angleStart = 90,
-         angleEnd = -90,
-         radius = 0.072 / 4 * railHeight
-       }, %)
+    |> arc(angleStart = 90, angleEnd = -90, radius = 0.072 / 4 * railHeight)
     |> yLine(length = -0.06 * railHeight, tag = $edge25)
     |> xLine(length = 0.087 * railHeight, tag = $edge26)
     |> yLine(length = 0.183 * railHeight, tag = $edge27)
@@ -151,17 +79,9 @@ fn rail8020(originStart, railHeight, railLength) {
     |> yLine(length = 0.183 * railHeight, tag = $edge31)
     |> xLine(length = -0.087 * railHeight, tag = $edge32)
     |> yLine(length = -0.06 * railHeight)
-    |> arc({
-         angleStart = 90,
-         angleEnd = -90,
-         radius = 0.072 / 4 * railHeight
-       }, %)
+    |> arc(angleStart = 90, angleEnd = -90, radius = 0.072 / 4 * railHeight)
     |> yLine(length = -0.1 * railHeight)
-    |> arc({
-         angleStart = 90,
-         angleEnd = -90,
-         radius = 0.072 / 4 * railHeight
-       }, %)
+    |> arc(angleStart = 90, angleEnd = -90, radius = 0.072 / 4 * railHeight)
     |> close()
 
     // Sketch center hole of profile

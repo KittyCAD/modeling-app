@@ -46,11 +46,7 @@ lugHoles = startSketchOn(lugBase, face = END)
 wheelCenterInner = startSketchOn(XY)
   |> startProfileAt([(lugSpacing - 1.5) / 2, 0], %)
   |> yLine(length = -wheelWidth / 10 - (wheelWidth / 20))
-  |> bezierCurve({
-       to = [-0.4, 0.3],
-       control1 = [-0.3, 0],
-       control2 = [0, 0.3]
-     }, %)
+  |> bezierCurve(control1 = [-0.3, 0], control2 = [0, 0.3], end = [-0.4, 0.3])
   |> yLine(endAbsolute = 0)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
@@ -60,11 +56,7 @@ wheelCenterInner = startSketchOn(XY)
 wheelCenterOuter = startSketchOn(XY)
   |> startProfileAt([(lugSpacing + 1.5) / 2, 0], %)
   |> yLine(length = -wheelWidth / 10 - (wheelWidth / 20))
-  |> bezierCurve({
-       to = [0.4, -0.1],
-       control1 = [0.3, 0],
-       control2 = [0.2, -0.3]
-     }, %)
+  |> bezierCurve(control1 = [0.3, 0], control2 = [0.2, -0.3], end = [0.4, -0.1])
   |> yLine(endAbsolute = -wheelWidth / 20)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
@@ -84,11 +76,7 @@ fn spoke(spokeGap, spokeAngle, spokeThickness) {
   // Spoke cross sections
   spokeProfile = startSketchOn(plane001)
     |> startProfileAt([(lugSpacing + 2) / 2, -0.7], %)
-    |> bezierCurve({
-         to = [
-           (wheelDiameter - lugSpacing - 2.9) / 2,
-           offset
-         ],
+    |> bezierCurve(
          control1 = [
            (wheelDiameter - lugSpacing - 2.9) / 3.5,
            offset / 7
@@ -96,14 +84,14 @@ fn spoke(spokeGap, spokeAngle, spokeThickness) {
          control2 = [
            (wheelDiameter - lugSpacing - 2.9) / 4,
            offset / 1.5
-         ]
-       }, %)
-    |> yLine(length = -wheelWidth / 15)
-    |> bezierCurve({
-         to = [
-           -(wheelDiameter - lugSpacing - 2.9) / 2,
-           -offset
          ],
+         end = [
+           (wheelDiameter - lugSpacing - 2.9) / 2,
+           offset
+         ],
+       )
+    |> yLine(length = -wheelWidth / 15)
+    |> bezierCurve(
          control1 = [
            -(wheelDiameter - lugSpacing - 2.9) / 5,
            -offset / 7
@@ -111,8 +99,12 @@ fn spoke(spokeGap, spokeAngle, spokeThickness) {
          control2 = [
            -(wheelDiameter - lugSpacing - 2.9) / 5,
            -offset / 1.5
-         ]
-       }, %)
+         ],
+         end = [
+           -(wheelDiameter - lugSpacing - 2.9) / 2,
+           -offset
+         ],
+       )
     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
     |> close()
 
