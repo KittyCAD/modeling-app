@@ -1434,6 +1434,7 @@ export const circle: SketchLineHelperKw = {
       ['arguments', 'CallExpressionKw'],
       [centerInfo.argIndex, ARG_INDEX_FIELD],
       ['arg', LABELED_ARG_FIELD],
+      ['elements', 'ArrayExpression'],
     ]
     const pathToRadiusLiteral: PathToNode = [
       ...pathToNode,
