@@ -63,6 +63,7 @@ export function useCreateFileLinkQuery(
         method: isDesktop() ? undefined : 'existingProject',
       }
 
+      console.log('nice callback?')
       callback(argDefaultValues)
     }
   }, [searchParams, immediateState])

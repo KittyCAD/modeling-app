@@ -191,7 +191,7 @@ export function readLocalStorageAppSettingsFile():
   }
 }
 
-function readLocalStorageProjectSettingsFile():
+export function readLocalStorageProjectSettingsFile():
   | DeepPartial<ProjectConfiguration>
   | Error {
   // TODO: Remove backwards compatibility after a few releases.

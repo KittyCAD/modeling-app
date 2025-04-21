@@ -320,11 +320,100 @@ export const renameProjectCommand: Command = {
     },
   },
 }
-// export const importFileFromURL: Command = {}
+
+export const importFileFromURL: Command = {
+  name: 'Import file from URL',
+  groupId: 'projects',
+  icon: 'file',
+  description: 'Create a file',
+  needsReview: true,
+  onSubmit: (record) => {
+    console.log('RECORD!', record)
+    if (record) {
+      systemIOActor.send({
+        type: SystemIOMachineEvents.createKCLFile,
+        data: {
+          requestedProjectName: record.projectName,
+          requestedCode: record.code,
+          requestedFileName: record.name,
+        },
+      })
+    }
+  },
+  args: {
+    method: {
+      inputType: 'options',
+      required: true,
+      skip: true,
+      options: isDesktop()
+        ? [
+            { name: 'New project', value: 'newProject' },
+            { name: 'Existing project', value: 'existingProject' },
+          ]
+        : [{ name: 'Overwrite', value: 'existingProject' }],
+      valueSummary(value) {
+        return isDesktop()
+          ? value === 'newProject'
+            ? 'New project'
+            : 'Existing project'
+          : 'Overwrite'
+      },
+    },
+    // TODO: We can't get the currently-opened project to auto-populate here because
+    // it's not available on projectMachine, but lower in fileMachine. Unify these.
+    projectName: {
+      inputType: 'options',
+      required: (commandsContext) =>
+        isDesktop() &&
+        commandsContext.argumentsToSubmit.method === 'existingProject',
+      skip: true,
+      options: (_, context) => {
+        const folders = folderSnapshot()
+        const options: CommandArgumentOption<any>[] = []
+        folders.forEach((folder) => {
+          options.push({
+            name: folder.name,
+            value: folder.name,
+            isCurrent: false,
+          })
+        })
+        return options
+      },
+    },
+    name: {
+      inputType: 'string',
+      required: isDesktop(),
+      skip: true,
+    },
+    code: {
+      inputType: 'text',
+      required: true,
+      skip: true,
+      valueSummary(value) {
+        const lineCount = value?.trim().split('\n').length
+        return `${lineCount} line${lineCount === 1 ? '' : 's'}`
+      },
+    },
+  },
+  reviewMessage(commandBarContext) {
+    return isDesktop()
+      ? `Will add the contents from URL to a new ${
+          commandBarContext.argumentsToSubmit.method === 'newProject'
+            ? 'project with file main.kcl'
+            : `file within the project "${commandBarContext.argumentsToSubmit.projectName}"`
+        } named "${
+          commandBarContext.argumentsToSubmit.name
+        }", and set default units to "${
+          commandBarContext.argumentsToSubmit.units
+        }".`
+      : `Will overwrite the contents of the current file with the contents from the URL.`
+  },
+}
 
 export const projectCommands = [
   openProjectCommand,
   createProjectCommand,
   deleteProjectCommand,
   renameProjectCommand,
+  importFileFromURL,
 ]

@@ -193,6 +193,12 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           configuration,
           newFileName
         )
+
+        return {
+          message: 'File created successfully',
+          fileName: input.requestedFileName,
+          projectName: requestedProjectName,
+        }
       }
     ),
     [SystemIOMachineActors.checkReadWrite]: fromPromise(

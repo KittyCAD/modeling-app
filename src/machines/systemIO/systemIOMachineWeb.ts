@@ -2,6 +2,11 @@ import { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import type { SystemIOContext } from '@src/machines/systemIO/utils'
 import { SystemIOMachineActors } from '@src/machines/systemIO/utils'
 import { fromPromise } from 'xstate'
+import { newKclFile } from '@src/lang/project'
+import { readLocalStorageProjectSettingsFile } from '@src/lib/settings/settingsUtils'
+import { err } from '@src/lib/trap'
+import { DEFAULT_DEFAULT_LENGTH_UNIT } from '@src/lib/constants'
+import { codeManager, kclManager } from '@src/lib/singletons'
 
 export const systemIOMachineWeb = systemIOMachine.provide({
   actors: {
@@ -15,7 +20,30 @@ export const systemIOMachineWeb = systemIOMachine.provide({
           requestedFileName: string
           requestedCode: string
         }
-      }) => {}
+      }) => {
+        // Browser version doesn't navigate, just overwrites the current file
+        // clearImportSearchParams()
+        const projectSettings = readLocalStorageProjectSettingsFile()
+        if (err(projectSettings)) {
+          return Promise.reject(
+            'Unable to read project settings from local storage'
+          )
+        }
+        const codeToWrite = newKclFile(
+          input.requestedCode,
+          projectSettings?.settings?.modeling?.base_unit ||
+            DEFAULT_DEFAULT_LENGTH_UNIT
+        )
+        if (err(codeToWrite)) return Promise.reject(codeToWrite)
+        codeManager.updateCodeStateEditor(codeToWrite)
+        await codeManager.writeToFile()
+        await kclManager.executeCode()
+        return {
+          message: 'File overwritten successfully',
+          fileName: input.requestedFileName,
+          projectName: '',
+        }
+      }
     ),
   },
 })

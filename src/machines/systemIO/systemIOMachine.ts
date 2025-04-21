@@ -183,7 +183,13 @@ export const systemIOMachine = setup({
           requestedFileName: string
           requestedCode: string
         }
-      }) => {}
+      }): Promise<{
+        message: string
+        fileName: string
+        projectName: string
+      }> => {
+        return { message: '', fileName: '', projectName: '' }
+      }
     ),
     [SystemIOMachineActors.checkReadWrite]: fromPromise(
       async ({
