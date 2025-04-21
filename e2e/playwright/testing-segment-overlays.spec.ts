@@ -1463,4 +1463,136 @@ part001 = startSketchOn(XZ)
       })
     }
   })
+  test.describe('Testing with showAllOverlays flag', () => {
+    test('circle overlay constraints with showAllOverlays', async ({
+      page,
+      editor,
+      homePage,
+      scene,
+      cmdBar,
+    }) => {
+      await page.addInitScript(async () => {
+        localStorage.setItem(
+          'persistCode',
+          `myvar = -141
+sketch001 = startSketchOn(XZ)
+profile002 = circle(sketch001, center = [345, 0], radius = 238.38)
+`
+        )
+        // Set flag to always show overlays without hover
+        localStorage.setItem('showAllOverlays', 'true')
+      })
+
+      await page.setBodyDimensions({ width: 1200, height: 500 })
+
+      await homePage.goToModelingScene()
+      await scene.connectionEstablished()
+      await scene.settled(cmdBar)
+
+      // Click on the circle line to enter edit mode
+      await page
+        .getByText('circle(sketch001, center = [345, 0], radius = 238.38)')
+        .click()
+      await page.waitForTimeout(100)
+      await page.getByRole('button', { name: 'Edit Sketch' }).click()
+      await page.waitForTimeout(500)
+
+      // Verify that the overlay is visible without hovering
+      await expect(page.getByTestId('segment-overlay')).toHaveCount(1)
+
+      // First, constrain the X coordinate
+      const xConstraintBtn = page.locator(
+        '[data-constraint-type="xAbsolute"][data-is-constrained="false"]'
+      )
+      await expect(xConstraintBtn).toBeVisible()
+      await xConstraintBtn.click()
+
+      // Complete the command
+      await expect(
+        page.getByTestId('cmd-bar-arg-value').getByRole('textbox')
+      ).toBeFocused()
+      await page.getByRole('button', { name: 'arrow right Continue' }).click()
+
+      // Verify the X constraint was added
+      await editor.expectEditor.toContain('center = [xAbs001, 0]', {
+        shouldNormalise: true,
+      })
+
+      // Now constrain the Y coordinate
+      const yConstraintBtn = page.locator(
+        '[data-constraint-type="yAbsolute"][data-is-constrained="false"]'
+      )
+      await expect(yConstraintBtn).toBeVisible()
+      await yConstraintBtn.click()
+
+      // Complete the command
+      await expect(
+        page.getByTestId('cmd-bar-arg-value').getByRole('textbox')
+      ).toBeFocused()
+      await page.getByRole('button', { name: 'arrow right Continue' }).click()
+
+      // Verify the Y constraint was added
+      await editor.expectEditor.toContain('center = [xAbs001, yAbs001]', {
+        shouldNormalise: true,
+      })
+
+      // Now constrain the radius
+      const radiusConstraintBtn = page.locator(
+        '[data-constraint-type="radius"][data-is-constrained="false"]'
+      )
+      await expect(radiusConstraintBtn).toBeVisible()
+      await radiusConstraintBtn.click()
+
+      // Complete the command
+      await expect(
+        page.getByTestId('cmd-bar-arg-value').getByRole('textbox')
+      ).toBeFocused()
+      await page.getByRole('button', { name: 'arrow right Continue' }).click()
+
+      // Verify all constraints were added
+      await editor.expectEditor.toContain(
+        'center = [xAbs001, yAbs001], radius = radius001',
+        { shouldNormalise: true }
+      )
+
+      // Now unconstrain the X coordinate
+      const constrainedXBtn = page.locator(
+        '[data-constraint-type="xAbsolute"][data-is-constrained="true"]'
+      )
+      await expect(constrainedXBtn).toBeVisible()
+      await constrainedXBtn.click()
+
+      // Verify the X constraint was removed
+      await editor.expectEditor.toContain(
+        'center = [345, yAbs001], radius = radius001',
+        { shouldNormalise: true }
+      )
+
+      // Now unconstrain the Y coordinate
+      const constrainedYBtn = page.locator(
+        '[data-constraint-type="yAbsolute"][data-is-constrained="true"]'
+      )
+      await expect(constrainedYBtn).toBeVisible()
+      await constrainedYBtn.click()
+
+      // Verify the Y constraint was removed
+      await editor.expectEditor.toContain(
+        'center = [345, 0], radius = radius001',
+        { shouldNormalise: true }
+      )
+
+      // Finally, unconstrain the radius
+      const constrainedRadiusBtn = page.locator(
+        '[data-constraint-type="radius"][data-is-constrained="true"]'
+      )
+      await expect(constrainedRadiusBtn).toBeVisible()
+      await constrainedRadiusBtn.click()
+
+      // Verify all constraints were removed
+      await editor.expectEditor.toContain(
+        'center = [345, 0], radius = 238.38',
+        { shouldNormalise: true }
+      )
+    })
+  })
 })

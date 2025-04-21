@@ -1247,23 +1247,23 @@ export const circle: SketchLineHelperKw = {
       if (replaceExistingCallback) {
         const result = replaceExistingCallback([
           {
-            type: 'arrayInObject',
-            index: 0,
-            key: 'center',
+            type: 'labeledArgArrayItem',
             argType: 'xAbsolute',
+            key: ARG_CIRCLE_CENTER,
+            index: 0,
             expr: x,
           },
           {
-            type: 'arrayInObject',
-            index: 1,
-            key: 'center',
+            type: 'labeledArgArrayItem',
             argType: 'yAbsolute',
+            key: ARG_CIRCLE_CENTER,
+            index: 1,
             expr: y,
           },
           {
-            type: 'objectProperty',
-            key: 'radius',
+            type: 'labeledArg',
             argType: 'radius',
+            key: ARG_RADIUS,
             expr: radiusExp,
           },
         ])
@@ -1327,26 +1327,28 @@ export const circle: SketchLineHelperKw = {
     const radiusExp = createLiteral(roundOff(radius, 2))
     const centerArray = createArrayExpression([x, y])
 
+    console.log('replaceExistingCallback2', replaceExistingCallback)
     if (replaceExistingCallback) {
+      // debugger
       const result = replaceExistingCallback([
         {
-          type: 'arrayInObject',
-          index: 0,
-          key: 'center',
+          type: 'labeledArgArrayItem',
           argType: 'xAbsolute',
+          key: ARG_CIRCLE_CENTER,
+          index: 0,
           expr: x,
         },
         {
-          type: 'arrayInObject',
-          index: 1,
-          key: 'center',
+          type: 'labeledArgArrayItem',
           argType: 'yAbsolute',
+          key: ARG_CIRCLE_CENTER,
+          index: 1,
           expr: y,
         },
         {
-          type: 'objectProperty',
-          key: 'radius',
+          type: 'labeledArg',
           argType: 'radius',
+          key: ARG_RADIUS,
           expr: radiusExp,
         },
       ])
@@ -1451,16 +1453,19 @@ export const circle: SketchLineHelperKw = {
       [1, 'index'],
     ]
 
-    return [
-      constrainInfo(
-        'radius',
-        isNotLiteralArrayOrStatic(radiusInfo.expr),
-        code.slice(radiusInfo.expr.start, radiusInfo.expr.end),
-        'circle',
-        'radius',
-        topLevelRange(radiusInfo.expr.start, radiusInfo.expr.end),
-        pathToRadiusLiteral
-      ),
+    const constraints: ConstrainInfo[] = [
+      {
+        stdLibFnName: 'circle',
+        type: 'radius',
+        isConstrained: isNotLiteralArrayOrStatic(radiusInfo.expr),
+        sourceRange: topLevelRange(radiusInfo.expr.start, radiusInfo.expr.end),
+        pathToNode: pathToRadiusLiteral,
+        value: code.slice(radiusInfo.expr.start, radiusInfo.expr.end),
+        argPosition: {
+          type: 'labeledArg',
+          key: ARG_RADIUS,
+        },
+      },
       {
         stdLibFnName: 'circle',
         type: 'xAbsolute',
@@ -1475,9 +1480,9 @@ export const circle: SketchLineHelperKw = {
           centerInfo.expr.elements[0].end
         ),
         argPosition: {
-          type: 'arrayInObject',
+          type: 'labeledArgArrayItem',
           index: 0,
-          key: 'center',
+          key: ARG_CIRCLE_CENTER,
         },
       },
       {
@@ -1494,12 +1499,13 @@ export const circle: SketchLineHelperKw = {
           centerInfo.expr.elements[1].end
         ),
         argPosition: {
-          type: 'arrayInObject',
+          type: 'labeledArgArrayItem',
           index: 1,
           key: 'center',
         },
       },
     ]
+    return constraints
   },
 }
 
@@ -1576,6 +1582,7 @@ export const arc: SketchLineHelperKw = {
 
     if (replaceExistingCallback && pipe.type !== 'CallExpression') {
       const { index: callIndex } = splitPathAtPipeExpression(pathToNode)
+      console.log('YOYOYOYOYO!NOO')
       const result = replaceExistingCallback([
         {
           type: 'objectProperty',
@@ -3484,7 +3491,6 @@ export function replaceSketchLine({
       pathToNode: PathToNode
     }
   | Error {
-  console.log('replaceSketchLine', fnName)
   if (![...toolTips, 'intersect', 'circle'].includes(fnName)) {
     return new Error(`The following function name  is not tooltip: ${fnName}`)
   }

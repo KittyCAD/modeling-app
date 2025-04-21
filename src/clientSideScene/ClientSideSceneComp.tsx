@@ -4,6 +4,10 @@ import toast from 'react-hot-toast'
 
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 
+// Helper function to check if overlays should always be shown
+const shouldAlwaysShowOverlays = () =>
+  localStorage.getItem('showAllOverlays') === 'true'
+
 import type { ReactCameraProperties } from '@src/clientSideScene/CameraControls'
 import {
   EXTRA_SEGMENT_HANDLE,
@@ -172,6 +176,10 @@ export const ClientSideScene = ({
 const Overlays = () => {
   const { context } = useModelingContext()
   if (context.mouseState.type === 'isDragging') return null
+
+  // Simple check directly from localStorage
+  const alwaysShowOverlays = shouldAlwaysShowOverlays()
+
   // Set a large zIndex, the overlay for hover dropdown menu on line segments needs to render
   // over the length labels on the line segments
   return (
@@ -180,11 +188,16 @@ const Overlays = () => {
         .flatMap((a) =>
           a[1].map((b) => ({ pathToNodeString: a[0], overlay: b }))
         )
-        .filter((a) => a.overlay.visible)
+        .filter((a) => alwaysShowOverlays || a.overlay.visible)
         .map(({ pathToNodeString, overlay }, index) => {
+          // Force visibility if alwaysShowOverlays is true
+          const modifiedOverlay = alwaysShowOverlays
+            ? { ...overlay, visible: true }
+            : overlay
+
           return (
             <Overlay
-              overlay={overlay}
+              overlay={modifiedOverlay}
               key={pathToNodeString + String(index)}
               pathToNodeString={pathToNodeString}
               overlayIndex={index}
@@ -205,6 +218,10 @@ const Overlay = ({
   pathToNodeString: string
 }) => {
   const { context, send, state } = useModelingContext()
+
+  // Simple check directly from localStorage
+  const alwaysShowOverlays = shouldAlwaysShowOverlays()
+
   let xAlignment = overlay.angle < 0 ? '0%' : '-100%'
   let yAlignment = overlay.angle < -90 || overlay.angle >= 90 ? '0%' : '-100%'
 
@@ -249,8 +266,9 @@ const Overlay = ({
     Math.sin(((overlay.angle + offsetAngle) * Math.PI) / 180) * offset
 
   const shouldShow =
-    overlay.visible &&
-    typeof context?.segmentHoverMap?.[pathToNodeString] === 'number' &&
+    (overlay.visible || alwaysShowOverlays) &&
+    (alwaysShowOverlays ||
+      typeof context?.segmentHoverMap?.[pathToNodeString] === 'number') &&
     !(
       state.matches({ Sketch: 'Line tool' }) ||
       state.matches({ Sketch: 'Tangential arc to' }) ||
