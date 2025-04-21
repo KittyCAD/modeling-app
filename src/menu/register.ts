@@ -24,7 +24,7 @@ export function modelingMenuCallbackMostActions(
 ) {
   // Menu listeners
   const cb = (data: WebContentSendPayload) => {
-    if (data.menuLabel === 'File.New project') {
+    if (data.menuLabel === 'File.Create project') {
       commandBarActor.send({
         type: 'Find and select command',
         data: {
@@ -84,7 +84,7 @@ export function modelingMenuCallbackMostActions(
       })
     } else if (data.menuLabel === 'File.Preferences.Theme color') {
       navigate(filePath + PATHS.SETTINGS_USER + '#themeColor')
-    } else if (data.menuLabel === 'File.Share current part (via Zoo link)') {
+    } else if (data.menuLabel === 'File.Share part via Zoo link') {
       copyFileShareLink({
         token: token ?? '',
         code: codeManager.code,
