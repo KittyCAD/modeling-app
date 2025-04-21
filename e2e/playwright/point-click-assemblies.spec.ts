@@ -143,28 +143,45 @@ test.describe('Point-and-click assemblies tests', () => {
         await scene.settled(cmdBar)
       })
 
-      await test.step('Insert a second time and expect error', async () => {
-        // TODO: revisit once we have clone with #6209
-        await insertPartIntoAssembly(
-          'bracket.kcl',
-          'bracket',
-          toolbar,
-          cmdBar,
-          page
-        )
+      await test.step('Insert a second time with the same name and expect error', async () => {
+        await toolbar.insertButton.click()
+        await cmdBar.selectOption({ name: 'bracket.kcl' }).click()
+        await cmdBar.expectState({
+          stage: 'arguments',
+          currentArgKey: 'localName',
+          currentArgValue: '',
+          headerArguments: { Path: 'bracket.kcl', LocalName: '' },
+          highlightedHeaderArg: 'localName',
+          commandName: 'Insert',
+        })
+        await page.keyboard.insertText('bracket')
+        await cmdBar.progressCmdBar()
+        await expect(
+          page.getByText('This variable name is already in use')
+        ).toBeVisible()
+      })
+
+      await test.step('Insert a second time with a different name and expect error', async () => {
+        await page.keyboard.insertText('2')
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          stage: 'review',
+          headerArguments: { Path: 'bracket.kcl', LocalName: 'bracket2' },
+          commandName: 'Insert',
+        })
+        await cmdBar.progressCmdBar()
         await editor.expectEditor.toContain(
           `
         import "cylinder.kcl" as cylinder
         import "bracket.kcl" as bracket
-        import "bracket.kcl" as bracket
+        import "bracket.kcl" as bracket2
         cylinder
         bracket
-        bracket
+        bracket2
       `,
           { shouldNormalise: true }
         )
-        await scene.settled(cmdBar)
-        await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
+        // TODO: update once we have clone() with #6209
       })
     }
   )
@@ -405,10 +422,6 @@ test.describe('Point-and-click assemblies tests', () => {
         )
         await scene.settled(cmdBar)
 
-        // TODO: remove this once #5780 is fixed
-        await page.reload()
-
-        await scene.settled(cmdBar)
         await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
         await toolbar.closePane('code')
         await scene.expectPixelColor(partColor, partPoint, tolerance)
@@ -451,10 +464,6 @@ test.describe('Point-and-click assemblies tests', () => {
       `,
           { shouldNormalise: true }
         )
-        await scene.settled(cmdBar)
-
-        // TODO: remove this once #5780 is fixed
-        await page.reload()
         await scene.settled(cmdBar)
 
         await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()

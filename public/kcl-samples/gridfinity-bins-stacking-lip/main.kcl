@@ -179,11 +179,12 @@ fn lipFace(plane) {
     |> startProfileAt([0, 0], %)
     // |> yLine(length = lipHeight, tag = $line100)
     |> line(end = [0.0, 5.792893], tag = $line000)
-    |> arc({
+    |> arc(
          angleStart = 180.0,
          angleEnd = 45.0,
-         radius = 0.500000
-       }, %, $arc000)
+         radius = 0.500000,
+         tag = $arc000,
+       )
     // |> angledLine(angle = -45, lengthY = lipStep5 )
     |> line(end = [1.046447, -1.046447], tag = $line001)
     |> yLine(length = -lipStep4)

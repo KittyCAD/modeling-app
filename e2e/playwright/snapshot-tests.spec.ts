@@ -49,7 +49,6 @@ test(
   'exports of each format should work',
   { tag: ['@snapshot', '@skipWin', '@skipMacos'] },
   async ({ page, context, scene, cmdBar, tronApp }) => {
-    test.fixme(orRunWhenFullSuiteEnabled())
     if (!tronApp) {
       fail()
     }
@@ -377,9 +376,6 @@ test.describe(
   'extrude on default planes should be stable',
   { tag: '@snapshot' },
   () => {
-    // FIXME: Skip on macos its being weird.
-    test.skip(process.platform === 'darwin', 'Skip on macos')
-
     test('XY', async ({ page, context, cmdBar, scene }) => {
       await extrudeDefaultPlane(context, page, cmdBar, scene, 'XY')
     })
@@ -534,9 +530,6 @@ test(
   'Draft rectangles should look right',
   { tag: '@snapshot' },
   async ({ page, context, cmdBar, scene }) => {
-    // FIXME: Skip on macos its being weird.
-    test.skip(process.platform === 'darwin', 'Skip on macos')
-
     const u = await getUtils(page)
     await page.setViewportSize({ width: 1200, height: 500 })
     const PUR = 400 / 37.5 //pixeltoUnitRatio
@@ -582,7 +575,6 @@ test(
   'Draft circle should look right',
   { tag: '@snapshot' },
   async ({ page, context, cmdBar, scene }) => {
-    test.fixme(orRunWhenFullSuiteEnabled())
     const u = await getUtils(page)
     await page.setViewportSize({ width: 1200, height: 500 })
     const PUR = 400 / 37.5 //pixeltoUnitRatio
@@ -629,9 +621,6 @@ test.describe(
   'Client side scene scale should match engine scale',
   { tag: '@snapshot' },
   () => {
-    // FIXME: Skip on macos its being weird.
-    test.skip(process.platform === 'darwin', 'Skip on macos')
-
     test('Inch scale', async ({ page, cmdBar, scene }) => {
       const u = await getUtils(page)
       await page.setViewportSize({ width: 1200, height: 500 })
@@ -807,9 +796,6 @@ test(
   'Sketch on face with none z-up',
   { tag: '@snapshot' },
   async ({ page, context, cmdBar, scene }) => {
-    // FIXME: Skip on macos its being weird.
-    test.skip(process.platform === 'darwin', 'Skip on macos')
-
     const u = await getUtils(page)
     await context.addInitScript(async (KCL_DEFAULT_LENGTH) => {
       localStorage.setItem(
@@ -868,9 +854,6 @@ test(
   'Zoom to fit on load - solid 2d',
   { tag: '@snapshot' },
   async ({ page, context, cmdBar, scene }) => {
-    // FIXME: Skip on macos its being weird.
-    test.skip(process.platform === 'darwin', 'Skip on macos')
-
     const u = await getUtils(page)
     await context.addInitScript(async () => {
       localStorage.setItem(
@@ -907,9 +890,6 @@ test(
   'Zoom to fit on load - solid 3d',
   { tag: '@snapshot' },
   async ({ page, context, cmdBar, scene }) => {
-    // FIXME: Skip on macos its being weird.
-    test.skip(process.platform === 'darwin', 'Skip on macos')
-
     const u = await getUtils(page)
     await context.addInitScript(async () => {
       localStorage.setItem(
@@ -1155,11 +1135,7 @@ sweepPath = startSketchOn(XZ)
 
 sweepSketch = startSketchOn(XY)
   |> startProfileAt([2, 0], %)
-  |> arc({
-       angleEnd = 360,
-       angleStart = 0,
-       radius = 2
-     }, %)
+  |> arc(angleStart = 0, angleEnd = 360, radius = 2)
   |> sweep(path = sweepPath)
   |> appearance(
        color = "#bb00ff",
@@ -1204,11 +1180,7 @@ sweepPath = startSketchOn(XZ)
 
 sweepSketch = startSketchOn(XY)
   |> startProfileAt([2, 0], %)
-  |> arc({
-       angleEnd = 360,
-       angleStart = 0,
-       radius = 2
-     }, %)
+  |> arc(angleStart = 0, angleEnd = 360, radius = 2)
   |> sweep(path = sweepPath)
   |> appearance(
        color = "#bb00ff",

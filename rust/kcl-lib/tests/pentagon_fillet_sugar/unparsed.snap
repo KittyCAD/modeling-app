@@ -5,11 +5,6 @@ description: Result of unparsing pentagon_fillet_sugar.kcl
 triangleHeight = 200
 plumbusLen = 100
 radius = 80
-circ = {
-  angleStart = 0,
-  angleEnd = 360,
-  radius = radius
-}
 
 triangleLen = 500
 p = startSketchOn(XY)
@@ -22,7 +17,12 @@ p = startSketchOn(XY)
 fn circl(x, face) {
   return startSketchOn(p, face = face)
     |> startProfileAt([x + radius, triangleHeight / 2], %)
-    |> arc(circ, %, $arc_tag)
+    |> arc(
+         angleStart = 0,
+         angleEnd = 360,
+         radius = radius,
+         tag = $arc_tag,
+       )
     |> close(%)
 }
 

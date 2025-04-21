@@ -91,35 +91,19 @@ fn magnetCenterCutout(plane) {
          2 * magOuterDiam
        ], %)
     |> xLine(length = 2 * magOuterDiam - (firstStep + thirdStep) - (magOuterDiam / 2))
-    |> arc({
-         angleStart = 90.0,
-         angleEnd = 0.0,
-         radius = magOuterDiam / 2
-       }, %)
+    |> arc(angleStart = 90.0, angleEnd = 0.0, radius = magOuterDiam / 2)
     |> yLine(length = -(2 * magOuterDiam - (firstStep + thirdStep) - (magOuterDiam / 2)))
     |> xLine(length = binLength - (4 * magOuterDiam))
     |> yLine(length = 2 * magOuterDiam - (firstStep + thirdStep) - (magOuterDiam / 2))
-    |> arc({
-         angleStart = 180.0,
-         angleEnd = 90.0,
-         radius = magOuterDiam / 2
-       }, %)
+    |> arc(angleStart = 180.0, angleEnd = 90.0, radius = magOuterDiam / 2)
     |> xLine(length = 2 * magOuterDiam - (firstStep + thirdStep) - (magOuterDiam / 2))
     |> yLine(length = binLength - (4 * magOuterDiam))
     |> xLine(length = -(2 * magOuterDiam - (firstStep + thirdStep) - (magOuterDiam / 2)))
-    |> arc({
-         angleStart = 270.0,
-         angleEnd = 180.0,
-         radius = magOuterDiam / 2
-       }, %)
+    |> arc(angleStart = 270.0, angleEnd = 180.0, radius = magOuterDiam / 2)
     |> yLine(length = 2 * magOuterDiam - (firstStep + thirdStep) - (magOuterDiam / 2))
     |> xLine(length = -(binLength - (4 * magOuterDiam)), tag = $line012)
     |> yLine(length = -(2 * magOuterDiam - (firstStep + thirdStep) - (magOuterDiam / 2)))
-    |> arc({
-         angleStart = 360.0,
-         angleEnd = 270.0,
-         radius = magOuterDiam / 2
-       }, %)
+    |> arc(angleStart = 360.0, angleEnd = 270.0, radius = magOuterDiam / 2)
     |> xLine(length = -(2 * magOuterDiam - (firstStep + thirdStep) - (magOuterDiam / 2)))
     |> yLine(length = -(binLength - (4 * magOuterDiam)))
     |> close()

@@ -13,7 +13,7 @@ use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
         types::{NumericType, PrimitiveType, RuntimeType},
-        ExecState, KclValue, Solid,
+        ExecState, KclValue, SolidOrImportedGeometry,
     },
     std::Args,
 };
@@ -43,7 +43,11 @@ struct AppearanceData {
 
 /// Set the appearance of a solid. This only works on solids, not sketches or individual paths.
 pub async fn appearance(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let solids = args.get_unlabeled_kw_arg_typed("solids", &RuntimeType::solids(), exec_state)?;
+    let solids = args.get_unlabeled_kw_arg_typed(
+        "solids",
+        &RuntimeType::Union(vec![RuntimeType::solids(), RuntimeType::imported()]),
+        exec_state,
+    )?;
 
     let color: String = args.get_kw_arg("color")?;
     let count_ty = RuntimeType::Primitive(PrimitiveType::Number(NumericType::count()));
@@ -270,6 +274,19 @@ pub async fn appearance(exec_state: &mut ExecState, args: Args) -> Result<KclVal
 ///         roughness = 50
 ///     )
 /// ```
+///
+/// ```no_run
+/// // Change the appearance of an imported model.
+///
+/// import "tests/inputs/cube.sldprt" as cube
+///
+/// cube
+/// //    |> appearance(
+/// //        color = "#ff0000",
+/// //        metalness = 50,
+/// //        roughness = 50
+/// //    )
+/// ```
 #[stdlib {
     name = "appearance",
     keywords = true,
@@ -282,14 +299,16 @@ pub async fn appearance(exec_state: &mut ExecState, args: Args) -> Result<KclVal
     }
 }]
 async fn inner_appearance(
-    solids: Vec<Solid>,
+    solids: SolidOrImportedGeometry,
     color: String,
     metalness: Option<f64>,
     roughness: Option<f64>,
     exec_state: &mut ExecState,
     args: Args,
-) -> Result<Vec<Solid>, KclError> {
-    for solid in &solids {
+) -> Result<SolidOrImportedGeometry, KclError> {
+    let mut solids = solids.clone();
+
+    for solid_id in solids.ids(&args.ctx).await? {
         // Set the material properties.
         let rgb = rgba_simple::RGB::<f32>::from_hex(&color).map_err(|err| {
             KclError::Semantic(KclErrorDetails {
@@ -308,7 +327,7 @@ async fn inner_appearance(
         args.batch_modeling_cmd(
             exec_state.next_uuid(),
             ModelingCmd::from(mcmd::ObjectSetMaterialParamsPbr {
-                object_id: solid.id,
+                object_id: solid_id,
                 color,
                 metalness: metalness.unwrap_or_default() as f32 / 100.0,
                 roughness: roughness.unwrap_or_default() as f32 / 100.0,

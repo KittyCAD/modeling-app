@@ -141,8 +141,8 @@ A base path.
 |----------|------|-------------|----------|
 | `type` |enum: `ArcThreePoint`|  | No |
 | `p1` |`[number, number]`| Point 1 of the arc (base on the end of previous segment) | No |
-| `p2` |`[number, number]`| Point 2 of the arc (interior kwarg) | No |
-| `p3` |`[number, number]`| Point 3 of the arc (end kwarg) | No |
+| `p2` |`[number, number]`| Point 2 of the arc (interiorAbsolute kwarg) | No |
+| `p3` |`[number, number]`| Point 3 of the arc (endAbsolute kwarg) | No |
 | `from` |`[number, number]`| The from point. | No |
 | `to` |`[number, number]`| The to point. | No |
 | `units` |[`UnitLen`](/docs/kcl/types/UnitLen)| A unit of length. | No |
