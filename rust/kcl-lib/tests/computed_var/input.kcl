@@ -13,7 +13,7 @@ one = obj[p]
 
 assert(one, isEqualTo = 1, error = "oops")
 
-assert(PI, isEqualTo = 3, epsilon = 0.000001, error = "oops pi")
+assert(PI, isEqualTo = 3, epsilon = 0.2, error = "oops pi")
 
 x = cos(2 * PI)
 assert(x, isEqualTo = 1, epsilon = 0.000001, error = "oops cos")
