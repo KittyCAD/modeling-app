@@ -60,6 +60,7 @@ pub async fn assert(_exec_state: &mut ExecState, args: Args) -> Result<KclValue,
         error = { docs = "If the value was false, the program will terminate with this error message" },
     }
 }]
+#[allow(clippy::too_many_arguments)]
 async fn inner_assert(
     actual: TyF64,
     is_greater_than: Option<TyF64>,
@@ -82,12 +83,12 @@ async fn inner_assert(
     .all(|cond| cond.is_none());
     if no_condition_given {
         return Err(KclError::Type(KclErrorDetails {
-            message: format!("You must provide at least one condition in this assert (for example, isEqualTo)"),
+            message: "You must provide at least one condition in this assert (for example, isEqualTo)".to_owned(),
             source_ranges: vec![args.source_range],
         }));
     }
     let suffix = if let Some(err_string) = error {
-        format!(" {err_string}")
+        format!(": {err_string}")
     } else {
         Default::default()
     };
