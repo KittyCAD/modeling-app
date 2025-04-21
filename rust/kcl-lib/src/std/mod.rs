@@ -78,7 +78,7 @@ lazy_static! {
         Box::new(crate::std::sketch::AngledLine),
         Box::new(crate::std::sketch::AngledLineThatIntersects),
         Box::new(crate::std::sketch::StartSketchOn),
-        Box::new(crate::std::sketch::StartProfileAt),
+        Box::new(crate::std::sketch::StartProfile),
         Box::new(crate::std::sketch::ProfileStartX),
         Box::new(crate::std::sketch::ProfileStartY),
         Box::new(crate::std::sketch::ProfileStart),

@@ -653,10 +653,6 @@ impl Args {
         FromArgs::from_args(self, 0)
     }
 
-    pub(crate) fn get_data_and_sketch_surface(&self) -> Result<([TyF64; 2], SketchSurface, Option<TagNode>), KclError> {
-        FromArgs::from_args(self, 0)
-    }
-
     pub(crate) fn get_data_and_solid(&self, exec_state: &mut ExecState) -> Result<(TyF64, Box<Solid>), KclError> {
         let data = FromArgs::from_args(self, 0)?;
         let Some(arg1) = self.args.get(1) else {

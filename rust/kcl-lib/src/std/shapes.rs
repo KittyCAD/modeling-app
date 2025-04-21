@@ -68,9 +68,9 @@ async fn inner_circle(
         SketchOrSurface::Sketch(s) => s.on,
     };
     let units = sketch_surface.units();
-    let sketch = crate::std::sketch::inner_start_profile_at(
-        [center[0] + radius, center[1]],
+    let sketch = crate::std::sketch::inner_start_profile(
         sketch_surface,
+        [center[0] + radius, center[1]],
         None,
         exec_state,
         args.clone(),
@@ -189,9 +189,9 @@ async fn inner_circle_three_point(
         SketchOrSurface::SketchSurface(surface) => surface,
         SketchOrSurface::Sketch(group) => group.on,
     };
-    let sketch = crate::std::sketch::inner_start_profile_at(
-        [center[0] + radius, center[1]],
+    let sketch = crate::std::sketch::inner_start_profile(
         sketch_surface,
+        [center[0] + radius, center[1]],
         None,
         exec_state,
         args.clone(),
@@ -371,7 +371,7 @@ async fn inner_polygon(
         .collect();
 
     let mut sketch =
-        crate::std::sketch::inner_start_profile_at(vertices[0], sketch_surface, None, exec_state, args.clone()).await?;
+        crate::std::sketch::inner_start_profile(sketch_surface, vertices[0], None, exec_state, args.clone()).await?;
 
     // Draw all the lines with unique IDs and modified tags
     for vertex in vertices.iter().skip(1) {

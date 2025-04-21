@@ -1306,10 +1306,13 @@ async fn make_sketch_plane_from_orientation(
 }
 
 /// Start a new profile at a given point.
-pub async fn start_profile_at(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (start, sketch_surface, tag) = args.get_data_and_sketch_surface()?;
+pub async fn start_profile(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    // let (start, sketch_surface, tag) = args.get_data_and_sketch_surface()?;
+    let sketch_surface = args.get_unlabeled_kw_arg("startProfileOn")?;
+    let start: [TyF64; 2] = args.get_kw_arg("at")?;
+    let tag = args.get_kw_arg_opt(NEW_TAG_KW)?;
 
-    let sketch = inner_start_profile_at([start[0].n, start[1].n], sketch_surface, tag, exec_state, args).await?;
+    let sketch = inner_start_profile(sketch_surface, [start[0].n, start[1].n], tag, exec_state, args).await?;
     Ok(KclValue::Sketch {
         value: Box::new(sketch),
     })
@@ -1319,7 +1322,7 @@ pub async fn start_profile_at(exec_state: &mut ExecState, args: Args) -> Result<
 ///
 /// ```no_run
 /// exampleSketch = startSketchOn(XZ)
-///   |> startProfileAt([0, 0], %)
+///   |> startProfile(at = [0, 0])
 ///   |> line(end = [10, 0])
 ///   |> line(end = [0, 10])
 ///   |> line(end = [-10, 0])
@@ -1330,7 +1333,7 @@ pub async fn start_profile_at(exec_state: &mut ExecState, args: Args) -> Result<
 ///
 /// ```no_run
 /// exampleSketch = startSketchOn(-XZ)
-///   |> startProfileAt([10, 10], %)
+///   |> startProfile(at = [10, 10])
 ///   |> line(end = [10, 0])
 ///   |> line(end = [0, 10])
 ///   |> line(end = [-10, 0])
@@ -1341,7 +1344,7 @@ pub async fn start_profile_at(exec_state: &mut ExecState, args: Args) -> Result<
 ///
 /// ```no_run
 /// exampleSketch = startSketchOn(-XZ)
-///   |> startProfileAt([-10, 23], %)
+///   |> startProfile(at = [-10, 23])
 ///   |> line(end = [10, 0])
 ///   |> line(end = [0, 10])
 ///   |> line(end = [-10, 0])
@@ -1350,11 +1353,18 @@ pub async fn start_profile_at(exec_state: &mut ExecState, args: Args) -> Result<
 /// example = extrude(exampleSketch, length = 5)
 /// ```
 #[stdlib {
-    name = "startProfileAt",
+    name = "startProfile",
+    keywords = true,
+    unlabeled_first = true,
+    args = {
+        sketch_surface = { docs = "What to start the profile on" },
+        at = { docs = "Where to start the profile. An absolute point." },
+        tag = { docs = "Tag this first starting point" },
+    }
 }]
-pub(crate) async fn inner_start_profile_at(
-    to: [f64; 2],
+pub(crate) async fn inner_start_profile(
     sketch_surface: SketchSurface,
+    at: [f64; 2],
     tag: Option<TagNode>,
     exec_state: &mut ExecState,
     args: Args,
@@ -1409,7 +1419,7 @@ pub(crate) async fn inner_start_profile_at(
         ModelingCmdReq {
             cmd: ModelingCmd::from(mcmd::MovePathPen {
                 path: path_id.into(),
-                to: KPoint2d::from(to).with_z(0.0).map(LengthUnit),
+                to: KPoint2d::from(at).with_z(0.0).map(LengthUnit),
             }),
             cmd_id: move_pen_id.into(),
         },
@@ -1421,8 +1431,8 @@ pub(crate) async fn inner_start_profile_at(
     .await?;
 
     let current_path = BasePath {
-        from: to,
-        to,
+        from: at,
+        to: at,
         tag: tag.clone(),
         units: sketch_surface.units(),
         geo_meta: GeoMeta {
