@@ -2,14 +2,12 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Error from executing array_index_oob.kcl
 ---
-KCL Semantic error
+KCL UndefinedValue error
 
-  × semantic: Error loading imported file. Open it to view more details.
-  │ std::prelude: Error loading imported file. Open it to view more details.
-  │ std::math: Modeling command failed: websocket closed early
-   ╭─[1:1]
+  × undefined value: The array doesn't have any item at index 0
+   ╭─[2:5]
  1 │ arr = []
-   · ▲
-   · ╰── main
  2 │ x = arr[0]
+   ·     ───┬──
+   ·        ╰── tests/array_index_oob/input.kcl
    ╰────
