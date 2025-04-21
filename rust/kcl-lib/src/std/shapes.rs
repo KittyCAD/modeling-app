@@ -265,7 +265,6 @@ pub async fn polygon(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     let num_sides: TyF64 = args.get_kw_arg_typed("numSides", &RuntimeType::count(), exec_state)?;
     let center = args.get_kw_arg_typed("center", &RuntimeType::point2d(), exec_state)?;
     let inscribed = args.get_kw_arg_opt_typed("inscribed", &RuntimeType::bool(), exec_state)?;
-    let tag = args.get_kw_arg_opt(NEW_TAG_KW)?;
 
     let sketch = inner_polygon(
         sketch_surface_or_group,
@@ -273,7 +272,6 @@ pub async fn polygon(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
         num_sides.n as u64,
         untype_point(center).0,
         inscribed,
-        tag,
         exec_state,
         args,
     )
@@ -319,7 +317,6 @@ pub async fn polygon(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
         num_sides = { docs = "The number of sides in the polygon", include_in_snippet = true },
         center = { docs = "The center point of the polygon", include_in_snippet = true },
         inscribed = { docs = "Whether the polygon is inscribed (true, the default) or circumscribed (false) about a circle with the specified radius", include_in_snippet = true },
-        tag = { docs = "Create a new tag which refers to this line" },
     }
 }]
 #[allow(clippy::too_many_arguments)]
@@ -329,7 +326,6 @@ async fn inner_polygon(
     num_sides: u64,
     center: [f64; 2],
     inscribed: Option<bool>,
-    tag: Option<TagNode>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
@@ -398,7 +394,7 @@ async fn inner_polygon(
             base: BasePath {
                 from: from.into(),
                 to: *vertex,
-                tag: tag.clone(),
+                tag: None,
                 units: sketch.units,
                 geo_meta: GeoMeta {
                     id,
@@ -406,10 +402,6 @@ async fn inner_polygon(
                 },
             },
         };
-
-        if let Some(tag) = &tag {
-            sketch.add_tag(tag, &current_path, exec_state);
-        }
 
         sketch.paths.push(current_path);
     }
@@ -434,7 +426,7 @@ async fn inner_polygon(
         base: BasePath {
             from: from.into(),
             to: vertices[0],
-            tag: tag.clone(),
+            tag: None,
             units: sketch.units,
             geo_meta: GeoMeta {
                 id: close_id,
@@ -442,10 +434,6 @@ async fn inner_polygon(
             },
         },
     };
-
-    if let Some(tag) = &tag {
-        sketch.add_tag(tag, &current_path, exec_state);
-    }
 
     sketch.paths.push(current_path);
 
