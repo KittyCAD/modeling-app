@@ -198,26 +198,6 @@ async fn inner_involute_circular(
     end.x += from.x;
     end.y += from.y;
 
-    // let path_json = path_to_json();
-    // let end = args
-    //     .send_modeling_cmd(
-    //         exec_state.next_uuid(),
-    //         ModelingCmd::EngineUtilEvaluatePath(mcmd::EngineUtilEvaluatePath { path_json, t: 1.0 }),
-    //     )
-    //     .await?;
-
-    // let end = match end {
-    //     kittycad_modeling_cmds::websocket::OkWebSocketResponseData::Modeling {
-    //         modeling_response: OkModelingCmdResponse::EngineUtilEvaluatePath(eval_path),
-    //     } => eval_path.pos,
-    //     other => {
-    //         return Err(KclError::Engine(KclErrorDetails {
-    //             source_ranges: vec![args.source_range],
-    //             message: format!("Expected EngineUtilEvaluatePath response but found {other:?}"),
-    //         }))
-    //     }
-    // };
-
     let current_path = Path::ToPoint {
         base: BasePath {
             from: from.into(),
@@ -2189,24 +2169,16 @@ async fn inner_tangential_arc_to_point(
     Ok(new_sketch)
 }
 
-/// Data to draw a bezier curve.
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-#[ts(export)]
-#[serde(rename_all = "camelCase")]
-pub struct BezierData {
-    /// The to point.
-    pub to: [TyF64; 2],
-    /// The first control point.
-    pub control1: [TyF64; 2],
-    /// The second control point.
-    pub control2: [TyF64; 2],
-}
-
 /// Draw a bezier curve.
 pub async fn bezier_curve(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (data, sketch, tag): (BezierData, Sketch, Option<TagNode>) = args.get_data_and_sketch_and_tag(exec_state)?;
+    let sketch =
+        args.get_unlabeled_kw_arg_typed("sketch", &RuntimeType::Primitive(PrimitiveType::Sketch), exec_state)?;
+    let end: [TyF64; 2] = args.get_kw_arg_typed("end", &RuntimeType::point2d(), exec_state)?;
+    let control1: [TyF64; 2] = args.get_kw_arg_typed("control1", &RuntimeType::point2d(), exec_state)?;
+    let control2: [TyF64; 2] = args.get_kw_arg_typed("control2", &RuntimeType::point2d(), exec_state)?;
+    let tag = args.get_kw_arg_opt("tag")?;
 
-    let new_sketch = inner_bezier_curve(data, sketch, tag, exec_state, args).await?;
+    let new_sketch = inner_bezier_curve(sketch, control1, control2, end, tag, exec_state, args).await?;
     Ok(KclValue::Sketch {
         value: Box::new(new_sketch),
     })
@@ -2220,11 +2192,11 @@ pub async fn bezier_curve(exec_state: &mut ExecState, args: Args) -> Result<KclV
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfileAt([0, 0], %)
 ///   |> line(end = [0, 10])
-///   |> bezierCurve({
-///        to = [10, 10],
+///   |> bezierCurve(
 ///        control1 = [5, 0],
-///        control2 = [5, 10]
-///      }, %)
+///        control2 = [5, 10],
+///        end = [10, 10],
+///      )
 ///   |> line(endAbsolute = [10, 0])
 ///   |> close()
 ///
@@ -2232,10 +2204,21 @@ pub async fn bezier_curve(exec_state: &mut ExecState, args: Args) -> Result<KclV
 /// ```
 #[stdlib {
     name = "bezierCurve",
+    keywords = true,
+    unlabeled_first = true,
+    args = {
+        sketch = { docs = "Which sketch should this path be added to?"},
+        end = { docs = "How far away (along the X and Y axes) should this line go?" },
+        control1 = { docs = "First control point for the cubic" },
+        control2 = { docs = "Second control point for the cubic" },
+        tag = { docs = "Create a new tag which refers to this line"},
+    }
 }]
 async fn inner_bezier_curve(
-    data: BezierData,
     sketch: Sketch,
+    control1: [TyF64; 2],
+    control2: [TyF64; 2],
+    end: [TyF64; 2],
     tag: Option<TagNode>,
     exec_state: &mut ExecState,
     args: Args,
@@ -2243,8 +2226,8 @@ async fn inner_bezier_curve(
     let from = sketch.current_pen_position()?;
 
     let relative = true;
-    let delta = data.to.clone();
-    let to = [from.x + data.to[0].n, from.y + data.to[1].n];
+    let delta = end.clone();
+    let to = [from.x + end[0].n, from.y + end[1].n];
 
     let id = exec_state.next_uuid();
 
@@ -2253,12 +2236,8 @@ async fn inner_bezier_curve(
         ModelingCmd::from(mcmd::ExtendPath {
             path: sketch.id.into(),
             segment: PathSegment::Bezier {
-                control1: KPoint2d::from(untype_point(data.control1).0)
-                    .with_z(0.0)
-                    .map(LengthUnit),
-                control2: KPoint2d::from(untype_point(data.control2).0)
-                    .with_z(0.0)
-                    .map(LengthUnit),
+                control1: KPoint2d::from(untype_point(control1).0).with_z(0.0).map(LengthUnit),
+                control2: KPoint2d::from(untype_point(control2).0).with_z(0.0).map(LengthUnit),
                 end: KPoint2d::from(untype_point(delta).0).with_z(0.0).map(LengthUnit),
                 relative,
             },
