@@ -76,6 +76,11 @@ const SignIn = () => {
     authActor.send({ type: 'Log in', token })
   }
 
+  const cancelSignIn = async () => {
+    authActor.send({ type: 'Log out' })
+    setUserCode('')
+  }
+
   return (
     <main
       className="bg-primary h-screen grid place-items-stretch m-0 p-2"
@@ -141,6 +146,17 @@ const SignIn = () => {
                         </span>
                       ))}
                     </p>
+                    <button
+                      onClick={toSync(cancelSignIn, reportRejection)}
+                      className={
+                        'm-0 mt-8 w-fit flex gap-4 items-center px-3 py-1 ' +
+                        '!border-transparent !text-lg !text-chalkboard-10 !bg-primary hover:hue-rotate-15'
+                      }
+                      data-testid="cancel-sign-in-button"
+                    >
+                      <CustomIcon name="arrowLeft" className="w-6 h-6" />
+                      Cancel
+                    </button>
                   </>
                 )}
               </div>
