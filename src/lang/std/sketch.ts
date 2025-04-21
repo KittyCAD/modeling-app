@@ -1276,7 +1276,7 @@ export const circle: SketchLineHelperKw = {
         if (callExp.type !== 'CallExpressionKw') {
           // In a pipe expression, the unlabeled first arg can be omitted
           const centerArg = createLabeledArg(ARG_CIRCLE_CENTER, centerArray)
-          const radiusArg = createLabeledArg(ARG_CIRCLE_RADIUS, radiusExp)
+          const radiusArg = createLabeledArg(ARG_RADIUS, radiusExp)
           const circleKw = createCallExpressionStdLibKw('circle', null, [
             centerArg,
             radiusArg,
@@ -1364,7 +1364,7 @@ export const circle: SketchLineHelperKw = {
       } else {
         // If somehow we get a non-kw expression, create the correct one
         const centerArg = createLabeledArg(ARG_CIRCLE_CENTER, centerArray)
-        const radiusArg = createLabeledArg(ARG_CIRCLE_RADIUS, radiusExp)
+        const radiusArg = createLabeledArg(ARG_RADIUS, radiusExp)
         const circleKw = createCallExpressionStdLibKw('circle', sketchArg, [
           centerArg,
           radiusArg,
@@ -1382,7 +1382,7 @@ export const circle: SketchLineHelperKw = {
     } else {
       // If no callback, create a CallExpressionKw directly
       const centerArg = createLabeledArg(ARG_CIRCLE_CENTER, centerArray)
-      const radiusArg = createLabeledArg(ARG_CIRCLE_RADIUS, radiusExp)
+      const radiusArg = createLabeledArg(ARG_RADIUS, radiusExp)
       const circleKw = createCallExpressionStdLibKw('circle', sketchArg, [
         centerArg,
         radiusArg,
