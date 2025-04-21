@@ -1251,7 +1251,7 @@ yo = 5 + 6
 abc = 3
 identifierGuy = 5
 part001 = startSketchOn(XY)
-|> startProfileAt([-1.2, 4.83], %)
+|> startProfile(at = [-1.2, 4.83])
 |> line(end = [2.8, 0])
 |> angledLine(angle = 100 + 100, length = 3.01)
 |> angledLine(angle = abc, length = 3.02)
@@ -1268,7 +1268,7 @@ yo2 = hmm([identifierGuy + 5])"#;
     async fn test_execute_with_pipe_substitutions_unary() {
         let ast = r#"const myVar = 3
 const part001 = startSketchOn(XY)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> line(end = [3, 4], tag = $seg01)
   |> line(end = [
   min(segLen(seg01), myVar),
@@ -1283,7 +1283,7 @@ const part001 = startSketchOn(XY)
     async fn test_execute_with_pipe_substitutions() {
         let ast = r#"const myVar = 3
 const part001 = startSketchOn(XY)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> line(end = [3, 4], tag = $seg01)
   |> line(end = [
   min(segLen(seg01), myVar),
@@ -1306,7 +1306,7 @@ const arrExpShouldNotBeIncluded = [1, 2, 3]
 const objExpShouldNotBeIncluded = { a: 1, b: 2, c: 3 }
 
 const part001 = startSketchOn(XY)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> yLine(endAbsolute = 1)
   |> xLine(length = 3.84) // selection-range-7ish-before-this
 
@@ -1327,7 +1327,7 @@ fn thing = () => {
 }
 
 const firstExtrude = startSketchOn(XY)
-  |> startProfileAt([0,0], %)
+  |> startProfile(at = [0,0])
   |> line(end = [0, l])
   |> line(end = [w, 0])
   |> line(end = [0, thing()])
@@ -1348,7 +1348,7 @@ fn thing = (x) => {
 }
 
 const firstExtrude = startSketchOn(XY)
-  |> startProfileAt([0,0], %)
+  |> startProfile(at = [0,0])
   |> line(end = [0, l])
   |> line(end = [w, 0])
   |> line(end = [0, thing(8)])
@@ -1369,7 +1369,7 @@ fn thing = (x) => {
 }
 
 const firstExtrude = startSketchOn(XY)
-  |> startProfileAt([0,0], %)
+  |> startProfile(at = [0,0])
   |> line(end = [0, l])
   |> line(end = [w, 0])
   |> line(end = thing(8))
@@ -1394,7 +1394,7 @@ fn thing = (x) => {
 }
 
 const firstExtrude = startSketchOn(XY)
-  |> startProfileAt([0,0], %)
+  |> startProfile(at = [0,0])
   |> line(end = [0, l])
   |> line(end = [w, 0])
   |> line(end = [0, thing(8)])
@@ -1408,7 +1408,7 @@ const firstExtrude = startSketchOn(XY)
     async fn test_execute_with_function_sketch() {
         let ast = r#"fn box = (h, l, w) => {
  const myBox = startSketchOn(XY)
-    |> startProfileAt([0,0], %)
+    |> startProfile(at = [0,0])
     |> line(end = [0, l])
     |> line(end = [w, 0])
     |> line(end = [0, -l])
@@ -1427,7 +1427,7 @@ const fnBox = box(3, 6, 10)"#;
     async fn test_get_member_of_object_with_function_period() {
         let ast = r#"fn box = (obj) => {
  let myBox = startSketchOn(XY)
-    |> startProfileAt(obj.start, %)
+    |> startProfile(at = obj.start)
     |> line(end = [0, obj.l])
     |> line(end = [obj.w, 0])
     |> line(end = [0, -obj.l])
@@ -1446,7 +1446,7 @@ const thisBox = box({start: [0,0], l: 6, w: 10, h: 3})
     async fn test_get_member_of_object_with_function_brace() {
         let ast = r#"fn box = (obj) => {
  let myBox = startSketchOn(XY)
-    |> startProfileAt(obj["start"], %)
+    |> startProfile(at = obj["start"])
     |> line(end = [0, obj["l"]])
     |> line(end = [obj["w"], 0])
     |> line(end = [0, -obj["l"]])
@@ -1465,7 +1465,7 @@ const thisBox = box({start: [0,0], l: 6, w: 10, h: 3})
     async fn test_get_member_of_object_with_function_mix_period_brace() {
         let ast = r#"fn box = (obj) => {
  let myBox = startSketchOn(XY)
-    |> startProfileAt(obj["start"], %)
+    |> startProfile(at = obj["start"])
     |> line(end = [0, obj["l"]])
     |> line(end = [obj["w"], 0])
     |> line(end = [10 - obj["w"], -obj.l])
@@ -1487,7 +1487,7 @@ const thisBox = box({start: [0,0], l: 6, w: 10, h: 3})
 fn test2 = () => {
   return {
     thing: startSketchOn(XY)
-      |> startProfileAt([0, 0], %)
+      |> startProfile(at = [0, 0])
       |> line(end = [0, 1])
       |> line(end = [1, 0])
       |> line(end = [0, -1])
@@ -1508,7 +1508,7 @@ x2.thing
     async fn test_execute_with_function_sketch_loop_objects() {
         let ast = r#"fn box = (obj) => {
 let myBox = startSketchOn(XY)
-    |> startProfileAt(obj.start, %)
+    |> startProfile(at = obj.start)
     |> line(end = [0, obj.l])
     |> line(end = [obj.w, 0])
     |> line(end = [0, -obj.l])
@@ -1530,7 +1530,7 @@ for var in [{start: [0,0], l: 6, w: 10, h: 3}, {start: [-10,-10], l: 3, w: 5, h:
     async fn test_execute_with_function_sketch_loop_array() {
         let ast = r#"fn box = (h, l, w, start) => {
  const myBox = startSketchOn(XY)
-    |> startProfileAt([0,0], %)
+    |> startProfile(at = [0,0])
     |> line(end = [0, l])
     |> line(end = [w, 0])
     |> line(end = [0, -l])
@@ -1552,7 +1552,7 @@ for var in [[3, 6, 10, [0,0]], [1.5, 3, 5, [-10,-10]]] {
     async fn test_get_member_of_array_with_function() {
         let ast = r#"fn box = (arr) => {
  let myBox =startSketchOn(XY)
-    |> startProfileAt(arr[0], %)
+    |> startProfile(at = arr[0])
     |> line(end = [0, arr[1]])
     |> line(end = [arr[2], 0])
     |> line(end = [0, -arr[1]])
@@ -1806,7 +1806,7 @@ const leg2 = 8 // inches
 fn thickness = () => { return 0.56 }
 
 const bracket = startSketchOn(XY)
-  |> startProfileAt([0,0], %)
+  |> startProfile(at = [0,0])
   |> line(end = [0, leg1])
   |> line(end = [leg2, 0])
   |> line(end = [0, -thickness()])
@@ -1818,7 +1818,7 @@ const bracket = startSketchOn(XY)
     #[tokio::test(flavor = "multi_thread")]
     async fn test_bad_arg_count_std() {
         let ast = "startSketchOn(XY)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> profileStartX()";
         assert!(parse_execute(ast)
             .await
@@ -2029,7 +2029,7 @@ const thickness_squared = distance * p * FOS * 6 / sigmaAllow
 const thickness = 0.56 // inches. App does not support square root function yet
 
 const bracket = startSketchOn(XY)
-  |> startProfileAt([0,0], %)
+  |> startProfile(at = [0,0])
   |> line(end = [0, leg1])
   |> line(end = [leg2, 0])
   |> line(end = [0, -thickness])
@@ -2063,7 +2063,7 @@ const leg2 = 8 // inches
 const thickness_squared = (distance * p * FOS * 6 / (sigmaAllow - width))
 const thickness = 0.32 // inches. App does not support square root function yet
 const bracket = startSketchOn(XY)
-  |> startProfileAt([0,0], %)
+  |> startProfile(at = [0,0])
     |> line(end = [0, leg1])
   |> line(end = [leg2, 0])
   |> line(end = [0, -thickness])
@@ -2087,7 +2087,7 @@ const leg2 = 8 // inches
 const thickness_squared = distance * p * FOS * 6 / (sigmaAllow - width)
 const thickness = 0.32 // inches. App does not support square root function yet
 const bracket = startSketchOn(XY)
-  |> startProfileAt([0,0], %)
+  |> startProfile(at = [0,0])
     |> line(end = [0, leg1])
   |> line(end = [leg2, 0])
   |> line(end = [0, -thickness])
@@ -2113,7 +2113,7 @@ let w = f() + f()
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_ids_stable_between_executions() {
         let code = r#"sketch001 = startSketchOn(XZ)
-|> startProfileAt([61.74, 206.13], %)
+|> startProfile(at = [61.74, 206.13])
 |> xLine(length = 305.11, tag = $seg01)
 |> yLine(length = -291.85)
 |> xLine(length = -segLen(seg01))
@@ -2140,7 +2140,7 @@ let w = f() + f()
         let id_generator = cache::read_old_ast().await.unwrap().exec_state.mod_local.id_generator;
 
         let code = r#"sketch001 = startSketchOn(XZ)
-|> startProfileAt([62.74, 206.13], %)
+|> startProfile(at = [62.74, 206.13])
 |> xLine(length = 305.11, tag = $seg01)
 |> yLine(length = -291.85)
 |> xLine(length = -segLen(seg01))
@@ -2166,7 +2166,7 @@ let w = f() + f()
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_changing_a_setting_updates_the_cached_state() {
         let code = r#"sketch001 = startSketchOn('XZ')
-|> startProfileAt([61.74, 206.13], %)
+|> startProfile(at = [61.74, 206.13])
 |> xLine(length = 305.11, tag = $seg01)
 |> yLine(length = -291.85)
 |> xLine(length = -segLen(seg01))
@@ -2235,7 +2235,7 @@ let w = f() + f()
     async fn read_tag_version() {
         let ast = r#"fn bar(t) {
   return startSketchOn(XY)
-    |> startProfileAt([0,0], %)
+    |> startProfile(at = [0,0])
     |> angledLine(
         angle = -60,
         length = segLen(t),
@@ -2245,7 +2245,7 @@ let w = f() + f()
 }
   
 sketch = startSketchOn(XY)
-  |> startProfileAt([0,0], %)
+  |> startProfile(at = [0,0])
   |> line(end = [0, 10])
   |> line(end = [10, 0], tag = $tag0)
   |> line(end = [0, 0])
@@ -2258,7 +2258,7 @@ fn foo() {
 solid = sketch |> extrude(length = 10)
 // tag0 tags a face
 sketch2 = startSketchOn(solid, face = tag0)
-  |> startProfileAt([0,0], %)
+  |> startProfile(at = [0,0])
   |> line(end = [0, 1])
   |> line(end = [1, 0])
   |> line(end = [0, 0])

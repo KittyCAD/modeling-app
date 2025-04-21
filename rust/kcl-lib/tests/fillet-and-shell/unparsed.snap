@@ -27,10 +27,10 @@ microUsbWidth = 7.4
 connectorPadding = 4
 
 miniHdmiHole = startSketchOn(XY)
-  |> startProfileAt([
+  |> startProfile(at = [
        0,
        border + miniHdmiDistance - (miniHdmiWidth / 2)
-     ], %)
+     ])
   |> line(endAbsolute = [
        0,
        border + miniHdmiDistance + miniHdmiWidth / 2
@@ -46,7 +46,7 @@ miniHdmiHole = startSketchOn(XY)
   |> close(%)
 
 case = startSketchOn(XY)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> line(endAbsolute = [caseWidth, 0], tag = $edge1)
   |> line(endAbsolute = [caseWidth, caseLength], tag = $edge2)
   |> line(endAbsolute = [0, caseLength], tag = $edge3)
@@ -64,7 +64,7 @@ case = startSketchOn(XY)
 
 fn m25Screw(x, y, height) {
   screw = startSketchOn(XY)
-    |> startProfileAt([0, 0], %)
+    |> startProfile(at = [0, 0])
     |> circle(center = [x, y], radius = 2.5)
     |> hole(circle(center = [x, y], radius = 1.25), %)
     |> extrude(length = height)

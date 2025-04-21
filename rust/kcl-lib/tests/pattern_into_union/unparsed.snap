@@ -16,7 +16,7 @@ depth = nPlates * (buildPlateThickness + thicknessTolerance) + (nPlates + 1) * e
 baseHeight = 0.25
 
 base = startSketchOn(XZ)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> xLine(endAbsolute = width, tag = $seg01)
   |> yLine(endAbsolute = baseHeight + endTabHeight)
   |> xLine(length = -endWidth)
@@ -28,7 +28,7 @@ base = startSketchOn(XZ)
   |> extrude(length = -depth)
 
 endTabs = startSketchOn(XZ)
-  |> startProfileAt([endWidth, baseHeight], %)
+  |> startProfile(at = [endWidth, baseHeight])
   |> xLine(endAbsolute = endWidth + endTabWidth)
   |> angledLine(angle = 135, endAbsoluteY = baseHeight + endTabHeight, tag = $toFillet)
   |> xLine(endAbsolute = endWidth)
@@ -38,7 +38,7 @@ endTabs = startSketchOn(XZ)
   |> patternLinear3d(axis = [0, 1, 0], distance = buildPlateThickness + thicknessTolerance + endTabThickness, instances = nPlates + 1)
 
 endTabs2 = startSketchOn(XZ)
-  |> startProfileAt([width - endWidth, baseHeight], %)
+  |> startProfile(at = [width - endWidth, baseHeight])
   |> xLine(endAbsolute = width - endTabWidth)
   |> angledLine(angle = 45, endAbsoluteY = baseHeight + endTabHeight, tag = $toFillet2)
   |> xLine(endAbsolute = width - endWidth)

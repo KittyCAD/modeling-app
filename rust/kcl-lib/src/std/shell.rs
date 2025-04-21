@@ -30,7 +30,7 @@ pub async fn shell(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// ```no_run
 /// // Remove the end face for the extrusion.
 /// firstSketch = startSketchOn(XY)
-///     |> startProfileAt([-12, 12], %)
+///     |> startProfile(at = [-12, 12])
 ///     |> line(end = [24, 0])
 ///     |> line(end = [0, -24])
 ///     |> line(end = [-24, 0])
@@ -48,7 +48,7 @@ pub async fn shell(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// ```no_run
 /// // Remove the start face for the extrusion.
 /// firstSketch = startSketchOn(-XZ)
-///     |> startProfileAt([-12, 12], %)
+///     |> startProfile(at = [-12, 12])
 ///     |> line(end = [24, 0])
 ///     |> line(end = [0, -24])
 ///     |> line(end = [-24, 0])
@@ -66,7 +66,7 @@ pub async fn shell(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// ```no_run
 /// // Remove a tagged face and the end face for the extrusion.
 /// firstSketch = startSketchOn(XY)
-///     |> startProfileAt([-12, 12], %)
+///     |> startProfile(at = [-12, 12])
 ///     |> line(end = [24, 0])
 ///     |> line(end = [0, -24])
 ///     |> line(end = [-24, 0], tag = $myTag)
@@ -84,7 +84,7 @@ pub async fn shell(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// ```no_run
 /// // Remove multiple faces at once.
 /// firstSketch = startSketchOn(XY)
-///     |> startProfileAt([-12, 12], %)
+///     |> startProfile(at = [-12, 12])
 ///     |> line(end = [24, 0])
 ///     |> line(end = [0, -24])
 ///     |> line(end = [-24, 0], tag = $myTag)
@@ -103,7 +103,7 @@ pub async fn shell(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// // Shell a sketch on face.
 /// size = 100
 /// case = startSketchOn(-XZ)
-///     |> startProfileAt([-size, -size], %)
+///     |> startProfile(at = [-size, -size])
 ///     |> line(end = [2 * size, 0])
 ///     |> line(end = [0, 2 * size])
 ///     |> tangentialArc(endAbsolute = [-size, size])
@@ -126,7 +126,7 @@ pub async fn shell(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// // Shell a sketch on face object on the end face.
 /// size = 100
 /// case = startSketchOn(XY)
-///     |> startProfileAt([-size, -size], %)
+///     |> startProfile(at = [-size, -size])
 ///     |> line(end = [2 * size, 0])
 ///     |> line(end = [0, 2 * size])
 ///     |> tangentialArc(endAbsolute = [-size, size])
@@ -151,7 +151,7 @@ pub async fn shell(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///
 /// size = 100
 /// case = startSketchOn(XY)
-///     |> startProfileAt([-size, -size], %)
+///     |> startProfile(at = [-size, -size])
 ///     |> line(end = [2 * size, 0])
 ///     |> line(end = [0, 2 * size])
 ///     |> tangentialArc(endAbsolute = [-size, size])
@@ -261,7 +261,7 @@ pub async fn hollow(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// ```no_run
 /// // Hollow a basic sketch.
 /// firstSketch = startSketchOn(XY)
-///     |> startProfileAt([-12, 12], %)
+///     |> startProfile(at = [-12, 12])
 ///     |> line(end = [24, 0])
 ///     |> line(end = [0, -24])
 ///     |> line(end = [-24, 0])
@@ -273,7 +273,7 @@ pub async fn hollow(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// ```no_run
 /// // Hollow a basic sketch.
 /// firstSketch = startSketchOn(-XZ)
-///     |> startProfileAt([-12, 12], %)
+///     |> startProfile(at = [-12, 12])
 ///     |> line(end = [24, 0])
 ///     |> line(end = [0, -24])
 ///     |> line(end = [-24, 0])
@@ -286,7 +286,7 @@ pub async fn hollow(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// // Hollow a sketch on face object.
 /// size = 100
 /// case = startSketchOn(-XZ)
-///     |> startProfileAt([-size, -size], %)
+///     |> startProfile(at = [-size, -size])
 ///     |> line(end = [2 * size, 0])
 ///     |> line(end = [0, 2 * size])
 ///     |> tangentialArc(endAbsolute = [-size, size])

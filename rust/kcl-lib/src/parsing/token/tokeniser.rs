@@ -572,7 +572,7 @@ mod tests {
     #[test]
     fn test_program2() {
         let program = r#"const part001 = startSketchOn(XY)
-    |> startProfileAt([0.0000000000, 5.0000000000], %)
+    |> startProfile(at = [0.0000000000, 5.0000000000])
     |> line([0.4900857016, -0.0240763666], %)
 
 const part002 = "part002"

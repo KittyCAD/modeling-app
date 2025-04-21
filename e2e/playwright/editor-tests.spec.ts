@@ -22,7 +22,7 @@ test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
 
     await u.codeLocator.click()
     await page.keyboard.type(`sketch001 = startSketchOn(XY)
-    |> startProfileAt([-10, -10], %)
+    |> startProfile(at = [-10, -10])
     |> line(end = [20, 0])
     |> line(end = [0, 20])
     |> line(end = [-20, 0])
@@ -35,7 +35,7 @@ test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
     await expect(page.locator('.cm-content')).toHaveText(
       `@settings(defaultLengthUnit = in)
 sketch001 = startSketchOn(XY)
-  |> startProfileAt([-10, -10], %)
+  |> startProfile(at = [-10, -10])
   |> line(end = [20, 0])
   |> line(end = [0, 20])
   |> line(end = [-20, 0])
@@ -50,7 +50,7 @@ sketch001 = startSketchOn(XY)
     await expect(page.locator('.cm-content')).toHaveText(
       `@settings(defaultLengthUnit = in)
 sketch001 = startSketchOn(XY)
-  |> startProfileAt([-10, -10], %)
+  |> startProfile(at = [-10, -10])
   |> line(end = [20, 0])
   |> line(end = [0, 20])
   |> line(end = [-20, 0])
@@ -70,7 +70,7 @@ sketch001 = startSketchOn(XY)
 
     await u.codeLocator.click()
     await page.keyboard.type(`sketch001 = startSketchOn(XY)
-  |> startProfileAt([-10, -10], %)
+  |> startProfile(at = [-10, -10])
   |> line(end = [20, 0])
   |> line(end = [0, 20])
   |> line(end = [-20, 0])
@@ -123,7 +123,7 @@ sketch001 = startSketchOn(XY)
 
     await u.codeLocator.click()
     await page.keyboard.type(`sketch001 = startSketchOn(XY)
-  |> startProfileAt([-10, -10], %)
+  |> startProfile(at = [-10, -10])
   |> line(end = [20, 0])
   |> line(end = [0, 20])
   |> line(end = [-20, 0])
@@ -178,7 +178,7 @@ sketch001 = startSketchOn(XY)
 
     await u.codeLocator.click()
     await page.keyboard.type(`sketch001 = startSketchOn(XY)
-    |> startProfileAt([-10, -10], %)
+    |> startProfile(at = [-10, -10])
     |> line(end = [20, 0])
     |> line(end = [0, 20])
     |> line(end = [-20, 0])
@@ -189,7 +189,7 @@ sketch001 = startSketchOn(XY)
     await expect(page.locator('.cm-content')).toHaveText(
       `@settings(defaultLengthUnit = in)
 sketch001 = startSketchOn(XY)
-  |> startProfileAt([-10, -10], %)
+  |> startProfile(at = [-10, -10])
   |> line(end = [20, 0])
   |> line(end = [0, 20])
   |> line(end = [-20, 0])
@@ -211,7 +211,7 @@ sketch001 = startSketchOn(XY)
 
     await u.codeLocator.click()
     await page.keyboard.type(`sketch_001 = startSketchOn(XY)
-    |> startProfileAt([-10, -10], %)
+    |> startProfile(at = [-10, -10])
     |> line(end = [20, 0])
     |> line(end = [0, 20])
     |> line(end = [-20, 0])
@@ -240,7 +240,7 @@ sketch001 = startSketchOn(XY)
     await expect(page.locator('.cm-content')).toHaveText(
       `@settings(defaultLengthUnit = in)
 sketch_001 = startSketchOn(XY)
-  |> startProfileAt([-10, -10], %)
+  |> startProfile(at = [-10, -10])
   |> line(end = [20, 0])
   |> line(end = [0, 20])
   |> line(end = [-20, 0])
@@ -259,7 +259,7 @@ sketch_001 = startSketchOn(XY)
 
   test('fold gutters work', async ({ page, homePage }) => {
     const fullCode = `sketch001 = startSketchOn(XY)
-   |> startProfileAt([-10, -10], %)
+   |> startProfile(at = [-10, -10])
    |> line(end = [20, 0])
    |> line(end = [0, 20])
    |> line(end = [-20, 0])
@@ -268,7 +268,7 @@ sketch_001 = startSketchOn(XY)
       localStorage.setItem(
         'persistCode',
         `sketch001 = startSketchOn(XY)
-   |> startProfileAt([-10, -10], %)
+   |> startProfile(at = [-10, -10])
    |> line(end = [20, 0])
    |> line(end = [0, 20])
    |> line(end = [-20, 0])
@@ -337,7 +337,7 @@ sketch_001 = startSketchOn(XY)
       localStorage.setItem(
         'persistCode',
         `sketch001 = startSketchOn(XY)
-    |> startProfileAt([-10, -10], %)
+    |> startProfile(at = [-10, -10])
     |> line(end = [20, 0])
     |> line(end = [0, 20])
     |> line(end = [-20, 0])
@@ -384,7 +384,7 @@ sketch_001 = startSketchOn(XY)
       localStorage.setItem(
         'persistCode',
         `sketch001 = startSketchOn(XY)
-    |> startProfileAt([-10, -10], %)
+    |> startProfile(at = [-10, -10])
     |> line(end = [20, 0])
     |> line(end = [0, 20])
     |> line(end = [-20, 0])
@@ -412,7 +412,7 @@ sketch_001 = startSketchOn(XY)
     await expect(
       page.locator('.cm-content')
     ).toHaveText(`sketch001 = startSketchOn(XY)
-  |> startProfileAt([-10, -10], %)
+  |> startProfile(at = [-10, -10])
   |> line(end = [20, 0])
   |> line(end = [0, 20])
   |> line(end = [-20, 0])
@@ -428,7 +428,7 @@ sketch_001 = startSketchOn(XY)
       localStorage.setItem(
         'persistCode',
         `sketch_001 = startSketchOn(XY)
-    |> startProfileAt([-10, -10], %)
+    |> startProfile(at = [-10, -10])
     |> line(end = [20, 0])
     |> line(end = [0, 20])
     |> line(end = [-20, 0])
@@ -466,7 +466,7 @@ sketch_001 = startSketchOn(XY)
     await expect(
       page.locator('.cm-content')
     ).toHaveText(`sketch_001 = startSketchOn(XY)
-  |> startProfileAt([-10, -10], %)
+  |> startProfile(at = [-10, -10])
   |> line(end = [20, 0])
   |> line(end = [0, 20])
   |> line(end = [-20, 0])
@@ -537,7 +537,7 @@ sketch_001 = startSketchOn(XY)
       localStorage.setItem(
         'persistCode',
         `sketch001 = startSketchOn(XZ)
-    |> startProfileAt([3.29, 7.86], %)
+    |> startProfile(at = [3.29, 7.86])
     |> line(end = [2.48, 2.44])
     |> line(end = [2.66, 1.17])
     |> close()
@@ -663,7 +663,7 @@ sketch_001 = startSketchOn(XY)
 
     fn squareHole = (l, w) => {
   squareHoleSketch = startSketchOn(XY)
-  |> startProfileAt([-width / 2, -length / 2], %)
+  |> startProfile(at = [-width / 2, -length / 2])
   |> line(endAbsolute = [width / 2, -length / 2])
   |> line(endAbsolute = [width / 2, length / 2])
   |> line(endAbsolute = [-width / 2, length / 2])
@@ -726,7 +726,7 @@ sketch_001 = startSketchOn(XY)
       localStorage.setItem(
         'persistCode',
         `box = startSketchOn(XY)
-    |> startProfileAt([0, 0], %)
+    |> startProfile(at = [0, 0])
     |> line(end = [0, 10])
     |> line(end = [10, 0])
     |> line(end = [0, -10], tag = $revolveAxis)
@@ -734,7 +734,7 @@ sketch_001 = startSketchOn(XY)
     |> extrude(length = 10)
 
     sketch001 = startSketchOn(box, face = revolveAxis)
-    |> startProfileAt([5, 10], %)
+    |> startProfile(at = [5, 10])
     |> line(end = [0, -10])
     |> line(end = [2, 0])
     |> line(end = [0, -10])
@@ -830,7 +830,7 @@ sketch_001 = startSketchOn(XY)
       await expect(page.locator('.cm-content')).toHaveText(
         `@settings(defaultLengthUnit = in)
 sketch001 = startSketchOn(XZ)
-        |> startProfileAt([3.14, 12], %)
+        |> startProfile(at = [3.14, 12])
         |> xLine(%, length = 5) // lin`.replaceAll('\n', '')
       )
 
@@ -905,7 +905,7 @@ sketch001 = startSketchOn(XZ)
       await expect(page.locator('.cm-content')).toHaveText(
         `@settings(defaultLengthUnit = in)
 sketch001 = startSketchOn(XZ)
-        |> startProfileAt([3.14, 12], %)
+        |> startProfile(at = [3.14, 12])
         |> xLine(%, length = 5) // lin`.replaceAll('\n', '')
       )
     })
@@ -920,7 +920,7 @@ sketch001 = startSketchOn(XZ)
       localStorage.setItem(
         'persistCode',
         `sketch001 = startSketchOn(XZ)
-  |> startProfileAt([4.61, -14.01], %)
+  |> startProfile(at = [4.61, -14.01])
   |> line(end = [12.73, -0.09])
   |> tangentialArc(endAbsolute = [24.95, -5.38])
   |> close()`
@@ -956,7 +956,7 @@ sketch001 = startSketchOn(XZ)
     })
     await page.waitForTimeout(100)
 
-    await page.getByText('startProfileAt([4.61, -14.01], %)').click()
+    await page.getByText('startProfile(at = [4.61, -14.01])').click()
     await expect(page.getByRole('button', { name: 'Extrude' })).toBeVisible()
     await page.getByRole('button', { name: 'Extrude' }).click()
 
@@ -971,7 +971,7 @@ sketch001 = startSketchOn(XZ)
 
     // expect the code to have changed
     await expect(page.locator('.cm-content')).toHaveText(
-      `sketch001 = startSketchOn(XZ)  |> startProfileAt([4.61, -14.01], %)  |> line(end = [12.73, -0.09])  |> tangentialArc(endAbsolute = [24.95, -5.38])  |> close()extrude001 = extrude(sketch001, length = 5)`
+      `sketch001 = startSketchOn(XZ)  |> startProfile(at = [4.61, -14.01])  |> line(end = [12.73, -0.09])  |> tangentialArc(endAbsolute = [24.95, -5.38])  |> close()extrude001 = extrude(sketch001, length = 5)`
     )
 
     // Now hit undo
@@ -983,7 +983,7 @@ sketch001 = startSketchOn(XZ)
     await expect(
       page.locator('.cm-content')
     ).toHaveText(`sketch001 = startSketchOn(XZ)
-  |> startProfileAt([4.61, -14.01], %)
+  |> startProfile(at = [4.61, -14.01])
   |> line(end = [12.73, -0.09])
   |> tangentialArc(endAbsolute = [24.95, -5.38])
   |> close()`)
@@ -999,7 +999,7 @@ sketch001 = startSketchOn(XZ)
           'persistCode',
           `@settings(defaultLengthUnit=in)
 sketch001 = startSketchOn(XZ)
-  |> startProfileAt([4.61, -10.01], %)
+  |> startProfile(at = [4.61, -10.01])
   |> line(end = [12.73, -0.09])
   |> tangentialArc(endAbsolute = [24.95, -0.38])
   |> close()
@@ -1040,7 +1040,7 @@ sketch001 = startSketchOn(XZ)
 
       const dragPX = 40
 
-      await page.getByText('startProfileAt([4.61, -10.01], %)').click()
+      await page.getByText('startProfile(at = [4.61, -10.01])').click()
       await expect(
         page.getByRole('button', { name: 'Edit Sketch' })
       ).toBeVisible()
@@ -1090,7 +1090,7 @@ sketch001 = startSketchOn(XZ)
       // expect the code to have changed
       await editor.expectEditor.toContain(
         `sketch001 = startSketchOn(XZ)
-    |> startProfileAt([2.71, -2.71], %)
+    |> startProfile(at = [2.71, -2.71])
     |> line(end = [15.4, -2.78])
     |> tangentialArc(endAbsolute = [27.6, -3.05])
     |> close()
@@ -1105,7 +1105,7 @@ sketch001 = startSketchOn(XZ)
 
       await editor.expectEditor.toContain(
         `sketch001 = startSketchOn(XZ)
-    |> startProfileAt([2.71, -2.71], %)
+    |> startProfile(at = [2.71, -2.71])
     |> line(end = [15.4, -2.78])
     |> tangentialArc(endAbsolute = [24.95, -0.38])
     |> close()
@@ -1120,7 +1120,7 @@ sketch001 = startSketchOn(XZ)
 
       await editor.expectEditor.toContain(
         `sketch001 = startSketchOn(XZ)
-    |> startProfileAt([2.71, -2.71], %)
+    |> startProfile(at = [2.71, -2.71])
     |> line(end = [12.73, -0.09])
     |> tangentialArc(endAbsolute = [24.95, -0.38])
     |> close()
@@ -1136,7 +1136,7 @@ sketch001 = startSketchOn(XZ)
       await page.waitForTimeout(100)
       await editor.expectEditor.toContain(
         `sketch001 = startSketchOn(XZ)
-    |> startProfileAt([4.61, -10.01], %)
+    |> startProfile(at = [4.61, -10.01])
     |> line(end = [12.73, -0.09])
     |> tangentialArc(endAbsolute = [24.95, -0.38])
     |> close()
@@ -1291,7 +1291,7 @@ sketch001 = startSketchOn(XZ)
       localStorage.setItem(
         'persistCode',
         `sketch001 = startSketchOn(XZ)
-  profile001 = startProfileAt([100.00, 100.0], sketch001)
+  profile001 = startProfile(sketch001, at = [100.00, 100.0])
     |> yLine(length = -100.0)
     |> xLine(length = 200.0)
     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])

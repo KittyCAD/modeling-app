@@ -62,7 +62,7 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 ///
 /// ```no_run
 /// example = startSketchOn('XZ')
-///   |> startProfileAt([0, 0], %)
+///   |> startProfile(at = [0, 0])
 ///   |> line(end = [10, 0])
 ///   |> arc(
 ///     angleStart = 120,
@@ -83,7 +83,7 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 ///
 /// ```no_run
 /// exampleSketch = startSketchOn('XZ')
-///   |> startProfileAt([-10, 0], %)
+///   |> startProfile(at = [-10, 0])
 ///   |> arc(
 ///     angleStart = 120,
 ///     angleEnd = -60,
@@ -105,7 +105,7 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 ///
 /// ```no_run
 /// exampleSketch = startSketchOn('XZ')
-///   |> startProfileAt([-10, 0], %)
+///   |> startProfile(at = [-10, 0])
 ///   |> arc(
 ///     angleStart = 120,
 ///     angleEnd = -60,
@@ -127,7 +127,7 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 ///
 /// ```no_run
 /// exampleSketch = startSketchOn('XZ')
-///   |> startProfileAt([-10, 0], %)
+///   |> startProfile(at = [-10, 0])
 ///   |> arc(
 ///     angleStart = 120,
 ///     angleEnd = -60,

@@ -28,7 +28,7 @@ pub async fn offset_plane(exec_state: &mut ExecState, args: Args) -> Result<KclV
 /// ```no_run
 /// // Loft a square and a circle on the `XY` plane using offset.
 /// squareSketch = startSketchOn('XY')
-///     |> startProfileAt([-100, 200], %)
+///     |> startProfile(at = [-100, 200])
 ///     |> line(end = [200, 0])
 ///     |> line(end = [0, -200])
 ///     |> line(end = [-200, 0])
@@ -44,7 +44,7 @@ pub async fn offset_plane(exec_state: &mut ExecState, args: Args) -> Result<KclV
 /// ```no_run
 /// // Loft a square and a circle on the `XZ` plane using offset.
 /// squareSketch = startSketchOn('XZ')
-///     |> startProfileAt([-100, 200], %)
+///     |> startProfile(at = [-100, 200])
 ///     |> line(end = [200, 0])
 ///     |> line(end = [0, -200])
 ///     |> line(end = [-200, 0])
@@ -60,7 +60,7 @@ pub async fn offset_plane(exec_state: &mut ExecState, args: Args) -> Result<KclV
 /// ```no_run
 /// // Loft a square and a circle on the `YZ` plane using offset.
 /// squareSketch = startSketchOn('YZ')
-///     |> startProfileAt([-100, 200], %)
+///     |> startProfile(at = [-100, 200])
 ///     |> line(end = [200, 0])
 ///     |> line(end = [0, -200])
 ///     |> line(end = [-200, 0])
@@ -76,7 +76,7 @@ pub async fn offset_plane(exec_state: &mut ExecState, args: Args) -> Result<KclV
 /// ```no_run
 /// // Loft a square and a circle on the `-XZ` plane using offset.
 /// squareSketch = startSketchOn('-XZ')
-///     |> startProfileAt([-100, 200], %)
+///     |> startProfile(at = [-100, 200])
 ///     |> line(end = [200, 0])
 ///     |> line(end = [0, -200])
 ///     |> line(end = [-200, 0])
@@ -91,12 +91,12 @@ pub async fn offset_plane(exec_state: &mut ExecState, args: Args) -> Result<KclV
 /// ```no_run
 /// // A circle on the XY plane
 /// startSketchOn("XY")
-///   |> startProfileAt([0, 0], %)
+///   |> startProfile(at = [0, 0])
 ///   |> circle( radius = 10, center = [0, 0] )
 ///   
 /// // Triangle on the plane 4 units above
 /// startSketchOn(offsetPlane("XY", offset = 4))
-///   |> startProfileAt([0, 0], %)
+///   |> startProfile(at = [0, 0])
 ///   |> line(end = [10, 0])
 ///   |> line(end = [0, 10])
 ///   |> close()

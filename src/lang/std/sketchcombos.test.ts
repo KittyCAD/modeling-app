@@ -179,14 +179,14 @@ function makeSelections(
 describe('testing transformAstForSketchLines for equal length constraint', () => {
   describe(`should always reorder selections to have the base selection first`, () => {
     const inputScript = `sketch001 = startSketchOn(XZ)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> line(end = [5, 5])
   |> line(end = [-2, 5])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()`
 
     const expectedModifiedScript = `sketch001 = startSketchOn(XZ)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> line(end = [5, 5], tag = $seg01)
   |> angledLine(angle = 112, length = segLen(seg01))
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
@@ -267,7 +267,7 @@ myVar3 = 6
 myAng = 40
 myAng2 = 134
 part001 = startSketchOn(XY)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> line(end = [1, 3.82]) // ln-should-get-tag
   |> line(endAbsolute = [myVar, 1]) // ln-lineTo-xAbsolute should use angleToMatchLengthX helper
   |> line(endAbsolute = [1, myVar]) // ln-lineTo-yAbsolute should use angleToMatchLengthY helper
@@ -303,7 +303,7 @@ myVar3 = 6
 myAng = 40
 myAng2 = 134
 part001 = startSketchOn(XY)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> line(end = [1, 3.82], tag = $seg01) // ln-should-get-tag
   |> angledLine(angle = -angleToMatchLengthX(seg01, myVar, %), endAbsoluteX = myVar) // ln-lineTo-xAbsolute should use angleToMatchLengthX helper
   |> angledLine(angle = -angleToMatchLengthY(seg01, myVar, %), endAbsoluteY = myVar) // ln-lineTo-yAbsolute should use angleToMatchLengthY helper
@@ -384,7 +384,7 @@ describe('testing transformAstForSketchLines for vertical and horizontal constra
 myVar2 = 12
 myVar3 = -10
 part001 = startSketchOn(XY)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> line(endAbsolute = [1, 1])
   |> line(end = [-6.28, 1.4]) // select for horizontal constraint 1
   |> line(end = [-1.07, myVar]) // select for vertical constraint 1
@@ -412,7 +412,7 @@ part001 = startSketchOn(XY)
 myVar2 = 12
 myVar3 = -10
 part001 = startSketchOn(XY)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> line(endAbsolute = [1, 1])
   |> xLine(length = -6.28) // select for horizontal constraint 1
   |> line(end = [-1.07, myVar]) // select for vertical constraint 1
@@ -472,7 +472,7 @@ part001 = startSketchOn(XY)
 myVar2 = 12
 myVar3 = -10
 part001 = startSketchOn(XY)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> line(endAbsolute = [1, 1])
   |> line(end = [-6.28, 1.4]) // select for horizontal constraint 1
   |> yLine(length = myVar) // select for vertical constraint 1
@@ -533,7 +533,7 @@ describe('testing transformAstForSketchLines for vertical and horizontal distanc
   describe('testing setHorzDistance for line', () => {
     const inputScript = `myVar = 1
 part001 = startSketchOn(XY)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> line(end = [0.31, 1.67]) // base selection
   |> line(end = [0.45, 1.46])
   |> line(end = [0.45, 1.46]) // free
@@ -639,7 +639,7 @@ halfHeight = totalHeight / 2
 halfArmAngle = armAngle / 2
 
 part001 = startSketchOn(XY)
-  |> startProfileAt([-0.01, -0.05], %)
+  |> startProfile(at = [-0.01, -0.05])
   |> line(end = [0.01, 0.94 + 0]) // partial
   |> xLine(length = 3.03) // partial
   |> angledLine({

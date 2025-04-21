@@ -28,9 +28,9 @@ description: Variables in memory after executing fillet-and-shell.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 901,
-            "end": 907,
-            "start": 901,
+            "commentStart": 880,
+            "end": 886,
+            "start": 880,
             "type": "TagDeclarator",
             "value": "edge1"
           },
@@ -41,9 +41,9 @@ description: Variables in memory after executing fillet-and-shell.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 964,
-            "end": 970,
-            "start": 964,
+            "commentStart": 943,
+            "end": 949,
+            "start": 943,
             "type": "TagDeclarator",
             "value": "edge2"
           },
@@ -54,9 +54,9 @@ description: Variables in memory after executing fillet-and-shell.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1019,
-            "end": 1025,
-            "start": 1019,
+            "commentStart": 998,
+            "end": 1004,
+            "start": 998,
             "type": "TagDeclarator",
             "value": "edge3"
           },
@@ -67,9 +67,9 @@ description: Variables in memory after executing fillet-and-shell.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1044,
-            "end": 1050,
-            "start": 1044,
+            "commentStart": 1023,
+            "end": 1029,
+            "start": 1023,
             "type": "TagDeclarator",
             "value": "edge4"
           },
@@ -90,9 +90,9 @@ description: Variables in memory after executing fillet-and-shell.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 901,
-              "end": 907,
-              "start": 901,
+              "commentStart": 880,
+              "end": 886,
+              "start": 880,
               "type": "TagDeclarator",
               "value": "edge1"
             },
@@ -115,9 +115,9 @@ description: Variables in memory after executing fillet-and-shell.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 964,
-              "end": 970,
-              "start": 964,
+              "commentStart": 943,
+              "end": 949,
+              "start": 943,
               "type": "TagDeclarator",
               "value": "edge2"
             },
@@ -140,9 +140,9 @@ description: Variables in memory after executing fillet-and-shell.kcl
               73.0
             ],
             "tag": {
-              "commentStart": 1019,
-              "end": 1025,
-              "start": 1019,
+              "commentStart": 998,
+              "end": 1004,
+              "start": 998,
               "type": "TagDeclarator",
               "value": "edge3"
             },
@@ -165,9 +165,9 @@ description: Variables in memory after executing fillet-and-shell.kcl
               73.0
             ],
             "tag": {
-              "commentStart": 1044,
-              "end": 1050,
-              "start": 1044,
+              "commentStart": 1023,
+              "end": 1029,
+              "start": 1023,
               "type": "TagDeclarator",
               "value": "edge4"
             },

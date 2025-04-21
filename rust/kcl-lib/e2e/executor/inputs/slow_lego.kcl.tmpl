@@ -27,7 +27,7 @@ const tubeFace = {
 }
 // Make the base
 const s = startSketchOn('XY')
-  |> startProfileAt([-totalWidth / 2, -totalLength / 2], %)
+  |> startProfile(at = [-totalWidth / 2, -totalLength / 2])
   |> line([totalWidth, 0], %)
   |> line([0, totalLength], %)
   |> line([-totalWidth, 0], %)

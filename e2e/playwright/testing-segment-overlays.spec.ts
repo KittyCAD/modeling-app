@@ -212,7 +212,7 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
           'persistCode',
           `@settings(defaultLengthUnit = in)
       part001 = startSketchOn(XZ)
-        |> startProfileAt([5 + 0, 20 + 0], %)
+        |> startProfile(at = [5 + 0, 20 + 0])
         |> line(end = [0.5, -14 + 0])
         |> angledLine(angle = 3 + 0, length = 32 + 0)
         |> line(endAbsolute = [5 + 33, 20 + 11.5 + 0])
@@ -383,7 +383,7 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
     xAbs001 = 33
     xAbs002 = 4
     part001 = startSketchOn(XZ)
-      |> startProfileAt([0, 0], %)
+      |> startProfile(at = [0, 0])
       |> line(end = [0.5, yRel001])
       |> angledLine(angle = angle001, length = len001)
       |> line(endAbsolute = [33, yAbs001])
@@ -456,7 +456,7 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
           'persistCode',
           `@settings(defaultLengthUnit = in)
       part001 = startSketchOn(XZ)
-        |> startProfileAt([0, 0], %)
+        |> startProfile(at = [0, 0])
         |> line(end = [0.5, -14 + 0])
         |> angledLine(angle = 3 + 0, length = 32 + 0)
         |> line(endAbsolute = [33, 11.5 + 0])
@@ -577,7 +577,7 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
           'persistCode',
           `@settings(defaultLengthUnit = in)
       part001 = startSketchOn(XZ)
-        |> startProfileAt([0, 0], %)
+        |> startProfile(at = [0, 0])
         |> line(end = [0.5, -14 + 0])
         |> angledLine(angle = 3 + 0, length = 32 + 0)
         |> line(endAbsolute = [33, 11.5 + 0])
@@ -705,7 +705,7 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
           'persistCode',
           `@settings(defaultLengthUnit = in)
       part001 = startSketchOn(XZ)
-        |> startProfileAt([0, 0], %)
+        |> startProfile(at = [0, 0])
         |> line(end = [0.5, -14 + 0])
         |> angledLine(angle = 3 + 0, length = 32 + 0)
         |> line(endAbsolute = [33, 11.5 + 0])
@@ -783,7 +783,7 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
           'persistCode',
           `@settings(defaultLengthUnit = in)
 sketch001 = startSketchOn(XZ)
-profile001 = startProfileAt([56.37, 120.33], sketch001)
+profile001 = startProfile(sketch001, at = [56.37, 120.33])
   |> line(end = [162.86, 106.48])
   |> arc(
        interiorAbsolute = [360.16, 231.76],
@@ -991,7 +991,7 @@ part001 = startSketchOn(XZ)
           'persistCode',
           `@settings(defaultLengthUnit = in)
 part001 = startSketchOn(XZ)
-  |>startProfileAt([0, 0], %)
+  |>startProfile(at = [0, 0])
   |> line(end = [0.5, -14 + 0])
   |> angledLine(angle = 3 + 0, length = 32 + 0)
   |> line(endAbsolute = [33, 11.5 + 0])
@@ -1238,7 +1238,7 @@ part001 = startSketchOn(XZ)
                 'persistCode',
                 `@settings(defaultLengthUnit = in)
         part001 = startSketchOn(XZ)
-          |> startProfileAt([5, 6], %)
+          |> startProfile(at = [5, 6])
           |> ${lineToBeDeleted}
           |> line(end = [-10, -15])
           |> angledLine(angle = -176, length = segLen(seg01))
@@ -1399,7 +1399,7 @@ part001 = startSketchOn(XZ)
               'persistCode',
               `@settings(defaultLengthUnit = in)
       part001 = startSketchOn(XZ)
-        |> startProfileAt([5, 6], %)
+        |> startProfile(at = [5, 6])
         |> ${lineToBeDeleted}
         |> line(end = [-10, -15])
         |> angledLine(angle = -176, length = segLen(seg01))`

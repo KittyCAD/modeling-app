@@ -49,7 +49,7 @@ test.describe(
         },
       }
 
-      const code = `@settings(defaultLengthUnit = in)sketch001 = startSketchOn(${plane})profile001 = startProfileAt([0.91, -1.22], sketch001)`
+      const code = `@settings(defaultLengthUnit = in)sketch001 = startSketchOn(${plane})profile001 = startProfile(sketch001, at = [0.91, -1.22])`
 
       await u.openDebugPanel()
 

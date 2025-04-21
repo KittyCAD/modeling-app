@@ -46,7 +46,7 @@ function angledLine(
  * It does not create the startSketchOn and it does not create the startProfileAt.
  * Returns AST expressions for this KCL code:
  * const yo = startSketchOn(XY)
- *  |> startProfileAt([0, 0], %)
+ *  |> startProfile(at = [0, 0])
  *  |> angledLine(angle = 0, length = 0, tag = $a)
  *  |> angledLine(angle = segAng(a) - 90, length = 0, tag = $b)
  *  |> angledLine(angle = segAng(a), length = -segLen(a), tag = $c)

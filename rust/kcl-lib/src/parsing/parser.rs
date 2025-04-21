@@ -3341,7 +3341,7 @@ comment */
 /* comment at start */
 
 mySk1 = startSketchOn(XY)
-  |> startProfileAt([0, 0], %)"#;
+  |> startProfile(at = [0, 0])"#;
         let tokens = crate::parsing::token::lex(test_program, ModuleId::default()).unwrap();
         let program = program.parse(tokens.as_slice()).unwrap();
         let mut starting_comments = program.inner.non_code_meta.start_nodes;
@@ -3863,7 +3863,7 @@ mySk1 = startSketchOn(XY)
     #[test]
     fn pipes_on_pipes_minimal() {
         let test_program = r#"startSketchOn(XY)
-        |> startProfileAt([0, 0], %)
+        |> startProfile(at = [0, 0])
         |> line(endAbsolute = [0, -0]) // MoveRelative
 
         "#;
@@ -4134,7 +4134,7 @@ mySk1 = startSketchOn(XY)
     fn test_parse_half_pipe_small() {
         assert_err_contains(
             "secondExtrude = startSketchOn('XY')
-  |> startProfileAt([0,0], %)
+  |> startProfile(at = [0,0])
   |",
             "Unexpected token: |",
         );
@@ -4227,7 +4227,7 @@ height = [obj["a"] -1, 0]"#;
         let code = "height = 10
 
 firstExtrude = startSketchOn('XY')
-  |> startProfileAt([0,0], %)
+  |> startProfile(at = [0,0])
   |> line([0, 8], %)
   |> line([20, 0], %)
   |> line([0, -8], %)
@@ -4235,7 +4235,7 @@ firstExtrude = startSketchOn('XY')
   |> extrude(length=2)
 
 secondExtrude = startSketchOn('XY')
-  |> startProfileAt([0,0], %)
+  |> startProfile(at = [0,0])
   |";
         assert_err_contains(code, "Unexpected token: |");
     }
@@ -4506,7 +4506,7 @@ e
 ///
 /// ```
 /// exampleSketch = startSketchOn("XZ")
-///   |> startProfileAt([0, 0], %)
+///   |> startProfile(at = [0, 0])
 ///   |> angledLine(
 ///        angle = 30,
 ///        length = 3 / cos(toRadians(30)),
@@ -4669,7 +4669,7 @@ thing(false)
     #[test]
     fn random_words_fail() {
         let test_program = r#"part001 = startSketchOn('-XZ')
-    |> startProfileAt([8.53, 11.8], %)
+    |> startProfile(at = [8.53, 11.8])
     asdasd asdasd
     |> line([11.12, -14.82], %)
     |> line([-13.27, -6.98], %)
@@ -4683,7 +4683,7 @@ thing(false)
     fn test_member_expression_sketch() {
         let some_program_string = r#"fn cube = (pos, scale) => {
   sg = startSketchOn('XY')
-  |> startProfileAt(pos, %)
+  |> startProfile(at = pos)
     |> line([0, scale], %)
     |> line([scale, 0], %)
     |> line([0, -scale], %)
@@ -4711,7 +4711,7 @@ let other_thing = 2 * cos(3)"#;
     fn test_negative_arguments() {
         let some_program_string = r#"fn box = (p, h, l, w) => {
  myBox = startSketchOn('XY')
-    |> startProfileAt(p, %)
+    |> startProfile(at = p)
     |> line([0, l], %)
     |> line([w, 0], %)
     |> line([0, -l], %)
@@ -4737,7 +4737,7 @@ let myBox = box([0,0], -3, -16, -10)
     #[test]
     fn test_parse_tag_named_std_lib() {
         let some_program_string = r#"startSketchOn('XY')
-    |> startProfileAt([0, 0], %)
+    |> startProfile(at = [0, 0])
     |> line([5, 5], %, $xLine)
 "#;
         assert_err(
@@ -4750,7 +4750,7 @@ let myBox = box([0,0], -3, -16, -10)
     #[test]
     fn test_parse_empty_tag_brace() {
         let some_program_string = r#"startSketchOn('XY')
-    |> startProfileAt([0, 0], %)
+    |> startProfile(at = [0, 0])
     |> line(%, $)
     "#;
         assert_err(some_program_string, "Tag names must not be empty", [69, 70]);
@@ -4758,7 +4758,7 @@ let myBox = box([0,0], -3, -16, -10)
     #[test]
     fn test_parse_empty_tag_whitespace() {
         let some_program_string = r#"startSketchOn('XY')
-    |> startProfileAt([0, 0], %)
+    |> startProfile(at = [0, 0])
     |> line(%, $ ,01)
     "#;
         assert_err(some_program_string, "Tag names must not be empty", [69, 70]);
@@ -4767,7 +4767,7 @@ let myBox = box([0,0], -3, -16, -10)
     #[test]
     fn test_parse_empty_tag_comma() {
         let some_program_string = r#"startSketchOn('XY')
-    |> startProfileAt([0, 0], %)
+    |> startProfile(at = [0, 0])
     |> line(%, $,)
     "#;
         assert_err(some_program_string, "Tag names must not be empty", [69, 70]);
@@ -4776,7 +4776,7 @@ let myBox = box([0,0], -3, -16, -10)
     fn test_parse_tag_starting_with_digit() {
         let some_program_string = r#"
     startSketchOn('XY')
-    |> startProfileAt([0, 0], %)
+    |> startProfile(at = [0, 0])
     |> line(%, $01)"#;
         assert_err(
             some_program_string,
@@ -4788,14 +4788,14 @@ let myBox = box([0,0], -3, -16, -10)
     fn test_parse_tag_including_digit() {
         let some_program_string = r#"
     startSketchOn('XY')
-    |> startProfileAt([0, 0], %)
+    |> startProfile(at = [0, 0])
     |> line(%, $var01)"#;
         assert_no_err(some_program_string);
     }
     #[test]
     fn test_parse_tag_starting_with_bang() {
         let some_program_string = r#"startSketchOn('XY')
-    |> startProfileAt([0, 0], %)
+    |> startProfile(at = [0, 0])
     |> line(%, $!var,01)
     "#;
         assert_err(some_program_string, "Tag names must not start with a bang", [69, 70]);
@@ -4803,7 +4803,7 @@ let myBox = box([0,0], -3, -16, -10)
     #[test]
     fn test_parse_tag_starting_with_dollar() {
         let some_program_string = r#"startSketchOn('XY')
-    |> startProfileAt([0, 0], %)
+    |> startProfile(at = [0, 0])
     |> line(%, $$,01)
     "#;
         assert_err(some_program_string, "Tag names must not start with a dollar", [69, 70]);
@@ -4811,7 +4811,7 @@ let myBox = box([0,0], -3, -16, -10)
     #[test]
     fn test_parse_tag_starting_with_fn() {
         let some_program_string = r#"startSketchOn('XY')
-    |> startProfileAt([0, 0], %)
+    |> startProfile(at = [0, 0])
     |> line(%, $fn,01)
     "#;
         assert_err(some_program_string, "Tag names must not start with a keyword", [69, 71]);
@@ -4819,7 +4819,7 @@ let myBox = box([0,0], -3, -16, -10)
     #[test]
     fn test_parse_tag_starting_with_a_comment() {
         let some_program_string = r#"startSketchOn('XY')
-    |> startProfileAt([0, 0], %)
+    |> startProfile(at = [0, 0])
     |> line(%, $//
     ,01)
     "#;
@@ -4834,7 +4834,7 @@ let myBox = box([0,0], -3, -16, -10)
     fn test_parse_tag_with_reserved_in_middle_works() {
         let some_program_string = r#"
     startSketchOn('XY')
-    |> startProfileAt([0, 0], %)
+    |> startProfile(at = [0, 0])
     |> line([5, 5], %, $sketching)
     "#;
         assert_no_err(some_program_string);
@@ -4843,7 +4843,7 @@ let myBox = box([0,0], -3, -16, -10)
     #[test]
     fn test_parse_array_missing_closing_bracket() {
         let some_program_string = r#"
-sketch001 = startSketchOn('XZ') |> startProfileAt([90.45, 119.09, %)"#;
+sketch001 = startSketchOn('XZ') |> startProfile(at = [90.45, 119.09)"#;
         assert_err(
             some_program_string,
             "Encountered an unexpected character(s) before finding a closing bracket(`]`) for the array",
@@ -4853,7 +4853,7 @@ sketch001 = startSketchOn('XZ') |> startProfileAt([90.45, 119.09, %)"#;
     #[test]
     fn test_parse_array_missing_comma() {
         let some_program_string = r#"
-sketch001 = startSketchOn('XZ') |> startProfileAt([90.45 119.09], %)"#;
+sketch001 = startSketchOn('XZ') |> startProfile(at = [90.45 119.09])"#;
         assert_err(
             some_program_string,
             "Unexpected character encountered. You might be missing a comma in between elements.",
@@ -4865,7 +4865,7 @@ sketch001 = startSketchOn('XZ') |> startProfileAt([90.45 119.09], %)"#;
         // since there is an early exit if encountering a reserved word, the error should be about
         // that and not the missing comma
         let some_program_string = r#"
-sketch001 = startSketchOn('XZ') |> startProfileAt([90.45 $struct], %)"#;
+sketch001 = startSketchOn('XZ') |> startProfile(at = [90.45 $struct])"#;
         assert_err(
             some_program_string,
             "Encountered an unexpected character(s) before finding a closing bracket(`]`) for the array",
@@ -4875,7 +4875,7 @@ sketch001 = startSketchOn('XZ') |> startProfileAt([90.45 $struct], %)"#;
     #[test]
     fn test_parse_array_random_brace() {
         let some_program_string = r#"
-sketch001 = startSketchOn('XZ') |> startProfileAt([}], %)"#;
+sketch001 = startSketchOn('XZ') |> startProfile(at = [}])"#;
         assert_err(
             some_program_string,
             "Encountered an unexpected character(s) before finding a closing bracket(`]`) for the array",
@@ -5176,7 +5176,7 @@ mod snapshot_tests {
     snapshot_test!(
         a,
         r#"boxSketch = startSketchOn(XY)
-    |> startProfileAt([0, 0], %)
+    |> startProfile(at = [0, 0])
     |> line([0, 10], %)
     |> tangentialArc([-5, 5], %)
     |> line([5, -15], %)
@@ -5242,11 +5242,11 @@ mod snapshot_tests {
     snapshot_test!(v, r#"pt1 = b1[0]"#);
     snapshot_test!(w, r#"pt1 = b1['zero']"#);
     snapshot_test!(x, r#"pt1 = b1.zero"#);
-    snapshot_test!(y, r#"sg = startSketchOn(XY) |> startProfileAt(pos, %)"#);
+    snapshot_test!(y, r#"sg = startSketchOn(XY) |> startProfile(at = pos)"#);
     snapshot_test!(
         z,
         "sg = startSketchOn(XY)
-    |> startProfileAt(pos) |> line([0, -scale], %)"
+    |> startProfile(at = pos) |> line([0, -scale])"
     );
     snapshot_test!(aa, r#"sg = -scale"#);
     snapshot_test!(ab, "line(endAbsolute = [0, -1])");
@@ -5269,7 +5269,7 @@ mod snapshot_tests {
     snapshot_test!(
         af,
         r#"mySketch = startSketchOn(XY)
-        |> startProfileAt([0,0], %)
+        |> startProfile(at = [0,0])
         |> line(endAbsolute = [0, 1], tag = $myPath)
         |> line(endAbsolute = [1, 1])
         |> line(endAbsolute = [1, 0], tag = $rightPath)
@@ -5277,16 +5277,16 @@ mod snapshot_tests {
     );
     snapshot_test!(
         ag,
-        "mySketch = startSketchOn(XY) |> startProfileAt([0,0], %) |> line(endAbsolute = [1, 1]) |> close()"
+        "mySketch = startSketchOn(XY) |> startProfile(at = [0,0]) |> line(endAbsolute = [1, 1]) |> close()"
     );
-    snapshot_test!(ah, "myBox = startSketchOn(XY) |> startProfileAt(p, %)");
+    snapshot_test!(ah, "myBox = startSketchOn(XY) |> startProfile(at = p)");
     snapshot_test!(ai, r#"myBox = f(1) |> g(2, %)"#);
     snapshot_test!(
         aj,
-        r#"myBox = startSketchOn(XY) |> startProfileAt(p, %) |> line(end = [0, l])"#
+        r#"myBox = startSketchOn(XY) |> startProfile(at = p) |> line(end = [0, l])"#
     );
     snapshot_test!(ak, "line(endAbsolute = [0, 1])");
-    snapshot_test!(ap, "mySketch = startSketchOn(XY) |> startProfileAt([0,0], %)");
+    snapshot_test!(ap, "mySketch = startSketchOn(XY) |> startProfile(at = [0,0])");
     snapshot_test!(aq, "log(5, \"hello\", aIdentifier)");
     snapshot_test!(ar, r#"5 + "a""#);
     snapshot_test!(at, "line([0, l], %)");

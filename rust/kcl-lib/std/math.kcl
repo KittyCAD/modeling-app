@@ -17,7 +17,7 @@ export PI = 3.14159265358979323846264338327950288_
 ///
 /// ```
 /// exampleSketch = startSketchOn(XZ)
-///   |> startProfileAt([0, 0], %)
+///   |> startProfile(at = [0, 0])
 ///   |> angledLine(
 ///     angle = 30,
 ///     length = 2 * E ^ 2,
@@ -33,7 +33,7 @@ export E = 2.71828182845904523536028747135266250_
 ///
 /// ```
 /// exampleSketch = startSketchOn(XZ)
-///   |> startProfileAt([0, 0], %)
+///   |> startProfile(at = [0, 0])
 ///   |> angledLine(
 ///     angle = 50,
 ///     length = 10 * TAU,
@@ -49,7 +49,7 @@ export TAU = 6.28318530717958647692528676655900577_
 ///
 /// ```
 /// exampleSketch = startSketchOn(XZ)
-///   |> startProfileAt([0, 0], %)
+///   |> startProfile(at = [0, 0])
 ///   |> angledLine(
 ///     angle = 30,
 ///     length = 3 / cos(toRadians(30)),
@@ -66,7 +66,7 @@ export fn cos(@num: number(Angle)): number(_) {}
 ///
 /// ```
 /// exampleSketch = startSketchOn(XZ)
-///   |> startProfileAt([0, 0], %)
+///   |> startProfile(at = [0, 0])
 ///   |> angledLine(
 ///     angle = 50,
 ///     length = 15 / sin(toRadians(135)),
@@ -83,7 +83,7 @@ export fn sin(@num: number(Angle)): number(_) {}
 ///
 /// ```
 /// exampleSketch = startSketchOn(XZ)
-///   |> startProfileAt([0, 0], %)
+///   |> startProfile(at = [0, 0])
 ///   |> angledLine(
 ///     angle = 50,
 ///     length = 50 * tan(1/2),
@@ -101,7 +101,7 @@ export fn tan(@num: number(Angle)): number(_) {}
 ///
 /// ```
 /// exampleSketch = startSketchOn(XZ)
-///   |> startProfileAt([0, 0], %)
+///   |> startProfile(at = [0, 0])
 ///   |> line(end = polar(angle = 30, length = 5), tag = $thing)
 ///   |> line(end = [0, 5])
 ///   |> line(end = [segEndX(thing), 0])

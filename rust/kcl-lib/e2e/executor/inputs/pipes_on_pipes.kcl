@@ -1,5 +1,5 @@
 const svg =  startSketchOn(XY)
-    |> startProfileAt([0, 0], %)
+    |> startProfile(at = [0, 0])
 
 |> line(endAbsolute = [22.687663, -2.7664351]) // MoveRelative
 |> line(endAbsolute = [15.687664000000002, -5.7664351]) // MoveRelative

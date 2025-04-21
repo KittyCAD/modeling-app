@@ -51,7 +51,7 @@ test.describe('integrations tests', () => {
         await scene.moveNoWhere()
         await editor.expectState({
           activeLines: [
-            '|>startProfileAt([75.8,317.2],%)//[$startCapTag,$EndCapTag]',
+            '|>startProfile(at=[75.8,317.2])//[$startCapTag,$EndCapTag]',
           ],
           highlightedCode: '',
           diagnostics: [],
@@ -80,7 +80,7 @@ test.describe('integrations tests', () => {
         await page.waitForTimeout(1000)
         await editor.expectState({
           activeLines: [
-            '|>startProfileAt([75.8,317.2],%)//[$startCapTag,$EndCapTag]',
+            '|>startProfile(at=[75.8,317.2])//[$startCapTag,$EndCapTag]',
           ],
           highlightedCode: '',
           diagnostics: [],

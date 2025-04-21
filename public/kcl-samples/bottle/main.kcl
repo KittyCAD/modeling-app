@@ -14,7 +14,7 @@ wallThickness = 4
 
 // Create a rounded body for the bottle
 bottleBody = startSketchOn(XY)
-  |> startProfileAt([-bottleLength / 2, 0], %)
+  |> startProfile(at = [-bottleLength / 2, 0])
   |> yLine(length = bottleWidth / 3)
   |> arc(endAbsolute = [bottleLength / 2, bottleWidth / 3], interiorAbsolute = [0, bottleWidth / 2])
   |> yLine(endAbsolute = 0)

@@ -235,7 +235,7 @@ test.describe('Testing Camera Movement', { tag: ['@skipWin'] }, () => {
       x = 948
 
     await u.canvasLocator.click({ position: { x: 783, y } })
-    code += `\n  |> startProfileAt([8.12, -12.98], %)`
+    code += `\n  |> startProfile(at = [8.12, -12.98])`
     // await expect(u.codeLocator).toHaveText(code)
     await u.canvasLocator.click({ position: { x, y } })
     code += `\n  |> line(end = [11.18, 0])`

@@ -19,7 +19,7 @@ distanceToInsideEdge = slateWidthHalf + templateThickness + templateGap
 
 // Create the first sketch
 sketch001 = startSketchOn(XZ)
-  |> startProfileAt([0, depth + templateGap], %)
+  |> startProfile(at = [0, depth + templateGap])
   |> xLine(length = slateWidthHalf - radius, tag = $seg01)
   |> arc(
        angleStart = 90,
@@ -52,7 +52,7 @@ extrude001 = extrude(sketch001, length = 5)
 
 // Create the second sketch
 sketch002 = startSketchOn(extrude001, face = START)
-  |> startProfileAt([distanceToInsideEdge, 0], %)
+  |> startProfile(at = [distanceToInsideEdge, 0])
   |> angledLine(angle = 180, length = templateThickness, tag = $rectangleSegmentA002)
   |> angledLine(angle = segAng(rectangleSegmentA002) + 90, length = templateThickness, tag = $rectangleSegmentB002)
   |> angledLine(angle = segAng(rectangleSegmentA002), length = -segLen(rectangleSegmentA002), tag = $rectangleSegmentC002)
@@ -64,7 +64,7 @@ extrude002 = extrude(sketch002, length = 13)
 
 // Create the third sketch
 sketch003 = startSketchOn(extrude001, face = START)
-  |> startProfileAt([-distanceToInsideEdge, 0], %)
+  |> startProfile(at = [-distanceToInsideEdge, 0])
   |> angledLine(angle = 0, length = templateThickness, tag = $rectangleSegmentA001)
   |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = templateThickness, tag = $rectangleSegmentB001)
   |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $rectangleSegmentC001)
@@ -76,7 +76,7 @@ extrude003 = extrude(sketch003, length = 13)
 
 // Create the fourth sketch
 sketch004 = startSketchOn(extrude002, face = END)
-  |> startProfileAt([-distanceToInsideEdge, 0], %)
+  |> startProfile(at = [-distanceToInsideEdge, 0])
   |> angledLine(angle = 0, length = distanceToInsideEdge * 2, tag = $rectangleSegmentA003)
   |> angledLine(angle = segAng(rectangleSegmentA003) - 90, length = templateThickness, tag = $rectangleSegmentB003)
   |> angledLine(angle = segAng(rectangleSegmentA003), length = -segLen(rectangleSegmentA003), tag = $rectangleSegmentC003)

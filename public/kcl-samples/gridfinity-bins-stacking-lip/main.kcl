@@ -36,7 +36,7 @@ lipHeight = lipStep1 + lipStep2 + lipStep3 + lipStep4 + lipStep5
 // Define a function which builds the profile of the baseplate bin
 fn face(plane) {
   faceSketch = startSketchOn(plane)
-    |> startProfileAt([binBaseLength + binTol, 0], %)
+    |> startProfile(at = [binBaseLength + binTol, 0])
     |> yLine(length = height)
     |> xLine(length = -binBaseLength)
     |> angledLine(angle = -45, lengthY = thirdStep)
@@ -90,10 +90,10 @@ corners = patternCircular3d(
 )
 
 singleBinFill = startSketchOn(XY)
-  |> startProfileAt([
+  |> startProfile(at = [
        binBaseLength + binTol,
        binBaseLength + binTol
-     ], %)
+     ])
   |> line(end = [binLength - (binBaseLength * 2), 0], tag = $line000)
   |> line(end = [0, binLength - (binBaseLength * 2)], tag = $line001)
   |> xLine(endAbsolute = profileStartX(%), tag = $line002)
@@ -156,7 +156,7 @@ binFill = patternLinear3d(
   |> patternLinear3d(axis = [0.0, 1.0, 0.0], instances = countBinLength, distance = binLength + binTol * 2)
 
 binTop = startSketchOn(offsetPlane(XY, offset = height))
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> xLine(length = (binLength + 2 * binTol) * countBinWidth, tag = $line010)
   |> yLine(length = (binLength + 2 * binTol) * countBinLength, tag = $line011)
   |> xLine(endAbsolute = profileStartX(%), tag = $line012)
@@ -176,7 +176,7 @@ binTop = startSketchOn(offsetPlane(XY, offset = height))
 // Define a function which builds the profile of the baseplate bin
 fn lipFace(plane) {
   faceSketch = startSketchOn(plane)
-    |> startProfileAt([0, 0], %)
+    |> startProfile(at = [0, 0])
     // |> yLine(length = lipHeight, tag = $line100)
     |> line(end = [0.0, 5.792893], tag = $line000)
     |> arc(

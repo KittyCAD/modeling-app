@@ -68,7 +68,7 @@ totalHeightHalf = 2
 armThick = 0.5
 totalLen = 9.5
 part001 = startSketchOn(-XZ)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> yLine(length = baseHeight)
   |> xLine(length = baseLen)
   |> angledLine(
@@ -318,7 +318,7 @@ const extrudeDefaultPlane = async (
   plane: string
 ) => {
   const code = `part001 = startSketchOn(${plane})
-  |> startProfileAt([7.00, 4.40], %)
+  |> startProfile(at = [7.00, 4.40])
   |> line(end = [6.60, -0.20])
   |> line(end = [2.80, 5.00])
   |> line(end = [-5.60, 4.40])
@@ -443,7 +443,7 @@ test(
     await page.waitForTimeout(700) // TODO detect animation ending, or disable animation
 
     await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
-    code += `profile001 = startProfileAt([182.59, -246.32], sketch001)`
+    code += `profile001 = startProfile(sketch001, at = [182.59, -246.32])`
     await expect(page.locator('.cm-content')).toHaveText(code)
     await page.waitForTimeout(100)
 
@@ -644,7 +644,7 @@ test.describe(
 
       const startXPx = 600
       await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
-      code += `profile001 = startProfileAt([182.59, -246.32], sketch001)`
+      code += `profile001 = startProfile(sketch001, at = [182.59, -246.32])`
       await expect(u.codeLocator).toHaveText(code)
       await page.waitForTimeout(100)
 
@@ -738,7 +738,7 @@ test.describe(
 
       const startXPx = 600
       await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
-      code += `profile001 = startProfileAt([182.59, -246.32], sketch001)`
+      code += `profile001 = startProfile(sketch001, at = [182.59, -246.32])`
       await expect(u.codeLocator).toHaveText(code)
       await page.waitForTimeout(100)
 
@@ -801,13 +801,13 @@ test(
       localStorage.setItem(
         'persistCode',
         `part001 = startSketchOn(-XZ)
-  |> startProfileAt([1.4, 2.47], %)
+  |> startProfile(at = [1.4, 2.47])
   |> line(end = [9.31, 10.55], tag = $seg01)
   |> line(end = [11.91, -10.42])
   |> close()
   |> extrude(length = ${KCL_DEFAULT_LENGTH})
 part002 = startSketchOn(part001, face = seg01)
-  |> startProfileAt([8, 8], %)
+  |> startProfile(at = [8, 8])
   |> line(end = [4.68, 3.05])
   |> line(end = [0, -7.79])
   |> close()
@@ -859,7 +859,7 @@ test(
       localStorage.setItem(
         'persistCode',
         `part001 = startSketchOn(XY)
-  |> startProfileAt([-10, -10], %)
+  |> startProfile(at = [-10, -10])
   |> line(end = [20, 0])
   |> line(end = [0, 20])
   |> line(end = [-20, 0])
@@ -895,7 +895,7 @@ test(
       localStorage.setItem(
         'persistCode',
         `part001 = startSketchOn(XY)
-  |> startProfileAt([-10, -10], %)
+  |> startProfile(at = [-10, -10])
   |> line(end = [20, 0])
   |> line(end = [0, 20])
   |> line(end = [-20, 0])
@@ -1055,7 +1055,7 @@ test('theme persists', async ({ page, context }) => {
     localStorage.setItem(
       'persistCode',
       `part001 = startSketchOn(XY)
-  |> startProfileAt([-10, -10], %)
+  |> startProfile(at = [-10, -10])
   |> line(end = [20, 0])
   |> line(end = [0, 20])
   |> line(end = [-20, 0])
@@ -1126,7 +1126,7 @@ test.describe('code color goober', { tag: '@snapshot' }, () => {
 
 // Create a path for the sweep.
 sweepPath = startSketchOn(XZ)
-  |> startProfileAt([0.05, 0.05], %)
+  |> startProfile(at = [0.05, 0.05])
   |> line(end = [0, 7])
   |> tangentialArc(angle = 90, radius = 5)
   |> line(end = [-3, 0])
@@ -1134,7 +1134,7 @@ sweepPath = startSketchOn(XZ)
   |> line(end = [0, 7])
 
 sweepSketch = startSketchOn(XY)
-  |> startProfileAt([2, 0], %)
+  |> startProfile(at = [2, 0])
   |> arc(angleStart = 0, angleEnd = 360, radius = 2)
   |> sweep(path = sweepPath)
   |> appearance(
@@ -1171,7 +1171,7 @@ sweepSketch = startSketchOn(XY)
 
 // Create a path for the sweep.
 sweepPath = startSketchOn(XZ)
-  |> startProfileAt([0.05, 0.05], %)
+  |> startProfile(at = [0.05, 0.05])
   |> line(end = [0, 7])
   |> tangentialArc(angle = 90, radius = 5)
   |> line(end = [-3, 0])
@@ -1179,7 +1179,7 @@ sweepPath = startSketchOn(XZ)
   |> line(end = [0, 7])
 
 sweepSketch = startSketchOn(XY)
-  |> startProfileAt([2, 0], %)
+  |> startProfile(at = [2, 0])
   |> arc(angleStart = 0, angleEnd = 360, radius = 2)
   |> sweep(path = sweepPath)
   |> appearance(

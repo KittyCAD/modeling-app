@@ -24,7 +24,7 @@ import { orRunWhenFullSuiteEnabled } from '@e2e/playwright/test-utils'
  */
 
 const file = `sketch001 = startSketchOn(XZ)
-profile001 = startProfileAt([57.81, 250.51], sketch001)
+profile001 = startProfile(sketch001, at = [57.81, 250.51])
   |> line(end = [121.13, 56.63], tag = $seg02)
   |> line(end = [83.37, -34.61], tag = $seg01)
   |> line(end = [19.66, -116.4])
@@ -33,7 +33,7 @@ profile001 = startProfileAt([57.81, 250.51], sketch001)
   |> close()
 extrude001 = extrude(profile001, length = 200)
 sketch002 = startSketchOn(XZ)
-  |> startProfileAt([-73.64, -42.89], %)
+  |> startProfile(at = [-73.64, -42.89])
   |> xLine(length = 173.71)
   |> line(end = [-22.12, -94.4])
   |> xLine(length = -156.98)
@@ -41,7 +41,7 @@ sketch002 = startSketchOn(XZ)
   |> close()
 extrude002 = extrude(sketch002, length = 50)
 sketch003 = startSketchOn(XY)
-  |> startProfileAt([52.92, 157.81], %)
+  |> startProfile(at = [52.92, 157.81])
   |> angledLine(angle = 0, length = 176.4, tag = $rectangleSegmentA001)
   |> angledLine(
        angle = segAng(rectangleSegmentA001) - 90,
@@ -76,7 +76,7 @@ test.describe('edit with AI example snapshots', () => {
         await clickBody1Cap()
         await editor.expectState({
           highlightedCode: '',
-          activeLines: ['|>startProfileAt([-73.64,-42.89],%)'],
+          activeLines: ['|>startProfile(at=[-73.64,-42.89])'],
           diagnostics: [],
         })
       })

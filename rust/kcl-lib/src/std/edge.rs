@@ -27,7 +27,7 @@ pub async fn get_opposite_edge(exec_state: &mut ExecState, args: Args) -> Result
 ///
 /// ```no_run
 /// exampleSketch = startSketchOn('XZ')
-///   |> startProfileAt([0, 0], %)
+///   |> startProfile(at = [0, 0])
 ///   |> line(end = [10, 0])
 ///   |> angledLine(
 ///        angle = 60,
@@ -101,7 +101,7 @@ pub async fn get_next_adjacent_edge(exec_state: &mut ExecState, args: Args) -> R
 ///
 /// ```no_run
 /// exampleSketch = startSketchOn('XZ')
-///   |> startProfileAt([0, 0], %)
+///   |> startProfile(at = [0, 0])
 ///   |> line(end = [10, 0])
 ///   |> angledLine(
 ///        angle = 60,
@@ -188,7 +188,7 @@ pub async fn get_previous_adjacent_edge(exec_state: &mut ExecState, args: Args) 
 ///
 /// ```no_run
 /// exampleSketch = startSketchOn('XZ')
-///   |> startProfileAt([0, 0], %)
+///   |> startProfile(at = [0, 0])
 ///   |> line(end = [10, 0])
 ///   |> angledLine(
 ///        angle = 60,
@@ -277,7 +277,7 @@ pub async fn get_common_edge(exec_state: &mut ExecState, args: Args) -> Result<K
 ///
 /// scale = 20
 /// part001 = startSketchOn('XY')
-///     |> startProfileAt([0, 0], %)
+///     |> startProfile(at = [0, 0])
 ///     |> line(end = [0, scale])
 ///     |> line(end = [scale, 0])
 ///     |> line(end = [0, -scale])
