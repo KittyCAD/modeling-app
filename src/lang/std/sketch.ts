@@ -1227,19 +1227,105 @@ export const circle: SketchLineHelperKw = {
 
     const { center, radius } = segmentInput
     const _node = { ...node }
+
+    // Try to get the pipe expression first
     const nodeMeta = getNodeFromPath<PipeExpression>(
       _node,
       pathToNode,
       'PipeExpression'
     )
-    if (err(nodeMeta)) return nodeMeta
 
-    const { node: pipe } = nodeMeta
+    // If we get a pipe expression, handle as before
+    if (!err(nodeMeta) && nodeMeta.node.type === 'PipeExpression') {
+      const { node: pipe } = nodeMeta
 
+      const x = createLiteral(roundOff(center[0], 2))
+      const y = createLiteral(roundOff(center[1], 2))
+      const radiusExp = createLiteral(roundOff(radius, 2))
+      const centerArray = createArrayExpression([x, y])
+
+      if (replaceExistingCallback) {
+        const result = replaceExistingCallback([
+          {
+            type: 'arrayInObject',
+            index: 0,
+            key: 'center',
+            argType: 'xAbsolute',
+            expr: x,
+          },
+          {
+            type: 'arrayInObject',
+            index: 1,
+            key: 'center',
+            argType: 'yAbsolute',
+            expr: y,
+          },
+          {
+            type: 'objectProperty',
+            key: 'radius',
+            argType: 'radius',
+            expr: radiusExp,
+          },
+        ])
+        if (err(result)) return result
+        const { callExp, valueUsedInTransform } = result
+
+        const { index: callIndex } = splitPathAtPipeExpression(pathToNode)
+
+        // Handle the case where the returned expression is not a proper kwarg expression
+        if (callExp.type !== 'CallExpressionKw') {
+          // In a pipe expression, the unlabeled first arg can be omitted
+          const centerArg = createLabeledArg(ARG_CIRCLE_CENTER, centerArray)
+          const radiusArg = createLabeledArg(ARG_CIRCLE_RADIUS, radiusExp)
+          const circleKw = createCallExpressionStdLibKw('circle', null, [
+            centerArg,
+            radiusArg,
+          ])
+
+          pipe.body[callIndex] = circleKw
+        } else {
+          // For CallExpressionKw, we don't need to set an unlabeled argument in pipe expressions
+          if (callExp.unlabeled) {
+            callExp.unlabeled = null
+          }
+          pipe.body[callIndex] = callExp
+        }
+
+        return {
+          modifiedAst: _node,
+          pathToNode,
+          valueUsedInTransform,
+        }
+      }
+      return new Error('not implemented')
+    }
+
+    // If it's not in a pipe expression, try to get variable declarator
+    const varDecMeta = getNodeFromPath<VariableDeclarator>(
+      _node,
+      pathToNode,
+      'VariableDeclarator'
+    )
+
+    if (err(varDecMeta))
+      return new Error('Could not find pipe expression or variable declarator')
+
+    const { node: varDec } = varDecMeta
+
+    // Get the existing circle expression to extract the unlabeled first argument (sketch)
+    const existingCircleExpr = varDec.init as Node<CallExpressionKw>
+    let sketchArg: Expr | null = null
+
+    // Extract the unlabeled sketch argument if it exists
+    if (existingCircleExpr && existingCircleExpr.type === 'CallExpressionKw') {
+      sketchArg = existingCircleExpr.unlabeled
+    }
+
+    // These follow the same pattern whether we use the callback or not
     const x = createLiteral(roundOff(center[0], 2))
     const y = createLiteral(roundOff(center[1], 2))
-
     const radiusExp = createLiteral(roundOff(radius, 2))
+    const centerArray = createArrayExpression([x, y])
 
     if (replaceExistingCallback) {
       const result = replaceExistingCallback([
@@ -1267,16 +1353,49 @@ export const circle: SketchLineHelperKw = {
       if (err(result)) return result
       const { callExp, valueUsedInTransform } = result
 
-      const { index: callIndex } = splitPathAtPipeExpression(pathToNode)
-      pipe.body[callIndex] = callExp
+      // Make sure the unlabeled first argument (sketch) is preserved
+      if (callExp.type === 'CallExpressionKw') {
+        if (sketchArg && !callExp.unlabeled) {
+          callExp.unlabeled = sketchArg
+        }
+
+        // Replace the variable declarator init with the call expression
+        varDec.init = callExp
+      } else {
+        // If somehow we get a non-kw expression, create the correct one
+        const centerArg = createLabeledArg(ARG_CIRCLE_CENTER, centerArray)
+        const radiusArg = createLabeledArg(ARG_CIRCLE_RADIUS, radiusExp)
+        const circleKw = createCallExpressionStdLibKw('circle', sketchArg, [
+          centerArg,
+          radiusArg,
+        ])
+
+        // Replace the variable declarator init with the correct KW expression
+        varDec.init = circleKw
+      }
 
       return {
         modifiedAst: _node,
         pathToNode,
         valueUsedInTransform,
       }
+    } else {
+      // If no callback, create a CallExpressionKw directly
+      const centerArg = createLabeledArg(ARG_CIRCLE_CENTER, centerArray)
+      const radiusArg = createLabeledArg(ARG_CIRCLE_RADIUS, radiusExp)
+      const circleKw = createCallExpressionStdLibKw('circle', sketchArg, [
+        centerArg,
+        radiusArg,
+      ])
+
+      // Replace the variable declarator init with the call expression
+      varDec.init = circleKw
+
+      return {
+        modifiedAst: _node,
+        pathToNode,
+      }
     }
-    return new Error('not implemented')
   },
   updateArgs: ({ node, pathToNode, input }) => {
     if (input.type !== 'arc-segment') return ARC_SEGMENT_ERR
@@ -3364,6 +3483,7 @@ export function replaceSketchLine({
       pathToNode: PathToNode
     }
   | Error {
+  console.log('replaceSketchLine', fnName)
   if (![...toolTips, 'intersect', 'circle'].includes(fnName)) {
     return new Error(`The following function name  is not tooltip: ${fnName}`)
   }

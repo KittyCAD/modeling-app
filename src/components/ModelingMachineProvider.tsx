@@ -1410,6 +1410,8 @@ export const ModelingMachineProvider = ({
                   })
                 )
               )
+              result.exprInsertIndex = data.namedValue.insertIndex
+
               if (
                 trap(parseResultAfterInsertion) ||
                 !resultIsOk(parseResultAfterInsertion)
@@ -1418,7 +1420,7 @@ export const ModelingMachineProvider = ({
               result = {
                 modifiedAst: parseResultAfterInsertion.program,
                 pathToReplaced: astAfterReplacement.pathToReplaced,
-                exprInsertIndex: astAfterReplacement.exprInsertIndex,
+                exprInsertIndex: result.exprInsertIndex,
               }
             } else if ('valueText' in data.namedValue) {
               // If they didn't provide a constant name,
