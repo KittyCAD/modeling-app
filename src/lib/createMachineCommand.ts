@@ -214,7 +214,9 @@ export function buildCommandArgument<
   } else if (arg.inputType === 'string') {
     return {
       inputType: arg.inputType,
-      defaultValue: arg.defaultValue,
+      defaultValue: arg.defaultValueFromContext
+        ? arg.defaultValueFromContext(context)
+        : arg.defaultValue,
       validation: arg.validation,
       ...baseCommandArgument,
     } satisfies CommandArgument<O, T> & { inputType: 'string' }
