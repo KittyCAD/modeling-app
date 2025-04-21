@@ -316,7 +316,7 @@ pub async fn polygon(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
         radius = { docs = "The radius of the polygon", include_in_snippet = true },
         num_sides = { docs = "The number of sides in the polygon", include_in_snippet = true },
         center = { docs = "The center point of the polygon", include_in_snippet = true },
-        inscribed = { docs = "Whether the polygon is inscribed (true, the default) or circumscribed (false) about a circle with the specified radius", include_in_snippet = true },
+        inscribed = { docs = "Whether the polygon is inscribed (true, the default) or circumscribed (false) about a circle with the specified radius" },
     }
 }]
 #[allow(clippy::too_many_arguments)]
