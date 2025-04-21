@@ -71,11 +71,11 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 ///   )
 ///   |> line(end = [5, 0])
 ///   |> line(end = [0, 10])
-///   |> bezierCurve({
-///     control1 = [-10, 0],
-///     control2 = [2, 10],
-///     to = [-5, 10],
-///   }, %)
+///   |> bezierCurve(
+///        control1 = [-10, 0],
+///        control2 = [2, 10],
+///        end = [-5, 10],
+///      )
 ///   |> line(end = [-5, -2])
 ///   |> close()
 ///   |> extrude(length = 10)
@@ -91,11 +91,11 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 ///   )
 ///   |> line(end = [10, 0])
 ///   |> line(end = [5, 0])
-///   |> bezierCurve({
-///     control1 = [-3, 0],
-///     control2 = [2, 10],
-///     to = [-5, 10],
-///   }, %)
+///   |> bezierCurve(
+///        control1 = [-3, 0],
+///        control2 = [2, 10],
+///        end = [-5, 10],
+///      )
 ///   |> line(end = [-4, 10])
 ///   |> line(end = [-5, -2])
 ///   |> close()
@@ -113,11 +113,11 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 ///   )
 ///   |> line(end = [10, 0])
 ///   |> line(end = [5, 0])
-///   |> bezierCurve({
-///     control1 = [-3, 0],
-///     control2 = [2, 10],
-///     to = [-5, 10],
-///   }, %)
+///   |> bezierCurve(
+///        control1 = [-3, 0],
+///        control2 = [2, 10],
+///        end = [-5, 10],
+///      )
 ///   |> line(end = [-4, 10])
 ///   |> line(end = [-5, -2])
 ///   |> close()
@@ -135,11 +135,11 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 ///   )
 ///   |> line(end = [10, 0])
 ///   |> line(end = [5, 0])
-///   |> bezierCurve({
-///     control1 = [-3, 0],
-///     control2 = [2, 10],
-///     to = [-5, 10],
-///   }, %)
+///   |> bezierCurve(
+///        control1 = [-3, 0],
+///        control2 = [2, 10],
+///        end = [-5, 10],
+///      )
 ///   |> line(end = [-4, 10])
 ///   |> line(end = [-5, -2])
 ///   |> close()

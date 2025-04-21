@@ -49,7 +49,6 @@ test(
   'exports of each format should work',
   { tag: ['@snapshot', '@skipWin', '@skipMacos'] },
   async ({ page, context, scene, cmdBar, tronApp }) => {
-    test.fixme(orRunWhenFullSuiteEnabled())
     if (!tronApp) {
       fail()
     }
@@ -377,8 +376,6 @@ test.describe(
   'extrude on default planes should be stable',
   { tag: '@snapshot' },
   () => {
-    test.fixme(orRunWhenFullSuiteEnabled())
-
     test('XY', async ({ page, context, cmdBar, scene }) => {
       await extrudeDefaultPlane(context, page, cmdBar, scene, 'XY')
     })
@@ -409,7 +406,6 @@ test(
   'Draft segments should look right',
   { tag: '@snapshot' },
   async ({ page, scene, toolbar }) => {
-    test.fixme(orRunWhenFullSuiteEnabled())
     const u = await getUtils(page)
     await page.setViewportSize({ width: 1200, height: 500 })
     const PUR = 400 / 37.5 //pixeltoUnitRatio
@@ -534,8 +530,6 @@ test(
   'Draft rectangles should look right',
   { tag: '@snapshot' },
   async ({ page, context, cmdBar, scene }) => {
-    test.fixme(orRunWhenFullSuiteEnabled())
-
     const u = await getUtils(page)
     await page.setViewportSize({ width: 1200, height: 500 })
     const PUR = 400 / 37.5 //pixeltoUnitRatio
@@ -581,7 +575,6 @@ test(
   'Draft circle should look right',
   { tag: '@snapshot' },
   async ({ page, context, cmdBar, scene }) => {
-    test.fixme(orRunWhenFullSuiteEnabled())
     const u = await getUtils(page)
     await page.setViewportSize({ width: 1200, height: 500 })
     const PUR = 400 / 37.5 //pixeltoUnitRatio
@@ -628,8 +621,6 @@ test.describe(
   'Client side scene scale should match engine scale',
   { tag: '@snapshot' },
   () => {
-    test.fixme(orRunWhenFullSuiteEnabled())
-
     test('Inch scale', async ({ page, cmdBar, scene }) => {
       const u = await getUtils(page)
       await page.setViewportSize({ width: 1200, height: 500 })
@@ -805,8 +796,6 @@ test(
   'Sketch on face with none z-up',
   { tag: '@snapshot' },
   async ({ page, context, cmdBar, scene }) => {
-    test.fixme(orRunWhenFullSuiteEnabled())
-
     const u = await getUtils(page)
     await context.addInitScript(async (KCL_DEFAULT_LENGTH) => {
       localStorage.setItem(
@@ -865,8 +854,6 @@ test(
   'Zoom to fit on load - solid 2d',
   { tag: '@snapshot' },
   async ({ page, context, cmdBar, scene }) => {
-    test.fixme(orRunWhenFullSuiteEnabled())
-
     const u = await getUtils(page)
     await context.addInitScript(async () => {
       localStorage.setItem(
@@ -903,8 +890,6 @@ test(
   'Zoom to fit on load - solid 3d',
   { tag: '@snapshot' },
   async ({ page, context, cmdBar, scene }) => {
-    test.fixme(orRunWhenFullSuiteEnabled())
-
     const u = await getUtils(page)
     await context.addInitScript(async () => {
       localStorage.setItem(
@@ -944,7 +929,6 @@ test.describe('Grid visibility', { tag: '@snapshot' }, () => {
     cmdBar,
     scene,
   }) => {
-    test.fixme(orRunWhenFullSuiteEnabled())
     const u = await getUtils(page)
     const stream = page.getByTestId('stream')
 
@@ -1004,7 +988,6 @@ test.describe('Grid visibility', { tag: '@snapshot' }, () => {
   })
 
   test('Grid turned off', async ({ page, cmdBar, scene }) => {
-    test.fixme(orRunWhenFullSuiteEnabled())
     const u = await getUtils(page)
     const stream = page.getByTestId('stream')
 
@@ -1026,7 +1009,6 @@ test.describe('Grid visibility', { tag: '@snapshot' }, () => {
   })
 
   test('Grid turned on', async ({ page, context, cmdBar, scene }) => {
-    test.fixme(orRunWhenFullSuiteEnabled())
     await context.addInitScript(
       async ({ settingsKey, settings }) => {
         localStorage.setItem(settingsKey, settings)
@@ -1136,7 +1118,6 @@ test('theme persists', async ({ page, context }) => {
 
 test.describe('code color goober', { tag: '@snapshot' }, () => {
   test('code color goober', async ({ page, context, scene, cmdBar }) => {
-    test.fixme(orRunWhenFullSuiteEnabled())
     const u = await getUtils(page)
     await context.addInitScript(async () => {
       localStorage.setItem(
@@ -1182,7 +1163,6 @@ sweepSketch = startSketchOn(XY)
     scene,
     cmdBar,
   }) => {
-    test.fixme(orRunWhenFullSuiteEnabled())
     const u = await getUtils(page)
     await context.addInitScript(async () => {
       localStorage.setItem(
