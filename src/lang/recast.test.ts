@@ -321,7 +321,7 @@ describe('testing call Expressions in BinaryExpressions and UnaryExpressions', (
   it('with unaryExpression in sketch situation', () => {
     const code = [
       'part001 = startSketchOn(XY)',
-      '  |> startProfile(0], at = [0)',
+      '  |> startProfile(at = [0, 0])',
       '  |> line(end = [-2.21, -legLen(5, min(3, 999))])',
     ].join('\n')
     const { ast } = code2ast(code)

@@ -1208,7 +1208,7 @@ export class SceneEntities {
     const tag = findUniqueName(_ast, 'rectangleSegmentA')
     const newDeclaration = createVariableDeclaration(
       varName,
-      createCallExpressionStdLib('startProfileAt', [
+      createCallExpressionStdLib('startProfile', [
         createArrayExpression([
           createLiteral(roundOff(rectangleOrigin[0])),
           createLiteral(roundOff(rectangleOrigin[1])),
@@ -1411,7 +1411,7 @@ export class SceneEntities {
     const tag = findUniqueName(_ast, 'rectangleSegmentA')
     const newDeclaration = createVariableDeclaration(
       varName,
-      createCallExpressionStdLib('startProfileAt', [
+      createCallExpressionStdLib('startProfile', [
         createArrayExpression([
           createLiteral(roundOff(rectangleOrigin[0])),
           createLiteral(roundOff(rectangleOrigin[1])),

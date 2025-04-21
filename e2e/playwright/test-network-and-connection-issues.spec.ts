@@ -177,7 +177,7 @@ test.describe('Test network and connection issues', () => {
 
       // select a line
       await page
-        .getByText(`startProfile(sketch001)`, at = ${commonPoints.startAt})
+        .getByText(`startProfile(sketch001, at = ${commonPoints.startAt})`)
         .click()
 
       // enter sketch again

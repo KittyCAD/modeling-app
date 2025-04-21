@@ -4597,7 +4597,7 @@ export function isEditingExistingSketch({
   if (
     (maybePipeExpression.type === 'CallExpression' ||
       maybePipeExpression.type === 'CallExpressionKw') &&
-    (maybePipeExpression.callee.name.name === 'startProfileAt' ||
+    (maybePipeExpression.callee.name.name === 'startProfile' ||
       maybePipeExpression.callee.name.name === 'circle' ||
       maybePipeExpression.callee.name.name === 'circleThreePoint')
   )
@@ -4605,8 +4605,7 @@ export function isEditingExistingSketch({
   if (maybePipeExpression.type !== 'PipeExpression') return false
   const hasStartProfileAt = maybePipeExpression.body.some(
     (item) =>
-      item.type === 'CallExpression' &&
-      item.callee.name.name === 'startProfileAt'
+      item.type === 'CallExpression' && item.callee.name.name === 'startProfile'
   )
   const hasCircle =
     maybePipeExpression.body.some(

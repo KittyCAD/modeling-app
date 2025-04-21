@@ -2442,7 +2442,9 @@ profile002 = startProfile(sketch002, at = [85.81, 52.55])
 
       const [startProfileAt] = scene.makeMouseHelpers(606, 184)
       const [nextPoint] = scene.makeMouseHelpers(763, 130)
-      await page.getByText('startProfile(sketch002)').click(, at = [85.81, 52.55])
+      await page
+        .getByText('startProfile(sketch002, at = [85.81, 52.55])')
+        .click()
       await toolbar.editSketch(1)
       // timeout wait for engine animation is unavoidable
       await page.waitForTimeout(600)

@@ -18,7 +18,6 @@ import {
   createLocalName,
   createObjectExpression,
   createPipeExpression,
-  createPipeSubstitution,
   createVariableDeclaration,
   findUniqueName,
 } from '@src/lang/create'
@@ -91,6 +90,7 @@ import type { Selection } from '@src/lib/selections'
 import { err, reportRejection, trap } from '@src/lib/trap'
 import { isArray, isOverlap, roundOff } from '@src/lib/utils'
 import type { ExtrudeFacePlane } from '@src/machines/modelingMachine'
+import { ARG_AT } from '@src/lang/constants'
 
 export function startSketchOnDefault(
   node: Node<Program>,
@@ -149,13 +149,19 @@ export function insertNewStartProfileAt(
 
   const newExpression = createVariableDeclaration(
     findUniqueName(node, 'profile'),
-    createCallExpressionStdLib('startProfileAt', [
-      createArrayExpression([
-        createLiteral(roundOff(at[0])),
-        createLiteral(roundOff(at[1])),
-      ]),
+    createCallExpressionStdLibKw(
+      'startProfile',
       createLocalName(varDec.node.id.name),
-    ])
+      [
+        createLabeledArg(
+          ARG_AT,
+          createArrayExpression([
+            createLiteral(roundOff(at[0])),
+            createLiteral(roundOff(at[1])),
+          ])
+        ),
+      ]
+    )
   )
   const insertIndex = getInsertIndex(sketchNodePaths, planeNodePath, insertType)
 
@@ -190,9 +196,8 @@ export function addSketchTo(
     createLiteral(axis.toUpperCase()),
     []
   )
-  const startProfileAt = createCallExpressionStdLib('startProfileAt', [
-    createLiteral('default'),
-    createPipeSubstitution(),
+  const startProfileAt = createCallExpressionStdLibKw('startProfile', null, [
+    createLabeledArg(ARG_AT, createLiteral('default')),
   ])
   const initialLineTo = createCallExpressionStdLibKw(
     'line',
@@ -1602,7 +1607,7 @@ export async function deleteFromSelection(
         pipeBody[0].type === 'CallExpressionKw') &&
       doNotDeleteProfileIfItHasBeenExtruded &&
       (pipeBody[0].callee.name.name === 'startSketchOn' ||
-        pipeBody[0].callee.name.name === 'startProfileAt')
+        pipeBody[0].callee.name.name === 'startProfile')
     ) {
       // remove varDec
       const varDecIndex = varDec.shallowPath[1][0] as number
@@ -1752,7 +1757,7 @@ export function splitPipedProfile(
   if (!isCallExprWithName(firstCall, 'startSketchOn'))
     return new Error('First call is not startSketchOn')
   const secondCall = init.body[1]
-  if (!isCallExprWithName(secondCall, 'startProfileAt'))
+  if (!isCallExprWithName(secondCall, 'startProfile'))
     return new Error('Second call is not startProfileAt')
 
   const varName = varDec.node.declaration.id.name
@@ -1777,14 +1782,14 @@ export function splitPipedProfile(
   if (
     !(
       profileBrokenIntoItsOwnVar.declaration.init.body[0].type ===
-        'CallExpression' &&
+        'CallExpressionKw' &&
       profileBrokenIntoItsOwnVar.declaration.init.body[0].callee.name.name ===
-        'startProfileAt'
+        'startProfile'
     )
   ) {
     return new Error('problem breaking pipe, expect startProfileAt to be first')
   }
-  profileBrokenIntoItsOwnVar.declaration.init.body[0].arguments[1] =
+  profileBrokenIntoItsOwnVar.declaration.init.body[0].unlabeled =
     createLocalName(newVarName)
   profileBrokenIntoItsOwnVar.declaration.id.name = varName
   profileBrokenIntoItsOwnVar.preComments = [] // we'll duplicate the comments since the new variable will have it to
