@@ -20,10 +20,10 @@
     "plugin:react-hooks/recommended"
   ],
   "settings": {
-		"react": {
-			"version": "detect"
-		}
-	},
+    "react": {
+      "version": "detect"
+    }
+  },
   "rules": {
     "no-array-constructor": "off", // This is wrong; use the @typescript-eslint one instead.
     "@typescript-eslint/no-array-constructor": "error",
