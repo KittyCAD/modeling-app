@@ -51,7 +51,7 @@ jobs:
         with:
           cache: false # Configured below.
 
-      - uses: taiki-e/install-action@d4635f2de61c8b8104d59cd4aede2060638378cc
+      - uses: taiki-e/install-action@09dc018eee06ae1c9e0409786563f534210ceb83
         with:
           tool: wasm-pack
 
@@ -191,7 +191,7 @@ jobs:
           cache: 'npm'
 
       - run: npm install
-      - uses: taiki-e/install-action@d4635f2de61c8b8104d59cd4aede2060638378cc
+      - uses: taiki-e/install-action@09dc018eee06ae1c9e0409786563f534210ceb83
         with:
           tool: wasm-pack
 
@@ -236,7 +236,7 @@ jobs:
           cache: 'npm'
 
       - run: npm install
-      - uses: taiki-e/install-action@d4635f2de61c8b8104d59cd4aede2060638378cc
+      - uses: taiki-e/install-action@09dc018eee06ae1c9e0409786563f534210ceb83
         with:
           tool: wasm-pack
 
