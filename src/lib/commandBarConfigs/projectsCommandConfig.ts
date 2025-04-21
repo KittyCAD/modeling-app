@@ -244,7 +244,7 @@ export const deleteProjectCommand: Command = {
   displayName: `Delete project`,
   description: 'Delete a project',
   groupId: 'projects',
-  needsReview: false,
+  needsReview: true,
   onSubmit: (record) => {
     if (record) {
       systemIOActor.send({
