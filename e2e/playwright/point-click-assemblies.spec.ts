@@ -405,10 +405,6 @@ test.describe('Point-and-click assemblies tests', () => {
         )
         await scene.settled(cmdBar)
 
-        // TODO: remove this once #5780 is fixed
-        await page.reload()
-
-        await scene.settled(cmdBar)
         await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
         await toolbar.closePane('code')
         await scene.expectPixelColor(partColor, partPoint, tolerance)
@@ -451,10 +447,6 @@ test.describe('Point-and-click assemblies tests', () => {
       `,
           { shouldNormalise: true }
         )
-        await scene.settled(cmdBar)
-
-        // TODO: remove this once #5780 is fixed
-        await page.reload()
         await scene.settled(cmdBar)
 
         await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
