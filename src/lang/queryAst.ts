@@ -51,6 +51,7 @@ import { Reason, err } from '@src/lib/trap'
 import { getAngle, isArray } from '@src/lib/utils'
 
 import { ARG_INDEX_FIELD, LABELED_ARG_FIELD } from '@src/lang/queryAstConstants'
+import type { KclCommandValue } from '@src/lib/commandTypes'
 
 /**
  * Retrieves a node from a given path within a Program node structure, optionally stopping at a specified node type.
@@ -1051,4 +1052,10 @@ export function updatePathToNodesAfterEdit(
   const newPath = structuredClone(pathToUpdate)
   newPath[1][0] = newIndex // Update the body index
   return newPath
+}
+
+export const valueOrVariable = (variable: KclCommandValue) => {
+  return 'variableName' in variable
+    ? variable.variableIdentifierAst
+    : variable.valueAst
 }

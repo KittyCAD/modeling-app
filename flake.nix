@@ -44,7 +44,9 @@
         packages =
           (with pkgs; [
             rustToolchain
+            cargo-criterion
             cargo-nextest
+            cargo-sort
             just
             postgresql.lib
             openssl
@@ -67,6 +69,7 @@
         PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH = "${pkgs.playwright-driver.browsers}/chromium-1091/chrome-linux/chrome";
         PLAYWRIGHT_BROWSERS_PATH = "${pkgs.playwright-driver.browsers}";
         NODE_ENV = "development";
+        RUSTFMT = "${pkgs.rust-bin.stable.latest.rustfmt}/bin/rustfmt";
       };
     });
 

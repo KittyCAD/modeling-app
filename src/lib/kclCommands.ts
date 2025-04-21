@@ -133,6 +133,14 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
             const path = context.argumentsToSubmit['path'] as string
             return getPathFilenameInVariableCase(path)
           },
+          validation: async ({ data, context }) => {
+            const variableExists = kclManager.variables[data.localName]
+            if (variableExists) {
+              return 'This variable name is already in use.'
+            }
+
+            return true
+          },
         },
       },
       onSubmit: (data) => {
@@ -153,7 +161,6 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
           EXECUTION_TYPE_REAL,
           { kclManager, editorManager, codeManager },
           {
-            skipUpdateAst: true,
             focusPath: [pathToImportNode, pathToInsertNode],
           }
         ).catch(reportRejection)

@@ -143,8 +143,95 @@ test.describe('Point-and-click assemblies tests', () => {
         await scene.settled(cmdBar)
       })
 
-      await test.step('Insert a second time and expect error', async () => {
-        // TODO: revisit once we have clone with #6209
+      await test.step('Insert a second time with the same name and expect error', async () => {
+        await toolbar.insertButton.click()
+        await cmdBar.selectOption({ name: 'bracket.kcl' }).click()
+        await cmdBar.expectState({
+          stage: 'arguments',
+          currentArgKey: 'localName',
+          currentArgValue: '',
+          headerArguments: { Path: 'bracket.kcl', LocalName: '' },
+          highlightedHeaderArg: 'localName',
+          commandName: 'Insert',
+        })
+        await page.keyboard.insertText('bracket')
+        await cmdBar.progressCmdBar()
+        await expect(
+          page.getByText('This variable name is already in use')
+        ).toBeVisible()
+      })
+
+      await test.step('Insert a second time with a different name and expect error', async () => {
+        await page.keyboard.insertText('2')
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          stage: 'review',
+          headerArguments: { Path: 'bracket.kcl', LocalName: 'bracket2' },
+          commandName: 'Insert',
+        })
+        await cmdBar.progressCmdBar()
+        await editor.expectEditor.toContain(
+          `
+        import "cylinder.kcl" as cylinder
+        import "bracket.kcl" as bracket
+        import "bracket.kcl" as bracket2
+        cylinder
+        bracket
+        bracket2
+      `,
+          { shouldNormalise: true }
+        )
+        // TODO: update once we have clone() with #6209
+      })
+    }
+  )
+
+  test(
+    `Insert the bracket part into an assembly and transform it`,
+    { tag: ['@electron'] },
+    async ({
+      context,
+      page,
+      homePage,
+      scene,
+      editor,
+      toolbar,
+      cmdBar,
+      tronApp,
+    }) => {
+      if (!tronApp) {
+        fail()
+      }
+
+      const midPoint = { x: 500, y: 250 }
+      const moreToTheRightPoint = { x: 900, y: 250 }
+      const bgColor: [number, number, number] = [30, 30, 30]
+      const partColor: [number, number, number] = [100, 100, 100]
+      const tolerance = 30
+      const u = await getUtils(page)
+      const gizmo = page.locator('[aria-label*=gizmo]')
+      const resetCameraButton = page.getByRole('button', { name: 'Reset view' })
+
+      await test.step('Setup parts and expect empty assembly scene', async () => {
+        const projectName = 'assembly'
+        await context.folderSetupFn(async (dir) => {
+          const bracketDir = path.join(dir, projectName)
+          await fsp.mkdir(bracketDir, { recursive: true })
+          await Promise.all([
+            fsp.copyFile(
+              path.join('public', 'kcl-samples', 'bracket', 'main.kcl'),
+              path.join(bracketDir, 'bracket.kcl')
+            ),
+            fsp.writeFile(path.join(bracketDir, 'main.kcl'), ''),
+          ])
+        })
+        await page.setBodyDimensions({ width: 1000, height: 500 })
+        await homePage.openProject(projectName)
+        await scene.settled(cmdBar)
+        await toolbar.closePane('code')
+      })
+
+      await test.step('Insert kcl as module', async () => {
         await insertPartIntoAssembly(
           'bracket.kcl',
           'bracket',
@@ -152,19 +239,123 @@ test.describe('Point-and-click assemblies tests', () => {
           cmdBar,
           page
         )
+        await toolbar.openPane('code')
         await editor.expectEditor.toContain(
           `
-        import "cylinder.kcl" as cylinder
         import "bracket.kcl" as bracket
-        import "bracket.kcl" as bracket
-        cylinder
-        bracket
         bracket
       `,
           { shouldNormalise: true }
         )
         await scene.settled(cmdBar)
-        await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
+
+        // Check scene for changes
+        await toolbar.closePane('code')
+        await u.doAndWaitForCmd(async () => {
+          await gizmo.click({ button: 'right' })
+          await resetCameraButton.click()
+        }, 'zoom_to_fit')
+        await toolbar.closePane('debug')
+        await scene.expectPixelColor(partColor, midPoint, tolerance)
+        await scene.expectPixelColor(bgColor, moreToTheRightPoint, tolerance)
+      })
+
+      await test.step('Set translate on module', async () => {
+        await toolbar.openPane('feature-tree')
+
+        const op = await toolbar.getFeatureTreeOperation('bracket', 0)
+        await op.click({ button: 'right' })
+        await page.getByTestId('context-menu-set-translate').click()
+        await cmdBar.expectState({
+          stage: 'arguments',
+          currentArgKey: 'x',
+          currentArgValue: '0',
+          headerArguments: {
+            X: '',
+            Y: '',
+            Z: '',
+          },
+          highlightedHeaderArg: 'x',
+          commandName: 'Translate',
+        })
+        await page.keyboard.insertText('5')
+        await cmdBar.progressCmdBar()
+        await page.keyboard.insertText('0.1')
+        await cmdBar.progressCmdBar()
+        await page.keyboard.insertText('0.2')
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          stage: 'review',
+          headerArguments: {
+            X: '5',
+            Y: '0.1',
+            Z: '0.2',
+          },
+          commandName: 'Translate',
+        })
+        await cmdBar.progressCmdBar()
+        await toolbar.closePane('feature-tree')
+        await toolbar.openPane('code')
+        await editor.expectEditor.toContain(
+          `
+        bracket
+          |> translate(x = 5, y = 0.1, z = 0.2)
+        `,
+          { shouldNormalise: true }
+        )
+        // Expect translated part in the scene
+        await scene.expectPixelColor(bgColor, midPoint, tolerance)
+        await scene.expectPixelColor(partColor, moreToTheRightPoint, tolerance)
+      })
+
+      await test.step('Set rotate on module', async () => {
+        await toolbar.closePane('code')
+        await toolbar.openPane('feature-tree')
+
+        const op = await toolbar.getFeatureTreeOperation('bracket', 0)
+        await op.click({ button: 'right' })
+        await page.getByTestId('context-menu-set-rotate').click()
+        await cmdBar.expectState({
+          stage: 'arguments',
+          currentArgKey: 'roll',
+          currentArgValue: '0',
+          headerArguments: {
+            Roll: '',
+            Pitch: '',
+            Yaw: '',
+          },
+          highlightedHeaderArg: 'roll',
+          commandName: 'Rotate',
+        })
+        await page.keyboard.insertText('0.1')
+        await cmdBar.progressCmdBar()
+        await page.keyboard.insertText('0.2')
+        await cmdBar.progressCmdBar()
+        await page.keyboard.insertText('0.3')
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          stage: 'review',
+          headerArguments: {
+            Roll: '0.1',
+            Pitch: '0.2',
+            Yaw: '0.3',
+          },
+          commandName: 'Rotate',
+        })
+        await cmdBar.progressCmdBar()
+        await toolbar.closePane('feature-tree')
+        await toolbar.openPane('code')
+        await editor.expectEditor.toContain(
+          `
+        bracket
+          |> translate(x = 5, y = 0.1, z = 0.2)
+          |> rotate(roll = 0.1, pitch = 0.2, yaw = 0.3)
+        `,
+          { shouldNormalise: true }
+        )
+        // Expect no change in the scene as the rotations are tiny
+        await scene.expectPixelColor(bgColor, midPoint, tolerance)
+        await scene.expectPixelColor(partColor, moreToTheRightPoint, tolerance)
       })
     }
   )
@@ -231,10 +422,6 @@ test.describe('Point-and-click assemblies tests', () => {
         )
         await scene.settled(cmdBar)
 
-        // TODO: remove this once #5780 is fixed
-        await page.reload()
-
-        await scene.settled(cmdBar)
         await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
         await toolbar.closePane('code')
         await scene.expectPixelColor(partColor, partPoint, tolerance)
@@ -277,10 +464,6 @@ test.describe('Point-and-click assemblies tests', () => {
       `,
           { shouldNormalise: true }
         )
-        await scene.settled(cmdBar)
-
-        // TODO: remove this once #5780 is fixed
-        await page.reload()
         await scene.settled(cmdBar)
 
         await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()

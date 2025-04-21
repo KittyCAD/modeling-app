@@ -22,7 +22,11 @@ import type {
   KclCommandValue,
   StateMachineCommandSetConfig,
 } from '@src/lib/commandTypes'
-import { KCL_DEFAULT_DEGREE, KCL_DEFAULT_LENGTH } from '@src/lib/constants'
+import {
+  KCL_DEFAULT_DEGREE,
+  KCL_DEFAULT_LENGTH,
+  KCL_DEFAULT_TRANSFORM,
+} from '@src/lib/constants'
 import type { components } from '@src/lib/machine-api'
 import type { Selections } from '@src/lib/selections'
 import { codeManager, kclManager } from '@src/lib/singletons'
@@ -162,6 +166,20 @@ export type ModelingCommandSchema = {
   Appearance: {
     nodeToEdit?: PathToNode
     color: string
+  }
+  Translate: {
+    nodeToEdit?: PathToNode
+    selection: Selections
+    x: KclCommandValue
+    y: KclCommandValue
+    z: KclCommandValue
+  }
+  Rotate: {
+    nodeToEdit?: PathToNode
+    selection: Selections
+    roll: KclCommandValue
+    pitch: KclCommandValue
+    yaw: KclCommandValue
   }
   'Boolean Subtract': {
     target: Selections
@@ -1022,6 +1040,88 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         ],
       },
       // Add more fields
+    },
+  },
+  Translate: {
+    description: 'Set translation on solid or sketch.',
+    icon: 'dimension', // TODO: likely not the best icon
+    needsReview: true,
+    hide: DEV || IS_NIGHTLY_OR_DEBUG ? undefined : 'both',
+    args: {
+      nodeToEdit: {
+        description:
+          'Path to the node in the AST to edit. Never shown to the user.',
+        skip: true,
+        inputType: 'text',
+        required: false,
+        hidden: true,
+      },
+      selection: {
+        // selectionMixed allows for feature tree selection of module imports
+        inputType: 'selectionMixed',
+        multiple: false,
+        required: true,
+        skip: true,
+        selectionTypes: ['path'],
+        selectionFilter: ['object'],
+        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+      },
+      x: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_TRANSFORM,
+        required: true,
+      },
+      y: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_TRANSFORM,
+        required: true,
+      },
+      z: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_TRANSFORM,
+        required: true,
+      },
+    },
+  },
+  Rotate: {
+    description: 'Set rotation on solid or sketch.',
+    icon: 'angle', // TODO: likely not the best icon
+    needsReview: true,
+    hide: DEV || IS_NIGHTLY_OR_DEBUG ? undefined : 'both',
+    args: {
+      nodeToEdit: {
+        description:
+          'Path to the node in the AST to edit. Never shown to the user.',
+        skip: true,
+        inputType: 'text',
+        required: false,
+        hidden: true,
+      },
+      selection: {
+        // selectionMixed allows for feature tree selection of module imports
+        inputType: 'selectionMixed',
+        multiple: false,
+        required: true,
+        skip: true,
+        selectionTypes: ['path'],
+        selectionFilter: ['object'],
+        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+      },
+      roll: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_TRANSFORM,
+        required: true,
+      },
+      pitch: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_TRANSFORM,
+        required: true,
+      },
+      yaw: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_TRANSFORM,
+        required: true,
+      },
     },
   },
 }

@@ -3,6 +3,7 @@
 
 use std::{cell::RefCell, collections::BTreeMap};
 
+use indexmap::IndexMap;
 use winnow::{
     combinator::{alt, delimited, opt, peek, preceded, repeat, repeat_till, separated, separated_pair, terminated},
     dispatch,
@@ -3138,6 +3139,21 @@ fn fn_call_kw(i: &mut TokenSlice) -> PResult<Node<CallExpressionKw>> {
     opt(comma_sep).parse_next(i)?;
     let end = close_paren.parse_next(i)?.end;
 
+    // Validate there aren't any duplicate labels.
+    let mut counted_labels = IndexMap::with_capacity(args.len());
+    for arg in &args {
+        *counted_labels.entry(&arg.label.inner.name).or_insert(0) += 1;
+    }
+    if let Some((duplicated, n)) = counted_labels.iter().find(|(_label, n)| n > &&1) {
+        let msg = format!(
+            "You've used the parameter labelled '{duplicated}' {n} times in a single function call. You can only set each parameter once! Remove all but one use."
+        );
+        ParseContext::err(CompilationError::err(
+            SourceRange::new(fn_name.start, end, fn_name.module_id),
+            msg,
+        ));
+    }
+
     let non_code_meta = NonCodeMeta {
         non_code_nodes,
         ..Default::default()
@@ -5075,6 +5091,18 @@ baz = 2
             );
         }
     }
+
+    #[test]
+    fn test_sensible_error_duplicated_args() {
+        let program = r#"f(arg = 1, normal = 44, arg = 2)"#;
+        let (_, mut errs) = assert_no_fatal(program);
+        assert_eq!(errs.len(), 1);
+        let err = errs.pop().unwrap();
+        assert_eq!(
+            err.message,
+            "You've used the parameter labelled 'arg' 2 times in a single function call. You can only set each parameter once! Remove all but one use.",
+        );
+    }
 }
 
 #[cfg(test)]
@@ -5297,17 +5325,6 @@ mod snapshot_tests {
             // b: 2,
             c: 3
         }"
-    );
-    snapshot_test!(
-        ba,
-        r#"
-sketch001 = startSketchOn('XY')
-  // |> arc({
-  //   angleEnd: 270,
-  //   angleStart: 450,
-  // }, %)
-  |> startProfileAt(%)
-"#
     );
     snapshot_test!(
         bb,

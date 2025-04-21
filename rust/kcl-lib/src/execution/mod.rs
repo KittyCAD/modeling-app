@@ -28,18 +28,18 @@ pub use state::{ExecState, MetaSettings};
 
 use crate::{
     engine::EngineManager,
-    errors::KclError,
+    errors::{KclError, KclErrorDetails},
     execution::{
         artifact::build_artifact_graph,
         cache::{CacheInformation, CacheResult},
         types::{UnitAngle, UnitLen},
     },
     fs::FileManager,
-    modules::{ModuleId, ModulePath},
+    modules::{ModuleId, ModulePath, ModuleRepr},
     parsing::ast::types::{Expr, ImportPath, NodeRef},
     source_range::SourceRange,
     std::StdLib,
-    CompilationError, ExecError, ExecutionKind, KclErrorWithOutputs,
+    CompilationError, ExecError, KclErrorWithOutputs,
 };
 
 pub(crate) mod annotations;
@@ -495,13 +495,9 @@ impl ExecutorContext {
         self.context_type == ContextType::Mock || self.context_type == ContextType::MockCustomForwarded
     }
 
-    pub async fn is_isolated_execution(&self) -> bool {
-        self.engine.execution_kind().await.is_isolated()
-    }
-
     /// Returns true if we should not send engine commands for any reason.
     pub async fn no_engine_commands(&self) -> bool {
-        self.is_mock() || self.is_isolated_execution().await
+        self.is_mock()
     }
 
     pub async fn send_clear_scene(
@@ -672,7 +668,7 @@ impl ExecutorContext {
             (program, exec_state, false)
         };
 
-        let result = self.inner_run(&program, &mut exec_state, preserve_mem).await;
+        let result = self.run_concurrent(&program, &mut exec_state, preserve_mem).await;
 
         if result.is_err() {
             cache::bust_cache().await;
@@ -705,7 +701,208 @@ impl ExecutorContext {
         program: &crate::Program,
         exec_state: &mut ExecState,
     ) -> Result<(EnvironmentRef, Option<ModelingSessionData>), KclErrorWithOutputs> {
+        self.run_concurrent(program, exec_state, false).await
+    }
+
+    /// Perform the execution of a program.
+    ///
+    /// You can optionally pass in some initialization memory for partial
+    /// execution.
+    ///
+    /// To access non-fatal errors and warnings, extract them from the `ExecState`.
+    pub async fn run_single_threaded(
+        &self,
+        program: &crate::Program,
+        exec_state: &mut ExecState,
+    ) -> Result<(EnvironmentRef, Option<ModelingSessionData>), KclErrorWithOutputs> {
+        exec_state.add_root_module_contents(program);
+        self.eval_prelude(exec_state, SourceRange::synthetic())
+            .await
+            .map_err(KclErrorWithOutputs::no_outputs)?;
+
         self.inner_run(program, exec_state, false).await
+    }
+
+    /// Perform the execution of a program using an (experimental!) concurrent
+    /// execution model. This has the same signature as [Self::run].
+    ///
+    /// For now -- do not use this unless you're willing to accept some
+    /// breakage.
+    ///
+    /// You can optionally pass in some initialization memory for partial
+    /// execution.
+    ///
+    /// To access non-fatal errors and warnings, extract them from the `ExecState`.
+    pub async fn run_concurrent(
+        &self,
+        program: &crate::Program,
+        exec_state: &mut ExecState,
+        preserve_mem: bool,
+    ) -> Result<(EnvironmentRef, Option<ModelingSessionData>), KclErrorWithOutputs> {
+        exec_state.add_root_module_contents(program);
+        self.eval_prelude(exec_state, SourceRange::synthetic())
+            .await
+            .map_err(KclErrorWithOutputs::no_outputs)?;
+
+        let mut universe = std::collections::HashMap::new();
+
+        let default_planes = self.engine.get_default_planes().read().await.clone();
+        crate::walk::import_universe(self, &program.ast, &mut universe, exec_state)
+            .await
+            .map_err(|err| {
+                let module_id_to_module_path: IndexMap<ModuleId, ModulePath> = exec_state
+                    .global
+                    .path_to_source_id
+                    .iter()
+                    .map(|(k, v)| ((*v), k.clone()))
+                    .collect();
+
+                KclErrorWithOutputs::new(
+                    err,
+                    exec_state.global.operations.clone(),
+                    exec_state.global.artifact_commands.clone(),
+                    exec_state.global.artifact_graph.clone(),
+                    module_id_to_module_path,
+                    exec_state.global.id_to_source.clone(),
+                    default_planes.clone(),
+                )
+            })?;
+
+        for modules in crate::walk::import_graph(&universe, self)
+            .map_err(|err| {
+                let module_id_to_module_path: IndexMap<ModuleId, ModulePath> = exec_state
+                    .global
+                    .path_to_source_id
+                    .iter()
+                    .map(|(k, v)| ((*v), k.clone()))
+                    .collect();
+
+                KclErrorWithOutputs::new(
+                    err,
+                    exec_state.global.operations.clone(),
+                    exec_state.global.artifact_commands.clone(),
+                    exec_state.global.artifact_graph.clone(),
+                    module_id_to_module_path,
+                    exec_state.global.id_to_source.clone(),
+                    default_planes.clone(),
+                )
+            })?
+            .into_iter()
+        {
+            #[cfg(not(target_arch = "wasm32"))]
+            let mut set = tokio::task::JoinSet::new();
+
+            #[allow(clippy::type_complexity)]
+            let (results_tx, mut results_rx): (
+                tokio::sync::mpsc::Sender<(
+                    ModuleId,
+                    ModulePath,
+                    Result<(Option<KclValue>, EnvironmentRef, Vec<String>), KclError>,
+                )>,
+                tokio::sync::mpsc::Receiver<_>,
+            ) = tokio::sync::mpsc::channel(1);
+
+            for module in modules {
+                let Some((import_stmt, module_id, module_path, program)) = universe.get(&module) else {
+                    return Err(KclErrorWithOutputs::no_outputs(KclError::Internal(KclErrorDetails {
+                        message: format!("Module {module} not found in universe"),
+                        source_ranges: Default::default(),
+                    })));
+                };
+                let module_id = *module_id;
+                let module_path = module_path.clone();
+                let program = program.clone();
+                let exec_state = exec_state.clone();
+                let exec_ctxt = self.clone();
+                let results_tx = results_tx.clone();
+                let source_range = SourceRange::from(import_stmt);
+
+                #[cfg(target_arch = "wasm32")]
+                {
+                    wasm_bindgen_futures::spawn_local(async move {
+                        //set.spawn(async move {
+                        let mut exec_state = exec_state;
+                        let exec_ctxt = exec_ctxt;
+
+                        let result = exec_ctxt
+                            .exec_module_from_ast(
+                                &program,
+                                module_id,
+                                &module_path,
+                                &mut exec_state,
+                                source_range,
+                                false,
+                            )
+                            .await;
+
+                        results_tx
+                            .send((module_id, module_path, result))
+                            .await
+                            .unwrap_or_default();
+                    });
+                }
+                #[cfg(not(target_arch = "wasm32"))]
+                {
+                    set.spawn(async move {
+                        let mut exec_state = exec_state;
+                        let exec_ctxt = exec_ctxt;
+
+                        let result = exec_ctxt
+                            .exec_module_from_ast(
+                                &program,
+                                module_id,
+                                &module_path,
+                                &mut exec_state,
+                                source_range,
+                                false,
+                            )
+                            .await;
+
+                        results_tx
+                            .send((module_id, module_path, result))
+                            .await
+                            .unwrap_or_default();
+                    });
+                }
+            }
+
+            drop(results_tx);
+
+            while let Some((module_id, _, result)) = results_rx.recv().await {
+                match result {
+                    Ok((val, session_data, variables)) => {
+                        let mut repr = exec_state.global.module_infos[&module_id].take_repr();
+
+                        let ModuleRepr::Kcl(_, cache) = &mut repr else {
+                            continue;
+                        };
+                        *cache = Some((val, session_data, variables));
+
+                        exec_state.global.module_infos[&module_id].restore_repr(repr);
+                    }
+                    Err(e) => {
+                        let module_id_to_module_path: IndexMap<ModuleId, ModulePath> = exec_state
+                            .global
+                            .path_to_source_id
+                            .iter()
+                            .map(|(k, v)| ((*v), k.clone()))
+                            .collect();
+
+                        return Err(KclErrorWithOutputs::new(
+                            e,
+                            exec_state.global.operations.clone(),
+                            exec_state.global.artifact_commands.clone(),
+                            exec_state.global.artifact_graph.clone(),
+                            module_id_to_module_path,
+                            exec_state.global.id_to_source.clone(),
+                            default_planes,
+                        ));
+                    }
+                }
+            }
+        }
+
+        self.inner_run(program, exec_state, preserve_mem).await
     }
 
     /// Perform the execution of a program.  Accept all possible parameters and
@@ -716,8 +913,6 @@ impl ExecutorContext {
         exec_state: &mut ExecState,
         preserve_mem: bool,
     ) -> Result<(EnvironmentRef, Option<ModelingSessionData>), KclErrorWithOutputs> {
-        exec_state.add_root_module_contents(program);
-
         let _stats = crate::log::LogPerfStats::new("Interpretation");
 
         // Re-apply the settings, in case the cache was busted.
@@ -752,7 +947,7 @@ impl ExecutorContext {
                 exec_state.global.artifact_graph.clone(),
                 module_id_to_module_path,
                 exec_state.global.id_to_source.clone(),
-                default_planes,
+                default_planes.clone(),
             )
         })?;
 
@@ -762,6 +957,7 @@ impl ExecutorContext {
             cache::write_old_memory((mem, exec_state.global.module_infos.clone())).await;
         }
         let session_data = self.engine.get_session_data().await;
+
         Ok((env_ref, session_data))
     }
 
@@ -783,12 +979,14 @@ impl ExecutorContext {
             .exec_module_body(
                 program,
                 exec_state,
-                ExecutionKind::Normal,
                 preserve_mem,
                 ModuleId::default(),
                 &ModulePath::Main,
             )
             .await;
+
+        // Ensure all the async commands completed.
+        self.engine.ensure_async_commands_completed().await?;
 
         // If we errored out and early-returned, there might be commands which haven't been executed
         // and should be dropped.
@@ -837,9 +1035,7 @@ impl ExecutorContext {
                     source_range,
                 )
                 .await?;
-            let (module_memory, _) = self
-                .exec_module_for_items(id, exec_state, ExecutionKind::Isolated, source_range)
-                .await?;
+            let (module_memory, _) = self.exec_module_for_items(id, exec_state, source_range).await?;
 
             exec_state.mut_stack().memory.set_std(module_memory);
         }
@@ -947,6 +1143,14 @@ impl ExecutorContext {
 
 #[cfg(test)]
 pub(crate) async fn parse_execute(code: &str) -> Result<ExecTestResults, KclError> {
+    parse_execute_with_project_dir(code, None).await
+}
+
+#[cfg(test)]
+pub(crate) async fn parse_execute_with_project_dir(
+    code: &str,
+    project_directory: Option<std::path::PathBuf>,
+) -> Result<ExecTestResults, KclError> {
     let program = crate::Program::parse_no_errs(code)?;
 
     let exec_ctxt = ExecutorContext {
@@ -960,7 +1164,10 @@ pub(crate) async fn parse_execute(code: &str) -> Result<ExecTestResults, KclErro
         )),
         fs: Arc::new(crate::fs::FileManager::new()),
         stdlib: Arc::new(crate::std::StdLib::new()),
-        settings: Default::default(),
+        settings: ExecutorSettings {
+            project_directory,
+            ..Default::default()
+        },
         context_type: ContextType::Mock,
     };
     let mut exec_state = ExecState::new(&exec_ctxt);
