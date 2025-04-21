@@ -66,6 +66,14 @@ description: Artifact commands multi-axis-robot.kcl
     "range": [],
     "command": {
       "type": "set_scene_units",
+      "unit": "mm"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "set_scene_units",
       "unit": "in"
     }
   },

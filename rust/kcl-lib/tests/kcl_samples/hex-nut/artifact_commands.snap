@@ -506,5 +506,13 @@ description: Artifact commands hex-nut.kcl
       "type": "set_scene_units",
       "unit": "mm"
     }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "set_scene_units",
+      "unit": "mm"
+    }
   }
 ]
