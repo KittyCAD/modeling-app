@@ -214,10 +214,22 @@ const FileTreeItem = ({
         return
       }
 
+      // TODO: make this not just name based but sub path instead
+      const isImportedInCurrentFile = kclManager.ast.body.some(
+        (n) =>
+          n.type === 'ImportStatement' &&
+          ((n.path.type === 'Kcl' &&
+            n.path.filename.includes(fileOrDir.name)) ||
+            (n.path.type === 'Foreign' && n.path.path.includes(fileOrDir.name)))
+      )
+
       if (isCurrentFile && eventType === 'change') {
         let code = await window.electron.readFile(path, { encoding: 'utf-8' })
         code = normalizeLineEndings(code)
         codeManager.updateCodeStateEditor(code)
+      } else if (isImportedInCurrentFile && eventType === 'change') {
+        // TODO: do something less stupid than this
+        location.reload()
       }
       fileSend({ type: 'Refresh' })
     },
