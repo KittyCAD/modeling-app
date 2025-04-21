@@ -170,20 +170,23 @@ impl ExecutorContext {
                                 self.exec_module_for_items(module_id, exec_state, source_range).await?;
                             for import_item in items {
                                 // Extract the item from the module.
-                                let item = exec_state
-                                    .stack()
-                                    .memory
+                                let mem = &exec_state.stack().memory;
+                                let mut value = mem
                                     .get_from(&import_item.name.name, env_ref, import_item.into(), 0)
-                                    .map_err(|_err| {
-                                        KclError::UndefinedValue(KclErrorDetails {
-                                            message: format!("{} is not defined in module", import_item.name.name),
-                                            source_ranges: vec![SourceRange::from(&import_item.name)],
-                                        })
-                                    })?
-                                    .clone();
-                                // Check that the item is allowed to be imported.
-                                if !module_exports.contains(&import_item.name.name) {
-                                    return Err(KclError::Semantic(KclErrorDetails {
+                                    .cloned();
+                                let ty_name = format!("{}{}", memory::TYPE_PREFIX, import_item.name.name);
+                                let mut ty = mem.get_from(&ty_name, env_ref, import_item.into(), 0).cloned();
+
+                                if value.is_err() && ty.is_err() {
+                                    return Err(KclError::UndefinedValue(KclErrorDetails {
+                                        message: format!("{} is not defined in module", import_item.name.name),
+                                        source_ranges: vec![SourceRange::from(&import_item.name)],
+                                    }));
+                                }
+
+                                // Check that the item is allowed to be imported (in at least one namespace).
+                                if value.is_ok() && !module_exports.contains(&import_item.name.name) {
+                                    value = Err(KclError::Semantic(KclErrorDetails {
                                         message: format!(
                                             "Cannot import \"{}\" from module because it is not exported. Add \"export\" before the definition to export it.",
                                             import_item.name.name
@@ -192,18 +195,45 @@ impl ExecutorContext {
                                     }));
                                 }
 
-                                // Add the item to the current module.
-                                exec_state.mut_stack().add(
-                                    import_item.identifier().to_owned(),
-                                    item,
-                                    SourceRange::from(&import_item.name),
-                                )?;
+                                if ty.is_ok() && !module_exports.contains(&ty_name) {
+                                    ty = Err(KclError::Semantic(KclErrorDetails {
+                                        message: String::new(),
+                                        source_ranges: vec![],
+                                    }));
+                                }
 
-                                if let ItemVisibility::Export = import_stmt.visibility {
-                                    exec_state
-                                        .mod_local
-                                        .module_exports
-                                        .push(import_item.identifier().to_owned());
+                                if value.is_err() && ty.is_err() {
+                                    return value.map(Option::Some);
+                                }
+
+                                // Add the item to the current module.
+                                if let Ok(value) = value {
+                                    exec_state.mut_stack().add(
+                                        import_item.identifier().to_owned(),
+                                        value,
+                                        SourceRange::from(&import_item.name),
+                                    )?;
+
+                                    if let ItemVisibility::Export = import_stmt.visibility {
+                                        exec_state
+                                            .mod_local
+                                            .module_exports
+                                            .push(import_item.identifier().to_owned());
+                                    }
+                                }
+
+                                if let Ok(ty) = ty {
+                                    let ty_name = format!("{}{}", memory::TYPE_PREFIX, import_item.identifier());
+                                    // Add the item to the current module.
+                                    exec_state.mut_stack().add(
+                                        ty_name.clone(),
+                                        ty,
+                                        SourceRange::from(&import_item.name),
+                                    )?;
+
+                                    if let ItemVisibility::Export = import_stmt.visibility {
+                                        exec_state.mod_local.module_exports.push(ty_name);
+                                    }
                                 }
                             }
                         }
@@ -298,19 +328,20 @@ impl ExecutorContext {
                                 value: TypeDef::RustRepr(t, props),
                                 meta: vec![metadata],
                             };
+                            let name_in_mem = format!("{}{}", memory::TYPE_PREFIX, ty.name.name);
                             exec_state
                                 .mut_stack()
-                                .add(
-                                    format!("{}{}", memory::TYPE_PREFIX, ty.name.name),
-                                    value,
-                                    metadata.source_range,
-                                )
+                                .add(name_in_mem.clone(), value, metadata.source_range)
                                 .map_err(|_| {
                                     KclError::Semantic(KclErrorDetails {
                                         message: format!("Redefinition of type {}.", ty.name.name),
                                         source_ranges: vec![metadata.source_range],
                                     })
                                 })?;
+
+                            if let ItemVisibility::Export = ty.visibility {
+                                exec_state.mod_local.module_exports.push(name_in_mem);
+                            }
                         }
                         // Do nothing for primitive types, they get special treatment and their declarations are just for documentation.
                         annotations::Impl::Primitive => {}
@@ -327,19 +358,20 @@ impl ExecutorContext {
                                     ),
                                     meta: vec![metadata],
                                 };
+                                let name_in_mem = format!("{}{}", memory::TYPE_PREFIX, ty.name.name);
                                 exec_state
                                     .mut_stack()
-                                    .add(
-                                        format!("{}{}", memory::TYPE_PREFIX, ty.name.name),
-                                        value,
-                                        metadata.source_range,
-                                    )
+                                    .add(name_in_mem.clone(), value, metadata.source_range)
                                     .map_err(|_| {
                                         KclError::Semantic(KclErrorDetails {
                                             message: format!("Redefinition of type {}.", ty.name.name),
                                             source_ranges: vec![metadata.source_range],
                                         })
                                     })?;
+
+                                if let ItemVisibility::Export = ty.visibility {
+                                    exec_state.mod_local.module_exports.push(name_in_mem);
+                                }
                             }
                             None => {
                                 return Err(KclError::Semantic(KclErrorDetails {
@@ -485,7 +517,7 @@ impl ExecutorContext {
                 message: "Cannot import items from foreign modules".to_owned(),
                 source_ranges: vec![geom.source_range],
             })),
-            ModuleRepr::Dummy => unreachable!(),
+            ModuleRepr::Dummy => unreachable!("Looking up {}, but it is still being interpreted", path),
         };
 
         exec_state.global.module_infos[&module_id].restore_repr(repr);
@@ -559,10 +591,10 @@ impl ExecutorContext {
                 // It was an import cycle.  Keep the original message.
                 err.override_source_ranges(vec![source_range])
             } else {
+                // TODO would be great to have line/column for the underlying error here
                 KclError::Semantic(KclErrorDetails {
                     message: format!(
-                        "Error loading imported file. Open it to view more details. {}: {}",
-                        path,
+                        "Error loading imported file ({path}). Open it to view more details.\n  {}",
                         err.message()
                     ),
                     source_ranges: vec![source_range],
@@ -2139,6 +2171,34 @@ fn assign_args_to_params_kw(
     Ok(())
 }
 
+fn coerce_result_type(
+    result: Result<Option<KclValue>, KclError>,
+    function_expression: NodeRef<'_, FunctionExpression>,
+    exec_state: &mut ExecState,
+) -> Result<Option<KclValue>, KclError> {
+    if let Ok(Some(val)) = result {
+        if let Some(ret_ty) = &function_expression.return_type {
+            let ty = RuntimeType::from_parsed(ret_ty.inner.clone(), exec_state, ret_ty.as_source_range())
+                .map_err(|e| KclError::Semantic(e.into()))?;
+            let val = val.coerce(&ty, exec_state).map_err(|_| {
+                KclError::Semantic(KclErrorDetails {
+                    message: format!(
+                        "This function requires its result to be of type `{}`, but found {}",
+                        ty.human_friendly_type(),
+                        val.human_friendly_type(),
+                    ),
+                    source_ranges: ret_ty.as_source_ranges(),
+                })
+            })?;
+            Ok(Some(val))
+        } else {
+            Ok(Some(val))
+        }
+    } else {
+        result
+    }
+}
+
 async fn call_user_defined_function(
     args: Vec<Arg>,
     memory: EnvironmentRef,
@@ -2159,13 +2219,16 @@ async fn call_user_defined_function(
     let result = ctx
         .exec_block(&function_expression.body, exec_state, BodyType::Block)
         .await;
-    let result = result.map(|_| {
+    let mut result = result.map(|_| {
         exec_state
             .stack()
             .get(memory::RETURN_NAME, function_expression.as_source_range())
             .ok()
             .cloned()
     });
+
+    result = coerce_result_type(result, function_expression, exec_state);
+
     // Restore the previous memory.
     exec_state.mut_stack().pop_env();
 
@@ -2193,13 +2256,16 @@ async fn call_user_defined_function_kw(
     let result = ctx
         .exec_block(&function_expression.body, exec_state, BodyType::Block)
         .await;
-    let result = result.map(|_| {
+    let mut result = result.map(|_| {
         exec_state
             .stack()
             .get(memory::RETURN_NAME, function_expression.as_source_range())
             .ok()
             .cloned()
     });
+
+    result = coerce_result_type(result, function_expression, exec_state);
+
     // Restore the previous memory.
     exec_state.mut_stack().pop_env();
 
@@ -2695,6 +2761,27 @@ foo(x = { direction = [0, 0], origin = [0, 0]})
 }
 
 foo(x = { direction = [0, 0], origin = [0, 0]})
+"#;
+
+        parse_execute(program).await.unwrap_err();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn coerce_return() {
+        let program = r#"fn foo(): number(mm) {
+  return 42
+}
+
+a = foo()
+"#;
+
+        parse_execute(program).await.unwrap();
+
+        let program = r#"fn foo(): number(mm) {
+  return { bar: 42 }
+}
+
+a = foo()
 "#;
 
         parse_execute(program).await.unwrap_err();

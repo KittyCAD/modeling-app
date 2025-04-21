@@ -13,12 +13,12 @@ export const projectFileRole = (
     label: 'File',
     submenu: [
       {
-        label: 'New project',
-        id: 'File.New project',
+        label: 'Create project',
+        id: 'File.Create project',
         accelerator: 'CommandOrControl+N',
         click: () => {
           typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-            menuLabel: 'File.New project',
+            menuLabel: 'File.Create project',
           })
         },
       },
@@ -125,12 +125,12 @@ export const modelingFileRole = (
       //   },
       // },
       {
-        label: 'New project',
-        id: 'File.New project',
+        label: 'Create project',
+        id: 'File.Create project',
         accelerator: 'CommandOrControl+N',
         click: () => {
           typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-            menuLabel: 'File.New project',
+            menuLabel: 'File.Create project',
           })
         },
       },
@@ -166,11 +166,11 @@ export const modelingFileRole = (
         },
       },
       {
-        label: 'Share current part (via Zoo link)',
-        id: 'File.Share current part (via Zoo link)',
+        label: 'Share part via Zoo link',
+        id: 'File.Share part via Zoo link',
         click: () => {
           typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-            menuLabel: 'File.Share current part (via Zoo link)',
+            menuLabel: 'File.Share part via Zoo link',
           })
         },
       },

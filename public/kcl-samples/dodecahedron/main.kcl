@@ -38,20 +38,20 @@ plane = {
 
 // Create a regular pentagon inscribed in a circle of radius pentR
 bottomFace = startSketchOn(XY)
-  |> polygon({
+  |> polygon(
        radius = pentR,
        numSides = 5,
        center = [0, 0],
-       inscribed = true
-     }, %)
+       inscribed = true,
+     )
 
 bottomSideFace = startSketchOn(plane)
-  |> polygon({
+  |> polygon(
        radius = pentR,
        numSides = 5,
        center = [0, 0],
-       inscribed = true
-     }, %)
+       inscribed = true,
+     )
 
 // Extrude the faces in each plane
 bottom = extrude(bottomFace, length = wallThickness)

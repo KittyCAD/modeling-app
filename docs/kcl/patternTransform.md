@@ -205,12 +205,12 @@ fn transform(i) {
 }
 startSketchOn(XY)
   |> startProfileAt([0, 0], %)
-  |> polygon({
+  |> polygon(
        radius = 10,
        numSides = 4,
        center = [0, 0],
-       inscribed = false
-     }, %)
+       inscribed = false,
+     )
   |> extrude(length = 4)
   |> patternTransform(instances = 3, transform = transform)
 ```
