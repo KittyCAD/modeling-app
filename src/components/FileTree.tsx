@@ -24,7 +24,7 @@ import { sortFilesAndDirectories } from '@src/lib/desktopFS'
 import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
 import { PATHS } from '@src/lib/paths'
 import type { FileEntry } from '@src/lib/project'
-import { codeManager, kclManager } from '@src/lib/singletons'
+import { codeManager, kclManager, rustContext } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
 import type { IndexLoaderData } from '@src/lib/types'
 
@@ -32,6 +32,7 @@ import { ToastInsert } from '@src/components/ToastInsert'
 import { commandBarActor } from '@src/machines/commandBarMachine'
 import toast from 'react-hot-toast'
 import styles from './FileTree.module.css'
+import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 
 function getIndentationCSS(level: number) {
   return `calc(1rem * ${level + 1})`
@@ -228,8 +229,11 @@ const FileTreeItem = ({
         code = normalizeLineEndings(code)
         codeManager.updateCodeStateEditor(code)
       } else if (isImportedInCurrentFile && eventType === 'change') {
-        // TODO: do something less stupid than this
-        location.reload()
+        await rustContext.clearSceneAndBustCache(
+          { settings: await jsAppSettings() },
+          codeManager?.currentFilePath || undefined
+        )
+        await kclManager.executeAst()
       }
       fileSend({ type: 'Refresh' })
     },
@@ -544,7 +548,7 @@ function FileTreeContextMenu({
           Clone
         </ContextMenuItem>,
         <ContextMenuItem
-          data-testid="context-menu-rename"
+          data-testid="context-menu-open-in-new-window"
           onClick={onOpenInNewWindow}
         >
           Open in new window
