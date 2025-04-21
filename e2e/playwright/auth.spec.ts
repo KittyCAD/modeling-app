@@ -37,7 +37,16 @@ test.describe('Authentication tests', () => {
         await expect(signInPage.signInButton).toBeVisible()
       })
 
-      // TODO: add step to actually sign in and get to the home page
+      await test.step('Sign in, activate, and expect home page', async () => {
+        await signInPage.signInButton.click()
+        await expect(signInPage.userCode).toBeVisible()
+        const userCode = await signInPage.userCode.textContent()
+        expect(userCode).not.toBeNull()
+        await signInPage.vefifyAndConfirmAuth(userCode!)
+
+        // Longer timeout than usual here for the wait on home page
+        await expect(homePage.projectSection).toBeVisible({ timeout: 10000 })
+      })
     }
   )
 })
