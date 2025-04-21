@@ -72,6 +72,7 @@ async fn inner_assert(
     error: Option<String>,
     args: &Args,
 ) -> Result<(), KclError> {
+    // Validate the args
     let no_condition_given = [
         &is_greater_than,
         &is_less_than,
@@ -87,12 +88,24 @@ async fn inner_assert(
             source_ranges: vec![args.source_range],
         }));
     }
+
+    if epsilon.is_some() && is_equal_to.is_none() {
+        return Err(KclError::Type(KclErrorDetails {
+            message:
+                "The `epsilon` arg is only used with `isEqualTo`. Either remove `epsilon` or add an `isEqualTo` arg."
+                    .to_owned(),
+            source_ranges: vec![args.source_range],
+        }));
+    }
+
     let suffix = if let Some(err_string) = error {
         format!(": {err_string}")
     } else {
         Default::default()
     };
     let actual = actual.n;
+
+    // Run the checks.
     if let Some(exp) = is_greater_than {
         let exp = exp.n;
         _assert(
@@ -131,13 +144,9 @@ async fn inner_assert(
     }
     if let Some(exp) = is_equal_to {
         let exp = exp.n;
-        let cond = if let Some(epsilon) = epsilon {
-            (actual - exp).abs() < epsilon.n
-        } else {
-            actual == exp
-        };
+        let epsilon = epsilon.map(|e| e.n).unwrap_or(0.0000000001);
         _assert(
-            cond,
+            (actual - exp).abs() < epsilon,
             &format!("Expected {actual} to be equal to {exp} but it wasn't{suffix}"),
             args,
         )
