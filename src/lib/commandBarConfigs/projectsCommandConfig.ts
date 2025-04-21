@@ -328,10 +328,9 @@ export const importFileFromURL: Command = {
   description: 'Create a file',
   needsReview: true,
   onSubmit: (record) => {
-    console.log('RECORD!', record)
     if (record) {
       systemIOActor.send({
-        type: SystemIOMachineEvents.createKCLFile,
+        type: SystemIOMachineEvents.importFileFromURL,
         data: {
           requestedProjectName: record.projectName,
           requestedCode: record.code,

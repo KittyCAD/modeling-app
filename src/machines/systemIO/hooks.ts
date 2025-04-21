@@ -16,3 +16,6 @@ export const useCanReadWriteProjectDirectory = () =>
   )
 export const useHasListedProjects = () =>
   useSelector(systemIOActor, (state) => state.context.hasListedProjects)
+
+export const useClearURLParams = () =>
+  useSelector(systemIOActor, (state) => state.context.clearURLParams)

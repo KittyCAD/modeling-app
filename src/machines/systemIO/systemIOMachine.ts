@@ -65,6 +65,14 @@ export const systemIOMachine = setup({
           }
         }
       | {
+          type: SystemIOMachineEvents.importFileFromURL
+          data: {
+            requestedProjectName: string
+            requestedFileName: string
+            requestedCode: string
+          }
+        }
+      | {
           type: SystemIOMachineEvents.setDefaultProjectFolderName
           data: { requestedDefaultProjectFolderName: string }
         },
@@ -220,6 +228,7 @@ export const systemIOMachine = setup({
       file: NO_PROJECT_DIRECTORY,
     },
     canReadWriteProjectDirectory: { value: true, error: undefined },
+    clearURLParams: { value: false },
   }),
   states: {
     [SystemIOMachineStates.idle]: {
@@ -252,6 +261,9 @@ export const systemIOMachine = setup({
         },
         [SystemIOMachineEvents.setDefaultProjectFolderName]: {
           actions: [SystemIOMachineActions.setDefaultProjectFolderName],
+        },
+        [SystemIOMachineEvents.importFileFromURL]: {
+          target: SystemIOMachineStates.importFileFromURL,
         },
       },
     },
@@ -360,6 +372,29 @@ export const systemIOMachine = setup({
         },
         onDone: {
           target: SystemIOMachineStates.idle,
+        },
+        onError: {
+          target: SystemIOMachineStates.idle,
+          actions: [SystemIOMachineActions.toastError],
+        },
+      },
+    },
+    [SystemIOMachineStates.importFileFromURL]: {
+      invoke: {
+        id: SystemIOMachineActors.importFileFromURL,
+        src: SystemIOMachineActors.createKCLFile,
+        input: ({ context, event }) => {
+          assertEvent(event, SystemIOMachineEvents.importFileFromURL)
+          return {
+            context,
+            requestedProjectName: event.data.requestedProjectName,
+            requestedFileName: event.data.requestedFileName,
+            requestedCode: event.data.requestedCode,
+          }
+        },
+        onDone: {
+          target: SystemIOMachineStates.idle,
+          actions: [assign({ clearURLParams: { value: true } })],
         },
         onError: {
           target: SystemIOMachineStates.idle,

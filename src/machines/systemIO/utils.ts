@@ -8,6 +8,7 @@ export enum SystemIOMachineActors {
   deleteProject = 'delete project',
   createKCLFile = 'create kcl file',
   checkReadWrite = 'check read write',
+  importFileFromURL = 'import file from URL',
 }
 
 export enum SystemIOMachineStates {
@@ -19,6 +20,7 @@ export enum SystemIOMachineStates {
   deletingProject = 'deletingProject',
   creatingKCLFile = 'creatingKCLFile',
   checkingReadWrite = 'checkingReadWrite',
+  importFileFromURL = 'importFileFromURL',
 }
 
 const donePrefix = 'xstate.done.actor.'
@@ -36,6 +38,7 @@ export enum SystemIOMachineEvents {
   createKCLFile = 'create kcl file',
   setDefaultProjectFolderName = 'set default project folder name',
   done_checkReadWrite = donePrefix + 'check read write',
+  importFileFromURL = 'import file from URL',
 }
 
 export enum SystemIOMachineActions {
@@ -65,4 +68,5 @@ export type SystemIOContext = {
   requestedProjectName: { name: string }
   requestedFileName: { project: string; file: string }
   canReadWriteProjectDirectory: { value: boolean; error: unknown }
+  clearURLParams: { value: boolean }
 }
