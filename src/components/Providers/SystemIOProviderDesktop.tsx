@@ -81,6 +81,7 @@ export function SystemIOMachineLogicListenerDesktop() {
 
   const useGlobalFileNavigation = () => {
     useEffect(() => {
+      console.log(requestedFileName, 'NEW!')
       if (!requestedFileName.file || !requestedFileName.project) {
         return
       }

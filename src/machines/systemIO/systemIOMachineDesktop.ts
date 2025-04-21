@@ -166,6 +166,13 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
 
         let newProjectName = requestedProjectName
 
+        if (!newProjectName) {
+          newProjectName = getUniqueProjectName(
+            input.context.defaultProjectFolderName,
+            input.context.folders
+          )
+        }
+
         const needsInterpolated =
           doesProjectNameNeedInterpolated(newProjectName)
         if (needsInterpolated) {
@@ -197,7 +204,7 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
         return {
           message: 'File created successfully',
           fileName: input.requestedFileName,
-          projectName: requestedProjectName,
+          projectName: newProjectName,
         }
       }
     ),

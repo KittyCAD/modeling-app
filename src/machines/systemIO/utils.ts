@@ -39,6 +39,7 @@ export enum SystemIOMachineEvents {
   setDefaultProjectFolderName = 'set default project folder name',
   done_checkReadWrite = donePrefix + 'check read write',
   importFileFromURL = 'import file from URL',
+  done_importFileFromURL = donePrefix + 'import file from URL',
 }
 
 export enum SystemIOMachineActions {

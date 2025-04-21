@@ -393,8 +393,20 @@ export const systemIOMachine = setup({
           }
         },
         onDone: {
-          target: SystemIOMachineStates.idle,
-          actions: [assign({ clearURLParams: { value: true } })],
+          target: SystemIOMachineStates.readingFolders,
+          // Clear on web? not desktop
+          actions: [
+            assign({
+              requestedFileName: ({ context, event }) => {
+                assertEvent(event, SystemIOMachineEvents.done_importFileFromURL)
+                // Not the entire path
+                return {
+                  project: event.output.projectName,
+                  file: event.output.fileName + '.kcl',
+                }
+              },
+            }),
+          ],
         },
         onError: {
           target: SystemIOMachineStates.idle,
