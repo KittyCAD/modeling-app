@@ -1,6 +1,7 @@
 import type { MutableRefObject } from 'react'
 import type { ActorRefFrom } from 'xstate'
 import { assign, fromPromise, setup } from 'xstate'
+import type { AppMachineContext } from '@src/lib/types'
 
 export enum EngineStreamState {
   Off = 'off',
@@ -80,7 +81,11 @@ export const engineStreamMachine = setup({
       async ({
         input: { context, params, rootContext },
       }: {
-        input: { context: EngineStreamContext; params: { zoomToFit: boolean } }
+        input: {
+          context: EngineStreamContext
+          params: { zoomToFit: boolean }
+          rootContext: AppMachineContext
+        }
       }) => {
         const canvas = context.canvasRef.current
         if (!canvas) return false
@@ -109,7 +114,7 @@ export const engineStreamMachine = setup({
       async ({
         input: { context, rootContext },
       }: {
-        input: { context: EngineStreamContext }
+        input: { context: EngineStreamContext; rootContext: AppMachineContext }
       }) => {
         const video = context.videoRef.current
         if (!video) return
@@ -146,9 +151,12 @@ export const engineStreamMachine = setup({
       async ({
         input: { context, event, rootContext },
       }: {
-        input: { context: EngineStreamContext; event: any }
+        input: {
+          context: EngineStreamContext
+          event: any
+          rootContext: AppMachineContext
+        }
       }) => {
-        console.log(context, event, rootContext)
         if (!context.authToken) return
 
         const video = context.videoRef.current

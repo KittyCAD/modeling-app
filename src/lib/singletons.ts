@@ -9,7 +9,6 @@ import { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { BaseUnit } from '@src/lib/settings/settingsTypes'
 
-
 import { useSelector } from '@xstate/react'
 import { createActor, setup, spawnChild } from 'xstate'
 
@@ -25,6 +24,7 @@ import { ACTOR_IDS } from '@src/machines/machineConstants'
 import { settingsMachine } from '@src/machines/settingsMachine'
 import { systemIOMachineDesktop } from '@src/machines/systemIO/systemIOMachineDesktop'
 import { systemIOMachineWeb } from '@src/machines/systemIO/systemIOMachineWeb'
+import type { AppMachineContext } from '@src/lib/types'
 
 export const codeManager = new CodeManager()
 export const engineCommandManager = new EngineCommandManager()
@@ -122,13 +122,7 @@ const appMachine = setup({
       settings: typeof SETTINGS
       systemIO: typeof SYSTEM_IO
     }
-    context: {
-      codeManager: any
-      kclManager: any
-      engineCommandManager: any
-      sceneInfra: any
-      sceneEntitiesManager: any
-    }
+    context: AppMachineContext
   },
   actors: appMachineActors,
 }).createMachine({

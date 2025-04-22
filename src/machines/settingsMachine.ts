@@ -547,6 +547,7 @@ export const settingsMachine = setup({
               doNotPersist: event.doNotPersist ?? false,
               context,
               toastCallback: event.data.toastCallback,
+              rootContext: self.system.get('root').getSnapshot().context,
             }
           }
 

@@ -20,6 +20,7 @@ import {
   SystemIOMachineActors,
 } from '@src/machines/systemIO/utils'
 import { fromPromise } from 'xstate'
+import type { AppMachineContext } from '@src/lib/types'
 
 export const systemIOMachineDesktop = systemIOMachine.provide({
   actors: {
@@ -157,6 +158,7 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           requestedProjectName: string
           requestedFileName: string
           requestedCode: string
+          rootContext: AppMachineContext
         }
       }) => {
         const requestedProjectName = input.requestedProjectName

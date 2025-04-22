@@ -10,6 +10,7 @@ import {
 } from '@src/machines/systemIO/utils'
 import toast from 'react-hot-toast'
 import { assertEvent, assign, fromPromise, setup } from 'xstate'
+import type { AppMachineContext } from '@src/lib/types'
 
 /**
  * Handles any system level I/O for folders and files
@@ -190,7 +191,7 @@ export const systemIOMachine = setup({
           requestedProjectName: string
           requestedFileName: string
           requestedCode: string
-          rootContext: any
+          rootContext: AppMachineContext
         }
       }): Promise<{
         message: string
@@ -385,13 +386,14 @@ export const systemIOMachine = setup({
       invoke: {
         id: SystemIOMachineActors.importFileFromURL,
         src: SystemIOMachineActors.createKCLFile,
-        input: ({ context, event }) => {
+        input: ({ context, event, self }) => {
           assertEvent(event, SystemIOMachineEvents.importFileFromURL)
           return {
             context,
             requestedProjectName: event.data.requestedProjectName,
             requestedFileName: event.data.requestedFileName,
             requestedCode: event.data.requestedCode,
+            rootContext: self.system.get('root').getSnapshot().context,
           }
         },
         onDone: {

@@ -1,4 +1,9 @@
 import type { FileEntry, Project } from '@src/lib/project'
+import type CodeManager from '@src/lang/codeManager'
+import type { EngineCommandManager } from '@src/lang/std/engineConnection'
+import type { KclManager } from '@src/lang/KclSingleton'
+import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 
 export type IndexLoaderData = {
   code: string | null
@@ -111,3 +116,11 @@ export type AsyncFn<F extends (...args: any[]) => any> = WithReturnType<
   F,
   Promise<unknown>
 >
+
+export type AppMachineContext = {
+  codeManager: CodeManager
+  kclManager: KclManager
+  engineCommandManager: EngineCommandManager
+  sceneInfra: SceneInfra
+  sceneEntitiesManager: SceneEntities
+}
