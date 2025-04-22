@@ -21,7 +21,7 @@ export class SignInPageFixture {
     this.apiBaseUrl = 'https://api.dev.zoo.dev'
   }
 
-  async vefifyAndConfirmAuth(userCode: string) {
+  async verifyAndConfirmAuth(userCode: string) {
     // Device flow: stolen from the tauri days
     // https://github.com/KittyCAD/modeling-app/blob/d916c7987452e480719004e6d11fd2e595c7d0eb/e2e/tauri/specs/app.spec.ts#L19
     const headers = {
