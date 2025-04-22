@@ -1117,13 +1117,13 @@ description: Result of parsing router-template-cross-bar.kcl
                         "right": {
                           "commentStart": 0,
                           "end": 0,
-                          "raw": "2",
+                          "raw": "2_",
                           "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
                             "value": 2.0,
-                            "suffix": "None"
+                            "suffix": "Count"
                           }
                         },
                         "start": 0,
