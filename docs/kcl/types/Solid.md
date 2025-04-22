@@ -10,7 +10,7 @@ When you define a solid to a variable like:
 
 ```js
 myPart = startSketchOn('XY')
-    |> startProfileAt([-12, 12], %)
+    |> startProfile(at = [-12, 12])
     |> line(end = [24, 0])
     |> line(end = [0, -24])
     |> line(end = [-24, 0])
@@ -29,7 +29,7 @@ you can use a function.
 ```js
 fn createPart() {
    return startSketchOn('XY')
-        |> startProfileAt([-12, 12], %)
+        |> startProfile(at = [-12, 12])
         |> line(end = [24, 0])
         |> line(end = [0, -24])
         |> line(end = [-24, 0])
