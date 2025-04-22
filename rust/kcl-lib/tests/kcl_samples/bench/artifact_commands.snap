@@ -268,6 +268,14 @@ description: Artifact commands bench.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "set_scene_units",
+      "unit": "mm"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "make_plane",
       "origin": {
         "x": 0.0,

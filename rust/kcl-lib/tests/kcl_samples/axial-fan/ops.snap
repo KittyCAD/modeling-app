@@ -8,7 +8,7 @@ description: Operations executed axial-fan.kcl
     "group": {
       "type": "ModuleInstance",
       "name": "fanHousing",
-      "moduleId": 5
+      "moduleId": 6
     },
     "sourceRange": []
   },
@@ -752,7 +752,7 @@ description: Operations executed axial-fan.kcl
     "group": {
       "type": "ModuleInstance",
       "name": "motor",
-      "moduleId": 6
+      "moduleId": 7
     },
     "sourceRange": []
   },
@@ -967,7 +967,7 @@ description: Operations executed axial-fan.kcl
     "group": {
       "type": "ModuleInstance",
       "name": "fan",
-      "moduleId": 7
+      "moduleId": 8
     },
     "sourceRange": []
   },
@@ -1079,8 +1079,8 @@ description: Operations executed axial-fan.kcl
       "name": "fanBlade",
       "functionSourceRange": [
         997,
-        2290,
-        7
+        2279,
+        8
       ],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -1358,8 +1358,8 @@ description: Operations executed axial-fan.kcl
       "name": "fanBlade",
       "functionSourceRange": [
         997,
-        2290,
-        7
+        2279,
+        8
       ],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -1637,8 +1637,8 @@ description: Operations executed axial-fan.kcl
       "name": "fanBlade",
       "functionSourceRange": [
         997,
-        2290,
-        7
+        2279,
+        8
       ],
       "unlabeledArg": null,
       "labeledArgs": {}

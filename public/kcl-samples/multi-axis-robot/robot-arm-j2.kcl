@@ -11,17 +11,9 @@ sketch011 = startSketchOn(plane003)
        1.75 - (axisJ2ArmWidth / 2 * sin(toRadians(axisJ2))),
        8 + axisJ2ArmWidth / 2 * cos(toRadians(axisJ2))
      ], %)
-  |> arc({
-       angleStart = 90 + axisJ2,
-       angleEnd = 270 + axisJ2,
-       radius = axisJ2ArmWidth / 2
-     }, %)
+  |> arc(angleStart = 90 + axisJ2, angleEnd = 270 + axisJ2, radius = axisJ2ArmWidth / 2)
   |> angledLine(angle = axisJ2, length = axisJ2ArmLength)
-  |> arc({
-       angleStart = -90 + axisJ2,
-       angleEnd = 90 + axisJ2,
-       radius = axisJ2ArmWidth / 2
-     }, %)
+  |> arc(angleStart = -90 + axisJ2, angleEnd = 90 + axisJ2, radius = axisJ2ArmWidth / 2)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 extrude011 = extrude(sketch011, length = -axisJ2ArmThickness)

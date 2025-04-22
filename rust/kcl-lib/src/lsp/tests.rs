@@ -1643,11 +1643,7 @@ sphere = startSketchOn(XZ)
        0 - 0.05
      ], %)
   |> line(end = [sphereDia - 0.1, 0])
-  |> arc({
-       angle_start: 0,
-       angle_end: -180,
-       radius: sphereDia / 2 - 0.05
-     }, %)
+  |> arc(angle_start = 0, angle_end = -180, radius = sphereDia / 2 - 0.05)
   |> close()
   |> revolve({ axis = X }, %)
   |> patternCircular3d(
@@ -1706,7 +1702,7 @@ outsideRevolve = startSketchOn(XZ)
         tower_lsp::lsp_types::Range {
             start: tower_lsp::lsp_types::Position { line: 0, character: 0 },
             end: tower_lsp::lsp_types::Position {
-                line: 60,
+                line: 56,
                 character: 29
             }
         }
@@ -1743,11 +1739,7 @@ sphere = startSketchOn(XZ)
        0 - 0.05
      ], %)
   |> line(end = [sphereDia - 0.1, 0])
-  |> arc({
-       angle_start = 0,
-       angle_end = -180,
-       radius = sphereDia / 2 - 0.05
-     }, %)
+  |> arc(angle_start = 0, angle_end = -180, radius = sphereDia / 2 - 0.05)
   |> close()
   |> revolve({ axis = X }, %)
   |> patternCircular3d(

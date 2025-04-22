@@ -66,6 +66,14 @@ description: Artifact commands assembly_non_default_units.kcl
     "range": [],
     "command": {
       "type": "set_scene_units",
+      "unit": "mm"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "set_scene_units",
       "unit": "in"
     }
   },

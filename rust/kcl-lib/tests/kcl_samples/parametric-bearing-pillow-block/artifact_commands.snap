@@ -1377,5 +1377,13 @@ description: Artifact commands parametric-bearing-pillow-block.kcl
       "type": "set_scene_units",
       "unit": "mm"
     }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "set_scene_units",
+      "unit": "mm"
+    }
   }
 ]

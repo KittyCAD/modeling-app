@@ -1635,6 +1635,12 @@ fn function_body(i: &mut TokenSlice) -> PResult<Node<Program>> {
                 }
                 handle_pending_non_code!(attr);
                 if attr.is_inner() {
+                    if !body.is_empty() {
+                        ParseContext::warn(CompilationError::err(
+                            attr.as_source_range(),
+                            "Named attributes should appear before any declarations or expressions.\n\nBecause named attributes apply to the whole function or module, including code written before them, it can be confusing for readers to not have these attributes at the top of code blocks.",
+                        ));
+                    }
                     inner_attrs.push(attr);
                 } else {
                     pending_attrs.push(attr);
@@ -4529,6 +4535,15 @@ export fn cos(num: number(rad)): number(_) {}"#;
     }
 
     #[test]
+    fn warn_late_settings() {
+        let some_program_string = r#"foo = 42
+@settings(defaultLengthUnit = mm)
+"#;
+        let (_, errs) = assert_no_err(some_program_string);
+        assert_eq!(errs.len(), 1, "{errs:#?}");
+    }
+
+    #[test]
     fn fn_decl_uom_ty() {
         let some_program_string = r#"fn foo(x: number(mm)): number(_) { return 1 }"#;
         let (_, errs) = assert_no_fatal(some_program_string);
@@ -5325,17 +5340,6 @@ mod snapshot_tests {
             // b: 2,
             c: 3
         }"
-    );
-    snapshot_test!(
-        ba,
-        r#"
-sketch001 = startSketchOn('XY')
-  // |> arc({
-  //   angleEnd: 270,
-  //   angleStart: 450,
-  // }, %)
-  |> startProfileAt(%)
-"#
     );
     snapshot_test!(
         bb,

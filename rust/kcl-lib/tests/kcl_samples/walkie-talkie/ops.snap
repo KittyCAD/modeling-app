@@ -8,7 +8,7 @@ description: Operations executed walkie-talkie.kcl
     "group": {
       "type": "ModuleInstance",
       "name": "body",
-      "moduleId": 6
+      "moduleId": 7
     },
     "sourceRange": []
   },
@@ -360,7 +360,7 @@ description: Operations executed walkie-talkie.kcl
     "group": {
       "type": "ModuleInstance",
       "name": "antenna",
-      "moduleId": 8
+      "moduleId": 9
     },
     "sourceRange": []
   },
@@ -460,7 +460,7 @@ description: Operations executed walkie-talkie.kcl
     "group": {
       "type": "ModuleInstance",
       "name": "case",
-      "moduleId": 7
+      "moduleId": 8
     },
     "sourceRange": []
   },
@@ -1513,7 +1513,7 @@ description: Operations executed walkie-talkie.kcl
       "functionSourceRange": [
         69,
         977,
-        12
+        13
       ],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -1571,8 +1571,8 @@ description: Operations executed walkie-talkie.kcl
       "name": "oLogo",
       "functionSourceRange": [
         1035,
-        1538,
-        12
+        1456,
+        13
       ],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -1629,9 +1629,9 @@ description: Operations executed walkie-talkie.kcl
       "type": "FunctionCall",
       "name": "oLogo2",
       "functionSourceRange": [
-        1556,
-        2059,
-        12
+        1474,
+        1895,
+        13
       ],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -1689,8 +1689,8 @@ description: Operations executed walkie-talkie.kcl
       "name": "oLogo",
       "functionSourceRange": [
         1035,
-        1538,
-        12
+        1456,
+        13
       ],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -1747,9 +1747,9 @@ description: Operations executed walkie-talkie.kcl
       "type": "FunctionCall",
       "name": "oLogo2",
       "functionSourceRange": [
-        1556,
-        2059,
-        12
+        1474,
+        1895,
+        13
       ],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -1825,7 +1825,7 @@ description: Operations executed walkie-talkie.kcl
     "group": {
       "type": "ModuleInstance",
       "name": "talkButton",
-      "moduleId": 9
+      "moduleId": 10
     },
     "sourceRange": []
   },
@@ -1940,7 +1940,7 @@ description: Operations executed walkie-talkie.kcl
     "group": {
       "type": "ModuleInstance",
       "name": "knob",
-      "moduleId": 10
+      "moduleId": 11
     },
     "sourceRange": []
   },
@@ -2056,7 +2056,7 @@ description: Operations executed walkie-talkie.kcl
       "functionSourceRange": [
         308,
         891,
-        11
+        12
       ],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -2169,7 +2169,7 @@ description: Operations executed walkie-talkie.kcl
       "functionSourceRange": [
         308,
         891,
-        11
+        12
       ],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -2282,7 +2282,7 @@ description: Operations executed walkie-talkie.kcl
       "functionSourceRange": [
         308,
         891,
-        11
+        12
       ],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -2395,7 +2395,7 @@ description: Operations executed walkie-talkie.kcl
       "functionSourceRange": [
         308,
         891,
-        11
+        12
       ],
       "unlabeledArg": null,
       "labeledArgs": {}

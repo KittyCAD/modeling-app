@@ -66,6 +66,10 @@ impl RuntimeType {
         RuntimeType::Primitive(PrimitiveType::Plane)
     }
 
+    pub fn bool() -> Self {
+        RuntimeType::Primitive(PrimitiveType::Boolean)
+    }
+
     pub fn string() -> Self {
         RuntimeType::Primitive(PrimitiveType::String)
     }
