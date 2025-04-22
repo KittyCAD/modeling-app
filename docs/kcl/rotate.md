@@ -76,7 +76,7 @@ pipeHole = startSketchOn(XY)
 
 sweepSketch = startSketchOn(XY)
   |> circle(center = [0, 0], radius = 2)
-  |> hole(pipeHole, %)
+  |> subtract2d(tool = pipeHole)
   |> sweep(path = sweepPath)
   |> rotate(roll = 10, pitch = 10, yaw = 90)
 ```
@@ -101,7 +101,7 @@ pipeHole = startSketchOn(XY)
 
 sweepSketch = startSketchOn(XY)
   |> circle(center = [0, 0], radius = 2)
-  |> hole(pipeHole, %)
+  |> subtract2d(tool = pipeHole)
   |> sweep(path = sweepPath)
   |> rotate(roll = 10)
 ```
@@ -126,7 +126,7 @@ pipeHole = startSketchOn(XY)
 
 sweepSketch = startSketchOn(XY)
   |> circle(center = [0, 0], radius = 2)
-  |> hole(pipeHole, %)
+  |> subtract2d(tool = pipeHole)
   |> sweep(path = sweepPath)
   |> rotate(axis = [0, 0, 1.0], angle = 90)
 ```

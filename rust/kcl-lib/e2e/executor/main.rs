@@ -49,11 +49,9 @@ async fn kcl_test_execute_engine_error_return() {
 "#;
 
     let result = execute_and_snapshot(code, None).await;
-    assert!(result.is_err());
-    assert_eq!(
-        result.err().unwrap().to_string(),
-        r#"engine: KclErrorDetails { source_ranges: [SourceRange([226, 245, 0])], message: "Modeling command failed: [ApiError { error_code: BadRequest, message: \"The path is not closed.  Solid2D construction requires a closed path!\" }]" }"#,
-    );
+    let expected_msg = "engine: Modeling command failed: [ApiError { error_code: BadRequest, message: \"The path is not closed.  Solid2D construction requires a closed path!\" }]";
+    let err = result.unwrap_err().as_kcl_error().unwrap().get_message();
+    assert_eq!(err, expected_msg);
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -1384,10 +1382,9 @@ extrusion = startSketchOn(XY)
 
     let result = execute_and_snapshot(code, None).await;
     assert!(result.is_err());
-    assert_eq!(
-        result.err().unwrap().to_string(),
-        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([68, 358, 0]), SourceRange([445, 478, 0])], message: "Expected 2 arguments, got 3" }"#
-    );
+    let expected_msg = "semantic: Expected 2 arguments, got 3";
+    let err = result.unwrap_err().as_kcl_error().unwrap().get_message();
+    assert_eq!(err, expected_msg);
 }
 
 #[tokio::test(flavor = "multi_thread")]

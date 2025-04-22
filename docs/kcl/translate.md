@@ -56,7 +56,7 @@ pipeHole = startSketchOn(XY)
 
 sweepSketch = startSketchOn(XY)
   |> circle(center = [0, 0], radius = 2)
-  |> hole(pipeHole, %)
+  |> subtract2d(tool = pipeHole)
   |> sweep(path = sweepPath)
   |> translate(x = 1.0, y = 1.0, z = 2.5)
 ```

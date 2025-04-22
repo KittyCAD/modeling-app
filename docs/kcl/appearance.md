@@ -198,7 +198,7 @@ pipeHole = startSketchOn(XY)
 
 sweepSketch = startSketchOn(XY)
   |> circle(center = [0, 0], radius = 2)
-  |> hole(pipeHole, %)
+  |> subtract2d(tool = pipeHole)
   |> sweep(path = sweepPath)
   |> appearance(color = "#ff0000", metalness = 50, roughness = 50)
 ```
