@@ -181,7 +181,6 @@ test.describe('Testing settings', () => {
   })
 
   test('Project and user settings can be reset', async ({ page, homePage }) => {
-    test.fixme(orRunWhenFullSuiteEnabled())
     const u = await getUtils(page)
     await test.step(`Setup`, async () => {
       await page.setBodyDimensions({ width: 1200, height: 500 })

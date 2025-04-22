@@ -36,12 +36,12 @@ pub async fn rem(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
 /// If `num` is negative, the result will be too.
 ///
 /// ```no_run
-/// assertEqual(rem( 7,  divisor =  4),  3, 0.01, "remainder is 3" )
-/// assertEqual(rem(-7,  divisor =  4), -3, 0.01, "remainder is -3")
-/// assertEqual(rem( 7,  divisor = -4),  3, 0.01, "remainder is 3" )
-/// assertEqual(rem( 6,    divisor = 2.5), 1,   0.01, "remainder is 1" )
-/// assertEqual(rem( 6.5,  divisor = 2.5), 1.5, 0.01, "remainder is 1.5" )
-/// assertEqual(rem( 6.5,  divisor = 2),   0.5, 0.01, "remainder is 0.5" )
+/// assert(rem( 7,    divisor =   4), isEqualTo =   3, error = "remainder is 3")
+/// assert(rem(-7,    divisor =   4), isEqualTo =  -3, error = "remainder is -3")
+/// assert(rem( 7,    divisor =  -4), isEqualTo =   3, error = "remainder is 3")
+/// assert(rem( 6,    divisor = 2.5), isEqualTo =   1, error = "remainder is 1")
+/// assert(rem( 6.5,  divisor = 2.5), isEqualTo = 1.5, error = "remainder is 1.5")
+/// assert(rem( 6.5,  divisor =   2), isEqualTo = 0.5, error = "remainder is 0.5")
 /// ```
 #[stdlib {
     name = "rem",

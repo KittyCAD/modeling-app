@@ -22,8 +22,8 @@ lSegments = totalLength / lbumps
 wSegments = totalWidth / wbumps
 
 // Add assertions to ensure that the number of bumps are greater than 1
-assertGreaterThan(lbumps, 1, "lbumps must be greater than 1")
-assertGreaterThan(wbumps, 1, "wbumps must be greater than 1")
+assert(lbumps, isGreaterThan = 1, error = "lbumps must be greater than 1")
+assert(wbumps, isGreaterThan = 1, error = "wbumps must be greater than 1")
 
 // Make the base
 base = startSketchOn(XY)

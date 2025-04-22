@@ -115,9 +115,9 @@ pub async fn reduce(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 ///     return sumSoFar
 /// */
 ///
-/// // We use `assertEqual` to check that our `sum` function gives the
+/// // We use `assert` to check that our `sum` function gives the
 /// // expected result. It's good to check your work!
-/// assertEqual(sum([1, 2, 3]), 6, 0.00001, "1 + 2 + 3 summed is 6")
+/// assert(sum([1, 2, 3]), isEqualTo = 6, tolerance = 0.1, error = "1 + 2 + 3 summed is 6")
 /// ```
 /// ```no_run
 /// // This example works just like the previous example above, but it uses
@@ -126,9 +126,9 @@ pub async fn reduce(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// arr = [1, 2, 3]
 /// sum = reduce(arr, 0, (i, result_so_far) => { return i + result_so_far })
 ///
-/// // We use `assertEqual` to check that our `sum` function gives the
+/// // We use `assert` to check that our `sum` function gives the
 /// // expected result. It's good to check your work!
-/// assertEqual(sum, 6, 0.00001, "1 + 2 + 3 summed is 6")
+/// assert(sum, isEqualTo = 6, tolerance = 0.1, error = "1 + 2 + 3 summed is 6")
 /// ```
 /// ```no_run
 /// // Declare a function that sketches a decagon.
@@ -224,7 +224,7 @@ async fn call_reduce_closure(
 /// ```no_run
 /// arr = [1, 2, 3]
 /// new_arr = push(arr, 4)
-/// assertEqual(new_arr[3], 4, 0.00001, "4 was added to the end of the array")
+/// assert(new_arr[3], isEqualTo = 4, tolerance = 0.1, error = "4 was added to the end of the array")
 /// ```
 #[stdlib {
     name = "push",
@@ -260,9 +260,9 @@ pub async fn push(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// ```no_run
 /// arr = [1, 2, 3, 4]
 /// new_arr = pop(arr)
-/// assertEqual(new_arr[0], 1, 0.00001, "1 is the first element of the array")
-/// assertEqual(new_arr[1], 2, 0.00001, "2 is the second element of the array")
-/// assertEqual(new_arr[2], 3, 0.00001, "3 is the third element of the array")
+/// assert(new_arr[0], isEqualTo = 1, tolerance = 0.00001, error = "1 is the first element of the array")
+/// assert(new_arr[1], isEqualTo = 2, tolerance = 0.00001, error = "2 is the second element of the array")
+/// assert(new_arr[2], isEqualTo = 3, tolerance = 0.00001, error = "3 is the third element of the array")
 /// ```
 #[stdlib {
     name = "pop",
