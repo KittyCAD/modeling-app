@@ -101,7 +101,7 @@ import {
 import type EditorManager from '@src/editor/manager'
 import type { KclManager } from '@src/lang/KclSingleton'
 import type CodeManager from '@src/lang/codeManager'
-import { ARG_END, ARG_END_ABSOLUTE } from '@src/lang/constants'
+import { ARG_END, ARG_AT, ARG_END_ABSOLUTE } from '@src/lang/constants'
 import {
   createArrayExpression,
   createCallExpressionStdLib,
@@ -1208,13 +1208,19 @@ export class SceneEntities {
     const tag = findUniqueName(_ast, 'rectangleSegmentA')
     const newDeclaration = createVariableDeclaration(
       varName,
-      createCallExpressionStdLib('startProfile', [
-        createArrayExpression([
-          createLiteral(roundOff(rectangleOrigin[0])),
-          createLiteral(roundOff(rectangleOrigin[1])),
-        ]),
+      createCallExpressionStdLibKw(
+        'startProfile',
         createLocalName(varDec.node.id.name),
-      ])
+        [
+          createLabeledArg(
+            ARG_AT,
+            createArrayExpression([
+              createLiteral(roundOff(rectangleOrigin[0])),
+              createLiteral(roundOff(rectangleOrigin[1])),
+            ])
+          ),
+        ]
+      )
     )
 
     const insertIndex = getInsertIndex(sketchNodePaths, planeNodePath, 'end')
@@ -1409,15 +1415,22 @@ export class SceneEntities {
     // first create just the variable declaration, as that's
     // all we want the user to see in the editor
     const tag = findUniqueName(_ast, 'rectangleSegmentA')
+
     const newDeclaration = createVariableDeclaration(
       varName,
-      createCallExpressionStdLib('startProfile', [
-        createArrayExpression([
-          createLiteral(roundOff(rectangleOrigin[0])),
-          createLiteral(roundOff(rectangleOrigin[1])),
-        ]),
+      createCallExpressionStdLibKw(
+        'startProfile',
         createLocalName(varDec.node.id.name),
-      ])
+        [
+          createLabeledArg(
+            ARG_AT,
+            createArrayExpression([
+              createLiteral(roundOff(rectangleOrigin[0])),
+              createLiteral(roundOff(rectangleOrigin[1])),
+            ])
+          ),
+        ]
+      )
     )
     const insertIndex = getInsertIndex(sketchNodePaths, planeNodePath, 'end')
 
