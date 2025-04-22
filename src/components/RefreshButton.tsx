@@ -1,20 +1,12 @@
 import { CustomIcon } from '@src/components/CustomIcon'
 import Tooltip from '@src/components/Tooltip'
-import { useMenuListener } from '@src/hooks/useMenu'
 import usePlatform from '@src/hooks/usePlatform'
 import { hotkeyDisplay } from '@src/lib/hotkeyWrapper'
 import { reportRejection } from '@src/lib/trap'
 import { refreshPage } from '@src/lib/utils'
-import type { WebContentSendPayload } from '@src/menu/channels'
 
 export const RefreshButton = () => {
   const platform = usePlatform()
-  const cb = (data: WebContentSendPayload) => {
-    if (data.menuLabel === 'Help.Refresh and report a bug') {
-      refreshPage('Native menu').catch(reportRejection)
-    }
-  }
-  useMenuListener(cb)
 
   return (
     <button
