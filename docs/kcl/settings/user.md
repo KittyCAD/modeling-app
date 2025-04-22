@@ -75,7 +75,7 @@ When the user is idle, teardown the stream after some time.
 
 ##### allow_orbit_in_sketch_mode
 
-When the user is idle, and this is true, the stream will be torn down.
+Allow orbiting in sketch mode.
 
 
 **Default:** None
