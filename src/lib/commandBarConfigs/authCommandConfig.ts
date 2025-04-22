@@ -1,6 +1,6 @@
-import { Command } from 'lib/commandTypes'
-import { authActor } from 'machines/appMachine'
-import { ACTOR_IDS } from 'machines/machineConstants'
+import type { Command } from '@src/lib/commandTypes'
+import { authActor } from '@src/machines/appMachine'
+import { ACTOR_IDS } from '@src/machines/machineConstants'
 
 export const authCommands: Command[] = [
   {

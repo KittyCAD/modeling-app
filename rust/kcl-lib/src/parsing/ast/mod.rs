@@ -1,5 +1,4 @@
 pub(crate) mod digest;
-pub mod modify;
 pub mod types;
 
 use crate::{

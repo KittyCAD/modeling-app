@@ -1,88 +1,101 @@
+import { perpendicularDistance } from 'sketch-helpers'
+
+import type { Node } from '@rust/kcl-lib/bindings/Node'
+
 import {
-  Path,
-  Sketch,
-  SourceRange,
-  PathToNode,
-  Program,
-  PipeExpression,
-  CallExpression,
-  CallExpressionKw,
-  VariableDeclarator,
-  Expr,
-  VariableDeclaration,
-  sketchFromKclValue,
-  topLevelRange,
-  VariableMap,
-} from 'lang/wasm'
+  ARG_ANGLE,
+  ARG_ANGLE_END,
+  ARG_ANGLE_START,
+  ARG_CIRCLE_CENTER,
+  ARG_RADIUS,
+  ARG_END,
+  ARG_END_ABSOLUTE,
+  ARG_END_ABSOLUTE_X,
+  ARG_END_ABSOLUTE_Y,
+  ARG_INTERSECT_TAG,
+  ARG_LENGTH,
+  ARG_LENGTH_X,
+  ARG_LENGTH_Y,
+  ARG_OFFSET,
+  ARG_TAG,
+  DETERMINING_ARGS,
+  ARG_INTERIOR_ABSOLUTE,
+} from '@src/lang/constants'
 import {
-  ARG_INDEX_FIELD,
-  getNodeFromPath,
-  getNodeFromPathCurry,
-  LABELED_ARG_FIELD,
-} from 'lang/queryAst'
-import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
+  createArrayExpression,
+  createBinaryExpression,
+  createCallExpression,
+  createCallExpressionStdLibKw,
+  createLabeledArg,
+  createLiteral,
+  createLocalName,
+  createPipeExpression,
+  createTagDeclarator,
+  findUniqueName,
+  nonCodeMetaEmpty,
+} from '@src/lang/create'
+import type { ToolTip } from '@src/lang/langHelpers'
+import { toolTips } from '@src/lang/langHelpers'
+import {
+  mutateArrExp,
+  mutateKwArg,
+  mutateObjExpProp,
+  removeKwArgs,
+  splitPathAtPipeExpression,
+} from '@src/lang/modifyAst'
+import { getNodeFromPath, getNodeFromPathCurry } from '@src/lang/queryAst'
+import { ARG_INDEX_FIELD, LABELED_ARG_FIELD } from '@src/lang/queryAstConstants'
+import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import {
   isLiteralArrayOrStatic,
   isNotLiteralArrayOrStatic,
-} from 'lang/std/sketchcombos'
-import { toolTips, ToolTip } from 'lang/langHelpers'
-import {
-  createPipeExpression,
-  mutateKwArg,
-  nonCodeMetaEmpty,
-  removeKwArgs,
-  splitPathAtPipeExpression,
-} from '../modifyAst'
-
-import {
-  SketchLineHelper,
-  ConstrainInfo,
-  ArrayItemInput,
-  ObjectPropertyInput,
-  SingleValueInput,
+} from '@src/lang/std/sketchcombos'
+import type {
   AddTagInfo,
+  ArrayItemInput,
+  ConstrainInfo,
+  CreatedSketchExprResult,
+  InputArgKeys,
+  ObjectPropertyInput,
+  RawArgs,
   SegmentInputs,
   SimplifiedArgDetails,
-  RawArgs,
-  CreatedSketchExprResult,
+  SingleValueInput,
+  SketchLineHelper,
   SketchLineHelperKw,
-  InputArgKeys,
-} from 'lang/std/stdTypes'
-
-import {
-  createLiteral,
-  createTagDeclarator,
-  createCallExpression,
-  createCallExpressionStdLibKw,
-  createArrayExpression,
-  createLabeledArg,
-  createPipeSubstitution,
-  createObjectExpression,
-  mutateArrExp,
-  mutateObjExpProp,
-  findUniqueName,
-} from 'lang/modifyAst'
-import { roundOff, getLength, getAngle, isArray } from 'lib/utils'
-import { err } from 'lib/trap'
-import { perpendicularDistance } from 'sketch-helpers'
-import { TagDeclarator } from '@rust/kcl-lib/bindings/TagDeclarator'
-import { EdgeCutInfo } from 'machines/modelingMachine'
-import { Node } from '@rust/kcl-lib/bindings/Node'
+  addCall,
+} from '@src/lang/std/stdTypes'
 import {
   findKwArg,
-  findKwArgWithIndex,
   findKwArgAny,
   findKwArgAnyIndex,
-} from 'lang/util'
-import { Name } from '@rust/kcl-lib/bindings/Name'
-
-export const ARG_TAG = 'tag'
-export const ARG_END = 'end'
-export const ARG_LENGTH = 'length'
-export const ARG_END_ABSOLUTE = 'endAbsolute'
-export const ARG_CIRCLE_CENTER = 'center'
-export const ARG_CIRCLE_RADIUS = 'radius'
-export const DETERMINING_ARGS = [ARG_LENGTH, ARG_END, ARG_END_ABSOLUTE]
+  findKwArgWithIndex,
+  topLevelRange,
+} from '@src/lang/util'
+import type {
+  CallExpression,
+  CallExpressionKw,
+  Expr,
+  Path,
+  PathToNode,
+  PipeExpression,
+  Program,
+  Sketch,
+  SourceRange,
+  VariableDeclaration,
+  VariableDeclarator,
+  VariableMap,
+} from '@src/lang/wasm'
+import { sketchFromKclValue } from '@src/lang/wasm'
+import { err } from '@src/lib/trap'
+import {
+  allLabels,
+  getAngle,
+  getLength,
+  isArray,
+  roundOff,
+} from '@src/lib/utils'
+import type { EdgeCutInfo } from '@src/machines/modelingMachine'
 
 const STRAIGHT_SEGMENT_ERR = new Error(
   'Invalid input, expected "straight-segment"'
@@ -119,15 +132,10 @@ export function createFirstArg(
         'angledLineOfYLength',
         'angledLineToX',
         'angledLineToY',
+        'angledLineThatIntersects',
       ].includes(sketchFn)
     )
       return createArrayExpression(val)
-    if (['angledLineThatIntersects'].includes(sketchFn) && val[2])
-      return createObjectExpression({
-        angle: val[0],
-        offset: val[1],
-        intersectTag: val[2],
-      })
   } else {
     if (['xLine', 'xLineTo', 'yLine', 'yLineTo'].includes(sketchFn)) return val
   }
@@ -149,22 +157,28 @@ const constrainInfo = (
   g: AbbreviatedInput,
   d: ConstrainInfo['sourceRange'],
   e: ConstrainInfo['pathToNode']
-): ConstrainInfo => ({
-  type: a,
-  isConstrained: b,
-  value: c,
-  sourceRange: d,
-  argPosition:
+): ConstrainInfo => {
+  const argPosition: SimplifiedArgDetails | undefined =
     g === 'singleValue'
       ? { type: 'singleValue' }
       : typeof g === 'number'
-      ? { type: 'arrayItem', index: g }
-      : typeof g === 'string'
-      ? { type: 'objectProperty', key: g }
-      : undefined,
-  pathToNode: e,
-  stdLibFnName: f,
-})
+        ? { type: 'arrayItem', index: g }
+        : typeof g === 'string'
+          ? { type: 'objectProperty', key: g }
+          : g?.type === 'labeledArg'
+            ? g
+            : undefined
+
+  return {
+    type: a,
+    isConstrained: b,
+    value: c,
+    sourceRange: d,
+    argPosition,
+    pathToNode: e,
+    stdLibFnName: f,
+  }
+}
 
 const commonConstraintInfoHelper = (
   callExp: CallExpression | CallExpressionKw,
@@ -174,11 +188,13 @@ const commonConstraintInfoHelper = (
     {
       arrayInput?: 0 | 1
       objInput?: ObjectPropertyInput<any>['key']
+      argLabel?: InputArgKeys
     },
     {
       arrayInput?: 0 | 1
       objInput?: ObjectPropertyInput<any>['key']
-    }
+      argLabel?: InputArgKeys
+    },
   ],
   code: string,
   pathToNode: PathToNode,
@@ -186,118 +202,188 @@ const commonConstraintInfoHelper = (
 ) => {
   if (callExp.type !== 'CallExpression' && callExp.type !== 'CallExpressionKw')
     return []
-  const firstArg = (() => {
-    switch (callExp.type) {
-      case 'CallExpression':
-        return callExp.arguments[0]
-      case 'CallExpressionKw':
-        return findKwArgAny(DETERMINING_ARGS, callExp)
-    }
-  })()
+  const firstArg: [Expr | undefined, { [key: string]: Expr } | undefined] =
+    (() => {
+      switch (callExp.type) {
+        case 'CallExpression':
+          return [callExp.arguments[0], undefined]
+        case 'CallExpressionKw':
+          if (callExp.callee.name.name === 'angledLine') {
+            const angleVal = findKwArg(ARG_ANGLE, callExp)
+            if (angleVal === undefined) {
+              return [undefined, undefined]
+            }
+            const lengthishIndex = findKwArgAnyIndex(
+              [
+                ARG_END_ABSOLUTE_X,
+                ARG_END_ABSOLUTE_Y,
+                ARG_LENGTH_X,
+                ARG_LENGTH_Y,
+                ARG_LENGTH,
+              ],
+              callExp
+            )
+            if (lengthishIndex === undefined) {
+              return [undefined, undefined]
+            }
+            const lengthKey = callExp.arguments[lengthishIndex].label.name
+            const lengthVal = callExp.arguments[lengthishIndex].arg
+            // Note: The order of keys here matters.
+            // Always assumes the angle was the first param, and then the length followed.
+            return [
+              undefined,
+              {
+                angle: angleVal,
+                [lengthKey]: lengthVal,
+              },
+            ]
+          }
+          return [findKwArgAny(DETERMINING_ARGS, callExp), undefined]
+      }
+    })()
   if (firstArg === undefined) {
+    console.error(
+      `Could not parse constraints because call to ${callExp.callee.name.name} was missing important arguments`
+    )
     return []
   }
-  const isArr = firstArg.type === 'ArrayExpression'
-  if (!isArr && firstArg.type !== 'ObjectExpression') return []
   const pipeExpressionIndex = pathToNode.findIndex(
     ([_, nodeName]) => nodeName === 'PipeExpression'
   )
   const pathToBase = pathToNode.slice(0, pipeExpressionIndex + 2)
-  const argIndex = (() => {
-    switch (callExp.type) {
-      case 'CallExpression':
-        return 0
-      case 'CallExpressionKw':
-        return findKwArgAnyIndex(DETERMINING_ARGS, callExp)
+
+  // Case where firstArg was a KCL expression.
+  const firstArgInner = firstArg[0]
+  if (firstArgInner !== undefined) {
+    const isArr = firstArgInner?.type === 'ArrayExpression'
+    const argIndex = (() => {
+      switch (callExp.type) {
+        case 'CallExpression':
+          return 0
+        case 'CallExpressionKw':
+          return findKwArgAnyIndex(DETERMINING_ARGS, callExp)
+      }
+    })()
+    if (argIndex === undefined) {
+      return []
     }
-  })()
-  if (argIndex === undefined) {
-    return []
+    // Construct the pathToNode.
+    const pathToArrayExpression: PathToNode = (() => {
+      const isKw = callExp.type === 'CallExpressionKw'
+      let path: PathToNode = [
+        ...pathToBase,
+        ['arguments', callExp.type],
+        [argIndex, 'index'],
+      ]
+      if (isKw) {
+        path.push(['arg', LABELED_ARG_FIELD])
+      }
+      path.push(
+        isArr
+          ? ['elements', 'ArrayExpression']
+          : ['properties', 'ObjectExpression']
+      )
+      return path
+    })()
+    if (!isArr && firstArgInner.type !== 'ObjectExpression') return []
+    const pathToFirstArg: PathToNode = isArr
+      ? [...pathToArrayExpression, [0, 'index']]
+      : [
+          ...pathToArrayExpression,
+          [
+            firstArgInner.properties.findIndex(
+              (a) => a.key.name === abbreviatedInputs[0].objInput
+            ),
+            'index',
+          ],
+          ['value', 'Property'],
+        ]
+
+    const pathToSecondArg: PathToNode = isArr
+      ? [...pathToArrayExpression, [1, 'index']]
+      : [
+          ...pathToArrayExpression,
+          [
+            firstArgInner.properties.findIndex(
+              (a) => a.key.name === abbreviatedInputs[1].objInput
+            ),
+            'index',
+          ],
+          ['value', 'Property'],
+        ]
+
+    const input1 = isArr
+      ? firstArgInner.elements[0]
+      : firstArgInner.properties.find(
+          (a) => a.key.name === abbreviatedInputs[0].objInput
+        )?.value
+    const input2 = isArr
+      ? firstArgInner.elements[1]
+      : firstArgInner.properties.find(
+          (a) => a.key.name === abbreviatedInputs[1].objInput
+        )?.value
+
+    const constraints: ConstrainInfo[] = []
+    if (input1)
+      constraints.push(
+        constrainInfo(
+          inputConstrainTypes[0],
+          isNotLiteralArrayOrStatic(input1),
+          code.slice(input1.start, input1.end),
+          stdLibFnName,
+          isArr
+            ? abbreviatedInputs[0].arrayInput
+            : abbreviatedInputs[0].objInput,
+          topLevelRange(input1.start, input1.end),
+          pathToFirstArg
+        )
+      )
+    if (input2)
+      constraints.push(
+        constrainInfo(
+          inputConstrainTypes[1],
+          isNotLiteralArrayOrStatic(input2),
+          code.slice(input2.start, input2.end),
+          stdLibFnName,
+          isArr
+            ? abbreviatedInputs[1].arrayInput
+            : abbreviatedInputs[1].objInput,
+          topLevelRange(input2.start, input2.end),
+          pathToSecondArg
+        )
+      )
+
+    return constraints
   }
 
-  // Construct the pathToNode.
-  const pathToArrayExpression: PathToNode = (() => {
-    const isKw = callExp.type === 'CallExpressionKw'
-    let path: PathToNode = [
+  // Case where the firstArg was an object of KCL expressions
+  // (i.e. map of argument labels to argument values in a KW call)
+  const multipleArgs = firstArg[1]
+  if (multipleArgs === undefined) {
+    console.error(
+      `Could not parse constraints because call to ${callExp.callee.name.name} had the wrong argument structure`
+    )
+    return []
+  }
+  return Object.keys(multipleArgs).map((argLabel, i) => {
+    const argValue: Expr = multipleArgs[argLabel]
+    const pathToArg: PathToNode = [
       ...pathToBase,
-      ['arguments', callExp.type],
-      [argIndex, 'index'],
+      ['arguments', 'CallExpressionKw'],
+      [i, ARG_INDEX_FIELD],
+      ['arg', LABELED_ARG_FIELD],
     ]
-    if (isKw) {
-      path.push(['arg', LABELED_ARG_FIELD])
-    }
-    path.push(
-      isArr
-        ? ['elements', 'ArrayExpression']
-        : ['properties', 'ObjectExpression']
+    const label = abbreviatedInputs[i].argLabel
+    return constrainInfo(
+      inputConstrainTypes[i],
+      isNotLiteralArrayOrStatic(argValue),
+      code.slice(argValue.start, argValue.end),
+      stdLibFnName,
+      label === undefined ? undefined : { type: 'labeledArg', key: label },
+      topLevelRange(argValue.start, argValue.end),
+      pathToArg
     )
-    return path
-  })()
-
-  const pathToFirstArg: PathToNode = isArr
-    ? [...pathToArrayExpression, [0, 'index']]
-    : [
-        ...pathToArrayExpression,
-        [
-          firstArg.properties.findIndex(
-            (a) => a.key.name === abbreviatedInputs[0].objInput
-          ),
-          'index',
-        ],
-        ['value', 'Property'],
-      ]
-
-  const pathToSecondArg: PathToNode = isArr
-    ? [...pathToArrayExpression, [1, 'index']]
-    : [
-        ...pathToArrayExpression,
-        [
-          firstArg.properties.findIndex(
-            (a) => a.key.name === abbreviatedInputs[1].objInput
-          ),
-          'index',
-        ],
-        ['value', 'Property'],
-      ]
-
-  const input1 = isArr
-    ? firstArg.elements[0]
-    : firstArg.properties.find(
-        (a) => a.key.name === abbreviatedInputs[0].objInput
-      )?.value
-  const input2 = isArr
-    ? firstArg.elements[1]
-    : firstArg.properties.find(
-        (a) => a.key.name === abbreviatedInputs[1].objInput
-      )?.value
-
-  const constraints: ConstrainInfo[] = []
-  if (input1)
-    constraints.push(
-      constrainInfo(
-        inputConstrainTypes[0],
-        isNotLiteralArrayOrStatic(input1),
-        code.slice(input1.start, input1.end),
-        stdLibFnName,
-        isArr ? abbreviatedInputs[0].arrayInput : abbreviatedInputs[0].objInput,
-        topLevelRange(input1.start, input1.end),
-        pathToFirstArg
-      )
-    )
-  if (input2)
-    constraints.push(
-      constrainInfo(
-        inputConstrainTypes[1],
-        isNotLiteralArrayOrStatic(input2),
-        code.slice(input2.start, input2.end),
-        stdLibFnName,
-        isArr ? abbreviatedInputs[1].arrayInput : abbreviatedInputs[1].objInput,
-        topLevelRange(input2.start, input2.end),
-        pathToSecondArg
-      )
-    )
-
-  return constraints
+  })
 }
 
 const horzVertConstraintInfoHelper = (
@@ -930,13 +1016,13 @@ export const yLine: SketchLineHelperKw = {
     ),
 }
 
-export const tangentialArcTo: SketchLineHelper = {
+export const tangentialArc: SketchLineHelperKw = {
   add: ({ node, pathToNode, segmentInput, replaceExistingCallback }) => {
     if (segmentInput.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR
     const { to } = segmentInput
     const _node = { ...node }
     const getNode = getNodeFromPathCurry(_node, pathToNode)
-    const _node1 = getNode<PipeExpression | CallExpression>('PipeExpression')
+    const _node1 = getNode<PipeExpression | CallExpressionKw>('PipeExpression')
     if (err(_node1)) return _node1
     const { node: pipe } = _node1
     const _node2 = getNodeFromPath<VariableDeclarator>(
@@ -950,13 +1036,13 @@ export const tangentialArcTo: SketchLineHelper = {
     const toX = createLiteral(roundOff(to[0], 2))
     const toY = createLiteral(roundOff(to[1], 2))
 
-    if (replaceExistingCallback && pipe.type !== 'CallExpression') {
+    if (replaceExistingCallback && pipe.type !== 'CallExpressionKw') {
       const { index: callIndex } = splitPathAtPipeExpression(pathToNode)
       const result = replaceExistingCallback([
         {
           type: 'arrayItem',
           index: 0,
-          argType: 'xRelative',
+          argType: 'xAbsolute',
           expr: toX,
         },
         {
@@ -975,10 +1061,11 @@ export const tangentialArcTo: SketchLineHelper = {
         valueUsedInTransform,
       }
     }
-    const newLine = createCallExpression('tangentialArcTo', [
-      createArrayExpression([toX, toY]),
-      createPipeSubstitution(),
-    ])
+    const newLine = createCallExpressionStdLibKw(
+      'tangentialArc',
+      null, // Assumes this is being called in a pipeline, so the first arg is optional and if not given, will become pipeline substitution.
+      [createLabeledArg(ARG_END_ABSOLUTE, createArrayExpression([toX, toY]))]
+    )
     if (pipe.type === 'PipeExpression') {
       pipe.body = [...pipe.body, newLine]
       return {
@@ -1004,69 +1091,134 @@ export const tangentialArcTo: SketchLineHelper = {
     if (input.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR
     const { to } = input
     const _node = { ...node }
-    const nodeMeta = getNodeFromPath<CallExpression>(_node, pathToNode)
+    const nodeMeta = getNodeFromPath<CallExpressionKw>(_node, pathToNode)
     if (err(nodeMeta)) return nodeMeta
     const { node: callExpression } = nodeMeta
-    const x = createLiteral(roundOff(to[0], 2))
-    const y = createLiteral(roundOff(to[1], 2))
 
-    const firstArg = callExpression.arguments?.[0]
-    if (!mutateArrExp(firstArg, createArrayExpression([x, y]))) {
-      mutateObjExpProp(firstArg, createArrayExpression([x, y]), 'to')
+    if (callExpression.type !== 'CallExpressionKw') {
+      return new Error(
+        `Expected CallExpressionKw, but found ${callExpression.type}`
+      )
     }
+
+    for (const arg of callExpression.arguments) {
+      if (arg.label.name !== ARG_END_ABSOLUTE && arg.label.name !== ARG_TAG) {
+        console.debug(
+          'Trying to edit unsupported tangentialArc keyword arguments; skipping'
+        )
+        return {
+          modifiedAst: _node,
+          pathToNode,
+        }
+      }
+    }
+
+    const toArrExp = createArrayExpression([
+      createLiteral(roundOff(to[0], 2)),
+      createLiteral(roundOff(to[1], 2)),
+    ])
+
+    mutateKwArg(ARG_END_ABSOLUTE, callExpression, toArrExp)
     return {
       modifiedAst: _node,
       pathToNode,
     }
   },
-  getTag: getTag(),
-  addTag: addTag(),
-  getConstraintInfo: (callExp: CallExpression, code, pathToNode) => {
-    if (callExp.type !== 'CallExpression') return []
-    const firstArg = callExp.arguments?.[0]
-    if (firstArg.type !== 'ArrayExpression') return []
+  getTag: getTagKwArg(),
+  addTag: addTagKw(),
+  getConstraintInfo: (callExp: CallExpressionKw, code, pathToNode) => {
+    if (callExp.type !== 'CallExpressionKw') return []
+    if (callExp.callee.name.name !== 'tangentialArc') return []
     const callee = callExp.callee
     const pathToCallee: PathToNode = [
       ...pathToNode,
-      ['callee', 'CallExpression'],
+      ['callee', 'CallExpressionKw'],
     ]
-    const pathToArrayExpression: PathToNode = [
-      ...pathToNode,
-      ['arguments', 'CallExpression'],
-      [0, 'index'],
-      ['elements', 'ArrayExpression'],
-    ]
-    const pathToFirstArg: PathToNode = [...pathToArrayExpression, [0, 'index']]
-    const pathToSecondArg: PathToNode = [...pathToArrayExpression, [1, 'index']]
-    return [
+    const endAbsoluteArg = findKwArgWithIndex(ARG_END_ABSOLUTE, callExp)
+
+    const constraints: ConstrainInfo[] = [
       constrainInfo(
         'tangentialWithPrevious',
         true,
         callee.name.name,
-        'tangentialArcTo',
+        'tangentialArc',
         undefined,
         topLevelRange(callee.start, callee.end),
         pathToCallee
       ),
-      constrainInfo(
-        'xAbsolute',
-        isNotLiteralArrayOrStatic(firstArg.elements[0]),
-        code.slice(firstArg.elements[0].start, firstArg.elements[0].end),
-        'tangentialArcTo',
-        0,
-        topLevelRange(firstArg.elements[0].start, firstArg.elements[0].end),
-        pathToFirstArg
-      ),
-      constrainInfo(
-        'yAbsolute',
-        isNotLiteralArrayOrStatic(firstArg.elements[1]),
-        code.slice(firstArg.elements[1].start, firstArg.elements[1].end),
-        'tangentialArcTo',
-        1,
-        topLevelRange(firstArg.elements[1].start, firstArg.elements[1].end),
-        pathToSecondArg
-      ),
     ]
+    if (endAbsoluteArg) {
+      const { expr, argIndex } = endAbsoluteArg
+      const pathToArgs: PathToNode = [
+        ...pathToNode,
+        ['arguments', 'CallExpressionKw'],
+      ]
+      const pathToArg: PathToNode = [
+        ...pathToArgs,
+        [argIndex, ARG_INDEX_FIELD],
+        ['arg', LABELED_ARG_FIELD],
+      ]
+      if (expr.type !== 'ArrayExpression' || expr.elements.length < 2) {
+        constraints.push(
+          constrainInfo(
+            'xAbsolute',
+            isNotLiteralArrayOrStatic(expr),
+            code.slice(expr.start, expr.end),
+            'tangentialArc',
+            0,
+            topLevelRange(expr.start, expr.end),
+            pathToArg
+          )
+        )
+        constraints.push(
+          constrainInfo(
+            'yAbsolute',
+            isNotLiteralArrayOrStatic(expr),
+            code.slice(expr.start, expr.end),
+            'tangentialArc',
+            1,
+            topLevelRange(expr.start, expr.end),
+            pathToArg
+          )
+        )
+        return constraints
+      }
+      const pathToX: PathToNode = [
+        ...pathToArg,
+        ['elements', 'ArrayExpression'],
+        [0, 'index'],
+      ]
+      const pathToY: PathToNode = [
+        ...pathToArg,
+        ['elements', 'ArrayExpression'],
+        [1, 'index'],
+      ]
+      const exprX = expr.elements[0]
+      const exprY = expr.elements[1]
+      constraints.push(
+        constrainInfo(
+          'xAbsolute',
+          isNotLiteralArrayOrStatic(exprX),
+          code.slice(exprX.start, exprX.end),
+          'tangentialArc',
+          0,
+          topLevelRange(exprX.start, exprX.end),
+          pathToX
+        )
+      )
+      constraints.push(
+        constrainInfo(
+          'yAbsolute',
+          isNotLiteralArrayOrStatic(exprY),
+          code.slice(exprY.start, exprY.end),
+          'tangentialArc',
+          1,
+          topLevelRange(exprY.start, exprY.end),
+          pathToY
+        )
+      )
+    }
+    return constraints
   },
 }
 export const circle: SketchLineHelperKw = {
@@ -1141,7 +1293,7 @@ export const circle: SketchLineHelperKw = {
     ])
     mutateKwArg(ARG_CIRCLE_CENTER, callExpression, newCenter)
     const newRadius = createLiteral(roundOff(radius))
-    mutateKwArg(ARG_CIRCLE_RADIUS, callExpression, newRadius)
+    mutateKwArg(ARG_RADIUS, callExpression, newRadius)
     return {
       modifiedAst: _node,
       pathToNode,
@@ -1154,7 +1306,7 @@ export const circle: SketchLineHelperKw = {
     const firstArg = callExp.arguments?.[0]
     if (firstArg.type !== 'LabeledArg') return []
     let centerInfo = findKwArgWithIndex(ARG_CIRCLE_CENTER, callExp)
-    let radiusInfo = findKwArgWithIndex(ARG_CIRCLE_RADIUS, callExp)
+    let radiusInfo = findKwArgWithIndex(ARG_RADIUS, callExp)
     if (!centerInfo || !radiusInfo) return []
     if (centerInfo?.expr.type !== 'ArrayExpression') return []
 
@@ -1231,7 +1383,7 @@ export const circle: SketchLineHelperKw = {
   },
 }
 
-export const arc: SketchLineHelper = {
+export const arc: SketchLineHelperKw = {
   add: ({
     node,
     variables,
@@ -1270,16 +1422,13 @@ export const arc: SketchLineHelper = {
     const startAngleDegrees = (startAngle * 180) / Math.PI
     const endAngleDegrees = (endAngle * 180) / Math.PI
 
-    // Create the arc call expression
-    const arcObj = createObjectExpression({
-      radius: createLiteral(roundOff(radius)),
-      angleStart: createLiteral(roundOff(startAngleDegrees)),
-      angleEnd: createLiteral(roundOff(endAngleDegrees)),
-    })
-
-    const newArc = createCallExpression('arc', [
-      arcObj,
-      createPipeSubstitution(),
+    const newArc = createCallExpressionStdLibKw('arc', null, [
+      createLabeledArg('radius', createLiteral(roundOff(radius))),
+      createLabeledArg(
+        'angleStart',
+        createLiteral(roundOff(startAngleDegrees))
+      ),
+      createLabeledArg('angleEnd', createLiteral(roundOff(endAngleDegrees))),
     ])
 
     if (
@@ -1380,15 +1529,10 @@ export const arc: SketchLineHelper = {
     if (input.type !== 'arc-segment') return ARC_SEGMENT_ERR
     const { center, radius, from, to } = input
     const _node = { ...node }
-    const nodeMeta = getNodeFromPath<CallExpression>(_node, pathToNode)
+    const nodeMeta = getNodeFromPath<CallExpressionKw>(_node, pathToNode)
     if (err(nodeMeta)) return nodeMeta
 
     const { node: callExpression, shallowPath } = nodeMeta
-    const firstArg = callExpression.arguments?.[0]
-
-    if (firstArg.type !== 'ObjectExpression') {
-      return new Error('Expected object expression as first argument')
-    }
 
     // Calculate start angle (from center to 'from' point)
     const startAngle = Math.atan2(from[1] - center[1], from[0] - center[0])
@@ -1400,133 +1544,120 @@ export const arc: SketchLineHelper = {
     const startAngleDegrees = (startAngle * 180) / Math.PI
     const endAngleDegrees = (endAngle * 180) / Math.PI
 
-    // Update radius
     const newRadius = createLiteral(roundOff(radius))
-    mutateObjExpProp(firstArg, newRadius, 'radius')
-
-    // Update angleStart
     const newAngleStart = createLiteral(roundOff(startAngleDegrees))
-    mutateObjExpProp(firstArg, newAngleStart, 'angleStart')
-
-    // Update angleEnd
     const newAngleEnd = createLiteral(roundOff(endAngleDegrees))
-    mutateObjExpProp(firstArg, newAngleEnd, 'angleEnd')
+    mutateKwArg('radius', callExpression, newRadius)
+    mutateKwArg('angleStart', callExpression, newAngleStart)
+    mutateKwArg('angleEnd', callExpression, newAngleEnd)
 
     return {
       modifiedAst: _node,
       pathToNode: shallowPath,
     }
   },
-  getTag: getTag(),
-  addTag: addTag(),
+  getTag: getTagKwArg(),
+  addTag: addTagKw(),
   getConstraintInfo: (callExp, code, pathToNode, filterValue) => {
     // TODO this isn't quiet right, the filter value needs to be added to group the radius and start angle together
     // with the end angle by itself,
     // also both angles are just called angle, which is not correct
-    if (callExp.type !== 'CallExpression') return []
-    const args = callExp.arguments
-    if (args.length < 1) return []
+    if (callExp.type !== 'CallExpressionKw') return []
 
-    const firstArg = args[0]
-    if (firstArg.type !== 'ObjectExpression') return []
+    const returnVal = []
+    const pathToBase: PathToNode = [
+      ...pathToNode,
+      ['arguments', 'CallExpressionKw'],
+    ]
 
     // Find radius, angleStart, and angleEnd properties
-    const radiusProp = firstArg.properties.find(
-      (prop) =>
-        prop.type === 'ObjectProperty' &&
-        prop.key.type === 'Identifier' &&
-        prop.key.name === 'radius'
+    const angleStart = findKwArgWithIndex(ARG_ANGLE_START, callExp)
+    const angleEnd = findKwArgWithIndex(ARG_ANGLE_END, callExp)
+    const radius = findKwArgWithIndex(ARG_RADIUS, callExp)
+    if (!radius || !angleStart || !angleEnd) return []
+    const pathToAngleStartArg: PathToNode = [
+      ...pathToBase,
+      [angleStart.argIndex, ARG_INDEX_FIELD],
+      ['arg', LABELED_ARG_FIELD],
+    ]
+    returnVal.push(
+      constrainInfo(
+        'angle',
+        isNotLiteralArrayOrStatic(angleStart.expr),
+        code.slice(angleStart.expr.start, angleStart.expr.end),
+        'arc',
+        { type: 'labeledArg', key: ARG_ANGLE_START },
+        topLevelRange(angleStart.expr.start, angleStart.expr.end),
+        pathToAngleStartArg
+      )
     )
-
-    const angleStartProp = firstArg.properties.find(
-      (prop) =>
-        prop.type === 'ObjectProperty' &&
-        prop.key.type === 'Identifier' &&
-        prop.key.name === 'angleStart'
+    const pathToAngleEndArg: PathToNode = [
+      ...pathToBase,
+      [angleEnd.argIndex, ARG_INDEX_FIELD],
+      ['arg', LABELED_ARG_FIELD],
+    ]
+    returnVal.push(
+      constrainInfo(
+        'angle',
+        isNotLiteralArrayOrStatic(angleEnd.expr),
+        code.slice(angleEnd.expr.start, angleEnd.expr.end),
+        'arc',
+        { type: 'labeledArg', key: ARG_ANGLE_END },
+        topLevelRange(angleEnd.expr.start, angleEnd.expr.end),
+        pathToAngleEndArg
+      )
     )
-
-    const angleEndProp = firstArg.properties.find(
-      (prop) =>
-        prop.type === 'ObjectProperty' &&
-        prop.key.type === 'Identifier' &&
-        prop.key.name === 'angleEnd'
+    const pathToRadiusArg: PathToNode = [
+      ...pathToBase,
+      [radius.argIndex, ARG_INDEX_FIELD],
+      ['arg', LABELED_ARG_FIELD],
+    ]
+    returnVal.push(
+      constrainInfo(
+        'angle',
+        isNotLiteralArrayOrStatic(radius.expr),
+        code.slice(radius.expr.start, radius.expr.end),
+        'arc',
+        { type: 'labeledArg', key: ARG_RADIUS },
+        topLevelRange(radius.expr.start, radius.expr.end),
+        pathToRadiusArg
+      )
     )
-
-    if (!radiusProp || !angleStartProp || !angleEndProp) return []
-
-    const pathToFirstArg: PathToNode = [
-      ...pathToNode,
-      ['arguments', 'CallExpression'],
-      [0, 'index'],
-    ]
-
-    const pathToRadiusProp: PathToNode = [
-      ...pathToFirstArg,
-      ['properties', 'ObjectExpression'],
-      [firstArg.properties.indexOf(radiusProp), 'index'],
-    ]
-
-    const pathToAngleStartProp: PathToNode = [
-      ...pathToFirstArg,
-      ['properties', 'ObjectExpression'],
-      [firstArg.properties.indexOf(angleStartProp), 'index'],
-    ]
-
-    const pathToAngleEndProp: PathToNode = [
-      ...pathToFirstArg,
-      ['properties', 'ObjectExpression'],
-      [firstArg.properties.indexOf(angleEndProp), 'index'],
-    ]
-
-    const pathToRadiusValue: PathToNode = [
-      ...pathToRadiusProp,
-      ['value', 'ObjectProperty'],
-    ]
-
-    const pathToAngleStartValue: PathToNode = [
-      ...pathToAngleStartProp,
-      ['value', 'ObjectProperty'],
-    ]
-
-    const pathToAngleEndValue: PathToNode = [
-      ...pathToAngleEndProp,
-      ['value', 'ObjectProperty'],
-    ]
 
     const constraints: ConstrainInfo[] = [
       constrainInfo(
         'radius',
-        isNotLiteralArrayOrStatic(radiusProp.value),
-        code.slice(radiusProp.value.start, radiusProp.value.end),
+        isNotLiteralArrayOrStatic(radius.expr),
+        code.slice(radius.expr.start, radius.expr.end),
         'arc',
         'radius',
-        topLevelRange(radiusProp.value.start, radiusProp.value.end),
-        pathToRadiusValue
+        topLevelRange(radius.expr.start, radius.expr.end),
+        pathToRadiusArg
       ),
       constrainInfo(
         'angle',
-        isNotLiteralArrayOrStatic(angleStartProp.value),
-        code.slice(angleStartProp.value.start, angleStartProp.value.end),
+        isNotLiteralArrayOrStatic(angleStart.expr),
+        code.slice(angleStart.expr.start, angleStart.expr.end),
         'arc',
         'angleStart',
-        topLevelRange(angleStartProp.value.start, angleStartProp.value.end),
-        pathToAngleStartValue
+        topLevelRange(angleStart.expr.start, angleStart.expr.end),
+        pathToAngleStartArg
       ),
       constrainInfo(
         'angle',
-        isNotLiteralArrayOrStatic(angleEndProp.value),
-        code.slice(angleEndProp.value.start, angleEndProp.value.end),
+        isNotLiteralArrayOrStatic(angleEnd.expr),
+        code.slice(angleEnd.expr.start, angleEnd.expr.end),
         'arc',
         'angleEnd',
-        topLevelRange(angleEndProp.value.start, angleEndProp.value.end),
-        pathToAngleEndValue
+        topLevelRange(angleEnd.expr.start, angleEnd.expr.end),
+        pathToAngleEndArg
       ),
     ]
 
     return constraints
   },
 }
-export const arcTo: SketchLineHelper = {
+export const arcTo: SketchLineHelperKw = {
   add: ({
     node,
     variables,
@@ -1550,9 +1681,9 @@ export const arcTo: SketchLineHelper = {
     const { node: pipe } = nodeMeta
 
     // p1 is the start point (from the previous segment)
-    // p2 is the interior point
+    // p2 is the interiorAbsolute point
     // p3 is the end point
-    const interior = createArrayExpression([
+    const interiorAbsolute = createArrayExpression([
       createLiteral(roundOff(p2[0], 2)),
       createLiteral(roundOff(p2[1], 2)),
     ])
@@ -1566,46 +1697,19 @@ export const arcTo: SketchLineHelper = {
       const result = replaceExistingCallback([
         {
           type: 'objectProperty',
-          key: 'interior' as InputArgKeys,
+          key: 'interiorAbsolute',
           argType: 'xAbsolute',
-          expr: createLiteral(0) as any, // This is a workaround, the actual value will be set later
+          expr: createLiteral(0), // This is a workaround, the actual value will be set later
         },
         {
           type: 'objectProperty',
-          key: 'end' as InputArgKeys,
+          key: 'endAbsolute',
           argType: 'yAbsolute',
-          expr: createLiteral(0) as any, // This is a workaround, the actual value will be set later
+          expr: createLiteral(0), // This is a workaround, the actual value will be set later
         },
       ])
       if (err(result)) return result
       const { callExp, valueUsedInTransform } = result
-
-      // Now manually update the object properties
-      if (
-        callExp.type === 'CallExpression' &&
-        callExp.arguments[0]?.type === 'ObjectExpression'
-      ) {
-        const objExp = callExp.arguments[0]
-        const interiorProp = objExp.properties.find(
-          (p) =>
-            p.type === 'ObjectProperty' &&
-            p.key.type === 'Identifier' &&
-            p.key.name === 'interior'
-        )
-        const endProp = objExp.properties.find(
-          (p) =>
-            p.type === 'ObjectProperty' &&
-            p.key.type === 'Identifier' &&
-            p.key.name === 'end'
-        )
-
-        if (interiorProp && interiorProp.type === 'ObjectProperty') {
-          interiorProp.value = interior
-        }
-        if (endProp && endProp.type === 'ObjectProperty') {
-          endProp.value = end
-        }
-      }
 
       const { index: callIndex } = splitPathAtPipeExpression(pathToNode)
       pipe.body[callIndex] = callExp
@@ -1617,20 +1721,15 @@ export const arcTo: SketchLineHelper = {
             0,
             pathToNode.findIndex(([_, type]) => type === 'PipeExpression') + 1
           ),
-          [pipe.body.length - 1, 'CallExpression'],
+          [pipe.body.length - 1, 'CallExpressionKw'],
         ],
         valueUsedInTransform,
       }
     }
 
-    const objExp = createObjectExpression({
-      interior,
-      end,
-    })
-
-    const newLine = createCallExpression('arcTo', [
-      objExp,
-      createPipeSubstitution(),
+    const newLine = createCallExpressionStdLibKw('arc', null, [
+      createLabeledArg(ARG_INTERIOR_ABSOLUTE, interiorAbsolute),
+      createLabeledArg(ARG_END_ABSOLUTE, end),
     ])
 
     if (spliceBetween) {
@@ -1655,7 +1754,7 @@ export const arcTo: SketchLineHelper = {
             pathToNode.findIndex(([key, _]) => key === 'init') + 1
           ),
           ['body', 'PipeExpression'],
-          [1, 'CallExpression'],
+          [1, 'CallExpressionKw'],
         ],
       }
     }
@@ -1667,7 +1766,7 @@ export const arcTo: SketchLineHelper = {
           0,
           pathToNode.findIndex(([_, type]) => type === 'PipeExpression') + 1
         ),
-        [pipe.body.length - 1, 'CallExpression'],
+        [pipe.body.length - 1, 'CallExpressionKw'],
       ],
     }
   },
@@ -1676,16 +1775,14 @@ export const arcTo: SketchLineHelper = {
 
     const { p2, p3 } = input
     const _node = { ...node }
-    const nodeMeta = getNodeFromPath<CallExpression>(_node, pathToNode)
+    const nodeMeta = getNodeFromPath<CallExpressionKw>(_node, pathToNode)
     if (err(nodeMeta)) return nodeMeta
 
     const { node: callExpression } = nodeMeta
 
-    // Update the first argument which should be an object with interior and end properties
-    const firstArg = callExpression.arguments?.[0]
-    if (!firstArg) return new Error('Missing first argument in arcTo')
+    // Update the first argument which should be an object with interiorAbsolute and end properties
 
-    const interiorPoint = createArrayExpression([
+    const interiorAbsolutePoint = createArrayExpression([
       createLiteral(roundOff(p2[0], 2)),
       createLiteral(roundOff(p2[1], 2)),
     ])
@@ -1695,77 +1792,56 @@ export const arcTo: SketchLineHelper = {
       createLiteral(roundOff(p3[1], 2)),
     ])
 
-    mutateObjExpProp(firstArg, interiorPoint, 'interior')
-    mutateObjExpProp(firstArg, endPoint, 'end')
+    mutateKwArg(ARG_INTERIOR_ABSOLUTE, callExpression, interiorAbsolutePoint)
+    mutateKwArg(ARG_END_ABSOLUTE, callExpression, endPoint)
 
     return {
       modifiedAst: _node,
       pathToNode,
     }
   },
-  getTag: getTag(),
-  addTag: addTag(),
+  getTag: getTagKwArg(),
+  addTag: addTagKw(),
   getConstraintInfo: (callExp, code, pathToNode, filterValue) => {
-    if (callExp.type !== 'CallExpression') return []
+    if (callExp.type !== 'CallExpressionKw') return []
     const args = callExp.arguments
     if (args.length < 1) return []
 
-    const firstArg = args[0]
-    if (firstArg.type !== 'ObjectExpression') return []
-
-    // Find interior and end properties
-    const interiorProp = firstArg.properties.find(
-      (prop) =>
-        prop.type === 'ObjectProperty' &&
-        prop.key.type === 'Identifier' &&
-        prop.key.name === 'interior'
+    // Find interiorAbsolute and end properties
+    const interiorAbsoluteProp = findKwArgWithIndex(
+      ARG_INTERIOR_ABSOLUTE,
+      callExp
     )
+    const endProp = findKwArgWithIndex(ARG_END_ABSOLUTE, callExp)
 
-    const endProp = firstArg.properties.find(
-      (prop) =>
-        prop.type === 'ObjectProperty' &&
-        prop.key.type === 'Identifier' &&
-        prop.key.name === 'end'
-    )
-
-    if (!interiorProp || !endProp) return []
+    if (!interiorAbsoluteProp || !endProp) return []
     if (
-      interiorProp.value.type !== 'ArrayExpression' ||
-      endProp.value.type !== 'ArrayExpression'
+      interiorAbsoluteProp.expr.type !== 'ArrayExpression' ||
+      endProp.expr.type !== 'ArrayExpression'
     )
       return []
 
-    const interiorArr = interiorProp.value
-    const endArr = endProp.value
+    const interiorAbsoluteArr = interiorAbsoluteProp.expr
+    const endArr = endProp.expr
 
-    if (interiorArr.elements.length < 2 || endArr.elements.length < 2) return []
+    if (interiorAbsoluteArr.elements.length < 2 || endArr.elements.length < 2)
+      return []
 
-    const pathToFirstArg: PathToNode = [
+    const pathToBase: PathToNode = [
       ...pathToNode,
-      ['arguments', 'CallExpression'],
-      [0, 'index'],
-    ]
-
-    const pathToInteriorProp: PathToNode = [
-      ...pathToFirstArg,
-      ['properties', 'ObjectExpression'],
-      [firstArg.properties.indexOf(interiorProp), 'index'],
-    ]
-
-    const pathToEndProp: PathToNode = [
-      ...pathToFirstArg,
-      ['properties', 'ObjectExpression'],
-      [firstArg.properties.indexOf(endProp), 'index'],
+      ['arguments', 'CallExpressionKw'],
     ]
 
     const pathToInteriorValue: PathToNode = [
-      ...pathToInteriorProp,
-      ['value', 'ObjectProperty'],
+      ...pathToBase,
+      [interiorAbsoluteProp.argIndex, ARG_INDEX_FIELD],
+      ['arg', LABELED_ARG_FIELD],
     ]
 
     const pathToEndValue: PathToNode = [
-      ...pathToEndProp,
-      ['value', 'ObjectProperty'],
+      ...pathToBase,
+      [endProp.argIndex, ARG_INDEX_FIELD],
+      ['arg', LABELED_ARG_FIELD],
     ]
 
     const pathToInteriorX: PathToNode = [
@@ -1795,49 +1871,53 @@ export const arcTo: SketchLineHelper = {
     const constraints: (ConstrainInfo & { filterValue: string })[] = [
       {
         type: 'xAbsolute',
-        isConstrained: isNotLiteralArrayOrStatic(interiorArr.elements[0]),
-        value: code.slice(
-          interiorArr.elements[0].start,
-          interiorArr.elements[0].end
+        isConstrained: isNotLiteralArrayOrStatic(
+          interiorAbsoluteArr.elements[0]
         ),
-        stdLibFnName: 'arcTo',
+        value: code.slice(
+          interiorAbsoluteArr.elements[0].start,
+          interiorAbsoluteArr.elements[0].end
+        ),
+        stdLibFnName: 'arc',
         argPosition: {
           type: 'arrayInObject',
-          key: 'interior',
+          key: 'interiorAbsolute',
           index: 0,
         },
         sourceRange: topLevelRange(
-          interiorArr.elements[0].start,
-          interiorArr.elements[0].end
+          interiorAbsoluteArr.elements[0].start,
+          interiorAbsoluteArr.elements[0].end
         ),
         pathToNode: pathToInteriorX,
-        filterValue: 'interior',
+        filterValue: 'interiorAbsolute',
       },
       {
         type: 'yAbsolute',
-        isConstrained: isNotLiteralArrayOrStatic(interiorArr.elements[1]),
-        value: code.slice(
-          interiorArr.elements[1].start,
-          interiorArr.elements[1].end
+        isConstrained: isNotLiteralArrayOrStatic(
+          interiorAbsoluteArr.elements[1]
         ),
-        stdLibFnName: 'arcTo',
+        value: code.slice(
+          interiorAbsoluteArr.elements[1].start,
+          interiorAbsoluteArr.elements[1].end
+        ),
+        stdLibFnName: 'arc',
         argPosition: {
           type: 'arrayInObject',
-          key: 'interior',
+          key: 'interiorAbsolute',
           index: 1,
         },
         sourceRange: topLevelRange(
-          interiorArr.elements[1].start,
-          interiorArr.elements[1].end
+          interiorAbsoluteArr.elements[1].start,
+          interiorAbsoluteArr.elements[1].end
         ),
         pathToNode: pathToInteriorY,
-        filterValue: 'interior',
+        filterValue: 'interiorAbsolute',
       },
       {
         type: 'xAbsolute',
         isConstrained: isNotLiteralArrayOrStatic(endArr.elements[0]),
         value: code.slice(endArr.elements[0].start, endArr.elements[0].end),
-        stdLibFnName: 'arcTo',
+        stdLibFnName: 'arc',
         argPosition: {
           type: 'arrayInObject',
           key: 'end',
@@ -1854,7 +1934,7 @@ export const arcTo: SketchLineHelper = {
         type: 'yAbsolute',
         isConstrained: isNotLiteralArrayOrStatic(endArr.elements[1]),
         value: code.slice(endArr.elements[1].start, endArr.elements[1].end),
-        stdLibFnName: 'arcTo',
+        stdLibFnName: 'arc',
         argPosition: {
           type: 'arrayInObject',
           key: 'end',
@@ -2171,8 +2251,9 @@ export const circleThreePoint: SketchLineHelperKw = {
     return finalConstraints
   },
 }
-export const angledLine: SketchLineHelper = {
-  add: ({ node, pathToNode, segmentInput, replaceExistingCallback }) => {
+
+export const angledLine: SketchLineHelperKw = {
+  add: ({ node, pathToNode, segmentInput, replaceExistingCallback, snaps }) => {
     if (segmentInput.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR
     const { from, to } = segmentInput
     const _node = { ...node }
@@ -2181,26 +2262,45 @@ export const angledLine: SketchLineHelper = {
     if (err(_node1)) return _node1
     const { node: pipe } = _node1
 
-    const newAngleVal = createLiteral(roundOff(getAngle(from, to), 0))
+    // When snapping to previous arc's tangent direction, create this expression:
+    //  angledLine({ angle = tangentToEnd(arc001), length = 12 }, %)
+    // Or if snapping to the negative direction:
+    //  angledLine({ angle = tangentToEnd(arc001) + turns::HALF_TURN, length = 12 }, %)
+    const newAngleVal = snaps?.previousArcTag
+      ? snaps.negativeTangentDirection
+        ? createBinaryExpression([
+            createCallExpression('tangentToEnd', [
+              createLocalName(snaps?.previousArcTag),
+            ]),
+            '+',
+            createLocalName('turns::HALF_TURN'),
+          ])
+        : createCallExpression('tangentToEnd', [
+            createLocalName(snaps?.previousArcTag),
+          ])
+      : createLiteral(roundOff(getAngle(from, to), 0))
     const newLengthVal = createLiteral(roundOff(getLength(from, to), 2))
-    const newLine = createCallExpression('angledLine', [
-      createArrayExpression([newAngleVal, newLengthVal]),
-      createPipeSubstitution(),
+    const newLine = createCallExpressionStdLibKw('angledLine', null, [
+      createLabeledArg(ARG_ANGLE, newAngleVal),
+      createLabeledArg(ARG_LENGTH, newLengthVal),
     ])
 
     if (replaceExistingCallback) {
       const { index: callIndex } = splitPathAtPipeExpression(pathToNode)
       const result = replaceExistingCallback([
         {
-          type: 'arrayOrObjItem',
-          index: 0,
+          type: 'labeledArg',
           key: 'angle',
           argType: 'angle',
-          expr: newAngleVal,
+          // We cannot pass newAngleVal to expr because it is a Node<Literal>.
+          // We couldn't change that type to be Node<Expr> because there is a lot of code assuming it to be Node<Literal>.
+          // So we added a new optional overrideExpr which can be Node<Expr> and this is used if present in sketchcombos/createNode().
+          expr:
+            newAngleVal.type === 'Literal' ? newAngleVal : createLiteral(''),
+          overrideExpr: newAngleVal,
         },
         {
-          type: 'arrayOrObjItem',
-          index: 1,
+          type: 'labeledArg',
           key: 'length',
           argType: 'length',
           expr: newLengthVal,
@@ -2226,7 +2326,7 @@ export const angledLine: SketchLineHelper = {
     if (input.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR
     const { to, from } = input
     const _node = { ...node }
-    const nodeMeta = getNodeFromPath<CallExpression>(_node, pathToNode)
+    const nodeMeta = getNodeFromPath<CallExpressionKw>(_node, pathToNode)
     if (err(nodeMeta)) return nodeMeta
     const { node: callExpression } = nodeMeta
     const angle = roundOff(getAngle(from, to), 0)
@@ -2235,33 +2335,30 @@ export const angledLine: SketchLineHelper = {
     const angleLit = createLiteral(angle)
     const lengthLit = createLiteral(lineLength)
 
-    const firstArg = callExpression.arguments?.[0]
-    if (!mutateArrExp(firstArg, createArrayExpression([angleLit, lengthLit]))) {
-      mutateObjExpProp(firstArg, angleLit, 'angle')
-      mutateObjExpProp(firstArg, lengthLit, 'length')
-    }
+    mutateKwArg(ARG_ANGLE, callExpression, angleLit)
+    mutateKwArg(ARG_LENGTH, callExpression, lengthLit)
 
     return {
       modifiedAst: _node,
       pathToNode,
     }
   },
-  getTag: getTag(),
-  addTag: addTag(),
-  getConstraintInfo: (callExp, ...args) =>
-    commonConstraintInfoHelper(
+  getTag: getTagKwArg(),
+  addTag: addTagKw(),
+  getConstraintInfo: (callExp, ...args) => {
+    const constraints = commonConstraintInfoHelper(
       callExp,
       ['angle', 'length'],
       'angledLine',
-      [
-        { arrayInput: 0, objInput: 'angle' },
-        { arrayInput: 1, objInput: 'length' },
-      ],
+      [{ argLabel: 'angle' }, { argLabel: 'length' }],
       ...args
-    ),
+    )
+
+    return constraints
+  },
 }
 
-export const angledLineOfXLength: SketchLineHelper = {
+export const angledLineOfXLength: SketchLineHelperKw = {
   add: ({
     node,
     variables,
@@ -2315,9 +2412,9 @@ export const angledLineOfXLength: SketchLineHelper = {
       if (err(result)) return result
       newLine = result.callExp
     } else {
-      newLine = createCallExpression('angledLineOfXLength', [
-        createArrayExpression([angle, xLength]),
-        createPipeSubstitution(),
+      newLine = createCallExpressionStdLibKw('angledLineOfXLength', null, [
+        createLabeledArg(ARG_ANGLE, angle),
+        createLabeledArg(ARG_LENGTH_X, xLength),
       ])
     }
     const { index: callIndex } = splitPathAtPipeExpression(pathToNode)
@@ -2335,46 +2432,49 @@ export const angledLineOfXLength: SketchLineHelper = {
     if (input.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR
     const { to, from } = input
     const _node = { ...node }
-    const nodeMeta = getNodeFromPath<CallExpression>(_node, pathToNode)
+    const nodeMeta = getNodeFromPath<CallExpressionKw>(_node, pathToNode)
     if (err(nodeMeta)) return nodeMeta
     const { node: callExpression } = nodeMeta
     const angle = roundOff(getAngle(from, to), 0)
     const xLength = roundOff(Math.abs(to[0] - from[0]), 2)
 
-    const firstArg = callExpression.arguments?.[0]
-    const adjustedXLength = isAngleLiteral(firstArg)
+    const oldAngle = findKwArg(ARG_ANGLE, callExpression)
+    if (oldAngle === undefined) {
+      return new Error(
+        `expected an angle arg, but it was not found. Args were ${allLabels(
+          callExpression
+        )}`
+      )
+    }
+    const adjustedXLength = isAngleLiteral(oldAngle)
       ? Math.abs(xLength)
       : xLength // todo make work for variable angle > 180
 
     const angleLit = createLiteral(angle)
     const lengthLit = createLiteral(adjustedXLength)
 
-    if (!mutateArrExp(firstArg, createArrayExpression([angleLit, lengthLit]))) {
-      mutateObjExpProp(firstArg, angleLit, 'angle')
-      mutateObjExpProp(firstArg, lengthLit, 'length')
-    }
+    removeDeterminingArgs(callExpression)
+    mutateKwArg(ARG_ANGLE, callExpression, angleLit)
+    mutateKwArg(ARG_LENGTH_X, callExpression, lengthLit)
 
     return {
       modifiedAst: _node,
       pathToNode,
     }
   },
-  getTag: getTag(),
-  addTag: addTag(),
+  getTag: getTagKwArg(),
+  addTag: addTagKw(),
   getConstraintInfo: (callExp, ...args) =>
     commonConstraintInfoHelper(
       callExp,
       ['angle', 'xRelative'],
       'angledLineOfXLength',
-      [
-        { arrayInput: 0, objInput: 'angle' },
-        { arrayInput: 1, objInput: 'length' },
-      ],
+      [{ argLabel: 'angle' }, { argLabel: 'lengthX' }],
       ...args
     ),
 }
 
-export const angledLineOfYLength: SketchLineHelper = {
+export const angledLineOfYLength: SketchLineHelperKw = {
   add: ({
     node,
     variables,
@@ -2426,9 +2526,9 @@ export const angledLineOfYLength: SketchLineHelper = {
       if (err(result)) return result
       newLine = result.callExp
     } else {
-      newLine = createCallExpression('angledLineOfYLength', [
-        createArrayExpression([angle, yLength]),
-        createPipeSubstitution(),
+      newLine = createCallExpressionStdLibKw('angledLine', null, [
+        createLabeledArg(ARG_ANGLE, angle),
+        createLabeledArg(ARG_LENGTH_Y, yLength),
       ])
     }
     const { index: callIndex } = splitPathAtPipeExpression(pathToNode)
@@ -2446,46 +2546,49 @@ export const angledLineOfYLength: SketchLineHelper = {
     if (input.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR
     const { to, from } = input
     const _node = { ...node }
-    const nodeMeta = getNodeFromPath<CallExpression>(_node, pathToNode)
+    const nodeMeta = getNodeFromPath<CallExpressionKw>(_node, pathToNode)
     if (err(nodeMeta)) return nodeMeta
     const { node: callExpression } = nodeMeta
     const angle = roundOff(getAngle(from, to), 0)
     const yLength = roundOff(to[1] - from[1], 2)
 
-    const firstArg = callExpression.arguments?.[0]
-    const adjustedYLength = isAngleLiteral(firstArg)
+    const oldAngle = findKwArg(ARG_ANGLE, callExpression)
+    if (oldAngle === undefined) {
+      return new Error(
+        `expected an angle arg, but it was not found. Args were ${allLabels(
+          callExpression
+        )}`
+      )
+    }
+    const adjustedYLength = isAngleLiteral(oldAngle)
       ? Math.abs(yLength)
       : yLength // todo make work for variable angle > 180
 
     const angleLit = createLiteral(angle)
     const lengthLit = createLiteral(adjustedYLength)
 
-    if (!mutateArrExp(firstArg, createArrayExpression([angleLit, lengthLit]))) {
-      mutateObjExpProp(firstArg, angleLit, 'angle')
-      mutateObjExpProp(firstArg, lengthLit, 'length')
-    }
+    removeDeterminingArgs(callExpression)
+    mutateKwArg(ARG_ANGLE, callExpression, angleLit)
+    mutateKwArg(ARG_LENGTH_Y, callExpression, lengthLit)
 
     return {
       modifiedAst: _node,
       pathToNode,
     }
   },
-  getTag: getTag(),
-  addTag: addTag(),
+  getTag: getTagKwArg(),
+  addTag: addTagKw(),
   getConstraintInfo: (callExp, ...args) =>
     commonConstraintInfoHelper(
       callExp,
       ['angle', 'yRelative'],
       'angledLineOfYLength',
-      [
-        { arrayInput: 0, objInput: 'angle' },
-        { arrayInput: 1, objInput: 'length' },
-      ],
+      [{ argLabel: 'angle' }, { argLabel: 'lengthY' }],
       ...args
     ),
 }
 
-export const angledLineToX: SketchLineHelper = {
+export const angledLineToX: SketchLineHelperKw = {
   add: ({ node, pathToNode, segmentInput, replaceExistingCallback }) => {
     if (segmentInput.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR
     const { from, to } = segmentInput
@@ -2528,9 +2631,9 @@ export const angledLineToX: SketchLineHelper = {
       }
     }
 
-    const callExp = createCallExpression('angledLineToX', [
-      createArrayExpression([angle, xArg]),
-      createPipeSubstitution(),
+    const callExp = createCallExpressionStdLibKw('angledLineToX', null, [
+      createLabeledArg(ARG_ANGLE, angle),
+      createLabeledArg(ARG_END_ABSOLUTE_X, xArg),
     ])
     pipe.body = [...pipe.body, callExp]
     return {
@@ -2542,44 +2645,39 @@ export const angledLineToX: SketchLineHelper = {
     if (input.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR
     const { to, from } = input
     const _node = { ...node }
-    const nodeMeta = getNodeFromPath<CallExpression>(_node, pathToNode)
+    const nodeMeta = getNodeFromPath<CallExpressionKw>(_node, pathToNode)
     if (err(nodeMeta)) return nodeMeta
 
     const { node: callExpression } = nodeMeta
     const angle = roundOff(getAngle(from, to), 0)
     const xLength = roundOff(to[0], 2)
 
-    const firstArg = callExpression.arguments?.[0]
     const adjustedXLength = xLength
 
     const angleLit = createLiteral(angle)
     const lengthLit = createLiteral(adjustedXLength)
 
-    if (!mutateArrExp(firstArg, createArrayExpression([angleLit, lengthLit]))) {
-      mutateObjExpProp(firstArg, angleLit, 'angle')
-      mutateObjExpProp(firstArg, lengthLit, 'to')
-    }
+    removeDeterminingArgs(callExpression)
+    mutateKwArg(ARG_ANGLE, callExpression, angleLit)
+    mutateKwArg(ARG_END_ABSOLUTE_X, callExpression, lengthLit)
     return {
       modifiedAst: _node,
       pathToNode,
     }
   },
-  getTag: getTag(),
-  addTag: addTag(),
+  getTag: getTagKwArg(),
+  addTag: addTagKw(),
   getConstraintInfo: (callExp, ...args) =>
     commonConstraintInfoHelper(
       callExp,
       ['angle', 'xAbsolute'],
       'angledLineToX',
-      [
-        { arrayInput: 0, objInput: 'angle' },
-        { arrayInput: 1, objInput: 'to' },
-      ],
+      [{ argLabel: 'angle' }, { argLabel: 'endAbsoluteX' }],
       ...args
     ),
 }
 
-export const angledLineToY: SketchLineHelper = {
+export const angledLineToY: SketchLineHelperKw = {
   add: ({ node, pathToNode, segmentInput, replaceExistingCallback }) => {
     if (segmentInput.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR
     const { from, to } = segmentInput
@@ -2624,9 +2722,9 @@ export const angledLineToY: SketchLineHelper = {
       }
     }
 
-    const newLine = createCallExpression('angledLineToY', [
-      createArrayExpression([angle, yArg]),
-      createPipeSubstitution(),
+    const newLine = createCallExpressionStdLibKw('angledLine', null, [
+      createLabeledArg(ARG_ANGLE, angle),
+      createLabeledArg(ARG_END_ABSOLUTE_Y, yArg),
     ])
     pipe.body = [...pipe.body, newLine]
     return {
@@ -2638,44 +2736,39 @@ export const angledLineToY: SketchLineHelper = {
     if (input.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR
     const { to, from } = input
     const _node = { ...node }
-    const nodeMeta = getNodeFromPath<CallExpression>(_node, pathToNode)
+    const nodeMeta = getNodeFromPath<CallExpressionKw>(_node, pathToNode)
     if (err(nodeMeta)) return nodeMeta
 
     const { node: callExpression } = nodeMeta
     const angle = roundOff(getAngle(from, to), 0)
     const xLength = roundOff(to[1], 2)
 
-    const firstArg = callExpression.arguments?.[0]
     const adjustedXLength = xLength
 
     const angleLit = createLiteral(angle)
     const lengthLit = createLiteral(adjustedXLength)
 
-    if (!mutateArrExp(firstArg, createArrayExpression([angleLit, lengthLit]))) {
-      mutateObjExpProp(firstArg, angleLit, 'angle')
-      mutateObjExpProp(firstArg, lengthLit, 'to')
-    }
+    removeDeterminingArgs(callExpression)
+    mutateKwArg(ARG_ANGLE, callExpression, angleLit)
+    mutateKwArg(ARG_END_ABSOLUTE_Y, callExpression, lengthLit)
     return {
       modifiedAst: _node,
       pathToNode,
     }
   },
-  getTag: getTag(),
-  addTag: addTag(),
+  getTag: getTagKwArg(),
+  addTag: addTagKw(),
   getConstraintInfo: (callExp, ...args) =>
     commonConstraintInfoHelper(
       callExp,
       ['angle', 'yAbsolute'],
       'angledLineToY',
-      [
-        { arrayInput: 0, objInput: 'angle' },
-        { arrayInput: 1, objInput: 'to' },
-      ],
+      [{ argLabel: 'angle' }, { argLabel: 'endAbsoluteY' }],
       ...args
     ),
 }
 
-export const angledLineThatIntersects: SketchLineHelper = {
+export const angledLineThatIntersects: SketchLineHelperKw = {
   add: ({
     node,
     pathToNode,
@@ -2714,13 +2807,13 @@ export const angledLineThatIntersects: SketchLineHelper = {
     if (replaceExistingCallback) {
       const result = replaceExistingCallback([
         {
-          type: 'objectProperty',
+          type: 'labeledArg',
           key: 'angle',
           argType: 'angle',
           expr: angle,
         },
         {
-          type: 'objectProperty',
+          type: 'labeledArg',
           key: 'offset',
           argType: 'intersectionOffset',
           expr: offset,
@@ -2742,18 +2835,18 @@ export const angledLineThatIntersects: SketchLineHelper = {
     if (input.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR
     const { to, from } = input
     const _node = { ...node }
-    const nodeMeta = getNodeFromPath<CallExpression>(_node, pathToNode)
+    const nodeMeta = getNodeFromPath<CallExpressionKw>(_node, pathToNode)
     if (err(nodeMeta)) return nodeMeta
 
     const { node: callExpression } = nodeMeta
     const angle = roundOff(getAngle(from, to), 0)
 
-    const firstArg = callExpression.arguments?.[0]
-    const intersectTag =
-      firstArg.type === 'ObjectExpression'
-        ? firstArg.properties.find((p) => p.key.name === 'intersectTag')
-            ?.value || createLiteral('')
-        : createLiteral('')
+    const intersectTag = findKwArg(ARG_INTERSECT_TAG, callExpression)
+    if (intersectTag === undefined) {
+      return new Error(
+        `no ${ARG_INTERSECT_TAG} argument found in angledLineThatIntersect call, which requires it`
+      )
+    }
     const intersectTagName =
       intersectTag.type === 'Name' ? intersectTag.name.name : ''
     const nodeMeta2 = getNodeFromPath<VariableDeclaration>(
@@ -2778,93 +2871,78 @@ export const angledLineThatIntersects: SketchLineHelper = {
       )
     }
 
-    const angleLit = createLiteral(angle)
-
-    mutateObjExpProp(firstArg, angleLit, 'angle')
-    mutateObjExpProp(firstArg, createLiteral(offset), 'offset')
+    mutateKwArg(ARG_ANGLE, callExpression, createLiteral(angle))
+    mutateKwArg(ARG_OFFSET, callExpression, createLiteral(offset))
     return {
       modifiedAst: _node,
       pathToNode,
     }
   },
-  getTag: getTag(),
-  addTag: addTag(),
-  getConstraintInfo: (callExp: CallExpression, code, pathToNode) => {
-    if (callExp.type !== 'CallExpression') return []
-    const firstArg = callExp.arguments?.[0]
-    if (firstArg.type !== 'ObjectExpression') return []
-    const angleIndex = firstArg.properties.findIndex(
-      (p) => p.key.name === 'angle'
-    )
-    const offsetIndex = firstArg.properties.findIndex(
-      (p) => p.key.name === 'offset'
-    )
-    const intersectTag = firstArg.properties.findIndex(
-      (p) => p.key.name === 'intersectTag'
-    )
+  getTag: getTagKwArg(),
+  addTag: addTagKw(),
+  getConstraintInfo: (callExp: CallExpressionKw, code, pathToNode) => {
+    if (callExp.type !== 'CallExpressionKw') return []
+    const angle = findKwArgWithIndex(ARG_ANGLE, callExp)
+    const offset = findKwArgWithIndex(ARG_OFFSET, callExp)
+    const intersectTag = findKwArgWithIndex(ARG_INTERSECT_TAG, callExp)
     const returnVal = []
-    const pathToObjectExp: PathToNode = [
+    const pathToBase: PathToNode = [
       ...pathToNode,
-      ['arguments', 'CallExpression'],
-      [0, 'index'],
-      ['properties', 'ObjectExpression'],
+      ['arguments', 'CallExpressionKw'],
     ]
-    if (angleIndex !== -1) {
-      const angle = firstArg.properties[angleIndex]?.value
+    if (angle !== undefined) {
       const pathToAngleProp: PathToNode = [
-        ...pathToObjectExp,
-        [angleIndex, 'index'],
-        ['value', 'Property'],
+        ...pathToBase,
+        [angle.argIndex, ARG_INDEX_FIELD],
+        ['arg', LABELED_ARG_FIELD],
       ]
       returnVal.push(
         constrainInfo(
           'angle',
-          isNotLiteralArrayOrStatic(angle),
-          code.slice(angle.start, angle.end),
+          isNotLiteralArrayOrStatic(angle.expr),
+          code.slice(angle.expr.start, angle.expr.end),
           'angledLineThatIntersects',
-          'angle',
-          topLevelRange(angle.start, angle.end),
+          { type: 'labeledArg', key: 'angle' },
+          topLevelRange(angle.expr.start, angle.expr.end),
           pathToAngleProp
         )
       )
     }
-    if (offsetIndex !== -1) {
-      const offset = firstArg.properties[offsetIndex]?.value
-      const pathToOffsetProp: PathToNode = [
-        ...pathToObjectExp,
-        [offsetIndex, 'index'],
-        ['value', 'Property'],
-      ]
-      returnVal.push(
-        constrainInfo(
-          'intersectionOffset',
-          isNotLiteralArrayOrStatic(offset),
-          code.slice(offset.start, offset.end),
-          'angledLineThatIntersects',
-          'offset',
-          topLevelRange(offset.start, offset.end),
-          pathToOffsetProp
-        )
-      )
-    }
-    if (intersectTag !== -1) {
-      const tag = firstArg.properties[intersectTag]?.value as Node<Name>
+    if (intersectTag !== undefined) {
       const pathToTagProp: PathToNode = [
-        ...pathToObjectExp,
-        [intersectTag, 'index'],
-        ['value', 'Property'],
+        ...pathToBase,
+        [intersectTag.argIndex, ARG_INDEX_FIELD],
+        ['arg', LABELED_ARG_FIELD],
       ]
       const info = constrainInfo(
         'intersectionTag',
         // This will always be a tag identifier.
         false,
-        code.slice(tag.start, tag.end),
+        code.slice(intersectTag.expr.start, intersectTag.expr.end),
         'angledLineThatIntersects',
-        'intersectTag',
-        topLevelRange(tag.start, tag.end),
+        { type: 'labeledArg', key: 'intersectTag' },
+        topLevelRange(intersectTag.expr.start, intersectTag.expr.end),
         pathToTagProp
       )
       returnVal.push(info)
+    }
+    if (offset !== undefined) {
+      const pathToOffsetProp: PathToNode = [
+        ...pathToBase,
+        [offset.argIndex, ARG_INDEX_FIELD],
+        ['arg', LABELED_ARG_FIELD],
+      ]
+      returnVal.push(
+        constrainInfo(
+          'intersectionOffset',
+          isNotLiteralArrayOrStatic(offset.expr),
+          code.slice(offset.expr.start, offset.expr.end),
+          'angledLineThatIntersects',
+          { type: 'labeledArg', key: 'offset' },
+          topLevelRange(offset.expr.start, offset.expr.end),
+          pathToOffsetProp
+        )
+      )
     }
     return returnVal
   },
@@ -2919,19 +2997,13 @@ export const updateStartProfileAtArgs: SketchLineHelper['updateArgs'] = ({
   }
 }
 
-export const sketchLineHelperMap: { [key: string]: SketchLineHelper } = {
-  angledLine,
-  angledLineOfXLength,
-  angledLineOfYLength,
-  angledLineToX,
-  angledLineToY,
-  angledLineThatIntersects,
-  tangentialArcTo,
-  arc,
-  arcTo,
-} as const
+// TODO: Just remove this.
+export const sketchLineHelperMap: { [key: string]: SketchLineHelper } =
+  {} as const
 
 export const sketchLineHelperMapKw: { [key: string]: SketchLineHelperKw } = {
+  arc,
+  arcTo,
   line,
   lineTo,
   circleThreePoint,
@@ -2940,6 +3012,13 @@ export const sketchLineHelperMapKw: { [key: string]: SketchLineHelperKw } = {
   yLine,
   xLineTo,
   yLineTo,
+  angledLine,
+  angledLineOfXLength,
+  angledLineOfYLength,
+  angledLineThatIntersects,
+  angledLineToX,
+  angledLineToY,
+  tangentialArc,
 } as const
 
 export function changeSketchArguments(
@@ -2962,10 +3041,7 @@ export function changeSketchArguments(
     sourceRangeOrPath.type === 'sourceRange'
       ? getNodePathFromSourceRange(_node, sourceRangeOrPath.sourceRange)
       : sourceRangeOrPath.pathToNode
-  const nodeMeta = getNodeFromPath<CallExpression | CallExpressionKw>(
-    _node,
-    thePath
-  )
+  const nodeMeta = getNodeFromPath<CallExpressionKw>(_node, thePath)
   if (err(nodeMeta)) return nodeMeta
 
   const { node: callExpression, shallowPath } = nodeMeta
@@ -2985,10 +3061,10 @@ export function changeSketchArguments(
     })
   }
   if (fnName in sketchLineHelperMapKw) {
-    const isAbsolute =
-      callExpression.type === 'CallExpressionKw' &&
-      findKwArg(ARG_END_ABSOLUTE, callExpression) !== undefined
-    const correctFnName = fnNameToTooltip(isAbsolute, fnName)
+    const correctFnName =
+      callExpression.type === 'CallExpressionKw'
+        ? fnNameToTooltip(allLabels(callExpression), fnName)
+        : fnName
     if (err(correctFnName)) {
       return correctFnName
     }
@@ -3017,19 +3093,47 @@ export function changeSketchArguments(
  * To put it another way, function names don't map cleanly to tooltips, but function names + arguments do.
  */
 export function fnNameToTooltip(
-  isAbsolute: boolean,
+  argLabels: string[],
   fnName: string
 ): ToolTip | Error {
+  const isAbsolute =
+    argLabels.findIndex((label) => label === ARG_END_ABSOLUTE) >= 0
   switch (fnName) {
+    case 'arc': {
+      const isArc = argLabels.some((label) =>
+        [ARG_RADIUS, ARG_ANGLE_START, ARG_ANGLE_END].includes(label)
+      )
+      return isArc ? 'arc' : 'arcTo'
+    }
     case 'line':
       return isAbsolute ? 'lineTo' : 'line'
     case 'xLine':
       return isAbsolute ? 'xLineTo' : 'xLine'
     case 'yLine':
       return isAbsolute ? 'yLineTo' : 'yLine'
+    case 'angledLineThatIntersects':
     case 'circleThreePoint':
     case 'circle':
+    case 'tangentialArc':
       return fnName
+    case 'angledLine': {
+      const argmap: Record<string, ToolTip> = {
+        [ARG_LENGTH_X]: 'angledLineOfXLength',
+        [ARG_LENGTH_Y]: 'angledLineOfYLength',
+        [ARG_END_ABSOLUTE_X]: 'angledLineToX',
+        [ARG_END_ABSOLUTE_Y]: 'angledLineToY',
+        [ARG_LENGTH]: 'angledLine',
+      }
+      for (const [arg, tooltip] of Object.entries(argmap)) {
+        const foundAt = argLabels.findIndex((label) => label === arg)
+        if (foundAt >= 0) {
+          return tooltip
+        }
+      }
+      const err = `Unknown angledLine arguments, could not map to tooltip. Args were ${argLabels}`
+      console.error(err)
+      return new Error(err)
+    }
     default:
       const err = `Unknown sketch line function ${fnName}`
       console.error(err)
@@ -3057,6 +3161,12 @@ export function tooltipToFnName(tooltip: ToolTip): string | Error {
       return 'xLine'
     case 'yLineTo':
       return 'yLine'
+    case 'angledLine':
+    case 'angledLineToX':
+    case 'angledLineToY':
+    case 'angledLineOfXLength':
+    case 'angledLineOfYLength':
+      return 'angledLine'
     default:
       return new Error(`Unknown tooltip function ${tooltip}`)
   }
@@ -3094,12 +3204,12 @@ export function getConstraintInfoKw(
     return []
   }
   if (!(fnName in sketchLineHelperMapKw)) return []
-  const correctFnName = fnNameToTooltip(isAbsolute, fnName)
-  if (err(correctFnName)) {
-    console.error(correctFnName)
+  const tooltip = fnNameToTooltip(allLabels(callExpression), fnName)
+  if (err(tooltip)) {
+    console.error(tooltip)
     return []
   }
-  return sketchLineHelperMapKw[correctFnName].getConstraintInfo(
+  return sketchLineHelperMapKw[tooltip].getConstraintInfo(
     callExpression,
     code,
     pathToNode,
@@ -3138,6 +3248,7 @@ interface CreateLineFnCallArgs {
   fnName: ToolTip
   pathToNode: PathToNode
   spliceBetween?: boolean
+  snaps?: addCall['snaps']
 }
 
 export function addNewSketchLn({
@@ -3147,6 +3258,7 @@ export function addNewSketchLn({
   pathToNode,
   input: segmentInput,
   spliceBetween = false,
+  snaps,
 }: CreateLineFnCallArgs):
   | {
       modifiedAst: Node<Program>
@@ -3176,6 +3288,7 @@ export function addNewSketchLn({
     pathToNode,
     segmentInput,
     spliceBetween,
+    snaps,
   })
 }
 
@@ -3455,53 +3568,13 @@ export function getTagFromCallExpression(
   return new Error(`"${callExp.callee.name.name}" is not a sketch line helper`)
 }
 
-function isAngleLiteral(lineArugement: Expr): boolean {
-  return lineArugement?.type === 'ArrayExpression'
-    ? isLiteralArrayOrStatic(lineArugement.elements[0])
-    : lineArugement?.type === 'ObjectExpression'
-    ? isLiteralArrayOrStatic(
-        lineArugement.properties.find(({ key }) => key.name === 'angle')?.value
-      )
-    : false
+function isAngleLiteral(lineArgument: Expr): boolean {
+  return isLiteralArrayOrStatic(lineArgument)
 }
 
 type addTagFn = (
   a: AddTagInfo
 ) => { modifiedAst: Node<Program>; tag: string } | Error
-
-function addTag(tagIndex = 2): addTagFn {
-  return ({ node, pathToNode }) => {
-    const _node = { ...node }
-    const callExpr = getNodeFromPath<Node<CallExpression>>(
-      _node,
-      pathToNode,
-      'CallExpression'
-    )
-    if (err(callExpr)) return callExpr
-
-    const { node: primaryCallExp } = callExpr
-
-    // Tag is always 3rd expression now, using arg index feels brittle
-    // but we can come up with a better way to identify tag later.
-    const thirdArg = primaryCallExp.arguments?.[tagIndex]
-    const tagDeclarator =
-      thirdArg ||
-      (createTagDeclarator(findUniqueName(_node, 'seg', 2)) as TagDeclarator)
-    const isTagExisting = !!thirdArg
-    if (!isTagExisting) {
-      primaryCallExp.arguments[tagIndex] = tagDeclarator
-    }
-    if ('value' in tagDeclarator) {
-      // Now TypeScript knows tagDeclarator has a value property
-      return {
-        modifiedAst: _node,
-        tag: String(tagDeclarator.value),
-      }
-    } else {
-      return new Error('Unable to assign tag without value')
-    }
-  }
-}
 
 function addTagKw(): addTagFn {
   return ({ node, pathToNode }) => {
@@ -3673,6 +3746,32 @@ function getFirstArgValuesForXYLineFns(callExpression: CallExpression): {
   }
 }
 
+export const getAngledLine = (
+  callExp: CallExpressionKw
+):
+  | {
+      val: [Expr, Expr]
+      tag?: Expr
+    }
+  | Error => {
+  let angle = findKwArg(ARG_ANGLE, callExp)
+  let length = findKwArgAny(
+    [
+      ARG_LENGTH,
+      ARG_LENGTH_X,
+      ARG_LENGTH_Y,
+      ARG_END_ABSOLUTE_X,
+      ARG_END_ABSOLUTE_Y,
+    ],
+    callExp
+  )
+  let tag = findKwArg(ARG_TAG, callExp)
+  if (angle && length) {
+    return { val: [angle, length], tag }
+  }
+  return new Error('malformed angled line call!')
+}
+
 export const getCircle = (
   callExp: CallExpressionKw
 ):
@@ -3684,7 +3783,7 @@ export const getCircle = (
   const firstArg = callExp.arguments[0]
   if (firstArg.type === 'LabeledArg') {
     let centerInfo = findKwArgWithIndex(ARG_CIRCLE_CENTER, callExp)
-    let radiusInfo = findKwArgWithIndex(ARG_CIRCLE_RADIUS, callExp)
+    let radiusInfo = findKwArgWithIndex(ARG_RADIUS, callExp)
     let tagInfo = findKwArgWithIndex(ARG_TAG, callExp)
     if (centerInfo && radiusInfo) {
       if (centerInfo.expr?.type === 'ArrayExpression' && radiusInfo.expr) {
@@ -3701,29 +3800,43 @@ export const getCircle = (
   }
   return new Error('expected the arguments to be for a circle')
 }
-const getAngledLineThatIntersects = (
-  callExp: CallExpression
+
+export const getAngledLineThatIntersects = (
+  callExp: CallExpressionKw
 ):
   | {
       val: [Expr, Expr, Expr]
       tag?: Expr
     }
   | Error => {
-  const firstArg = callExp.arguments[0]
-  if (firstArg.type === 'ObjectExpression') {
-    const tag = firstArg.properties.find((p) => p.key.name === 'tag')?.value
-    const angle = firstArg.properties.find((p) => p.key.name === 'angle')?.value
-    const offset = firstArg.properties.find(
-      (p) => p.key.name === 'offset'
-    )?.value
-    const intersectTag = firstArg.properties.find(
-      (p) => p.key.name === 'intersectTag'
-    )?.value
-    if (angle && offset && intersectTag) {
-      return { val: [angle, offset, intersectTag], tag }
-    }
+  const angle = findKwArg(ARG_ANGLE, callExp)
+  const intersectTag = findKwArg(ARG_INTERSECT_TAG, callExp)
+  const offset = findKwArg(ARG_OFFSET, callExp)
+  if (!angle || !intersectTag || !offset) {
+    return new Error(
+      `angledLineThatIntersects call needs angle, intersectTag, and offset args`
+    )
   }
-  return new Error('expected ArrayExpression or ObjectExpression')
+  const tag = findKwArg(ARG_TAG, callExp)
+  return { val: [angle, intersectTag, offset], tag }
+}
+
+export const getArc = (
+  callExp: CallExpressionKw
+):
+  | {
+      val: [Expr, Expr, Expr]
+      tag?: Expr
+    }
+  | Error => {
+  const angleStart = findKwArg(ARG_ANGLE_START, callExp)
+  const angleEnd = findKwArg(ARG_ANGLE_END, callExp)
+  const radius = findKwArg(ARG_RADIUS, callExp)
+  if (!angleStart || !angleEnd || !radius) {
+    return new Error(`arc call needs angleStart, angleEnd, and radius args`)
+  }
+  const tag = findKwArg(ARG_TAG, callExp)
+  return { val: [angleStart, angleEnd, radius], tag }
 }
 
 /**
@@ -3733,6 +3846,7 @@ export function isAbsoluteLine(lineCall: CallExpressionKw): boolean | Error {
   const name = lineCall?.callee?.name.name
   switch (name) {
     case 'line':
+    case 'tangentialArc':
       if (findKwArg(ARG_END, lineCall) !== undefined) {
         return false
       }
@@ -3740,7 +3854,7 @@ export function isAbsoluteLine(lineCall: CallExpressionKw): boolean | Error {
         return true
       }
       return new Error(
-        `line call has neither ${ARG_END} nor ${ARG_END_ABSOLUTE} params`
+        `${name} call has neither ${ARG_END} nor ${ARG_END_ABSOLUTE} params`
       )
     case 'xLine':
     case 'yLine':
@@ -3753,9 +3867,16 @@ export function isAbsoluteLine(lineCall: CallExpressionKw): boolean | Error {
       return new Error(
         `${name} call has neither ${ARG_END} nor ${ARG_END_ABSOLUTE} params`
       )
+    case 'angledLineThatIntersects':
+    case 'arc':
     case 'circle':
     case 'circleThreePoint':
       return false
+    case 'angledLine':
+      return (
+        findKwArgAny([ARG_END_ABSOLUTE_X, ARG_END_ABSOLUTE_Y], lineCall) !==
+        undefined
+      )
   }
   return new Error(`Unknown sketch function ${name}`)
 }
@@ -3782,8 +3903,12 @@ export function getArgForEnd(lineCall: CallExpressionKw):
       }
       return getValuesForXYFns(arg)
     }
+    case 'angledLineThatIntersects':
+      return getAngledLineThatIntersects(lineCall)
+    case 'arc':
+      return getArc(lineCall)
     case 'yLine':
-    case 'xLine':
+    case 'xLine': {
       const arg = findKwArgAny(DETERMINING_ARGS, lineCall)
       const tag = findKwArg(ARG_TAG, lineCall)
       if (arg === undefined) {
@@ -3791,6 +3916,30 @@ export function getArgForEnd(lineCall: CallExpressionKw):
       } else {
         return { val: arg, tag }
       }
+    }
+    case 'angledLine': {
+      const angle = findKwArg(ARG_ANGLE, lineCall)
+      if (angle === undefined) {
+        return new Error(`call to ${name} needs an ${ARG_ANGLE} arg`)
+      }
+      const length = findKwArgAny(
+        [
+          ARG_LENGTH,
+          ARG_LENGTH_X,
+          ARG_LENGTH_Y,
+          ARG_END_ABSOLUTE_X,
+          ARG_END_ABSOLUTE_Y,
+        ],
+        lineCall
+      )
+      if (length === undefined) {
+        return new Error(
+          `call to ${name} needs an arg like ${ARG_LENGTH}, or ${ARG_END_ABSOLUTE_X} or something`
+        )
+      }
+      const tag = findKwArg(ARG_TAG, lineCall)
+      return { val: [angle, length], tag }
+    }
     default:
       return new Error(`unknown function ${name}`)
   }
@@ -3817,10 +3966,7 @@ export function getFirstArg(callExp: CallExpression):
   if (['xLine', 'yLine', 'xLineTo', 'yLineTo'].includes(name)) {
     return getFirstArgValuesForXYLineFns(callExp)
   }
-  if (['angledLineThatIntersects'].includes(name)) {
-    return getAngledLineThatIntersects(callExp)
-  }
-  if (['tangentialArcTo'].includes(name)) {
+  if (['tangentialArc'].includes(name)) {
     // TODO probably needs it's own implementation
     return getFirstArgValuesForXYFns(callExp)
   }

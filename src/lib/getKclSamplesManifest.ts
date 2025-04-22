@@ -1,5 +1,5 @@
-import { KCL_SAMPLES_MANIFEST_URL } from './constants'
-import { isDesktop } from './isDesktop'
+import { KCL_SAMPLES_MANIFEST_URL } from '@src/lib/constants'
+import { isDesktop } from '@src/lib/isDesktop'
 
 export type KclSamplesManifestItem = {
   file: string

@@ -15,14 +15,6 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "set_scene_units",
-      "unit": "mm"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
       "hidden": true
@@ -43,6 +35,38 @@ description: Artifact commands multi-axis-robot.kcl
     "command": {
       "type": "set_scene_units",
       "unit": "in"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "set_scene_units",
+      "unit": "mm"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "set_scene_units",
+      "unit": "mm"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "set_scene_units",
+      "unit": "mm"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "set_scene_units",
+      "unit": "mm"
     }
   },
   {
@@ -220,7 +244,8 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.5,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -506,7 +531,8 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 3.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -666,7 +692,8 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 1.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -825,7 +852,8 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -0.5,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -891,7 +919,8 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -0.5,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -957,7 +986,8 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -0.5,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -1023,7 +1053,8 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -0.5,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -1182,7 +1213,8 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -0.5,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -1248,7 +1280,8 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -0.5,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -1314,7 +1347,8 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -0.5,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -1380,7 +1414,8 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -0.5,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -1627,7 +1662,8 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 1.4,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -1876,7 +1912,8 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 1.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -2074,7 +2111,8 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 1.5,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -2255,7 +2293,8 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.2,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -2321,7 +2360,8 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.2,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -2387,7 +2427,8 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.2,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -2453,7 +2494,8 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.2,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -2591,7 +2633,8 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.15,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -2789,7 +2832,8 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -1.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -3078,7 +3122,8 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -2.5,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -3276,7 +3321,8 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.15,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -3436,7 +3482,8 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 1.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -3617,7 +3664,8 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.15,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -3683,7 +3731,8 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.15,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -3749,7 +3798,8 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.15,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -3815,7 +3865,8 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.15,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -3881,7 +3932,8 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.15,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -3947,7 +3999,8 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.15,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -4013,7 +4066,8 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.15,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -4079,7 +4133,8 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.15,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -4238,7 +4293,8 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.15,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -4304,7 +4360,8 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.15,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -4370,7 +4427,8 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.15,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -4436,7 +4494,8 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.15,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -4574,7 +4633,8 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 1.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -4838,7 +4898,8 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 2.5,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -5036,7 +5097,8 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.15,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -5217,7 +5279,8 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.15,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -5283,7 +5346,8 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.15,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -5349,7 +5413,8 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.15,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -5415,7 +5480,8 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.15,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -5481,7 +5547,8 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.15,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -5547,7 +5614,8 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.15,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -5613,7 +5681,8 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.15,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -5679,7 +5748,8 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 0.15,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -5817,7 +5887,8 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -0.5,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -5955,7 +6026,8 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -0.5,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -6093,7 +6165,8 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -0.01,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -6333,7 +6406,8 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -1.5,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -6693,7 +6767,8 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -1.5,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -6884,6 +6959,14 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "object_visible",
       "object_id": "[uuid]",
       "hidden": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "set_scene_units",
+      "unit": "in"
     }
   }
 ]

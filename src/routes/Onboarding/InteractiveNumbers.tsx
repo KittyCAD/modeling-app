@@ -1,6 +1,11 @@
-import { OnboardingButtons, kbdClasses, useDemoCode } from '.'
-import { onboardingPaths } from 'routes/Onboarding/paths'
-import { bracketWidthConstantLine } from 'lib/exampleKcl'
+import { bracketWidthConstantLine } from '@src/lib/exampleKcl'
+import { onboardingPaths } from '@src/routes/Onboarding/paths'
+
+import {
+  OnboardingButtons,
+  kbdClasses,
+  useDemoCode,
+} from '@src/routes/Onboarding/utils'
 
 export default function OnboardingInteractiveNumbers() {
   useDemoCode()
@@ -16,7 +21,7 @@ export default function OnboardingInteractiveNumbers() {
           <h2 className="text-3xl font-bold">Hybrid editing</h2>
 
           <p className="my-4">
-            We believe editing in Modeling App should feel fluid between code
+            We believe editing in Design Studio should feel fluid between code
             and point-and-click, so that you can work in the way that feels most
             natural to you. Let's try something out that demonstrates this
             principle, by editing numbers without typing.

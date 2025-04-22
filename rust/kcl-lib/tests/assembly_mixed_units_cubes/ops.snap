@@ -4,8 +4,17 @@ description: Operations executed assembly_mixed_units_cubes.kcl
 ---
 [
   {
+    "type": "GroupBegin",
+    "group": {
+      "type": "ModuleInstance",
+      "name": "cubeIn",
+      "moduleId": 6
+    },
+    "sourceRange": []
+  },
+  {
     "labeledArgs": {
-      "data": {
+      "planeOrSolid": {
         "value": {
           "type": "String",
           "value": "XY"
@@ -51,8 +60,20 @@ description: Operations executed assembly_mixed_units_cubes.kcl
     }
   },
   {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "ModuleInstance",
+      "name": "cubeMm",
+      "moduleId": 7
+    },
+    "sourceRange": []
+  },
+  {
     "labeledArgs": {
-      "data": {
+      "planeOrSolid": {
         "value": {
           "type": "String",
           "value": "XY"
@@ -96,5 +117,8 @@ description: Operations executed assembly_mixed_units_cubes.kcl
       },
       "sourceRange": []
     }
+  },
+  {
+    "type": "GroupEnd"
   }
 ]

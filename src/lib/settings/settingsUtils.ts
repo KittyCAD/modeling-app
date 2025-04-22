@@ -1,30 +1,41 @@
+import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
+import type { NamedView } from '@rust/kcl-lib/bindings/NamedView'
+import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
+import { default_app_settings } from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
+import { TEST } from '@src/env'
+
 import {
   defaultAppSettings,
   defaultProjectSettings,
-  initPromise,
   parseAppSettings,
   parseProjectSettings,
   serializeConfiguration,
   serializeProjectConfiguration,
-} from 'lang/wasm'
-import { mouseControlsToCameraSystem } from 'lib/cameraControls'
-import { BROWSER_PROJECT_NAME } from 'lib/constants'
+} from '@src/lang/wasm'
+import { initPromise } from '@src/lang/wasmUtils'
+import { mouseControlsToCameraSystem } from '@src/lib/cameraControls'
+import { BROWSER_PROJECT_NAME } from '@src/lib/constants'
 import {
   getInitialDefaultDir,
   readAppSettingsFile,
   readProjectSettingsFile,
   writeAppSettingsFile,
   writeProjectSettingsFile,
-} from 'lib/desktop'
-import { isDesktop } from 'lib/isDesktop'
-import { Setting, createSettings, settings } from 'lib/settings/initialSettings'
-import { appThemeToTheme } from 'lib/theme'
-import { err } from 'lib/trap'
-import { DeepPartial } from 'lib/types'
-import { Configuration } from '@rust/kcl-lib/bindings/Configuration'
-import { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
-import { NamedView } from '@rust/kcl-lib/bindings/NamedView'
-import { SaveSettingsPayload, SettingsLevel } from './settingsTypes'
+} from '@src/lib/desktop'
+import { isDesktop } from '@src/lib/isDesktop'
+import type { Setting } from '@src/lib/settings/initialSettings'
+import { createSettings, settings } from '@src/lib/settings/initialSettings'
+import type {
+  SaveSettingsPayload,
+  SettingsLevel,
+} from '@src/lib/settings/settingsTypes'
+import { appThemeToTheme } from '@src/lib/theme'
+import { err } from '@src/lib/trap'
+import type { DeepPartial } from '@src/lib/types'
+
+type OmitNull<T> = T extends null ? undefined : T
+const toUndefinedIfNull = (a: any): OmitNull<any> =>
+  a === null ? undefined : a
 
 /**
  * Convert from a rust settings struct into the JS settings struct.
@@ -42,7 +53,9 @@ export function configurationToSettingsPayload(
         : undefined,
       onboardingStatus: configuration?.settings?.app?.onboarding_status,
       dismissWebBanner: configuration?.settings?.app?.dismiss_web_banner,
-      streamIdleMode: configuration?.settings?.app?.stream_idle_mode,
+      streamIdleMode: toUndefinedIfNull(
+        configuration?.settings?.app?.stream_idle_mode
+      ),
       allowOrbitInSketchMode:
         configuration?.settings?.app?.allow_orbit_in_sketch_mode,
       projectDirectory: configuration?.settings?.project?.directory,
@@ -121,7 +134,6 @@ export function projectConfigurationToSettingsPayload(
         : undefined,
       onboardingStatus: configuration?.settings?.app?.onboarding_status,
       dismissWebBanner: configuration?.settings?.app?.dismiss_web_banner,
-      streamIdleMode: configuration?.settings?.app?.stream_idle_mode,
       allowOrbitInSketchMode:
         configuration?.settings?.app?.allow_orbit_in_sketch_mode,
       namedViews: deepPartialNamedViewsToNamedViews(
@@ -439,4 +451,17 @@ export function getSettingInputType(setting: Setting) {
   if (setting.commandConfig)
     return setting.commandConfig.inputType as 'string' | 'options' | 'boolean'
   return typeof setting.default as 'string' | 'boolean'
+}
+
+export const jsAppSettings = async () => {
+  let jsAppSettings = default_app_settings()
+  if (!TEST) {
+    const settings = await import('@src/machines/appMachine').then((module) =>
+      module.getSettings()
+    )
+    if (settings) {
+      jsAppSettings = getAllCurrentSettings(settings)
+    }
+  }
+  return jsAppSettings
 }

@@ -6,7 +6,7 @@ description: Result of parsing import_whole.kcl
   "Ok": {
     "body": [
       {
-        "commentStart": 33,
+        "commentStart": 0,
         "end": 0,
         "path": {
           "type": "Kcl",
@@ -15,7 +15,7 @@ description: Result of parsing import_whole.kcl
         "selector": {
           "type": "None",
           "alias": {
-            "commentStart": 64,
+            "commentStart": 0,
             "end": 0,
             "name": "foo",
             "start": 0,
@@ -27,12 +27,12 @@ description: Result of parsing import_whole.kcl
         "type": "ImportStatement"
       },
       {
-        "commentStart": 67,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 69,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 69,
+            "commentStart": 0,
             "end": 0,
             "name": "bar",
             "start": 0,
@@ -42,10 +42,10 @@ description: Result of parsing import_whole.kcl
             "body": [
               {
                 "abs_path": false,
-                "commentStart": 75,
+                "commentStart": 0,
                 "end": 0,
                 "name": {
-                  "commentStart": 75,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "foo",
                   "start": 0,
@@ -61,74 +61,34 @@ description: Result of parsing import_whole.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 90,
+                      "commentStart": 0,
                       "end": 0,
-                      "name": "faces",
+                      "name": "z",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 98,
-                      "elements": [
-                        {
-                          "commentStart": 99,
-                          "end": 0,
-                          "raw": "'end'",
-                          "start": 0,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": "end"
-                        }
-                      ],
+                      "commentStart": 0,
                       "end": 0,
+                      "raw": "1",
                       "start": 0,
-                      "type": "ArrayExpression",
-                      "type": "ArrayExpression"
-                    }
-                  },
-                  {
-                    "type": "LabeledArg",
-                    "label": {
-                      "commentStart": 107,
-                      "end": 0,
-                      "name": "thickness",
-                      "start": 0,
-                      "type": "Identifier"
-                    },
-                    "arg": {
-                      "abs_path": false,
-                      "commentStart": 119,
-                      "end": 0,
-                      "name": {
-                        "commentStart": 124,
-                        "end": 0,
-                        "name": "thickness",
-                        "start": 0,
-                        "type": "Identifier"
-                      },
-                      "path": [
-                        {
-                          "commentStart": 119,
-                          "end": 0,
-                          "name": "foo",
-                          "start": 0,
-                          "type": "Identifier"
-                        }
-                      ],
-                      "start": 0,
-                      "type": "Name",
-                      "type": "Name"
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 1.0,
+                        "suffix": "None"
+                      }
                     }
                   }
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 84,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 84,
+                    "commentStart": 0,
                     "end": 0,
-                    "name": "shell",
+                    "name": "translate",
                     "start": 0,
                     "type": "Identifier"
                   },
@@ -136,7 +96,7 @@ description: Result of parsing import_whole.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 84,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -144,7 +104,7 @@ description: Result of parsing import_whole.kcl
                 "unlabeled": null
               }
             ],
-            "commentStart": 75,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "PipeExpression",
@@ -167,7 +127,7 @@ description: Result of parsing import_whole.kcl
         "commentStart": 0,
         "end": 0,
         "name": {
-          "commentStart": 1,
+          "commentStart": 0,
           "end": 0,
           "name": "settings",
           "start": 0,
@@ -175,10 +135,10 @@ description: Result of parsing import_whole.kcl
         },
         "properties": [
           {
-            "commentStart": 10,
+            "commentStart": 0,
             "end": 0,
             "key": {
-              "commentStart": 10,
+              "commentStart": 0,
               "end": 0,
               "name": "defaultLengthUnit",
               "start": 0,
@@ -188,10 +148,10 @@ description: Result of parsing import_whole.kcl
             "type": "ObjectProperty",
             "value": {
               "abs_path": false,
-              "commentStart": 30,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 30,
+                "commentStart": 0,
                 "end": 0,
                 "name": "mm",
                 "start": 0,
@@ -212,7 +172,7 @@ description: Result of parsing import_whole.kcl
       "nonCodeNodes": {
         "0": [
           {
-            "commentStart": 67,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -224,7 +184,7 @@ description: Result of parsing import_whole.kcl
       },
       "startNodes": [
         {
-          "commentStart": 33,
+          "commentStart": 0,
           "end": 0,
           "start": 0,
           "type": "NonCodeNode",

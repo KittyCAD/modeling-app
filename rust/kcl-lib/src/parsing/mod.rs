@@ -143,16 +143,31 @@ impl From<KclError> for ParseResult {
     }
 }
 
-const STR_DEPRECATIONS: [(&str, &str); 6] = [
+const STR_DEPRECATIONS: [(&str, &str); 16] = [
     ("XY", "XY"),
     ("XZ", "XZ"),
     ("YZ", "YZ"),
     ("-XY", "-XY"),
     ("-XZ", "-XZ"),
     ("-YZ", "-YZ"),
+    ("xy", "XY"),
+    ("xz", "XZ"),
+    ("yz", "YZ"),
+    ("-xy", "-XY"),
+    ("-xz", "-XZ"),
+    ("-yz", "-YZ"),
+    ("START", "START"),
+    ("start", "START"),
+    ("END", "END"),
+    ("end", "END"),
 ];
 const FN_DEPRECATIONS: [(&str, &str); 3] = [("pi", "PI"), ("e", "E"), ("tau", "TAU")];
-const CONST_DEPRECATIONS: [(&str, &str); 0] = [];
+const CONST_DEPRECATIONS: [(&str, &str); 4] = [
+    ("ZERO", "turns::ZERO"),
+    ("QUARTER_TURN", "turns::QUARTER_TURN"),
+    ("HALF_TURN", "turns::HALF_TURN"),
+    ("THREE_QUARTER_TURN", "turns::THREE_QUARTER_TURN"),
+];
 
 #[derive(Clone, Copy)]
 pub enum DeprecationKind {

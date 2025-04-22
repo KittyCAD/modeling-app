@@ -53,7 +53,7 @@ pub trait CoreDump: Clone {
             .meta()
             .create_debug_uploads(vec![kittycad::types::multipart::Attachment {
                 name: "".to_string(),
-                filename: Some(format!(r#"modeling-app/coredump-{coredump_id}-screenshot.png"#)),
+                filepath: Some(format!(r#"modeling-app/coredump-{coredump_id}-screenshot.png"#).into()),
                 content_type: Some("image/png".to_string()),
                 data,
             }])
@@ -101,7 +101,7 @@ pub trait CoreDump: Clone {
             .meta()
             .create_debug_uploads(vec![kittycad::types::multipart::Attachment {
                 name: "".to_string(),
-                filename: Some(format!(r#"modeling-app/coredump-{}.json"#, coredump_id)),
+                filepath: Some(format!(r#"modeling-app/coredump-{}.json"#, coredump_id).into()),
                 content_type: Some("application/json".to_string()),
                 data,
             }])
@@ -164,7 +164,7 @@ impl CoreDumpInfo {
 ![Screenshot]({screenshot_url})
 
 > _Note: If you are capturing from a browser there is limited support for screenshots, only captures the modeling scene.
-  If you are on MacOS native screenshots may be disabled by default. To enable native screenshots add Zoo Modeling App to System Settings -> Screen & SystemAudio Recording for native screenshots._
+  If you are on MacOS native screenshots may be disabled by default. To enable native screenshots add Zoo Design Studio to System Settings -> Screen & SystemAudio Recording for native screenshots._
 
 <details>
 <summary><b>Core Dump</b></summary>

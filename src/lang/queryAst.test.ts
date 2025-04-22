@@ -1,36 +1,33 @@
-import {
-  assertParse,
-  recast,
-  initPromise,
-  PathToNode,
-  Identifier,
-  topLevelRange,
-} from './wasm'
-import {
-  findAllPreviousVariables,
-  isNodeSafeToReplace,
-  isTypeInValue,
-  hasExtrudeSketch,
-  findUsesOfTagInPipe,
-  hasSketchPipeBeenExtruded,
-  doesSceneHaveSweepableSketch,
-  traverse,
-  getNodeFromPath,
-  doesSceneHaveExtrudedSketch,
-} from './queryAst'
-import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
-import { enginelessExecutor } from '../lib/testHelpers'
+import type { Name } from '@rust/kcl-lib/bindings/Name'
+
 import {
   createArrayExpression,
   createCallExpression,
+  createCallExpressionStdLib,
   createLiteral,
   createPipeSubstitution,
-  createCallExpressionStdLib,
-} from './modifyAst'
-import { err } from 'lib/trap'
-import { codeRefFromRange } from './std/artifactGraph'
-import { addCallExpressionsToPipe, addCloseToPipe } from 'lang/std/sketch'
-import { Name } from '@rust/kcl-lib/bindings/Name'
+} from '@src/lang/create'
+import {
+  doesSceneHaveExtrudedSketch,
+  doesSceneHaveSweepableSketch,
+  findAllPreviousVariables,
+  findUsesOfTagInPipe,
+  getNodeFromPath,
+  hasExtrudeSketch,
+  hasSketchPipeBeenExtruded,
+  isNodeSafeToReplace,
+  isTypeInValue,
+  traverse,
+} from '@src/lang/queryAst'
+import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
+import { codeRefFromRange } from '@src/lang/std/artifactGraph'
+import { addCallExpressionsToPipe, addCloseToPipe } from '@src/lang/std/sketch'
+import { topLevelRange } from '@src/lang/util'
+import type { Identifier, PathToNode } from '@src/lang/wasm'
+import { assertParse, recast } from '@src/lang/wasm'
+import { initPromise } from '@src/lang/wasmUtils'
+import { enginelessExecutor } from '@src/lib/testHelpers'
+import { err } from '@src/lib/trap'
 
 beforeAll(async () => {
   await initPromise
@@ -81,11 +78,11 @@ describe('testing argIsNotIdentifier', () => {
   const code = `part001 = startSketchOn(XY)
 |> startProfileAt([-1.2, 4.83], %)
 |> line(end = [2.8, 0])
-|> angledLine([100 + 100, 3.09], %)
-|> angledLine([abc, 3.09], %)
-|> angledLine([def('yo'), 3.09], %)
-|> angledLine([ghi(%), 3.09], %)
-|> angledLine([jkl('yo') + 2, 3.09], %)
+|> angledLine(angle = 100 + 100, length = 3.09)
+|> angledLine(angle = abc, length = 3.09)
+|> angledLine(angle = def('yo'), length = 3.09)
+|> angledLine(angle = ghi(%), length = 3.09)
+|> angledLine(angle = jkl('yo') + 2, length = 3.09)
 yo = 5 + 6
 yo2 = hmm([identifierGuy + 5])`
   it('find a safe binaryExpression', () => {
@@ -102,7 +99,7 @@ yo2 = hmm([identifierGuy + 5])`
     const replaced = result.replacer(structuredClone(ast), 'replaceName')
     if (err(replaced)) throw replaced
     const outCode = recast(replaced.modifiedAst)
-    expect(outCode).toContain(`angledLine([replaceName, 3.09], %)`)
+    expect(outCode).toContain(`angledLine(angle = replaceName, length = 3.09)`)
   })
   it('find a safe Identifier', () => {
     const ast = assertParse(code)
@@ -130,7 +127,7 @@ yo2 = hmm([identifierGuy + 5])`
     const replaced = result.replacer(structuredClone(ast), 'replaceName')
     if (err(replaced)) throw replaced
     const outCode = recast(replaced.modifiedAst)
-    expect(outCode).toContain(`angledLine([replaceName, 3.09], %)`)
+    expect(outCode).toContain(`angledLine(angle = replaceName, length = 3.09)`)
   })
   it('find an UNsafe CallExpression, as it has a PipeSubstitution', () => {
     const ast = assertParse(code)
@@ -189,7 +186,7 @@ yo2 = hmm([identifierGuy + 5])`
     if (err(replaced)) throw replaced
     const { modifiedAst } = replaced
     const outCode = recast(modifiedAst)
-    expect(outCode).toContain(`angledLine([replaceName, 3.09], %)`)
+    expect(outCode).toContain(`angledLine(angle = replaceName, length = 3.09)`)
   })
   it('find a safe BinaryExpression within a CallExpression', () => {
     const ast = assertParse(code)
@@ -385,9 +382,9 @@ describe('testing hasExtrudeSketch', () => {
 part001 = startSketchOn(XY)
   |> startProfileAt([-1.41, 3.46], %)
   |> line(end = [19.49, 1.16], tag = $seg01)
-  |> angledLine([-35, length001], %)
+  |> angledLine(angle = -35, length = length001)
   |> line(end = [-3.22, -7.36])
-  |> angledLine([-175, segLen(seg01)], %)`
+  |> angledLine(angle = -175, length = segLen(seg01))`
     const ast = assertParse(exampleCode)
 
     const execState = await enginelessExecutor(ast)
@@ -405,9 +402,9 @@ part001 = startSketchOn(XY)
 part001 = startSketchOn(XY)
   |> startProfileAt([-1.41, 3.46], %)
   |> line(end = [19.49, 1.16], tag = $seg01)
-  |> angledLine([-35, length001], %)
+  |> angledLine(angle = -35, length = length001)
   |> line(end = [-3.22, -7.36])
-  |> angledLine([-175, segLen(seg01)], %)
+  |> angledLine(angle = -175, length = segLen(seg01))
   |> extrude(length = 1)`
     const ast = assertParse(exampleCode)
 
@@ -442,9 +439,9 @@ describe('Testing findUsesOfTagInPipe', () => {
 |> startProfileAt([68.12, 156.65], %)
 |> line(end = [306.21, 198.82])
 |> line(end = [306.21, 198.85], tag = $seg01)
-|> angledLine([-65, segLen(seg01)], %)
+|> angledLine(angle = -65, length = segLen(seg01))
 |> line(end = [306.21, 198.87])
-|> angledLine([65, segLen(seg01)], %)`
+|> angledLine(angle = 65, length = segLen(seg01))`
   it('finds the current segment', async () => {
     const ast = assertParse(exampleCode)
 
@@ -491,13 +488,13 @@ describe('Testing hasSketchPipeBeenExtruded', () => {
   |> line(end = [-17.67, 0.85])
   |> close()
 extrude001 = extrude(sketch001, length = 10)
-sketch002 = startSketchOn(extrude001, seg01)
+sketch002 = startSketchOn(extrude001, face = seg01)
   |> startProfileAt([-12.94, 6.6], %)
   |> line(end = [2.45, -0.2])
   |> line(end = [-2, -1.25])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-sketch003 = startSketchOn(extrude001, 'END')
+sketch003 = startSketchOn(extrude001, face = 'END')
   |> startProfileAt([8.14, 2.8], %)
   |> line(end = [-1.24, 4.39])
   |> line(end = [3.79, 1.91])
@@ -568,7 +565,7 @@ describe('Testing doesSceneHaveSweepableSketch', () => {
   |> line(end = [-17.67, 0.85])
   |> close()
 extrude001 = extrude(sketch001, length = 10)
-sketch002 = startSketchOn(extrude001, $seg01)
+sketch002 = startSketchOn(extrude001, face = $seg01)
   |> startProfileAt([-12.94, 6.6], %)
   |> line(end = [2.45, -0.2])
   |> line(end = [-2, -1.25])

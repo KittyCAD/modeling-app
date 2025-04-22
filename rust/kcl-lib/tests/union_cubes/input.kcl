@@ -1,0 +1,15 @@
+fn cube(center, size) {
+  return startSketchOn(XY)
+    |> startProfileAt([center[0] - size, center[1] - size], %)
+    |> line(endAbsolute = [center[0] + size, center[1] - size])
+    |> line(endAbsolute = [center[0] + size, center[1] + size])
+    |> line(endAbsolute = [center[0] - size, center[1] + size])
+    |> close()
+    |> extrude(length = 2 * size)
+}
+
+part001 = cube([0, 0], 10)
+part002 = cube([7, 3], 5)
+     |> translate(z = 1)
+
+fullPart = union([part001, part002])

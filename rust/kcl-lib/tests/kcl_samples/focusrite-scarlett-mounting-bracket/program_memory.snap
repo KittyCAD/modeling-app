@@ -15,9 +15,9 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1354,
-            "end": 1360,
-            "start": 1354,
+            "commentStart": 1323,
+            "end": 1329,
+            "start": 1323,
             "type": "TagDeclarator",
             "value": "edge1"
           },
@@ -28,9 +28,9 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1411,
-            "end": 1417,
-            "start": 1411,
+            "commentStart": 1380,
+            "end": 1386,
+            "start": 1380,
             "type": "TagDeclarator",
             "value": "edge2"
           },
@@ -41,9 +41,9 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1471,
-            "end": 1477,
-            "start": 1471,
+            "commentStart": 1440,
+            "end": 1446,
+            "start": 1440,
             "type": "TagDeclarator",
             "value": "edge3"
           },
@@ -54,9 +54,9 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1527,
-            "end": 1533,
-            "start": 1527,
+            "commentStart": 1496,
+            "end": 1502,
+            "start": 1496,
             "type": "TagDeclarator",
             "value": "edge4"
           },
@@ -67,9 +67,9 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1579,
-            "end": 1585,
-            "start": 1579,
+            "commentStart": 1548,
+            "end": 1554,
+            "start": 1548,
             "type": "TagDeclarator",
             "value": "edge5"
           },
@@ -80,9 +80,9 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1632,
-            "end": 1638,
-            "start": 1632,
+            "commentStart": 1601,
+            "end": 1607,
+            "start": 1601,
             "type": "TagDeclarator",
             "value": "edge6"
           },
@@ -93,9 +93,9 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1689,
-            "end": 1695,
-            "start": 1689,
+            "commentStart": 1658,
+            "end": 1664,
+            "start": 1658,
             "type": "TagDeclarator",
             "value": "edge7"
           },
@@ -106,9 +106,9 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1716,
-            "end": 1722,
-            "start": 1716,
+            "commentStart": 1685,
+            "end": 1691,
+            "start": 1685,
             "type": "TagDeclarator",
             "value": "edge8"
           },
@@ -129,9 +129,9 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               49.0
             ],
             "tag": {
-              "commentStart": 1354,
-              "end": 1360,
-              "start": 1354,
+              "commentStart": 1323,
+              "end": 1329,
+              "start": 1323,
               "type": "TagDeclarator",
               "value": "edge1"
             },
@@ -154,9 +154,9 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               -4.0
             ],
             "tag": {
-              "commentStart": 1411,
-              "end": 1417,
-              "start": 1411,
+              "commentStart": 1380,
+              "end": 1386,
+              "start": 1380,
               "type": "TagDeclarator",
               "value": "edge2"
             },
@@ -179,9 +179,9 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               -4.0
             ],
             "tag": {
-              "commentStart": 1471,
-              "end": 1477,
-              "start": 1471,
+              "commentStart": 1440,
+              "end": 1446,
+              "start": 1440,
               "type": "TagDeclarator",
               "value": "edge3"
             },
@@ -204,9 +204,9 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               49.0
             ],
             "tag": {
-              "commentStart": 1527,
-              "end": 1533,
-              "start": 1527,
+              "commentStart": 1496,
+              "end": 1502,
+              "start": 1496,
               "type": "TagDeclarator",
               "value": "edge4"
             },
@@ -229,9 +229,9 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               49.0
             ],
             "tag": {
-              "commentStart": 1579,
-              "end": 1585,
-              "start": 1579,
+              "commentStart": 1548,
+              "end": 1554,
+              "start": 1548,
               "type": "TagDeclarator",
               "value": "edge5"
             },
@@ -254,9 +254,9 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               0.0
             ],
             "tag": {
-              "commentStart": 1632,
-              "end": 1638,
-              "start": 1632,
+              "commentStart": 1601,
+              "end": 1607,
+              "start": 1601,
               "type": "TagDeclarator",
               "value": "edge6"
             },
@@ -279,9 +279,9 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               0.0
             ],
             "tag": {
-              "commentStart": 1689,
-              "end": 1695,
-              "start": 1689,
+              "commentStart": 1658,
+              "end": 1664,
+              "start": 1658,
               "type": "TagDeclarator",
               "value": "edge7"
             },
@@ -304,9 +304,9 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               49.0
             ],
             "tag": {
-              "commentStart": 1716,
-              "end": 1722,
-              "start": 1716,
+              "commentStart": 1685,
+              "end": 1691,
+              "start": 1685,
               "type": "TagDeclarator",
               "value": "edge8"
             },
@@ -328,22 +328,34 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "origin": {
             "x": 0.0,
             "y": 44.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
+            "z": 1.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "units": {
             "type": "Mm"
@@ -414,28 +426,72 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
         {
           "type": "fillet",
           "id": "[uuid]",
-          "radius": 6.0,
+          "radius": {
+            "n": 6.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
           "edgeId": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
           "id": "[uuid]",
-          "radius": 6.0,
+          "radius": {
+            "n": 6.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
           "edgeId": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
           "id": "[uuid]",
-          "radius": 6.0,
+          "radius": {
+            "n": 6.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
           "edgeId": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
           "id": "[uuid]",
-          "radius": 6.0,
+          "radius": {
+            "n": 6.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
           "edgeId": "[uuid]",
           "tag": null
         }
@@ -448,176 +504,177 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
   "bracketPlane": {
     "type": "Object",
     "value": {
-      "plane": {
+      "origin": {
         "type": "Object",
         "value": {
-          "origin": {
-            "type": "Object",
-            "value": {
-              "x": {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
+          "x": {
+            "type": "Number",
+            "value": 0.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
               },
-              "y": {
-                "type": "Number",
-                "value": 44.0,
-                "ty": {
-                  "type": "Unknown"
-                }
-              },
-              "z": {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
+              "angle": {
+                "type": "Degrees"
               }
             }
           },
-          "xAxis": {
-            "type": "Object",
-            "value": {
-              "x": {
-                "type": "Number",
-                "value": 1.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
+          "y": {
+            "type": "Number",
+            "value": 44.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
               },
-              "y": {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              },
-              "z": {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
+              "angle": {
+                "type": "Degrees"
               }
             }
           },
-          "yAxis": {
-            "type": "Object",
-            "value": {
-              "x": {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
+          "z": {
+            "type": "Number",
+            "value": 0.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
               },
-              "y": {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          }
+        }
+      },
+      "xAxis": {
+        "type": "Object",
+        "value": {
+          "x": {
+            "type": "Number",
+            "value": 1.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
               },
-              "z": {
-                "type": "Number",
-                "value": 1.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
+              "angle": {
+                "type": "Degrees"
               }
             }
           },
-          "zAxis": {
-            "type": "Object",
-            "value": {
-              "x": {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
+          "y": {
+            "type": "Number",
+            "value": 0.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
               },
-              "y": {
-                "type": "Number",
-                "value": -1.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "z": {
+            "type": "Number",
+            "value": 0.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
               },
-              "z": {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          }
+        }
+      },
+      "yAxis": {
+        "type": "Object",
+        "value": {
+          "x": {
+            "type": "Number",
+            "value": 0.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "y": {
+            "type": "Number",
+            "value": 0.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "z": {
+            "type": "Number",
+            "value": 1.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          }
+        }
+      },
+      "zAxis": {
+        "type": "Object",
+        "value": {
+          "x": {
+            "type": "Number",
+            "value": 0.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "y": {
+            "type": "Number",
+            "value": -1.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "z": {
+            "type": "Number",
+            "value": 0.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
               }
             }
           }
@@ -644,9 +701,9 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             49.0
           ],
           "tag": {
-            "commentStart": 1354,
-            "end": 1360,
-            "start": 1354,
+            "commentStart": 1323,
+            "end": 1329,
+            "start": 1323,
             "type": "TagDeclarator",
             "value": "edge1"
           },
@@ -669,9 +726,9 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             -4.0
           ],
           "tag": {
-            "commentStart": 1411,
-            "end": 1417,
-            "start": 1411,
+            "commentStart": 1380,
+            "end": 1386,
+            "start": 1380,
             "type": "TagDeclarator",
             "value": "edge2"
           },
@@ -694,9 +751,9 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             -4.0
           ],
           "tag": {
-            "commentStart": 1471,
-            "end": 1477,
-            "start": 1471,
+            "commentStart": 1440,
+            "end": 1446,
+            "start": 1440,
             "type": "TagDeclarator",
             "value": "edge3"
           },
@@ -719,9 +776,9 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             49.0
           ],
           "tag": {
-            "commentStart": 1527,
-            "end": 1533,
-            "start": 1527,
+            "commentStart": 1496,
+            "end": 1502,
+            "start": 1496,
             "type": "TagDeclarator",
             "value": "edge4"
           },
@@ -744,9 +801,9 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             49.0
           ],
           "tag": {
-            "commentStart": 1579,
-            "end": 1585,
-            "start": 1579,
+            "commentStart": 1548,
+            "end": 1554,
+            "start": 1548,
             "type": "TagDeclarator",
             "value": "edge5"
           },
@@ -769,9 +826,9 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             0.0
           ],
           "tag": {
-            "commentStart": 1632,
-            "end": 1638,
-            "start": 1632,
+            "commentStart": 1601,
+            "end": 1607,
+            "start": 1601,
             "type": "TagDeclarator",
             "value": "edge6"
           },
@@ -794,9 +851,9 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             0.0
           ],
           "tag": {
-            "commentStart": 1689,
-            "end": 1695,
-            "start": 1689,
+            "commentStart": 1658,
+            "end": 1664,
+            "start": 1658,
             "type": "TagDeclarator",
             "value": "edge7"
           },
@@ -819,9 +876,9 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             49.0
           ],
           "tag": {
-            "commentStart": 1716,
-            "end": 1722,
-            "start": 1716,
+            "commentStart": 1685,
+            "end": 1691,
+            "start": 1685,
             "type": "TagDeclarator",
             "value": "edge8"
           },
@@ -843,22 +900,34 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
         "origin": {
           "x": 0.0,
           "y": 44.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": {
+            "type": "Mm"
+          }
         },
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": {
+            "type": "Mm"
+          }
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
-          "z": 1.0
+          "z": 1.0,
+          "units": {
+            "type": "Mm"
+          }
         },
         "zAxis": {
           "x": 0.0,
           "y": -1.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": {
+            "type": "Mm"
+          }
         },
         "units": {
           "type": "Mm"
@@ -1183,22 +1252,34 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "origin": {
             "x": -52.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
+            "z": 1.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "zAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "units": {
             "type": "Mm"
@@ -1335,22 +1416,34 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "origin": {
             "x": -52.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
+            "z": 1.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "zAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "units": {
             "type": "Mm"
@@ -1391,176 +1484,177 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
   "retPlane": {
     "type": "Object",
     "value": {
-      "plane": {
+      "origin": {
         "type": "Object",
         "value": {
-          "origin": {
-            "type": "Object",
-            "value": {
-              "x": {
-                "type": "Number",
-                "value": -52.0,
-                "ty": {
-                  "type": "Unknown"
-                }
+          "x": {
+            "type": "Number",
+            "value": -52.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
               },
-              "y": {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              },
-              "z": {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
+              "angle": {
+                "type": "Degrees"
               }
             }
           },
-          "xAxis": {
-            "type": "Object",
-            "value": {
-              "x": {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
+          "y": {
+            "type": "Number",
+            "value": 0.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
               },
-              "y": {
-                "type": "Number",
-                "value": 1.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              },
-              "z": {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
+              "angle": {
+                "type": "Degrees"
               }
             }
           },
-          "yAxis": {
-            "type": "Object",
-            "value": {
-              "x": {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
+          "z": {
+            "type": "Number",
+            "value": 0.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
               },
-              "y": {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          }
+        }
+      },
+      "xAxis": {
+        "type": "Object",
+        "value": {
+          "x": {
+            "type": "Number",
+            "value": 0.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
               },
-              "z": {
-                "type": "Number",
-                "value": 1.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
+              "angle": {
+                "type": "Degrees"
               }
             }
           },
-          "zAxis": {
-            "type": "Object",
-            "value": {
-              "x": {
-                "type": "Number",
-                "value": 1.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
+          "y": {
+            "type": "Number",
+            "value": 1.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
               },
-              "y": {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "z": {
+            "type": "Number",
+            "value": 0.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
               },
-              "z": {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          }
+        }
+      },
+      "yAxis": {
+        "type": "Object",
+        "value": {
+          "x": {
+            "type": "Number",
+            "value": 0.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "y": {
+            "type": "Number",
+            "value": 0.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "z": {
+            "type": "Number",
+            "value": 1.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          }
+        }
+      },
+      "zAxis": {
+        "type": "Object",
+        "value": {
+          "x": {
+            "type": "Number",
+            "value": 1.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "y": {
+            "type": "Number",
+            "value": 0.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "z": {
+            "type": "Number",
+            "value": 0.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
               }
             }
           }
@@ -1584,182 +1678,177 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
   "tabPlane": {
     "type": "Object",
     "value": {
-      "plane": {
+      "origin": {
         "type": "Object",
         "value": {
-          "origin": {
-            "type": "Object",
-            "value": {
-              "x": {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
+          "x": {
+            "type": "Number",
+            "value": 0.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
               },
-              "y": {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              },
-              "z": {
-                "type": "Number",
-                "value": 49.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
+              "angle": {
+                "type": "Degrees"
               }
             }
           },
-          "xAxis": {
-            "type": "Object",
-            "value": {
-              "x": {
-                "type": "Number",
-                "value": 1.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
+          "y": {
+            "type": "Number",
+            "value": 0.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
               },
-              "y": {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              },
-              "z": {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
+              "angle": {
+                "type": "Degrees"
               }
             }
           },
-          "yAxis": {
-            "type": "Object",
-            "value": {
-              "x": {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
+          "z": {
+            "type": "Number",
+            "value": 49.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
               },
-              "y": {
-                "type": "Number",
-                "value": 1.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          }
+        }
+      },
+      "xAxis": {
+        "type": "Object",
+        "value": {
+          "x": {
+            "type": "Number",
+            "value": 1.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
               },
-              "z": {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
+              "angle": {
+                "type": "Degrees"
               }
             }
           },
-          "zAxis": {
-            "type": "Object",
-            "value": {
-              "x": {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
+          "y": {
+            "type": "Number",
+            "value": 0.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
               },
-              "y": {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "z": {
+            "type": "Number",
+            "value": 0.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
               },
-              "z": {
-                "type": "Number",
-                "value": 1.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          }
+        }
+      },
+      "yAxis": {
+        "type": "Object",
+        "value": {
+          "x": {
+            "type": "Number",
+            "value": 0.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "y": {
+            "type": "Number",
+            "value": 1.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "z": {
+            "type": "Number",
+            "value": 0.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          }
+        }
+      },
+      "zAxis": {
+        "type": "Object",
+        "value": {
+          "x": {
+            "type": "Number",
+            "value": 0.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "y": {
+            "type": "Number",
+            "value": 0.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "z": {
+            "type": "Number",
+            "value": 1.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
               }
             }
           }
@@ -1808,9 +1897,9 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3359,
-                "end": 3366,
-                "start": 3359,
+                "commentStart": 3304,
+                "end": 3311,
+                "start": 3304,
                 "type": "TagDeclarator",
                 "value": "edge21"
               },
@@ -1821,9 +1910,9 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3415,
-                "end": 3422,
-                "start": 3415,
+                "commentStart": 3360,
+                "end": 3367,
+                "start": 3360,
                 "type": "TagDeclarator",
                 "value": "edge22"
               },
@@ -1834,9 +1923,9 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3474,
-                "end": 3481,
-                "start": 3474,
+                "commentStart": 3419,
+                "end": 3426,
+                "start": 3419,
                 "type": "TagDeclarator",
                 "value": "edge23"
               },
@@ -1847,9 +1936,9 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3500,
-                "end": 3507,
-                "start": 3500,
+                "commentStart": 3445,
+                "end": 3452,
+                "start": 3445,
                 "type": "TagDeclarator",
                 "value": "edge24"
               },
@@ -1870,9 +1959,9 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   44.0
                 ],
                 "tag": {
-                  "commentStart": 3359,
-                  "end": 3366,
-                  "start": 3359,
+                  "commentStart": 3304,
+                  "end": 3311,
+                  "start": 3304,
                   "type": "TagDeclarator",
                   "value": "edge21"
                 },
@@ -1895,9 +1984,9 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   35.6667
                 ],
                 "tag": {
-                  "commentStart": 3415,
-                  "end": 3422,
-                  "start": 3415,
+                  "commentStart": 3360,
+                  "end": 3367,
+                  "start": 3360,
                   "type": "TagDeclarator",
                   "value": "edge22"
                 },
@@ -1920,9 +2009,9 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   19.0
                 ],
                 "tag": {
-                  "commentStart": 3474,
-                  "end": 3481,
-                  "start": 3474,
+                  "commentStart": 3419,
+                  "end": 3426,
+                  "start": 3419,
                   "type": "TagDeclarator",
                   "value": "edge23"
                 },
@@ -1945,9 +2034,9 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   10.6667
                 ],
                 "tag": {
-                  "commentStart": 3500,
-                  "end": 3507,
-                  "start": 3500,
+                  "commentStart": 3445,
+                  "end": 3452,
+                  "start": 3445,
                   "type": "TagDeclarator",
                   "value": "edge24"
                 },
@@ -1969,22 +2058,34 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 49.0
+                "z": 49.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Mm"
@@ -2039,14 +2140,36 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": 2.5,
+              "radius": {
+                "n": 2.5,
+                "ty": {
+                  "type": "Default",
+                  "len": {
+                    "type": "Mm"
+                  },
+                  "angle": {
+                    "type": "Degrees"
+                  }
+                }
+              },
               "edgeId": "[uuid]",
               "tag": null
             },
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": 2.5,
+              "radius": {
+                "n": 2.5,
+                "ty": {
+                  "type": "Default",
+                  "len": {
+                    "type": "Mm"
+                  },
+                  "angle": {
+                    "type": "Degrees"
+                  }
+                }
+              },
               "edgeId": "[uuid]",
               "tag": null
             }
@@ -2068,9 +2191,9 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3359,
-                "end": 3366,
-                "start": 3359,
+                "commentStart": 3304,
+                "end": 3311,
+                "start": 3304,
                 "type": "TagDeclarator",
                 "value": "edge21"
               },
@@ -2081,9 +2204,9 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3415,
-                "end": 3422,
-                "start": 3415,
+                "commentStart": 3360,
+                "end": 3367,
+                "start": 3360,
                 "type": "TagDeclarator",
                 "value": "edge22"
               },
@@ -2094,9 +2217,9 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3474,
-                "end": 3481,
-                "start": 3474,
+                "commentStart": 3419,
+                "end": 3426,
+                "start": 3419,
                 "type": "TagDeclarator",
                 "value": "edge23"
               },
@@ -2107,9 +2230,9 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3500,
-                "end": 3507,
-                "start": 3500,
+                "commentStart": 3445,
+                "end": 3452,
+                "start": 3445,
                 "type": "TagDeclarator",
                 "value": "edge24"
               },
@@ -2130,9 +2253,9 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   44.0
                 ],
                 "tag": {
-                  "commentStart": 3359,
-                  "end": 3366,
-                  "start": 3359,
+                  "commentStart": 3304,
+                  "end": 3311,
+                  "start": 3304,
                   "type": "TagDeclarator",
                   "value": "edge21"
                 },
@@ -2155,9 +2278,9 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   35.6667
                 ],
                 "tag": {
-                  "commentStart": 3415,
-                  "end": 3422,
-                  "start": 3415,
+                  "commentStart": 3360,
+                  "end": 3367,
+                  "start": 3360,
                   "type": "TagDeclarator",
                   "value": "edge22"
                 },
@@ -2180,9 +2303,9 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   19.0
                 ],
                 "tag": {
-                  "commentStart": 3474,
-                  "end": 3481,
-                  "start": 3474,
+                  "commentStart": 3419,
+                  "end": 3426,
+                  "start": 3419,
                   "type": "TagDeclarator",
                   "value": "edge23"
                 },
@@ -2205,9 +2328,9 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   10.6667
                 ],
                 "tag": {
-                  "commentStart": 3500,
-                  "end": 3507,
-                  "start": 3500,
+                  "commentStart": 3445,
+                  "end": 3452,
+                  "start": 3445,
                   "type": "TagDeclarator",
                   "value": "edge24"
                 },
@@ -2229,22 +2352,34 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 49.0
+                "z": 49.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Mm"
@@ -2299,14 +2434,36 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": 2.5,
+              "radius": {
+                "n": 2.5,
+                "ty": {
+                  "type": "Default",
+                  "len": {
+                    "type": "Mm"
+                  },
+                  "angle": {
+                    "type": "Degrees"
+                  }
+                }
+              },
               "edgeId": "[uuid]",
               "tag": null
             },
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": 2.5,
+              "radius": {
+                "n": 2.5,
+                "ty": {
+                  "type": "Default",
+                  "len": {
+                    "type": "Mm"
+                  },
+                  "angle": {
+                    "type": "Degrees"
+                  }
+                }
+              },
               "edgeId": "[uuid]",
               "tag": null
             }
@@ -2333,9 +2490,9 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2543,
-                "end": 2550,
-                "start": 2543,
+                "commentStart": 2488,
+                "end": 2495,
+                "start": 2488,
                 "type": "TagDeclarator",
                 "value": "edge11"
               },
@@ -2346,9 +2503,9 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2599,
-                "end": 2606,
-                "start": 2599,
+                "commentStart": 2544,
+                "end": 2551,
+                "start": 2544,
                 "type": "TagDeclarator",
                 "value": "edge12"
               },
@@ -2359,9 +2516,9 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2659,
-                "end": 2666,
-                "start": 2659,
+                "commentStart": 2604,
+                "end": 2611,
+                "start": 2604,
                 "type": "TagDeclarator",
                 "value": "edge13"
               },
@@ -2372,9 +2529,9 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2685,
-                "end": 2692,
-                "start": 2685,
+                "commentStart": 2630,
+                "end": 2637,
+                "start": 2630,
                 "type": "TagDeclarator",
                 "value": "edge14"
               },
@@ -2395,9 +2552,9 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   44.0
                 ],
                 "tag": {
-                  "commentStart": 2543,
-                  "end": 2550,
-                  "start": 2543,
+                  "commentStart": 2488,
+                  "end": 2495,
+                  "start": 2488,
                   "type": "TagDeclarator",
                   "value": "edge11"
                 },
@@ -2420,9 +2577,9 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   35.6667
                 ],
                 "tag": {
-                  "commentStart": 2599,
-                  "end": 2606,
-                  "start": 2599,
+                  "commentStart": 2544,
+                  "end": 2551,
+                  "start": 2544,
                   "type": "TagDeclarator",
                   "value": "edge12"
                 },
@@ -2445,9 +2602,9 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   19.0
                 ],
                 "tag": {
-                  "commentStart": 2659,
-                  "end": 2666,
-                  "start": 2659,
+                  "commentStart": 2604,
+                  "end": 2611,
+                  "start": 2604,
                   "type": "TagDeclarator",
                   "value": "edge13"
                 },
@@ -2470,9 +2627,9 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   10.6667
                 ],
                 "tag": {
-                  "commentStart": 2685,
-                  "end": 2692,
-                  "start": 2685,
+                  "commentStart": 2630,
+                  "end": 2637,
+                  "start": 2630,
                   "type": "TagDeclarator",
                   "value": "edge14"
                 },
@@ -2494,22 +2651,34 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 49.0
+                "z": 49.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Mm"
@@ -2564,14 +2733,36 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": 2.5,
+              "radius": {
+                "n": 2.5,
+                "ty": {
+                  "type": "Default",
+                  "len": {
+                    "type": "Mm"
+                  },
+                  "angle": {
+                    "type": "Degrees"
+                  }
+                }
+              },
               "edgeId": "[uuid]",
               "tag": null
             },
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": 2.5,
+              "radius": {
+                "n": 2.5,
+                "ty": {
+                  "type": "Default",
+                  "len": {
+                    "type": "Mm"
+                  },
+                  "angle": {
+                    "type": "Degrees"
+                  }
+                }
+              },
               "edgeId": "[uuid]",
               "tag": null
             }
@@ -2593,9 +2784,9 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2543,
-                "end": 2550,
-                "start": 2543,
+                "commentStart": 2488,
+                "end": 2495,
+                "start": 2488,
                 "type": "TagDeclarator",
                 "value": "edge11"
               },
@@ -2606,9 +2797,9 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2599,
-                "end": 2606,
-                "start": 2599,
+                "commentStart": 2544,
+                "end": 2551,
+                "start": 2544,
                 "type": "TagDeclarator",
                 "value": "edge12"
               },
@@ -2619,9 +2810,9 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2659,
-                "end": 2666,
-                "start": 2659,
+                "commentStart": 2604,
+                "end": 2611,
+                "start": 2604,
                 "type": "TagDeclarator",
                 "value": "edge13"
               },
@@ -2632,9 +2823,9 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2685,
-                "end": 2692,
-                "start": 2685,
+                "commentStart": 2630,
+                "end": 2637,
+                "start": 2630,
                 "type": "TagDeclarator",
                 "value": "edge14"
               },
@@ -2655,9 +2846,9 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   44.0
                 ],
                 "tag": {
-                  "commentStart": 2543,
-                  "end": 2550,
-                  "start": 2543,
+                  "commentStart": 2488,
+                  "end": 2495,
+                  "start": 2488,
                   "type": "TagDeclarator",
                   "value": "edge11"
                 },
@@ -2680,9 +2871,9 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   35.6667
                 ],
                 "tag": {
-                  "commentStart": 2599,
-                  "end": 2606,
-                  "start": 2599,
+                  "commentStart": 2544,
+                  "end": 2551,
+                  "start": 2544,
                   "type": "TagDeclarator",
                   "value": "edge12"
                 },
@@ -2705,9 +2896,9 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   19.0
                 ],
                 "tag": {
-                  "commentStart": 2659,
-                  "end": 2666,
-                  "start": 2659,
+                  "commentStart": 2604,
+                  "end": 2611,
+                  "start": 2604,
                   "type": "TagDeclarator",
                   "value": "edge13"
                 },
@@ -2730,9 +2921,9 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   10.6667
                 ],
                 "tag": {
-                  "commentStart": 2685,
-                  "end": 2692,
-                  "start": 2685,
+                  "commentStart": 2630,
+                  "end": 2637,
+                  "start": 2630,
                   "type": "TagDeclarator",
                   "value": "edge14"
                 },
@@ -2754,22 +2945,34 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 49.0
+                "z": 49.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "units": {
                 "type": "Mm"
@@ -2824,14 +3027,36 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": 2.5,
+              "radius": {
+                "n": 2.5,
+                "ty": {
+                  "type": "Default",
+                  "len": {
+                    "type": "Mm"
+                  },
+                  "angle": {
+                    "type": "Degrees"
+                  }
+                }
+              },
               "edgeId": "[uuid]",
               "tag": null
             },
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": 2.5,
+              "radius": {
+                "n": 2.5,
+                "ty": {
+                  "type": "Default",
+                  "len": {
+                    "type": "Mm"
+                  },
+                  "angle": {
+                    "type": "Degrees"
+                  }
+                }
+              },
               "edgeId": "[uuid]",
               "tag": null
             }

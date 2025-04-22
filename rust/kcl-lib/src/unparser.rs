@@ -192,7 +192,7 @@ impl Node<Annotation> {
                 result.push_str(&indentation);
                 result.push_str(comment);
             }
-            if !comment.ends_with("*/") && !result.ends_with("\n\n") && result != "\n" {
+            if !result.ends_with("\n\n") && result != "\n" {
                 result.push('\n');
             }
         }
@@ -864,10 +864,10 @@ impl Parameter {
     }
 }
 
-/// Collect all the kcl files in a directory, recursively.
+/// Collect all the kcl (and other relevant) files in a directory, recursively.
 #[cfg(not(target_arch = "wasm32"))]
 #[async_recursion::async_recursion]
-pub(crate) async fn walk_dir(dir: &std::path::PathBuf) -> Result<Vec<std::path::PathBuf>, anyhow::Error> {
+pub async fn walk_dir(dir: &std::path::PathBuf) -> Result<Vec<std::path::PathBuf>, anyhow::Error> {
     // Make sure we actually have a directory.
     if !dir.is_dir() {
         anyhow::bail!("`{}` is not a directory", dir.display());
@@ -881,7 +881,10 @@ pub(crate) async fn walk_dir(dir: &std::path::PathBuf) -> Result<Vec<std::path::
 
         if path.is_dir() {
             files.extend(walk_dir(&path).await?);
-        } else if path.extension().is_some_and(|ext| ext == "kcl") {
+        } else if path
+            .extension()
+            .is_some_and(|ext| crate::RELEVANT_FILE_EXTENSIONS.contains(&ext.to_string_lossy().to_string()))
+        {
             files.push(path);
         }
     }
@@ -901,6 +904,8 @@ pub async fn recast_dir(dir: &std::path::Path, options: &crate::FormatOptions) -
 
     let futures = files
         .into_iter()
+        .filter(|file| file.extension().is_some_and(|ext| ext == "kcl")) // We only care about kcl
+        // files here.
         .map(|file| {
             let options = options.clone();
             tokio::spawn(async move {
@@ -1011,6 +1016,20 @@ foo = 42
 // Comment on another item
 @(impl = kcl)
 bar = 0
+"#;
+        let program = crate::parsing::top_level_parse(input).unwrap();
+        let output = program.recast(&Default::default(), 0);
+        assert_eq!(output, input);
+    }
+
+    #[test]
+    fn recast_annotations_with_block_comment() {
+        let input = r#"/* Start comment
+
+sdfsdfsdfs */
+@settings(defaultLengthUnit = in)
+
+foo = 42
 "#;
         let program = crate::parsing::top_level_parse(input).unwrap();
         let output = program.recast(&Default::default(), 0);
@@ -1172,7 +1191,7 @@ fn o(c_x, c_y) {
          angle_start = 45 + a,
          angle_end = 225 - a
        }, %)
-    |> angledLine([45, o_r - i_r], %)
+    |> angledLine(angle = 45, length = o_r - i_r)
     |> arc({
          radius = i_r,
          angle_start = 225 - a,
@@ -1188,7 +1207,7 @@ fn o(c_x, c_y) {
          angle_start = 225 + a,
          angle_end = 360 + 45 - a
        }, %)
-    |> angledLine([225, o_r - i_r], %)
+    |> angledLine(angle = 225, length = o_r - i_r)
     |> arc({
          radius = i_r,
          angle_start = 45 - a,
@@ -1235,7 +1254,7 @@ insideRevolve = startSketchOn(XZ)
   |> line([0, -thickness], %)
   |> line([-overHangLength, 0], %)
   |> close()
-  |> revolve({ axis: 'y' }, %)
+  |> revolve({ axis = Y }, %)
 
 // Sketch and revolve one of the balls and duplicate it using a circular pattern. (This is currently a workaround, we have a bug with rotating on a sketch that touches the rotation axis)
 sphere = startSketchOn(XZ)
@@ -1250,7 +1269,7 @@ sphere = startSketchOn(XZ)
        radius = sphereDia / 2 - 0.05
      }, %)
   |> close()
-  |> revolve({ axis: 'x' }, %)
+  |> revolve({ axis = X }, %)
   |> patternCircular3d(
        axis = [0, 0, 1],
        center = [0, 0, 0],
@@ -1274,7 +1293,7 @@ outsideRevolve = startSketchOn(XZ)
   |> line([0, thickness], %)
   |> line([overHangLength - thickness, 0], %)
   |> close()
-  |> revolve({ axis: 'y' }, %)"#;
+  |> revolve({ axis = Y }, %)"#;
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
 
         let recasted = program.recast(&Default::default(), 0);
@@ -1301,7 +1320,7 @@ insideRevolve = startSketchOn(XZ)
   |> line([0, -thickness], %)
   |> line([-overHangLength, 0], %)
   |> close()
-  |> revolve({ axis = 'y' }, %)
+  |> revolve({ axis = Y }, %)
 
 // Sketch and revolve one of the balls and duplicate it using a circular pattern. (This is currently a workaround, we have a bug with rotating on a sketch that touches the rotation axis)
 sphere = startSketchOn(XZ)
@@ -1316,7 +1335,7 @@ sphere = startSketchOn(XZ)
        radius = sphereDia / 2 - 0.05
      }, %)
   |> close()
-  |> revolve({ axis = 'x' }, %)
+  |> revolve({ axis = X }, %)
   |> patternCircular3d(
        axis = [0, 0, 1],
        center = [0, 0, 0],
@@ -1340,7 +1359,7 @@ outsideRevolve = startSketchOn(XZ)
   |> line([0, thickness], %)
   |> line([overHangLength - thickness, 0], %)
   |> close()
-  |> revolve({ axis = 'y' }, %)
+  |> revolve({ axis = Y }, %)
 "#
         );
     }
@@ -1613,9 +1632,9 @@ fn bracketSketch = (w, d, t) => {
   s = startSketchOn({
          plane: {
   origin: { x = 0, y = length / 2 + thk, z = 0 },
-  x_axis: { x = 1, y = 0, z = 0 },
-  y_axis: { x = 0, y = 0, z = 1 },
-  z_axis: { x = 0, y = 1, z = 0 }
+  x_axis = { x = 1, y = 0, z = 0 },
+  y_axis = { x = 0, y = 0, z = 1 },
+  z_axis = { x = 0, y = 1, z = 0 }
 }
        })
     |> startProfileAt([-w / 2 - t, d + t], %)
@@ -1645,9 +1664,9 @@ bracket_body = bracketSketch(width, depth, thk)
 tabs_r = startSketchOn({
        plane: {
   origin: { x = 0, y = 0, z = depth + thk },
-  x_axis: { x = 1, y = 0, z = 0 },
-  y_axis: { x = 0, y = 1, z = 0 },
-  z_axis: { x = 0, y = 0, z = 1 }
+  x_axis = { x = 1, y = 0, z = 0 },
+  y_axis = { x = 0, y = 1, z = 0 },
+  z_axis = { x = 0, y = 0, z = 1 }
 }
      })
   |> startProfileAt([width / 2 + thk, length / 2 + thk], %)
@@ -1709,7 +1728,7 @@ thk = 5
 hole_diam = 5
 // define a rectangular shape func
 fn rectShape(pos, w, l) {
-  rr = startSketchOn('xy')
+  rr = startSketchOn(XY)
     |> startProfileAt([pos[0] - (w / 2), pos[1] - (l / 2)], %)
     |> line(endAbsolute = [pos[0] + w / 2, pos[1] - (l / 2)], tag = $edge1)
     |> line(endAbsolute = [pos[0] + w / 2, pos[1] + l / 2], tag = $edge2)
@@ -2118,16 +2137,13 @@ mySk1 = startSketchOn(XY)
 
     #[test]
     fn test_recast_multiline_object() {
-        let some_program_string = r#"part001 = startSketchOn(XY)
-  |> startProfileAt([-0.01, -0.08], %)
-  |> line([0.62, 4.15], %, $seg01)
-  |> line([2.77, -1.24], %)
-  |> angledLineThatIntersects({
-       angle = 201,
-       offset = -1.35,
-       intersectTag = seg01
-     }, %)
-  |> line([-0.42, -1.72], %)"#;
+        let some_program_string = r#"x = {
+  a = 1000000000,
+  b = 2000000000,
+  c = 3000000000,
+  d = 4000000000,
+  e = 5000000000
+}"#;
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
 
         let recasted = program.recast(&Default::default(), 0);
@@ -2203,14 +2219,8 @@ myAng2 = 134
 part001 = startSketchOn(XY)
   |> startProfileAt([0, 0], %)
   |> line([1, 3.82], %, $seg01) // ln-should-get-tag
-  |> angledLineToX([
-       -angleToMatchLengthX(seg01, myVar, %),
-       myVar
-     ], %) // ln-lineTo-xAbsolute should use angleToMatchLengthX helper
-  |> angledLineToY([
-       -angleToMatchLengthY(seg01, myVar, %),
-       myVar
-     ], %) // ln-lineTo-yAbsolute should use angleToMatchLengthY helper"#;
+  |> angledLine(angle = -angleToMatchLengthX(seg01, myVar, %), length = myVar) // ln-lineTo-xAbsolute should use angleToMatchLengthX helper
+  |> angledLine(angle = -angleToMatchLengthY(seg01, myVar, %), length = myVar) // ln-lineTo-yAbsolute should use angleToMatchLengthY helper"#;
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
 
         let recasted = program.recast(&Default::default(), 0);
@@ -2227,14 +2237,8 @@ myAng2 = 134
 part001 = startSketchOn(XY)
    |> startProfileAt([0, 0], %)
    |> line([1, 3.82], %, $seg01) // ln-should-get-tag
-   |> angledLineToX([
-         -angleToMatchLengthX(seg01, myVar, %),
-         myVar
-      ], %) // ln-lineTo-xAbsolute should use angleToMatchLengthX helper
-   |> angledLineToY([
-         -angleToMatchLengthY(seg01, myVar, %),
-         myVar
-      ], %) // ln-lineTo-yAbsolute should use angleToMatchLengthY helper
+   |> angledLine(angle = -angleToMatchLengthX(seg01, myVar, %), length = myVar) // ln-lineTo-xAbsolute should use angleToMatchLengthX helper
+   |> angledLine(angle = -angleToMatchLengthY(seg01, myVar, %), length = myVar) // ln-lineTo-yAbsolute should use angleToMatchLengthY helper
 "#;
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
 
@@ -2528,9 +2532,9 @@ fn f() {
 sketch002 = startSketchOn({
        plane: {
     origin: { x = 1, y = 2, z = 3 },
-    x_axis: { x = 4, y = 5, z = 6 },
-    y_axis: { x = 7, y = 8, z = 9 },
-    z_axis: { x = 10, y = 11, z = 12 }
+    x_axis = { x = 4, y = 5, z = 6 },
+    y_axis = { x = 7, y = 8, z = 9 },
+    z_axis = { x = 10, y = 11, z = 12 }
        }
   })
 "#;

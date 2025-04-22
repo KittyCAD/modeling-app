@@ -1,16 +1,17 @@
 // A little class for updating the code state when we need to and explicitly
 // NOT updating the code state when we don't need to.
 // This prevents re-renders of the codemirror editor, when typing.
-import { bracket } from 'lib/exampleKcl'
-import { isDesktop } from 'lib/isDesktop'
-import toast from 'react-hot-toast'
-import { editorManager } from 'lib/singletons'
-import { Annotation, Transaction } from '@codemirror/state'
-import { EditorView, KeyBinding } from '@codemirror/view'
-import { recast, Program, parse } from 'lang/wasm'
-import { err, reportRejection } from 'lib/trap'
-import { Compartment } from '@codemirror/state'
 import { history } from '@codemirror/commands'
+import { Annotation, Compartment, Transaction } from '@codemirror/state'
+import type { EditorView, KeyBinding } from '@codemirror/view'
+import toast from 'react-hot-toast'
+
+import type { Program } from '@src/lang/wasm'
+import { parse, recast } from '@src/lang/wasm'
+import { bracket } from '@src/lib/exampleKcl'
+import { isDesktop } from '@src/lib/isDesktop'
+import { editorManager } from '@src/lib/singletons'
+import { err, reportRejection } from '@src/lib/trap'
 
 const PERSIST_CODE_KEY = 'persistCode'
 
@@ -164,13 +165,16 @@ export default class CodeManager {
     }
   }
 
-  async updateEditorWithAstAndWriteToFile(ast: Program) {
+  async updateEditorWithAstAndWriteToFile(
+    ast: Program,
+    options?: Partial<{ isDeleting: boolean }>
+  ) {
     // We clear the AST when it cannot be parsed. If we are trying to write an
     // empty AST, it's probably because of an earlier error. That's a bad state
     // to be in, and it's not going to be pretty, but at the least, let's not
-    // permanently delete the user's code. If you want to clear the scene, call
-    // updateCodeStateEditor directly.
-    if (ast.body.length === 0) return
+    // permanently delete the user's code accidentally.
+    // if you want to clear the scene, pass in the `isDeleting` option.
+    if (ast.body.length === 0 && !options?.isDeleting) return
     const newCode = recast(ast)
     if (err(newCode)) return
     // Test to see if we can parse the recast code, and never update the editor with bad code.

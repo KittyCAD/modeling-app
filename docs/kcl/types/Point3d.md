@@ -1,5 +1,5 @@
 ---
-title: "std::Point3d"
+title: "std::types::Point3d"
 excerpt: "A point in three dimensional space."
 layout: manual
 ---
@@ -7,7 +7,7 @@ layout: manual
 A point in three dimensional space.
 
 ```kcl
-type Point3d = [number; 3]
+type Point3d = [number(Length); 3]
 ```
 
 [`Point3d`](/docs/kcl/types/Point3d) is an alias for a three-element array of [number](/docs/kcl/types/number)s. To write a value

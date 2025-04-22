@@ -6,27 +6,30 @@
  * A way to bypass this is by reloading the entire .js file so the global wasm variable
  * gets reinitialized and we do not use that old reference
  */
-
-import {
-  parse_wasm as ParseWasm,
-  recast_wasm as RecastWasm,
-  format_number as FormatNumber,
-  kcl_lint as KclLint,
-  is_points_ccw as IsPointsCcw,
-  get_tangential_arc_to_info as GetTangentialArcToInfo,
+import type {
+  base64_decode as Base64Decode,
+  change_kcl_settings as ChangeKclSettings,
   coredump as CoreDump,
   default_app_settings as DefaultAppSettings,
+  default_project_settings as DefaultProjectSettings,
+  format_number as FormatNumber,
+  get_kcl_version as GetKclVersion,
+  get_tangential_arc_to_info as GetTangentialArcToInfo,
+  import_file_extensions as ImportFileExtensions,
+  is_kcl_empty_or_only_settings as IsKclEmptyOrOnlySettings,
+  is_points_ccw as IsPointsCcw,
+  kcl_lint as KclLint,
+  kcl_settings as KclSettings,
   parse_app_settings as ParseAppSettings,
   parse_project_settings as ParseProjectSettings,
-  default_project_settings as DefaultProjectSettings,
-  base64_decode as Base64Decode,
-  kcl_settings as KclSettings,
-  change_kcl_settings as ChangeKclSettings,
-  get_kcl_version as GetKclVersion,
+  parse_wasm as ParseWasm,
+  recast_wasm as RecastWasm,
+  relevant_file_extensions as RelevantFileExtensions,
   serialize_configuration as SerializeConfiguration,
   serialize_project_configuration as SerializeProjectConfiguration,
 } from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
 
+// eslint-disable-next-line @typescript-eslint/consistent-type-imports
 export type ModuleType = typeof import('@rust/kcl-wasm-lib/pkg/kcl_wasm_lib')
 
 // Stores the result of the import of the wasm_lib file
@@ -93,6 +96,11 @@ export const kcl_settings: typeof KclSettings = (...args) => {
 export const change_kcl_settings: typeof ChangeKclSettings = (...args) => {
   return getModule().change_kcl_settings(...args)
 }
+export const is_kcl_empty_or_only_settings: typeof IsKclEmptyOrOnlySettings = (
+  ...args
+) => {
+  return getModule().is_kcl_empty_or_only_settings(...args)
+}
 export const get_kcl_version: typeof GetKclVersion = () => {
   return getModule().get_kcl_version()
 }
@@ -105,3 +113,9 @@ export const serialize_project_configuration: typeof SerializeProjectConfigurati
   (...args) => {
     return getModule().serialize_project_configuration(...args)
   }
+export const import_file_extensions: typeof ImportFileExtensions = () => {
+  return getModule().import_file_extensions()
+}
+export const relevant_file_extensions: typeof RelevantFileExtensions = () => {
+  return getModule().relevant_file_extensions()
+}

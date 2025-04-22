@@ -1,46 +1,53 @@
-import { App } from './App'
+import { useMemo } from 'react'
+import toast from 'react-hot-toast'
 import {
+  Outlet,
+  RouterProvider,
   createBrowserRouter,
   createHashRouter,
-  Outlet,
   redirect,
-  RouterProvider,
 } from 'react-router-dom'
-import { ErrorPage } from './components/ErrorPage'
-import { Settings } from './routes/Settings'
-import { Telemetry } from './routes/Telemetry'
-import Onboarding, { onboardingRoutes } from './routes/Onboarding'
-import SignIn from './routes/SignIn'
-import { Auth } from './Auth'
-import { isDesktop } from './lib/isDesktop'
-import Home from './routes/Home'
-import { NetworkContext } from './hooks/useNetworkContext'
-import { useNetworkStatus } from './hooks/useNetworkStatus'
-import makeUrlPathRelative from './lib/makeUrlPathRelative'
-import DownloadAppBanner from 'components/DownloadAppBanner'
-import { WasmErrBanner } from 'components/WasmErrBanner'
-import { CommandBar } from 'components/CommandBar/CommandBar'
-import ModelingMachineProvider from 'components/ModelingMachineProvider'
-import FileMachineProvider from 'components/FileMachineProvider'
-import { MachineManagerProvider } from 'components/MachineManagerProvider'
-import { PATHS } from 'lib/paths'
-import { fileLoader, homeLoader, telemetryLoader } from 'lib/routeLoaders'
-import LspProvider from 'components/LspProvider'
-import { KclContextProvider } from 'lang/KclProvider'
-import { ASK_TO_OPEN_QUERY_PARAM, BROWSER_PROJECT_NAME } from 'lib/constants'
-import { CoreDumpManager } from 'lib/coredump'
-import { codeManager, engineCommandManager } from 'lib/singletons'
-import useHotkeyWrapper from 'lib/hotkeyWrapper'
-import toast from 'react-hot-toast'
-import { coreDump } from 'lang/wasm'
-import { useMemo } from 'react'
-import { AppStateProvider } from 'AppState'
-import { reportRejection } from 'lib/trap'
-import { RouteProvider } from 'components/RouteProvider'
-import { ProjectsContextProvider } from 'components/ProjectsContextProvider'
-import { useToken } from 'machines/appMachine'
-import { OpenInDesktopAppHandler } from 'components/OpenInDesktopAppHandler'
-import { rustContext } from 'lib/singletons'
+
+import { App } from '@src/App'
+import { AppStateProvider } from '@src/AppState'
+import { Auth } from '@src/Auth'
+import { CommandBar } from '@src/components/CommandBar/CommandBar'
+import DownloadAppBanner from '@src/components/DownloadAppBanner'
+import { ErrorPage } from '@src/components/ErrorPage'
+import FileMachineProvider from '@src/components/FileMachineProvider'
+import LspProvider from '@src/components/LspProvider'
+import { MachineManagerProvider } from '@src/components/MachineManagerProvider'
+import ModelingMachineProvider from '@src/components/ModelingMachineProvider'
+import { OpenInDesktopAppHandler } from '@src/components/OpenInDesktopAppHandler'
+import { ProjectsContextProvider } from '@src/components/ProjectsContextProvider'
+import { RouteProvider } from '@src/components/RouteProvider'
+import { WasmErrBanner } from '@src/components/WasmErrBanner'
+import { NetworkContext } from '@src/hooks/useNetworkContext'
+import { useNetworkStatus } from '@src/hooks/useNetworkStatus'
+import { KclContextProvider } from '@src/lang/KclProvider'
+import { coreDump } from '@src/lang/wasm'
+import {
+  ASK_TO_OPEN_QUERY_PARAM,
+  BROWSER_PROJECT_NAME,
+} from '@src/lib/constants'
+import { CoreDumpManager } from '@src/lib/coredump'
+import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
+import { isDesktop } from '@src/lib/isDesktop'
+import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
+import { PATHS } from '@src/lib/paths'
+import { fileLoader, homeLoader, telemetryLoader } from '@src/lib/routeLoaders'
+import {
+  codeManager,
+  engineCommandManager,
+  rustContext,
+} from '@src/lib/singletons'
+import { reportRejection } from '@src/lib/trap'
+import { useToken } from '@src/machines/appMachine'
+import Home from '@src/routes/Home'
+import Onboarding, { onboardingRoutes } from '@src/routes/Onboarding'
+import { Settings } from '@src/routes/Settings'
+import SignIn from '@src/routes/SignIn'
+import { Telemetry } from '@src/routes/Telemetry'
 
 const createRouter = isDesktop() ? createHashRouter : createBrowserRouter
 

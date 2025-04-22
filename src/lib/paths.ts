@@ -1,13 +1,20 @@
-import { onboardingPaths } from 'routes/Onboarding/paths'
-import { BROWSER_FILE_NAME, BROWSER_PROJECT_NAME, FILE_EXT } from './constants'
-import { isDesktop } from './isDesktop'
-import { readAppSettingsFile } from './desktop'
-import { readLocalStorageAppSettingsFile } from './settings/settingsUtils'
-import { err } from 'lib/trap'
-import { IS_PLAYWRIGHT_KEY } from '../../e2e/playwright/storageStates'
-import { DeepPartial } from './types'
-import { Configuration } from '@rust/kcl-lib/bindings/Configuration'
-import { PlatformPath } from 'path'
+import type { PlatformPath } from 'path'
+
+import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
+
+import { IS_PLAYWRIGHT_KEY } from '@e2e/playwright/storageStates'
+
+import {
+  BROWSER_FILE_NAME,
+  BROWSER_PROJECT_NAME,
+  FILE_EXT,
+} from '@src/lib/constants'
+import { readAppSettingsFile } from '@src/lib/desktop'
+import { isDesktop } from '@src/lib/isDesktop'
+import { readLocalStorageAppSettingsFile } from '@src/lib/settings/settingsUtils'
+import { err } from '@src/lib/trap'
+import type { DeepPartial } from '@src/lib/types'
+import { onboardingPaths } from '@src/routes/Onboarding/paths'
 
 const prependRoutes =
   (routesObject: Record<string, string>) => (prepend: string) => {
@@ -23,7 +30,7 @@ type OnboardingPaths = {
   [K in keyof typeof onboardingPaths]: `/onboarding${(typeof onboardingPaths)[K]}`
 }
 
-const SETTINGS = '/settings' as const
+const SETTINGS = '/settings'
 
 export type ProjectRoute = {
   projectName: string | null

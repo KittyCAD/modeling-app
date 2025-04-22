@@ -16,15 +16,18 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-use super::args::Arg;
+use super::{
+    args::Arg,
+    utils::{untype_point, untype_point_3d},
+};
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
         kcl_value::FunctionSource,
         types::{NumericType, RuntimeType},
-        ExecState, Geometries, Geometry, KclObjectFields, KclValue, Point2d, Point3d, Sketch, Solid,
+        ExecState, Geometries, Geometry, KclObjectFields, KclValue, Sketch, Solid,
     },
-    std::Args,
+    std::{args::TyF64, Args},
     ExecutorContext, SourceRange,
 };
 
@@ -242,12 +245,12 @@ pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Res
 /// }
 /// startSketchOn('XY')
 ///   |> startProfileAt([0, 0], %)
-///   |> polygon({
-///        radius: 10,
-///        numSides: 4,
-///        center: [0, 0],
-///        inscribed: false
-///      }, %)
+///   |> polygon(
+///        radius = 10,
+///        numSides = 4,
+///        center = [0, 0],
+///        inscribed = false,
+///      )
 ///   |> extrude(length = 4)
 ///   |> patternTransform(instances = 3, transform = transform)
 /// ```
@@ -381,6 +384,7 @@ async fn send_pattern_transform<T: GeometryTrait>(
     args: &Args,
 ) -> Result<Vec<T>, KclError> {
     let id = exec_state.next_uuid();
+    let extra_instances = transforms.len();
 
     let resp = args
         .send_modeling_cmd(
@@ -393,10 +397,19 @@ async fn send_pattern_transform<T: GeometryTrait>(
         )
         .await?;
 
-    let OkWebSocketResponseData::Modeling {
+    let mut mock_ids = Vec::new();
+    let entity_ids = if let OkWebSocketResponseData::Modeling {
         modeling_response: OkModelingCmdResponse::EntityLinearPatternTransform(pattern_info),
     } = &resp
-    else {
+    {
+        &pattern_info.entity_ids
+    } else if args.ctx.no_engine_commands().await {
+        mock_ids.reserve(extra_instances);
+        for _ in 0..extra_instances {
+            mock_ids.push(exec_state.next_uuid());
+        }
+        &mock_ids
+    } else {
         return Err(KclError::Engine(KclErrorDetails {
             message: format!("EntityLinearPattern response was not as expected: {:?}", resp),
             source_ranges: vec![args.source_range],
@@ -404,7 +417,7 @@ async fn send_pattern_transform<T: GeometryTrait>(
     };
 
     let mut geometries = vec![solid.clone()];
-    for id in pattern_info.entity_ids.iter().copied() {
+    for id in entity_ids.iter().copied() {
         let mut new_solid = solid.clone();
         new_solid.set_id(id);
         geometries.push(new_solid);
@@ -427,7 +440,7 @@ async fn make_transform<T: GeometryTrait>(
     };
     let transform_fn_args = vec![Arg::synthetic(repetition_num)];
     let transform_fn_return = transform
-        .call(exec_state, ctxt, transform_fn_args, source_range)
+        .call(None, exec_state, ctxt, transform_fn_args, source_range)
         .await?;
 
     // Unpack the returned transform object.
@@ -462,13 +475,14 @@ async fn make_transform<T: GeometryTrait>(
 
     transforms
         .into_iter()
-        .map(|obj| transform_from_obj_fields::<T>(obj, source_ranges.clone()))
+        .map(|obj| transform_from_obj_fields::<T>(obj, source_ranges.clone(), exec_state))
         .collect()
 }
 
 fn transform_from_obj_fields<T: GeometryTrait>(
     transform: KclObjectFields,
     source_ranges: Vec<SourceRange>,
+    exec_state: &mut ExecState,
 ) -> Result<Transform, KclError> {
     // Apply defaults to the transform.
     let replicate = match transform.get("replicate") {
@@ -484,13 +498,26 @@ fn transform_from_obj_fields<T: GeometryTrait>(
     };
 
     let scale = match transform.get("scale") {
-        Some(x) => T::array_to_point3d(x, source_ranges.clone())?,
-        None => Point3d { x: 1.0, y: 1.0, z: 1.0 },
+        Some(x) => untype_point_3d(T::array_to_point3d(x, source_ranges.clone(), exec_state)?)
+            .0
+            .into(),
+        None => kcmc::shared::Point3d { x: 1.0, y: 1.0, z: 1.0 },
     };
 
     let translate = match transform.get("translate") {
-        Some(x) => T::array_to_point3d(x, source_ranges.clone())?,
-        None => Point3d { x: 0.0, y: 0.0, z: 0.0 },
+        Some(x) => {
+            let (arr, _) = untype_point_3d(T::array_to_point3d(x, source_ranges.clone(), exec_state)?);
+            kcmc::shared::Point3d::<LengthUnit> {
+                x: LengthUnit(arr[0]),
+                y: LengthUnit(arr[1]),
+                z: LengthUnit(arr[2]),
+            }
+        }
+        None => kcmc::shared::Point3d::<LengthUnit> {
+            x: LengthUnit(0.0),
+            y: LengthUnit(0.0),
+            z: LengthUnit(0.0),
+        },
     };
 
     let mut rotation = Rotation::default();
@@ -503,7 +530,9 @@ fn transform_from_obj_fields<T: GeometryTrait>(
             }));
         };
         if let Some(axis) = rot.get("axis") {
-            rotation.axis = T::array_to_point3d(axis, source_ranges.clone())?.into();
+            rotation.axis = untype_point_3d(T::array_to_point3d(axis, source_ranges.clone(), exec_state)?)
+                .0
+                .into();
         }
         if let Some(angle) = rot.get("angle") {
             match angle {
@@ -523,7 +552,9 @@ fn transform_from_obj_fields<T: GeometryTrait>(
                 KclValue::String { value: s, meta: _ } if s == "local" => OriginType::Local,
                 KclValue::String { value: s, meta: _ } if s == "global" => OriginType::Global,
                 other => {
-                    let origin = T::array_to_point3d(other, source_ranges.clone())?.into();
+                    let origin = untype_point_3d(T::array_to_point3d(other, source_ranges.clone(), exec_state)?)
+                        .0
+                        .into();
                     OriginType::Custom { origin }
                 }
             };
@@ -532,73 +563,50 @@ fn transform_from_obj_fields<T: GeometryTrait>(
 
     Ok(Transform {
         replicate,
-        scale: scale.into(),
-        translate: translate.into(),
+        scale,
+        translate,
         rotation,
     })
 }
 
-fn array_to_point3d(val: &KclValue, source_ranges: Vec<SourceRange>) -> Result<Point3d, KclError> {
-    let KclValue::MixedArray { value: arr, meta } = val else {
-        return Err(KclError::Semantic(KclErrorDetails {
-            message: "Expected an array of 3 numbers (i.e. a 3D point)".to_string(),
-            source_ranges,
-        }));
-    };
-    let len = arr.len();
-    if len != 3 {
-        return Err(KclError::Semantic(KclErrorDetails {
-            message: format!("Expected an array of 3 numbers (i.e. a 3D point) but found {len} items"),
-            source_ranges,
-        }));
-    };
-    // Gets an f64 from a KCL value.
-    let f = |k: &KclValue, component: char| {
-        use super::args::FromKclValue;
-        if let Some(value) = f64::from_kcl_val(k) {
-            Ok(value)
-        } else {
-            Err(KclError::Semantic(KclErrorDetails {
-                message: format!("{component} component of this point was not a number"),
-                source_ranges: meta.iter().map(|m| m.source_range).collect(),
-            }))
-        }
-    };
-    let x = f(&arr[0], 'x')?;
-    let y = f(&arr[1], 'y')?;
-    let z = f(&arr[2], 'z')?;
-    Ok(Point3d { x, y, z })
+fn array_to_point3d(
+    val: &KclValue,
+    source_ranges: Vec<SourceRange>,
+    exec_state: &mut ExecState,
+) -> Result<[TyF64; 3], KclError> {
+    val.coerce(&RuntimeType::point3d(), exec_state)
+        .map_err(|e| {
+            KclError::Semantic(KclErrorDetails {
+                message: format!(
+                    "Expected an array of 3 numbers (i.e., a 3D point), found {}",
+                    e.found
+                        .map(|t| t.human_friendly_type())
+                        .unwrap_or_else(|| val.human_friendly_type().to_owned())
+                ),
+                source_ranges,
+            })
+        })
+        .map(|val| val.as_point3d().unwrap())
 }
 
-fn array_to_point2d(val: &KclValue, source_ranges: Vec<SourceRange>) -> Result<Point2d, KclError> {
-    let KclValue::MixedArray { value: arr, meta } = val else {
-        return Err(KclError::Semantic(KclErrorDetails {
-            message: "Expected an array of 2 numbers (i.e. a 2D point)".to_string(),
-            source_ranges,
-        }));
-    };
-    let len = arr.len();
-    if len != 2 {
-        return Err(KclError::Semantic(KclErrorDetails {
-            message: format!("Expected an array of 2 numbers (i.e. a 2D point) but found {len} items"),
-            source_ranges,
-        }));
-    };
-    // Gets an f64 from a KCL value.
-    let f = |k: &KclValue, component: char| {
-        use super::args::FromKclValue;
-        if let Some(value) = f64::from_kcl_val(k) {
-            Ok(value)
-        } else {
-            Err(KclError::Semantic(KclErrorDetails {
-                message: format!("{component} component of this point was not a number"),
-                source_ranges: meta.iter().map(|m| m.source_range).collect(),
-            }))
-        }
-    };
-    let x = f(&arr[0], 'x')?;
-    let y = f(&arr[1], 'y')?;
-    Ok(Point2d { x, y })
+fn array_to_point2d(
+    val: &KclValue,
+    source_ranges: Vec<SourceRange>,
+    exec_state: &mut ExecState,
+) -> Result<[TyF64; 2], KclError> {
+    val.coerce(&RuntimeType::point2d(), exec_state)
+        .map_err(|e| {
+            KclError::Semantic(KclErrorDetails {
+                message: format!(
+                    "Expected an array of 2 numbers (i.e., a 2D point), found {}",
+                    e.found
+                        .map(|t| t.human_friendly_type())
+                        .unwrap_or_else(|| val.human_friendly_type().to_owned())
+                ),
+                source_ranges,
+            })
+        })
+        .map(|val| val.as_point2d().unwrap())
 }
 
 trait GeometryTrait: Clone {
@@ -606,7 +614,11 @@ trait GeometryTrait: Clone {
     fn id(&self) -> Uuid;
     fn original_id(&self) -> Uuid;
     fn set_id(&mut self, id: Uuid);
-    fn array_to_point3d(val: &KclValue, source_ranges: Vec<SourceRange>) -> Result<Point3d, KclError>;
+    fn array_to_point3d(
+        val: &KclValue,
+        source_ranges: Vec<SourceRange>,
+        exec_state: &mut ExecState,
+    ) -> Result<[TyF64; 3], KclError>;
     async fn flush_batch(args: &Args, exec_state: &mut ExecState, set: &Self::Set) -> Result<(), KclError>;
 }
 
@@ -621,9 +633,14 @@ impl GeometryTrait for Sketch {
     fn original_id(&self) -> Uuid {
         self.original_id
     }
-    fn array_to_point3d(val: &KclValue, source_ranges: Vec<SourceRange>) -> Result<Point3d, KclError> {
-        let Point2d { x, y } = array_to_point2d(val, source_ranges)?;
-        Ok(Point3d { x, y, z: 0.0 })
+    fn array_to_point3d(
+        val: &KclValue,
+        source_ranges: Vec<SourceRange>,
+        exec_state: &mut ExecState,
+    ) -> Result<[TyF64; 3], KclError> {
+        let [x, y] = array_to_point2d(val, source_ranges, exec_state)?;
+        let ty = x.ty.clone();
+        Ok([x, y, TyF64::new(0.0, ty)])
     }
 
     async fn flush_batch(_: &Args, _: &mut ExecState, _: &Self::Set) -> Result<(), KclError> {
@@ -645,8 +662,12 @@ impl GeometryTrait for Solid {
         self.sketch.original_id
     }
 
-    fn array_to_point3d(val: &KclValue, source_ranges: Vec<SourceRange>) -> Result<Point3d, KclError> {
-        array_to_point3d(val, source_ranges)
+    fn array_to_point3d(
+        val: &KclValue,
+        source_ranges: Vec<SourceRange>,
+        exec_state: &mut ExecState,
+    ) -> Result<[TyF64; 3], KclError> {
+        array_to_point3d(val, source_ranges, exec_state)
     }
 
     async fn flush_batch(args: &Args, exec_state: &mut ExecState, solid_set: &Self::Set) -> Result<(), KclError> {
@@ -659,30 +680,35 @@ mod tests {
     use super::*;
     use crate::execution::types::NumericType;
 
-    #[test]
-    fn test_array_to_point3d() {
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_array_to_point3d() {
+        let mut exec_state = ExecState::new(&ExecutorContext::new_mock().await);
         let input = KclValue::MixedArray {
             value: vec![
                 KclValue::Number {
                     value: 1.1,
                     meta: Default::default(),
-                    ty: NumericType::Unknown,
+                    ty: NumericType::mm(),
                 },
                 KclValue::Number {
                     value: 2.2,
                     meta: Default::default(),
-                    ty: NumericType::Unknown,
+                    ty: NumericType::mm(),
                 },
                 KclValue::Number {
                     value: 3.3,
                     meta: Default::default(),
-                    ty: NumericType::Unknown,
+                    ty: NumericType::mm(),
                 },
             ],
             meta: Default::default(),
         };
-        let expected = Point3d { x: 1.1, y: 2.2, z: 3.3 };
-        let actual = array_to_point3d(&input, Vec::new());
+        let expected = [
+            TyF64::new(1.1, NumericType::mm()),
+            TyF64::new(2.2, NumericType::mm()),
+            TyF64::new(3.3, NumericType::mm()),
+        ];
+        let actual = array_to_point3d(&input, Vec::new(), &mut exec_state);
         assert_eq!(actual.unwrap(), expected);
     }
 }
@@ -691,10 +717,11 @@ mod tests {
 pub async fn pattern_linear_2d(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let sketches = args.get_unlabeled_kw_arg_typed("sketches", &RuntimeType::sketches(), exec_state)?;
     let instances: u32 = args.get_kw_arg("instances")?;
-    let distance: f64 = args.get_kw_arg("distance")?;
-    let axis: [f64; 2] = args.get_kw_arg("axis")?;
+    let distance: TyF64 = args.get_kw_arg_typed("distance", &RuntimeType::length(), exec_state)?;
+    let axis: [TyF64; 2] = args.get_kw_arg_typed("axis", &RuntimeType::point2d(), exec_state)?;
     let use_original: Option<bool> = args.get_kw_arg_opt("useOriginal")?;
 
+    let axis = untype_point(axis).0;
     if axis == [0.0, 0.0] {
         return Err(KclError::Semantic(KclErrorDetails {
             message:
@@ -704,7 +731,8 @@ pub async fn pattern_linear_2d(exec_state: &mut ExecState, args: Args) -> Result
         }));
     }
 
-    let sketches = inner_pattern_linear_2d(sketches, instances, distance, axis, use_original, exec_state, args).await?;
+    let sketches =
+        inner_pattern_linear_2d(sketches, instances, distance.n, axis, use_original, exec_state, args).await?;
     Ok(sketches.into())
 }
 
@@ -770,10 +798,11 @@ async fn inner_pattern_linear_2d(
 pub async fn pattern_linear_3d(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let solids = args.get_unlabeled_kw_arg_typed("solids", &RuntimeType::solids(), exec_state)?;
     let instances: u32 = args.get_kw_arg("instances")?;
-    let distance: f64 = args.get_kw_arg("distance")?;
-    let axis: [f64; 3] = args.get_kw_arg("axis")?;
+    let distance: TyF64 = args.get_kw_arg_typed("distance", &RuntimeType::length(), exec_state)?;
+    let axis: [TyF64; 3] = args.get_kw_arg_typed("axis", &RuntimeType::point3d(), exec_state)?;
     let use_original: Option<bool> = args.get_kw_arg_opt("useOriginal")?;
 
+    let (axis, _) = untype_point_3d(axis);
     if axis == [0.0, 0.0, 0.0] {
         return Err(KclError::Semantic(KclErrorDetails {
             message:
@@ -783,7 +812,7 @@ pub async fn pattern_linear_3d(exec_state: &mut ExecState, args: Args) -> Result
         }));
     }
 
-    let solids = inner_pattern_linear_3d(solids, instances, distance, axis, use_original, exec_state, args).await?;
+    let solids = inner_pattern_linear_3d(solids, instances, distance.n, axis, use_original, exec_state, args).await?;
     Ok(solids.into())
 }
 
@@ -814,15 +843,15 @@ pub async fn pattern_linear_3d(exec_state: &mut ExecState, args: Args) -> Result
 ///     |> startProfileAt([-size, -size], %)
 ///     |> line(end = [2 * size, 0])
 ///     |> line(end = [0, 2 * size])
-///     |> tangentialArcTo([-size, size], %)
+///     |> tangentialArc(endAbsolute = [-size, size])
 ///     |> close(%)
 ///     |> extrude(length = 65)
 ///
-/// const thing1 = startSketchOn(case, 'end')
+/// const thing1 = startSketchOn(case, face = END)
 ///     |> circle(center = [-size / 2, -size / 2], radius = 25)
 ///     |> extrude(length = 50)
 ///
-/// const thing2 = startSketchOn(case, 'end')
+/// const thing2 = startSketchOn(case, face = END)
 ///     |> circle(center = [size / 2, -size / 2], radius = 25)
 ///     |> extrude(length = 50)
 ///
@@ -842,11 +871,11 @@ pub async fn pattern_linear_3d(exec_state: &mut ExecState, args: Args) -> Result
 ///     |> startProfileAt([-size, -size], %)
 ///     |> line(end = [2 * size, 0])
 ///     |> line(end = [0, 2 * size])
-///     |> tangentialArcTo([-size, size], %)
+///     |> tangentialArc(endAbsolute = [-size, size])
 ///     |> close(%)
 ///     |> extrude(length = 65)
 ///
-/// const thing1 = startSketchOn(case, 'end')
+/// const thing1 = startSketchOn(case, face = END)
 ///     |> circle(center =[-size / 2, -size / 2], radius = 25)
 ///     |> extrude(length = 50)
 ///
@@ -1015,16 +1044,16 @@ impl CircularPattern {
 pub async fn pattern_circular_2d(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let sketches = args.get_unlabeled_kw_arg_typed("sketches", &RuntimeType::sketches(), exec_state)?;
     let instances: u32 = args.get_kw_arg("instances")?;
-    let center: [f64; 2] = args.get_kw_arg("center")?;
-    let arc_degrees: f64 = args.get_kw_arg("arcDegrees")?;
+    let center: [TyF64; 2] = args.get_kw_arg_typed("center", &RuntimeType::point2d(), exec_state)?;
+    let arc_degrees: TyF64 = args.get_kw_arg_typed("arcDegrees", &RuntimeType::angle(), exec_state)?;
     let rotate_duplicates: bool = args.get_kw_arg("rotateDuplicates")?;
     let use_original: Option<bool> = args.get_kw_arg_opt("useOriginal")?;
 
     let sketches = inner_pattern_circular_2d(
         sketches,
         instances,
-        center,
-        arc_degrees,
+        untype_point(center).0,
+        arc_degrees.n,
         rotate_duplicates,
         use_original,
         exec_state,
@@ -1124,11 +1153,11 @@ pub async fn pattern_circular_3d(exec_state: &mut ExecState, args: Args) -> Resu
     // If instances is 1, this has no effect.
     let instances: u32 = args.get_kw_arg("instances")?;
     // The axis around which to make the pattern. This is a 3D vector.
-    let axis: [f64; 3] = args.get_kw_arg("axis")?;
+    let axis: [TyF64; 3] = args.get_kw_arg_typed("axis", &RuntimeType::point3d(), exec_state)?;
     // The center about which to make the pattern. This is a 3D vector.
-    let center: [f64; 3] = args.get_kw_arg("center")?;
+    let center: [TyF64; 3] = args.get_kw_arg_typed("center", &RuntimeType::point3d(), exec_state)?;
     // The arc angle (in degrees) to place the repetitions. Must be greater than 0.
-    let arc_degrees: f64 = args.get_kw_arg("arcDegrees")?;
+    let arc_degrees: TyF64 = args.get_kw_arg_typed("arcDegrees", &RuntimeType::angle(), exec_state)?;
     // Whether or not to rotate the duplicates as they are copied.
     let rotate_duplicates: bool = args.get_kw_arg("rotateDuplicates")?;
     // If the target being patterned is itself a pattern, then, should you use the original solid,
@@ -1138,9 +1167,9 @@ pub async fn pattern_circular_3d(exec_state: &mut ExecState, args: Args) -> Resu
     let solids = inner_pattern_circular_3d(
         solids,
         instances,
-        axis,
-        center,
-        arc_degrees,
+        untype_point_3d(axis).0,
+        untype_point_3d(center).0,
+        arc_degrees.n,
         rotate_duplicates,
         use_original,
         exec_state,
@@ -1280,10 +1309,21 @@ async fn pattern_circular(
         )
         .await?;
 
-    let OkWebSocketResponseData::Modeling {
+    // The common case is borrowing from the response.  Instead of cloning,
+    // create a Vec to borrow from in mock mode.
+    let mut mock_ids = Vec::new();
+    let entity_ids = if let OkWebSocketResponseData::Modeling {
         modeling_response: OkModelingCmdResponse::EntityCircularPattern(pattern_info),
     } = &resp
-    else {
+    {
+        &pattern_info.entity_ids
+    } else if args.ctx.no_engine_commands().await {
+        mock_ids.reserve(num_repetitions as usize);
+        for _ in 0..num_repetitions {
+            mock_ids.push(exec_state.next_uuid());
+        }
+        &mock_ids
+    } else {
         return Err(KclError::Engine(KclErrorDetails {
             message: format!("EntityCircularPattern response was not as expected: {:?}", resp),
             source_ranges: vec![args.source_range],
@@ -1293,18 +1333,18 @@ async fn pattern_circular(
     let geometries = match geometry {
         Geometry::Sketch(sketch) => {
             let mut geometries = vec![sketch.clone()];
-            for id in pattern_info.entity_ids.iter() {
+            for id in entity_ids.iter().copied() {
                 let mut new_sketch = sketch.clone();
-                new_sketch.id = *id;
+                new_sketch.id = id;
                 geometries.push(new_sketch);
             }
             Geometries::Sketches(geometries)
         }
         Geometry::Solid(solid) => {
             let mut geometries = vec![solid.clone()];
-            for id in pattern_info.entity_ids.iter() {
+            for id in entity_ids.iter().copied() {
                 let mut new_solid = solid.clone();
-                new_solid.id = *id;
+                new_solid.id = id;
                 geometries.push(new_solid);
             }
             Geometries::Solids(geometries)

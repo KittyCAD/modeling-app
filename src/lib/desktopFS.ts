@@ -1,18 +1,19 @@
-import { isDesktop } from './isDesktop'
-import type { FileEntry } from 'lib/project'
+import { relevantFileExtensions } from '@src/lang/wasmUtils'
 import {
   FILE_EXT,
   INDEX_IDENTIFIER,
   MAX_PADDING,
   ONBOARDING_PROJECT_NAME,
-} from 'lib/constants'
-import { bracket } from './exampleKcl'
-import { PATHS } from './paths'
+} from '@src/lib/constants'
 import {
   createNewProjectDirectory,
   listProjects,
   readAppSettingsFile,
-} from './desktop'
+} from '@src/lib/desktop'
+import { bracket } from '@src/lib/exampleKcl'
+import { isDesktop } from '@src/lib/isDesktop'
+import { PATHS } from '@src/lib/paths'
+import type { FileEntry } from '@src/lib/project'
 
 export const isHidden = (fileOrDir: FileEntry) =>
   !!fileOrDir.name?.startsWith('.')
@@ -200,14 +201,20 @@ export function getNextFileName({
   entryName: string
   baseDir: string
 }) {
+  // Preserve the extension in case of a relevant but foreign file
+  let extension = window.electron.path.extname(entryName)
+  if (!relevantFileExtensions().includes(extension.replace('.', ''))) {
+    extension = FILE_EXT
+  }
+
   // Remove any existing index from the name before adding a new one
-  let createdName = entryName.replace(FILE_EXT, '') + FILE_EXT
+  let createdName = entryName.replace(extension, '') + extension
   let createdPath = window.electron.path.join(baseDir, createdName)
   let i = 1
   while (window.electron.exists(createdPath)) {
-    const matchOnIndexAndExtension = new RegExp(`(-\\d+)?(${FILE_EXT})?$`)
+    const matchOnIndexAndExtension = new RegExp(`(-\\d+)?(${extension})?$`)
     createdName =
-      entryName.replace(matchOnIndexAndExtension, '') + `-${i}` + FILE_EXT
+      entryName.replace(matchOnIndexAndExtension, '') + `-${i}` + extension
     createdPath = window.electron.path.join(baseDir, createdName)
     i++
   }

@@ -1,21 +1,26 @@
-import { Artifact, getArtifactFromRange } from 'lang/std/artifactGraph'
-import { SourceRange } from 'lang/wasm'
-import {
-  enterAppearanceFlow,
-  enterEditFlow,
-  EnterEditFlowProps,
-} from 'lib/operations'
-import { engineCommandManager, kclManager } from 'lib/singletons'
-import { err } from 'lib/trap'
 import toast from 'react-hot-toast'
-import { Operation } from '@rust/kcl-lib/bindings/Operation'
 import { assign, fromPromise, setup } from 'xstate'
-import { commandBarActor } from './commandBarMachine'
-import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
+
+import type { Operation } from '@rust/kcl-lib/bindings/Operation'
+
 import {
   deleteSelectionPromise,
   deletionErrorMessage,
-} from 'lang/modifyAst/deleteSelection'
+} from '@src/lang/modifyAst/deleteSelection'
+import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
+import type { Artifact } from '@src/lang/std/artifactGraph'
+import { getArtifactFromRange } from '@src/lang/std/artifactGraph'
+import type { SourceRange } from '@src/lang/wasm'
+import type { EnterEditFlowProps } from '@src/lib/operations'
+import {
+  enterAppearanceFlow,
+  enterEditFlow,
+  enterTranslateFlow,
+  enterRotateFlow,
+} from '@src/lib/operations'
+import { kclManager } from '@src/lib/singletons'
+import { err } from '@src/lib/trap'
+import { commandBarActor } from '@src/machines/commandBarMachine'
 
 type FeatureTreeEvent =
   | {
@@ -38,6 +43,14 @@ type FeatureTreeEvent =
       type: 'enterAppearanceFlow'
       data: { targetSourceRange: SourceRange; currentOperation: Operation }
     }
+  | {
+      type: 'enterTranslateFlow'
+      data: { targetSourceRange: SourceRange; currentOperation: Operation }
+    }
+  | {
+      type: 'enterRotateFlow'
+      data: { targetSourceRange: SourceRange; currentOperation: Operation }
+    }
   | { type: 'goToError' }
   | { type: 'codePaneOpened' }
   | { type: 'selected' }
@@ -49,6 +62,8 @@ type FeatureTreeContext = {
   targetSourceRange?: SourceRange
   currentOperation?: Operation
 }
+
+export const featureTreeMachineDefaultContext: FeatureTreeContext = {}
 
 export const featureTreeMachine = setup({
   types: {
@@ -94,6 +109,52 @@ export const featureTreeMachine = setup({
         return new Promise((resolve, reject) => {
           const { commandBarSend, ...editFlowProps } = input
           enterAppearanceFlow(editFlowProps)
+            .then((result) => {
+              if (err(result)) {
+                reject(result)
+                return
+              }
+              input.commandBarSend(result)
+              resolve(result)
+            })
+            .catch(reject)
+        })
+      }
+    ),
+    prepareTranslateCommand: fromPromise(
+      ({
+        input,
+      }: {
+        input: EnterEditFlowProps & {
+          commandBarSend: (typeof commandBarActor)['send']
+        }
+      }) => {
+        return new Promise((resolve, reject) => {
+          const { commandBarSend, ...editFlowProps } = input
+          enterTranslateFlow(editFlowProps)
+            .then((result) => {
+              if (err(result)) {
+                reject(result)
+                return
+              }
+              input.commandBarSend(result)
+              resolve(result)
+            })
+            .catch(reject)
+        })
+      }
+    ),
+    prepareRotateCommand: fromPromise(
+      ({
+        input,
+      }: {
+        input: EnterEditFlowProps & {
+          commandBarSend: (typeof commandBarActor)['send']
+        }
+      }) => {
+        return new Promise((resolve, reject) => {
+          const { commandBarSend, ...editFlowProps } = input
+          enterRotateFlow(editFlowProps)
             .then((result) => {
               if (err(result)) {
                 reject(result)
@@ -196,6 +257,16 @@ export const featureTreeMachine = setup({
           actions: ['saveTargetSourceRange', 'saveCurrentOperation'],
         },
 
+        enterTranslateFlow: {
+          target: 'enteringTranslateFlow',
+          actions: ['saveTargetSourceRange', 'saveCurrentOperation'],
+        },
+
+        enterRotateFlow: {
+          target: 'enteringRotateFlow',
+          actions: ['saveTargetSourceRange', 'saveCurrentOperation'],
+        },
+
         deleteOperation: {
           target: 'deletingOperation',
           actions: ['saveTargetSourceRange'],
@@ -273,10 +344,10 @@ export const featureTreeMachine = setup({
             src: 'prepareEditCommand',
             input: ({ context }) => {
               const artifact = context.targetSourceRange
-                ? getArtifactFromRange(
+                ? (getArtifactFromRange(
                     context.targetSourceRange,
-                    engineCommandManager.artifactGraph
-                  ) ?? undefined
+                    kclManager.artifactGraph
+                  ) ?? undefined)
                 : undefined
               return {
                 // currentOperation is guaranteed to be defined here
@@ -327,10 +398,118 @@ export const featureTreeMachine = setup({
             src: 'prepareAppearanceCommand',
             input: ({ context }) => {
               const artifact = context.targetSourceRange
-                ? getArtifactFromRange(
+                ? (getArtifactFromRange(
                     context.targetSourceRange,
-                    engineCommandManager.artifactGraph
-                  ) ?? undefined
+                    kclManager.artifactGraph
+                  ) ?? undefined)
+                : undefined
+              return {
+                // currentOperation is guaranteed to be defined here
+                operation: context.currentOperation!,
+                artifact,
+                commandBarSend: commandBarActor.send,
+              }
+            },
+            onDone: {
+              target: 'done',
+              reenter: true,
+            },
+            onError: {
+              target: 'done',
+              reenter: true,
+              actions: ({ event }) => {
+                if ('error' in event && err(event.error)) {
+                  toast.error(event.error.message)
+                }
+              },
+            },
+          },
+        },
+      },
+
+      initial: 'selecting',
+      entry: 'sendSelectionEvent',
+      exit: ['clearContext'],
+    },
+
+    enteringTranslateFlow: {
+      states: {
+        selecting: {
+          on: {
+            selected: {
+              target: 'prepareTranslateCommand',
+              reenter: true,
+            },
+          },
+        },
+
+        done: {
+          always: '#featureTree.idle',
+        },
+
+        prepareTranslateCommand: {
+          invoke: {
+            src: 'prepareTranslateCommand',
+            input: ({ context }) => {
+              const artifact = context.targetSourceRange
+                ? (getArtifactFromRange(
+                    context.targetSourceRange,
+                    kclManager.artifactGraph
+                  ) ?? undefined)
+                : undefined
+              return {
+                // currentOperation is guaranteed to be defined here
+                operation: context.currentOperation!,
+                artifact,
+                commandBarSend: commandBarActor.send,
+              }
+            },
+            onDone: {
+              target: 'done',
+              reenter: true,
+            },
+            onError: {
+              target: 'done',
+              reenter: true,
+              actions: ({ event }) => {
+                if ('error' in event && err(event.error)) {
+                  toast.error(event.error.message)
+                }
+              },
+            },
+          },
+        },
+      },
+
+      initial: 'selecting',
+      entry: 'sendSelectionEvent',
+      exit: ['clearContext'],
+    },
+
+    enteringRotateFlow: {
+      states: {
+        selecting: {
+          on: {
+            selected: {
+              target: 'prepareRotateCommand',
+              reenter: true,
+            },
+          },
+        },
+
+        done: {
+          always: '#featureTree.idle',
+        },
+
+        prepareRotateCommand: {
+          invoke: {
+            src: 'prepareRotateCommand',
+            input: ({ context }) => {
+              const artifact = context.targetSourceRange
+                ? (getArtifactFromRange(
+                    context.targetSourceRange,
+                    kclManager.artifactGraph
+                  ) ?? undefined)
                 : undefined
               return {
                 // currentOperation is guaranteed to be defined here
@@ -381,10 +560,10 @@ export const featureTreeMachine = setup({
             src: 'sendDeleteCommand',
             input: ({ context }) => {
               const artifact = context.targetSourceRange
-                ? getArtifactFromRange(
+                ? (getArtifactFromRange(
                     context.targetSourceRange,
-                    engineCommandManager.artifactGraph
-                  ) ?? undefined
+                    kclManager.artifactGraph
+                  ) ?? undefined)
                 : undefined
               return {
                 artifact,

@@ -3,6 +3,7 @@
 
 use std::{cell::RefCell, collections::BTreeMap};
 
+use indexmap::IndexMap;
 use winnow::{
     combinator::{alt, delimited, opt, peek, preceded, repeat, repeat_till, separated, separated_pair, terminated},
     dispatch,
@@ -35,7 +36,7 @@ use crate::{
         token::{Token, TokenSlice, TokenType},
         PIPE_OPERATOR, PIPE_SUBSTITUTION_OPERATOR,
     },
-    SourceRange,
+    SourceRange, IMPORT_FILE_EXTENSIONS,
 };
 
 thread_local! {
@@ -284,6 +285,11 @@ fn non_code_node(i: &mut TokenSlice) -> PResult<Node<NonCodeNode>> {
     }
 
     alt((non_code_node_leading_whitespace, non_code_node_no_leading_whitespace)).parse_next(i)
+}
+
+fn outer_annotation(i: &mut TokenSlice) -> PResult<Node<Annotation>> {
+    peek((at_sign, open_paren)).parse_next(i)?;
+    annotation(i)
 }
 
 fn annotation(i: &mut TokenSlice) -> PResult<Node<Annotation>> {
@@ -1629,6 +1635,12 @@ fn function_body(i: &mut TokenSlice) -> PResult<Node<Program>> {
                 }
                 handle_pending_non_code!(attr);
                 if attr.is_inner() {
+                    if !body.is_empty() {
+                        ParseContext::warn(CompilationError::err(
+                            attr.as_source_range(),
+                            "Named attributes should appear before any declarations or expressions.\n\nBecause named attributes apply to the whole function or module, including code written before them, it can be confusing for readers to not have these attributes at the top of code blocks.",
+                        ));
+                    }
                     inner_attrs.push(attr);
                 } else {
                     pending_attrs.push(attr);
@@ -1798,11 +1810,6 @@ fn import_stmt(i: &mut TokenSlice) -> PResult<BoxNode<ImportStatement>> {
             end = alias.end;
             *selector_alias = Some(alias);
         }
-
-        ParseContext::warn(CompilationError::err(
-            SourceRange::new(start, path.end, path.module_id),
-            "Importing a whole module is experimental, likely to be buggy, and likely to change",
-        ));
     }
 
     let path_string = match path.inner.value {
@@ -1823,14 +1830,6 @@ fn import_stmt(i: &mut TokenSlice) -> PResult<BoxNode<ImportStatement>> {
             )
             .into(),
         ));
-    } else if matches!(path, ImportPath::Std { .. }) && matches!(selector, ImportSelector::None { .. }) {
-        return Err(ErrMode::Cut(
-            CompilationError::fatal(
-                SourceRange::new(start, end, module_id),
-                "the standard library cannot be imported as a part",
-            )
-            .into(),
-        ));
     }
 
     Ok(Node::boxed(
@@ -1845,8 +1844,6 @@ fn import_stmt(i: &mut TokenSlice) -> PResult<BoxNode<ImportStatement>> {
         module_id,
     ))
 }
-
-const FOREIGN_IMPORT_EXTENSIONS: [&str; 8] = ["fbx", "gltf", "glb", "obj", "ply", "sldprt", "step", "stl"];
 
 /// Validates the path string in an `import` statement.
 ///
@@ -1912,12 +1909,11 @@ fn validate_path_string(path_string: String, var_name: bool, path_range: SourceR
 
         ImportPath::Std { path: segments }
     } else if path_string.contains('.') {
-        // TODO should allow other extensions if there is a format attribute.
-        let extn = &path_string[path_string.rfind('.').unwrap() + 1..];
-        if !FOREIGN_IMPORT_EXTENSIONS.contains(&extn) {
+        let extn = std::path::Path::new(&path_string).extension().unwrap_or_default();
+        if !IMPORT_FILE_EXTENSIONS.contains(&extn.to_string_lossy().to_string()) {
             ParseContext::warn(CompilationError::err(
                 path_range,
-                format!("unsupported import path format. KCL files can be imported from the current project, CAD files with the following formats are supported: {}", FOREIGN_IMPORT_EXTENSIONS.join(", ")),
+                format!("unsupported import path format. KCL files can be imported from the current project, CAD files with the following formats are supported: {}", IMPORT_FILE_EXTENSIONS.join(", ")),
             ))
         }
         ImportPath::Foreign { path: path_string }
@@ -1925,7 +1921,7 @@ fn validate_path_string(path_string: String, var_name: bool, path_range: SourceR
         return Err(ErrMode::Cut(
             CompilationError::fatal(
                 path_range,
-                format!("unsupported import path format. KCL files can be imported from the current project, CAD files with the following formats are supported: {}", FOREIGN_IMPORT_EXTENSIONS.join(", ")),
+                format!("unsupported import path format. KCL files can be imported from the current project, CAD files with the following formats are supported: {}", IMPORT_FILE_EXTENSIONS.join(", ")),
             )
             .into(),
         ));
@@ -2341,21 +2337,6 @@ fn nameable_identifier(i: &mut TokenSlice) -> PResult<Node<Identifier>> {
         ));
     }
 
-    if let Some(suggestion) = super::deprecation(&result.name, DeprecationKind::Const) {
-        ParseContext::warn(
-            CompilationError::err(
-                result.as_source_range(),
-                format!("Using `{}` is deprecated, prefer using `{}`.", result.name, suggestion),
-            )
-            .with_suggestion(
-                format!("Replace `{}` with `{}`", result.name, suggestion),
-                suggestion,
-                None,
-                Tag::Deprecated,
-            ),
-        );
-    }
-
     Ok(result)
 }
 
@@ -2374,8 +2355,7 @@ fn name(i: &mut TokenSlice) -> PResult<Node<Name>> {
     let name = idents.pop().unwrap();
     let end = name.end;
     let module_id = name.module_id;
-
-    Ok(Node::new(
+    let result = Node::new(
         Name {
             name,
             path: idents,
@@ -2385,7 +2365,24 @@ fn name(i: &mut TokenSlice) -> PResult<Node<Name>> {
         start,
         end,
         module_id,
-    ))
+    );
+
+    if let Some(suggestion) = super::deprecation(&result.to_string(), DeprecationKind::Const) {
+        ParseContext::warn(
+            CompilationError::err(
+                result.as_source_range(),
+                format!("Using `{result}` is deprecated, prefer using `{suggestion}`."),
+            )
+            .with_suggestion(
+                format!("Replace `{result}` with `{suggestion}`"),
+                suggestion,
+                None,
+                Tag::Deprecated,
+            ),
+        );
+    }
+
+    Ok(result)
 }
 
 impl TryFrom<Token> for Node<TagDeclarator> {
@@ -2910,13 +2907,17 @@ struct ParamDescription {
     arg_name: Token,
     type_: std::option::Option<Node<Type>>,
     default_value: Option<DefaultParamVal>,
+    attr: Option<Node<Annotation>>,
     comments: Option<Node<Vec<String>>>,
 }
 
 fn parameter(i: &mut TokenSlice) -> PResult<ParamDescription> {
-    let (_, comments, found_at_sign, arg_name, question_mark, _, type_, _ws, default_literal) = (
+    let (_, comments, _, attr, _, found_at_sign, arg_name, question_mark, _, type_, _ws, default_literal) = (
         opt(whitespace),
         opt(comments),
+        opt(whitespace),
+        opt(outer_annotation),
+        opt(whitespace),
         opt(at_sign),
         any.verify(|token: &Token| !matches!(token.token_type, TokenType::Brace) || token.value != ")"),
         opt(question_mark),
@@ -2941,6 +2942,7 @@ fn parameter(i: &mut TokenSlice) -> PResult<ParamDescription> {
                 return Err(ErrMode::Backtrack(ContextError::from(e)));
             }
         },
+        attr,
         comments,
     })
 }
@@ -2962,12 +2964,16 @@ fn parameters(i: &mut TokenSlice) -> PResult<Vec<Parameter>> {
                  arg_name,
                  type_,
                  default_value,
+                 attr,
                  comments,
              }| {
                 let mut identifier = Node::<Identifier>::try_from(arg_name)?;
                 if let Some(comments) = comments {
                     identifier.comment_start = comments.start;
                     identifier.pre_comments = comments.inner;
+                }
+                if let Some(attr) = attr {
+                    identifier.outer_attrs.push(attr);
                 }
 
                 Ok(Parameter {
@@ -3138,6 +3144,21 @@ fn fn_call_kw(i: &mut TokenSlice) -> PResult<Node<CallExpressionKw>> {
     ignore_whitespace(i);
     opt(comma_sep).parse_next(i)?;
     let end = close_paren.parse_next(i)?.end;
+
+    // Validate there aren't any duplicate labels.
+    let mut counted_labels = IndexMap::with_capacity(args.len());
+    for arg in &args {
+        *counted_labels.entry(&arg.label.inner.name).or_insert(0) += 1;
+    }
+    if let Some((duplicated, n)) = counted_labels.iter().find(|(_label, n)| n > &&1) {
+        let msg = format!(
+            "You've used the parameter labelled '{duplicated}' {n} times in a single function call. You can only set each parameter once! Remove all but one use."
+        );
+        ParseContext::err(CompilationError::err(
+            SourceRange::new(fn_name.start, end, fn_name.module_id),
+            msg,
+        ));
+    }
 
     let non_code_meta = NonCodeMeta {
         non_code_nodes,
@@ -3878,6 +3899,23 @@ mySk1 = startSketchOn(XY)
     }
 
     #[test]
+    fn parse_numeric() {
+        let test_program = "fn foo(x: number(Length)) {}";
+        let tokens = crate::parsing::token::lex(test_program, ModuleId::default()).unwrap();
+        run_parser(tokens.as_slice()).unwrap();
+
+        let test_program = "42_mm";
+        let tokens = crate::parsing::token::lex(test_program, ModuleId::default()).unwrap();
+        assert_eq!(tokens.iter().count(), 1);
+        run_parser(tokens.as_slice()).unwrap();
+
+        let test_program = "42_Length";
+        let tokens = crate::parsing::token::lex(test_program, ModuleId::default()).unwrap();
+        assert_eq!(tokens.iter().count(), 2);
+        assert_eq!(run_parser(tokens.as_slice()).unwrap_errs().count(), 1);
+    }
+
+    #[test]
     fn test_parameter_list() {
         let tests = [
             ("", vec![]),
@@ -4475,14 +4513,14 @@ e
 /// ```
 /// exampleSketch = startSketchOn("XZ")
 ///   |> startProfileAt([0, 0], %)
-///   |> angledLine({
-///     angle = 30,
-///     length = 3 / cos(toRadians(30)),
-///   }, %)
+///   |> angledLine(
+///        angle = 30,
+///        length = 3 / cos(toRadians(30)),
+///      )
 ///   |> yLine(endAbsolute = 0)
 ///   |> close(%)
-///  
-/// example = extrude(5, exampleSketch)
+/// 
+/// example = extrude(exampleSketch, length = 5)
 /// ```
 @(impl = std_rust)
 export fn cos(num: number(rad)): number(_) {}"#;
@@ -4491,21 +4529,18 @@ export fn cos(num: number(rad)): number(_) {}"#;
 
     #[test]
     fn warn_import() {
-        let some_program_string = r#"import "foo.kcl""#;
-        let (_, errs) = assert_no_err(some_program_string);
-        assert_eq!(errs.len(), 1, "{errs:#?}");
-
-        let some_program_string = r#"import "foo.obj""#;
-        let (_, errs) = assert_no_err(some_program_string);
-        assert_eq!(errs.len(), 1, "{errs:#?}");
-
-        let some_program_string = r#"import "foo.sldprt""#;
-        let (_, errs) = assert_no_err(some_program_string);
-        assert_eq!(errs.len(), 1, "{errs:#?}");
-
         let some_program_string = r#"import "foo.bad""#;
         let (_, errs) = assert_no_err(some_program_string);
-        assert_eq!(errs.len(), 2, "{errs:#?}");
+        assert_eq!(errs.len(), 1, "{errs:#?}");
+    }
+
+    #[test]
+    fn warn_late_settings() {
+        let some_program_string = r#"foo = 42
+@settings(defaultLengthUnit = mm)
+"#;
+        let (_, errs) = assert_no_err(some_program_string);
+        assert_eq!(errs.len(), 1, "{errs:#?}");
     }
 
     #[test]
@@ -5071,6 +5106,18 @@ baz = 2
             );
         }
     }
+
+    #[test]
+    fn test_sensible_error_duplicated_args() {
+        let program = r#"f(arg = 1, normal = 44, arg = 2)"#;
+        let (_, mut errs) = assert_no_fatal(program);
+        assert_eq!(errs.len(), 1);
+        let err = errs.pop().unwrap();
+        assert_eq!(
+            err.message,
+            "You've used the parameter labelled 'arg' 2 times in a single function call. You can only set each parameter once! Remove all but one use.",
+        );
+    }
 }
 
 #[cfg(test)]
@@ -5293,17 +5340,6 @@ mod snapshot_tests {
             // b: 2,
             c: 3
         }"
-    );
-    snapshot_test!(
-        ba,
-        r#"
-sketch001 = startSketchOn('XY')
-  // |> arc({
-  //   angleEnd: 270,
-  //   angleStart: 450,
-  // }, %)
-  |> startProfileAt(%)
-"#
     );
     snapshot_test!(
         bb,

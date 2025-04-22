@@ -1,5 +1,6 @@
 import { assign, fromPromise, setup } from 'xstate'
-import { Project, FileEntry } from 'lib/project'
+
+import type { FileEntry, Project } from '@src/lib/project'
 
 type FileMachineContext = {
   project: Project
@@ -126,7 +127,7 @@ export const fileMachine = setup({
           makeDir: boolean
           selectedDirectory: FileEntry
           targetPathToClone?: string
-          content: string
+          content?: string
           shouldSetToRename: boolean
         }
       }) => Promise.resolve({ message: '', path: '' })
@@ -152,7 +153,7 @@ export const fileMachine = setup({
           name: string
           makeDir: boolean
           selectedDirectory: FileEntry
-          content: string
+          content?: string
         }
       }) => Promise.resolve({ path: '' })
     ),
@@ -238,7 +239,7 @@ export const fileMachine = setup({
             makeDir: event.data.makeDir,
             selectedDirectory: context.selectedDirectory,
             targetPathToClone: event.data.targetPathToClone,
-            content: event.data.content ?? '',
+            content: event.data.content,
             shouldSetToRename: event.data.shouldSetToRename ?? false,
           }
         },
@@ -417,7 +418,7 @@ export const fileMachine = setup({
             name: event.data.name,
             makeDir: event.data.makeDir,
             selectedDirectory: context.selectedDirectory,
-            content: event.data.content ?? '',
+            content: event.data.content,
           }
         },
         onDone: 'Reading files',

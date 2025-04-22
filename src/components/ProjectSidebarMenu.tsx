@@ -1,24 +1,30 @@
 import { Popover, Transition } from '@headlessui/react'
-import { ActionButton, ActionButtonProps } from './ActionButton'
-import { type IndexLoaderData } from 'lib/types'
-import { PATHS } from 'lib/paths'
-import { isDesktop } from '../lib/isDesktop'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { Fragment, useMemo, useContext } from 'react'
-import { Logo } from './Logo'
-import { APP_NAME } from 'lib/constants'
-import { CustomIcon } from './CustomIcon'
-import { useLspContext } from './LspProvider'
-import { codeManager, engineCommandManager, kclManager } from 'lib/singletons'
-import { MachineManagerContext } from 'components/MachineManagerProvider'
-import usePlatform from 'hooks/usePlatform'
-import { useAbsoluteFilePath } from 'hooks/useAbsoluteFilePath'
-import Tooltip from './Tooltip'
-import { SnapshotFrom } from 'xstate'
-import { commandBarActor } from 'machines/commandBarMachine'
 import { useSelector } from '@xstate/react'
-import { copyFileShareLink } from 'lib/links'
-import { useToken } from 'machines/appMachine'
+import { Fragment, useContext, useMemo } from 'react'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
+import type { SnapshotFrom } from 'xstate'
+
+import type { ActionButtonProps } from '@src/components/ActionButton'
+import { ActionButton } from '@src/components/ActionButton'
+import { CustomIcon } from '@src/components/CustomIcon'
+import { Logo } from '@src/components/Logo'
+import { useLspContext } from '@src/components/LspProvider'
+import { MachineManagerContext } from '@src/components/MachineManagerProvider'
+import Tooltip from '@src/components/Tooltip'
+import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
+import usePlatform from '@src/hooks/usePlatform'
+import { APP_NAME } from '@src/lib/constants'
+import { isDesktop } from '@src/lib/isDesktop'
+import { copyFileShareLink } from '@src/lib/links'
+import { PATHS } from '@src/lib/paths'
+import {
+  codeManager,
+  engineCommandManager,
+  kclManager,
+} from '@src/lib/singletons'
+import { type IndexLoaderData } from '@src/lib/types'
+import { useToken } from '@src/machines/appMachine'
+import { commandBarActor } from '@src/machines/commandBarMachine'
 
 const ProjectSidebarMenu = ({
   project,
@@ -107,6 +113,7 @@ function ProjectMenuPopover({
   const commands = useSelector(commandBarActor, commandsSelector)
 
   const { onProjectClose } = useLspContext()
+  const insertCommandInfo = { name: 'Insert', groupId: 'code' }
   const exportCommandInfo = { name: 'Export', groupId: 'modeling' }
   const makeCommandInfo = { name: 'Make', groupId: 'modeling' }
   const shareCommandInfo = { name: 'share-file-link', groupId: 'code' }
@@ -139,6 +146,29 @@ function ProjectMenuPopover({
           },
         },
         'break',
+        {
+          id: 'insert',
+          Element: 'button',
+          children: (
+            <>
+              <span>Insert from project file</span>
+              {!findCommand(insertCommandInfo) && (
+                <Tooltip
+                  position="right"
+                  wrapperClassName="!max-w-none min-w-fit"
+                >
+                  Awaiting engine connection
+                </Tooltip>
+              )}
+            </>
+          ),
+          disabled: !findCommand(insertCommandInfo),
+          onClick: () =>
+            commandBarActor.send({
+              type: 'Find and select command',
+              data: insertCommandInfo,
+            }),
+        },
         {
           id: 'export',
           Element: 'button',
@@ -190,7 +220,7 @@ function ProjectMenuPopover({
         {
           id: 'share-link',
           Element: 'button',
-          children: 'Share current part (via Zoo link)',
+          children: 'Share part via Zoo link',
           disabled: !findCommand(shareCommandInfo),
           onClick: async () => {
             await copyFileShareLink({

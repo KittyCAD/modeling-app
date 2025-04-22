@@ -33,13 +33,7 @@ mod test_examples_my_func {
     #[tokio::test(flavor = "multi_thread", worker_threads = 5)]
     async fn kcl_test_example_my_func0() -> miette::Result<()> {
         let code = "This is another code block.\nyes sirrr.\nmyFunc";
-        let result = match crate::test_server::execute_and_snapshot(
-            code,
-            crate::settings::types::UnitLength::Mm,
-            None,
-        )
-        .await
-        {
+        let result = match crate::test_server::execute_and_snapshot(code, None).await {
             Err(crate::errors::ExecError::Kcl(e)) => {
                 return Err(miette::Report::new(crate::errors::Report {
                     error: e.error,
@@ -110,9 +104,7 @@ impl crate::docs::StdLibFn for MyFunc {
         vec![crate::docs::StdLibFnArg {
             name: "args".to_string(),
             type_: "kittycad::types::InputFormat".to_string(),
-            schema: crate::docs::cleanup_number_tuples_root(
-                generator.root_schema_for::<Option<kittycad::types::InputFormat>>(),
-            ),
+            schema: generator.root_schema_for::<Option<kittycad::types::InputFormat>>(),
             required: false,
             label_required: true,
             description: String::new().to_string(),
@@ -124,8 +116,7 @@ impl crate::docs::StdLibFn for MyFunc {
         let mut settings = schemars::gen::SchemaSettings::openapi3();
         settings.inline_subschemas = inline_subschemas;
         let mut generator = schemars::gen::SchemaGenerator::new(settings);
-        let schema =
-            crate::docs::cleanup_number_tuples_root(generator.root_schema_for::<Vec<Sketch>>());
+        let schema = generator.root_schema_for::<Vec<Sketch>>();
         Some(crate::docs::StdLibFnArg {
             name: "".to_string(),
             type_: "[Sketch]".to_string(),

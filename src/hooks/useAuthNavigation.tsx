@@ -1,7 +1,8 @@
-import { PATHS } from 'lib/paths'
-import { useAuthState } from 'machines/appMachine'
 import { useEffect } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
+
+import { PATHS } from '@src/lib/paths'
+import { useAuthState } from '@src/machines/appMachine'
 
 /**
  * A simple hook that listens to the auth state of the app and navigates

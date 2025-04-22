@@ -1,5 +1,6 @@
-import { assertParse, initPromise } from '../wasm'
-import { enginelessExecutor } from '../../lib/testHelpers'
+import { assertParse } from '@src/lang/wasm'
+import { initPromise } from '@src/lang/wasmUtils'
+import { enginelessExecutor } from '@src/lib/testHelpers'
 
 beforeAll(async () => {
   await initPromise
@@ -11,11 +12,12 @@ describe('testing angledLineThatIntersects', () => {
   |> startProfileAt([0, 0], %)
   |> line(endAbsolute = [2, 2], tag = $yo)
   |> line(endAbsolute = [3, 1])
-  |> angledLineThatIntersects({
-  angle: 180,
-  intersectTag: yo,
-  offset: ${offset},
-}, %, $yo2)
+  |> angledLineThatIntersects(
+       angle = 180,
+       intersectTag = yo,
+       offset = ${offset},
+       tag = $yo2,
+     )
 intersect = segEndX(yo2)`
     const execState = await enginelessExecutor(assertParse(code('-1')))
     expect(execState.variables['intersect']?.value).toBe(1 + Math.sqrt(2))

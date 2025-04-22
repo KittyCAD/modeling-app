@@ -1,0 +1,23 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing tests/pattern_circular_in_module/thing.kcl
+---
+export fn thing() {
+  exampleSketch = startSketchOn(XZ)
+    |> startProfileAt([.5, 25], %)
+    |> line(end = [0, 5])
+    |> line(end = [-1, 0])
+    |> line(end = [0, -5])
+    |> close()
+    |> patternCircular2d(
+         center = [0, 0],
+         instances = 4,
+         arcDegrees = 360,
+         rotateDuplicates = true,
+       )
+
+  return extrude(exampleSketch, length = 1)
+}
+
+// This makes it run in isolated mode when the function is imported.
+thing()

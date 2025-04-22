@@ -1,11 +1,12 @@
 import { Dialog } from '@headlessui/react'
-import { ActionButton } from 'components/ActionButton'
 
-interface DeleteConfirmationDialogProps extends React.PropsWithChildren<{}> {
+import { ActionButton } from '@src/components/ActionButton'
+
+type DeleteConfirmationDialogProps = React.PropsWithChildren<{
   title: string
   onConfirm: () => void
   onDismiss: () => void
-}
+}>
 
 export function DeleteConfirmationDialog({
   title,

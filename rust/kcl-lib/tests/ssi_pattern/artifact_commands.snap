@@ -15,14 +15,6 @@ description: Artifact commands ssi_pattern.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "set_scene_units",
-      "unit": "mm"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
       "hidden": true
@@ -221,7 +213,8 @@ description: Artifact commands ssi_pattern.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": 50.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -1346,7 +1339,8 @@ description: Artifact commands ssi_pattern.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -40.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -1412,7 +1406,8 @@ description: Artifact commands ssi_pattern.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -40.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -1478,7 +1473,8 @@ description: Artifact commands ssi_pattern.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -40.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -1544,7 +1540,8 @@ description: Artifact commands ssi_pattern.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -40.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -1610,7 +1607,8 @@ description: Artifact commands ssi_pattern.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -40.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -1676,7 +1674,8 @@ description: Artifact commands ssi_pattern.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -40.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -1742,7 +1741,8 @@ description: Artifact commands ssi_pattern.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -40.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -1808,7 +1808,8 @@ description: Artifact commands ssi_pattern.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -40.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -1874,7 +1875,8 @@ description: Artifact commands ssi_pattern.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -40.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -1940,7 +1942,8 @@ description: Artifact commands ssi_pattern.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -40.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -2006,7 +2009,8 @@ description: Artifact commands ssi_pattern.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -40.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -2072,7 +2076,8 @@ description: Artifact commands ssi_pattern.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -40.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -2138,7 +2143,8 @@ description: Artifact commands ssi_pattern.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -40.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -2204,7 +2210,8 @@ description: Artifact commands ssi_pattern.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -40.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -2270,7 +2277,8 @@ description: Artifact commands ssi_pattern.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -40.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -2336,7 +2344,8 @@ description: Artifact commands ssi_pattern.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -40.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -2402,7 +2411,8 @@ description: Artifact commands ssi_pattern.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -40.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -2468,7 +2478,8 @@ description: Artifact commands ssi_pattern.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -40.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -2534,7 +2545,8 @@ description: Artifact commands ssi_pattern.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -40.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -2600,7 +2612,8 @@ description: Artifact commands ssi_pattern.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -40.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -2666,7 +2679,8 @@ description: Artifact commands ssi_pattern.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -40.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -2732,7 +2746,8 @@ description: Artifact commands ssi_pattern.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -40.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -2798,7 +2813,8 @@ description: Artifact commands ssi_pattern.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -40.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -2864,7 +2880,8 @@ description: Artifact commands ssi_pattern.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -40.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -2930,7 +2947,8 @@ description: Artifact commands ssi_pattern.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -40.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -2996,7 +3014,8 @@ description: Artifact commands ssi_pattern.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -40.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -3062,7 +3081,8 @@ description: Artifact commands ssi_pattern.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -40.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -3128,7 +3148,8 @@ description: Artifact commands ssi_pattern.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -40.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -3194,7 +3215,8 @@ description: Artifact commands ssi_pattern.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -40.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -3260,7 +3282,8 @@ description: Artifact commands ssi_pattern.kcl
       "type": "extrude",
       "target": "[uuid]",
       "distance": -40.0,
-      "faces": null
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -3305,6 +3328,38 @@ description: Artifact commands ssi_pattern.kcl
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "set_scene_units",
+      "unit": "mm"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "set_scene_units",
+      "unit": "mm"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "set_scene_units",
+      "unit": "mm"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "set_scene_units",
+      "unit": "mm"
     }
   }
 ]

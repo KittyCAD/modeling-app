@@ -1,69 +1,54 @@
+import * as TWEEN from '@tweenjs/tween.js'
+import type {
+  Group,
+  Intersection,
+  MeshBasicMaterial,
+  Object3D,
+  Object3DEventMap,
+  Texture,
+} from 'three'
 import {
   AmbientLight,
   Color,
   GridHelper,
   LineBasicMaterial,
+  Mesh,
   OrthographicCamera,
-  PerspectiveCamera,
+  Raycaster,
   Scene,
+  TextureLoader,
+  Vector2,
   Vector3,
   WebGLRenderer,
-  Raycaster,
-  Vector2,
-  Group,
-  MeshBasicMaterial,
-  Mesh,
-  Intersection,
-  Object3D,
-  Object3DEventMap,
-  TextureLoader,
-  Texture,
 } from 'three'
-import { Coords2d, compareVec2Epsilon2 } from 'lang/std/sketch'
-import { useModelingContext } from 'hooks/useModelingContext'
-import * as TWEEN from '@tweenjs/tween.js'
-import { Axis, NonCodeSelection } from 'lib/selections'
-import { type BaseUnit } from 'lib/settings/settingsTypes'
-import { CameraControls } from './CameraControls'
-import { EngineCommandManager } from 'lang/std/engineConnection'
-import { MouseState, SegmentOverlayPayload } from 'machines/modelingMachine'
-import { getAngle, throttle } from 'lib/utils'
-import { Themes } from 'lib/theme'
 import { CSS2DRenderer } from 'three/examples/jsm/renderers/CSS2DRenderer'
-import { orthoScale, perspScale } from './helpers'
+
+import { CameraControls } from '@src/clientSideScene/CameraControls'
+import { orthoScale, perspScale } from '@src/clientSideScene/helpers'
+import {
+  AXIS_GROUP,
+  DEBUG_SHOW_INTERSECTION_PLANE,
+  INTERSECTION_PLANE_LAYER,
+  RAYCASTABLE_PLANE,
+  SKETCH_LAYER,
+  X_AXIS,
+  Y_AXIS,
+  getSceneScale,
+} from '@src/clientSideScene/sceneUtils'
+import type { useModelingContext } from '@src/hooks/useModelingContext'
+import type { EngineCommandManager } from '@src/lang/std/engineConnection'
+import type { Coords2d } from '@src/lang/std/sketch'
+import { compareVec2Epsilon2 } from '@src/lang/std/sketch'
+import type { Axis, NonCodeSelection } from '@src/lib/selections'
+import { type BaseUnit } from '@src/lib/settings/settingsTypes'
+import { Themes } from '@src/lib/theme'
+import { getAngle, getLength, throttle } from '@src/lib/utils'
+import type {
+  MouseState,
+  SegmentOverlayPayload,
+} from '@src/machines/modelingMachine'
 
 type SendType = ReturnType<typeof useModelingContext>['send']
-
-// 63.5 is definitely a bit of a magic number, play with it until it looked right
-// if it were 64, that would feel like it's something in the engine where a random
-// power of 2 is used, but it's the 0.5 seems to make things look much more correct
-export const ZOOM_MAGIC_NUMBER = 63.5
-
-export const INTERSECTION_PLANE_LAYER = 1
-export const SKETCH_LAYER = 2
-
-// redundant types so that it can be changed temporarily but CI will catch the wrong type
-export const DEBUG_SHOW_INTERSECTION_PLANE: false = false
-export const DEBUG_SHOW_BOTH_SCENES: false = false
-
-export const RAYCASTABLE_PLANE = 'raycastable-plane'
-
-export const X_AXIS = 'xAxis'
-export const Y_AXIS = 'yAxis'
-/** If a segment angle is less than this many degrees off a meanginful angle it'll snap to it */
-export const ANGLE_SNAP_THRESHOLD_DEGREES = 3
-/** the THREEjs representation of the group surrounding a "snapped" point that is not yet placed */
-export const DRAFT_POINT_GROUP = 'draft-point-group'
-/** the THREEjs representation of a "snapped" point that is not yet placed */
-export const DRAFT_POINT = 'draft-point'
-export const AXIS_GROUP = 'axisGroup'
-export const SKETCH_GROUP_SEGMENTS = 'sketch-group-segments'
-export const ARROWHEAD = 'arrowhead'
-export const SEGMENT_LENGTH_LABEL = 'segment-length-label'
-export const SEGMENT_LENGTH_LABEL_TEXT = 'segment-length-label-text'
-export const SEGMENT_LENGTH_LABEL_OFFSET_PX = 30
-export const CIRCLE_3_POINT_DRAFT_POINT = 'circle-3-point-draft-point'
-export const CIRCLE_3_POINT_DRAFT_CIRCLE = 'circle-3-point-draft-circle'
 
 export interface OnMouseEnterLeaveArgs {
   selected: Object3D<Object3DEventMap>
@@ -83,6 +68,7 @@ interface OnDragCallbackArgs extends OnMouseEnterLeaveArgs {
   }
   intersects: Intersection<Object3D<Object3DEventMap>>[]
 }
+
 export interface OnClickCallbackArgs {
   mouseEvent: MouseEvent
   intersectionPoint?: {
@@ -108,6 +94,7 @@ interface OnMoveCallbackArgs {
 // Anything that added the the scene for the user to interact with is probably in SceneEntities.ts
 
 type Voidish = void | Promise<void>
+
 export class SceneInfra {
   static instance: SceneInfra
   readonly scene: Scene
@@ -116,7 +103,6 @@ export class SceneInfra {
   readonly camControls: CameraControls
   private readonly fov = 45
   isFovAnimationInProgress = false
-  _baseUnit: BaseUnit = 'mm'
   _baseUnitMultiplier = 1
   _theme: Themes = Themes.System
   readonly extraSegmentTexture: Texture
@@ -146,8 +132,8 @@ export class SceneInfra {
     this.onMouseLeave = callbacks.onMouseLeave || this.onMouseLeave
     this.selected = null // following selections between callbacks being set is too tricky
   }
+
   set baseUnit(unit: BaseUnit) {
-    this._baseUnit = unit
     this._baseUnitMultiplier = baseUnitTomm(unit)
     this.scene.scale.set(
       this._baseUnitMultiplier,
@@ -155,9 +141,11 @@ export class SceneInfra {
       this._baseUnitMultiplier
     )
   }
+
   set theme(theme: Themes) {
     this._theme = theme
   }
+
   resetMouseListeners = () => {
     this.setCallbacks({
       onDragStart: () => {},
@@ -172,12 +160,15 @@ export class SceneInfra {
 
   modelingSend: SendType = (() => {}) as any
   throttledModelingSend: any = (() => {}) as any
+
   setSend(send: SendType) {
     this.modelingSend = send
     this.throttledModelingSend = throttle(send, 100)
   }
+
   overlayTimeout = 0
   callbacks: (() => SegmentOverlayPayload | null)[] = []
+
   _overlayCallbacks(callbacks: (() => SegmentOverlayPayload | null)[]) {
     const segmentOverlayPayload: SegmentOverlayPayload = {
       type: 'add-many',
@@ -196,6 +187,7 @@ export class SceneInfra {
       data: segmentOverlayPayload,
     })
   }
+
   overlayCallbacks(
     callbacks: (() => SegmentOverlayPayload | null)[],
     instant = false
@@ -212,6 +204,7 @@ export class SceneInfra {
   }
 
   overlayThrottleMap: { [pathToNodeString: string]: number } = {}
+
   updateOverlayDetails({
     handle,
     group,
@@ -261,7 +254,7 @@ export class SceneInfra {
     return null
   }
 
-  hoveredObject: null | any = null
+  hoveredObject: null | Object3D<Object3DEventMap> = null
   raycaster = new Raycaster()
   planeRaycaster = new Raycaster()
   currentMouseVector = new Vector2()
@@ -271,6 +264,8 @@ export class SceneInfra {
     hasBeenDragged: boolean
   } | null = null
   mouseDownVector: null | Vector2 = null
+  private isRenderingPaused = false
+  private lastFrameTime = 0
 
   constructor(engineCommandManager: EngineCommandManager) {
     // SCENE
@@ -355,8 +350,20 @@ export class SceneInfra {
     TWEEN.update() // This will update all tweens during the animation loop
     if (!this.isFovAnimationInProgress) {
       this.camControls.update()
-      this.renderer.render(this.scene, this.camControls.camera)
-      this.labelRenderer.render(this.scene, this.camControls.camera)
+
+      // If rendering is paused, only render if enough time has passed to maintain smooth animation
+      if (this.isRenderingPaused) {
+        const currentTime = performance.now()
+        if (currentTime - this.lastFrameTime > 1000 / 30) {
+          // Limit to 30fps while paused
+          this.renderer.render(this.scene, this.camControls.camera)
+          this.labelRenderer.render(this.scene, this.camControls.camera)
+          this.lastFrameTime = currentTime
+        }
+      } else {
+        this.renderer.render(this.scene, this.camControls.camera)
+        this.labelRenderer.render(this.scene, this.camControls.camera)
+      }
     }
   }
 
@@ -366,6 +373,7 @@ export class SceneInfra {
     window.removeEventListener('resize', this.onWindowResize)
     // Dispose of any other resources like geometries, materials, textures
   }
+
   getClientSceneScaleFactor(meshOrGroup: Mesh | Group) {
     const orthoFactor = orthoScale(this.camControls.camera)
     const factor =
@@ -375,6 +383,7 @@ export class SceneInfra {
       this._baseUnitMultiplier
     return factor
   }
+
   getPlaneIntersectPoint = (): {
     twoD?: Vector2
     threeD?: Vector3
@@ -487,11 +496,13 @@ export class SceneInfra {
       if (this.hoveredObject !== firstIntersectObject) {
         const hoveredObj = this.hoveredObject
         this.hoveredObject = null
-        await this.onMouseLeave({
-          selected: hoveredObj,
-          mouseEvent: mouseEvent,
-          intersectionPoint,
-        })
+        if (hoveredObj) {
+          await this.onMouseLeave({
+            selected: hoveredObj,
+            mouseEvent: mouseEvent,
+            intersectionPoint,
+          })
+        }
         this.hoveredObject = firstIntersectObject
         await this.onMouseEnter({
           selected: this.hoveredObject,
@@ -571,6 +582,7 @@ export class SceneInfra {
       (a, b) => a.distance - b.distance
     )
   }
+
   updateMouseState(mouseState: MouseState) {
     if (this.lastMouseState.type === mouseState.type) return
     this.lastMouseState = mouseState
@@ -680,24 +692,22 @@ export class SceneInfra {
       }
     })
   }
-}
 
-export function getSceneScale(
-  camera: PerspectiveCamera | OrthographicCamera,
-  target: Vector3
-): number {
-  const distance =
-    camera instanceof PerspectiveCamera
-      ? camera.position.distanceTo(target)
-      : 63.7942123 / camera.zoom
+  screenSpaceDistance(a: Coords2d, b: Coords2d): number {
+    const dummy = new Mesh()
+    dummy.position.set(0, 0, 0)
+    const scale = this.getClientSceneScaleFactor(dummy)
+    return getLength(a, b) / scale
+  }
+  pauseRendering() {
+    this.isRenderingPaused = true
+    // Store the current time to prevent unnecessary updates
+    this.lastFrameTime = performance.now()
+  }
 
-  if (distance <= 20) return 0.1
-  else if (distance > 20 && distance <= 200) return 1
-  else if (distance > 200 && distance <= 2000) return 10
-  else if (distance > 2000 && distance <= 20000) return 100
-  else if (distance > 20000) return 1000
-
-  return 1
+  resumeRendering() {
+    this.isRenderingPaused = false
+  }
 }
 
 function baseUnitTomm(baseUnit: BaseUnit) {

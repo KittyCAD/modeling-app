@@ -6,7 +6,7 @@ part001 = startSketchOn(XY)
   |> close()
   |> extrude(length = 5)
 
-part002 = startSketchOn(part001, here)
+part002 = startSketchOn(part001, face = here)
   |> startProfileAt([0, 0], %)
   |> line(end = [0, 10])
   |> line(end = [10, 0])

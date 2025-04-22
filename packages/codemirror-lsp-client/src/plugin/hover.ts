@@ -1,12 +1,8 @@
-import { Extension } from '@codemirror/state'
-import {
-  hoverTooltip,
-  tooltips,
-  ViewPlugin,
-  EditorView,
-} from '@codemirror/view'
+import type { Extension } from '@codemirror/state'
+import type { ViewPlugin } from '@codemirror/view'
+import { EditorView, hoverTooltip, tooltips } from '@codemirror/view'
 
-import { LanguageServerPlugin } from './lsp'
+import type { LanguageServerPlugin } from './lsp'
 import { offsetToPos } from './util'
 
 export default function lspHoverExt(

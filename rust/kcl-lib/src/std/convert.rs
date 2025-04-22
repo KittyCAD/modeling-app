@@ -13,7 +13,7 @@ pub async fn int(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
     let num = args.get_number_with_type()?;
     let converted = inner_int(num.n)?;
 
-    Ok(args.make_user_val_from_f64_with_type(num.map(converted)))
+    Ok(args.make_user_val_from_f64_with_type(num.map_value(converted)))
 }
 
 /// Convert a number to an integer.

@@ -4,8 +4,8 @@
 // Set units
 @settings(defaultLengthUnit = in)
 
-// Import Constants
-import lugCount, lugSpacing, offset, backSpacing, wheelWidth, wheelDiameter, spokeCount, spokeGap, spokeAngle, spokeThickness from "globals.kcl"
+// Import parameters
+import lugCount, lugSpacing, offset, backSpacing, wheelWidth, wheelDiameter, spokeCount, spokeGap, spokeAngle, spokeThickness from "parameters.kcl"
 
 // Create the wheel center
 lugBase = startSketchOn(XZ)
@@ -14,13 +14,13 @@ lugBase = startSketchOn(XZ)
   |> extrude(length = wheelWidth / 20)
 
 // Extend the wheel center and bore holes to accomidate the lug heads
-lugExtrusion = startSketchOn(lugBase, 'END')
+lugExtrusion = startSketchOn(lugBase, face = END)
   |> circle(center = [0, 0], radius = (lugSpacing + 1.5) / 2)
   |> hole(circle(center = [0, 0], radius = (lugSpacing - 1.5) / 2), %)
   |> extrude(length = wheelWidth / 10)
 
 // Create the circular pattern for the lugs
-lugClearance = startSketchOn(lugExtrusion, 'END')
+lugClearance = startSketchOn(lugExtrusion, face = END)
   |> circle(center = [lugSpacing / 2, 0], radius = 1.2 / 2)
   |> patternCircular2d(
        arcDegrees = 360,
@@ -31,8 +31,8 @@ lugClearance = startSketchOn(lugExtrusion, 'END')
   |> extrude(length = -wheelWidth / 10)
 
 // Create the circular pattern for the lug holes
-lugHoles = startSketchOn(lugBase, 'END')
-  |> circle(center = [lugSpacing / 2, 0], radius = 16 * mm() / 2)
+lugHoles = startSketchOn(lugBase, face = END)
+  |> circle(center = [lugSpacing / 2, 0], radius = fromMm(16) / 2)
   |> patternCircular2d(
        arcDegrees = 360,
        center = [0, 0],
@@ -46,51 +46,37 @@ lugHoles = startSketchOn(lugBase, 'END')
 wheelCenterInner = startSketchOn(XY)
   |> startProfileAt([(lugSpacing - 1.5) / 2, 0], %)
   |> yLine(length = -wheelWidth / 10 - (wheelWidth / 20))
-  |> bezierCurve({
-       to = [-0.4, 0.3],
-       control1 = [-0.3, 0],
-       control2 = [0, 0.3]
-     }, %)
+  |> bezierCurve(control1 = [-0.3, 0], control2 = [0, 0.3], end = [-0.4, 0.3])
   |> yLine(endAbsolute = 0)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-  |> revolve(axis = 'y')
+  |> revolve(axis = Y)
   |> appearance(color = "#ffffff", metalness = 0, roughness = 0)
 
 wheelCenterOuter = startSketchOn(XY)
   |> startProfileAt([(lugSpacing + 1.5) / 2, 0], %)
   |> yLine(length = -wheelWidth / 10 - (wheelWidth / 20))
-  |> bezierCurve({
-       to = [0.4, -0.1],
-       control1 = [0.3, 0],
-       control2 = [0.2, -0.3]
-     }, %)
+  |> bezierCurve(control1 = [0.3, 0], control2 = [0.2, -0.3], end = [0.4, -0.1])
   |> yLine(endAbsolute = -wheelWidth / 20)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-  |> revolve(axis = 'y')
+  |> revolve(axis = Y)
   |> appearance(color = "#ffffff", metalness = 0, roughness = 0)
 
 // Write a function that defines the spoke geometry, patterns and extrudes it
 fn spoke(spokeGap, spokeAngle, spokeThickness) {
   // Seperating the spoke base planes
   plane001 = {
-    plane = {
-      origin = [0.0, 0.0, spokeGap / 2],
-      xAxis = [1.0, 0.0, spokeAngle],
-      yAxis = [0.0, 1.0, 0.0],
-      zAxis = [0.0, 0.0, 1.0]
-    }
+    origin = [0.0, 0.0, spokeGap / 2],
+    xAxis = [1.0, 0.0, spokeAngle],
+    yAxis = [0.0, 1.0, 0.0],
+    zAxis = [0.0, 0.0, 1.0]
   }
 
   // Spoke cross sections
   spokeProfile = startSketchOn(plane001)
     |> startProfileAt([(lugSpacing + 2) / 2, -0.7], %)
-    |> bezierCurve({
-         to = [
-           (wheelDiameter - lugSpacing - 2.9) / 2,
-           offset
-         ],
+    |> bezierCurve(
          control1 = [
            (wheelDiameter - lugSpacing - 2.9) / 3.5,
            offset / 7
@@ -98,14 +84,14 @@ fn spoke(spokeGap, spokeAngle, spokeThickness) {
          control2 = [
            (wheelDiameter - lugSpacing - 2.9) / 4,
            offset / 1.5
-         ]
-       }, %)
-    |> yLine(length = -wheelWidth / 15)
-    |> bezierCurve({
-         to = [
-           -(wheelDiameter - lugSpacing - 2.9) / 2,
-           -offset
          ],
+         end = [
+           (wheelDiameter - lugSpacing - 2.9) / 2,
+           offset
+         ],
+       )
+    |> yLine(length = -wheelWidth / 15)
+    |> bezierCurve(
          control1 = [
            -(wheelDiameter - lugSpacing - 2.9) / 5,
            -offset / 7
@@ -113,8 +99,12 @@ fn spoke(spokeGap, spokeAngle, spokeThickness) {
          control2 = [
            -(wheelDiameter - lugSpacing - 2.9) / 5,
            -offset / 1.5
-         ]
-       }, %)
+         ],
+         end = [
+           -(wheelDiameter - lugSpacing - 2.9) / 2,
+           -offset
+         ],
+       )
     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
     |> close()
 
@@ -173,5 +163,5 @@ startSketchOn(XY)
   |> xLine(length = wheelWidth * 0.03)
   |> yLine(length = wheelWidth * 0.05)
   |> close()
-  |> revolve(axis = 'y')
+  |> revolve(axis = Y)
   |> appearance(color = "#ffffff", metalness = 0, roughness = 0)

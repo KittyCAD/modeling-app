@@ -1,6 +1,7 @@
-import { isDesktop } from 'lib/isDesktop'
-import { reportRejection } from 'lib/trap'
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
+
+import { isDesktop } from '@src/lib/isDesktop'
+import { reportRejection } from '@src/lib/trap'
 
 type Path = string
 

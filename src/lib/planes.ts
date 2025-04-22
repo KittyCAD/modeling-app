@@ -1,4 +1,4 @@
-import { DefaultPlanes } from '@rust/kcl-lib/bindings/DefaultPlanes'
+import type { DefaultPlanes } from '@rust/kcl-lib/bindings/DefaultPlanes'
 
 // KCL string representation of default planes
 export type DefaultPlaneStr = 'XY' | 'XZ' | 'YZ' | '-XY' | '-XZ' | '-YZ'

@@ -3,7 +3,7 @@
 export COMMIT=$(git rev-parse --short HEAD)
 
 # package.json
-PACKAGE=$(jq '.productName="Zoo Modeling App (Nightly)" | .name="zoo-modeling-app-nightly"' package.json --indent 2)
+PACKAGE=$(jq '.productName="Zoo Design Studio (Nightly)" | .name="zoo-modeling-app-nightly"' package.json --indent 2)
 echo "$PACKAGE" > package.json
 
 # electron-builder.yml

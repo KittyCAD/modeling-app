@@ -1,6 +1,10 @@
-import { commandBarActor, useCommandBarState } from 'machines/commandBarMachine'
-import CommandBarHeader from './CommandBarHeader'
 import { useHotkeys } from 'react-hotkeys-hook'
+
+import CommandBarHeader from '@src/components/CommandBar/CommandBarHeader'
+import {
+  commandBarActor,
+  useCommandBarState,
+} from '@src/machines/commandBarMachine'
 
 function CommandBarReview({ stepBack }: { stepBack: () => void }) {
   const commandBarState = useCommandBarState()

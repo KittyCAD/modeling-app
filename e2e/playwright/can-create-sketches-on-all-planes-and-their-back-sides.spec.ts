@@ -1,10 +1,12 @@
-import { Page } from '@playwright/test'
-import { test, expect } from './zoo-test'
-import { HomePageFixture } from './fixtures/homePageFixture'
-import { getUtils } from './test-utils'
-import { EngineCommand } from 'lang/std/artifactGraph'
-import { uuidv4 } from 'lib/utils'
-import { SceneFixture } from './fixtures/sceneFixture'
+import type { Page } from '@playwright/test'
+import type { EngineCommand } from '@src/lang/std/artifactGraph'
+import { uuidv4 } from '@src/lib/utils'
+
+import type { HomePageFixture } from '@e2e/playwright/fixtures/homePageFixture'
+import type { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
+import type { ToolbarFixture } from '@e2e/playwright/fixtures/toolbarFixture'
+import { getUtils } from '@e2e/playwright/test-utils'
+import { expect, test } from '@e2e/playwright/zoo-test'
 
 test.describe(
   'Can create sketches on all planes and their back sides',
@@ -14,6 +16,7 @@ test.describe(
       page: Page,
       homePage: HomePageFixture,
       scene: SceneFixture,
+      toolbar: ToolbarFixture,
       plane: string,
       clickCoords: { x: number; y: number }
     ) => {
@@ -46,7 +49,7 @@ test.describe(
         },
       }
 
-      const code = `sketch001 = startSketchOn(${plane})profile001 = startProfileAt([0.91, -1.22], sketch001)`
+      const code = `@settings(defaultLengthUnit = in)sketch001 = startSketchOn(${plane})profile001 = startProfileAt([0.91, -1.22], sketch001)`
 
       await u.openDebugPanel()
 
@@ -58,8 +61,11 @@ test.describe(
       await u.sendCustomCmd(updateCamCommand)
 
       await u.closeDebugPanel()
+
       await page.mouse.click(clickCoords.x, clickCoords.y)
       await page.waitForTimeout(600) // wait for animation
+
+      await toolbar.waitUntilSketchingReady()
 
       await expect(
         page.getByRole('button', { name: 'line Line', exact: true })
@@ -116,11 +122,12 @@ test.describe(
     ]
 
     for (const config of planeConfigs) {
-      test(config.plane, async ({ page, homePage, scene }) => {
+      test(config.plane, async ({ page, homePage, scene, toolbar }) => {
         await sketchOnPlaneAndBackSideTest(
           page,
           homePage,
           scene,
+          toolbar,
           config.plane,
           config.coords
         )

@@ -120,7 +120,7 @@ impl From<KclErrorWithOutputs> for KclError {
     }
 }
 
-#[derive(Error, Debug, Serialize, Deserialize, ts_rs::TS, Clone, PartialEq)]
+#[derive(Error, Debug, Serialize, ts_rs::TS, Clone, PartialEq)]
 #[error("{error}")]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
@@ -217,10 +217,13 @@ impl IntoDiagnostic for KclErrorWithOutputs {
     fn to_lsp_diagnostics(&self, code: &str) -> Vec<Diagnostic> {
         let message = self.error.get_message();
         let source_ranges = self.error.source_ranges();
+        println!("self: {:?}", self);
 
         source_ranges
             .into_iter()
             .map(|source_range| {
+                println!("source_range: {:?}", source_range);
+                println!("filenames: {:?}", self.filenames);
                 let source = self
                     .source_files
                     .get(&source_range.module_id())

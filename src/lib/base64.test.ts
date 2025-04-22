@@ -1,5 +1,6 @@
 import { expect } from 'vitest'
-import { base64ToString, stringToBase64 } from './base64'
+
+import { base64ToString, stringToBase64 } from '@src/lib/base64'
 
 describe('base64 encoding', () => {
   test('to base64, simple code', async () => {

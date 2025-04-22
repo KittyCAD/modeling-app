@@ -1,11 +1,19 @@
-import { SourceRange } from '../lang/wasm'
-
+import type { Binary as BSONBinary } from 'bson'
 import { v4 } from 'uuid'
-import { isDesktop } from './isDesktop'
-import { AnyMachineSnapshot } from 'xstate'
-import { AsyncFn } from './types'
+import type { AnyMachineSnapshot } from 'xstate'
+
+import type { CallExpressionKw, SourceRange } from '@src/lang/wasm'
+import { isDesktop } from '@src/lib/isDesktop'
+import type { AsyncFn } from '@src/lib/types'
 
 export const uuidv4 = v4
+
+/**
+ * Get all labels for a keyword call expression.
+ */
+export function allLabels(callExpression: CallExpressionKw): string[] {
+  return callExpression.arguments.map((a) => a.label.name)
+}
 
 /**
  * A safer type guard for arrays since the built-in Array.isArray() asserts `any[]`.
@@ -13,6 +21,10 @@ export const uuidv4 = v4
 export function isArray(val: any): val is unknown[] {
   // eslint-disable-next-line no-restricted-syntax
   return Array.isArray(val)
+}
+
+export type SafeArray<T> = Omit<Array<T>, number> & {
+  [index: number]: T | undefined
 }
 
 /**
@@ -405,4 +417,92 @@ export function isClockwise(points: [number, number][]): boolean {
 
   // If sum is positive, the points are in clockwise order
   return sum > 0
+}
+
+/**
+ * Converts a binary buffer to a UUID string.
+ *
+ * @param buffer - The binary buffer containing the UUID bytes.
+ * @returns A string representation of the UUID in the format 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'.
+ */
+export function binaryToUuid(
+  binaryData: Buffer | Uint8Array | BSONBinary | string
+): string {
+  if (typeof binaryData === 'string') {
+    return binaryData
+  }
+
+  let buffer: Uint8Array
+
+  // Handle MongoDB BSON Binary object
+  if (
+    binaryData &&
+    '_bsontype' in binaryData &&
+    binaryData._bsontype === 'Binary'
+  ) {
+    // Extract the buffer from the BSON Binary object
+    buffer = binaryData.buffer
+  }
+  // Handle case where buffer property exists (some MongoDB drivers structure)
+  else if (binaryData && binaryData.buffer instanceof Uint8Array) {
+    buffer = binaryData.buffer
+  }
+  // Handle direct Buffer or Uint8Array
+  else if (binaryData instanceof Uint8Array || Buffer.isBuffer(binaryData)) {
+    buffer = binaryData
+  } else {
+    console.error(
+      'Invalid input type: expected MongoDB BSON Binary, Buffer, or Uint8Array'
+    )
+    return ''
+  }
+
+  // Ensure we have exactly 16 bytes (128 bits) for a UUID
+  if (buffer.length !== 16) {
+    // For debugging
+    console.log('Buffer length:', buffer.length)
+    console.log('Buffer content:', Array.from(buffer))
+    console.error('UUID must be exactly 16 bytes')
+    return ''
+  }
+
+  // Convert each byte to a hex string and pad with zeros if needed
+  const hexValues = Array.from(buffer).map((byte) =>
+    byte.toString(16).padStart(2, '0')
+  )
+
+  // Format into UUID structure (8-4-4-4-12 characters)
+  return [
+    hexValues.slice(0, 4).join(''),
+    hexValues.slice(4, 6).join(''),
+    hexValues.slice(6, 8).join(''),
+    hexValues.slice(8, 10).join(''),
+    hexValues.slice(10, 16).join(''),
+  ].join('-')
+}
+
+export function getModuleId(sourceRange: SourceRange) {
+  return sourceRange[2]
+}
+
+export function getInVariableCase(name: string, prefixIfDigit = 'm') {
+  // As of 2025-04-08, standard case for KCL variables is camelCase
+  const startsWithANumber = !Number.isNaN(Number(name.charAt(0)))
+  const paddedName = startsWithANumber ? `${prefixIfDigit}${name}` : name
+
+  // From https://www.30secondsofcode.org/js/s/string-case-conversion/#word-boundary-identification
+  const r = /[A-Z]{2,}(?=[A-Z][a-z]+[0-9]*|\b)|[A-Z]?[a-z]+[0-9]*|[A-Z]|[0-9]+/g
+  const boundaryIdentification = paddedName.match(r)
+  if (!boundaryIdentification) {
+    return undefined
+  }
+
+  const likelyPascalCase = boundaryIdentification
+    .map((x) => x.slice(0, 1).toUpperCase() + x.slice(1).toLowerCase())
+    .join('')
+  if (!likelyPascalCase) {
+    return undefined
+  }
+
+  return likelyPascalCase.slice(0, 1).toLowerCase() + likelyPascalCase.slice(1)
 }

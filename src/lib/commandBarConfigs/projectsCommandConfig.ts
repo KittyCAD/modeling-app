@@ -1,10 +1,10 @@
-import { CommandBarOverwriteWarning } from 'components/CommandBarOverwriteWarning'
-import { StateMachineCommandSetConfig } from 'lib/commandTypes'
-import { isDesktop } from 'lib/isDesktop'
-import { projectsMachine } from 'machines/projectsMachine'
+import { CommandBarOverwriteWarning } from '@src/components/CommandBarOverwriteWarning'
+import type { StateMachineCommandSetConfig } from '@src/lib/commandTypes'
+import { isDesktop } from '@src/lib/isDesktop'
+import type { projectsMachine } from '@src/machines/projectsMachine'
 
 export type ProjectsCommandSchema = {
-  'Read projects': {}
+  'Read projects': Record<string, unknown>
   'Create project': {
     name: string
   }
@@ -74,8 +74,8 @@ export const projectsCommandBarConfig: StateMachineCommandSetConfig<
         required: true,
         options: (_, context) =>
           context?.projects.map((p) => ({
-            name: p.name!,
-            value: p.name!,
+            name: p.name,
+            value: p.name,
           })) || [],
       },
     },
@@ -91,8 +91,8 @@ export const projectsCommandBarConfig: StateMachineCommandSetConfig<
         required: true,
         options: (_, context) =>
           context?.projects.map((p) => ({
-            name: p.name!,
-            value: p.name!,
+            name: p.name,
+            value: p.name,
           })) || [],
       },
       newName: {
@@ -136,8 +136,8 @@ export const projectsCommandBarConfig: StateMachineCommandSetConfig<
         skip: true,
         options: (_, context) =>
           context?.projects.map((p) => ({
-            name: p.name!,
-            value: p.name!,
+            name: p.name,
+            value: p.name,
           })) || [],
       },
       name: {
