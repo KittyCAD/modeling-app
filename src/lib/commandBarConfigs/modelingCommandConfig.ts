@@ -386,8 +386,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       selection: {
         inputType: 'selection',
-        selectionTypes: ['solid2d', 'segment'],
-        multiple: false, // TODO: multiple selection
+        selectionTypes: ['solid2d'],
+        multiple: true,
         required: true,
         skip: true,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),

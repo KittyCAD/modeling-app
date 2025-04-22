@@ -356,88 +356,77 @@ export function mutateObjExpProp(
   return false
 }
 
-export function extrudeSketch({
-  node,
-  pathToNode,
-  distance = createLiteral(4),
-  extrudeName,
-  artifact,
-  artifactGraph,
+export function addExtrude({
+  ast,
+  sketches,
+  distance,
+  nodeToEdit,
 }: {
-  node: Node<Program>
-  pathToNode: PathToNode
+  ast: Node<Program>
+  sketches: Expr[]
   distance: Expr
-  extrudeName?: string
-  artifactGraph: ArtifactGraph
-  artifact?: Artifact
+  nodeToEdit?: PathToNode
 }):
   | {
       modifiedAst: Node<Program>
       pathToNode: PathToNode
-      pathToExtrudeArg: PathToNode
     }
   | Error {
-  const orderedSketchNodePaths = getPathsFromArtifact({
-    artifact: artifact,
-    sketchPathToNode: pathToNode,
-    artifactGraph,
-    ast: node,
-  })
-  if (err(orderedSketchNodePaths)) return orderedSketchNodePaths
-  const _node = structuredClone(node)
-  const _node1 = getNodeFromPath(_node, pathToNode)
-  if (err(_node1)) return _node1
-
-  // determine if sketchExpression is in a pipeExpression or not
-  const _node2 = getNodeFromPath<PipeExpression>(
-    _node,
-    pathToNode,
-    'PipeExpression'
-  )
-  if (err(_node2)) return _node2
-
-  const _node3 = getNodeFromPath<VariableDeclarator>(
-    _node,
-    pathToNode,
-    'VariableDeclarator'
-  )
-  if (err(_node3)) return _node3
-  const { node: variableDeclarator } = _node3
-
-  const extrudeCall = createCallExpressionStdLibKw(
-    'extrude',
-    createLocalName(variableDeclarator.id.name),
-    [createLabeledArg('length', distance)]
-  )
+  const modifiedAst = structuredClone(ast)
+  let sketchesArg: Expr | null = null
+  if (sketches.length === 1) {
+    if (sketches[0].type !== 'PipeSubstitution') {
+      sketchesArg = sketches[0]
+    }
+    // Keep it null if it's a pipe substitution
+  } else {
+    sketchesArg = createArrayExpression(sketches)
+  }
+  const extrudeCall = createCallExpressionStdLibKw('extrude', sketchesArg, [
+    createLabeledArg('length', distance),
+  ])
   // index of the 'length' arg above. If you reorder the labeled args above,
   // make sure to update this too.
   const argIndex = 0
 
-  // We're not creating a pipe expression,
-  // but rather a separate constant for the extrusion
-  const name =
-    extrudeName ?? findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.EXTRUDE)
-  const VariableDeclaration = createVariableDeclaration(name, extrudeCall)
+  let pathToNode: PathToNode = []
+  if (nodeToEdit) {
+    const result = getNodeFromPath<CallExpressionKw>(
+      modifiedAst,
+      nodeToEdit,
+      'CallExpressionKw'
+    )
+    if (err(result)) {
+      return result
+    }
 
-  const lastSketchNodePath =
-    orderedSketchNodePaths[orderedSketchNodePaths.length - 1]
+    // Replace the existing call with the new one
+    Object.assign(result.node, extrudeCall)
+    pathToNode = nodeToEdit
+  } else {
+    // We're not creating a pipe expression,
+    // but rather a separate constant for the extrusion
+    const name = findUniqueName(
+      modifiedAst,
+      KCL_DEFAULT_CONSTANT_PREFIXES.EXTRUDE
+    )
+    const variable = createVariableDeclaration(name, extrudeCall)
+    // TODO: Check if we should instead find a good index to insert at
+    modifiedAst.body.push(variable)
+    pathToNode = [
+      ['body', ''],
+      [modifiedAst.body.length - 1, 'index'],
+      ['declaration', 'VariableDeclaration'],
+      ['init', 'VariableDeclarator'],
+      ['arguments', 'CallExpressionKw'],
+      [argIndex, ARG_INDEX_FIELD],
+      ['arg', LABELED_ARG_FIELD],
+    ]
+  }
 
-  const sketchIndexInBody = Number(lastSketchNodePath[1][0])
-  _node.body.splice(sketchIndexInBody + 1, 0, VariableDeclaration)
-
-  const pathToExtrudeArg: PathToNode = [
-    ['body', ''],
-    [sketchIndexInBody + 1, 'index'],
-    ['declaration', 'VariableDeclaration'],
-    ['init', 'VariableDeclarator'],
-    ['arguments', 'CallExpressionKw'],
-    [argIndex, ARG_INDEX_FIELD],
-    ['arg', LABELED_ARG_FIELD],
-  ]
   return {
-    modifiedAst: _node,
-    pathToNode: [...pathToNode.slice(0, -1), [-1, 'index']],
-    pathToExtrudeArg,
+    modifiedAst,
+    pathToNode,
   }
 }
 

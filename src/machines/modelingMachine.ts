@@ -42,7 +42,11 @@ import {
   horzVertDistanceInfo,
 } from '@src/components/Toolbar/SetHorzVertDistance'
 import { angleLengthInfo } from '@src/components/Toolbar/angleLengthInfo'
-import { createLiteral, createLocalName } from '@src/lang/create'
+import {
+  createLiteral,
+  createLocalName,
+  createPipeSubstitution,
+} from '@src/lang/create'
 import { updateModelingState } from '@src/lang/modelingWorkflows'
 import {
   addHelix,
@@ -50,7 +54,7 @@ import {
   addShell,
   addSweep,
   deleteNodeInExtrudePipe,
-  extrudeSketch,
+  addExtrude,
   insertNamedConstant,
   insertVariableAndOffsetPathToNode,
   loftSketches,
@@ -1690,66 +1694,62 @@ export const modelingMachine = setup({
     >(async ({ input }) => {
       if (!input) return new Error('No input provided')
       const { selection, distance, nodeToEdit } = input
-      const isEditing =
-        nodeToEdit !== undefined && typeof nodeToEdit[1][0] === 'number'
-      let ast = structuredClone(kclManager.ast)
-      let extrudeName: string | undefined = undefined
+      let ast = kclManager.ast
+      let nodeToReplace: CallExpressionKw | undefined = undefined
 
-      // If this is an edit flow, first we're going to remove the old extrusion
-      if (isEditing) {
-        // Extract the plane name from the node to edit
-        const extrudeNameNode = getNodeFromPath<VariableDeclaration>(
+      // 1. If we're editing, we want to first keep track of the existing node
+      if (nodeToEdit !== undefined && typeof nodeToEdit[1][0] === 'number') {
+        const result = getNodeFromPath<CallExpressionKw>(
           ast,
           nodeToEdit,
-          'VariableDeclaration'
+          'CallExpressionKw'
         )
-        if (err(extrudeNameNode)) {
-          console.error('Error extracting plane name')
+        if (err(result)) {
+          console.error('Error extracting extrude name')
         } else {
-          extrudeName = extrudeNameNode.node.declaration.id.name
+          nodeToReplace = result.node
+        }
+      }
+
+      // 2. Map the selections to program references
+      const sketches: Expr[] = selection.graphSelections.flatMap((s) => {
+        const path = getNodePathFromSourceRange(ast, s?.codeRef.range)
+        const sketchVariable = getNodeFromPath<VariableDeclarator>(
+          ast,
+          path,
+          'VariableDeclarator'
+        )
+        if (err(sketchVariable)) {
+          return []
         }
 
-        // Removing the old extrusion statement
-        const newBody = [...ast.body]
-        newBody.splice(nodeToEdit[1][0] as number, 1)
-        ast.body = newBody
-      }
+        const name = sketchVariable.node.id.name
+        if (nodeToEdit && nodeToReplace) {
+          const result = getNodeFromPath<VariableDeclarator>(
+            ast,
+            nodeToEdit,
+            'VariableDeclarator'
+          )
+          if (
+            !err(result) &&
+            result.node.type === 'VariableDeclarator' &&
+            name === result.node.id.name
+          ) {
+            return createPipeSubstitution()
+          }
+        }
+        return createLocalName(name)
+      })
 
-      const pathToNode = getNodePathFromSourceRange(
+      // 3. Add an extrude statement to the AST
+      const extrudeSketchRes = addExtrude({
         ast,
-        selection.graphSelections[0]?.codeRef.range
-      )
-      // Add an extrude statement to the AST
-      const extrudeSketchRes = extrudeSketch({
-        node: ast,
-        pathToNode,
-        artifact: selection.graphSelections[0].artifact,
-        artifactGraph: kclManager.artifactGraph,
-        distance:
-          'variableName' in distance
-            ? distance.variableIdentifierAst
-            : distance.valueAst,
-        extrudeName,
+        sketches,
+        distance: valueOrVariable(distance),
+        nodeToEdit,
       })
       if (err(extrudeSketchRes)) return extrudeSketchRes
-      const { modifiedAst, pathToExtrudeArg } = extrudeSketchRes
-
-      // Insert the distance variable if the user has provided a variable name
-      if (
-        'variableName' in distance &&
-        distance.variableName &&
-        typeof pathToExtrudeArg[1][0] === 'number'
-      ) {
-        const insertIndex = Math.min(
-          pathToExtrudeArg[1][0],
-          distance.insertIndex
-        )
-        const newBody = [...modifiedAst.body]
-        newBody.splice(insertIndex, 0, distance.variableDeclarationAst)
-        modifiedAst.body = newBody
-        // Since we inserted a new variable, we need to update the path to the extrude argument
-        pathToExtrudeArg[1][0]++
-      }
+      const { modifiedAst, pathToNode: pathToExtrudeArg } = extrudeSketchRes
 
       await updateModelingState(
         modifiedAst,

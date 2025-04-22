@@ -1,4 +1,8 @@
-import type { OpKclValue, Operation } from '@rust/kcl-lib/bindings/Operation'
+import type {
+  OpKclValue,
+  OpSketch,
+  Operation,
+} from '@rust/kcl-lib/bindings/Operation'
 
 import type { CustomIconName } from '@src/components/CustomIcon'
 import { getNodeFromPath } from '@src/lang/queryAst'
@@ -11,7 +15,11 @@ import {
   getSweepEdgeCodeRef,
   getWallCodeRef,
 } from '@src/lang/std/artifactGraph'
-import { type PipeExpression, sourceRangeFromRust } from '@src/lang/wasm'
+import {
+  type PipeExpression,
+  Sketch,
+  sourceRangeFromRust,
+} from '@src/lang/wasm'
 import type {
   HelixModes,
   ModelingCommandSchema,
@@ -59,6 +67,8 @@ interface StdLibCallInfo {
  */
 const prepareToEditExtrude: PrepareToEditCallback =
   async function prepareToEditExtrude({ operation, artifact }) {
+    console.log('operation', operation)
+    console.log('artifact', artifact)
     const baseCommand = {
       name: 'Extrude',
       groupId: 'modeling',
@@ -68,36 +78,59 @@ const prepareToEditExtrude: PrepareToEditCallback =
       !('pathId' in artifact) ||
       (operation.type !== 'StdLibCall' && operation.type !== 'KclStdLibCall')
     ) {
-      return baseCommand
+      return { reason: 'Wrong operation type or artifact' }
     }
 
-    // We have to go a little roundabout to get from the original artifact
-    // to the solid2DId that we need to pass to the Extrude command.
-    const pathArtifact = getArtifactOfTypes(
-      {
-        key: artifact.pathId,
-        types: ['path'],
-      },
-      kclManager.artifactGraph
-    )
-    if (
-      err(pathArtifact) ||
-      pathArtifact.type !== 'path' ||
-      !pathArtifact.solid2dId
-    )
-      return baseCommand
-    const solid2DArtifact = getArtifactOfTypes(
-      {
-        key: pathArtifact.solid2dId,
-        types: ['solid2d'],
-      },
-      kclManager.artifactGraph
-    )
-    if (err(solid2DArtifact) || solid2DArtifact.type !== 'solid2d') {
-      return baseCommand
+    // 1. Map the unlabeled arguments to solid2d selections
+    let sketches: OpKclValue[] = []
+    if (operation.unlabeledArg?.value.type === 'Sketch') {
+      sketches = [operation.unlabeledArg.value]
+    } else if (operation.unlabeledArg?.value.type === 'Array') {
+      sketches = operation.unlabeledArg.value.value
+    } else {
+      return { reason: "Couldn't retrieve sketches" }
     }
 
-    // Convert the length argument from a string to a KCL expression
+    const graphSelections: Selection[] = sketches.flatMap((sketch) => {
+      // We have to go a little roundabout to get from the original artifact
+      // to the solid2DId that we need to pass to the Extrude command.
+      if (sketch.type !== 'Sketch') {
+        return []
+      }
+
+      const pathArtifact = getArtifactOfTypes(
+        {
+          key: sketch.value.artifactId,
+          types: ['path'],
+        },
+        kclManager.artifactGraph
+      )
+      if (
+        err(pathArtifact) ||
+        pathArtifact.type !== 'path' ||
+        !pathArtifact.solid2dId
+      ) {
+        return []
+      }
+
+      const solid2DArtifact = getArtifactOfTypes(
+        {
+          key: pathArtifact.solid2dId,
+          types: ['solid2d'],
+        },
+        kclManager.artifactGraph
+      )
+      if (err(solid2DArtifact) || solid2DArtifact.type !== 'solid2d') {
+        return []
+      }
+
+      return {
+        artifact: solid2DArtifact,
+        codeRef: pathArtifact.codeRef,
+      }
+    })
+
+    // 2. Convert the length argument from a string to a KCL expression
     const distanceResult = await stringToKclExpression(
       codeManager.code.slice(
         operation.labeledArgs?.['length']?.sourceRange[0],
@@ -108,17 +141,12 @@ const prepareToEditExtrude: PrepareToEditCallback =
       return baseCommand
     }
 
-    // Assemble the default argument values for the Extrude command,
+    // 3. Assemble the default argument values for the Extrude command,
     // with `nodeToEdit` set, which will let the Extrude actor know
     // to edit the node that corresponds to the StdLibCall.
     const argDefaultValues: ModelingCommandSchema['Extrude'] = {
       selection: {
-        graphSelections: [
-          {
-            artifact: solid2DArtifact,
-            codeRef: pathArtifact.codeRef,
-          },
-        ],
+        graphSelections,
         otherSelections: [],
       },
       distance: distanceResult,
@@ -127,6 +155,7 @@ const prepareToEditExtrude: PrepareToEditCallback =
         sourceRangeFromRust(operation.sourceRange)
       ),
     }
+    console.log('argDefaultValues', argDefaultValues)
     return {
       ...baseCommand,
       argDefaultValues,
