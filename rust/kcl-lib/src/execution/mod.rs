@@ -1585,7 +1585,7 @@ const answer = returnX()"#;
         assert_eq!(
             err,
             KclError::UndefinedValue(KclErrorDetails {
-                message: "memory item key `x` is not defined".to_owned(),
+                message: "`x` is not defined".to_owned(),
                 source_ranges: vec![
                     SourceRange::new(64, 65, ModuleId::default()),
                     SourceRange::new(97, 106, ModuleId::default())
@@ -1669,7 +1669,7 @@ let shape = layer() |> patternTransform(instances = 10, transform = transform)
         assert_eq!(
             err,
             KclError::UndefinedValue(KclErrorDetails {
-                message: "memory item key `x` is not defined".to_owned(),
+                message: "`x` is not defined".to_owned(),
                 source_ranges: vec![SourceRange::new(80, 81, ModuleId::default())],
             }),
         );
