@@ -164,9 +164,6 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
             "units": {
               "type": "Mm"
             }
-          },
-          "units": {
-            "type": "Mm"
           }
         },
         "start": {
@@ -438,9 +435,6 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
                   "units": {
                     "type": "Mm"
                   }
-                },
-                "units": {
-                  "type": "Mm"
                 }
               },
               "start": {

@@ -380,6 +380,24 @@ description: Operations executed ball-bearing.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
+      "name": "toRadians",
+      "functionSourceRange": [
+        11603,
+        11652,
+        1
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
       "name": "sin",
       "functionSourceRange": [
         0,
