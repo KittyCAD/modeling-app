@@ -410,6 +410,7 @@ export const systemIOMachine = setup({
                 }
               },
             }),
+            assign({ clearURLParams:{value:true}})
           ],
         },
         onError: {

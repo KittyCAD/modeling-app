@@ -147,7 +147,8 @@ export function SystemIOMachineLogicListenerDesktop() {
   useApplicationProjectDirectory()
   useDefaultProjectName()
   useWatchingApplicationProjectDirectory()
-  useClearQueryParams()
+  // Gotcha: not required on desktop right now.
+  /* useClearQueryParams() */
 
   return null
 }
