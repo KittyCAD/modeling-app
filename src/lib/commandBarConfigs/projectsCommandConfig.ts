@@ -1,12 +1,22 @@
 import { CommandBarOverwriteWarning } from '@src/components/CommandBarOverwriteWarning'
 import { isDesktop } from '@src/lib/isDesktop'
 import type { Command, CommandArgumentOption } from '@src/lib/commandTypes'
+
 import {
   folderSnapshot,
   defaultProjectFolderNameSnapshot,
 } from '@src/machines/systemIO/snapshotContext'
 import { systemIOActor } from '@src/lib/singletons'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
+
+export type ProjectsCommandSchema = {
+  'Import file from URL': {
+    name: string
+    code?: string
+    method: 'newProject' | 'existingProject'
+    projectName?: string
+  }
+}
 
 export const openProjectCommand: Command = {
   icon: 'arrowRight',

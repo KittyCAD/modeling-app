@@ -14,7 +14,6 @@ import { createMachineCommand } from '@src/lib/createMachineCommand'
 import type { authMachine } from '@src/machines/authMachine'
 import { commandBarActor } from '@src/machines/commandBarMachine'
 import type { modelingMachine } from '@src/machines/modelingMachine'
-import type { projectsMachine } from '@src/machines/projectsMachine'
 import type { settingsMachine } from '@src/machines/settingsMachine'
 
 // This might not be necessary, AnyStateMachine from xstate is working
@@ -22,7 +21,6 @@ export type AllMachines =
   | typeof modelingMachine
   | typeof settingsMachine
   | typeof authMachine
-  | typeof projectsMachine
 
 interface UseStateMachineCommandsArgs<
   T extends AllMachines,
