@@ -41,6 +41,7 @@ Object.keys(latestRunDepHash).forEach((key)=>{
   delete dup2[key]
 })
 
+console.log(" ")
 console.log("diff.js - line item diff")
 console.log(" ")
 console.log("Added(+)")
