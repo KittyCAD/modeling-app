@@ -519,7 +519,7 @@ const DefaultPlanes = () => {
     { name: 'Front plane', id: defaultPlanes.xz, key: 'xz' },
     { name: 'Top plane', id: defaultPlanes.xy, key: 'xy' },
     { name: 'Side plane', id: defaultPlanes.yz, key: 'yz' },
-  ]
+  ] as const
 
   return (
     <div className="mb-2">

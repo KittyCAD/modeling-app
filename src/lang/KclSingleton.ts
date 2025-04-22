@@ -48,6 +48,7 @@ import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 
 import { err, reportRejection } from '@src/lib/trap'
 import { deferExecution, uuidv4 } from '@src/lib/utils'
+import { PlaneVisibilityMap } from '@src/machines/modelingMachine'
 
 interface ExecuteArgs {
   ast?: Node<Program>
@@ -703,14 +704,16 @@ export class KclManager {
     return Promise.all(thePromises)
   }
 
-  setPlaneHidden(planeKey: string, hidden: boolean) {
-    const planeId =
-      this.defaultPlanes?.[planeKey as keyof typeof this.defaultPlanes]
+  setPlaneVisibilityByKey(
+    planeKey: keyof PlaneVisibilityMap,
+    visible: boolean
+  ) {
+    const planeId = this.defaultPlanes?.[planeKey]
     if (!planeId) {
       reportError(new Error(`Plane ${planeKey} not found`))
       return
     }
-    return this.engineCommandManager.setPlaneHidden(planeId, hidden)
+    return this.engineCommandManager.setPlaneHidden(planeId, !visible)
   }
 
   /** TODO: this function is hiding unawaited asynchronous work */

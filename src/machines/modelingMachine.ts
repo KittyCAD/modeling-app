@@ -455,12 +455,12 @@ export type ModelingMachineEvent =
   | {
       type: 'Toggle default plane visibility'
       planeId: string
-      planeKey: string
+      planeKey: keyof PlaneVisibilityMap
     }
   | {
       type: 'Save default plane visibility'
       planeId: string
-      planeKey: string
+      planeKey: keyof PlaneVisibilityMap
     }
   | {
       type: 'Restore default plane visibility'
@@ -500,8 +500,14 @@ export interface ModelingMachineContext {
   segmentOverlays: SegmentOverlays
   segmentHoverMap: { [pathToNodeString: string]: number }
   store: Store
-  defaultPlaneVisibility: Record<string, boolean>
-  savedDefaultPlaneVisibility: Record<string, boolean>
+  defaultPlaneVisibility: PlaneVisibilityMap
+  savedDefaultPlaneVisibility: PlaneVisibilityMap
+}
+
+export type PlaneVisibilityMap = {
+  xy: boolean
+  xz: boolean
+  yz: boolean
 }
 
 export const modelingMachineDefaultContext: ModelingMachineContext = {
@@ -1310,11 +1316,13 @@ export const modelingMachine = setup({
       }
     }),
     'Restore default plane visibility': assign(({ context }) => {
-      for (const planeKey in context.savedDefaultPlaneVisibility) {
+      for (const planeKey of Object.keys(
+        context.savedDefaultPlaneVisibility
+      ) as (keyof PlaneVisibilityMap)[]) {
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        kclManager.setPlaneHidden(
+        kclManager.setPlaneVisibilityByKey(
           planeKey,
-          !context.savedDefaultPlaneVisibility[planeKey]
+          context.savedDefaultPlaneVisibility[planeKey]
         )
       }
 
