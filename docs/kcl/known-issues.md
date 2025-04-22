@@ -24,4 +24,4 @@ once fixed in engine will just start working here with no language changes.
 - **Appearance**: Changing the appearance on a loft does not work. 
     Changing the appearance on an imported model does not work.
 
-- **CSG Booleans**: Coplanar unions, subtractions, and intersections are not currently supported.
+- **CSG Booleans**: Coplanar (bodies that share a plane) unions, subtractions, and intersections are not currently supported.
