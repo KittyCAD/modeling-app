@@ -95,8 +95,7 @@ pub struct DefaultPlanes {
 pub struct TagIdentifier {
     pub value: String,
     // Multi-version representation of info about the tag. Kept ordered. The usize is the epoch at which the info
-    // was written. Note that there might be multiple versions of tag info from the same epoch, the version with
-    // the higher index will be the most recent.
+    // was written.
     #[serde(skip)]
     pub info: Vec<(usize, TagEngineInfo)>,
     #[serde(skip)]
@@ -123,10 +122,16 @@ impl TagIdentifier {
     /// Add info from a different instance of this tag.
     pub fn merge_info(&mut self, other: &TagIdentifier) {
         assert_eq!(&self.value, &other.value);
-        'new_info: for (oe, ot) in &other.info {
-            for (e, _) in &self.info {
-                if e > oe {
-                    continue 'new_info;
+        for (oe, ot) in &other.info {
+            if let Some((e, t)) = self.info.last_mut() {
+                // If there is newer info, then skip this iteration.
+                if *e > *oe {
+                    continue;
+                }
+                // If we're in the same epoch, then overwrite.
+                if e == oe {
+                    *t = ot.clone();
+                    continue;
                 }
             }
             self.info.push((*oe, ot.clone()));
