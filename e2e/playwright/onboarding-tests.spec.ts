@@ -107,12 +107,10 @@ test.describe('Onboarding tests', () => {
   )
 
   test('Code resets after confirmation', async ({
-    context,
     page,
     homePage,
     tronApp,
     scene,
-    cmdBar,
   }) => {
     if (!tronApp) {
       fail()
@@ -276,6 +274,8 @@ test.describe('Onboarding tests', () => {
     page,
     homePage,
     tronApp,
+    editor,
+    toolbar,
   }) => {
     if (!tronApp) {
       fail()
@@ -289,7 +289,6 @@ test.describe('Onboarding tests', () => {
       },
     })
 
-    const u = await getUtils(page)
     const badCode = `// This is bad code we shouldn't see`
 
     await page.setBodyDimensions({ width: 1200, height: 1080 })
@@ -299,18 +298,19 @@ test.describe('Onboarding tests', () => {
       .poll(() => page.url())
       .toContain(onboardingPaths.PARAMETRIC_MODELING)
 
-    const bracketNoNewLines = bracket.replace(/\n/g, '')
-
     // Check the code got reset on load
-    await expect(page.locator('#code-pane')).toBeVisible()
-    await expect(u.codeLocator).toHaveText(bracketNoNewLines, {
+    await toolbar.openPane('code')
+    await editor.expectEditor.toContain(bracket, {
+      shouldNormalise: true,
       timeout: 10_000,
     })
 
     // Mess with the code again
-    await u.codeLocator.selectText()
-    await u.codeLocator.fill(badCode)
-    await expect(u.codeLocator).toHaveText(badCode)
+    await editor.replaceCode('', badCode)
+    await editor.expectEditor.toContain(badCode, {
+      shouldNormalise: true,
+      timeout: 10_000,
+    })
 
     // Click to the next step
     await page.locator('[data-testid="onboarding-next"]').hover()
@@ -320,7 +320,10 @@ test.describe('Onboarding tests', () => {
     })
 
     // Check that the code has been reset
-    await expect(u.codeLocator).toHaveText(bracketNoNewLines)
+    await editor.expectEditor.toContain(bracket, {
+      shouldNormalise: true,
+      timeout: 10_000,
+    })
   })
 
   // (lee) The two avatar tests are weird because even on main, we don't have

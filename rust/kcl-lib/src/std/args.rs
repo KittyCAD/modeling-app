@@ -653,40 +653,6 @@ impl Args {
         FromArgs::from_args(self, 0)
     }
 
-    pub(crate) fn get_data_and_sketch_and_tag<'a, T>(
-        &'a self,
-        exec_state: &mut ExecState,
-    ) -> Result<(T, Sketch, Option<TagNode>), KclError>
-    where
-        T: FromKclValue<'a> + Sized,
-    {
-        let data: T = FromArgs::from_args(self, 0)?;
-        let Some(arg1) = self.args.get(1) else {
-            return Err(KclError::Semantic(KclErrorDetails {
-                message: "Expected a sketch for second argument".to_owned(),
-                source_ranges: vec![self.source_range],
-            }));
-        };
-        let sarg = arg1
-            .value
-            .coerce(&RuntimeType::Primitive(PrimitiveType::Sketch), exec_state)
-            .map_err(|_| {
-                KclError::Type(KclErrorDetails {
-                    message: format!(
-                        "Expected a sketch for second argument, found {}",
-                        arg1.value.human_friendly_type()
-                    ),
-                    source_ranges: vec![self.source_range],
-                })
-            })?;
-        let sketch = match sarg {
-            KclValue::Sketch { value } => *value,
-            _ => unreachable!(),
-        };
-        let tag: Option<TagNode> = FromArgs::from_args(self, 2)?;
-        Ok((data, sketch, tag))
-    }
-
     pub(crate) fn get_data_and_sketch_surface(&self) -> Result<([TyF64; 2], SketchSurface, Option<TagNode>), KclError> {
         FromArgs::from_args(self, 0)
     }
@@ -808,19 +774,6 @@ impl Args {
             message: format!("Expected a face with the tag `{}`", tag.value),
             source_ranges: vec![self.source_range],
         }))
-    }
-
-    pub(crate) fn get_polygon_args(
-        &self,
-    ) -> Result<
-        (
-            crate::std::shapes::PolygonData,
-            crate::std::shapes::SketchOrSurface,
-            Option<TagNode>,
-        ),
-        KclError,
-    > {
-        FromArgs::from_args(self, 0)
     }
 }
 
@@ -997,28 +950,6 @@ macro_rules! let_field_of {
     };
 }
 
-impl<'a> FromKclValue<'a> for super::shapes::PolygonData {
-    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        let obj = arg.as_object()?;
-        let_field_of!(obj, radius);
-        let_field_of!(obj, num_sides "numSides");
-        let_field_of!(obj, center);
-        let_field_of!(obj, inscribed);
-        let polygon_type = if inscribed {
-            PolygonType::Inscribed
-        } else {
-            PolygonType::Circumscribed
-        };
-        Some(Self {
-            radius,
-            num_sides,
-            center,
-            polygon_type,
-            inscribed,
-        })
-    }
-}
-
 impl<'a> FromKclValue<'a> for crate::execution::Plane {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         arg.as_plane().cloned()
@@ -1092,16 +1023,6 @@ impl<'a> FromKclValue<'a> for kittycad_modeling_cmds::coord::Direction {
             "negative" => Some(Self::Negative),
             _ => None,
         }
-    }
-}
-
-impl<'a> FromKclValue<'a> for super::sketch::BezierData {
-    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        let obj = arg.as_object()?;
-        let_field_of!(obj, to);
-        let_field_of!(obj, control1);
-        let_field_of!(obj, control2);
-        Some(Self { to, control1, control2 })
     }
 }
 

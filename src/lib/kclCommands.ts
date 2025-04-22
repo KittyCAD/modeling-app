@@ -133,6 +133,14 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
             const path = context.argumentsToSubmit['path'] as string
             return getPathFilenameInVariableCase(path)
           },
+          validation: async ({ data, context }) => {
+            const variableExists = kclManager.variables[data.localName]
+            if (variableExists) {
+              return 'This variable name is already in use.'
+            }
+
+            return true
+          },
         },
       },
       onSubmit: (data) => {
@@ -325,7 +333,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
     },
     {
       name: 'share-file-link',
-      displayName: 'Share current part (via Zoo link)',
+      displayName: 'Share part via Zoo link',
       description: 'Create a link that contains a copy of the current file.',
       groupId: 'code',
       needsReview: false,
