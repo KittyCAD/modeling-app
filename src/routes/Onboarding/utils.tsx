@@ -15,7 +15,7 @@ import { PATHS } from '@src/lib/paths'
 import { codeManager, editorManager, kclManager } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
 import { toSync } from '@src/lib/utils'
-import { settingsActor } from '@src/machines/appMachine'
+import { settingsActor } from '@src/lib/singletons'
 import { onboardingRoutes } from '@src/routes/Onboarding'
 import { onboardingPaths } from '@src/routes/Onboarding/paths'
 

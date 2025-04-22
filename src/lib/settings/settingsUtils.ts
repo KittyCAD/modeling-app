@@ -456,7 +456,7 @@ export function getSettingInputType(setting: Setting) {
 export const jsAppSettings = async () => {
   let jsAppSettings = default_app_settings()
   if (!TEST) {
-    const settings = await import('@src/machines/appMachine').then((module) =>
+    const settings = await import('@src/lib/singletons').then((module) =>
       module.getSettings()
     )
     if (settings) {

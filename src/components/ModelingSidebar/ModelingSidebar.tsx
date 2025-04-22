@@ -22,7 +22,7 @@ import { useKclContext } from '@src/lang/KclProvider'
 import { EngineConnectionStateType } from '@src/lang/std/engineConnection'
 import { SIDEBAR_BUTTON_SUFFIX } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
-import { useSettings } from '@src/machines/appMachine'
+import { useSettings } from '@src/lib/singletons'
 import { commandBarActor } from '@src/machines/commandBarMachine'
 import { onboardingPaths } from '@src/routes/Onboarding/paths'
 

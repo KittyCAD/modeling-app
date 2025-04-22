@@ -26,7 +26,7 @@ import {
   getSortIcon,
 } from '@src/lib/sorting'
 import { reportRejection } from '@src/lib/trap'
-import { authActor, systemIOActor, useSettings } from '@src/machines/appMachine'
+import { authActor, systemIOActor, useSettings } from '@src/lib/singletons'
 import { commandBarActor } from '@src/machines/commandBarMachine'
 import {
   useCanReadWriteProjectDirectory,

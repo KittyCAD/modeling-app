@@ -35,7 +35,7 @@ import {
   rustContext,
 } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
-import { useToken } from '@src/machines/appMachine'
+import { useToken } from '@src/lib/singletons'
 import RootLayout from '@src/Root'
 import Home from '@src/routes/Home'
 import Onboarding, { onboardingRoutes } from '@src/routes/Onboarding'

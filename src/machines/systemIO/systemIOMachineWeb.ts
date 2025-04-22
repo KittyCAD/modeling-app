@@ -6,7 +6,6 @@ import { newKclFile } from '@src/lang/project'
 import { readLocalStorageProjectSettingsFile } from '@src/lib/settings/settingsUtils'
 import { err } from '@src/lib/trap'
 import { DEFAULT_DEFAULT_LENGTH_UNIT } from '@src/lib/constants'
-import { codeManager, kclManager } from '@src/lib/singletons'
 
 export const systemIOMachineWeb = systemIOMachine.provide({
   actors: {
@@ -19,6 +18,7 @@ export const systemIOMachineWeb = systemIOMachine.provide({
           requestedProjectName: string
           requestedFileName: string
           requestedCode: string
+          rootContext: any
         }
       }) => {
         // Browser version doesn't navigate, just overwrites the current file
@@ -35,9 +35,9 @@ export const systemIOMachineWeb = systemIOMachine.provide({
             DEFAULT_DEFAULT_LENGTH_UNIT
         )
         if (err(codeToWrite)) return Promise.reject(codeToWrite)
-        codeManager.updateCodeStateEditor(codeToWrite)
-        await codeManager.writeToFile()
-        await kclManager.executeCode()
+        input.rootContext.codeManager.updateCodeStateEditor(codeToWrite)
+        await input.rootContext.codeManager.writeToFile()
+        await input.rootContext.kclManager.executeCode()
         return {
           message: 'File overwritten successfully',
           fileName: input.requestedFileName,

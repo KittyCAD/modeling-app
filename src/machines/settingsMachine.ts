@@ -36,13 +36,6 @@ import {
   setSettingsAtLevel,
 } from '@src/lib/settings/settingsUtils'
 import {
-  codeManager,
-  engineCommandManager,
-  kclManager,
-  sceneEntitiesManager,
-  sceneInfra,
-} from '@src/lib/singletons'
-import {
   Themes,
   darkModeMatcher,
   getOppositeTheme,
@@ -95,13 +88,14 @@ export const settingsMachine = setup({
         doNotPersist: boolean
         context: SettingsMachineContext
         toastCallback?: () => void
+        rootContext: any
       }
     >(async ({ input }) => {
       // Without this, when a user changes the file, it'd
       // create a detection loop with the file-system watcher.
       if (input.doNotPersist) return
 
-      codeManager.writeCausedByAppCheckedInFileTreeFileSystemWatcher = true
+      input.rootContext.codeManager.writeCausedByAppCheckedInFileTreeFileSystemWatcher = true
       const { currentProject, ...settings } = input.context
 
       const val = await saveSettings(settings, currentProject?.path)
@@ -190,20 +184,28 @@ export const settingsMachine = setup({
     }),
   },
   actions: {
-    setEngineTheme: ({ context }) => {
+    setEngineTheme: ({ context, self }) => {
+      const rootContext = self.system.get('root').getSnapshot().context
+      const engineCommandManager = rootContext.engineCommandManager
       if (engineCommandManager && context.app.theme.current) {
         engineCommandManager
           .setTheme(context.app.theme.current)
           .catch(reportRejection)
       }
     },
-    setClientTheme: ({ context }) => {
+    setClientTheme: ({ context, self }) => {
+      const rootContext = self.system.get('root').getSnapshot().context
+      const sceneInfra = rootContext.sceneInfra
+      const sceneEntitiesManager = rootContext.sceneEntitiesManager
+
       if (!sceneInfra || !sceneEntitiesManager) return
       const opposingTheme = getOppositeTheme(context.app.theme.current)
       sceneInfra.theme = opposingTheme
       sceneEntitiesManager.updateSegmentBaseColor(opposingTheme)
     },
-    setAllowOrbitInSketchMode: ({ context }) => {
+    setAllowOrbitInSketchMode: ({ context, self }) => {
+      const rootContext = self.system.get('root').getSnapshot().context
+      const sceneInfra = rootContext.sceneInfra
       if (!sceneInfra.camControls) return
       sceneInfra.camControls._setting_allowOrbitInSketchMode =
         context.app.allowOrbitInSketchMode.current
@@ -232,7 +234,9 @@ export const settingsMachine = setup({
         id: `${event.type}.success`,
       })
     },
-    'Execute AST': ({ context, event }) => {
+    'Execute AST': ({ context, event, self }) => {
+      const rootContext = self.system.get('root').getSnapshot().context
+      const kclManager = rootContext.kclManager
       try {
         const relevantSetting = (s: typeof settings) => {
           return (
@@ -345,8 +349,10 @@ export const settingsMachine = setup({
         currentTheme === Themes.System ? getSystemTheme() : currentTheme
       )
     },
-    setEngineCameraProjection: ({ context }) => {
+    setEngineCameraProjection: ({ context, self }) => {
       const newCurrentProjection = context.modeling.cameraProjection.current
+      const rootContext = self.system.get('root').getSnapshot().context
+      const sceneInfra = rootContext.sceneInfra
       sceneInfra.camControls.setEngineCameraProjection(newCurrentProjection)
     },
     sendThemeToWatcher: sendTo('watchSystemTheme', ({ context }) => ({
@@ -532,7 +538,7 @@ export const settingsMachine = setup({
             console.error('Error persisting settings')
           },
         },
-        input: ({ context, event }) => {
+        input: ({ context, event, self }) => {
           if (
             event.type === 'set.app.namedViews' &&
             'toastCallback' in event.data
@@ -547,6 +553,7 @@ export const settingsMachine = setup({
           return {
             doNotPersist: event.doNotPersist ?? false,
             context,
+            rootContext: self.system.get('root').getSnapshot().context,
           }
         },
       },

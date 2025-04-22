@@ -1,4 +1,4 @@
-import { systemIOActor } from '@src/machines/appMachine'
+import { systemIOActor } from '@src/lib/singletons'
 import { useSelector } from '@xstate/react'
 export const useRequestedProjectName = () =>
   useSelector(systemIOActor, (state) => state.context.requestedProjectName)

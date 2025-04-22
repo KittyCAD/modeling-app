@@ -190,6 +190,7 @@ export const systemIOMachine = setup({
           requestedProjectName: string
           requestedFileName: string
           requestedCode: string
+          rootContext: any
         }
       }): Promise<{
         message: string
@@ -361,13 +362,14 @@ export const systemIOMachine = setup({
       invoke: {
         id: SystemIOMachineActors.createKCLFile,
         src: SystemIOMachineActors.createKCLFile,
-        input: ({ context, event }) => {
+        input: ({ context, event, self}) => {
           assertEvent(event, SystemIOMachineEvents.createKCLFile)
           return {
             context,
             requestedProjectName: event.data.requestedProjectName,
             requestedFileName: event.data.requestedFileName,
             requestedCode: event.data.requestedCode,
+            rootContext: self.system.get('root').getSnapshot().context
           }
         },
         onDone: {

@@ -11,7 +11,7 @@ import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
 import usePlatform from '@src/hooks/usePlatform'
 import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
-import { authActor } from '@src/machines/appMachine'
+import { authActor } from '@src/lib/singletons'
 
 type User = Models['User_type']
 

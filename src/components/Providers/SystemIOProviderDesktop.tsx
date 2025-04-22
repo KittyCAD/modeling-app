@@ -1,6 +1,6 @@
 import { useFileSystemWatcher } from '@src/hooks/useFileSystemWatcher'
 import { PATHS } from '@src/lib/paths'
-import { systemIOActor, useSettings } from '@src/machines/appMachine'
+import { systemIOActor, useSettings } from '@src/lib/singletons'
 import {
   useHasListedProjects,
   useProjectDirectoryPath,

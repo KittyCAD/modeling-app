@@ -33,7 +33,7 @@ import { PATHS } from '@src/lib/paths'
 import type { Project } from '@src/lib/project'
 import { codeManager, kclManager } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
-import { useSettings } from '@src/machines/appMachine'
+import { useSettings } from '@src/lib/singletons'
 import { commandBarActor } from '@src/machines/commandBarMachine'
 import { projectsMachine } from '@src/machines/projectsMachine'
 

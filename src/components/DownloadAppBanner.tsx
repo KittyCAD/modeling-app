@@ -3,7 +3,7 @@ import { useState } from 'react'
 
 import { ActionButton } from '@src/components/ActionButton'
 import { CREATE_FILE_URL_PARAM } from '@src/lib/constants'
-import { useSettings } from '@src/machines/appMachine'
+import { useSettings } from '@src/lib/singletons'
 import { useSearchParams } from 'react-router-dom'
 
 const DownloadAppBanner = () => {

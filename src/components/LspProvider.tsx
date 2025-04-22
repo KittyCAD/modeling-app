@@ -27,7 +27,7 @@ import { PATHS } from '@src/lib/paths'
 import type { FileEntry } from '@src/lib/project'
 import { codeManager } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
-import { useToken } from '@src/machines/appMachine'
+import { useToken } from '@src/lib/singletons'
 
 function getWorkspaceFolders(): LSP.WorkspaceFolder[] {
   return []

@@ -14,7 +14,7 @@ import { PATHS } from '@src/lib/paths'
 import { Themes, getSystemTheme } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
 import { toSync } from '@src/lib/utils'
-import { authActor, useSettings } from '@src/machines/appMachine'
+import { authActor, useSettings } from '@src/lib/singletons'
 import { APP_VERSION, IS_NIGHTLY } from '@src/routes/utils'
 
 const subtleBorder =

@@ -18,7 +18,7 @@ import { REASONABLE_TIME_TO_REFRESH_STREAM_SIZE } from '@src/lib/timings'
 import { err, reportRejection, trap } from '@src/lib/trap'
 import type { IndexLoaderData } from '@src/lib/types'
 import { uuidv4 } from '@src/lib/utils'
-import { engineStreamActor, useSettings } from '@src/machines/appMachine'
+import { engineStreamActor, useSettings } from '@src/lib/singletons'
 import { useCommandBarState } from '@src/machines/commandBarMachine'
 import {
   EngineStreamState,

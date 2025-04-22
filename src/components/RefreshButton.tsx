@@ -13,7 +13,7 @@ import {
 } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
 import { toSync } from '@src/lib/utils'
-import { useToken } from '@src/machines/appMachine'
+import { useToken } from '@src/lib/singletons'
 import type { WebContentSendPayload } from '@src/menu/channels'
 
 export const RefreshButton = ({ children }: React.PropsWithChildren) => {

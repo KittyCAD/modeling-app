@@ -1,4 +1,4 @@
-import { systemIOActor } from '@src/machines/appMachine'
+import { systemIOActor } from '@src/lib/singletons'
 
 export const folderSnapshot = () => {
   const { folders } = systemIOActor.getSnapshot().context

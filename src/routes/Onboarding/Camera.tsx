@@ -1,7 +1,7 @@
 import { SettingsSection } from '@src/components/Settings/SettingsSection'
 import type { CameraSystem } from '@src/lib/cameraControls'
 import { cameraMouseDragGuards, cameraSystems } from '@src/lib/cameraControls'
-import { settingsActor, useSettings } from '@src/machines/appMachine'
+import { settingsActor, useSettings } from '@src/lib/singletons'
 import { onboardingPaths } from '@src/routes/Onboarding/paths'
 
 import {

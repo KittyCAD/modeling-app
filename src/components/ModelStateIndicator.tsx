@@ -1,4 +1,4 @@
-import { engineStreamActor } from '@src/machines/appMachine'
+import { engineStreamActor } from '@src/lib/singletons'
 import { EngineStreamState } from '@src/machines/engineStreamMachine'
 import { useSelector } from '@xstate/react'
 

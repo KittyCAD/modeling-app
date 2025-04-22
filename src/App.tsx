@@ -39,7 +39,7 @@ import {
   engineStreamActor,
   useSettings,
   useToken,
-} from '@src/machines/appMachine'
+} from '@src/lib/singletons'
 import { commandBarActor } from '@src/machines/commandBarMachine'
 import { EngineStreamTransition } from '@src/machines/engineStreamMachine'
 import { onboardingPaths } from '@src/routes/Onboarding/paths'

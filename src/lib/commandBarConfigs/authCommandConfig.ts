@@ -1,5 +1,5 @@
 import type { Command } from '@src/lib/commandTypes'
-import { authActor } from '@src/machines/appMachine'
+import { authActor } from '@src/lib/singletons'
 import { ACTOR_IDS } from '@src/machines/machineConstants'
 
 export const authCommands: Command[] = [

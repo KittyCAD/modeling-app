@@ -176,7 +176,7 @@ import {
   folderSnapshot,
   defaultProjectFolderNameSnapshot,
 } from '@src/machines/systemIO/snapshotContext'
-import { systemIOActor } from '@src/machines/appMachine'
+import { systemIOActor } from '@src/lib/singletons'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 
 export const openProjectCommand: Command = {
