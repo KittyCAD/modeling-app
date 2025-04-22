@@ -14,8 +14,6 @@ import {
   ARG_OFFSET,
   ARG_TAG,
   DETERMINING_ARGS,
-  ARG_CIRCLE_CENTER,
-  ARG_RADIUS,
 } from '@src/lang/constants'
 import {
   createArrayExpression,

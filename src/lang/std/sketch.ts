@@ -3250,8 +3250,15 @@ export function fnNameToToolTipFromSegment(
       return seg.type === 'ArcThreePoint' ? 'arcTo' : 'arc'
     }
     case 'line':
+    case 'lineTo':
     case 'xLine':
+    case 'xLineTo':
     case 'yLine':
+    case 'yLineTo':
+    case 'angledLineToX':
+    case 'angledLineToY':
+    case 'angledLineOfXLength':
+    case 'angledLineOfYLength':
     case 'angledLineThatIntersects':
     case 'circleThreePoint':
     case 'circle':
