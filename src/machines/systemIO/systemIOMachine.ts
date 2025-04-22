@@ -362,14 +362,14 @@ export const systemIOMachine = setup({
       invoke: {
         id: SystemIOMachineActors.createKCLFile,
         src: SystemIOMachineActors.createKCLFile,
-        input: ({ context, event, self}) => {
+        input: ({ context, event, self }) => {
           assertEvent(event, SystemIOMachineEvents.createKCLFile)
           return {
             context,
             requestedProjectName: event.data.requestedProjectName,
             requestedFileName: event.data.requestedFileName,
             requestedCode: event.data.requestedCode,
-            rootContext: self.system.get('root').getSnapshot().context
+            rootContext: self.system.get('root').getSnapshot().context,
           }
         },
         onDone: {

@@ -74,7 +74,7 @@ if (typeof window !== 'undefined') {
   ;(window as any).enableMousePositionLogs = () =>
     document.addEventListener('mousemove', (e) =>
       console.log(`await page.mouse.click(${e.clientX}, ${e.clientY})`)
-                             )
+    )
   ;(window as any).enableFillet = () => {
     ;(window as any)._enableFillet = true
   }
@@ -90,7 +90,6 @@ if (typeof window !== 'undefined') {
       },
     })
 }
-
 
 import { useSelector } from '@xstate/react'
 import { createActor, setup, spawnChild } from 'xstate'
@@ -122,23 +121,23 @@ const appMachine = setup({
       settings: typeof SETTINGS
       systemIO: typeof SYSTEM_IO
     }
+    context: {
+      codeManager: any
+      kclManager: any
+      engineCommandManager: any
+      sceneInfra: any
+      sceneEntitiesManager: any
+    }
   },
   actors: appMachineActors,
-  context: {} as {
-    codeManager: any,
-    kclManager: any,
-    engineCommandManager: any,
-    sceneInfra: any,
-    sceneEntitiesManager: any
-  }
 }).createMachine({
   id: 'modeling-app',
-  context:{
+  context: {
     codeManager: codeManager,
     kclManager: kclManager,
     engineCommandManager: engineCommandManager,
     sceneInfra: sceneInfra,
-    sceneEntitiesManager: sceneEntitiesManager
+    sceneEntitiesManager: sceneEntitiesManager,
   },
   entry: [
     spawnChild(AUTH, { id: AUTH, systemId: AUTH }),
@@ -194,5 +193,3 @@ export const systemIOActor = appActor.getSnapshot().children.systemIO!
 export const engineStreamActor = appActor.system.get(
   ENGINE_STREAM
 ) as EngineStreamActor
-
-window.actor = systemIOActor

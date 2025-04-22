@@ -78,7 +78,7 @@ export const engineStreamMachine = setup({
   actors: {
     [EngineStreamTransition.Play]: fromPromise(
       async ({
-        input: { context, params, rootContext},
+        input: { context, params, rootContext },
       }: {
         input: { context: EngineStreamContext; params: { zoomToFit: boolean } }
       }) => {
@@ -148,7 +148,7 @@ export const engineStreamMachine = setup({
       }: {
         input: { context: EngineStreamContext; event: any }
       }) => {
-        console.log(context,event, rootContext)
+        console.log(context, event, rootContext)
         if (!context.authToken) return
 
         const video = context.videoRef.current
@@ -229,7 +229,7 @@ export const engineStreamMachine = setup({
           context: args.context,
           rootContext: args.self.system.get('root').getSnapshot().context,
           params: { zoomToFit: args.context.zoomToFit },
-          event: args.event
+          event: args.event,
         }),
       },
       on: {
@@ -270,7 +270,7 @@ export const engineStreamMachine = setup({
         input: (args) => ({
           context: args.context,
           rootContext: args.self.system.get('root').getSnapshot().context,
-          event: args.event
+          event: args.event,
         }),
         onDone: {
           target: EngineStreamState.Playing,
@@ -298,7 +298,7 @@ export const engineStreamMachine = setup({
         input: (args) => ({
           context: args.context,
           rootContext: args.self.system.get('root').getSnapshot().context,
-          event: args.event
+          event: args.event,
         }),
       },
       on: {

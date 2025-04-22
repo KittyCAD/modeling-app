@@ -35,11 +35,7 @@ import {
 } from '@src/lib/singletons'
 import { maybeWriteToDisk } from '@src/lib/telemetry'
 import { type IndexLoaderData } from '@src/lib/types'
-import {
-  engineStreamActor,
-  useSettings,
-  useToken,
-} from '@src/lib/singletons'
+import { engineStreamActor, useSettings, useToken } from '@src/lib/singletons'
 import { commandBarActor } from '@src/machines/commandBarMachine'
 import { EngineStreamTransition } from '@src/machines/engineStreamMachine'
 import { onboardingPaths } from '@src/routes/Onboarding/paths'
