@@ -1784,6 +1784,9 @@ function getTransformMapPathKw(
       }
     return false
   }
+  if (name === 'startProfile') {
+    return false
+  }
   const tooltip = fnNameToTooltip(allLabels(sketchFnExp), name)
   if (err(tooltip)) {
     return false

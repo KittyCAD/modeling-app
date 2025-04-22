@@ -43,7 +43,7 @@ function angledLine(
 }
 
 /**
- * It does not create the startSketchOn and it does not create the startProfileAt.
+ * It does not create the startSketchOn and it does not create the startProfile.
  * Returns AST expressions for this KCL code:
  * const yo = startSketchOn(XY)
  *  |> startProfile(at = [0, 0])

@@ -474,7 +474,7 @@ export class SceneEntities {
       scale,
       theme: this.sceneInfra._theme,
       // default is 12, this makes the draft point pop a bit more,
-      // especially when snapping to the startProfileAt handle as it's it was the exact same size
+      // especially when snapping to the startProfile handle as it's it was the exact same size
       size: 16,
     })
     draftPoint.layers.set(SKETCH_LAYER)

@@ -196,7 +196,7 @@ export function addSketchTo(
     createLiteral(axis.toUpperCase()),
     []
   )
-  const startProfileAt = createCallExpressionStdLibKw('startProfile', null, [
+  const startProfile = createCallExpressionStdLibKw('startProfile', null, [
     createLabeledArg(ARG_AT, createLiteral('default')),
   ])
   const initialLineTo = createCallExpressionStdLibKw(
@@ -205,7 +205,7 @@ export function addSketchTo(
     [createLabeledArg('end', createLiteral('default'))]
   )
 
-  const pipeBody = [startSketchOn, startProfileAt, initialLineTo]
+  const pipeBody = [startSketchOn, startProfile, initialLineTo]
 
   const variableDeclaration = createVariableDeclaration(
     _name,
@@ -1384,6 +1384,7 @@ export async function deleteFromSelection(
               extrudeNameToDelete = dec.id.name
             }
             if (
+              // TODO: This is wrong, loft is now a CallExpressionKw.
               dec.init.type === 'CallExpression' &&
               dec.init.callee.name.name === 'loft' &&
               dec.init.arguments?.[0].type === 'ArrayExpression' &&
@@ -1402,11 +1403,14 @@ export async function deleteFromSelection(
       pathToNode = selection.codeRef.pathToNode
       if (varDec.node.type === 'VariableDeclarator') {
         extrudeNameToDelete = varDec.node.id.name
-      } else if (varDec.node.type === 'CallExpression') {
-        const callExp = getNodeFromPath<CallExpression>(
+      } else if (
+        varDec.node.type === 'CallExpression' ||
+        varDec.node.type === 'CallExpressionKw'
+      ) {
+        const callExp = getNodeFromPath<CallExpression | CallExpressionKw>(
           astClone,
           pathToNode,
-          'CallExpression'
+          ['CallExpression', 'CallExpressionKw']
         )
         if (err(callExp)) return callExp
         extrudeNameToDelete = callExp.node.callee.name.name

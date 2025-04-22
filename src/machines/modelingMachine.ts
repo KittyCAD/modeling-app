@@ -4581,7 +4581,7 @@ export function isEditingExistingSketch({
   sketchDetails: SketchDetails | null
 }): boolean {
   // should check that the variable declaration is a pipeExpression
-  // and that the pipeExpression contains a "startProfileAt" callExpression
+  // and that the pipeExpression contains a "startProfile" callExpression
   if (!sketchDetails?.sketchEntryNodePath) return false
   const variableDeclaration = getNodeFromPath<VariableDeclarator>(
     kclManager.ast,
@@ -4605,7 +4605,8 @@ export function isEditingExistingSketch({
   if (maybePipeExpression.type !== 'PipeExpression') return false
   const hasStartProfileAt = maybePipeExpression.body.some(
     (item) =>
-      item.type === 'CallExpression' && item.callee.name.name === 'startProfile'
+      item.type === 'CallExpressionKw' &&
+      item.callee.name.name === 'startProfile'
   )
   const hasCircle =
     maybePipeExpression.body.some(
