@@ -1830,18 +1830,18 @@ const bracket = startSketchOn(XY)
     #[tokio::test(flavor = "multi_thread")]
     async fn test_unary_operator_not_succeeds() {
         let ast = r#"
-fn returnTrue = () => { return !false }
-const t = true
-const f = false
-let notTrue = !t
-let notFalse = !f
-let c = !!true
-let d = !returnTrue()
+fn returnTrue() { return !false }
+t = true
+f = false
+notTrue = !t
+notFalse = !f
+c = !!true
+d = !returnTrue()
 
-assert(!false, "expected to pass")
+assertIs(!false, error = "expected to pass")
 
 fn check = (x) => {
-  assert(!x, "expected argument to be false")
+  assertIs(!x, error = "expected argument to be false")
   return true
 }
 check(false)
