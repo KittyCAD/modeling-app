@@ -19,7 +19,6 @@ import { err, reportRejection, trap } from '@src/lib/trap'
 import type { IndexLoaderData } from '@src/lib/types'
 import { uuidv4 } from '@src/lib/utils'
 import { engineStreamActor, useSettings } from '@src/machines/appMachine'
-import { useCommandBarState } from '@src/machines/commandBarMachine'
 import {
   EngineStreamState,
   EngineStreamTransition,
@@ -57,8 +56,6 @@ export const EngineStream = (props: {
 
   const { state: modelingMachineState, send: modelingMachineActorSend } =
     useModelingContext()
-
-  const commandBarState = useCommandBarState()
 
   const streamIdleMode = settings.app.streamIdleMode.current
 
