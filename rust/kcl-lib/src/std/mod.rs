@@ -137,6 +137,7 @@ lazy_static! {
         Box::new(crate::std::units::FromCm),
         Box::new(crate::std::units::FromYd),
         Box::new(crate::std::assert::Assert),
+        Box::new(crate::std::assert::AssertIs),
         Box::new(crate::std::transform::Scale),
         Box::new(crate::std::transform::Translate),
         Box::new(crate::std::transform::Rotate),

@@ -21,6 +21,13 @@ async fn _assert(value: bool, message: &str, args: &Args) -> Result<(), KclError
     Ok(())
 }
 
+pub async fn assert_is(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let actual = args.get_unlabeled_kw_arg("actual")?;
+    let error = args.get_kw_arg_opt("error")?;
+    inner_assert_is(actual, error, &args).await?;
+    Ok(KclValue::none())
+}
+
 /// Check that the provided value is true, or raise a [KclError]
 /// with the provided description.
 pub async fn assert(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
@@ -34,6 +41,28 @@ pub async fn assert(_exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     let error = args.get_kw_arg_opt("error")?;
     inner_assert(actual, gt, lt, gte, lte, eq, epsilon, error, &args).await?;
     Ok(KclValue::none())
+}
+
+/// Asserts that a value is the boolean value true.
+/// ```no_run
+/// kclIsFun = true
+/// assertIs(kclIsFun)
+/// ```
+#[stdlib{
+    name = "assertIs",
+    keywords = true,
+    unlabeled_first = true,
+    args = {
+        actual = { docs = "Value to check. If this is the boolean value true, assert passes. Otherwise it fails." },
+        error = { docs = "If the value was false, the program will terminate with this error message" },
+    }
+}]
+async fn inner_assert_is(actual: bool, error: Option<String>, args: &Args) -> Result<(), KclError> {
+    let error_msg = match &error {
+        Some(x) => x,
+        None => "should have been true, but it was not",
+    };
+    _assert(actual, error_msg, args).await
 }
 
 /// Check a value meets some expected conditions at runtime. Program terminates with an error if conditions aren't met.
