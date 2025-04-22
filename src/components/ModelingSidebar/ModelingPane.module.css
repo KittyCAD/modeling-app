@@ -18,7 +18,7 @@
 .header {
   @apply z-10 relative rounded-tr;
   @apply flex h-[41px] items-center justify-between gap-2 px-2;
-  @apply font-mono text-xs font-bold select-none text-chalkboard-90;
+  @apply text-xs select-none text-chalkboard-90;
   @apply bg-chalkboard-10 border-b border-chalkboard-30;
 }
 

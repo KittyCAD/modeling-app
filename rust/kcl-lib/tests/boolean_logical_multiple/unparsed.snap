@@ -8,7 +8,7 @@ i = if ii {
 } else {
   2
 }
-assert(i == 1, "and has higher precedence than or")
+assert(i, isEqualTo = 1, error = "and has higher precedence than or")
 
 jj = false | true & !false | false & true
 j = if jj {
@@ -16,4 +16,4 @@ j = if jj {
 } else {
   2
 }
-assert(j == 1, "multiple logical operators")
+assert(j, isEqualTo = 1, error = "multiple logical operators")
