@@ -22,7 +22,6 @@ import { mutateKwArgOnly } from '@src/lang/modifyAst'
 import {
   findKwArg,
   isArrayExpression,
-  isCallExpression,
   isCallExpressionKw,
 } from '@src/lang/util'
 import type { CallExpressionKw, Expr, PipeExpression } from '@src/lang/wasm'
