@@ -9,6 +9,23 @@ import { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { BaseUnit } from '@src/lib/settings/settingsTypes'
 
+
+import { useSelector } from '@xstate/react'
+import { createActor, setup, spawnChild } from 'xstate'
+
+import { isDesktop } from '@src/lib/isDesktop'
+import { createSettings } from '@src/lib/settings/initialSettings'
+import { authMachine } from '@src/machines/authMachine'
+import type { EngineStreamActor } from '@src/machines/engineStreamMachine'
+import {
+  engineStreamContextCreate,
+  engineStreamMachine,
+} from '@src/machines/engineStreamMachine'
+import { ACTOR_IDS } from '@src/machines/machineConstants'
+import { settingsMachine } from '@src/machines/settingsMachine'
+import { systemIOMachineDesktop } from '@src/machines/systemIO/systemIOMachineDesktop'
+import { systemIOMachineWeb } from '@src/machines/systemIO/systemIOMachineWeb'
+
 export const codeManager = new CodeManager()
 export const engineCommandManager = new EngineCommandManager()
 export const rustContext = new RustContext(engineCommandManager)
@@ -90,22 +107,6 @@ if (typeof window !== 'undefined') {
       },
     })
 }
-
-import { useSelector } from '@xstate/react'
-import { createActor, setup, spawnChild } from 'xstate'
-
-import { isDesktop } from '@src/lib/isDesktop'
-import { createSettings } from '@src/lib/settings/initialSettings'
-import { authMachine } from '@src/machines/authMachine'
-import type { EngineStreamActor } from '@src/machines/engineStreamMachine'
-import {
-  engineStreamContextCreate,
-  engineStreamMachine,
-} from '@src/machines/engineStreamMachine'
-import { ACTOR_IDS } from '@src/machines/machineConstants'
-import { settingsMachine } from '@src/machines/settingsMachine'
-import { systemIOMachineDesktop } from '@src/machines/systemIO/systemIOMachineDesktop'
-import { systemIOMachineWeb } from '@src/machines/systemIO/systemIOMachineWeb'
 const { AUTH, SETTINGS, SYSTEM_IO, ENGINE_STREAM } = ACTOR_IDS
 const appMachineActors = {
   [AUTH]: authMachine,
