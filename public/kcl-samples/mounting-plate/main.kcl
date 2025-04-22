@@ -35,28 +35,28 @@ part = rs
          plateLength / 2 - holeIndex
        ],
        radius = holeRadius,
-     ), %)
+     ))
   |> subtract2d(tool = circle(
        center = [
          plateWidth / 2 - holeIndex,
          plateLength / 2 - holeIndex
        ],
        radius = holeRadius,
-     ), %)
+     ))
   |> subtract2d(tool = circle(
        center = [
          -plateWidth / 2 + holeIndex,
          -plateLength / 2 + holeIndex
        ],
        radius = holeRadius,
-     ), %)
+     ))
   |> subtract2d(tool = circle(
        center = [
          plateWidth / 2 - holeIndex,
          -plateLength / 2 + holeIndex
        ],
        radius = holeRadius,
-     ), %)
+     ))
   |> subtract2d(tool = circle(center = [0, 0], radius = centerHoleDiameter))
   |> extrude(length = plateThickness)
   |> fillet(

@@ -84,28 +84,28 @@ sketch003 = startSketchOn(XY)
          wallThickness * 3 + holeDia
        ],
        radius = holeDia,
-     ), %)
+     ))
   |> subtract2d(tool = circle(
        center = [
          width * 1.2 + wallThickness * 3 + holeDia,
          length - (wallThickness * 3 + holeDia)
        ],
        radius = holeDia,
-     ), %)
+     ))
   |> subtract2d(tool = circle(
        center = [
          width * 2.2 - (wallThickness * 3 + holeDia),
          wallThickness * 3 + holeDia
        ],
        radius = holeDia,
-     ), %)
+     ))
   |> subtract2d(tool = circle(
        center = [
          width * 2.2 - (wallThickness * 3 + holeDia),
          length - (wallThickness * 3 + holeDia)
        ],
        radius = holeDia,
-     ), %)
+     ))
 extrude003 = extrude(sketch003, length = wallThickness)
   |> fillet(
        radius = wallThickness * 4,
@@ -134,28 +134,28 @@ sketch004 = startSketchOn(extrude003, face = END)
          wallThickness * 3 + holeDia
        ],
        radius = holeDia + wallThickness,
-     ), %)
+     ))
   |> subtract2d(tool = circle(
        center = [
          width * 1.2 + wallThickness * 3 + holeDia,
          length - (wallThickness * 3 + holeDia)
        ],
        radius = holeDia + wallThickness,
-     ), %)
+     ))
   |> subtract2d(tool = circle(
        center = [
          width * 2.2 - (wallThickness * 3 + holeDia),
          wallThickness * 3 + holeDia
        ],
        radius = holeDia + wallThickness,
-     ), %)
+     ))
   |> subtract2d(tool = circle(
        center = [
          width * 2.2 - (wallThickness * 3 + holeDia),
          length - (wallThickness * 3 + holeDia)
        ],
        radius = holeDia + wallThickness,
-     ), %)
+     ))
 extrude004 = extrude(sketch004, length = wallThickness)
   |> fillet(
        radius = wallThickness * 3,

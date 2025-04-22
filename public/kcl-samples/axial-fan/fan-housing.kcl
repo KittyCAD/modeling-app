@@ -23,28 +23,28 @@ bottomFaceSketch = startSketchOn(XY)
          mountingHoleSpacing / 2
        ],
        radius = mountingHoleSize / 2,
-     ), %)
+     ))
   |> subtract2d(tool = circle(
        center = [
          -mountingHoleSpacing / 2,
          mountingHoleSpacing / 2
        ],
        radius = mountingHoleSize / 2,
-     ), %)
+     ))
   |> subtract2d(tool = circle(
        center = [
          mountingHoleSpacing / 2,
          -mountingHoleSpacing / 2
        ],
        radius = mountingHoleSize / 2,
-     ), %)
+     ))
   |> subtract2d(tool = circle(
        center = [
          -mountingHoleSpacing / 2,
          -mountingHoleSpacing / 2
        ],
        radius = mountingHoleSize / 2,
-     ), %)
+     ))
   |> extrude(length = 4)
 
 // Add large openings to the bottom face to allow airflow through the fan
@@ -105,28 +105,28 @@ topHoles = startProfileAt([-fanSize / 2, -fanSize / 2], topFaceSketch)
          mountingHoleSpacing / 2
        ],
        radius = mountingHoleSize / 2,
-     ), %)
+     ))
   |> subtract2d(tool = circle(
        center = [
          -mountingHoleSpacing / 2,
          mountingHoleSpacing / 2
        ],
        radius = mountingHoleSize / 2,
-     ), %)
+     ))
   |> subtract2d(tool = circle(
        center = [
          mountingHoleSpacing / 2,
          -mountingHoleSpacing / 2
        ],
        radius = mountingHoleSize / 2,
-     ), %)
+     ))
   |> subtract2d(tool = circle(
        center = [
          -mountingHoleSpacing / 2,
          -mountingHoleSpacing / 2
        ],
        radius = mountingHoleSize / 2,
-     ), %)
+     ))
   |> extrude(length = 4)
 
 // Create a housing for the electric motor to sit

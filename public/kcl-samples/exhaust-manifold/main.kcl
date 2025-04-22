@@ -85,28 +85,28 @@ flangeSketch = startSketchOn(XY)
          -primaryTubeDiameter * .6
        ],
        radius = 0.25 / 2,
-     ), %)
+     ))
   |> subtract2d(tool = circle(
        center = [
          primaryTubeDiameter * .6,
          primaryTubeDiameter * .6
        ],
        radius = 0.25 / 2,
-     ), %)
+     ))
   |> subtract2d(tool = circle(
        center = [
          3 * 2 - (primaryTubeDiameter * .6),
          primaryTubeDiameter * .6
        ],
        radius = 0.25 / 2,
-     ), %)
+     ))
   |> subtract2d(tool = circle(
        center = [
          3 * 2 + primaryTubeDiameter * .6,
          -primaryTubeDiameter * .6
        ],
        radius = 0.25 / 2,
-     ), %)
+     ))
 
   // Extrude the flange and fillet the edges
   |> extrude(length = plateHeight)

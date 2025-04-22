@@ -9,32 +9,32 @@ flowchart LR
     7[Solid2d]
   end
   subgraph path8 [Path]
-    8["Path<br>[1105, 1250, 0]"]
-    9["Segment<br>[1105, 1250, 0]"]
+    8["Path<br>[1118, 1263, 0]"]
+    9["Segment<br>[1118, 1263, 0]"]
     10[Solid2d]
   end
   subgraph path11 [Path]
-    11["Path<br>[1265, 1409, 0]"]
-    12["Segment<br>[1265, 1409, 0]"]
+    11["Path<br>[1288, 1432, 0]"]
+    12["Segment<br>[1288, 1432, 0]"]
     13[Solid2d]
   end
   subgraph path14 [Path]
-    14["Path<br>[1424, 1570, 0]"]
-    15["Segment<br>[1424, 1570, 0]"]
+    14["Path<br>[1457, 1603, 0]"]
+    15["Segment<br>[1457, 1603, 0]"]
     16[Solid2d]
   end
   subgraph path17 [Path]
-    17["Path<br>[1585, 1730, 0]"]
-    18["Segment<br>[1585, 1730, 0]"]
+    17["Path<br>[1628, 1773, 0]"]
+    18["Segment<br>[1628, 1773, 0]"]
     19[Solid2d]
   end
   subgraph path20 [Path]
-    20["Path<br>[1745, 1797, 0]"]
-    21["Segment<br>[1745, 1797, 0]"]
+    20["Path<br>[1798, 1850, 0]"]
+    21["Segment<br>[1798, 1850, 0]"]
     22[Solid2d]
   end
   1["Plane<br>[541, 558, 0]"]
-  23["Sweep Extrusion<br>[1807, 1839, 0]"]
+  23["Sweep Extrusion<br>[1857, 1889, 0]"]
   24[Wall]
   25[Wall]
   26[Wall]
@@ -49,10 +49,10 @@ flowchart LR
   35["SweepEdge Adjacent"]
   36["SweepEdge Opposite"]
   37["SweepEdge Adjacent"]
-  38["EdgeCut Fillet<br>[1845, 2110, 0]"]
-  39["EdgeCut Fillet<br>[1845, 2110, 0]"]
-  40["EdgeCut Fillet<br>[1845, 2110, 0]"]
-  41["EdgeCut Fillet<br>[1845, 2110, 0]"]
+  38["EdgeCut Fillet<br>[1895, 2160, 0]"]
+  39["EdgeCut Fillet<br>[1895, 2160, 0]"]
+  40["EdgeCut Fillet<br>[1895, 2160, 0]"]
+  41["EdgeCut Fillet<br>[1895, 2160, 0]"]
   1 --- 2
   1 --- 8
   1 --- 11
