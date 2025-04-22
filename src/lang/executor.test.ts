@@ -462,7 +462,7 @@ const theExtrude = startSketchOn(XY)
     await expect(exe(code)).rejects.toEqual(
       new KCLError(
         'undefined_value',
-        'memory item key `myVarZ` is not defined',
+        '`myVarZ` is not defined',
         topLevelRange(129, 135),
         [],
         [],
