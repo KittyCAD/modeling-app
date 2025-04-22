@@ -101,7 +101,6 @@ lazy_static! {
         Box::new(crate::std::array::Map),
         Box::new(crate::std::array::Push),
         Box::new(crate::std::array::Pop),
-        Box::new(crate::std::chamfer::Chamfer),
         Box::new(crate::std::fillet::Fillet),
         Box::new(crate::std::edge::GetOppositeEdge),
         Box::new(crate::std::edge::GetNextAdjacentEdge),
@@ -211,6 +210,10 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
         ("prelude", "offsetPlane") => (
             |e, a| Box::pin(crate::std::planes::offset_plane(e, a)),
             StdFnProps::default("std::offsetPlane").include_in_feature_tree(),
+        ),
+        ("solid", "chamfer") => (
+            |e, a| Box::pin(crate::std::chamfer::chamfer(e, a)),
+            StdFnProps::default("std::solid::chamfer").include_in_feature_tree(),
         ),
         _ => unreachable!(),
     }

@@ -1138,8 +1138,9 @@ impl KclValue {
                 _ => Err(self.into()),
             },
             PrimitiveType::Tag => match value {
-                KclValue::TagDeclarator { .. } => Ok(value.clone()),
-                KclValue::TagIdentifier { .. } => Ok(value.clone()),
+                KclValue::TagDeclarator { .. } | KclValue::TagIdentifier { .. } | KclValue::Uuid { .. } => {
+                    Ok(value.clone())
+                }
                 _ => Err(self.into()),
             },
         }
@@ -1292,12 +1293,12 @@ impl KclValue {
             KclValue::HomArray { ty, value, .. } => {
                 Some(RuntimeType::Array(Box::new(ty.clone()), ArrayLen::Known(value.len())))
             }
-            KclValue::TagIdentifier(_) | KclValue::TagDeclarator(_) => Some(RuntimeType::Primitive(PrimitiveType::Tag)),
-            KclValue::Function { .. }
-            | KclValue::Module { .. }
-            | KclValue::KclNone { .. }
-            | KclValue::Type { .. }
-            | KclValue::Uuid { .. } => None,
+            KclValue::TagIdentifier(_) | KclValue::TagDeclarator(_) | KclValue::Uuid { .. } => {
+                Some(RuntimeType::Primitive(PrimitiveType::Tag))
+            }
+            KclValue::Function { .. } | KclValue::Module { .. } | KclValue::KclNone { .. } | KclValue::Type { .. } => {
+                None
+            }
         }
     }
 }

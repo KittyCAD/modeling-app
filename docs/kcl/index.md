@@ -43,7 +43,6 @@ layout: manual
   * [`atan2`](kcl/atan2)
   * [`bezierCurve`](kcl/bezierCurve)
   * [`ceil`](kcl/ceil)
-  * [`chamfer`](kcl/chamfer)
   * [`circleThreePoint`](kcl/circleThreePoint)
   * [`clone`](kcl/clone)
   * [`close`](kcl/close)
@@ -132,6 +131,8 @@ layout: manual
 * **std::sketch**
   * [`circle`](kcl/std-sketch-circle)
   * [`mirror2d`](kcl/std-sketch-mirror2d)
+* **std::solid**
+  * [`chamfer`](kcl/std-solid-chamfer)
 * **std::turns**
   * [`turns::HALF_TURN`](kcl/consts/std-turns-HALF_TURN)
   * [`turns::QUARTER_TURN`](kcl/consts/std-turns-QUARTER_TURN)
