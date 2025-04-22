@@ -102,7 +102,7 @@ fn cube(length, center) {
   p3 = [l + x, -l + y]
 
   return startSketchOn(XY)
-    |> startProfileAt(p0, %)
+    |> startProfile(at = p0)
     |> line(endAbsolute = p1)
     |> line(endAbsolute = p2)
     |> line(endAbsolute = p3)
@@ -140,7 +140,7 @@ fn cube(length, center) {
   p3 = [l + x, -l + y]
 
   return startSketchOn(XY)
-    |> startProfileAt(p0, %)
+    |> startProfile(at = p0)
     |> line(endAbsolute = p1)
     |> line(endAbsolute = p2)
     |> line(endAbsolute = p3)
@@ -204,7 +204,7 @@ fn transform(i) {
   ]
 }
 startSketchOn(XY)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> polygon(
        radius = 10,
        numSides = 4,

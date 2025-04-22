@@ -28,7 +28,7 @@ segLen(tag: TagIdentifier): number
 
 ```js
 exampleSketch = startSketchOn(XZ)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> angledLine(angle = 60, length = 10, tag = $thing)
   |> tangentialArc(angle = -120, radius = 5)
   |> angledLine(angle = -60, length = segLen(thing))

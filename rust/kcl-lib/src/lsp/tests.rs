@@ -1696,7 +1696,7 @@ outsideRevolve = startSketchOn(XZ)
         tower_lsp::lsp_types::Range {
             start: tower_lsp::lsp_types::Position { line: 0, character: 0 },
             end: tower_lsp::lsp_types::Position {
-                line: 56,
+                line: 50,
                 character: 29
             }
         }
@@ -1728,7 +1728,10 @@ insideRevolve = startSketchOn(XZ)
 
 // Sketch and revolve one of the balls and duplicate it using a circular pattern. (This is currently a workaround, we have a bug with rotating on a sketch that touches the rotation axis)
 sphere = startSketchOn(XZ)
-  |> startProfile(at = [0.05 + insideDia / 2 + thickness, 0 - 0.05])
+  |> startProfile(at = [
+       0.05 + insideDia / 2 + thickness,
+       0 - 0.05
+     ])
   |> line(end = [sphereDia - 0.1, 0])
   |> arc(angle_start = 0, angle_end = -180, radius = sphereDia / 2 - 0.05)
   |> close()
@@ -1743,7 +1746,10 @@ sphere = startSketchOn(XZ)
 
 // Sketch and revolve the outside bearing
 outsideRevolve = startSketchOn(XZ)
-  |> startProfile(at = [insideDia / 2 + thickness + sphereDia, 0])
+  |> startProfile(at = [
+       insideDia / 2 + thickness + sphereDia,
+       0
+     ])
   |> line(end = [0, sphereDia / 2])
   |> line(end = [-overHangLength + thickness, 0])
   |> line(end = [0, thickness])

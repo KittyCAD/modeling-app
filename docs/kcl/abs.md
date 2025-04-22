@@ -34,7 +34,7 @@ abs(num: number): number
 myAngle = -120
 
 sketch001 = startSketchOn(XZ)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> line(end = [8, 0])
   |> angledLine(angle = abs(myAngle), length = 5)
   |> line(end = [-5, 0])

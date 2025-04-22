@@ -34,7 +34,7 @@ angleToMatchLengthX(
 
 ```js
 sketch001 = startSketchOn(XZ)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> line(end = [2, 5], tag = $seg01)
   |> angledLine(angle = -angleToMatchLengthX(seg01, 7, %), endAbsoluteX = 10)
   |> close()
