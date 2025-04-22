@@ -332,14 +332,7 @@ export const EngineStream = (props: {
     if (!engineStreamState.context.videoRef.current) return
     // If we're in sketch mode, don't send a engine-side select event
     if (modelingMachineState.matches('Sketch')) return
-    // Only respect default plane selection if we're on a selection command argument
-    if (
-      !(
-        commandBarState.matches('Gathering arguments') &&
-        commandBarState.context.currentArgument?.inputType === 'selection'
-      )
-    )
-      return
+
     // If we're mousing up from a camera drag, don't send a select event
     if (sceneInfra.camControls.wasDragging === true) return
 
