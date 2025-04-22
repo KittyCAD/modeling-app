@@ -1264,7 +1264,7 @@ async fn make_sketch_plane_from_orientation(
                 NOTE(dr): The x_axis defined below isn't consistent with default plane definitions. PlaneData::Neg* variants
                 only negate the z axis, x and y axes are the same as PlaneData::*.
 
-                Defining the x_axis in this way causes `startOnSketch(-XZ)` and `startOnSketch(offsetPlane(-XY, offset = 0))`
+                Defining the x_axis in this way causes `startOnSketch(-XZ)` and `startOnSketch(offsetPlane(-XZ, offset = 0))`
                 to produce different results.
             */
 
