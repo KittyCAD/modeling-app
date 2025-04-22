@@ -212,14 +212,14 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
 
 pub(crate) fn std_ty(path: &str, fn_name: &str) -> (PrimitiveType, StdFnProps) {
     match (path, fn_name) {
-        ("prelude", "Sketch") => (PrimitiveType::Sketch, StdFnProps::default("std::Sketch")),
-        ("prelude", "Solid") => (PrimitiveType::Solid, StdFnProps::default("std::Solid")),
-        ("prelude", "Plane") => (PrimitiveType::Plane, StdFnProps::default("std::Plane")),
-        ("prelude", "Face") => (PrimitiveType::Face, StdFnProps::default("std::Face")),
-        ("prelude", "Helix") => (PrimitiveType::Helix, StdFnProps::default("std::Helix")),
-        ("prelude", "Edge") => (PrimitiveType::Edge, StdFnProps::default("std::Edge")),
-        ("prelude", "Axis2d") => (PrimitiveType::Axis2d, StdFnProps::default("std::Axis2d")),
-        ("prelude", "Axis3d") => (PrimitiveType::Axis3d, StdFnProps::default("std::Axis3d")),
+        ("types", "Sketch") => (PrimitiveType::Sketch, StdFnProps::default("std::types::Sketch")),
+        ("types", "Solid") => (PrimitiveType::Solid, StdFnProps::default("std::types::Solid")),
+        ("types", "Plane") => (PrimitiveType::Plane, StdFnProps::default("std::types::Plane")),
+        ("types", "Face") => (PrimitiveType::Face, StdFnProps::default("std::types::Face")),
+        ("types", "Helix") => (PrimitiveType::Helix, StdFnProps::default("std::types::Helix")),
+        ("types", "Edge") => (PrimitiveType::Edge, StdFnProps::default("std::types::Edge")),
+        ("types", "Axis2d") => (PrimitiveType::Axis2d, StdFnProps::default("std::types::Axis2d")),
+        ("types", "Axis3d") => (PrimitiveType::Axis3d, StdFnProps::default("std::types::Axis3d")),
         _ => unreachable!(),
     }
 }

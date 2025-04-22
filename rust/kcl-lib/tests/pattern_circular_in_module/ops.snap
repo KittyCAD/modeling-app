@@ -11,7 +11,7 @@ description: Operations executed pattern_circular_in_module.kcl
       "functionSourceRange": [
         15,
         378,
-        5
+        6
       ],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -99,7 +99,7 @@ description: Operations executed pattern_circular_in_module.kcl
       "functionSourceRange": [
         15,
         378,
-        5
+        6
       ],
       "unlabeledArg": null,
       "labeledArgs": {}

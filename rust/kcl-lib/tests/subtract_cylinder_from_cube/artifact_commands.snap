@@ -496,5 +496,13 @@ description: Artifact commands subtract_cylinder_from_cube.kcl
       "type": "set_scene_units",
       "unit": "mm"
     }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "set_scene_units",
+      "unit": "mm"
+    }
   }
 ]

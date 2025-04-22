@@ -310,5 +310,13 @@ description: Artifact commands function_sketch_with_position.kcl
       "type": "set_scene_units",
       "unit": "mm"
     }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "set_scene_units",
+      "unit": "mm"
+    }
   }
 ]
