@@ -524,7 +524,7 @@ description: Result of parsing computed_var.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
-                "name": "epsilon",
+                "name": "tolerance",
                 "start": 0,
                 "type": "Identifier"
               },
@@ -715,7 +715,7 @@ description: Result of parsing computed_var.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
-                "name": "epsilon",
+                "name": "tolerance",
                 "start": 0,
                 "type": "Identifier"
               },
