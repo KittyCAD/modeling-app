@@ -4,6 +4,11 @@ import type { EngineCommandManager } from '@src/lang/std/engineConnection'
 import type { KclManager } from '@src/lang/KclSingleton'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
+import type { engineStreamMachine } from '@src/machines/engineStreamMachine'
+import type { authMachine } from '@src/machines/authMachine'
+import type { settingsMachine } from '@src/machines/settingsMachine'
+import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
+import type { ActorRefFrom } from 'xstate'
 
 export type IndexLoaderData = {
   code: string | null
@@ -123,4 +128,8 @@ export type AppMachineContext = {
   engineCommandManager: EngineCommandManager
   sceneInfra: SceneInfra
   sceneEntitiesManager: SceneEntities
+  authActor?: ActorRefFrom<typeof authMachine>
+  settingsActor?: ActorRefFrom<typeof settingsMachine>
+  systemIOActor?: ActorRefFrom<typeof systemIOMachine>
+  engineStreamActor?: ActorRefFrom<typeof engineStreamMachine>
 }

@@ -10,12 +10,11 @@ import { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { BaseUnit } from '@src/lib/settings/settingsTypes'
 
 import { useSelector } from '@xstate/react'
-import { createActor, setup, spawnChild } from 'xstate'
+import { createActor, setup, assign } from 'xstate'
 
 import { isDesktop } from '@src/lib/isDesktop'
 import { createSettings } from '@src/lib/settings/initialSettings'
 import { authMachine } from '@src/machines/authMachine'
-import type { EngineStreamActor } from '@src/machines/engineStreamMachine'
 import {
   engineStreamContextCreate,
   engineStreamMachine,
@@ -117,11 +116,6 @@ const appMachineActors = {
 
 const appMachine = setup({
   types: {} as {
-    children: {
-      auth: typeof AUTH
-      settings: typeof SETTINGS
-      systemIO: typeof SYSTEM_IO
-    }
     context: AppMachineContext
   },
   actors: appMachineActors,
@@ -135,17 +129,24 @@ const appMachine = setup({
     sceneEntitiesManager: sceneEntitiesManager,
   },
   entry: [
-    spawnChild(AUTH, { id: AUTH, systemId: AUTH }),
-    spawnChild(SETTINGS, {
-      id: SETTINGS,
-      systemId: SETTINGS,
-      input: createSettings(),
-    }),
-    spawnChild(SYSTEM_IO, { id: SYSTEM_IO, systemId: SYSTEM_IO }),
-    spawnChild(ENGINE_STREAM, {
-      id: ENGINE_STREAM,
-      systemId: ENGINE_STREAM,
-      input: engineStreamContextCreate(),
+    assign({
+      // Gotcha, if you use spawn, make sure you remove the ActorRef from context
+      // to prevent memory leaks when the spawned actor is no longer needed
+      authActor: ({ spawn }) => spawn(AUTH, { id: AUTH, systemId: AUTH }),
+      settingsActor: ({ spawn }) =>
+        spawn(SETTINGS, {
+          id: SETTINGS,
+          systemId: SETTINGS,
+          input: createSettings(),
+        }),
+      systemIOActor: ({ spawn }) =>
+        spawn(SYSTEM_IO, { id: SYSTEM_IO, systemId: SYSTEM_IO }),
+      engineStreamActor: ({ spawn }) =>
+        spawn(ENGINE_STREAM, {
+          id: ENGINE_STREAM,
+          systemId: ENGINE_STREAM,
+          input: engineStreamContextCreate(),
+        }),
     }),
   ],
 })
@@ -159,7 +160,7 @@ export const appActor = createActor(appMachine, {
  * the lifetime of {appActor}, but would not work if it were invoked
  * or if it were destroyed under any conditions during {appActor}'s life
  */
-export const authActor = appActor.getSnapshot().children.auth!
+export const authActor = appActor.getSnapshot().context.authActor!
 export const useAuthState = () => useSelector(authActor, (state) => state)
 export const useToken = () =>
   useSelector(authActor, (state) => state.context.token)
@@ -171,7 +172,7 @@ export const useUser = () =>
  * the lifetime of {appActor}, but would not work if it were invoked
  * or if it were destroyed under any conditions during {appActor}'s life
  */
-export const settingsActor = appActor.getSnapshot().children.settings!
+export const settingsActor = appActor.getSnapshot().context.settingsActor!
 export const getSettings = () => {
   const { currentProject: _, ...settings } = settingsActor.getSnapshot().context
   return settings
@@ -183,8 +184,7 @@ export const useSettings = () =>
     return settings
   })
 
-export const systemIOActor = appActor.getSnapshot().children.systemIO!
+export const systemIOActor = appActor.getSnapshot().context.systemIOActor!
 
-export const engineStreamActor = appActor.system.get(
-  ENGINE_STREAM
-) as EngineStreamActor
+export const engineStreamActor =
+  appActor.getSnapshot().context.engineStreamActor!
