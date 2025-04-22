@@ -37,9 +37,9 @@ pub async fn assert(_exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     let gte = args.get_kw_arg_opt("isGreaterThanOrEqual")?;
     let lte = args.get_kw_arg_opt("isLessThanOrEqual")?;
     let eq = args.get_kw_arg_opt("isEqualTo")?;
-    let epsilon = args.get_kw_arg_opt("epsilon")?;
+    let tolerance = args.get_kw_arg_opt("tolerance")?;
     let error = args.get_kw_arg_opt("error")?;
-    inner_assert(actual, gt, lt, gte, lte, eq, epsilon, error, &args).await?;
+    inner_assert(actual, gt, lt, gte, lte, eq, tolerance, error, &args).await?;
     Ok(KclValue::none())
 }
 
@@ -72,7 +72,7 @@ async fn inner_assert_is(actual: bool, error: Option<String>, args: &Args) -> Re
 /// n = 10
 /// assert(n, isEqualTo = 10)
 /// assert(n, isGreaterThanOrEqual = 0, isLessThan = 100, error = "number should be between 0 and 100")
-/// assert(1.0000000000012, isEqualTo = 1, epsilon = 0.0001, error = "number should be almost exactly 1")
+/// assert(1.0000000000012, isEqualTo = 1, tolerance = 0.0001, error = "number should be almost exactly 1")
 /// ```
 #[stdlib {
     name = "assert",
@@ -85,7 +85,7 @@ async fn inner_assert_is(actual: bool, error: Option<String>, args: &Args) -> Re
         is_greater_than_or_equal = { docs = "Comparison argument. If given, checks the `actual` value is greater than or equal to this." },
         is_less_than_or_equal = { docs = "Comparison argument. If given, checks the `actual` value is less than or equal to this." },
         is_equal_to = { docs = "Comparison argument. If given, checks the `actual` value is less than or equal to this.", include_in_snippet = true },
-        epsilon = { docs = "If `isEqualTo` is used, this is the tolerance to allow for the comparison. This tolerance is used because KCL's number system has some floating-point imprecision when used with very large decimal places." },
+        tolerance = { docs = "If `isEqualTo` is used, this is the tolerance to allow for the comparison. This tolerance is used because KCL's number system has some floating-point imprecision when used with very large decimal places." },
         error = { docs = "If the value was false, the program will terminate with this error message" },
     }
 }]
@@ -97,7 +97,7 @@ async fn inner_assert(
     is_greater_than_or_equal: Option<TyF64>,
     is_less_than_or_equal: Option<TyF64>,
     is_equal_to: Option<TyF64>,
-    epsilon: Option<TyF64>,
+    tolerance: Option<TyF64>,
     error: Option<String>,
     args: &Args,
 ) -> Result<(), KclError> {
@@ -118,10 +118,10 @@ async fn inner_assert(
         }));
     }
 
-    if epsilon.is_some() && is_equal_to.is_none() {
+    if tolerance.is_some() && is_equal_to.is_none() {
         return Err(KclError::Type(KclErrorDetails {
             message:
-                "The `epsilon` arg is only used with `isEqualTo`. Either remove `epsilon` or add an `isEqualTo` arg."
+                "The `tolerance` arg is only used with `isEqualTo`. Either remove `tolerance` or add an `isEqualTo` arg."
                     .to_owned(),
             source_ranges: vec![args.source_range],
         }));
@@ -173,9 +173,9 @@ async fn inner_assert(
     }
     if let Some(exp) = is_equal_to {
         let exp = exp.n;
-        let epsilon = epsilon.map(|e| e.n).unwrap_or(0.0000000001);
+        let tolerance = tolerance.map(|e| e.n).unwrap_or(0.0000000001);
         _assert(
-            (actual - exp).abs() < epsilon,
+            (actual - exp).abs() < tolerance,
             &format!("Expected {actual} to be equal to {exp} but it wasn't{suffix}"),
             args,
         )

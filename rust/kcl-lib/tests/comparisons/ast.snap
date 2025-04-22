@@ -267,7 +267,7 @@ description: Result of parsing comparisons.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
-                "name": "isLessThanOrEqualTo",
+                "name": "isLessThanOrEqual",
                 "start": 0,
                 "type": "Identifier"
               },
@@ -351,7 +351,7 @@ description: Result of parsing comparisons.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
-                "name": "isLessThanOrEqualTo",
+                "name": "isLessThanOrEqual",
                 "start": 0,
                 "type": "Identifier"
               },
@@ -519,7 +519,7 @@ description: Result of parsing comparisons.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
-                "name": "isGreaterThanOrEqualTo",
+                "name": "isGreaterThanOrEqual",
                 "start": 0,
                 "type": "Identifier"
               },
@@ -603,7 +603,7 @@ description: Result of parsing comparisons.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
-                "name": "isGreaterThanOrEqualTo",
+                "name": "isGreaterThanOrEqual",
                 "start": 0,
                 "type": "Identifier"
               },

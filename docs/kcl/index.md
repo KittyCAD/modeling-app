@@ -40,6 +40,7 @@ layout: manual
   * [`arc`](kcl/arc)
   * [`asin`](kcl/asin)
   * [`assert`](kcl/assert)
+  * [`assertIs`](kcl/assertIs)
   * [`atan`](kcl/atan)
   * [`atan2`](kcl/atan2)
   * [`bezierCurve`](kcl/bezierCurve)

@@ -16,7 +16,7 @@ assert(
   isGreaterThanOrEqual?: number,
   isLessThanOrEqual?: number,
   isEqualTo?: number,
-  epsilon?: number,
+  tolerance?: number,
   error?: String,
 ): ()
 ```
@@ -32,7 +32,7 @@ assert(
 | `isGreaterThanOrEqual` | [`number`](/docs/kcl/types/number) | Comparison argument. If given, checks the `actual` value is greater than or equal to this. | No |
 | `isLessThanOrEqual` | [`number`](/docs/kcl/types/number) | Comparison argument. If given, checks the `actual` value is less than or equal to this. | No |
 | `isEqualTo` | [`number`](/docs/kcl/types/number) | Comparison argument. If given, checks the `actual` value is less than or equal to this. | No |
-| `epsilon` | [`number`](/docs/kcl/types/number) | If `isEqualTo` is used, this is the tolerance to allow for the comparison. This tolerance is used because KCL's number system has some floating-point imprecision when used with very large decimal places. | No |
+| `tolerance` | [`number`](/docs/kcl/types/number) | If `isEqualTo` is used, this is the tolerance to allow for the comparison. This tolerance is used because KCL's number system has some floating-point imprecision when used with very large decimal places. | No |
 | `error` | `String` | If the value was false, the program will terminate with this error message | No |
 
 ### Returns
@@ -54,7 +54,7 @@ assert(
 assert(
   1.0000000000012,
   isEqualTo = 1,
-  epsilon = 0.0001,
+  tolerance = 0.0001,
   error = "number should be almost exactly 1",
 )
 ```
