@@ -20,7 +20,7 @@ export type ProjectsCommandSchema = {
 
 export const openProjectCommand: Command = {
   icon: 'arrowRight',
-  name: 'Open projecct',
+  name: 'Open project',
   displayName: `Open project`,
   description: 'Open a project',
   groupId: 'projects',
