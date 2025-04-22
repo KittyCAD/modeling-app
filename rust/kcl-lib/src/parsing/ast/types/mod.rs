@@ -450,7 +450,6 @@ impl Program {
 
         for item in &self.body {
             let r = item.comment_range();
-            eprintln!("item {r:?}");
             if pos >= r.0 && pos < r.1 {
                 return true;
             }

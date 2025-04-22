@@ -306,6 +306,14 @@ description: Artifact commands walkie-talkie.kcl
     "range": [],
     "command": {
       "type": "set_scene_units",
+      "unit": "mm"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "set_scene_units",
       "unit": "in"
     }
   },

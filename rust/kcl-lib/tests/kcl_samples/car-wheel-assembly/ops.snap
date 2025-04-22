@@ -8,7 +8,7 @@ description: Operations executed car-wheel-assembly.kcl
     "group": {
       "type": "ModuleInstance",
       "name": "carRotor",
-      "moduleId": 6
+      "moduleId": 7
     },
     "sourceRange": []
   },
@@ -718,7 +718,7 @@ description: Operations executed car-wheel-assembly.kcl
     "group": {
       "type": "ModuleInstance",
       "name": "carWheel",
-      "moduleId": 5
+      "moduleId": 6
     },
     "sourceRange": []
   },
@@ -1254,7 +1254,7 @@ description: Operations executed car-wheel-assembly.kcl
       "functionSourceRange": [
         2572,
         4111,
-        5
+        6
       ],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -1645,7 +1645,7 @@ description: Operations executed car-wheel-assembly.kcl
       "functionSourceRange": [
         2572,
         4111,
-        5
+        6
       ],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -2137,7 +2137,7 @@ description: Operations executed car-wheel-assembly.kcl
     "group": {
       "type": "ModuleInstance",
       "name": "lugNut",
-      "moduleId": 8
+      "moduleId": 9
     },
     "sourceRange": []
   },
@@ -2149,7 +2149,7 @@ description: Operations executed car-wheel-assembly.kcl
       "functionSourceRange": [
         637,
         1240,
-        8
+        9
       ],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -2594,7 +2594,7 @@ description: Operations executed car-wheel-assembly.kcl
     "group": {
       "type": "ModuleInstance",
       "name": "brakeCaliper",
-      "moduleId": 7
+      "moduleId": 8
     },
     "sourceRange": []
   },
@@ -2728,7 +2728,7 @@ description: Operations executed car-wheel-assembly.kcl
     "group": {
       "type": "ModuleInstance",
       "name": "carTire",
-      "moduleId": 9
+      "moduleId": 10
     },
     "sourceRange": []
   },
