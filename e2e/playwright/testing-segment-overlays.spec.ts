@@ -1595,4 +1595,196 @@ profile002 = circle(sketch001, center = [345, 0], radius = 238.38)
       )
     })
   })
+  test('arc with interiorAbsolute and endAbsolute kwargs overlay constraints', async ({
+    page,
+    editor,
+    homePage,
+    scene,
+    cmdBar,
+  }) => {
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `myvar = 141
+sketch001 = startSketchOn(XZ)
+profile001 = circleThreePoint(
+  sketch001,
+  p1 = [445.16, 202.16],
+  p2 = [445.16, 116.92],
+  p3 = [546.85, 103],
+)
+profile003 = startProfileAt([64.39, 35.16], sketch001)
+  |> line(end = [60.69, 23.02])
+  |> arc(interiorAbsolute = [159.26, 100.58], endAbsolute = [237.05, 84.07])
+  |> line(end = [70.31, 42.28])`
+      )
+      // Set flag to always show overlays without hover
+      localStorage.setItem('showAllOverlays', 'true')
+    })
+
+    await page.setBodyDimensions({ width: 1200, height: 500 })
+
+    await homePage.goToModelingScene()
+    await scene.connectionEstablished()
+    await scene.settled(cmdBar)
+
+    // Click on the line before the arc to enter edit mode
+    await page.getByText('line(end = [60.69, 23.02])').click()
+    await page.waitForTimeout(100)
+    await page.getByRole('button', { name: 'Edit Sketch' }).click()
+    await page.waitForTimeout(500)
+
+    // Verify overlays are visible
+    // 3 for the three point arc, and 4 for the 3 segments (arc has two)
+    await expect(page.getByTestId('segment-overlay')).toHaveCount(7)
+
+    // ---- Testing interior point constraints ----
+
+    // 1. Constrain interior X coordinate
+    const interiorXConstraintBtn = page
+      .locator(
+        '[data-constraint-type="xAbsolute"][data-is-constrained="false"]'
+      )
+      .nth(3)
+    await expect(interiorXConstraintBtn).toBeVisible()
+    await interiorXConstraintBtn.click()
+
+    // Complete the command
+    await expect(
+      page.getByTestId('cmd-bar-arg-value').getByRole('textbox')
+    ).toBeFocused()
+    await page.getByRole('button', { name: 'arrow right Continue' }).click()
+
+    // Verify the constraint was added
+    await editor.expectEditor.toContain(
+      'interiorAbsolute = [xAbs001, 100.58]',
+      {
+        shouldNormalise: true,
+      }
+    )
+
+    // 2. Constrain interior Y coordinate
+    const interiorYConstraintBtn = page
+      .locator(
+        '[data-constraint-type="yAbsolute"][data-is-constrained="false"]'
+      )
+      .nth(3)
+    await expect(interiorYConstraintBtn).toBeVisible()
+    await interiorYConstraintBtn.click()
+
+    // Complete the command
+    await expect(
+      page.getByTestId('cmd-bar-arg-value').getByRole('textbox')
+    ).toBeFocused()
+    await page.getByRole('button', { name: 'arrow right Continue' }).click()
+
+    // Verify both constraints were added
+    await editor.expectEditor.toContain(
+      'interiorAbsolute = [xAbs001, yAbs001]',
+      {
+        shouldNormalise: true,
+      }
+    )
+
+    // ---- Testing end point constraints ----
+
+    // 3. Constrain end X coordinate
+    const endXConstraintBtn = page
+      .locator(
+        '[data-constraint-type="xAbsolute"][data-is-constrained="false"]'
+      )
+      .nth(3) // still number 3 because the interior ones are now constrained
+    await expect(endXConstraintBtn).toBeVisible()
+    await endXConstraintBtn.click()
+
+    // Complete the command
+    await expect(
+      page.getByTestId('cmd-bar-arg-value').getByRole('textbox')
+    ).toBeFocused()
+    await page.getByRole('button', { name: 'arrow right Continue' }).click()
+
+    // Verify the constraint was added
+    await editor.expectEditor.toContain('endAbsolute = [xAbs002, 84.07]', {
+      shouldNormalise: true,
+    })
+
+    // 4. Constrain end Y coordinate
+    const endYConstraintBtn = page
+      .locator(
+        '[data-constraint-type="yAbsolute"][data-is-constrained="false"]'
+      )
+      .nth(3) // still number 3 because the interior ones are now constrained
+    await expect(endYConstraintBtn).toBeVisible()
+    await endYConstraintBtn.click()
+
+    // Complete the command
+    await expect(
+      page.getByTestId('cmd-bar-arg-value').getByRole('textbox')
+    ).toBeFocused()
+    await page.getByRole('button', { name: 'arrow right Continue' }).click()
+
+    // Verify all constraints were added
+    await editor.expectEditor.toContain(
+      'interiorAbsolute = [xAbs001, yAbs001], endAbsolute = [xAbs002, yAbs002]',
+      {
+        shouldNormalise: true,
+      }
+    )
+
+    // ---- Unconstrain the coordinates in reverse order ----
+
+    // 5. Unconstrain end Y coordinate
+    const constrainedEndYBtn = page
+      .locator('[data-constraint-type="yAbsolute"][data-is-constrained="true"]')
+      .nth(1)
+    await expect(constrainedEndYBtn).toBeVisible()
+    await constrainedEndYBtn.click()
+
+    // Verify the constraint was removed
+    await editor.expectEditor.toContain('endAbsolute = [xAbs002, 84.07]', {
+      shouldNormalise: true,
+    })
+
+    // 6. Unconstrain end X coordinate
+    const constrainedEndXBtn = page
+      .locator('[data-constraint-type="xAbsolute"][data-is-constrained="true"]')
+      .nth(1)
+    await expect(constrainedEndXBtn).toBeVisible()
+    await constrainedEndXBtn.click()
+
+    // Verify the constraint was removed
+    await editor.expectEditor.toContain('endAbsolute = [237.05, 84.07]', {
+      shouldNormalise: true,
+    })
+
+    // 7. Unconstrain interior Y coordinate
+    const constrainedInteriorYBtn = page
+      .locator('[data-constraint-type="yAbsolute"][data-is-constrained="true"]')
+      .nth(0)
+    await expect(constrainedInteriorYBtn).toBeVisible()
+    await constrainedInteriorYBtn.click()
+
+    // Verify the constraint was removed
+    await editor.expectEditor.toContain(
+      'interiorAbsolute = [xAbs001, 100.58]',
+      {
+        shouldNormalise: true,
+      }
+    )
+
+    // 8. Unconstrain interior X coordinate
+    const constrainedInteriorXBtn = page
+      .locator('[data-constraint-type="xAbsolute"][data-is-constrained="true"]')
+      .nth(0)
+    await expect(constrainedInteriorXBtn).toBeVisible()
+    await constrainedInteriorXBtn.click()
+
+    // Verify all constraints were removed
+    await editor.expectEditor.toContain(
+      'interiorAbsolute = [159.26, 100.58], endAbsolute = [237.05, 84.07]',
+      {
+        shouldNormalise: true,
+      }
+    )
+  })
 })

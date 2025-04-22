@@ -39,6 +39,7 @@ import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import {
   createFirstArg,
   fnNameToTooltip,
+  fnNameToToolTipFromSegment,
   getAngledLine,
   getAngledLineThatIntersects,
   getArc,
@@ -2299,35 +2300,42 @@ export function transformAstSketchLines({
     }
     const { to, from } = seg
     // Note to ADAM: Here is where the replaceExisting call gets sent.
+    const segmentInput: Parameters<
+      typeof replaceSketchLine
+    >[0]['segmentInput'] =
+      seg.type === 'Circle'
+        ? {
+            type: 'arc-segment',
+            center: seg.center,
+            radius: seg.radius,
+            from,
+            to: from, // For a full circle, to is the same as from
+            ccw: true, // Default to counter-clockwise for circles
+          }
+        : seg.type === 'CircleThreePoint' || seg.type === 'ArcThreePoint'
+          ? {
+              type: 'circle-three-point-segment',
+              p1: seg.p1,
+              p2: seg.p2,
+              p3: seg.p3,
+            }
+          : {
+              type: 'straight-segment',
+              to,
+              from,
+            }
+    const fnName = fnNameToToolTipFromSegment(
+      seg,
+      transformTo || (call.node.callee.name.name as ToolTip)
+    )
+    if (err(fnName)) return fnName
     const replacedSketchLine = replaceSketchLine({
       node: node,
       variables: memVars,
       pathToNode: _pathToNode,
       referencedSegment,
-      fnName: transformTo || (call.node.callee.name.name as ToolTip),
-      segmentInput:
-        seg.type === 'Circle'
-          ? {
-              type: 'arc-segment',
-              center: seg.center,
-              radius: seg.radius,
-              from,
-              to: from, // For a full circle, to is the same as from
-              ccw: true, // Default to counter-clockwise for circles
-            }
-          : seg.type === 'CircleThreePoint' || seg.type === 'ArcThreePoint'
-            ? {
-                type: 'circle-three-point-segment',
-                p1: seg.p1,
-                p2: seg.p2,
-                p3: seg.p3,
-              }
-            : {
-                type: 'straight-segment',
-                to,
-                from,
-              },
-
+      fnName,
+      segmentInput,
       replaceExistingCallback: (rawArgs) =>
         callBack({
           referenceSegName: _referencedSegmentName,

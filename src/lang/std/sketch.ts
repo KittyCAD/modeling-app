@@ -100,7 +100,7 @@ import type { EdgeCutInfo } from '@src/machines/modelingMachine'
 const STRAIGHT_SEGMENT_ERR = new Error(
   'Invalid input, expected "straight-segment"'
 )
-const ARC_SEGMENT_ERR = new Error('Invalid input, expected "arc-segment"')
+const ARC_SEGMENT_ERR = () => new Error('Invalid input, expected "arc-segment"')
 const CIRCLE_THREE_POINT_SEGMENT_ERR = new Error(
   'Invalid input, expected "circle-three-point-segment"'
 )
@@ -1223,7 +1223,7 @@ export const tangentialArc: SketchLineHelperKw = {
 }
 export const circle: SketchLineHelperKw = {
   add: ({ node, pathToNode, segmentInput, replaceExistingCallback }) => {
-    if (segmentInput.type !== 'arc-segment') return ARC_SEGMENT_ERR
+    if (segmentInput.type !== 'arc-segment') return ARC_SEGMENT_ERR()
 
     const { center, radius } = segmentInput
     const _node = { ...node }
@@ -1400,7 +1400,7 @@ export const circle: SketchLineHelperKw = {
     }
   },
   updateArgs: ({ node, pathToNode, input }) => {
-    if (input.type !== 'arc-segment') return ARC_SEGMENT_ERR
+    if (input.type !== 'arc-segment') return ARC_SEGMENT_ERR()
     const { center, radius } = input
     const _node = { ...node }
     const nodeMeta = getNodeFromPath<CallExpressionKw>(_node, pathToNode)
@@ -1518,7 +1518,7 @@ export const arc: SketchLineHelperKw = {
     replaceExistingCallback,
     spliceBetween,
   }) => {
-    if (segmentInput.type !== 'arc-segment') return ARC_SEGMENT_ERR
+    if (segmentInput.type !== 'arc-segment') return ARC_SEGMENT_ERR()
     const { center, radius, from, to } = segmentInput
     const _node = { ...node }
 
@@ -1582,7 +1582,6 @@ export const arc: SketchLineHelperKw = {
 
     if (replaceExistingCallback && pipe.type !== 'CallExpression') {
       const { index: callIndex } = splitPathAtPipeExpression(pathToNode)
-      console.log('YOYOYOYOYO!NOO')
       const result = replaceExistingCallback([
         {
           type: 'objectProperty',
@@ -1653,7 +1652,7 @@ export const arc: SketchLineHelperKw = {
     }
   },
   updateArgs: ({ node, pathToNode, input }) => {
-    if (input.type !== 'arc-segment') return ARC_SEGMENT_ERR
+    if (input.type !== 'arc-segment') return ARC_SEGMENT_ERR()
     const { center, radius, from, to } = input
     const _node = { ...node }
     const nodeMeta = getNodeFromPath<CallExpressionKw>(_node, pathToNode)
@@ -1794,7 +1793,7 @@ export const arcTo: SketchLineHelperKw = {
     spliceBetween,
   }) => {
     if (segmentInput.type !== 'circle-three-point-segment')
-      return ARC_SEGMENT_ERR
+      return ARC_SEGMENT_ERR()
 
     const { p2, p3 } = segmentInput
     const _node = { ...node }
@@ -1810,29 +1809,43 @@ export const arcTo: SketchLineHelperKw = {
     // p1 is the start point (from the previous segment)
     // p2 is the interiorAbsolute point
     // p3 is the end point
-    const interiorAbsolute = createArrayExpression([
-      createLiteral(roundOff(p2[0], 2)),
-      createLiteral(roundOff(p2[1], 2)),
-    ])
+    const p2x = createLiteral(roundOff(p2[0], 2))
+    const p2y = createLiteral(roundOff(p2[1], 2))
+    const interiorAbsolute = createArrayExpression([p2x, p2y])
 
-    const end = createArrayExpression([
-      createLiteral(roundOff(p3[0], 2)),
-      createLiteral(roundOff(p3[1], 2)),
-    ])
+    const p3x = createLiteral(roundOff(p3[0], 2))
+    const p3y = createLiteral(roundOff(p3[1], 2))
+    const end = createArrayExpression([p3x, p3y])
 
     if (replaceExistingCallback) {
       const result = replaceExistingCallback([
         {
-          type: 'objectProperty',
+          type: 'labeledArgArrayItem',
           key: 'interiorAbsolute',
+          index: 0,
           argType: 'xAbsolute',
-          expr: createLiteral(0), // This is a workaround, the actual value will be set later
+          expr: p2x,
         },
         {
-          type: 'objectProperty',
-          key: 'endAbsolute',
+          type: 'labeledArgArrayItem',
+          key: 'interiorAbsolute',
+          index: 1,
           argType: 'yAbsolute',
-          expr: createLiteral(0), // This is a workaround, the actual value will be set later
+          expr: p2y,
+        },
+        {
+          type: 'labeledArgArrayItem',
+          key: 'endAbsolute',
+          index: 0,
+          argType: 'xAbsolute',
+          expr: p3x,
+        },
+        {
+          type: 'labeledArgArrayItem',
+          key: 'endAbsolute',
+          index: 1,
+          argType: 'yAbsolute',
+          expr: p3y,
         },
       ])
       if (err(result)) return result
@@ -1898,7 +1911,7 @@ export const arcTo: SketchLineHelperKw = {
     }
   },
   updateArgs: ({ node, pathToNode, input }) => {
-    if (input.type !== 'circle-three-point-segment') return ARC_SEGMENT_ERR
+    if (input.type !== 'circle-three-point-segment') return ARC_SEGMENT_ERR()
 
     const { p2, p3 } = input
     const _node = { ...node }
@@ -2007,8 +2020,8 @@ export const arcTo: SketchLineHelperKw = {
         ),
         stdLibFnName: 'arc',
         argPosition: {
-          type: 'arrayInObject',
-          key: 'interiorAbsolute',
+          type: 'labeledArgArrayItem',
+          key: ARG_INTERIOR_ABSOLUTE,
           index: 0,
         },
         sourceRange: topLevelRange(
@@ -2016,7 +2029,7 @@ export const arcTo: SketchLineHelperKw = {
           interiorAbsoluteArr.elements[0].end
         ),
         pathToNode: pathToInteriorX,
-        filterValue: 'interiorAbsolute',
+        filterValue: ARG_INTERIOR_ABSOLUTE,
       },
       {
         type: 'yAbsolute',
@@ -2029,8 +2042,8 @@ export const arcTo: SketchLineHelperKw = {
         ),
         stdLibFnName: 'arc',
         argPosition: {
-          type: 'arrayInObject',
-          key: 'interiorAbsolute',
+          type: 'labeledArgArrayItem',
+          key: ARG_INTERIOR_ABSOLUTE,
           index: 1,
         },
         sourceRange: topLevelRange(
@@ -2038,7 +2051,7 @@ export const arcTo: SketchLineHelperKw = {
           interiorAbsoluteArr.elements[1].end
         ),
         pathToNode: pathToInteriorY,
-        filterValue: 'interiorAbsolute',
+        filterValue: ARG_INTERIOR_ABSOLUTE,
       },
       {
         type: 'xAbsolute',
@@ -2046,8 +2059,8 @@ export const arcTo: SketchLineHelperKw = {
         value: code.slice(endArr.elements[0].start, endArr.elements[0].end),
         stdLibFnName: 'arc',
         argPosition: {
-          type: 'arrayInObject',
-          key: 'end',
+          type: 'labeledArgArrayItem',
+          key: 'endAbsolute',
           index: 0,
         },
         sourceRange: topLevelRange(
@@ -2055,7 +2068,7 @@ export const arcTo: SketchLineHelperKw = {
           endArr.elements[0].end
         ),
         pathToNode: pathToEndX,
-        filterValue: 'end',
+        filterValue: 'endAbsolute',
       },
       {
         type: 'yAbsolute',
@@ -2063,8 +2076,8 @@ export const arcTo: SketchLineHelperKw = {
         value: code.slice(endArr.elements[1].start, endArr.elements[1].end),
         stdLibFnName: 'arc',
         argPosition: {
-          type: 'arrayInObject',
-          key: 'end',
+          type: 'labeledArgArrayItem',
+          key: 'endAbsolute',
           index: 1,
         },
         sourceRange: topLevelRange(
@@ -2072,7 +2085,7 @@ export const arcTo: SketchLineHelperKw = {
           endArr.elements[1].end
         ),
         pathToNode: pathToEndY,
-        filterValue: 'end',
+        filterValue: 'endAbsolute',
       },
     ]
 
@@ -3209,6 +3222,47 @@ export function changeSketchArguments(
   }
 
   return new Error(`not a sketch line helper: ${fnName}`)
+}
+
+/**
+ * Converts a function name to a ToolTip (UI hint/identifier) based on the segment type.
+ *
+ * This function differs from fnNameToTooltip() in that it uses the Path/segment
+ * type information to determine the correct ToolTip, rather than analyzing function
+ * argument labels. This is particularly important for functions like 'arc' where
+ * the same function name can map to different ToolTips ('arc' or 'arcTo') depending
+ * on the segment type (ArcThreePoint vs other types).
+ *
+ * While fnNameToTooltip() determines the ToolTip by examining the function's argument
+ * structure at call site, this function uses the segment geometry information, making
+ * it suitable for contexts where we have the Path object but not the full argument list.
+ *
+ * @param seg - The Path object containing segment type information
+ * @param fnName - The function name to convert to a ToolTip
+ * @returns The corresponding ToolTip or an Error if the function name is unknown
+ */
+export function fnNameToToolTipFromSegment(
+  seg: Path,
+  fnName: string
+): ToolTip | Error {
+  switch (fnName) {
+    case 'arc': {
+      return seg.type === 'ArcThreePoint' ? 'arcTo' : 'arc'
+    }
+    case 'line':
+    case 'xLine':
+    case 'yLine':
+    case 'angledLineThatIntersects':
+    case 'circleThreePoint':
+    case 'circle':
+    case 'tangentialArc':
+    case 'angledLine':
+      return fnName
+    default:
+      const err = `Unknown sketch line function ${fnName}`
+      console.error(err)
+      return new Error(err)
+  }
 }
 
 /**

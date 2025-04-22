@@ -137,7 +137,8 @@ const Loading = ({ children, className, dataTestId }: LoadingProps) => {
             __html: Marked.parse(
               CONNECTION_ERROR_TEXT[error.error] +
                 (error.context
-                  ? '\n\nThe error details are: ' + error.context
+                  ? '\n\nThe error details are: ' +
+                    JSON.stringify(error.context)
                   : ''),
               {
                 renderer: new SafeRenderer(markedOptions),
