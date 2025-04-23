@@ -399,6 +399,17 @@ pub(crate) async fn do_post_extrude<'a>(
                         });
                         Some(extrude_surface)
                     }
+                    Path::CircularInvolute { .. } => {
+                        let extrude_surface = ExtrudeSurface::ExtrudeInvolute(crate::execution::ExtrudeInvolute {
+                            face_id: *actual_face_id,
+                            tag: path.get_base().tag.clone(),
+                            geo_meta: GeoMeta {
+                                id: path.get_base().geo_meta.id,
+                                metadata: path.get_base().geo_meta.metadata,
+                            },
+                        });
+                        Some(extrude_surface)
+                    }
                 }
             } else if no_engine_commands {
                 // Only pre-populate the extrude surface if we are in mock mode.

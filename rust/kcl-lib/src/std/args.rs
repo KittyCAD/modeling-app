@@ -805,6 +805,17 @@ impl Args {
                     None
                 }
             }
+            ExtrudeSurface::ExtrudeInvolute(extrude_involute) => {
+                if let Some(involute_tag) = &extrude_involute.tag {
+                    if involute_tag.name == tag.value {
+                        Some(Ok(extrude_involute.face_id))
+                    } else {
+                        None
+                    }
+                } else {
+                    None
+                }
+            }
             ExtrudeSurface::Chamfer(chamfer) => {
                 if let Some(chamfer_tag) = &chamfer.tag {
                     if chamfer_tag.name == tag.value {

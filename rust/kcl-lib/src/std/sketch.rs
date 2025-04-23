@@ -198,7 +198,7 @@ async fn inner_involute_circular(
     end.x += from.x;
     end.y += from.y;
 
-    let current_path = Path::ToPoint {
+    let current_path = Path::CircularInvolute {
         base: BasePath {
             from: from.ignore_units(),
             to: [end.x, end.y],
@@ -209,6 +209,10 @@ async fn inner_involute_circular(
                 metadata: args.source_range.into(),
             },
         },
+        start_radius,
+        end_radius,
+        angle: angle.to_degrees(),
+        reverse: reverse.unwrap_or_default(),
     };
 
     let mut new_sketch = sketch.clone();
