@@ -195,9 +195,11 @@ export const FileMachineProvider = ({
           }
         },
         openFileInNewWindow: ({ event }) => {
-          if (event.type !== 'Open file in new window') return
+          if (event.type !== 'Open file in new window') {
+            return
+          }
+
           commandBarActor.send({ type: 'Close' })
-          console.log('event.data.name', event.data.name)
           window.electron.openInNewWindow(event.data.name)
         },
       },

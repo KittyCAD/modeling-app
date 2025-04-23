@@ -284,8 +284,7 @@ ipcMain.handle('shell.openExternal', (event, data) => {
 })
 
 ipcMain.handle('openInNewWindow', (event, data) => {
-  console.log('openInNewData data', data)
-  createWindow(data)
+  return createWindow(data)
 })
 
 ipcMain.handle(
