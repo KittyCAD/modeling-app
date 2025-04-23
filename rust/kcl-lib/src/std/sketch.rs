@@ -105,6 +105,15 @@ pub async fn involute_circular(exec_state: &mut ExecState, args: Args) -> Result
     let angle: TyF64 = args.get_kw_arg_typed("angle", &RuntimeType::angle(), exec_state)?;
     let reverse = args.get_kw_arg_opt("reverse")?;
     let tag = args.get_kw_arg_opt(NEW_TAG_KW)?;
+
+    if end_radius.n < start_radius.n {
+            return Err(KclError::Semantic(KclErrorDetails {
+                source_ranges: vec![args.source_range],
+                message: format!("endRadius: {0} cannot be less than startRadius: {1}", end_radius.n, start_radius.n)
+                    .to_owned(),
+            }));
+    }
+
     let new_sketch = inner_involute_circular(
         sketch,
         start_radius.n,
