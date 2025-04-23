@@ -225,16 +225,7 @@ pub async fn translate(exec_state: &mut ExecState, args: Args) -> Result<KclValu
         }));
     }
 
-    let objects = inner_translate(
-        objects,
-        translate_x.map(|t| t.n),
-        translate_y.map(|t| t.n),
-        translate_z.map(|t| t.n),
-        global,
-        exec_state,
-        args,
-    )
-    .await?;
+    let objects = inner_translate(objects, translate_x, translate_y, translate_z, global, exec_state, args).await?;
     Ok(objects.into())
 }
 
@@ -397,9 +388,9 @@ pub async fn translate(exec_state: &mut ExecState, args: Args) -> Result<KclValu
 }]
 async fn inner_translate(
     objects: SolidOrSketchOrImportedGeometry,
-    x: Option<f64>,
-    y: Option<f64>,
-    z: Option<f64>,
+    x: Option<TyF64>,
+    y: Option<TyF64>,
+    z: Option<TyF64>,
     global: Option<bool>,
     exec_state: &mut ExecState,
     args: Args,
@@ -421,9 +412,9 @@ async fn inner_translate(
                 transforms: vec![shared::ComponentTransform {
                     translate: Some(shared::TransformBy::<Point3d<LengthUnit>> {
                         property: shared::Point3d {
-                            x: LengthUnit(x.unwrap_or_default()),
-                            y: LengthUnit(y.unwrap_or_default()),
-                            z: LengthUnit(z.unwrap_or_default()),
+                            x: LengthUnit(x.as_ref().map(|t| t.to_mm()).unwrap_or_default()),
+                            y: LengthUnit(y.as_ref().map(|t| t.to_mm()).unwrap_or_default()),
+                            z: LengthUnit(z.as_ref().map(|t| t.to_mm()).unwrap_or_default()),
                         },
                         set: false,
                         is_local: !global.unwrap_or(false),
@@ -451,11 +442,11 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
         ]),
         exec_state,
     )?;
-    let roll: Option<TyF64> = args.get_kw_arg_opt_typed("roll", &RuntimeType::angle(), exec_state)?;
-    let pitch: Option<TyF64> = args.get_kw_arg_opt_typed("pitch", &RuntimeType::angle(), exec_state)?;
-    let yaw: Option<TyF64> = args.get_kw_arg_opt_typed("yaw", &RuntimeType::angle(), exec_state)?;
+    let roll: Option<TyF64> = args.get_kw_arg_opt_typed("roll", &RuntimeType::degrees(), exec_state)?;
+    let pitch: Option<TyF64> = args.get_kw_arg_opt_typed("pitch", &RuntimeType::degrees(), exec_state)?;
+    let yaw: Option<TyF64> = args.get_kw_arg_opt_typed("yaw", &RuntimeType::degrees(), exec_state)?;
     let axis: Option<[TyF64; 3]> = args.get_kw_arg_opt_typed("axis", &RuntimeType::point3d(), exec_state)?;
-    let angle: Option<TyF64> = args.get_kw_arg_opt_typed("angle", &RuntimeType::angle(), exec_state)?;
+    let angle: Option<TyF64> = args.get_kw_arg_opt_typed("angle", &RuntimeType::degrees(), exec_state)?;
     let global = args.get_kw_arg_opt("global")?;
 
     // Check if no rotation values are provided.
@@ -544,7 +535,9 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
         roll.map(|t| t.n),
         pitch.map(|t| t.n),
         yaw.map(|t| t.n),
-        axis.map(|p| [p[0].n, p[1].n, p[2].n]),
+        // Don't adjust axis units since the axis must be normalized and only the direction
+        // should be significant, not the magnitude.
+        axis.map(|a| [a[0].n, a[1].n, a[2].n]),
         angle.map(|t| t.n),
         global,
         exec_state,
@@ -780,7 +773,7 @@ async fn inner_rotate(
     for object_id in objects.ids(&args.ctx).await? {
         let id = exec_state.next_uuid();
 
-        if let (Some(axis), Some(angle)) = (axis, angle) {
+        if let (Some(axis), Some(angle)) = (&axis, angle) {
             args.batch_modeling_cmd(
                 id,
                 ModelingCmd::from(mcmd::SetObjectTransform {

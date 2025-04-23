@@ -33,19 +33,11 @@ description: Artifact commands ball-bearing.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "set_scene_units",
-      "unit": "in"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
       "type": "make_plane",
       "origin": {
         "x": 0.0,
         "y": 0.0,
-        "z": -0.1565
+        "z": -3.9751
       },
       "x_axis": {
         "x": 1.0,
@@ -106,7 +98,7 @@ description: Artifact commands ball-bearing.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 0.475,
+        "x": 12.065,
         "y": 0.0,
         "z": 0.0
       }
@@ -131,7 +123,7 @@ description: Artifact commands ball-bearing.kcl
           "x": 0.0,
           "y": 0.0
         },
-        "radius": 0.475,
+        "radius": 12.065,
         "start": {
           "unit": "degrees",
           "value": 0.0
@@ -182,7 +174,7 @@ description: Artifact commands ball-bearing.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 0.375,
+        "x": 9.524999999999999,
         "y": 0.0,
         "z": 0.0
       }
@@ -207,7 +199,7 @@ description: Artifact commands ball-bearing.kcl
           "x": 0.0,
           "y": 0.0
         },
-        "radius": 0.375,
+        "radius": 9.524999999999999,
         "start": {
           "unit": "degrees",
           "value": 0.0
@@ -268,7 +260,7 @@ description: Artifact commands ball-bearing.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 0.313,
+      "distance": 7.9502,
       "faces": null,
       "opposite": "None"
     }
@@ -392,8 +384,8 @@ description: Artifact commands ball-bearing.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 0.475,
-        "y": 0.001,
+        "x": 12.065,
+        "y": 0.0254,
         "z": 0.0
       }
     }
@@ -414,10 +406,10 @@ description: Artifact commands ball-bearing.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": 0.6,
-          "y": 0.001
+          "x": 15.24,
+          "y": 0.0254
         },
-        "radius": 0.125,
+        "radius": 3.175,
         "start": {
           "unit": "degrees",
           "value": 180.0
@@ -596,8 +588,8 @@ description: Artifact commands ball-bearing.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 0.5375,
-        "y": 0.10825317547305482,
+        "x": 13.652499999999998,
+        "y": 2.7496306570155924,
         "z": 0.0
       }
     }
@@ -618,10 +610,10 @@ description: Artifact commands ball-bearing.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": 0.6,
+          "x": 15.24,
           "y": -0.0
         },
-        "radius": 0.125,
+        "radius": 3.175,
         "start": {
           "unit": "degrees",
           "value": 120.0
@@ -644,7 +636,7 @@ description: Artifact commands ball-bearing.kcl
         "type": "line",
         "end": {
           "x": 0.0,
-          "y": 0.0313,
+          "y": 0.7938,
           "z": 0.0
         },
         "relative": true
@@ -660,7 +652,7 @@ description: Artifact commands ball-bearing.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -0.125,
+          "x": -3.175,
           "y": 0.0,
           "z": 0.0
         },
@@ -874,7 +866,7 @@ description: Artifact commands ball-bearing.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 0.63125,
+        "x": 16.033749999999998,
         "y": 0.0,
         "z": 0.0
       }
@@ -896,10 +888,10 @@ description: Artifact commands ball-bearing.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": 0.6,
+          "x": 15.24,
           "y": 0.0
         },
-        "radius": 0.03125,
+        "radius": 0.79375,
         "start": {
           "unit": "degrees",
           "value": 0.0
@@ -1011,7 +1003,7 @@ description: Artifact commands ball-bearing.kcl
       "origin": {
         "x": 0.0,
         "y": 0.0,
-        "z": -0.1565
+        "z": -3.9751
       },
       "x_axis": {
         "x": 1.0,
@@ -1072,7 +1064,7 @@ description: Artifact commands ball-bearing.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 0.8125,
+        "x": 20.6375,
         "y": 0.0,
         "z": 0.0
       }
@@ -1097,7 +1089,7 @@ description: Artifact commands ball-bearing.kcl
           "x": 0.0,
           "y": 0.0
         },
-        "radius": 0.8125,
+        "radius": 20.6375,
         "start": {
           "unit": "degrees",
           "value": 0.0
@@ -1148,7 +1140,7 @@ description: Artifact commands ball-bearing.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 0.725,
+        "x": 18.415,
         "y": 0.0,
         "z": 0.0
       }
@@ -1173,7 +1165,7 @@ description: Artifact commands ball-bearing.kcl
           "x": 0.0,
           "y": 0.0
         },
-        "radius": 0.725,
+        "radius": 18.415,
         "start": {
           "unit": "degrees",
           "value": 0.0
@@ -1234,7 +1226,7 @@ description: Artifact commands ball-bearing.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 0.313,
+      "distance": 7.9502,
       "faces": null,
       "opposite": "None"
     }
@@ -1337,30 +1329,6 @@ description: Artifact commands ball-bearing.kcl
       "type": "object_visible",
       "object_id": "[uuid]",
       "hidden": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "set_scene_units",
-      "unit": "mm"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "set_scene_units",
-      "unit": "mm"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "set_scene_units",
-      "unit": "mm"
     }
   }
 ]
