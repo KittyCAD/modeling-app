@@ -356,17 +356,21 @@ export function ToastTextToCadSuccess({
                     requestedProjectName: projectName,
                     requestedFileName: fileName
                   }})
+
+                  console.log(location)
+                  const path = location.pathname.includes(PATHS.FILE)
                 } else if (fileMachineSend) {
                   fileMachineSend({
                     type: 'Delete file',
                     data: {
                       name: data.fileName,
                       path,
-                       children: null,
-                     },
-                   })
-                 }
+                      children: null,
+                    },
+                  })
+                }
               }
+
               toast.dismiss(toastId)
             }}
           >

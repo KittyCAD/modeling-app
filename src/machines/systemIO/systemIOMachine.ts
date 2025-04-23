@@ -496,9 +496,6 @@ export const systemIOMachine = setup({
         },
         onDone: {
           target: SystemIOMachineStates.readingFolders,
-          actions: [assign({requestedProjectName:(aaa)=>{
-            return {name:aaa.event.output.projectName}
-          }})]
         },
         onError: {
           target: SystemIOMachineStates.readingFolders,
