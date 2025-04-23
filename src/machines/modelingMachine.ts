@@ -2945,49 +2945,11 @@ export const modelingMachine = setup({
           savedDefaultPlaneVisibility: ModelingMachineContext['savedDefaultPlaneVisibility']
         }
       }) => {
-        console.log('clean-up-sketch-mode', input)
-
-        // Here I just started inlining the actions that were invoked by cancel sketch mode
-
-        // 'reset client scene mouse handlers',
-        // sceneInfra.resetMouseListeners()
-        //
-        // // 'Restore default plane visibility',
-        // const promises: Promise<unknown>[] = []
-        // for (const planeKey in input.savedDefaultPlaneVisibility) {
-        //   const promise = kclManager.setPlaneHidden(
-        //     planeKey,
-        //     !input.savedDefaultPlaneVisibility[planeKey]
-        //   )
-        //   if (promise) {
-        //     promises.push(promise)
-        //   }
-        // }
-        // await Promise.all(promises)
-        //
-        // // 'reset camera position',
-        // await engineCommandManager.sendSceneCommand({
-        //   type: 'modeling_cmd_req',
-        //   cmd_id: uuidv4(),
-        //   cmd: {
-        //     type: 'default_camera_look_at',
-        //     center: { x: 0, y: 0, z: 0 },
-        //     vantage: { x: 0, y: -1250, z: 580 },
-        //     up: { x: 0, y: 0, z: 1 },
-        //   },
-        // })
-        //
-        // console.log('>> Setting selection filter.')
-        //
-        // // 'set selection filter to curves only',
-        // await engineCommandManager.sendSceneCommand({
-        //   type: 'modeling_cmd_req',
-        //   cmd_id: uuidv4(),
-        //   cmd: {
-        //     type: 'set_selection_filter',
-        //     filter: ['curve'],
-        //   },
-        // }) //.catch(reportRejection)
+        // We can synchronize sketch clean up actions here as most of them are async and some of them are affected by
+        // each other.
+        // This is not implemented yet, the actions are still in:
+        // "Cleaning up sketch mode"/entry and
+        // Sketch mode / exit
       }
     ),
     'reeval-node-paths': fromPromise(
@@ -3193,18 +3155,13 @@ export const modelingMachine = setup({
         'Artifact graph populated': {
           actions: [
             'reset client scene mouse handlers',
-            'Restore default plane visibility',
+            'Restore default plane visibility', // This only works when artifact graph is populated, not on "entry"
             'reset camera position',
-            'set selection filter to curves only',
           ],
         },
       },
 
-      entry: [
-        'reset client scene mouse handlers',
-        'reset camera position',
-        'set selection filter to curves only',
-      ],
+      entry: ['reset client scene mouse handlers', 'reset camera position'],
     },
 
     Sketch: {
@@ -4686,16 +4643,10 @@ export const modelingMachine = setup({
         onError: 'idle',
       },
 
-      // This was moved here from the Cancel event's action list
+      // Moved here from the Cancel event's action list:
       // TODO what if we're existing extrude equipped, should these actions still be fired?
       // maybe cancel needs to have a guard for if else logic?
-      entry: [
-        'reset sketch metadata',
-        'enable copilot',
-        'enter modeling mode',
-        // This doesn't work here, it needs the async "sketch exit execute" action (which is invoked on Sketch exit) to complete
-        'set selection filter to curves only',
-      ],
+      entry: ['reset sketch metadata', 'enable copilot', 'enter modeling mode'],
       exit: ['Restore default plane visibility'],
     },
   },
