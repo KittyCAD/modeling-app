@@ -295,7 +295,7 @@ pub async fn leg_length(_exec_state: &mut ExecState, args: Args) -> Result<KclVa
 /// Compute the length of the given leg.
 ///
 /// ```no_run
-/// legLen(5, 3)
+/// legLen(hypotenuse = 5, leg = 3)
 /// ```
 #[stdlib {
     name = "legLen",
@@ -322,7 +322,7 @@ pub async fn leg_angle_x(_exec_state: &mut ExecState, args: Args) -> Result<KclV
 /// Compute the angle of the given leg for x.
 ///
 /// ```no_run
-/// legAngX(5, 3)
+/// legAngX(hypotenuse = 5, leg = 3)
 /// ```
 #[stdlib {
     name = "legAngX",
@@ -349,7 +349,7 @@ pub async fn leg_angle_y(_exec_state: &mut ExecState, args: Args) -> Result<KclV
 /// Compute the angle of the given leg for y.
 ///
 /// ```no_run
-/// legAngY(5, 3)
+/// legAngY(hypotenuse = 5, leg = 3)
 /// ```
 #[stdlib {
     name = "legAngY",

@@ -316,11 +316,11 @@ part001 = startSketchOn(XY)
   |> angledLine(angle = angleToMatchLengthY(seg01, myVar3, %), endAbsoluteY = myVar3) // ln-angledLineToY-yAbsolute should use angleToMatchLengthY to get angle
   |> line(end = [
        min(segLen(seg01), myVar),
-       legLen(segLen(seg01), myVar)
+       legLen(hypotenuse = segLen(seg01), leg = myVar)
      ]) // ln-should use legLen for y
   |> line(end = [
        min(segLen(seg01), myVar),
-       -legLen(segLen(seg01), myVar)
+       -legLen(hypotenuse = segLen(seg01), leg = myVar)
      ]) // ln-legLen but negative
   |> angledLine(angle = -112, length = segLen(seg01)) // ln-should become angledLine
   |> angledLine(angle = myVar, length = segLen(seg01)) // ln-use segLen for second arg
@@ -329,11 +329,11 @@ part001 = startSketchOn(XY)
   |> angledLine(angle = legAngX(segLen(seg01), myVar), lengthX = min(segLen(seg01), myVar)) // ln-should use legAngX to calculate angle
   |> angledLine(angle = 180 + legAngX(segLen(seg01), myVar), lengthX = min(segLen(seg01), myVar)) // ln-same as above but should have + 180 to match original quadrant
   |> line(end = [
-       legLen(segLen(seg01), myVar),
+       legLen(hypotenuse = segLen(seg01), leg = myVar),
        min(segLen(seg01), myVar)
      ]) // ln-legLen again but yRelative
   |> line(end = [
-       -legLen(segLen(seg01), myVar),
+       -legLen(hypotenuse = segLen(seg01), leg = myVar),
        min(segLen(seg01), myVar)
      ]) // ln-negative legLen yRelative
   |> angledLine(angle = 58, length = segLen(seg01)) // ln-angledLineOfYLength-free should become angledLine
