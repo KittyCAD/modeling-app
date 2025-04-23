@@ -960,9 +960,6 @@ pub enum PlaneData {
         /// What should the plane’s Y axis be?
         #[serde(rename = "yAxis")]
         y_axis: Point3d,
-        /// The z-axis (normal).
-        #[serde(rename = "zAxis")]
-        z_axis: Point3d,
     },
 }
 
@@ -1229,7 +1226,6 @@ async fn start_sketch_on_face(
         // TODO: get this from the extrude plane data.
         x_axis: solid.sketch.on.x_axis(),
         y_axis: solid.sketch.on.y_axis(),
-        z_axis: solid.sketch.on.z_axis(),
         units: solid.units,
         solid,
         meta: vec![args.source_range.into()],
@@ -1247,49 +1243,18 @@ async fn make_sketch_plane_from_orientation(
     let clobber = false;
     let size = LengthUnit(60.0);
     let hide = Some(true);
-    match data {
-        PlaneData::XY | PlaneData::NegXY | PlaneData::XZ | PlaneData::NegXZ | PlaneData::YZ | PlaneData::NegYZ => {
-            // TODO: ignoring the default planes here since we already created them, breaks the
-            // front end for the feature tree which is stupid and we should fix it.
-            let x_axis = match data {
-                PlaneData::NegXY => Point3d::new(-1.0, 0.0, 0.0, UnitLen::Mm),
-                PlaneData::NegXZ => Point3d::new(1.0, 0.0, 0.0, UnitLen::Mm),
-                PlaneData::NegYZ => Point3d::new(0.0, -1.0, 0.0, UnitLen::Mm),
-                _ => plane.x_axis,
-            };
-            args.batch_modeling_cmd(
-                plane.id,
-                ModelingCmd::from(mcmd::MakePlane {
-                    clobber,
-                    origin: plane.origin.into(),
-                    size,
-                    x_axis: x_axis.into(),
-                    y_axis: plane.y_axis.into(),
-                    hide,
-                }),
-            )
-            .await?;
-        }
-        PlaneData::Plane {
-            origin,
-            x_axis,
-            y_axis,
-            z_axis: _,
-        } => {
-            args.batch_modeling_cmd(
-                plane.id,
-                ModelingCmd::from(mcmd::MakePlane {
-                    clobber,
-                    origin: origin.into(),
-                    size,
-                    x_axis: x_axis.into(),
-                    y_axis: y_axis.into(),
-                    hide,
-                }),
-            )
-            .await?;
-        }
-    }
+    args.batch_modeling_cmd(
+        plane.id,
+        ModelingCmd::from(mcmd::MakePlane {
+            clobber,
+            origin: plane.origin.into(),
+            size,
+            x_axis: plane.x_axis.into(),
+            y_axis: plane.y_axis.into(),
+            hide,
+        }),
+    )
+    .await?;
 
     Ok(Box::new(plane))
 }
@@ -1384,7 +1349,8 @@ pub(crate) async fn inner_start_profile_at(
                 adjust_camera: false,
                 planar_normal: if let SketchSurface::Plane(plane) = &sketch_surface {
                     // We pass in the normal for the plane here.
-                    Some(plane.z_axis.into())
+                    let normal = plane.x_axis.cross(&plane.y_axis);
+                    Some(normal.into())
                 } else {
                     None
                 },

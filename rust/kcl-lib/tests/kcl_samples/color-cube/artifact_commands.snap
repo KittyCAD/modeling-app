@@ -157,7 +157,7 @@ description: Artifact commands color-cube.kcl
         "z": 0.0
       },
       "x_axis": {
-        "x": 1.0,
+        "x": -1.0,
         "y": 0.0,
         "z": 0.0
       },
@@ -1610,7 +1610,7 @@ description: Artifact commands color-cube.kcl
       "planar_normal": {
         "x": 0.0,
         "y": 1.0,
-        "z": 0.0
+        "z": -0.0
       }
     }
   },
@@ -1729,7 +1729,7 @@ description: Artifact commands color-cube.kcl
       "planar_normal": {
         "x": 0.0,
         "y": 1.0,
-        "z": 0.0
+        "z": -0.0
       }
     }
   },

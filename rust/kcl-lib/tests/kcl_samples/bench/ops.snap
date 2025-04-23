@@ -519,7 +519,7 @@ description: Operations executed bench.kcl
       "offset": {
         "value": {
           "type": "Number",
-          "value": 28.0,
+          "value": -28.0,
           "ty": {
             "type": "Default",
             "len": {
@@ -1210,7 +1210,7 @@ description: Operations executed bench.kcl
       "name": "armRest",
       "functionSourceRange": [
         3739,
-        3927,
+        3928,
         6
       ],
       "unlabeledArg": null,
@@ -1379,7 +1379,7 @@ description: Operations executed bench.kcl
       "name": "armRest",
       "functionSourceRange": [
         3739,
-        3927,
+        3928,
         6
       ],
       "unlabeledArg": null,

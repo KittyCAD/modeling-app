@@ -108,7 +108,7 @@ description: Variables in memory after executing neg_xz_plane.kcl
             }
           },
           "xAxis": {
-            "x": 1.0,
+            "x": -1.0,
             "y": 0.0,
             "z": 0.0,
             "units": {
@@ -119,14 +119,6 @@ description: Variables in memory after executing neg_xz_plane.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Mm"
-            }
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": 1.0,
-            "z": 0.0,
             "units": {
               "type": "Mm"
             }

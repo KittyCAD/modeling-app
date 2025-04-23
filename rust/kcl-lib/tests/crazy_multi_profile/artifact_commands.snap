@@ -969,7 +969,7 @@ description: Artifact commands crazy_multi_profile.kcl
       "planar_normal": {
         "x": 0.0,
         "y": 1.0,
-        "z": 0.0
+        "z": -0.0
       }
     }
   },
@@ -1046,7 +1046,7 @@ description: Artifact commands crazy_multi_profile.kcl
       "planar_normal": {
         "x": 0.0,
         "y": 1.0,
-        "z": 0.0
+        "z": -0.0
       }
     }
   },
@@ -1148,7 +1148,7 @@ description: Artifact commands crazy_multi_profile.kcl
       "planar_normal": {
         "x": 0.0,
         "y": 1.0,
-        "z": 0.0
+        "z": -0.0
       }
     }
   },
@@ -1250,7 +1250,7 @@ description: Artifact commands crazy_multi_profile.kcl
       "planar_normal": {
         "x": 0.0,
         "y": 1.0,
-        "z": 0.0
+        "z": -0.0
       }
     }
   },
@@ -1326,7 +1326,7 @@ description: Artifact commands crazy_multi_profile.kcl
       "planar_normal": {
         "x": 0.0,
         "y": 1.0,
-        "z": 0.0
+        "z": -0.0
       }
     }
   },
@@ -1445,7 +1445,7 @@ description: Artifact commands crazy_multi_profile.kcl
       "planar_normal": {
         "x": 0.0,
         "y": 1.0,
-        "z": 0.0
+        "z": -0.0
       }
     }
   },

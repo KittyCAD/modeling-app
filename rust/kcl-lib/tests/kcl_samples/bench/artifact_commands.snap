@@ -35,7 +35,7 @@ description: Artifact commands bench.kcl
     "command": {
       "type": "make_plane",
       "origin": {
-        "x": -28.0,
+        "x": 28.0,
         "y": 0.0,
         "z": 0.0
       },
@@ -74,7 +74,7 @@ description: Artifact commands bench.kcl
     "command": {
       "type": "make_plane",
       "origin": {
-        "x": 28.0,
+        "x": -28.0,
         "y": 0.0,
         "z": 0.0
       },
@@ -1994,7 +1994,7 @@ description: Artifact commands bench.kcl
       "animated": false,
       "adjust_camera": false,
       "planar_normal": {
-        "x": -1.0,
+        "x": 1.0,
         "y": 0.0,
         "z": 0.0
       }
@@ -2385,7 +2385,7 @@ description: Artifact commands bench.kcl
       "animated": false,
       "adjust_camera": false,
       "planar_normal": {
-        "x": -1.0,
+        "x": 1.0,
         "y": 0.0,
         "z": 0.0
       }
@@ -2836,7 +2836,7 @@ description: Artifact commands bench.kcl
       "animated": false,
       "adjust_camera": false,
       "planar_normal": {
-        "x": -1.0,
+        "x": 1.0,
         "y": 0.0,
         "z": 0.0
       }
@@ -3227,7 +3227,7 @@ description: Artifact commands bench.kcl
       "animated": false,
       "adjust_camera": false,
       "planar_normal": {
-        "x": -1.0,
+        "x": 1.0,
         "y": 0.0,
         "z": 0.0
       }
@@ -7414,7 +7414,7 @@ description: Artifact commands bench.kcl
     "command": {
       "type": "make_plane",
       "origin": {
-        "x": -28.0,
+        "x": 28.0,
         "y": 0.0,
         "z": 0.0
       },
@@ -7457,7 +7457,7 @@ description: Artifact commands bench.kcl
       "animated": false,
       "adjust_camera": false,
       "planar_normal": {
-        "x": -1.0,
+        "x": 1.0,
         "y": 0.0,
         "z": 0.0
       }
@@ -7543,7 +7543,7 @@ description: Artifact commands bench.kcl
         "z": 0.0
       },
       "x_axis": {
-        "x": 1.0,
+        "x": -1.0,
         "y": 0.0,
         "z": 0.0
       },
@@ -7583,7 +7583,7 @@ description: Artifact commands bench.kcl
       "planar_normal": {
         "x": 0.0,
         "y": 1.0,
-        "z": 0.0
+        "z": -0.0
       }
     }
   },
@@ -7601,7 +7601,7 @@ description: Artifact commands bench.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 28.0,
+        "x": -28.0,
         "y": 32.4,
         "z": 0.0
       }
@@ -7907,7 +7907,7 @@ description: Artifact commands bench.kcl
     "command": {
       "type": "make_plane",
       "origin": {
-        "x": 28.0,
+        "x": -28.0,
         "y": 0.0,
         "z": 0.0
       },
@@ -7950,7 +7950,7 @@ description: Artifact commands bench.kcl
       "animated": false,
       "adjust_camera": false,
       "planar_normal": {
-        "x": -1.0,
+        "x": 1.0,
         "y": 0.0,
         "z": 0.0
       }
@@ -8036,7 +8036,7 @@ description: Artifact commands bench.kcl
         "z": 0.0
       },
       "x_axis": {
-        "x": 1.0,
+        "x": -1.0,
         "y": 0.0,
         "z": 0.0
       },
@@ -8076,7 +8076,7 @@ description: Artifact commands bench.kcl
       "planar_normal": {
         "x": 0.0,
         "y": 1.0,
-        "z": 0.0
+        "z": -0.0
       }
     }
   },
@@ -8094,7 +8094,7 @@ description: Artifact commands bench.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": -28.0,
+        "x": 28.0,
         "y": 32.4,
         "z": 0.0
       }
