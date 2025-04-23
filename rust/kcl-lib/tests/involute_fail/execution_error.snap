@@ -1,0 +1,13 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Error from executing involute_fail.kcl
+---
+KCL Semantic error
+
+  × semantic: endRadius: 10 cannot be less than startRadius: 12
+   ╭─[4:4]
+ 3 │ |> xLine(length = 5)
+ 4 │ |> involuteCircular(startRadius = 12, endRadius = 10, angle = 0, reverse = true)
+   ·    ──────────────────────────────────────┬──────────────────────────────────────
+   ·                                          ╰── tests/involute_fail/input.kcl
+   ╰────
