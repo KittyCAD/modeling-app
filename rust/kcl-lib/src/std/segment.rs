@@ -604,6 +604,7 @@ pub async fn angle_to_match_length_x(exec_state: &mut ExecState, args: Args) -> 
 /// ```
 #[stdlib {
     name = "angleToMatchLengthX",
+    deprecated = true,
 }]
 fn inner_angle_to_match_length_x(
     tag: &TagIdentifier,
@@ -668,6 +669,7 @@ pub async fn angle_to_match_length_y(exec_state: &mut ExecState, args: Args) -> 
 /// ```
 #[stdlib {
     name = "angleToMatchLengthY",
+    deprecated = true,
 }]
 fn inner_angle_to_match_length_y(
     tag: &TagIdentifier,
