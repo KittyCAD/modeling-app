@@ -1,7 +1,6 @@
 import { Toolbar } from '@src/Toolbar'
 import { CommandBarOpenButton } from '@src/components/CommandBarOpenButton'
 import ProjectSidebarMenu from '@src/components/ProjectSidebarMenu'
-import { RefreshButton } from '@src/components/RefreshButton'
 import UserSidebarMenu from '@src/components/UserSidebarMenu'
 import { isDesktop } from '@src/lib/isDesktop'
 import { type IndexLoaderData } from '@src/lib/types'
@@ -51,12 +50,7 @@ export const AppHeader = ({
       </div>
       <div className="flex items-center gap-1 py-1 ml-auto">
         {/* If there are children, show them, otherwise show User menu */}
-        {children || (
-          <>
-            <CommandBarOpenButton />
-            <RefreshButton />
-          </>
-        )}
+        {children || <CommandBarOpenButton />}
         <UserSidebarMenu user={user} />
       </div>
     </header>

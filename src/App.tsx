@@ -28,7 +28,7 @@ import { PATHS } from '@src/lib/paths'
 import { takeScreenshotOfVideoStreamCanvas } from '@src/lib/screenshot'
 import { sceneInfra } from '@src/lib/singletons'
 import { maybeWriteToDisk } from '@src/lib/telemetry'
-import { type IndexLoaderData } from '@src/lib/types'
+import type { IndexLoaderData } from '@src/lib/types'
 import {
   engineStreamActor,
   useSettings,
@@ -37,6 +37,8 @@ import {
 import { commandBarActor } from '@src/machines/commandBarMachine'
 import { EngineStreamTransition } from '@src/machines/engineStreamMachine'
 import { onboardingPaths } from '@src/routes/Onboarding/paths'
+import { CommandBarOpenButton } from './components/CommandBarOpenButton'
+import { ShareButton } from './components/ShareButton'
 
 // CYCLIC REF
 sceneInfra.camControls.engineStreamActor = engineStreamActor
@@ -146,10 +148,13 @@ export function App() {
   return (
     <div className="relative h-full flex flex-col" ref={ref}>
       <AppHeader
-        className={'transition-opacity transition-duration-75 ' + paneOpacity}
+        className={`transition-opacity transition-duration-75 ${paneOpacity}`}
         project={{ project, file }}
         enableMenu={true}
-      />
+      >
+        <CommandBarOpenButton />
+        <ShareButton />
+      </AppHeader>
       <ModalContainer />
       <ModelingSidebar paneOpacity={paneOpacity} />
       <EngineStream pool={pool} authToken={authToken} />

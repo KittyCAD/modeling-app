@@ -89,18 +89,6 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
         }),
     },
     {
-      id: 'share-link',
-      title: 'Share part via Zoo link',
-      sidebarName: 'Share part via Zoo link',
-      icon: 'link',
-      keybinding: 'Mod + Alt + S',
-      action: () =>
-        commandBarActor.send({
-          type: 'Find and select command',
-          data: { name: 'share-file-link', groupId: 'code' },
-        }),
-    },
-    {
       id: 'export',
       title: 'Export part',
       sidebarName: 'Export part',
