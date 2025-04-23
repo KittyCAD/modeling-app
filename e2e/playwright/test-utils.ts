@@ -1036,6 +1036,10 @@ export function testsInputPath(fileName: string): string {
   return path.join('rust', 'kcl-lib', 'tests', 'inputs', fileName)
 }
 
+export function kclSamplesPath(fileName: string): string {
+  return path.join('public', 'kcl-samples', fileName)
+}
+
 export async function doAndWaitForImageDiff(
   page: Page,
   fn: () => Promise<unknown>,
