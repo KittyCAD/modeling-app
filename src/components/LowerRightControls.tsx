@@ -2,7 +2,6 @@ import { Link, useLocation } from 'react-router-dom'
 
 import { CustomIcon } from '@src/components/CustomIcon'
 import { HelpMenu } from '@src/components/HelpMenu'
-import { ModelStateIndicator } from '@src/components/ModelStateIndicator'
 import { NetworkHealthIndicator } from '@src/components/NetworkHealthIndicator'
 import { NetworkMachineIndicator } from '@src/components/NetworkMachineIndicator'
 import Tooltip from '@src/components/Tooltip'

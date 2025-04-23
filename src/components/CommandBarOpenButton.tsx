@@ -2,7 +2,7 @@ import { COMMAND_PALETTE_HOTKEY } from '@src/components/CommandBar/CommandBar'
 import usePlatform from '@src/hooks/usePlatform'
 import { hotkeyDisplay } from '@src/lib/hotkeyWrapper'
 import { commandBarActor } from '@src/machines/commandBarMachine'
-import { CustomIcon } from './CustomIcon'
+import { CustomIcon } from '@src/components/CustomIcon'
 
 export function CommandBarOpenButton() {
   const platform = usePlatform()

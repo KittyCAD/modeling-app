@@ -37,8 +37,8 @@ import {
 import { commandBarActor } from '@src/machines/commandBarMachine'
 import { EngineStreamTransition } from '@src/machines/engineStreamMachine'
 import { onboardingPaths } from '@src/routes/Onboarding/paths'
-import { CommandBarOpenButton } from './components/CommandBarOpenButton'
-import { ShareButton } from './components/ShareButton'
+import { CommandBarOpenButton } from '@src/components/CommandBarOpenButton'
+import { ShareButton } from '@src/components/ShareButton'
 
 // CYCLIC REF
 sceneInfra.camControls.engineStreamActor = engineStreamActor
