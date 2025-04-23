@@ -35,7 +35,7 @@ legAngX(
 ### Examples
 
 ```js
-legAngX(5, 3)
+legAngX(hypotenuse = 5, leg = 3)
 ```
 
 

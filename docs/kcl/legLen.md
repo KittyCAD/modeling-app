@@ -35,7 +35,7 @@ legLen(
 ### Examples
 
 ```js
-legLen(5, 3)
+legLen(hypotenuse = 5, leg = 3)
 ```
 
 
