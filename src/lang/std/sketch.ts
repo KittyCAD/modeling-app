@@ -5,6 +5,7 @@ import type { Node } from '@rust/kcl-lib/bindings/Node'
 import {
   ARG_ANGLE,
   ARG_ANGLE_END,
+  ARG_AT,
   ARG_ANGLE_START,
   ARG_CIRCLE_CENTER,
   ARG_RADIUS,
@@ -37,9 +38,7 @@ import {
 import type { ToolTip } from '@src/lang/langHelpers'
 import { toolTips } from '@src/lang/langHelpers'
 import {
-  mutateArrExp,
   mutateKwArg,
-  mutateObjExpProp,
   removeKwArgs,
   splitPathAtPipeExpression,
 } from '@src/lang/modifyAst'
@@ -2956,7 +2955,7 @@ export const updateStartProfileAtArgs: SketchLineHelper['updateArgs'] = ({
   if (input.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR
   const { to } = input
   const _node = { ...node }
-  const nodeMeta = getNodeFromPath<CallExpression>(_node, pathToNode)
+  const nodeMeta = getNodeFromPath<CallExpressionKw>(_node, pathToNode)
   if (err(nodeMeta)) {
     console.error(nodeMeta)
     return {
@@ -2989,8 +2988,7 @@ export const updateStartProfileAtArgs: SketchLineHelper['updateArgs'] = ({
     createLiteral(roundOff(to[1])),
   ])
 
-  mutateArrExp(callExpression.arguments?.[0], toArrExp) ||
-    mutateObjExpProp(callExpression.arguments?.[0], toArrExp, 'to')
+  mutateKwArg(ARG_AT, callExpression, toArrExp)
   return {
     modifiedAst: _node,
     pathToNode,
