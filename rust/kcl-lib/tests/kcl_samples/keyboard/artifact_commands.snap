@@ -33,14 +33,6 @@ description: Artifact commands keyboard.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "set_scene_units",
-      "unit": "in"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
       "type": "make_plane",
       "origin": {
         "x": 0.0,
@@ -114,8 +106,8 @@ description: Artifact commands keyboard.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -0.14,
-          "y": 0.68,
+          "x": -3.556,
+          "y": 17.272,
           "z": 0.0
         },
         "relative": true
@@ -131,8 +123,8 @@ description: Artifact commands keyboard.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.856,
-          "y": 0.719,
+          "x": 148.743,
+          "y": 18.2633,
           "z": 0.0
         },
         "relative": true
@@ -148,7 +140,7 @@ description: Artifact commands keyboard.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.13,
+          "x": 130.302,
           "y": 0.0,
           "z": 0.0
         },
@@ -203,7 +195,7 @@ description: Artifact commands keyboard.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 13.6,
+      "distance": 345.44,
       "faces": null,
       "opposite": "None"
     }
@@ -356,7 +348,7 @@ description: Artifact commands keyboard.kcl
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
-      "radius": 0.6,
+      "radius": 15.239999999999998,
       "tolerance": 0.0000001,
       "cut_type": "fillet"
     }
@@ -368,7 +360,7 @@ description: Artifact commands keyboard.kcl
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
-      "radius": 0.6,
+      "radius": 15.239999999999998,
       "tolerance": 0.0000001,
       "cut_type": "fillet"
     }
@@ -380,7 +372,7 @@ description: Artifact commands keyboard.kcl
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
-      "radius": 0.6,
+      "radius": 15.239999999999998,
       "tolerance": 0.0000001,
       "cut_type": "fillet"
     }
@@ -392,7 +384,7 @@ description: Artifact commands keyboard.kcl
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
-      "radius": 0.6,
+      "radius": 15.239999999999998,
       "tolerance": 0.0000001,
       "cut_type": "fillet"
     }
@@ -423,8 +415,8 @@ description: Artifact commands keyboard.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 1.15,
-        "y": 0.75,
+        "x": 29.209999999999997,
+        "y": 19.049999999999997,
         "z": 0.0
       }
     }
@@ -445,10 +437,10 @@ description: Artifact commands keyboard.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": 0.75,
-          "y": 0.75
+          "x": 19.05,
+          "y": 19.05
         },
-        "radius": 0.4,
+        "radius": 10.16,
         "start": {
           "unit": "degrees",
           "value": 0.0
@@ -495,8 +487,8 @@ description: Artifact commands keyboard.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 4.800000000000001,
-        "y": 0.75,
+        "x": 121.92000000000002,
+        "y": 19.049999999999997,
         "z": 0.0
       }
     }
@@ -517,10 +509,10 @@ description: Artifact commands keyboard.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": 4.4,
-          "y": 0.75
+          "x": 111.76,
+          "y": 19.05
         },
-        "radius": 0.4,
+        "radius": 10.16,
         "start": {
           "unit": "degrees",
           "value": 0.0
@@ -567,8 +559,8 @@ description: Artifact commands keyboard.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 1.13,
-        "y": 12.85,
+        "x": 28.701999999999995,
+        "y": 326.39,
         "z": 0.0
       }
     }
@@ -589,10 +581,10 @@ description: Artifact commands keyboard.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": 0.73,
-          "y": 12.85
+          "x": 18.542,
+          "y": 326.39
         },
-        "radius": 0.4,
+        "radius": 10.16,
         "start": {
           "unit": "degrees",
           "value": 0.0
@@ -639,8 +631,8 @@ description: Artifact commands keyboard.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 4.800000000000001,
-        "y": 12.85,
+        "x": 121.92000000000002,
+        "y": 326.39,
         "z": 0.0
       }
     }
@@ -661,10 +653,10 @@ description: Artifact commands keyboard.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": 4.4,
-          "y": 12.85
+          "x": 111.76,
+          "y": 326.39
         },
-        "radius": 0.4,
+        "radius": 10.16,
         "start": {
           "unit": "degrees",
           "value": 0.0
@@ -703,7 +695,7 @@ description: Artifact commands keyboard.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 0.15,
+      "distance": 3.8099999999999996,
       "faces": null,
       "opposite": "None"
     }
@@ -770,7 +762,7 @@ description: Artifact commands keyboard.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 0.15,
+      "distance": 3.8099999999999996,
       "faces": null,
       "opposite": "None"
     }
@@ -837,7 +829,7 @@ description: Artifact commands keyboard.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 0.15,
+      "distance": 3.8099999999999996,
       "faces": null,
       "opposite": "None"
     }
@@ -904,7 +896,7 @@ description: Artifact commands keyboard.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 0.15,
+      "distance": 3.8099999999999996,
       "faces": null,
       "opposite": "None"
     }
@@ -961,7 +953,7 @@ description: Artifact commands keyboard.kcl
       "origin": {
         "x": 0.0,
         "y": 0.0,
-        "z": 0.7
+        "z": 17.779999999999998
       },
       "x_axis": {
         "x": 1.0,
@@ -1008,8 +1000,8 @@ description: Artifact commands keyboard.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 0.3,
-        "y": 0.30000000000000004,
+        "x": 7.619999999999999,
+        "y": 7.620000000000001,
         "z": 0.0
       }
     }
@@ -1030,10 +1022,10 @@ description: Artifact commands keyboard.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": 0.4,
-          "y": 0.3
+          "x": 10.16,
+          "y": 7.62
         },
-        "radius": 0.1,
+        "radius": 2.54,
         "start": {
           "unit": "degrees",
           "value": 180.0
@@ -1055,7 +1047,7 @@ description: Artifact commands keyboard.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 0.9,
+          "x": 22.86,
           "y": 0.0,
           "z": 0.0
         },
@@ -1071,7 +1063,7 @@ description: Artifact commands keyboard.kcl
       "path": "[uuid]",
       "segment": {
         "type": "tangential_arc",
-        "radius": 0.1,
+        "radius": 2.54,
         "offset": {
           "unit": "degrees",
           "value": 90.0
@@ -1089,7 +1081,7 @@ description: Artifact commands keyboard.kcl
         "type": "line",
         "end": {
           "x": 0.0,
-          "y": 0.6,
+          "y": 15.24,
           "z": 0.0
         },
         "relative": true
@@ -1104,7 +1096,7 @@ description: Artifact commands keyboard.kcl
       "path": "[uuid]",
       "segment": {
         "type": "tangential_arc",
-        "radius": 0.1,
+        "radius": 2.54,
         "offset": {
           "unit": "degrees",
           "value": 90.0
@@ -1121,7 +1113,7 @@ description: Artifact commands keyboard.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -0.9,
+          "x": -22.86,
           "y": -0.0,
           "z": 0.0
         },
@@ -1137,7 +1129,7 @@ description: Artifact commands keyboard.kcl
       "path": "[uuid]",
       "segment": {
         "type": "tangential_arc",
-        "radius": 0.1,
+        "radius": 2.54,
         "offset": {
           "unit": "degrees",
           "value": 90.0
@@ -1154,8 +1146,8 @@ description: Artifact commands keyboard.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 0.3,
-          "y": 0.3,
+          "x": 7.62,
+          "y": 7.62,
           "z": 0.0
         },
         "relative": false
@@ -1192,7 +1184,7 @@ description: Artifact commands keyboard.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 0.1,
+      "distance": 2.54,
       "faces": null,
       "opposite": "None"
     }
@@ -1416,7 +1408,7 @@ description: Artifact commands keyboard.kcl
       "origin": {
         "x": 0.0,
         "y": 0.0,
-        "z": 0.7
+        "z": 17.779999999999998
       },
       "x_axis": {
         "x": 1.0,
@@ -1463,8 +1455,8 @@ description: Artifact commands keyboard.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 1.5,
-        "y": 0.30000000000000004,
+        "x": 38.099999999999994,
+        "y": 7.620000000000001,
         "z": 0.0
       }
     }
@@ -1485,10 +1477,10 @@ description: Artifact commands keyboard.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": 1.6,
-          "y": 0.3
+          "x": 40.64,
+          "y": 7.62
         },
-        "radius": 0.1,
+        "radius": 2.54,
         "start": {
           "unit": "degrees",
           "value": 180.0
@@ -1510,7 +1502,7 @@ description: Artifact commands keyboard.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 0.6,
+          "x": 15.24,
           "y": 0.0,
           "z": 0.0
         },
@@ -1526,7 +1518,7 @@ description: Artifact commands keyboard.kcl
       "path": "[uuid]",
       "segment": {
         "type": "tangential_arc",
-        "radius": 0.1,
+        "radius": 2.54,
         "offset": {
           "unit": "degrees",
           "value": 90.0
@@ -1544,7 +1536,7 @@ description: Artifact commands keyboard.kcl
         "type": "line",
         "end": {
           "x": 0.0,
-          "y": 0.6,
+          "y": 15.24,
           "z": 0.0
         },
         "relative": true
@@ -1559,7 +1551,7 @@ description: Artifact commands keyboard.kcl
       "path": "[uuid]",
       "segment": {
         "type": "tangential_arc",
-        "radius": 0.1,
+        "radius": 2.54,
         "offset": {
           "unit": "degrees",
           "value": 90.0
@@ -1576,7 +1568,7 @@ description: Artifact commands keyboard.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -0.6,
+          "x": -15.24,
           "y": -0.0,
           "z": 0.0
         },
@@ -1592,7 +1584,7 @@ description: Artifact commands keyboard.kcl
       "path": "[uuid]",
       "segment": {
         "type": "tangential_arc",
-        "radius": 0.1,
+        "radius": 2.54,
         "offset": {
           "unit": "degrees",
           "value": 90.0
@@ -1609,8 +1601,8 @@ description: Artifact commands keyboard.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 1.5,
-          "y": 0.3,
+          "x": 38.1,
+          "y": 7.62,
           "z": 0.0
         },
         "relative": false
@@ -1647,7 +1639,7 @@ description: Artifact commands keyboard.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 0.1,
+      "distance": 2.54,
       "faces": null,
       "opposite": "None"
     }
@@ -1864,7 +1856,7 @@ description: Artifact commands keyboard.kcl
         [
           {
             "translate": {
-              "x": 0.9,
+              "x": 22.86,
               "y": 0.0,
               "z": 0.0
             },
@@ -1893,7 +1885,7 @@ description: Artifact commands keyboard.kcl
         [
           {
             "translate": {
-              "x": 1.8,
+              "x": 45.72,
               "y": 0.0,
               "z": 0.0
             },
@@ -1930,7 +1922,7 @@ description: Artifact commands keyboard.kcl
       "origin": {
         "x": 0.0,
         "y": 0.0,
-        "z": 0.7
+        "z": 17.779999999999998
       },
       "x_axis": {
         "x": 1.0,
@@ -1977,8 +1969,8 @@ description: Artifact commands keyboard.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 4.2,
-        "y": 0.30000000000000004,
+        "x": 106.67999999999999,
+        "y": 7.620000000000001,
         "z": 0.0
       }
     }
@@ -1999,10 +1991,10 @@ description: Artifact commands keyboard.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": 4.3,
-          "y": 0.3
+          "x": 109.22,
+          "y": 7.62
         },
-        "radius": 0.1,
+        "radius": 2.54,
         "start": {
           "unit": "degrees",
           "value": 180.0
@@ -2024,7 +2016,7 @@ description: Artifact commands keyboard.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.0,
+          "x": 127.0,
           "y": 0.0,
           "z": 0.0
         },
@@ -2040,7 +2032,7 @@ description: Artifact commands keyboard.kcl
       "path": "[uuid]",
       "segment": {
         "type": "tangential_arc",
-        "radius": 0.1,
+        "radius": 2.54,
         "offset": {
           "unit": "degrees",
           "value": 90.0
@@ -2058,7 +2050,7 @@ description: Artifact commands keyboard.kcl
         "type": "line",
         "end": {
           "x": 0.0,
-          "y": 0.6,
+          "y": 15.24,
           "z": 0.0
         },
         "relative": true
@@ -2073,7 +2065,7 @@ description: Artifact commands keyboard.kcl
       "path": "[uuid]",
       "segment": {
         "type": "tangential_arc",
-        "radius": 0.1,
+        "radius": 2.54,
         "offset": {
           "unit": "degrees",
           "value": 90.0
@@ -2090,7 +2082,7 @@ description: Artifact commands keyboard.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -5.0,
+          "x": -127.0,
           "y": -0.0,
           "z": 0.0
         },
@@ -2106,7 +2098,7 @@ description: Artifact commands keyboard.kcl
       "path": "[uuid]",
       "segment": {
         "type": "tangential_arc",
-        "radius": 0.1,
+        "radius": 2.54,
         "offset": {
           "unit": "degrees",
           "value": 90.0
@@ -2123,8 +2115,8 @@ description: Artifact commands keyboard.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 4.2,
-          "y": 0.3,
+          "x": 106.68,
+          "y": 7.62,
           "z": 0.0
         },
         "relative": false
@@ -2161,7 +2153,7 @@ description: Artifact commands keyboard.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 0.1,
+      "distance": 2.54,
       "faces": null,
       "opposite": "None"
     }
@@ -2385,7 +2377,7 @@ description: Artifact commands keyboard.kcl
       "origin": {
         "x": 0.0,
         "y": 0.0,
-        "z": 0.7
+        "z": 17.779999999999998
       },
       "x_axis": {
         "x": 1.0,
@@ -2432,8 +2424,8 @@ description: Artifact commands keyboard.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 9.5,
-        "y": 0.30000000000000004,
+        "x": 241.29999999999998,
+        "y": 7.620000000000001,
         "z": 0.0
       }
     }
@@ -2454,10 +2446,10 @@ description: Artifact commands keyboard.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": 9.6,
-          "y": 0.3
+          "x": 243.84,
+          "y": 7.62
         },
-        "radius": 0.1,
+        "radius": 2.54,
         "start": {
           "unit": "degrees",
           "value": 180.0
@@ -2479,7 +2471,7 @@ description: Artifact commands keyboard.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 0.6,
+          "x": 15.24,
           "y": 0.0,
           "z": 0.0
         },
@@ -2495,7 +2487,7 @@ description: Artifact commands keyboard.kcl
       "path": "[uuid]",
       "segment": {
         "type": "tangential_arc",
-        "radius": 0.1,
+        "radius": 2.54,
         "offset": {
           "unit": "degrees",
           "value": 90.0
@@ -2513,7 +2505,7 @@ description: Artifact commands keyboard.kcl
         "type": "line",
         "end": {
           "x": 0.0,
-          "y": 0.6,
+          "y": 15.24,
           "z": 0.0
         },
         "relative": true
@@ -2528,7 +2520,7 @@ description: Artifact commands keyboard.kcl
       "path": "[uuid]",
       "segment": {
         "type": "tangential_arc",
-        "radius": 0.1,
+        "radius": 2.54,
         "offset": {
           "unit": "degrees",
           "value": 90.0
@@ -2545,7 +2537,7 @@ description: Artifact commands keyboard.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -0.6,
+          "x": -15.24,
           "y": -0.0,
           "z": 0.0
         },
@@ -2561,7 +2553,7 @@ description: Artifact commands keyboard.kcl
       "path": "[uuid]",
       "segment": {
         "type": "tangential_arc",
-        "radius": 0.1,
+        "radius": 2.54,
         "offset": {
           "unit": "degrees",
           "value": 90.0
@@ -2578,8 +2570,8 @@ description: Artifact commands keyboard.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 9.5,
-          "y": 0.3,
+          "x": 241.3,
+          "y": 7.62,
           "z": 0.0
         },
         "relative": false
@@ -2616,7 +2608,7 @@ description: Artifact commands keyboard.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 0.1,
+      "distance": 2.54,
       "faces": null,
       "opposite": "None"
     }
@@ -2840,7 +2832,7 @@ description: Artifact commands keyboard.kcl
       "origin": {
         "x": 0.0,
         "y": 0.0,
-        "z": 0.7
+        "z": 17.779999999999998
       },
       "x_axis": {
         "x": 1.0,
@@ -2887,8 +2879,8 @@ description: Artifact commands keyboard.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 10.4,
-        "y": 0.30000000000000004,
+        "x": 264.15999999999997,
+        "y": 7.620000000000001,
         "z": 0.0
       }
     }
@@ -2909,10 +2901,10 @@ description: Artifact commands keyboard.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": 10.5,
-          "y": 0.3
+          "x": 266.7,
+          "y": 7.62
         },
-        "radius": 0.1,
+        "radius": 2.54,
         "start": {
           "unit": "degrees",
           "value": 180.0
@@ -2934,7 +2926,7 @@ description: Artifact commands keyboard.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 0.6,
+          "x": 15.24,
           "y": 0.0,
           "z": 0.0
         },
@@ -2950,7 +2942,7 @@ description: Artifact commands keyboard.kcl
       "path": "[uuid]",
       "segment": {
         "type": "tangential_arc",
-        "radius": 0.1,
+        "radius": 2.54,
         "offset": {
           "unit": "degrees",
           "value": 90.0
@@ -2968,7 +2960,7 @@ description: Artifact commands keyboard.kcl
         "type": "line",
         "end": {
           "x": 0.0,
-          "y": 0.6,
+          "y": 15.24,
           "z": 0.0
         },
         "relative": true
@@ -2983,7 +2975,7 @@ description: Artifact commands keyboard.kcl
       "path": "[uuid]",
       "segment": {
         "type": "tangential_arc",
-        "radius": 0.1,
+        "radius": 2.54,
         "offset": {
           "unit": "degrees",
           "value": 90.0
@@ -3000,7 +2992,7 @@ description: Artifact commands keyboard.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -0.6,
+          "x": -15.24,
           "y": -0.0,
           "z": 0.0
         },
@@ -3016,7 +3008,7 @@ description: Artifact commands keyboard.kcl
       "path": "[uuid]",
       "segment": {
         "type": "tangential_arc",
-        "radius": 0.1,
+        "radius": 2.54,
         "offset": {
           "unit": "degrees",
           "value": 90.0
@@ -3033,8 +3025,8 @@ description: Artifact commands keyboard.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 10.4,
-          "y": 0.3,
+          "x": 264.16,
+          "y": 7.62,
           "z": 0.0
         },
         "relative": false
@@ -3071,7 +3063,7 @@ description: Artifact commands keyboard.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 0.1,
+      "distance": 2.54,
       "faces": null,
       "opposite": "None"
     }
@@ -3295,7 +3287,7 @@ description: Artifact commands keyboard.kcl
       "origin": {
         "x": 0.0,
         "y": 0.0,
-        "z": 0.7
+        "z": 17.779999999999998
       },
       "x_axis": {
         "x": 1.0,
@@ -3342,8 +3334,8 @@ description: Artifact commands keyboard.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 11.3,
-        "y": 0.30000000000000004,
+        "x": 287.02,
+        "y": 7.620000000000001,
         "z": 0.0
       }
     }
@@ -3364,10 +3356,10 @@ description: Artifact commands keyboard.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": 11.4,
-          "y": 0.3
+          "x": 289.56,
+          "y": 7.62
         },
-        "radius": 0.1,
+        "radius": 2.54,
         "start": {
           "unit": "degrees",
           "value": 180.0
@@ -3389,7 +3381,7 @@ description: Artifact commands keyboard.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 0.9,
+          "x": 22.86,
           "y": 0.0,
           "z": 0.0
         },
@@ -3405,7 +3397,7 @@ description: Artifact commands keyboard.kcl
       "path": "[uuid]",
       "segment": {
         "type": "tangential_arc",
-        "radius": 0.1,
+        "radius": 2.54,
         "offset": {
           "unit": "degrees",
           "value": 90.0
@@ -3423,7 +3415,7 @@ description: Artifact commands keyboard.kcl
         "type": "line",
         "end": {
           "x": 0.0,
-          "y": 0.6,
+          "y": 15.24,
           "z": 0.0
         },
         "relative": true
@@ -3438,7 +3430,7 @@ description: Artifact commands keyboard.kcl
       "path": "[uuid]",
       "segment": {
         "type": "tangential_arc",
-        "radius": 0.1,
+        "radius": 2.54,
         "offset": {
           "unit": "degrees",
           "value": 90.0
@@ -3455,7 +3447,7 @@ description: Artifact commands keyboard.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -0.9,
+          "x": -22.86,
           "y": -0.0,
           "z": 0.0
         },
@@ -3471,7 +3463,7 @@ description: Artifact commands keyboard.kcl
       "path": "[uuid]",
       "segment": {
         "type": "tangential_arc",
-        "radius": 0.1,
+        "radius": 2.54,
         "offset": {
           "unit": "degrees",
           "value": 90.0
@@ -3488,8 +3480,8 @@ description: Artifact commands keyboard.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 11.3,
-          "y": 0.3,
+          "x": 287.02,
+          "y": 7.62,
           "z": 0.0
         },
         "relative": false
@@ -3526,7 +3518,7 @@ description: Artifact commands keyboard.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 0.1,
+      "distance": 2.54,
       "faces": null,
       "opposite": "None"
     }
@@ -3750,7 +3742,7 @@ description: Artifact commands keyboard.kcl
       "origin": {
         "x": 0.0,
         "y": 0.0,
-        "z": 0.7
+        "z": 17.779999999999998
       },
       "x_axis": {
         "x": 1.0,
@@ -3797,8 +3789,8 @@ description: Artifact commands keyboard.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 12.5,
-        "y": 0.30000000000000004,
+        "x": 317.5,
+        "y": 7.620000000000001,
         "z": 0.0
       }
     }
@@ -3819,10 +3811,10 @@ description: Artifact commands keyboard.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": 12.6,
-          "y": 0.3
+          "x": 320.04,
+          "y": 7.62
         },
-        "radius": 0.1,
+        "radius": 2.54,
         "start": {
           "unit": "degrees",
           "value": 180.0
@@ -3844,7 +3836,7 @@ description: Artifact commands keyboard.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 0.6,
+          "x": 15.24,
           "y": 0.0,
           "z": 0.0
         },
@@ -3860,7 +3852,7 @@ description: Artifact commands keyboard.kcl
       "path": "[uuid]",
       "segment": {
         "type": "tangential_arc",
-        "radius": 0.1,
+        "radius": 2.54,
         "offset": {
           "unit": "degrees",
           "value": 90.0
@@ -3878,7 +3870,7 @@ description: Artifact commands keyboard.kcl
         "type": "line",
         "end": {
           "x": 0.0,
-          "y": 0.6,
+          "y": 15.24,
           "z": 0.0
         },
         "relative": true
@@ -3893,7 +3885,7 @@ description: Artifact commands keyboard.kcl
       "path": "[uuid]",
       "segment": {
         "type": "tangential_arc",
-        "radius": 0.1,
+        "radius": 2.54,
         "offset": {
           "unit": "degrees",
           "value": 90.0
@@ -3910,7 +3902,7 @@ description: Artifact commands keyboard.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -0.6,
+          "x": -15.24,
           "y": -0.0,
           "z": 0.0
         },
@@ -3926,7 +3918,7 @@ description: Artifact commands keyboard.kcl
       "path": "[uuid]",
       "segment": {
         "type": "tangential_arc",
-        "radius": 0.1,
+        "radius": 2.54,
         "offset": {
           "unit": "degrees",
           "value": 90.0
@@ -3943,8 +3935,8 @@ description: Artifact commands keyboard.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 12.5,
-          "y": 0.3,
+          "x": 317.5,
+          "y": 7.62,
           "z": 0.0
         },
         "relative": false
@@ -3981,7 +3973,7 @@ description: Artifact commands keyboard.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 0.1,
+      "distance": 2.54,
       "faces": null,
       "opposite": "None"
     }
@@ -4205,7 +4197,7 @@ description: Artifact commands keyboard.kcl
       "origin": {
         "x": 0.0,
         "y": 0.0,
-        "z": 0.7
+        "z": 17.779999999999998
       },
       "x_axis": {
         "x": 1.0,
@@ -4252,8 +4244,8 @@ description: Artifact commands keyboard.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 0.30000000000000004,
-        "y": 1.2000000000000002,
+        "x": 7.620000000000001,
+        "y": 30.480000000000004,
         "z": 0.0
       }
     }
@@ -4274,10 +4266,10 @@ description: Artifact commands keyboard.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": 0.4,
-          "y": 1.2
+          "x": 10.16,
+          "y": 30.48
         },
-        "radius": 0.1,
+        "radius": 2.54,
         "start": {
           "unit": "degrees",
           "value": 180.0
@@ -4299,7 +4291,7 @@ description: Artifact commands keyboard.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 1.5,
+          "x": 38.1,
           "y": 0.0,
           "z": 0.0
         },
@@ -4315,7 +4307,7 @@ description: Artifact commands keyboard.kcl
       "path": "[uuid]",
       "segment": {
         "type": "tangential_arc",
-        "radius": 0.1,
+        "radius": 2.54,
         "offset": {
           "unit": "degrees",
           "value": 90.0
@@ -4333,7 +4325,7 @@ description: Artifact commands keyboard.kcl
         "type": "line",
         "end": {
           "x": 0.0,
-          "y": 0.6,
+          "y": 15.24,
           "z": 0.0
         },
         "relative": true
@@ -4348,7 +4340,7 @@ description: Artifact commands keyboard.kcl
       "path": "[uuid]",
       "segment": {
         "type": "tangential_arc",
-        "radius": 0.1,
+        "radius": 2.54,
         "offset": {
           "unit": "degrees",
           "value": 90.0
@@ -4365,7 +4357,7 @@ description: Artifact commands keyboard.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -1.5,
+          "x": -38.1,
           "y": -0.0,
           "z": 0.0
         },
@@ -4381,7 +4373,7 @@ description: Artifact commands keyboard.kcl
       "path": "[uuid]",
       "segment": {
         "type": "tangential_arc",
-        "radius": 0.1,
+        "radius": 2.54,
         "offset": {
           "unit": "degrees",
           "value": 90.0
@@ -4398,8 +4390,8 @@ description: Artifact commands keyboard.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 0.3,
-          "y": 1.2,
+          "x": 7.62,
+          "y": 30.48,
           "z": 0.0
         },
         "relative": false
@@ -4436,7 +4428,7 @@ description: Artifact commands keyboard.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 0.1,
+      "distance": 2.54,
       "faces": null,
       "opposite": "None"
     }
@@ -4660,7 +4652,7 @@ description: Artifact commands keyboard.kcl
       "origin": {
         "x": 0.0,
         "y": 0.0,
-        "z": 0.7
+        "z": 17.779999999999998
       },
       "x_axis": {
         "x": 1.0,
@@ -4707,8 +4699,8 @@ description: Artifact commands keyboard.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 2.1,
-        "y": 1.2000000000000002,
+        "x": 53.339999999999996,
+        "y": 30.480000000000004,
         "z": 0.0
       }
     }
@@ -4729,10 +4721,10 @@ description: Artifact commands keyboard.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": 2.2,
-          "y": 1.2
+          "x": 55.88,
+          "y": 30.48
         },
-        "radius": 0.1,
+        "radius": 2.54,
         "start": {
           "unit": "degrees",
           "value": 180.0
@@ -4754,7 +4746,7 @@ description: Artifact commands keyboard.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 0.6,
+          "x": 15.24,
           "y": 0.0,
           "z": 0.0
         },
@@ -4770,7 +4762,7 @@ description: Artifact commands keyboard.kcl
       "path": "[uuid]",
       "segment": {
         "type": "tangential_arc",
-        "radius": 0.1,
+        "radius": 2.54,
         "offset": {
           "unit": "degrees",
           "value": 90.0
@@ -4788,7 +4780,7 @@ description: Artifact commands keyboard.kcl
         "type": "line",
         "end": {
           "x": 0.0,
-          "y": 0.6,
+          "y": 15.24,
           "z": 0.0
         },
         "relative": true
@@ -4803,7 +4795,7 @@ description: Artifact commands keyboard.kcl
       "path": "[uuid]",
       "segment": {
         "type": "tangential_arc",
-        "radius": 0.1,
+        "radius": 2.54,
         "offset": {
           "unit": "degrees",
           "value": 90.0
@@ -4820,7 +4812,7 @@ description: Artifact commands keyboard.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -0.6,
+          "x": -15.24,
           "y": -0.0,
           "z": 0.0
         },
@@ -4836,7 +4828,7 @@ description: Artifact commands keyboard.kcl
       "path": "[uuid]",
       "segment": {
         "type": "tangential_arc",
-        "radius": 0.1,
+        "radius": 2.54,
         "offset": {
           "unit": "degrees",
           "value": 90.0
@@ -4853,8 +4845,8 @@ description: Artifact commands keyboard.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 2.1,
-          "y": 1.2,
+          "x": 53.34,
+          "y": 30.48,
           "z": 0.0
         },
         "relative": false
@@ -4891,7 +4883,7 @@ description: Artifact commands keyboard.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 0.1,
+      "distance": 2.54,
       "faces": null,
       "opposite": "None"
     }
@@ -5108,7 +5100,7 @@ description: Artifact commands keyboard.kcl
         [
           {
             "translate": {
-              "x": 0.9,
+              "x": 22.86,
               "y": 0.0,
               "z": 0.0
             },
@@ -5137,7 +5129,7 @@ description: Artifact commands keyboard.kcl
         [
           {
             "translate": {
-              "x": 1.8,
+              "x": 45.72,
               "y": 0.0,
               "z": 0.0
             },
@@ -5166,7 +5158,7 @@ description: Artifact commands keyboard.kcl
         [
           {
             "translate": {
-              "x": 2.7,
+              "x": 68.58,
               "y": 0.0,
               "z": 0.0
             },
@@ -5195,7 +5187,7 @@ description: Artifact commands keyboard.kcl
         [
           {
             "translate": {
-              "x": 3.6,
+              "x": 91.44,
               "y": 0.0,
               "z": 0.0
             },
@@ -5224,7 +5216,7 @@ description: Artifact commands keyboard.kcl
         [
           {
             "translate": {
-              "x": 4.5,
+              "x": 114.3,
               "y": 0.0,
               "z": 0.0
             },
@@ -5253,7 +5245,7 @@ description: Artifact commands keyboard.kcl
         [
           {
             "translate": {
-              "x": 5.4,
+              "x": 137.16,
               "y": 0.0,
               "z": 0.0
             },
@@ -5282,7 +5274,7 @@ description: Artifact commands keyboard.kcl
         [
           {
             "translate": {
-              "x": 6.3,
+              "x": 160.01999999999998,
               "y": 0.0,
               "z": 0.0
             },
@@ -5311,7 +5303,7 @@ description: Artifact commands keyboard.kcl
         [
           {
             "translate": {
-              "x": 7.2,
+              "x": 182.88,
               "y": 0.0,
               "z": 0.0
             },
@@ -5340,7 +5332,7 @@ description: Artifact commands keyboard.kcl
         [
           {
             "translate": {
-              "x": 8.1,
+              "x": 205.74,
               "y": 0.0,
               "z": 0.0
             },
@@ -5377,7 +5369,7 @@ description: Artifact commands keyboard.kcl
       "origin": {
         "x": 0.0,
         "y": 0.0,
-        "z": 0.7
+        "z": 17.779999999999998
       },
       "x_axis": {
         "x": 1.0,
@@ -5424,8 +5416,8 @@ description: Artifact commands keyboard.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 11.1,
-        "y": 1.2000000000000002,
+        "x": 281.94,
+        "y": 30.480000000000004,
         "z": 0.0
       }
     }
@@ -5446,10 +5438,10 @@ description: Artifact commands keyboard.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": 11.2,
-          "y": 1.2
+          "x": 284.48,
+          "y": 30.48
         },
-        "radius": 0.1,
+        "radius": 2.54,
         "start": {
           "unit": "degrees",
           "value": 180.0
@@ -5471,7 +5463,7 @@ description: Artifact commands keyboard.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 2.0,
+          "x": 50.8,
           "y": 0.0,
           "z": 0.0
         },
@@ -5487,7 +5479,7 @@ description: Artifact commands keyboard.kcl
       "path": "[uuid]",
       "segment": {
         "type": "tangential_arc",
-        "radius": 0.1,
+        "radius": 2.54,
         "offset": {
           "unit": "degrees",
           "value": 90.0
@@ -5505,7 +5497,7 @@ description: Artifact commands keyboard.kcl
         "type": "line",
         "end": {
           "x": 0.0,
-          "y": 0.6,
+          "y": 15.24,
           "z": 0.0
         },
         "relative": true
@@ -5520,7 +5512,7 @@ description: Artifact commands keyboard.kcl
       "path": "[uuid]",
       "segment": {
         "type": "tangential_arc",
-        "radius": 0.1,
+        "radius": 2.54,
         "offset": {
           "unit": "degrees",
           "value": 90.0
@@ -5537,7 +5529,7 @@ description: Artifact commands keyboard.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -2.0,
+          "x": -50.8,
           "y": -0.0,
           "z": 0.0
         },
@@ -5553,7 +5545,7 @@ description: Artifact commands keyboard.kcl
       "path": "[uuid]",
       "segment": {
         "type": "tangential_arc",
-        "radius": 0.1,
+        "radius": 2.54,
         "offset": {
           "unit": "degrees",
           "value": 90.0
@@ -5570,8 +5562,8 @@ description: Artifact commands keyboard.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 11.1,
-          "y": 1.2,
+          "x": 281.94,
+          "y": 30.48,
           "z": 0.0
         },
         "relative": false
@@ -5608,7 +5600,7 @@ description: Artifact commands keyboard.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 0.1,
+      "distance": 2.54,
       "faces": null,
       "opposite": "None"
     }
@@ -5832,7 +5824,7 @@ description: Artifact commands keyboard.kcl
       "origin": {
         "x": 0.0,
         "y": 0.0,
-        "z": 0.7
+        "z": 17.779999999999998
       },
       "x_axis": {
         "x": 1.0,
@@ -5879,8 +5871,8 @@ description: Artifact commands keyboard.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 0.30000000000000004,
-        "y": 2.1,
+        "x": 7.620000000000001,
+        "y": 53.339999999999996,
         "z": 0.0
       }
     }
@@ -5901,10 +5893,10 @@ description: Artifact commands keyboard.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": 0.4,
-          "y": 2.1
+          "x": 10.16,
+          "y": 53.34
         },
-        "radius": 0.1,
+        "radius": 2.54,
         "start": {
           "unit": "degrees",
           "value": 180.0
@@ -5926,7 +5918,7 @@ description: Artifact commands keyboard.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 1.0,
+          "x": 25.4,
           "y": 0.0,
           "z": 0.0
         },
@@ -5942,7 +5934,7 @@ description: Artifact commands keyboard.kcl
       "path": "[uuid]",
       "segment": {
         "type": "tangential_arc",
-        "radius": 0.1,
+        "radius": 2.54,
         "offset": {
           "unit": "degrees",
           "value": 90.0
@@ -5960,7 +5952,7 @@ description: Artifact commands keyboard.kcl
         "type": "line",
         "end": {
           "x": 0.0,
-          "y": 0.6,
+          "y": 15.24,
           "z": 0.0
         },
         "relative": true
@@ -5975,7 +5967,7 @@ description: Artifact commands keyboard.kcl
       "path": "[uuid]",
       "segment": {
         "type": "tangential_arc",
-        "radius": 0.1,
+        "radius": 2.54,
         "offset": {
           "unit": "degrees",
           "value": 90.0
@@ -5992,7 +5984,7 @@ description: Artifact commands keyboard.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -1.0,
+          "x": -25.4,
           "y": -0.0,
           "z": 0.0
         },
@@ -6008,7 +6000,7 @@ description: Artifact commands keyboard.kcl
       "path": "[uuid]",
       "segment": {
         "type": "tangential_arc",
-        "radius": 0.1,
+        "radius": 2.54,
         "offset": {
           "unit": "degrees",
           "value": 90.0
@@ -6025,8 +6017,8 @@ description: Artifact commands keyboard.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 0.3,
-          "y": 2.1,
+          "x": 7.62,
+          "y": 53.34,
           "z": 0.0
         },
         "relative": false
@@ -6063,7 +6055,7 @@ description: Artifact commands keyboard.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 0.1,
+      "distance": 2.54,
       "faces": null,
       "opposite": "None"
     }
@@ -6287,7 +6279,7 @@ description: Artifact commands keyboard.kcl
       "origin": {
         "x": 0.0,
         "y": 0.0,
-        "z": 0.7
+        "z": 17.779999999999998
       },
       "x_axis": {
         "x": 1.0,
@@ -6334,8 +6326,8 @@ description: Artifact commands keyboard.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 1.6,
-        "y": 2.1,
+        "x": 40.64,
+        "y": 53.339999999999996,
         "z": 0.0
       }
     }
@@ -6356,10 +6348,10 @@ description: Artifact commands keyboard.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": 1.7,
-          "y": 2.1
+          "x": 43.18,
+          "y": 53.34
         },
-        "radius": 0.1,
+        "radius": 2.54,
         "start": {
           "unit": "degrees",
           "value": 180.0
@@ -6381,7 +6373,7 @@ description: Artifact commands keyboard.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 0.6,
+          "x": 15.24,
           "y": 0.0,
           "z": 0.0
         },
@@ -6397,7 +6389,7 @@ description: Artifact commands keyboard.kcl
       "path": "[uuid]",
       "segment": {
         "type": "tangential_arc",
-        "radius": 0.1,
+        "radius": 2.54,
         "offset": {
           "unit": "degrees",
           "value": 90.0
@@ -6415,7 +6407,7 @@ description: Artifact commands keyboard.kcl
         "type": "line",
         "end": {
           "x": 0.0,
-          "y": 0.6,
+          "y": 15.24,
           "z": 0.0
         },
         "relative": true
@@ -6430,7 +6422,7 @@ description: Artifact commands keyboard.kcl
       "path": "[uuid]",
       "segment": {
         "type": "tangential_arc",
-        "radius": 0.1,
+        "radius": 2.54,
         "offset": {
           "unit": "degrees",
           "value": 90.0
@@ -6447,7 +6439,7 @@ description: Artifact commands keyboard.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -0.6,
+          "x": -15.24,
           "y": -0.0,
           "z": 0.0
         },
@@ -6463,7 +6455,7 @@ description: Artifact commands keyboard.kcl
       "path": "[uuid]",
       "segment": {
         "type": "tangential_arc",
-        "radius": 0.1,
+        "radius": 2.54,
         "offset": {
           "unit": "degrees",
           "value": 90.0
@@ -6480,8 +6472,8 @@ description: Artifact commands keyboard.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 1.6,
-          "y": 2.1,
+          "x": 40.64,
+          "y": 53.34,
           "z": 0.0
         },
         "relative": false
@@ -6518,7 +6510,7 @@ description: Artifact commands keyboard.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 0.1,
+      "distance": 2.54,
       "faces": null,
       "opposite": "None"
     }
@@ -6735,7 +6727,7 @@ description: Artifact commands keyboard.kcl
         [
           {
             "translate": {
-              "x": 0.9,
+              "x": 22.86,
               "y": 0.0,
               "z": 0.0
             },
@@ -6764,7 +6756,7 @@ description: Artifact commands keyboard.kcl
         [
           {
             "translate": {
-              "x": 1.8,
+              "x": 45.72,
               "y": 0.0,
               "z": 0.0
             },
@@ -6793,7 +6785,7 @@ description: Artifact commands keyboard.kcl
         [
           {
             "translate": {
-              "x": 2.7,
+              "x": 68.58,
               "y": 0.0,
               "z": 0.0
             },
@@ -6822,7 +6814,7 @@ description: Artifact commands keyboard.kcl
         [
           {
             "translate": {
-              "x": 3.6,
+              "x": 91.44,
               "y": 0.0,
               "z": 0.0
             },
@@ -6851,7 +6843,7 @@ description: Artifact commands keyboard.kcl
         [
           {
             "translate": {
-              "x": 4.5,
+              "x": 114.3,
               "y": 0.0,
               "z": 0.0
             },
@@ -6880,7 +6872,7 @@ description: Artifact commands keyboard.kcl
         [
           {
             "translate": {
-              "x": 5.4,
+              "x": 137.16,
               "y": 0.0,
               "z": 0.0
             },
@@ -6909,7 +6901,7 @@ description: Artifact commands keyboard.kcl
         [
           {
             "translate": {
-              "x": 6.3,
+              "x": 160.01999999999998,
               "y": 0.0,
               "z": 0.0
             },
@@ -6938,7 +6930,7 @@ description: Artifact commands keyboard.kcl
         [
           {
             "translate": {
-              "x": 7.2,
+              "x": 182.88,
               "y": 0.0,
               "z": 0.0
             },
@@ -6967,7 +6959,7 @@ description: Artifact commands keyboard.kcl
         [
           {
             "translate": {
-              "x": 8.1,
+              "x": 205.74,
               "y": 0.0,
               "z": 0.0
             },
@@ -6996,7 +6988,7 @@ description: Artifact commands keyboard.kcl
         [
           {
             "translate": {
-              "x": 9.0,
+              "x": 228.6,
               "y": 0.0,
               "z": 0.0
             },
@@ -7033,7 +7025,7 @@ description: Artifact commands keyboard.kcl
       "origin": {
         "x": 0.0,
         "y": 0.0,
-        "z": 0.7
+        "z": 17.779999999999998
       },
       "x_axis": {
         "x": 1.0,
@@ -7080,8 +7072,8 @@ description: Artifact commands keyboard.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 11.5,
-        "y": 2.1,
+        "x": 292.09999999999997,
+        "y": 53.339999999999996,
         "z": 0.0
       }
     }
@@ -7102,10 +7094,10 @@ description: Artifact commands keyboard.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": 11.6,
-          "y": 2.1
+          "x": 294.64,
+          "y": 53.34
         },
-        "radius": 0.1,
+        "radius": 2.54,
         "start": {
           "unit": "degrees",
           "value": 180.0
@@ -7127,7 +7119,7 @@ description: Artifact commands keyboard.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 1.6,
+          "x": 40.64,
           "y": 0.0,
           "z": 0.0
         },
@@ -7143,7 +7135,7 @@ description: Artifact commands keyboard.kcl
       "path": "[uuid]",
       "segment": {
         "type": "tangential_arc",
-        "radius": 0.1,
+        "radius": 2.54,
         "offset": {
           "unit": "degrees",
           "value": 90.0
@@ -7161,7 +7153,7 @@ description: Artifact commands keyboard.kcl
         "type": "line",
         "end": {
           "x": 0.0,
-          "y": 0.6,
+          "y": 15.24,
           "z": 0.0
         },
         "relative": true
@@ -7176,7 +7168,7 @@ description: Artifact commands keyboard.kcl
       "path": "[uuid]",
       "segment": {
         "type": "tangential_arc",
-        "radius": 0.1,
+        "radius": 2.54,
         "offset": {
           "unit": "degrees",
           "value": 90.0
@@ -7193,7 +7185,7 @@ description: Artifact commands keyboard.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -1.6,
+          "x": -40.64,
           "y": -0.0,
           "z": 0.0
         },
@@ -7209,7 +7201,7 @@ description: Artifact commands keyboard.kcl
       "path": "[uuid]",
       "segment": {
         "type": "tangential_arc",
-        "radius": 0.1,
+        "radius": 2.54,
         "offset": {
           "unit": "degrees",
           "value": 90.0
@@ -7226,8 +7218,8 @@ description: Artifact commands keyboard.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 11.5,
-          "y": 2.1,
+          "x": 292.1,
+          "y": 53.34,
           "z": 0.0
         },
         "relative": false
@@ -7264,7 +7256,7 @@ description: Artifact commands keyboard.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 0.1,
+      "distance": 2.54,
       "faces": null,
       "opposite": "None"
     }
@@ -7488,7 +7480,7 @@ description: Artifact commands keyboard.kcl
       "origin": {
         "x": 0.0,
         "y": 0.0,
-        "z": 0.7
+        "z": 17.779999999999998
       },
       "x_axis": {
         "x": 1.0,
@@ -7535,8 +7527,8 @@ description: Artifact commands keyboard.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 0.30000000000000004,
-        "y": 3.0000000000000004,
+        "x": 7.620000000000001,
+        "y": 76.2,
         "z": 0.0
       }
     }
@@ -7557,10 +7549,10 @@ description: Artifact commands keyboard.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": 0.4,
-          "y": 3.0
+          "x": 10.16,
+          "y": 76.2
         },
-        "radius": 0.1,
+        "radius": 2.54,
         "start": {
           "unit": "degrees",
           "value": 180.0
@@ -7582,7 +7574,7 @@ description: Artifact commands keyboard.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 0.7,
+          "x": 17.78,
           "y": 0.0,
           "z": 0.0
         },
@@ -7598,7 +7590,7 @@ description: Artifact commands keyboard.kcl
       "path": "[uuid]",
       "segment": {
         "type": "tangential_arc",
-        "radius": 0.1,
+        "radius": 2.54,
         "offset": {
           "unit": "degrees",
           "value": 90.0
@@ -7616,7 +7608,7 @@ description: Artifact commands keyboard.kcl
         "type": "line",
         "end": {
           "x": 0.0,
-          "y": 0.6,
+          "y": 15.24,
           "z": 0.0
         },
         "relative": true
@@ -7631,7 +7623,7 @@ description: Artifact commands keyboard.kcl
       "path": "[uuid]",
       "segment": {
         "type": "tangential_arc",
-        "radius": 0.1,
+        "radius": 2.54,
         "offset": {
           "unit": "degrees",
           "value": 90.0
@@ -7648,7 +7640,7 @@ description: Artifact commands keyboard.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -0.7,
+          "x": -17.78,
           "y": -0.0,
           "z": 0.0
         },
@@ -7664,7 +7656,7 @@ description: Artifact commands keyboard.kcl
       "path": "[uuid]",
       "segment": {
         "type": "tangential_arc",
-        "radius": 0.1,
+        "radius": 2.54,
         "offset": {
           "unit": "degrees",
           "value": 90.0
@@ -7681,8 +7673,8 @@ description: Artifact commands keyboard.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 0.3,
-          "y": 3.0,
+          "x": 7.62,
+          "y": 76.2,
           "z": 0.0
         },
         "relative": false
@@ -7719,7 +7711,7 @@ description: Artifact commands keyboard.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 0.1,
+      "distance": 2.54,
       "faces": null,
       "opposite": "None"
     }
@@ -7943,7 +7935,7 @@ description: Artifact commands keyboard.kcl
       "origin": {
         "x": 0.0,
         "y": 0.0,
-        "z": 0.7
+        "z": 17.779999999999998
       },
       "x_axis": {
         "x": 1.0,
@@ -7990,8 +7982,8 @@ description: Artifact commands keyboard.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 1.3,
-        "y": 3.0000000000000004,
+        "x": 33.019999999999996,
+        "y": 76.2,
         "z": 0.0
       }
     }
@@ -8012,10 +8004,10 @@ description: Artifact commands keyboard.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": 1.4,
-          "y": 3.0
+          "x": 35.56,
+          "y": 76.2
         },
-        "radius": 0.1,
+        "radius": 2.54,
         "start": {
           "unit": "degrees",
           "value": 180.0
@@ -8037,7 +8029,7 @@ description: Artifact commands keyboard.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 0.6,
+          "x": 15.24,
           "y": 0.0,
           "z": 0.0
         },
@@ -8053,7 +8045,7 @@ description: Artifact commands keyboard.kcl
       "path": "[uuid]",
       "segment": {
         "type": "tangential_arc",
-        "radius": 0.1,
+        "radius": 2.54,
         "offset": {
           "unit": "degrees",
           "value": 90.0
@@ -8071,7 +8063,7 @@ description: Artifact commands keyboard.kcl
         "type": "line",
         "end": {
           "x": 0.0,
-          "y": 0.6,
+          "y": 15.24,
           "z": 0.0
         },
         "relative": true
@@ -8086,7 +8078,7 @@ description: Artifact commands keyboard.kcl
       "path": "[uuid]",
       "segment": {
         "type": "tangential_arc",
-        "radius": 0.1,
+        "radius": 2.54,
         "offset": {
           "unit": "degrees",
           "value": 90.0
@@ -8103,7 +8095,7 @@ description: Artifact commands keyboard.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -0.6,
+          "x": -15.24,
           "y": -0.0,
           "z": 0.0
         },
@@ -8119,7 +8111,7 @@ description: Artifact commands keyboard.kcl
       "path": "[uuid]",
       "segment": {
         "type": "tangential_arc",
-        "radius": 0.1,
+        "radius": 2.54,
         "offset": {
           "unit": "degrees",
           "value": 90.0
@@ -8136,8 +8128,8 @@ description: Artifact commands keyboard.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 1.3,
-          "y": 3.0,
+          "x": 33.02,
+          "y": 76.2,
           "z": 0.0
         },
         "relative": false
@@ -8174,7 +8166,7 @@ description: Artifact commands keyboard.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 0.1,
+      "distance": 2.54,
       "faces": null,
       "opposite": "None"
     }
@@ -8391,7 +8383,7 @@ description: Artifact commands keyboard.kcl
         [
           {
             "translate": {
-              "x": 0.9,
+              "x": 22.86,
               "y": 0.0,
               "z": 0.0
             },
@@ -8420,7 +8412,7 @@ description: Artifact commands keyboard.kcl
         [
           {
             "translate": {
-              "x": 1.8,
+              "x": 45.72,
               "y": 0.0,
               "z": 0.0
             },
@@ -8449,7 +8441,7 @@ description: Artifact commands keyboard.kcl
         [
           {
             "translate": {
-              "x": 2.7,
+              "x": 68.58,
               "y": 0.0,
               "z": 0.0
             },
@@ -8478,7 +8470,7 @@ description: Artifact commands keyboard.kcl
         [
           {
             "translate": {
-              "x": 3.6,
+              "x": 91.44,
               "y": 0.0,
               "z": 0.0
             },
@@ -8507,7 +8499,7 @@ description: Artifact commands keyboard.kcl
         [
           {
             "translate": {
-              "x": 4.5,
+              "x": 114.3,
               "y": 0.0,
               "z": 0.0
             },
@@ -8536,7 +8528,7 @@ description: Artifact commands keyboard.kcl
         [
           {
             "translate": {
-              "x": 5.4,
+              "x": 137.16,
               "y": 0.0,
               "z": 0.0
             },
@@ -8565,7 +8557,7 @@ description: Artifact commands keyboard.kcl
         [
           {
             "translate": {
-              "x": 6.3,
+              "x": 160.01999999999998,
               "y": 0.0,
               "z": 0.0
             },
@@ -8594,7 +8586,7 @@ description: Artifact commands keyboard.kcl
         [
           {
             "translate": {
-              "x": 7.2,
+              "x": 182.88,
               "y": 0.0,
               "z": 0.0
             },
@@ -8623,7 +8615,7 @@ description: Artifact commands keyboard.kcl
         [
           {
             "translate": {
-              "x": 8.1,
+              "x": 205.74,
               "y": 0.0,
               "z": 0.0
             },
@@ -8652,7 +8644,7 @@ description: Artifact commands keyboard.kcl
         [
           {
             "translate": {
-              "x": 9.0,
+              "x": 228.6,
               "y": 0.0,
               "z": 0.0
             },
@@ -8681,7 +8673,7 @@ description: Artifact commands keyboard.kcl
         [
           {
             "translate": {
-              "x": 9.9,
+              "x": 251.45999999999998,
               "y": 0.0,
               "z": 0.0
             },
@@ -8718,7 +8710,7 @@ description: Artifact commands keyboard.kcl
       "origin": {
         "x": 0.0,
         "y": 0.0,
-        "z": 0.7
+        "z": 17.779999999999998
       },
       "x_axis": {
         "x": 1.0,
@@ -8765,8 +8757,8 @@ description: Artifact commands keyboard.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 12.100000000000001,
-        "y": 3.0000000000000004,
+        "x": 307.34000000000003,
+        "y": 76.2,
         "z": 0.0
       }
     }
@@ -8787,10 +8779,10 @@ description: Artifact commands keyboard.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": 12.2,
-          "y": 3.0
+          "x": 309.88,
+          "y": 76.2
         },
-        "radius": 0.1,
+        "radius": 2.54,
         "start": {
           "unit": "degrees",
           "value": 180.0
@@ -8812,7 +8804,7 @@ description: Artifact commands keyboard.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 1.0,
+          "x": 25.4,
           "y": 0.0,
           "z": 0.0
         },
@@ -8828,7 +8820,7 @@ description: Artifact commands keyboard.kcl
       "path": "[uuid]",
       "segment": {
         "type": "tangential_arc",
-        "radius": 0.1,
+        "radius": 2.54,
         "offset": {
           "unit": "degrees",
           "value": 90.0
@@ -8846,7 +8838,7 @@ description: Artifact commands keyboard.kcl
         "type": "line",
         "end": {
           "x": 0.0,
-          "y": 0.6,
+          "y": 15.24,
           "z": 0.0
         },
         "relative": true
@@ -8861,7 +8853,7 @@ description: Artifact commands keyboard.kcl
       "path": "[uuid]",
       "segment": {
         "type": "tangential_arc",
-        "radius": 0.1,
+        "radius": 2.54,
         "offset": {
           "unit": "degrees",
           "value": 90.0
@@ -8878,7 +8870,7 @@ description: Artifact commands keyboard.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -1.0,
+          "x": -25.4,
           "y": -0.0,
           "z": 0.0
         },
@@ -8894,7 +8886,7 @@ description: Artifact commands keyboard.kcl
       "path": "[uuid]",
       "segment": {
         "type": "tangential_arc",
-        "radius": 0.1,
+        "radius": 2.54,
         "offset": {
           "unit": "degrees",
           "value": 90.0
@@ -8911,8 +8903,8 @@ description: Artifact commands keyboard.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 12.1,
-          "y": 3.0,
+          "x": 307.34,
+          "y": 76.2,
           "z": 0.0
         },
         "relative": false
@@ -8949,7 +8941,7 @@ description: Artifact commands keyboard.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 0.1,
+      "distance": 2.54,
       "faces": null,
       "opposite": "None"
     }
@@ -9173,7 +9165,7 @@ description: Artifact commands keyboard.kcl
       "origin": {
         "x": 0.0,
         "y": 0.0,
-        "z": 0.7
+        "z": 17.779999999999998
       },
       "x_axis": {
         "x": 1.0,
@@ -9220,8 +9212,8 @@ description: Artifact commands keyboard.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 0.30000000000000004,
-        "y": 3.900000000000001,
+        "x": 7.620000000000001,
+        "y": 99.06000000000002,
         "z": 0.0
       }
     }
@@ -9242,10 +9234,10 @@ description: Artifact commands keyboard.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": 0.4,
-          "y": 3.9
+          "x": 10.16,
+          "y": 99.06
         },
-        "radius": 0.1,
+        "radius": 2.54,
         "start": {
           "unit": "degrees",
           "value": 180.0
@@ -9267,7 +9259,7 @@ description: Artifact commands keyboard.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 0.6,
+          "x": 15.24,
           "y": 0.0,
           "z": 0.0
         },
@@ -9283,7 +9275,7 @@ description: Artifact commands keyboard.kcl
       "path": "[uuid]",
       "segment": {
         "type": "tangential_arc",
-        "radius": 0.1,
+        "radius": 2.54,
         "offset": {
           "unit": "degrees",
           "value": 90.0
@@ -9301,7 +9293,7 @@ description: Artifact commands keyboard.kcl
         "type": "line",
         "end": {
           "x": 0.0,
-          "y": 0.6,
+          "y": 15.24,
           "z": 0.0
         },
         "relative": true
@@ -9316,7 +9308,7 @@ description: Artifact commands keyboard.kcl
       "path": "[uuid]",
       "segment": {
         "type": "tangential_arc",
-        "radius": 0.1,
+        "radius": 2.54,
         "offset": {
           "unit": "degrees",
           "value": 90.0
@@ -9333,7 +9325,7 @@ description: Artifact commands keyboard.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -0.6,
+          "x": -15.24,
           "y": -0.0,
           "z": 0.0
         },
@@ -9349,7 +9341,7 @@ description: Artifact commands keyboard.kcl
       "path": "[uuid]",
       "segment": {
         "type": "tangential_arc",
-        "radius": 0.1,
+        "radius": 2.54,
         "offset": {
           "unit": "degrees",
           "value": 90.0
@@ -9366,8 +9358,8 @@ description: Artifact commands keyboard.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 0.3,
-          "y": 3.9,
+          "x": 7.62,
+          "y": 99.06,
           "z": 0.0
         },
         "relative": false
@@ -9404,1721 +9396,7 @@ description: Artifact commands keyboard.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 0.1,
-      "faces": null,
-      "opposite": "None"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "object_bring_to_front",
-      "object_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_extrusion_face_info",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "object_set_material_params_pbr",
-      "object_id": "[uuid]",
-      "color": {
-        "r": 0.6901961,
-        "g": 0.6901961,
-        "b": 0.6901961,
-        "a": 100.0
-      },
-      "metalness": 0.0,
-      "roughness": 0.0,
-      "ambient_occlusion": 0.0
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "entity_linear_pattern_transform",
-      "entity_id": "[uuid]",
-      "transform": [],
-      "transforms": [
-        [
-          {
-            "translate": {
-              "x": 0.9,
-              "y": 0.0,
-              "z": 0.0
-            },
-            "scale": {
-              "x": 1.0,
-              "y": 1.0,
-              "z": 1.0
-            },
-            "rotation": {
-              "axis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0
-              },
-              "angle": {
-                "unit": "degrees",
-                "value": 0.0
-              },
-              "origin": {
-                "type": "local"
-              }
-            },
-            "replicate": true
-          }
-        ],
-        [
-          {
-            "translate": {
-              "x": 1.8,
-              "y": 0.0,
-              "z": 0.0
-            },
-            "scale": {
-              "x": 1.0,
-              "y": 1.0,
-              "z": 1.0
-            },
-            "rotation": {
-              "axis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0
-              },
-              "angle": {
-                "unit": "degrees",
-                "value": 0.0
-              },
-              "origin": {
-                "type": "local"
-              }
-            },
-            "replicate": true
-          }
-        ],
-        [
-          {
-            "translate": {
-              "x": 2.7,
-              "y": 0.0,
-              "z": 0.0
-            },
-            "scale": {
-              "x": 1.0,
-              "y": 1.0,
-              "z": 1.0
-            },
-            "rotation": {
-              "axis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0
-              },
-              "angle": {
-                "unit": "degrees",
-                "value": 0.0
-              },
-              "origin": {
-                "type": "local"
-              }
-            },
-            "replicate": true
-          }
-        ],
-        [
-          {
-            "translate": {
-              "x": 3.6,
-              "y": 0.0,
-              "z": 0.0
-            },
-            "scale": {
-              "x": 1.0,
-              "y": 1.0,
-              "z": 1.0
-            },
-            "rotation": {
-              "axis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0
-              },
-              "angle": {
-                "unit": "degrees",
-                "value": 0.0
-              },
-              "origin": {
-                "type": "local"
-              }
-            },
-            "replicate": true
-          }
-        ],
-        [
-          {
-            "translate": {
-              "x": 4.5,
-              "y": 0.0,
-              "z": 0.0
-            },
-            "scale": {
-              "x": 1.0,
-              "y": 1.0,
-              "z": 1.0
-            },
-            "rotation": {
-              "axis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0
-              },
-              "angle": {
-                "unit": "degrees",
-                "value": 0.0
-              },
-              "origin": {
-                "type": "local"
-              }
-            },
-            "replicate": true
-          }
-        ],
-        [
-          {
-            "translate": {
-              "x": 5.4,
-              "y": 0.0,
-              "z": 0.0
-            },
-            "scale": {
-              "x": 1.0,
-              "y": 1.0,
-              "z": 1.0
-            },
-            "rotation": {
-              "axis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0
-              },
-              "angle": {
-                "unit": "degrees",
-                "value": 0.0
-              },
-              "origin": {
-                "type": "local"
-              }
-            },
-            "replicate": true
-          }
-        ],
-        [
-          {
-            "translate": {
-              "x": 6.3,
-              "y": 0.0,
-              "z": 0.0
-            },
-            "scale": {
-              "x": 1.0,
-              "y": 1.0,
-              "z": 1.0
-            },
-            "rotation": {
-              "axis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0
-              },
-              "angle": {
-                "unit": "degrees",
-                "value": 0.0
-              },
-              "origin": {
-                "type": "local"
-              }
-            },
-            "replicate": true
-          }
-        ],
-        [
-          {
-            "translate": {
-              "x": 7.2,
-              "y": 0.0,
-              "z": 0.0
-            },
-            "scale": {
-              "x": 1.0,
-              "y": 1.0,
-              "z": 1.0
-            },
-            "rotation": {
-              "axis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0
-              },
-              "angle": {
-                "unit": "degrees",
-                "value": 0.0
-              },
-              "origin": {
-                "type": "local"
-              }
-            },
-            "replicate": true
-          }
-        ],
-        [
-          {
-            "translate": {
-              "x": 8.1,
-              "y": 0.0,
-              "z": 0.0
-            },
-            "scale": {
-              "x": 1.0,
-              "y": 1.0,
-              "z": 1.0
-            },
-            "rotation": {
-              "axis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0
-              },
-              "angle": {
-                "unit": "degrees",
-                "value": 0.0
-              },
-              "origin": {
-                "type": "local"
-              }
-            },
-            "replicate": true
-          }
-        ],
-        [
-          {
-            "translate": {
-              "x": 9.0,
-              "y": 0.0,
-              "z": 0.0
-            },
-            "scale": {
-              "x": 1.0,
-              "y": 1.0,
-              "z": 1.0
-            },
-            "rotation": {
-              "axis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0
-              },
-              "angle": {
-                "unit": "degrees",
-                "value": 0.0
-              },
-              "origin": {
-                "type": "local"
-              }
-            },
-            "replicate": true
-          }
-        ],
-        [
-          {
-            "translate": {
-              "x": 9.9,
-              "y": 0.0,
-              "z": 0.0
-            },
-            "scale": {
-              "x": 1.0,
-              "y": 1.0,
-              "z": 1.0
-            },
-            "rotation": {
-              "axis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0
-              },
-              "angle": {
-                "unit": "degrees",
-                "value": 0.0
-              },
-              "origin": {
-                "type": "local"
-              }
-            },
-            "replicate": true
-          }
-        ],
-        [
-          {
-            "translate": {
-              "x": 10.8,
-              "y": 0.0,
-              "z": 0.0
-            },
-            "scale": {
-              "x": 1.0,
-              "y": 1.0,
-              "z": 1.0
-            },
-            "rotation": {
-              "axis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0
-              },
-              "angle": {
-                "unit": "degrees",
-                "value": 0.0
-              },
-              "origin": {
-                "type": "local"
-              }
-            },
-            "replicate": true
-          }
-        ]
-      ]
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "make_plane",
-      "origin": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.7
-      },
-      "x_axis": {
-        "x": 1.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "y_axis": {
-        "x": 0.0,
-        "y": 1.0,
-        "z": 0.12186934340514748
-      },
-      "size": 60.0,
-      "clobber": false,
-      "hide": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "enable_sketch_mode",
-      "entity_id": "[uuid]",
-      "ortho": false,
-      "animated": false,
-      "adjust_camera": false,
-      "planar_normal": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "start_path"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "move_path_pen",
-      "path": "[uuid]",
-      "to": {
-        "x": 12.0,
-        "y": 3.900000000000001,
-        "z": 0.0
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extend_path",
-      "path": "[uuid]",
-      "segment": {
-        "type": "arc",
-        "center": {
-          "x": 12.1,
-          "y": 3.9
-        },
-        "radius": 0.1,
-        "start": {
-          "unit": "degrees",
-          "value": 180.0
-        },
-        "end": {
-          "unit": "degrees",
-          "value": 270.0
-        },
-        "relative": false
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extend_path",
-      "path": "[uuid]",
-      "segment": {
-        "type": "line",
-        "end": {
-          "x": 1.1,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "relative": true
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extend_path",
-      "path": "[uuid]",
-      "segment": {
-        "type": "tangential_arc",
-        "radius": 0.1,
-        "offset": {
-          "unit": "degrees",
-          "value": 90.0
-        }
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extend_path",
-      "path": "[uuid]",
-      "segment": {
-        "type": "line",
-        "end": {
-          "x": 0.0,
-          "y": 0.6,
-          "z": 0.0
-        },
-        "relative": true
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extend_path",
-      "path": "[uuid]",
-      "segment": {
-        "type": "tangential_arc",
-        "radius": 0.1,
-        "offset": {
-          "unit": "degrees",
-          "value": 90.0
-        }
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extend_path",
-      "path": "[uuid]",
-      "segment": {
-        "type": "line",
-        "end": {
-          "x": -1.1,
-          "y": -0.0,
-          "z": 0.0
-        },
-        "relative": true
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extend_path",
-      "path": "[uuid]",
-      "segment": {
-        "type": "tangential_arc",
-        "radius": 0.1,
-        "offset": {
-          "unit": "degrees",
-          "value": 90.0
-        }
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extend_path",
-      "path": "[uuid]",
-      "segment": {
-        "type": "line",
-        "end": {
-          "x": 12.0,
-          "y": 3.9,
-          "z": 0.0
-        },
-        "relative": false
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "close_path",
-      "path_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "enable_sketch_mode",
-      "entity_id": "[uuid]",
-      "ortho": false,
-      "animated": false,
-      "adjust_camera": false,
-      "planar_normal": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extrude",
-      "target": "[uuid]",
-      "distance": 0.1,
-      "faces": null,
-      "opposite": "None"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "object_bring_to_front",
-      "object_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_extrusion_face_info",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "object_set_material_params_pbr",
-      "object_id": "[uuid]",
-      "color": {
-        "r": 0.13725491,
-        "g": 0.6862745,
-        "b": 0.5764706,
-        "a": 100.0
-      },
-      "metalness": 0.0,
-      "roughness": 0.0,
-      "ambient_occlusion": 0.0
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "entity_linear_pattern_transform",
-      "entity_id": "[uuid]",
-      "transform": [],
-      "transforms": []
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "make_plane",
-      "origin": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.7
-      },
-      "x_axis": {
-        "x": 1.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "y_axis": {
-        "x": 0.0,
-        "y": 1.0,
-        "z": 0.12186934340514748
-      },
-      "size": 60.0,
-      "clobber": false,
-      "hide": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "enable_sketch_mode",
-      "entity_id": "[uuid]",
-      "ortho": false,
-      "animated": false,
-      "adjust_camera": false,
-      "planar_normal": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "start_path"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "move_path_pen",
-      "path": "[uuid]",
-      "to": {
-        "x": 0.30000000000000004,
-        "y": 4.800000000000001,
-        "z": 0.0
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extend_path",
-      "path": "[uuid]",
-      "segment": {
-        "type": "arc",
-        "center": {
-          "x": 0.4,
-          "y": 4.8
-        },
-        "radius": 0.1,
-        "start": {
-          "unit": "degrees",
-          "value": 180.0
-        },
-        "end": {
-          "unit": "degrees",
-          "value": 270.0
-        },
-        "relative": false
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extend_path",
-      "path": "[uuid]",
-      "segment": {
-        "type": "line",
-        "end": {
-          "x": 0.9,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "relative": true
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extend_path",
-      "path": "[uuid]",
-      "segment": {
-        "type": "tangential_arc",
-        "radius": 0.1,
-        "offset": {
-          "unit": "degrees",
-          "value": 90.0
-        }
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extend_path",
-      "path": "[uuid]",
-      "segment": {
-        "type": "line",
-        "end": {
-          "x": 0.0,
-          "y": 0.28,
-          "z": 0.0
-        },
-        "relative": true
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extend_path",
-      "path": "[uuid]",
-      "segment": {
-        "type": "tangential_arc",
-        "radius": 0.1,
-        "offset": {
-          "unit": "degrees",
-          "value": 90.0
-        }
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extend_path",
-      "path": "[uuid]",
-      "segment": {
-        "type": "line",
-        "end": {
-          "x": -0.9,
-          "y": -0.0,
-          "z": 0.0
-        },
-        "relative": true
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extend_path",
-      "path": "[uuid]",
-      "segment": {
-        "type": "tangential_arc",
-        "radius": 0.1,
-        "offset": {
-          "unit": "degrees",
-          "value": 90.0
-        }
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extend_path",
-      "path": "[uuid]",
-      "segment": {
-        "type": "line",
-        "end": {
-          "x": 0.3,
-          "y": 4.8,
-          "z": 0.0
-        },
-        "relative": false
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "close_path",
-      "path_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "enable_sketch_mode",
-      "entity_id": "[uuid]",
-      "ortho": false,
-      "animated": false,
-      "adjust_camera": false,
-      "planar_normal": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extrude",
-      "target": "[uuid]",
-      "distance": 0.1,
-      "faces": null,
-      "opposite": "None"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "object_bring_to_front",
-      "object_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_extrusion_face_info",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "object_set_material_params_pbr",
-      "object_id": "[uuid]",
-      "color": {
-        "r": 0.13725491,
-        "g": 0.6862745,
-        "b": 0.5764706,
-        "a": 100.0
-      },
-      "metalness": 0.0,
-      "roughness": 0.0,
-      "ambient_occlusion": 0.0
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "entity_linear_pattern_transform",
-      "entity_id": "[uuid]",
-      "transform": [],
-      "transforms": []
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "make_plane",
-      "origin": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.7
-      },
-      "x_axis": {
-        "x": 1.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "y_axis": {
-        "x": 0.0,
-        "y": 1.0,
-        "z": 0.12186934340514748
-      },
-      "size": 60.0,
-      "clobber": false,
-      "hide": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "enable_sketch_mode",
-      "entity_id": "[uuid]",
-      "ortho": false,
-      "animated": false,
-      "adjust_camera": false,
-      "planar_normal": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "start_path"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "move_path_pen",
-      "path": "[uuid]",
-      "to": {
-        "x": 1.5,
-        "y": 4.800000000000001,
-        "z": 0.0
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extend_path",
-      "path": "[uuid]",
-      "segment": {
-        "type": "arc",
-        "center": {
-          "x": 1.6,
-          "y": 4.8
-        },
-        "radius": 0.1,
-        "start": {
-          "unit": "degrees",
-          "value": 180.0
-        },
-        "end": {
-          "unit": "degrees",
-          "value": 270.0
-        },
-        "relative": false
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extend_path",
-      "path": "[uuid]",
-      "segment": {
-        "type": "line",
-        "end": {
-          "x": 0.6,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "relative": true
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extend_path",
-      "path": "[uuid]",
-      "segment": {
-        "type": "tangential_arc",
-        "radius": 0.1,
-        "offset": {
-          "unit": "degrees",
-          "value": 90.0
-        }
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extend_path",
-      "path": "[uuid]",
-      "segment": {
-        "type": "line",
-        "end": {
-          "x": 0.0,
-          "y": 0.28,
-          "z": 0.0
-        },
-        "relative": true
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extend_path",
-      "path": "[uuid]",
-      "segment": {
-        "type": "tangential_arc",
-        "radius": 0.1,
-        "offset": {
-          "unit": "degrees",
-          "value": 90.0
-        }
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extend_path",
-      "path": "[uuid]",
-      "segment": {
-        "type": "line",
-        "end": {
-          "x": -0.6,
-          "y": -0.0,
-          "z": 0.0
-        },
-        "relative": true
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extend_path",
-      "path": "[uuid]",
-      "segment": {
-        "type": "tangential_arc",
-        "radius": 0.1,
-        "offset": {
-          "unit": "degrees",
-          "value": 90.0
-        }
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extend_path",
-      "path": "[uuid]",
-      "segment": {
-        "type": "line",
-        "end": {
-          "x": 1.5,
-          "y": 4.8,
-          "z": 0.0
-        },
-        "relative": false
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "close_path",
-      "path_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "enable_sketch_mode",
-      "entity_id": "[uuid]",
-      "ortho": false,
-      "animated": false,
-      "adjust_camera": false,
-      "planar_normal": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extrude",
-      "target": "[uuid]",
-      "distance": 0.1,
+      "distance": 2.54,
       "faces": null,
       "opposite": "None"
     }
@@ -11335,7 +9613,7 @@ description: Artifact commands keyboard.kcl
         [
           {
             "translate": {
-              "x": 0.9,
+              "x": 22.86,
               "y": 0.0,
               "z": 0.0
             },
@@ -11364,7 +9642,7 @@ description: Artifact commands keyboard.kcl
         [
           {
             "translate": {
-              "x": 1.8,
+              "x": 45.72,
               "y": 0.0,
               "z": 0.0
             },
@@ -11393,7 +9671,7 @@ description: Artifact commands keyboard.kcl
         [
           {
             "translate": {
-              "x": 2.7,
+              "x": 68.58,
               "y": 0.0,
               "z": 0.0
             },
@@ -11422,7 +9700,7 @@ description: Artifact commands keyboard.kcl
         [
           {
             "translate": {
-              "x": 3.6,
+              "x": 91.44,
               "y": 0.0,
               "z": 0.0
             },
@@ -11451,7 +9729,7 @@ description: Artifact commands keyboard.kcl
         [
           {
             "translate": {
-              "x": 4.5,
+              "x": 114.3,
               "y": 0.0,
               "z": 0.0
             },
@@ -11480,7 +9758,7 @@ description: Artifact commands keyboard.kcl
         [
           {
             "translate": {
-              "x": 5.4,
+              "x": 137.16,
               "y": 0.0,
               "z": 0.0
             },
@@ -11509,7 +9787,7 @@ description: Artifact commands keyboard.kcl
         [
           {
             "translate": {
-              "x": 6.3,
+              "x": 160.01999999999998,
               "y": 0.0,
               "z": 0.0
             },
@@ -11538,7 +9816,7 @@ description: Artifact commands keyboard.kcl
         [
           {
             "translate": {
-              "x": 7.2,
+              "x": 182.88,
               "y": 0.0,
               "z": 0.0
             },
@@ -11567,7 +9845,7 @@ description: Artifact commands keyboard.kcl
         [
           {
             "translate": {
-              "x": 8.1,
+              "x": 205.74,
               "y": 0.0,
               "z": 0.0
             },
@@ -11596,7 +9874,7 @@ description: Artifact commands keyboard.kcl
         [
           {
             "translate": {
-              "x": 9.0,
+              "x": 228.6,
               "y": 0.0,
               "z": 0.0
             },
@@ -11625,7 +9903,36 @@ description: Artifact commands keyboard.kcl
         [
           {
             "translate": {
-              "x": 9.9,
+              "x": 251.45999999999998,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 274.32,
               "y": 0.0,
               "z": 0.0
             },
@@ -11662,7 +9969,7 @@ description: Artifact commands keyboard.kcl
       "origin": {
         "x": 0.0,
         "y": 0.0,
-        "z": 0.7
+        "z": 17.779999999999998
       },
       "x_axis": {
         "x": 1.0,
@@ -11709,8 +10016,8 @@ description: Artifact commands keyboard.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 12.3,
-        "y": 4.800000000000001,
+        "x": 304.79999999999995,
+        "y": 99.06000000000002,
         "z": 0.0
       }
     }
@@ -11731,10 +10038,10 @@ description: Artifact commands keyboard.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": 12.4,
-          "y": 4.8
+          "x": 307.34,
+          "y": 99.06
         },
-        "radius": 0.1,
+        "radius": 2.54,
         "start": {
           "unit": "degrees",
           "value": 180.0
@@ -11756,7 +10063,7 @@ description: Artifact commands keyboard.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 0.8,
+          "x": 27.94,
           "y": 0.0,
           "z": 0.0
         },
@@ -11772,7 +10079,7 @@ description: Artifact commands keyboard.kcl
       "path": "[uuid]",
       "segment": {
         "type": "tangential_arc",
-        "radius": 0.1,
+        "radius": 2.54,
         "offset": {
           "unit": "degrees",
           "value": 90.0
@@ -11790,7 +10097,7 @@ description: Artifact commands keyboard.kcl
         "type": "line",
         "end": {
           "x": 0.0,
-          "y": 0.28,
+          "y": 15.24,
           "z": 0.0
         },
         "relative": true
@@ -11805,7 +10112,7 @@ description: Artifact commands keyboard.kcl
       "path": "[uuid]",
       "segment": {
         "type": "tangential_arc",
-        "radius": 0.1,
+        "radius": 2.54,
         "offset": {
           "unit": "degrees",
           "value": 90.0
@@ -11822,7 +10129,7 @@ description: Artifact commands keyboard.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -0.8,
+          "x": -27.94,
           "y": -0.0,
           "z": 0.0
         },
@@ -11838,7 +10145,7 @@ description: Artifact commands keyboard.kcl
       "path": "[uuid]",
       "segment": {
         "type": "tangential_arc",
-        "radius": 0.1,
+        "radius": 2.54,
         "offset": {
           "unit": "degrees",
           "value": 90.0
@@ -11855,8 +10162,8 @@ description: Artifact commands keyboard.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 12.3,
-          "y": 4.8,
+          "x": 304.8,
+          "y": 99.06,
           "z": 0.0
         },
         "relative": false
@@ -11893,7 +10200,7 @@ description: Artifact commands keyboard.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 0.1,
+      "distance": 2.54,
       "faces": null,
       "opposite": "None"
     }
@@ -12117,7 +10424,7 @@ description: Artifact commands keyboard.kcl
       "origin": {
         "x": 0.0,
         "y": 0.0,
-        "z": 0.81
+        "z": 17.779999999999998
       },
       "x_axis": {
         "x": 1.0,
@@ -12164,8 +10471,8 @@ description: Artifact commands keyboard.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 2.3,
-        "y": 1.36,
+        "x": 7.620000000000001,
+        "y": 121.92000000000002,
         "z": 0.0
       }
     }
@@ -12184,45 +10491,19 @@ description: Artifact commands keyboard.kcl
       "type": "extend_path",
       "path": "[uuid]",
       "segment": {
-        "type": "line",
-        "end": {
-          "x": 0.0,
-          "y": -0.06,
-          "z": 0.0
+        "type": "arc",
+        "center": {
+          "x": 10.16,
+          "y": 121.92
         },
-        "relative": true
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extend_path",
-      "path": "[uuid]",
-      "segment": {
-        "type": "line",
-        "end": {
-          "x": 0.06,
-          "y": 0.0,
-          "z": 0.0
+        "radius": 2.54,
+        "start": {
+          "unit": "degrees",
+          "value": 180.0
         },
-        "relative": true
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extend_path",
-      "path": "[uuid]",
-      "segment": {
-        "type": "line",
         "end": {
-          "x": 2.42,
-          "y": 1.3647,
-          "z": 0.0
+          "unit": "degrees",
+          "value": 270.0
         },
         "relative": false
       }
@@ -12237,24 +10518,7 @@ description: Artifact commands keyboard.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 2.42,
-          "y": 1.3,
-          "z": 0.0
-        },
-        "relative": false
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extend_path",
-      "path": "[uuid]",
-      "segment": {
-        "type": "line",
-        "end": {
-          "x": 0.252,
+          "x": 22.86,
           "y": 0.0,
           "z": 0.0
         },
@@ -12269,47 +10533,12 @@ description: Artifact commands keyboard.kcl
       "type": "extend_path",
       "path": "[uuid]",
       "segment": {
-        "type": "line",
-        "end": {
-          "x": 0.0,
-          "y": 0.09,
-          "z": 0.0
-        },
-        "relative": true
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extend_path",
-      "path": "[uuid]",
-      "segment": {
-        "type": "line",
-        "end": {
-          "x": -0.228,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "relative": true
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extend_path",
-      "path": "[uuid]",
-      "segment": {
-        "type": "line",
-        "end": {
-          "x": 2.672,
-          "y": 1.6358,
-          "z": 0.0
-        },
-        "relative": false
+        "type": "tangential_arc",
+        "radius": 2.54,
+        "offset": {
+          "unit": "degrees",
+          "value": 90.0
+        }
       }
     }
   },
@@ -12323,7 +10552,7 @@ description: Artifact commands keyboard.kcl
         "type": "line",
         "end": {
           "x": 0.0,
-          "y": 0.06,
+          "y": 7.112,
           "z": 0.0
         },
         "relative": true
@@ -12337,10 +10566,26 @@ description: Artifact commands keyboard.kcl
       "type": "extend_path",
       "path": "[uuid]",
       "segment": {
+        "type": "tangential_arc",
+        "radius": 2.54,
+        "offset": {
+          "unit": "degrees",
+          "value": 90.0
+        }
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
         "type": "line",
         "end": {
-          "x": -0.06,
-          "y": 0.0,
+          "x": -22.86,
+          "y": -0.0,
           "z": 0.0
         },
         "relative": true
@@ -12354,13 +10599,12 @@ description: Artifact commands keyboard.kcl
       "type": "extend_path",
       "path": "[uuid]",
       "segment": {
-        "type": "line",
-        "end": {
-          "x": -0.06,
-          "y": -0.0647,
-          "z": 0.0
-        },
-        "relative": true
+        "type": "tangential_arc",
+        "radius": 2.54,
+        "offset": {
+          "unit": "degrees",
+          "value": 90.0
+        }
       }
     }
   },
@@ -12373,59 +10617,8 @@ description: Artifact commands keyboard.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 0.0,
-          "y": 0.0647,
-          "z": 0.0
-        },
-        "relative": true
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extend_path",
-      "path": "[uuid]",
-      "segment": {
-        "type": "line",
-        "end": {
-          "x": 2.3,
-          "y": 1.6958,
-          "z": 0.0
-        },
-        "relative": false
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extend_path",
-      "path": "[uuid]",
-      "segment": {
-        "type": "line",
-        "end": {
-          "x": 0.0,
-          "y": -0.09,
-          "z": 0.0
-        },
-        "relative": true
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extend_path",
-      "path": "[uuid]",
-      "segment": {
-        "type": "line",
-        "end": {
-          "x": 2.5285,
-          "y": 1.6058,
+          "x": 7.62,
+          "y": 121.92,
           "z": 0.0
         },
         "relative": false
@@ -12462,7 +10655,1806 @@ description: Artifact commands keyboard.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": -0.03,
+      "distance": 2.54,
+      "faces": null,
+      "opposite": "None"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "object_set_material_params_pbr",
+      "object_id": "[uuid]",
+      "color": {
+        "r": 0.13725491,
+        "g": 0.6862745,
+        "b": 0.5764706,
+        "a": 100.0
+      },
+      "metalness": 0.0,
+      "roughness": 0.0,
+      "ambient_occlusion": 0.0
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "entity_linear_pattern_transform",
+      "entity_id": "[uuid]",
+      "transform": [],
+      "transforms": []
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "make_plane",
+      "origin": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 17.779999999999998
+      },
+      "x_axis": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "y_axis": {
+        "x": 0.0,
+        "y": 1.0,
+        "z": 0.12186934340514748
+      },
+      "size": 60.0,
+      "clobber": false,
+      "hide": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "start_path"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "move_path_pen",
+      "path": "[uuid]",
+      "to": {
+        "x": 38.099999999999994,
+        "y": 121.92000000000002,
+        "z": 0.0
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "arc",
+        "center": {
+          "x": 40.64,
+          "y": 121.92
+        },
+        "radius": 2.54,
+        "start": {
+          "unit": "degrees",
+          "value": 180.0
+        },
+        "end": {
+          "unit": "degrees",
+          "value": 270.0
+        },
+        "relative": false
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "line",
+        "end": {
+          "x": 15.24,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "relative": true
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "tangential_arc",
+        "radius": 2.54,
+        "offset": {
+          "unit": "degrees",
+          "value": 90.0
+        }
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "line",
+        "end": {
+          "x": 0.0,
+          "y": 7.112,
+          "z": 0.0
+        },
+        "relative": true
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "tangential_arc",
+        "radius": 2.54,
+        "offset": {
+          "unit": "degrees",
+          "value": 90.0
+        }
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "line",
+        "end": {
+          "x": -15.24,
+          "y": -0.0,
+          "z": 0.0
+        },
+        "relative": true
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "tangential_arc",
+        "radius": 2.54,
+        "offset": {
+          "unit": "degrees",
+          "value": 90.0
+        }
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "line",
+        "end": {
+          "x": 38.1,
+          "y": 121.92,
+          "z": 0.0
+        },
+        "relative": false
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "close_path",
+      "path_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": 2.54,
+      "faces": null,
+      "opposite": "None"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "object_set_material_params_pbr",
+      "object_id": "[uuid]",
+      "color": {
+        "r": 0.6901961,
+        "g": 0.6901961,
+        "b": 0.6901961,
+        "a": 100.0
+      },
+      "metalness": 0.0,
+      "roughness": 0.0,
+      "ambient_occlusion": 0.0
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "entity_linear_pattern_transform",
+      "entity_id": "[uuid]",
+      "transform": [],
+      "transforms": [
+        [
+          {
+            "translate": {
+              "x": 22.86,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 45.72,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 68.58,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 91.44,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 114.3,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 137.16,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 160.01999999999998,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 182.88,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 205.74,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 228.6,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 251.45999999999998,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ]
+      ]
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "make_plane",
+      "origin": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 17.779999999999998
+      },
+      "x_axis": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "y_axis": {
+        "x": 0.0,
+        "y": 1.0,
+        "z": 0.12186934340514748
+      },
+      "size": 60.0,
+      "clobber": false,
+      "hide": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "start_path"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "move_path_pen",
+      "path": "[uuid]",
+      "to": {
+        "x": 312.42,
+        "y": 121.92000000000002,
+        "z": 0.0
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "arc",
+        "center": {
+          "x": 314.96,
+          "y": 121.92
+        },
+        "radius": 2.54,
+        "start": {
+          "unit": "degrees",
+          "value": 180.0
+        },
+        "end": {
+          "unit": "degrees",
+          "value": 270.0
+        },
+        "relative": false
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "line",
+        "end": {
+          "x": 20.32,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "relative": true
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "tangential_arc",
+        "radius": 2.54,
+        "offset": {
+          "unit": "degrees",
+          "value": 90.0
+        }
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "line",
+        "end": {
+          "x": 0.0,
+          "y": 7.112,
+          "z": 0.0
+        },
+        "relative": true
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "tangential_arc",
+        "radius": 2.54,
+        "offset": {
+          "unit": "degrees",
+          "value": 90.0
+        }
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "line",
+        "end": {
+          "x": -20.32,
+          "y": -0.0,
+          "z": 0.0
+        },
+        "relative": true
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "tangential_arc",
+        "radius": 2.54,
+        "offset": {
+          "unit": "degrees",
+          "value": 90.0
+        }
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "line",
+        "end": {
+          "x": 312.42,
+          "y": 121.92,
+          "z": 0.0
+        },
+        "relative": false
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "close_path",
+      "path_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": 2.54,
+      "faces": null,
+      "opposite": "None"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "object_set_material_params_pbr",
+      "object_id": "[uuid]",
+      "color": {
+        "r": 0.13725491,
+        "g": 0.6862745,
+        "b": 0.5764706,
+        "a": 100.0
+      },
+      "metalness": 0.0,
+      "roughness": 0.0,
+      "ambient_occlusion": 0.0
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "entity_linear_pattern_transform",
+      "entity_id": "[uuid]",
+      "transform": [],
+      "transforms": []
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "make_plane",
+      "origin": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 20.574
+      },
+      "x_axis": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "y_axis": {
+        "x": 0.0,
+        "y": 1.0,
+        "z": 0.12186934340514748
+      },
+      "size": 60.0,
+      "clobber": false,
+      "hide": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "start_path"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "move_path_pen",
+      "path": "[uuid]",
+      "to": {
+        "x": 58.419999999999995,
+        "y": 34.544000000000004,
+        "z": 0.0
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "line",
+        "end": {
+          "x": 0.0,
+          "y": -1.524,
+          "z": 0.0
+        },
+        "relative": true
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "line",
+        "end": {
+          "x": 1.524,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "relative": true
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "line",
+        "end": {
+          "x": 61.468,
+          "y": 34.6629,
+          "z": 0.0
+        },
+        "relative": false
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "line",
+        "end": {
+          "x": 61.468,
+          "y": 33.02,
+          "z": 0.0
+        },
+        "relative": false
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "line",
+        "end": {
+          "x": 6.4008,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "relative": true
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "line",
+        "end": {
+          "x": 0.0,
+          "y": 2.286,
+          "z": 0.0
+        },
+        "relative": true
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "line",
+        "end": {
+          "x": -5.7912,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "relative": true
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "line",
+        "end": {
+          "x": 67.8688,
+          "y": 41.549,
+          "z": 0.0
+        },
+        "relative": false
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "line",
+        "end": {
+          "x": 0.0,
+          "y": 1.524,
+          "z": 0.0
+        },
+        "relative": true
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "line",
+        "end": {
+          "x": -1.524,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "relative": true
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "line",
+        "end": {
+          "x": -1.524,
+          "y": -1.6429,
+          "z": 0.0
+        },
+        "relative": true
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "line",
+        "end": {
+          "x": 0.0,
+          "y": 1.6429,
+          "z": 0.0
+        },
+        "relative": true
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "line",
+        "end": {
+          "x": 58.42,
+          "y": 43.073,
+          "z": 0.0
+        },
+        "relative": false
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "line",
+        "end": {
+          "x": 0.0,
+          "y": -2.286,
+          "z": 0.0
+        },
+        "relative": true
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "line",
+        "end": {
+          "x": 64.2242,
+          "y": 40.787,
+          "z": 0.0
+        },
+        "relative": false
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "close_path",
+      "path_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": -0.7619999999999999,
       "faces": null,
       "opposite": "None"
     }
@@ -12836,7 +12828,7 @@ description: Artifact commands keyboard.kcl
       "origin": {
         "x": 0.0,
         "y": 0.0,
-        "z": 0.81
+        "z": 20.574
       },
       "x_axis": {
         "x": 1.0,
@@ -12883,8 +12875,8 @@ description: Artifact commands keyboard.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 9.025200000000002,
-        "y": 3.4484000000000004,
+        "x": 229.24008000000003,
+        "y": 87.58936,
         "z": 0.0
       }
     }
@@ -12905,10 +12897,10 @@ description: Artifact commands keyboard.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": 8.8993,
-          "y": 3.2804
+          "x": 226.0412,
+          "y": 83.321
         },
-        "radius": 0.21000000000000002,
+        "radius": 5.3340000000000005,
         "start": {
           "unit": "degrees",
           "value": 53.15
@@ -12930,8 +12922,8 @@ description: Artifact commands keyboard.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 0.0653,
-          "y": 0.0704,
+          "x": 1.6583,
+          "y": 1.7877,
           "z": 0.0
         },
         "relative": true
@@ -12947,10 +12939,10 @@ description: Artifact commands keyboard.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": 8.8994,
-          "y": 3.2805
+          "x": 226.0458,
+          "y": 83.3249
         },
-        "radius": 0.1152,
+        "radius": 2.92608,
         "start": {
           "unit": "degrees",
           "value": 216.15
@@ -12993,7 +12985,7 @@ description: Artifact commands keyboard.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": -0.03,
+      "distance": -0.7619999999999999,
       "faces": null,
       "opposite": "None"
     }
@@ -13127,7 +13119,7 @@ description: Artifact commands keyboard.kcl
       "origin": {
         "x": 0.0,
         "y": 0.0,
-        "z": 0.81
+        "z": 20.574
       },
       "x_axis": {
         "x": 1.0,
@@ -13174,8 +13166,8 @@ description: Artifact commands keyboard.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 8.774000000000001,
-        "y": 3.1116000000000006,
+        "x": 222.8596,
+        "y": 79.03464000000001,
         "z": 0.0
       }
     }
@@ -13196,10 +13188,10 @@ description: Artifact commands keyboard.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": 8.8999,
-          "y": 3.2796
+          "x": 226.0585,
+          "y": 83.303
         },
-        "radius": 0.21000000000000002,
+        "radius": 5.3340000000000005,
         "start": {
           "unit": "degrees",
           "value": -126.85
@@ -13221,8 +13213,8 @@ description: Artifact commands keyboard.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -0.0653,
-          "y": -0.0704,
+          "x": -1.6583,
+          "y": -1.7877,
           "z": 0.0
         },
         "relative": true
@@ -13238,10 +13230,10 @@ description: Artifact commands keyboard.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": 8.8998,
-          "y": 3.2795
+          "x": 226.0539,
+          "y": 83.2991
         },
-        "radius": 0.1152,
+        "radius": 2.92608,
         "start": {
           "unit": "degrees",
           "value": 36.15
@@ -13284,7 +13276,7 @@ description: Artifact commands keyboard.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": -0.03,
+      "distance": -0.7619999999999999,
       "faces": null,
       "opposite": "None"
     }
@@ -13418,7 +13410,7 @@ description: Artifact commands keyboard.kcl
       "origin": {
         "x": 0.0,
         "y": 0.0,
-        "z": 0.81
+        "z": 20.574
       },
       "x_axis": {
         "x": 1.0,
@@ -13465,8 +13457,8 @@ description: Artifact commands keyboard.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 9.925200000000002,
-        "y": 3.4484000000000004,
+        "x": 252.10008000000005,
+        "y": 87.58936,
         "z": 0.0
       }
     }
@@ -13487,10 +13479,10 @@ description: Artifact commands keyboard.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": 9.7993,
-          "y": 3.2804
+          "x": 248.9012,
+          "y": 83.321
         },
-        "radius": 0.21000000000000002,
+        "radius": 5.3340000000000005,
         "start": {
           "unit": "degrees",
           "value": 53.15
@@ -13512,8 +13504,8 @@ description: Artifact commands keyboard.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 0.0653,
-          "y": 0.0704,
+          "x": 1.6583,
+          "y": 1.7877,
           "z": 0.0
         },
         "relative": true
@@ -13529,10 +13521,10 @@ description: Artifact commands keyboard.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": 9.7994,
-          "y": 3.2805
+          "x": 248.9058,
+          "y": 83.3249
         },
-        "radius": 0.1152,
+        "radius": 2.92608,
         "start": {
           "unit": "degrees",
           "value": 216.15
@@ -13575,7 +13567,7 @@ description: Artifact commands keyboard.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": -0.03,
+      "distance": -0.7619999999999999,
       "faces": null,
       "opposite": "None"
     }
@@ -13709,7 +13701,7 @@ description: Artifact commands keyboard.kcl
       "origin": {
         "x": 0.0,
         "y": 0.0,
-        "z": 0.81
+        "z": 20.574
       },
       "x_axis": {
         "x": 1.0,
@@ -13756,8 +13748,8 @@ description: Artifact commands keyboard.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 9.674000000000001,
-        "y": 3.1116000000000006,
+        "x": 245.7196,
+        "y": 79.03464000000001,
         "z": 0.0
       }
     }
@@ -13778,10 +13770,10 @@ description: Artifact commands keyboard.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": 9.7999,
-          "y": 3.2796
+          "x": 248.9185,
+          "y": 83.303
         },
-        "radius": 0.21000000000000002,
+        "radius": 5.3340000000000005,
         "start": {
           "unit": "degrees",
           "value": -126.85
@@ -13803,8 +13795,8 @@ description: Artifact commands keyboard.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -0.0653,
-          "y": -0.0704,
+          "x": -1.6583,
+          "y": -1.7877,
           "z": 0.0
         },
         "relative": true
@@ -13820,10 +13812,10 @@ description: Artifact commands keyboard.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": 9.7998,
-          "y": 3.2795
+          "x": 248.9139,
+          "y": 83.2991
         },
-        "radius": 0.1152,
+        "radius": 2.92608,
         "start": {
           "unit": "degrees",
           "value": 36.15
@@ -13866,7 +13858,7 @@ description: Artifact commands keyboard.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": -0.03,
+      "distance": -0.7619999999999999,
       "faces": null,
       "opposite": "None"
     }
@@ -14224,38 +14216,6 @@ description: Artifact commands keyboard.kcl
       "type": "object_visible",
       "object_id": "[uuid]",
       "hidden": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "set_scene_units",
-      "unit": "mm"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "set_scene_units",
-      "unit": "mm"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "set_scene_units",
-      "unit": "mm"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "set_scene_units",
-      "unit": "mm"
     }
   }
 ]

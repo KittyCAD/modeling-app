@@ -182,9 +182,6 @@ description: Variables in memory after executing flange.kcl
                   "units": {
                     "type": "Mm"
                   }
-                },
-                "units": {
-                  "type": "Inches"
                 }
               },
               "start": {
@@ -351,9 +348,6 @@ description: Variables in memory after executing flange.kcl
               "units": {
                 "type": "Mm"
               }
-            },
-            "units": {
-              "type": "Inches"
             }
           },
           "start": {
@@ -449,9 +443,6 @@ description: Variables in memory after executing flange.kcl
               "units": {
                 "type": "Mm"
               }
-            },
-            "units": {
-              "type": "Inches"
             }
           },
           "start": {
@@ -547,9 +538,6 @@ description: Variables in memory after executing flange.kcl
               "units": {
                 "type": "Mm"
               }
-            },
-            "units": {
-              "type": "Inches"
             }
           },
           "start": {
@@ -645,9 +633,6 @@ description: Variables in memory after executing flange.kcl
               "units": {
                 "type": "Mm"
               }
-            },
-            "units": {
-              "type": "Inches"
             }
           },
           "start": {
@@ -758,9 +743,6 @@ description: Variables in memory after executing flange.kcl
             "units": {
               "type": "Mm"
             }
-          },
-          "units": {
-            "type": "Inches"
           }
         },
         "start": {
@@ -1072,9 +1054,6 @@ description: Variables in memory after executing flange.kcl
                         "units": {
                           "type": "Mm"
                         }
-                      },
-                      "units": {
-                        "type": "Inches"
                       }
                     },
                     "start": {
@@ -1332,9 +1311,6 @@ description: Variables in memory after executing flange.kcl
                   "units": {
                     "type": "Mm"
                   }
-                },
-                "units": {
-                  "type": "Inches"
                 }
               },
               "start": {
