@@ -12,6 +12,7 @@ import type {
   KclCommandValue,
 } from '@src/lib/commandTypes'
 import { getCommandArgumentKclValuesOnly } from '@src/lib/commandUtils'
+import { projectCommands } from '@src/lib/commandBarConfigs/projectsCommandConfig'
 
 export type CommandBarContext = {
   commands: Command[]
@@ -661,7 +662,7 @@ function sortCommands(a: Command, b: Command) {
 
 export const commandBarActor = createActor(commandBarMachine, {
   input: {
-    commands: [...authCommands],
+    commands: [...authCommands, ...projectCommands],
   },
 }).start()
 

@@ -248,10 +248,13 @@ export const importFileFromURL: Command = {
   },
 }
 
-export const projectCommands = [
-  openProjectCommand,
-  createProjectCommand,
-  deleteProjectCommand,
-  renameProjectCommand,
-  importFileFromURL,
-]
+/** No disk-writing commands are available in the browser */
+export const projectCommands = isDesktop()
+  ? [
+      openProjectCommand,
+      createProjectCommand,
+      deleteProjectCommand,
+      renameProjectCommand,
+      importFileFromURL,
+    ]
+  : [importFileFromURL]
