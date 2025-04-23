@@ -29,7 +29,6 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
         const projects = []
         const projectDirectoryPath = context.projectDirectoryPath
         if (projectDirectoryPath === NO_PROJECT_DIRECTORY) {
-          // TODO
           return []
         }
         await mkdirOrNOOP(projectDirectoryPath)
