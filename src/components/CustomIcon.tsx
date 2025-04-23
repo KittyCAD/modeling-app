@@ -311,6 +311,22 @@ const CustomIconMap = {
       />
     </svg>
   ),
+  command: (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M4.70711 6L8.20711 9.5L8.56066 9.85355L8.20711 10.2071L4.70711 13.7071L4 13L7.14645 9.85355L4 6.70711L4.70711 6ZM15.3536 11.3536H9.35356V12.3536H15.3536V11.3536Z"
+        fill="currentColor"
+      />
+    </svg>
+  ),
   dimension: (
     <svg
       viewBox="0 0 20 20"

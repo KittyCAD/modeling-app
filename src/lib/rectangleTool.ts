@@ -81,12 +81,16 @@ export const getRectangleCallExpressions = (
       createLabeledArg(
         ARG_END_ABSOLUTE,
         createArrayExpression([
-          createCallExpressionStdLib('profileStartX', [
+          createCallExpressionStdLibKw(
+            'profileStartX',
             createPipeSubstitution(),
-          ]),
-          createCallExpressionStdLib('profileStartY', [
+            []
+          ),
+          createCallExpressionStdLibKw(
+            'profileStartY',
             createPipeSubstitution(),
-          ]),
+            []
+          ),
         ])
       ),
     ]), // close the rectangle
