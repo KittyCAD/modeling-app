@@ -129,6 +129,15 @@ const appMachine = setup({
     sceneEntitiesManager: sceneEntitiesManager,
   },
   entry: [
+    /**
+     * We originally wanted to use spawnChild but the inferred type blew up. The more children we
+     * created the type complexity went through the roof. This functionally should act the same.
+     * the system and parent internals are tracked properly. After reading the documentation
+     * it suggests either method but this method requires manual clean up as described in the gotcha
+     * comment block below. If this becomes an issue we can always move this spawn into createActor functions
+     * in javascript above and reference those directly but the system and parent internals within xstate
+     * will not work.
+     */
     assign({
       // Gotcha, if you use spawn, make sure you remove the ActorRef from context
       // to prevent memory leaks when the spawned actor is no longer needed
