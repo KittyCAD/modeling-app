@@ -1,6 +1,4 @@
 import { useEffect, useCallback } from 'react'
-import { commandBarActor } from '@src/machines/commandBarMachine'
-import { importFileFromURL } from '@src/lib/commandBarConfigs/projectsCommandConfig'
 import { useClearURLParams } from '@src/machines/systemIO/hooks'
 import { useSearchParams } from 'react-router-dom'
 import { CREATE_FILE_URL_PARAM } from '@src/lib/constants'
@@ -18,26 +16,6 @@ export function SystemIOMachineLogicListenerWeb() {
     setSearchParams(searchParams)
   }, [searchParams, setSearchParams])
 
-  const useAddProjectCommandsToCommandBar = () => {
-    const commands = [importFileFromURL]
-    useEffect(() => {
-      commandBarActor.send({
-        type: 'Add commands',
-        data: {
-          commands: commands,
-        },
-      })
-      return () => {
-        commandBarActor.send({
-          type: 'Remove commands',
-          data: {
-            commands: commands,
-          },
-        })
-      }
-    }, [])
-  }
-
   const useClearQueryParams = () => {
     useEffect(() => {
       if (clearURLParams.value) {
@@ -46,7 +24,6 @@ export function SystemIOMachineLogicListenerWeb() {
     }, [clearURLParams])
   }
 
-  useAddProjectCommandsToCommandBar()
   useClearQueryParams()
   return null
 }

@@ -9,8 +9,6 @@ import {
 } from '@src/machines/systemIO/hooks'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { useNavigate } from 'react-router-dom'
-import { commandBarActor } from '@src/machines/commandBarMachine'
-import { projectCommands } from '@src/lib/commandBarConfigs/projectsCommandConfig'
 import { useEffect, useCallback } from 'react'
 import { useClearURLParams } from '@src/machines/systemIO/hooks'
 import { useSearchParams } from 'react-router-dom'
@@ -34,25 +32,6 @@ export function SystemIOMachineLogicListenerDesktop() {
     searchParams.delete('units')
     setSearchParams(searchParams)
   }, [searchParams, setSearchParams])
-
-  const useAddProjectCommandsToCommandBar = () => {
-    useEffect(() => {
-      commandBarActor.send({
-        type: 'Add commands',
-        data: {
-          commands: projectCommands,
-        },
-      })
-      return () => {
-        commandBarActor.send({
-          type: 'Remove commands',
-          data: {
-            commands: projectCommands,
-          },
-        })
-      }
-    }, [])
-  }
 
   const useGlobalProjectNavigation = () => {
     useEffect(() => {
@@ -133,7 +112,6 @@ export function SystemIOMachineLogicListenerDesktop() {
     )
   }
 
-  useAddProjectCommandsToCommandBar()
   useGlobalProjectNavigation()
   useGlobalFileNavigation()
   useApplicationProjectDirectory()
