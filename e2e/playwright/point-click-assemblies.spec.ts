@@ -357,6 +357,30 @@ test.describe('Point-and-click assemblies tests', () => {
         await scene.expectPixelColor(bgColor, midPoint, tolerance)
         await scene.expectPixelColor(partColor, moreToTheRightPoint, tolerance)
       })
+
+      await test.step('Delete the part using the feature tree', async () => {
+        await toolbar.openPane('feature-tree')
+        const op = await toolbar.getFeatureTreeOperation('bracket', 0)
+        await op.click({ button: 'right' })
+        await page.getByTestId('context-menu-delete').click()
+        await scene.settled(cmdBar)
+        await toolbar.closePane('feature-tree')
+        await toolbar.openPane('code')
+
+        // Expect only the import statement to be there
+        await editor.expectEditor.toContain('import "bracket.kcl" as bracket')
+        await editor.expectEditor.not.toContain(`bracket |> translate`, {
+          shouldNormalise: true,
+        })
+        await editor.expectEditor.not.toContain(`|> rotate`, {
+          shouldNormalise: true,
+        })
+        await toolbar.closePane('code')
+
+        // Expect empty scene
+        await scene.expectPixelColor(bgColor, midPoint, tolerance)
+        await scene.expectPixelColor(bgColor, moreToTheRightPoint, tolerance)
+      })
     }
   )
 
@@ -381,6 +405,7 @@ test.describe('Point-and-click assemblies tests', () => {
       const partPoint = { x: midPoint.x + 30, y: midPoint.y - 30 } // mid point, just off top right
       const defaultPlanesColor: [number, number, number] = [180, 220, 180]
       const partColor: [number, number, number] = [150, 150, 150]
+      const bgColor: [number, number, number] = [30, 30, 30]
       const tolerance = 50
 
       const complexPlmFileName = 'cube_Complex-PLM_Name_-001.sldprt'
@@ -469,6 +494,57 @@ test.describe('Point-and-click assemblies tests', () => {
         await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
         await toolbar.closePane('code')
         await scene.expectPixelColor(partColor, partPoint, tolerance)
+      })
+
+      await test.step('Delete first part using the feature tree', async () => {
+        await toolbar.openPane('feature-tree')
+        const op = await toolbar.getFeatureTreeOperation('cube', 0)
+        await op.click({ button: 'right' })
+        await page.getByTestId('context-menu-delete').click()
+        await scene.settled(cmdBar)
+        await toolbar.closePane('feature-tree')
+
+        // Expect only the import statement to be there
+        await toolbar.openPane('code')
+        await editor.expectEditor.toContain(
+          `
+        import "cube.step" as cube
+        import "${complexPlmFileName}" as cubeSw
+        cubeSw
+      `,
+          { shouldNormalise: true }
+        )
+        await toolbar.closePane('code')
+      })
+
+      await test.step('Delete second part using the feature tree', async () => {
+        await toolbar.openPane('feature-tree')
+        const op = await toolbar.getFeatureTreeOperation('cubeSw', 0)
+        await op.click({ button: 'right' })
+        await page.getByTestId('context-menu-delete').click()
+        await scene.settled(cmdBar)
+        await toolbar.closePane('feature-tree')
+
+        // Expect only the import statement to be there
+        await toolbar.openPane('code')
+        await editor.expectEditor.toContain(
+          `
+        import "cube.step" as cube
+        import "${complexPlmFileName}" as cubeSw
+      `,
+          { shouldNormalise: true }
+        )
+        await editor.expectEditor.not.toContain(
+          `
+          cube
+          cubeSw
+      `,
+          { shouldNormalise: true }
+        )
+        await toolbar.closePane('code')
+
+        // Expect empty scene
+        await scene.expectPixelColor(bgColor, partPoint, tolerance)
       })
     }
   )

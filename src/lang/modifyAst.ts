@@ -70,6 +70,7 @@ import type {
   CallExpression,
   CallExpressionKw,
   Expr,
+  ExpressionStatement,
   KclValue,
   Literal,
   PathToNode,
@@ -1257,6 +1258,7 @@ export async function deleteFromSelection(
   getFaceDetails: (id: string) => Promise<Models['FaceIsPlanar_type']> = () =>
     ({}) as any
 ): Promise<Node<Program> | Error> {
+  console.log('selection', selection)
   const astClone = structuredClone(ast)
   let deletionArtifact = selection.artifact
 
@@ -1405,6 +1407,30 @@ export async function deleteFromSelection(
         )
         if (err(callExp)) return callExp
         extrudeNameToDelete = callExp.node.callee.name.name
+      } else if (varDec.node.type === 'Name') {
+        const statement = getNodeFromPath<ExpressionStatement>(
+          astClone,
+          pathToNode,
+          'ExpressionStatement'
+        )
+        if (err(statement)) {
+          return statement
+        }
+
+        if (
+          statement.node.expression.type === 'Name' &&
+          statement.node.expression.name.type === 'Identifier'
+        ) {
+          extrudeNameToDelete = statement.node.expression.name.name
+        } else if (
+          statement.node.expression.type === 'PipeExpression' &&
+          statement.node.expression.body[0].type === 'Name' &&
+          statement.node.expression.body[0].name.type === 'Identifier'
+        ) {
+          extrudeNameToDelete = statement.node.expression.body[0].name.name
+        } else {
+          return new Error('Could not find statement to delete')
+        }
       } else {
         return new Error('Could not find extrude variable or call')
       }
