@@ -7,6 +7,7 @@ test.describe('Authentication tests', () => {
     { tag: ['@electron'] },
     async ({ page, homePage, signInPage, toolbar, tronApp }) => {
       if (!tronApp) {
+        fail()
       }
 
       await page.setBodyDimensions({ width: 1000, height: 500 })
