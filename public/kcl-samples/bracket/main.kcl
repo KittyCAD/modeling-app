@@ -25,10 +25,10 @@ shelfMountingHolePlacementOffset = shelfMountingHoleDiameter * 1.5
 wallMountingHolePlacementOffset = wallMountingHoleDiameter * 1.5
 
 // Add checks to ensure bracket is possible. These make sure that there is adequate distance between holes and edges.
-assertGreaterThanOrEq(wallMountLength, wallMountingHoleDiameter * 3, "Holes not possible. Either decrease hole diameter or increase wallMountLength")
-assertGreaterThanOrEq(shelfMountLength, shelfMountingHoleDiameter * 5.5, "wallMountLength must be longer for hole sizes to work. Either decrease mounting hole diameters or increase shelfMountLength")
-assertGreaterThanOrEq(width, shelfMountingHoleDiameter * 5.5, "Holes not possible. Either decrease hole diameter or increase width")
-assertGreaterThanOrEq(width, wallMountingHoleDiameter * 5.5, "Holes not possible. Either decrease hole diameter or increase width")
+assert(wallMountLength, isGreaterThanOrEqual = wallMountingHoleDiameter * 3, error = "Holes not possible. Either decrease hole diameter or increase wallMountLength")
+assert(shelfMountLength, isGreaterThanOrEqual = shelfMountingHoleDiameter * 5.5, error = "wallMountLength must be longer for hole sizes to work. Either decrease mounting hole diameters or increase shelfMountLength")
+assert(width, isGreaterThanOrEqual = shelfMountingHoleDiameter * 5.5, error = "Holes not possible. Either decrease hole diameter or increase width")
+assert(width, isGreaterThanOrEqual = wallMountingHoleDiameter * 5.5, error = "Holes not possible. Either decrease hole diameter or increase width")
 
 // Create the body of the bracket
 bracketBody = startSketchOn(XZ)

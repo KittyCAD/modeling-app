@@ -127,7 +127,7 @@ export const CreateNewVariable = ({
           autoFocus={true}
           autoCapitalize="off"
           autoCorrect="off"
-          className={`font-mono flex-1 sm:text-sm px-2 py-1 rounded-sm bg-chalkboard-10 dark:bg-chalkboard-90 text-chalkboard-90 dark:text-chalkboard-10 ${
+          className={`flex-1 sm:text-sm px-2 py-1 rounded-sm bg-chalkboard-10 dark:bg-chalkboard-90 text-chalkboard-90 dark:text-chalkboard-10 ${
             !shouldCreateVariable ? 'opacity-50' : ''
           }`}
           value={newVariableName}

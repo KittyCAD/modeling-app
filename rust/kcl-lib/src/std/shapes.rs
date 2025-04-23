@@ -13,9 +13,16 @@ use kittycad_modeling_cmds::shared::PathSegment;
 use schemars::JsonSchema;
 use serde::Serialize;
 
+use super::{
+    args::TyF64,
+    utils::{point_to_len_unit, point_to_mm, point_to_typed, untype_point, untyped_point_to_mm},
+};
 use crate::{
     errors::{KclError, KclErrorDetails},
-    execution::{types::RuntimeType, BasePath, ExecState, GeoMeta, KclValue, Path, Sketch, SketchSurface},
+    execution::{
+        types::{RuntimeType, UnitLen},
+        BasePath, ExecState, GeoMeta, KclValue, Path, Sketch, SketchSurface,
+    },
     parsing::ast::types::TagNode,
     std::{
         sketch::NEW_TAG_KW,
@@ -23,8 +30,6 @@ use crate::{
         Args,
     },
 };
-
-use super::{args::TyF64, utils::untype_point};
 
 /// A sketch surface or a sketch.
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
@@ -42,15 +47,7 @@ pub async fn circle(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
     let radius: TyF64 = args.get_kw_arg_typed("radius", &RuntimeType::length(), exec_state)?;
     let tag = args.get_kw_arg_opt(NEW_TAG_KW)?;
 
-    let sketch = inner_circle(
-        sketch_or_surface,
-        untype_point(center).0,
-        radius.n,
-        tag,
-        exec_state,
-        args,
-    )
-    .await?;
+    let sketch = inner_circle(sketch_or_surface, center, radius, tag, exec_state, args).await?;
     Ok(KclValue::Sketch {
         value: Box::new(sketch),
     })
@@ -58,8 +55,8 @@ pub async fn circle(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 
 async fn inner_circle(
     sketch_or_surface: SketchOrSurface,
-    center: [f64; 2],
-    radius: f64,
+    center: [TyF64; 2],
+    radius: TyF64,
     tag: Option<TagNode>,
     exec_state: &mut ExecState,
     args: Args,
@@ -68,17 +65,15 @@ async fn inner_circle(
         SketchOrSurface::SketchSurface(surface) => surface,
         SketchOrSurface::Sketch(s) => s.on,
     };
-    let units = sketch_surface.units();
-    let sketch = crate::std::sketch::inner_start_profile_at(
-        [center[0] + radius, center[1]],
-        sketch_surface,
-        None,
-        exec_state,
-        args.clone(),
-    )
-    .await?;
+    let (center_u, ty) = untype_point(center.clone());
+    let units = ty.expect_length();
 
-    let from = [center[0] + radius, center[1]];
+    let from = [center_u[0] + radius.to_length_units(units), center_u[1]];
+    let from_t = [TyF64::new(from[0], ty.clone()), TyF64::new(from[1], ty)];
+
+    let sketch =
+        crate::std::sketch::inner_start_profile_at(from_t, sketch_surface, None, exec_state, args.clone()).await?;
+
     let angle_start = Angle::zero();
     let angle_end = Angle::turn();
 
@@ -91,8 +86,8 @@ async fn inner_circle(
             segment: PathSegment::Arc {
                 start: angle_start,
                 end: angle_end,
-                center: KPoint2d::from(center).map(LengthUnit),
-                radius: radius.into(),
+                center: KPoint2d::from(point_to_mm(center)).map(LengthUnit),
+                radius: LengthUnit(radius.to_mm()),
                 relative: false,
             },
         }),
@@ -110,8 +105,8 @@ async fn inner_circle(
                 metadata: args.source_range.into(),
             },
         },
-        radius,
-        center,
+        radius: radius.to_length_units(units),
+        center: center_u,
         ccw: angle_start < angle_end,
     };
 
@@ -136,16 +131,7 @@ pub async fn circle_three_point(exec_state: &mut ExecState, args: Args) -> Resul
     let p3 = args.get_kw_arg_typed("p3", &RuntimeType::point2d(), exec_state)?;
     let tag = args.get_kw_arg_opt("tag")?;
 
-    let sketch = inner_circle_three_point(
-        sketch_surface_or_group,
-        untype_point(p1).0,
-        untype_point(p2).0,
-        untype_point(p3).0,
-        tag,
-        exec_state,
-        args,
-    )
-    .await?;
+    let sketch = inner_circle_three_point(sketch_surface_or_group, p1, p2, p3, tag, exec_state, args).await?;
     Ok(KclValue::Sketch {
         value: Box::new(sketch),
     })
@@ -175,13 +161,20 @@ pub async fn circle_three_point(exec_state: &mut ExecState, args: Args) -> Resul
 // path so it can be used for other features, otherwise it's lost.
 async fn inner_circle_three_point(
     sketch_surface_or_group: SketchOrSurface,
-    p1: [f64; 2],
-    p2: [f64; 2],
-    p3: [f64; 2],
+    p1: [TyF64; 2],
+    p2: [TyF64; 2],
+    p3: [TyF64; 2],
     tag: Option<TagNode>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
+    let ty = p1[0].ty.clone();
+    let units = ty.expect_length();
+
+    let p1 = point_to_len_unit(p1, units);
+    let p2 = point_to_len_unit(p2, units);
+    let p3 = point_to_len_unit(p3, units);
+
     let center = calculate_circle_center(p1, p2, p3);
     // It can be the distance to any of the 3 points - they all lay on the circumference.
     let radius = distance(center, p2);
@@ -190,16 +183,15 @@ async fn inner_circle_three_point(
         SketchOrSurface::SketchSurface(surface) => surface,
         SketchOrSurface::Sketch(group) => group.on,
     };
-    let sketch = crate::std::sketch::inner_start_profile_at(
-        [center[0] + radius, center[1]],
-        sketch_surface,
-        None,
-        exec_state,
-        args.clone(),
-    )
-    .await?;
 
-    let from = [center[0] + radius, center[1]];
+    let from = [
+        TyF64::new(center[0] + radius, ty.clone()),
+        TyF64::new(center[1], ty.clone()),
+    ];
+    let sketch =
+        crate::std::sketch::inner_start_profile_at(from.clone(), sketch_surface, None, exec_state, args.clone())
+            .await?;
+
     let angle_start = Angle::zero();
     let angle_end = Angle::turn();
 
@@ -212,8 +204,8 @@ async fn inner_circle_three_point(
             segment: PathSegment::Arc {
                 start: angle_start,
                 end: angle_end,
-                center: KPoint2d::from(center).map(LengthUnit),
-                radius: radius.into(),
+                center: KPoint2d::from(untyped_point_to_mm(center, units)).map(LengthUnit),
+                radius: units.adjust_to(radius, UnitLen::Mm).0.into(),
                 relative: false,
             },
         }),
@@ -222,10 +214,11 @@ async fn inner_circle_three_point(
 
     let current_path = Path::CircleThreePoint {
         base: BasePath {
-            from,
-            to: from,
+            // It's fine to untype here because we know `from` has units as its units.
+            from: untype_point(from.clone()).0,
+            to: untype_point(from).0,
             tag: tag.clone(),
-            units: sketch.units,
+            units,
             geo_meta: GeoMeta {
                 id,
                 metadata: args.source_range.into(),
@@ -259,35 +252,24 @@ pub enum PolygonType {
     Circumscribed,
 }
 
-/// Data for drawing a polygon
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-#[ts(export)]
-#[serde(rename_all = "camelCase")]
-pub struct PolygonData {
-    /// The radius of the polygon
-    pub radius: TyF64,
-    /// The number of sides in the polygon
-    pub num_sides: u64,
-    /// The center point of the polygon
-    pub center: [TyF64; 2],
-    /// The type of the polygon (inscribed or circumscribed)
-    #[serde(skip)]
-    pub polygon_type: PolygonType,
-    /// Whether the polygon is inscribed (true) or circumscribed (false) about a circle with the specified radius
-    #[serde(default = "default_inscribed")]
-    pub inscribed: bool,
-}
-
-fn default_inscribed() -> bool {
-    true
-}
-
 /// Create a regular polygon with the specified number of sides and radius.
 pub async fn polygon(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (data, sketch_surface_or_group, tag): (PolygonData, SketchOrSurface, Option<TagNode>) =
-        args.get_polygon_args()?;
+    let sketch_surface_or_group = args.get_unlabeled_kw_arg("sketchOrSurface")?;
+    let radius: TyF64 = args.get_kw_arg_typed("radius", &RuntimeType::length(), exec_state)?;
+    let num_sides: TyF64 = args.get_kw_arg_typed("numSides", &RuntimeType::count(), exec_state)?;
+    let center = args.get_kw_arg_typed("center", &RuntimeType::point2d(), exec_state)?;
+    let inscribed = args.get_kw_arg_opt_typed("inscribed", &RuntimeType::bool(), exec_state)?;
 
-    let sketch = inner_polygon(data, sketch_surface_or_group, tag, exec_state, args).await?;
+    let sketch = inner_polygon(
+        sketch_surface_or_group,
+        radius,
+        num_sides.n as u64,
+        center,
+        inscribed,
+        exec_state,
+        args,
+    )
+    .await?;
     Ok(KclValue::Sketch {
         value: Box::new(sketch),
     })
@@ -298,12 +280,12 @@ pub async fn polygon(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 /// ```no_run
 /// // Create a regular hexagon inscribed in a circle of radius 10
 /// hex = startSketchOn('XY')
-///   |> polygon({
+///   |> polygon(
 ///     radius = 10,
 ///     numSides = 6,
 ///     center = [0, 0],
 ///     inscribed = true,
-///   }, %)
+///   )
 ///
 /// example = extrude(hex, length = 5)
 /// ```
@@ -311,64 +293,87 @@ pub async fn polygon(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 /// ```no_run
 /// // Create a square circumscribed around a circle of radius 5
 /// square = startSketchOn('XY')
-///   |> polygon({
+///   |> polygon(
 ///     radius = 5.0,
 ///     numSides = 4,
 ///     center = [10, 10],
 ///     inscribed = false,
-///   }, %)
+///   )
 /// example = extrude(square, length = 5)
 /// ```
 #[stdlib {
     name = "polygon",
+    keywords = true,
+    unlabeled_first = true,
+    args = {
+        sketch_surface_or_group = { docs = "Plane or surface to sketch on" },
+        radius = { docs = "The radius of the polygon", include_in_snippet = true },
+        num_sides = { docs = "The number of sides in the polygon", include_in_snippet = true },
+        center = { docs = "The center point of the polygon", include_in_snippet = true },
+        inscribed = { docs = "Whether the polygon is inscribed (true, the default) or circumscribed (false) about a circle with the specified radius" },
+    }
 }]
+#[allow(clippy::too_many_arguments)]
 async fn inner_polygon(
-    data: PolygonData,
     sketch_surface_or_group: SketchOrSurface,
-    tag: Option<TagNode>,
+    radius: TyF64,
+    num_sides: u64,
+    center: [TyF64; 2],
+    inscribed: Option<bool>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
-    if data.num_sides < 3 {
+    if num_sides < 3 {
         return Err(KclError::Type(KclErrorDetails {
             message: "Polygon must have at least 3 sides".to_string(),
             source_ranges: vec![args.source_range],
         }));
     }
 
-    if data.radius.n <= 0.0 {
+    if radius.n <= 0.0 {
         return Err(KclError::Type(KclErrorDetails {
             message: "Radius must be greater than 0".to_string(),
             source_ranges: vec![args.source_range],
         }));
     }
 
-    let sketch_surface = match sketch_surface_or_group {
-        SketchOrSurface::SketchSurface(surface) => surface,
-        SketchOrSurface::Sketch(group) => group.on,
+    let (sketch_surface, units) = match sketch_surface_or_group {
+        SketchOrSurface::SketchSurface(surface) => (surface, radius.ty.expect_length()),
+        SketchOrSurface::Sketch(group) => (group.on, group.units),
     };
 
-    let half_angle = std::f64::consts::PI / data.num_sides as f64;
+    let half_angle = std::f64::consts::PI / num_sides as f64;
 
-    let radius_to_vertices = match data.polygon_type {
-        PolygonType::Inscribed => data.radius.n,
-        PolygonType::Circumscribed => data.radius.n / half_angle.cos(),
+    let radius_to_vertices = if inscribed.unwrap_or(true) {
+        // inscribed
+        radius.n
+    } else {
+        // circumscribed
+        radius.n / half_angle.cos()
     };
 
-    let angle_step = 2.0 * std::f64::consts::PI / data.num_sides as f64;
+    let angle_step = std::f64::consts::TAU / num_sides as f64;
 
-    let vertices: Vec<[f64; 2]> = (0..data.num_sides)
+    let center_u = point_to_len_unit(center, units);
+
+    let vertices: Vec<[f64; 2]> = (0..num_sides)
         .map(|i| {
             let angle = angle_step * i as f64;
             [
-                data.center[0].n + radius_to_vertices * angle.cos(),
-                data.center[1].n + radius_to_vertices * angle.sin(),
+                center_u[0] + radius_to_vertices * angle.cos(),
+                center_u[1] + radius_to_vertices * angle.sin(),
             ]
         })
         .collect();
 
-    let mut sketch =
-        crate::std::sketch::inner_start_profile_at(vertices[0], sketch_surface, None, exec_state, args.clone()).await?;
+    let mut sketch = crate::std::sketch::inner_start_profile_at(
+        point_to_typed(vertices[0], units),
+        sketch_surface,
+        None,
+        exec_state,
+        args.clone(),
+    )
+    .await?;
 
     // Draw all the lines with unique IDs and modified tags
     for vertex in vertices.iter().skip(1) {
@@ -380,7 +385,9 @@ async fn inner_polygon(
             ModelingCmd::from(mcmd::ExtendPath {
                 path: sketch.id.into(),
                 segment: PathSegment::Line {
-                    end: KPoint2d::from(*vertex).with_z(0.0).map(LengthUnit),
+                    end: KPoint2d::from(untyped_point_to_mm(*vertex, units))
+                        .with_z(0.0)
+                        .map(LengthUnit),
                     relative: false,
                 },
             }),
@@ -389,9 +396,9 @@ async fn inner_polygon(
 
         let current_path = Path::ToPoint {
             base: BasePath {
-                from: from.into(),
+                from: from.ignore_units(),
                 to: *vertex,
-                tag: tag.clone(),
+                tag: None,
                 units: sketch.units,
                 geo_meta: GeoMeta {
                     id,
@@ -399,10 +406,6 @@ async fn inner_polygon(
                 },
             },
         };
-
-        if let Some(tag) = &tag {
-            sketch.add_tag(tag, &current_path, exec_state);
-        }
 
         sketch.paths.push(current_path);
     }
@@ -416,7 +419,9 @@ async fn inner_polygon(
         ModelingCmd::from(mcmd::ExtendPath {
             path: sketch.id.into(),
             segment: PathSegment::Line {
-                end: KPoint2d::from(vertices[0]).with_z(0.0).map(LengthUnit),
+                end: KPoint2d::from(untyped_point_to_mm(vertices[0], units))
+                    .with_z(0.0)
+                    .map(LengthUnit),
                 relative: false,
             },
         }),
@@ -425,9 +430,9 @@ async fn inner_polygon(
 
     let current_path = Path::ToPoint {
         base: BasePath {
-            from: from.into(),
+            from: from.ignore_units(),
             to: vertices[0],
-            tag: tag.clone(),
+            tag: None,
             units: sketch.units,
             geo_meta: GeoMeta {
                 id: close_id,
@@ -435,10 +440,6 @@ async fn inner_polygon(
             },
         },
     };
-
-    if let Some(tag) = &tag {
-        sketch.add_tag(tag, &current_path, exec_state);
-    }
 
     sketch.paths.push(current_path);
 

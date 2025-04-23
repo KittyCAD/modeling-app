@@ -1033,9 +1033,6 @@ description: Variables in memory after executing import_async.kcl
             "units": {
               "type": "Mm"
             }
-          },
-          "units": {
-            "type": "Mm"
           }
         },
         "start": {
@@ -2129,9 +2126,6 @@ description: Variables in memory after executing import_async.kcl
                   "units": {
                     "type": "Mm"
                   }
-                },
-                "units": {
-                  "type": "Mm"
                 }
               },
               "start": {
@@ -3625,7 +3619,7 @@ description: Variables in memory after executing import_async.kcl
   },
   "screw": {
     "type": "Module",
-    "value": 5
+    "value": 6
   },
   "start": {
     "type": "Sketch",
@@ -3669,9 +3663,6 @@ description: Variables in memory after executing import_async.kcl
           "units": {
             "type": "Mm"
           }
-        },
-        "units": {
-          "type": "Mm"
         }
       },
       "start": {
@@ -3745,9 +3736,6 @@ description: Variables in memory after executing import_async.kcl
         "units": {
           "type": "Mm"
         }
-      },
-      "units": {
-        "type": "Mm"
       }
     }
   },
@@ -7684,9 +7672,6 @@ description: Variables in memory after executing import_async.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -11651,9 +11636,6 @@ description: Variables in memory after executing import_async.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -15618,9 +15600,6 @@ description: Variables in memory after executing import_async.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -19585,9 +19564,6 @@ description: Variables in memory after executing import_async.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -23552,9 +23528,6 @@ description: Variables in memory after executing import_async.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -27519,9 +27492,6 @@ description: Variables in memory after executing import_async.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -31486,9 +31456,6 @@ description: Variables in memory after executing import_async.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -35453,9 +35420,6 @@ description: Variables in memory after executing import_async.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -39420,9 +39384,6 @@ description: Variables in memory after executing import_async.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -43387,9 +43348,6 @@ description: Variables in memory after executing import_async.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -47354,9 +47312,6 @@ description: Variables in memory after executing import_async.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -51321,9 +51276,6 @@ description: Variables in memory after executing import_async.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -55288,9 +55240,6 @@ description: Variables in memory after executing import_async.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -59255,9 +59204,6 @@ description: Variables in memory after executing import_async.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -63222,9 +63168,6 @@ description: Variables in memory after executing import_async.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -67189,9 +67132,6 @@ description: Variables in memory after executing import_async.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -71156,9 +71096,6 @@ description: Variables in memory after executing import_async.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -75123,9 +75060,6 @@ description: Variables in memory after executing import_async.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -79090,9 +79024,6 @@ description: Variables in memory after executing import_async.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -83057,9 +82988,6 @@ description: Variables in memory after executing import_async.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -87024,9 +86952,6 @@ description: Variables in memory after executing import_async.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {

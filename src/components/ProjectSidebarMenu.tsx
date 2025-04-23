@@ -220,7 +220,7 @@ function ProjectMenuPopover({
         {
           id: 'share-link',
           Element: 'button',
-          children: 'Share current part (via Zoo link)',
+          children: 'Share part via Zoo link',
           disabled: !findCommand(shareCommandInfo),
           onClick: async () => {
             await copyFileShareLink({

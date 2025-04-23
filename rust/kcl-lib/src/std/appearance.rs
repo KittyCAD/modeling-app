@@ -11,10 +11,7 @@ use serde::Serialize;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    execution::{
-        types::{NumericType, PrimitiveType, RuntimeType},
-        ExecState, KclValue, SolidOrImportedGeometry,
-    },
+    execution::{types::RuntimeType, ExecState, KclValue, SolidOrImportedGeometry},
     std::Args,
 };
 
@@ -50,9 +47,8 @@ pub async fn appearance(exec_state: &mut ExecState, args: Args) -> Result<KclVal
     )?;
 
     let color: String = args.get_kw_arg("color")?;
-    let count_ty = RuntimeType::Primitive(PrimitiveType::Number(NumericType::count()));
-    let metalness: Option<TyF64> = args.get_kw_arg_opt_typed("metalness", &count_ty, exec_state)?;
-    let roughness: Option<TyF64> = args.get_kw_arg_opt_typed("roughness", &count_ty, exec_state)?;
+    let metalness: Option<TyF64> = args.get_kw_arg_opt_typed("metalness", &RuntimeType::count(), exec_state)?;
+    let roughness: Option<TyF64> = args.get_kw_arg_opt_typed("roughness", &RuntimeType::count(), exec_state)?;
     let data = AppearanceData {
         color,
         metalness,

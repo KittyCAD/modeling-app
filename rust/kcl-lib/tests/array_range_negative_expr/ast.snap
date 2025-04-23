@@ -96,73 +96,53 @@ description: Result of parsing array_range_negative_expr.kcl
         "expression": {
           "arguments": [
             {
-              "commentStart": 0,
-              "computed": false,
-              "end": 0,
-              "object": {
+              "type": "LabeledArg",
+              "label": {
                 "commentStart": 0,
                 "end": 0,
-                "name": "xs",
+                "name": "isEqualTo",
                 "start": 0,
-                "type": "Identifier",
                 "type": "Identifier"
               },
-              "property": {
+              "arg": {
+                "argument": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "raw": "5",
+                  "start": 0,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": {
+                    "value": 5.0,
+                    "suffix": "None"
+                  }
+                },
                 "commentStart": 0,
                 "end": 0,
-                "raw": "0",
+                "operator": "-",
                 "start": 0,
-                "type": "Literal",
-                "type": "Literal",
-                "value": {
-                  "value": 0.0,
-                  "suffix": "None"
-                }
-              },
-              "start": 0,
-              "type": "MemberExpression",
-              "type": "MemberExpression"
-            },
-            {
-              "argument": {
-                "commentStart": 0,
-                "end": 0,
-                "raw": "5",
-                "start": 0,
-                "type": "Literal",
-                "type": "Literal",
-                "value": {
-                  "value": 5.0,
-                  "suffix": "None"
-                }
-              },
-              "commentStart": 0,
-              "end": 0,
-              "operator": "-",
-              "start": 0,
-              "type": "UnaryExpression",
-              "type": "UnaryExpression"
-            },
-            {
-              "commentStart": 0,
-              "end": 0,
-              "raw": "0.001",
-              "start": 0,
-              "type": "Literal",
-              "type": "Literal",
-              "value": {
-                "value": 0.001,
-                "suffix": "None"
+                "type": "UnaryExpression",
+                "type": "UnaryExpression"
               }
             },
             {
-              "commentStart": 0,
-              "end": 0,
-              "raw": "\"first element is -5\"",
-              "start": 0,
-              "type": "Literal",
-              "type": "Literal",
-              "value": "first element is -5"
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 0,
+                "end": 0,
+                "name": "error",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "arg": {
+                "commentStart": 0,
+                "end": 0,
+                "raw": "\"first element is -5\"",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": "first element is -5"
+              }
             }
           ],
           "callee": {
@@ -172,7 +152,7 @@ description: Result of parsing array_range_negative_expr.kcl
             "name": {
               "commentStart": 0,
               "end": 0,
-              "name": "assertEqual",
+              "name": "assert",
               "start": 0,
               "type": "Identifier"
             },
@@ -183,8 +163,36 @@ description: Result of parsing array_range_negative_expr.kcl
           "commentStart": 0,
           "end": 0,
           "start": 0,
-          "type": "CallExpression",
-          "type": "CallExpression"
+          "type": "CallExpressionKw",
+          "type": "CallExpressionKw",
+          "unlabeled": {
+            "commentStart": 0,
+            "computed": false,
+            "end": 0,
+            "object": {
+              "commentStart": 0,
+              "end": 0,
+              "name": "xs",
+              "start": 0,
+              "type": "Identifier",
+              "type": "Identifier"
+            },
+            "property": {
+              "commentStart": 0,
+              "end": 0,
+              "raw": "0",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 0.0,
+                "suffix": "None"
+              }
+            },
+            "start": 0,
+            "type": "MemberExpression",
+            "type": "MemberExpression"
+          }
         },
         "start": 0,
         "type": "ExpressionStatement",
