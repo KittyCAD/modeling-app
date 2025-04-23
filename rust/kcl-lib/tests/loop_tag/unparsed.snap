@@ -28,7 +28,7 @@ fn calculatePoint(index) {
 
 // Start sketch on the XY plane
 initialSketch = startSketchOn(XY)
-  |> startProfileAt(calculatePoint(0), %)
+  |> startProfile(at = calculatePoint(0))
 
 // Draw lines to form the base of the cylinder
 finalSketch = reduce([1 .. numSides - 1], initialSketch, fn(index, sketch) {

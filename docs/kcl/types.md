@@ -183,7 +183,7 @@ way:
 
 ```norun
 startSketchOn(XZ)
-  |> startProfileAt(origin, %)
+  |> startProfile(at = origin)
   |> angledLine(angle = 0, length = 191.26, tag = $rectangleSegmentA001)
   |> angledLine(
        angle = segAng(rectangleSegmentA001) - 90,
@@ -218,7 +218,7 @@ However if the code was written like this:
 ```norun
 fn rect(origin) {
   return startSketchOn(XZ)
-    |> startProfileAt(origin, %)
+    |> startProfile(at = origin)
     |> angledLine(angle = 0, length = 191.26, tag = $rectangleSegmentA001)
     |> angledLine(
          angle = segAng(rectangleSegmentA001) - 90,
@@ -248,7 +248,7 @@ For example the following code works.
 ```norun
 fn rect(origin) {
   return startSketchOn(XZ)
-    |> startProfileAt(origin, %)
+    |> startProfile(at = origin)
     |> angledLine(angle = 0, length = 191.26, tag = $rectangleSegmentA001)
     |> angledLine(
          angle = segAng(rectangleSegmentA001) - 90,

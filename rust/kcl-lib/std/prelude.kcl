@@ -418,7 +418,7 @@ export fn toYards(@num: number(yd)): number(yd) {
 ///
 /// ```
 /// exampleSketch = startSketchOn(XZ)
-///   |> startProfileAt([0, 0], %)
+///   |> startProfile(at = [0, 0])
 ///   |> angledLine(
 ///     angle = 50,
 ///     length = 70 * cos(toRadians(45)),
@@ -436,7 +436,7 @@ export fn toRadians(@num: number(rad)): number(rad) {
 ///
 /// ```
 /// exampleSketch = startSketchOn(XZ)
-///   |> startProfileAt([0, 0], %)
+///   |> startProfile(at = [0, 0])
 ///   |> angledLine(
 ///     angle = 50,
 ///     length = 70 * cos(toDegrees((PI/4): number(rad))),
