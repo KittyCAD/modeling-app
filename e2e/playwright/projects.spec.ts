@@ -400,11 +400,6 @@ test(
     await expect(page.getByText('broken-code')).toBeVisible()
     await page.getByText('broken-code').click()
 
-    // Gotcha: You can not use scene.settled() since the KCL code is going to fail
-    await expect(
-      page.getByTestId('model-state-indicator-playing')
-    ).toBeAttached()
-
     // Gotcha: Scroll to the text content in code mirror because CodeMirror lazy loads DOM content
     await editor.scrollToText(
       "|> line(end = [0, wallMountL], tag = 'outerEdge')"
@@ -779,7 +774,9 @@ test.describe(`Project management commands`, () => {
       // Constants and locators
       const projectHomeLink = page.getByTestId('project-link')
       const commandButton = page.getByRole('button', { name: 'Commands' })
-      const commandOption = page.getByRole('option', { name: 'rename project' })
+      const commandOption = page.getByRole('option', {
+        name: 'rename project',
+      })
       const projectNameOption = page.getByRole('option', { name: projectName })
       const projectRenamedName = `untitled`
       // const projectMenuButton = page.getByTestId('project-sidebar-toggle')
@@ -839,7 +836,9 @@ test.describe(`Project management commands`, () => {
       // Constants and locators
       const projectHomeLink = page.getByTestId('project-link')
       const commandButton = page.getByRole('button', { name: 'Commands' })
-      const commandOption = page.getByRole('option', { name: 'delete project' })
+      const commandOption = page.getByRole('option', {
+        name: 'delete project',
+      })
       const projectNameOption = page.getByRole('option', { name: projectName })
       const commandWarning = page.getByText('Are you sure you want to delete?')
       const commandSubmitButton = page.getByRole('button', {
@@ -891,7 +890,9 @@ test.describe(`Project management commands`, () => {
       // Constants and locators
       const projectHomeLink = page.getByTestId('project-link')
       const commandButton = page.getByRole('button', { name: 'Commands' })
-      const commandOption = page.getByRole('option', { name: 'rename project' })
+      const commandOption = page.getByRole('option', {
+        name: 'rename project',
+      })
       const projectNameOption = page.getByRole('option', { name: projectName })
       const projectRenamedName = `untitled`
       const commandContinueButton = page.getByRole('button', {
@@ -947,7 +948,9 @@ test.describe(`Project management commands`, () => {
       // Constants and locators
       const projectHomeLink = page.getByTestId('project-link')
       const commandButton = page.getByRole('button', { name: 'Commands' })
-      const commandOption = page.getByRole('option', { name: 'delete project' })
+      const commandOption = page.getByRole('option', {
+        name: 'delete project',
+      })
       const projectNameOption = page.getByRole('option', { name: projectName })
       const commandWarning = page.getByText('Are you sure you want to delete?')
       const commandSubmitButton = page.getByRole('button', {
@@ -1962,13 +1965,13 @@ test(
 test(
   'Settings persist across restarts',
   { tag: '@electron' },
-  async ({ page, scene, cmdBar }, testInfo) => {
+  async ({ page, toolbar }, testInfo) => {
     await test.step('We can change a user setting like theme', async () => {
       await page.setBodyDimensions({ width: 1200, height: 500 })
 
       page.on('console', console.log)
 
-      await page.getByTestId('user-sidebar-toggle').click()
+      await toolbar.userSidebarButton.click()
 
       await page.getByTestId('user-settings').click()
 
@@ -1995,7 +1998,7 @@ test(
 test(
   'Original project name persist after onboarding',
   { tag: '@electron' },
-  async ({ page }, testInfo) => {
+  async ({ page, toolbar }, testInfo) => {
     test.fixme(orRunWhenFullSuiteEnabled())
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
@@ -2007,7 +2010,7 @@ test(
     })
 
     await test.step('Should go through onboarding', async () => {
-      await page.getByTestId('user-sidebar-toggle').click()
+      await toolbar.userSidebarButton.click()
       await page.getByTestId('user-settings').click()
       await page.getByRole('button', { name: 'Replay Onboarding' }).click()
 

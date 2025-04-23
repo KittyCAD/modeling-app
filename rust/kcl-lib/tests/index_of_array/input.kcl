@@ -8,8 +8,8 @@ arr = [90, 91, 92]
 
 result0 = arr[1]
 
-assertLessThanOrEq(result0, 91, "Literal property lookup")
-assertGreaterThanOrEq(result0, 91, "Literal property lookup")
+assert(result0, isLessThanOrEqual = 91, error = "Literal property lookup")
+assert(result0, isGreaterThanOrEqual = 91, error = "Literal property lookup")
 
 // Test: computed index.
 
@@ -17,5 +17,5 @@ assertGreaterThanOrEq(result0, 91, "Literal property lookup")
 i = int(1 + 0)
 result1 = arr[i]
 
-assertLessThanOrEq(result1, 91, "Computed property lookup")
-assertGreaterThanOrEq(result1, 91, "Computed property lookup")
+assert(result1, isLessThanOrEqual = 91, error = "Computed property lookup")
+assert(result1, isGreaterThanOrEqual = 91, error = "Computed property lookup")

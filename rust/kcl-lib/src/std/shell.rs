@@ -16,10 +16,10 @@ use super::args::TyF64;
 /// Create a shell.
 pub async fn shell(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let solids = args.get_unlabeled_kw_arg_typed("solids", &RuntimeType::solids(), exec_state)?;
-    let thickness: TyF64 = args.get_kw_arg_typed("thickness", &RuntimeType::count(), exec_state)?;
+    let thickness: TyF64 = args.get_kw_arg_typed("thickness", &RuntimeType::length(), exec_state)?;
     let faces = args.get_kw_arg("faces")?;
 
-    let result = inner_shell(solids, thickness.n, faces, exec_state, args).await?;
+    let result = inner_shell(solids, thickness, faces, exec_state, args).await?;
     Ok(result.into())
 }
 
@@ -182,7 +182,7 @@ pub async fn shell(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 }]
 async fn inner_shell(
     solids: Vec<Solid>,
-    thickness: f64,
+    thickness: TyF64,
     faces: Vec<FaceTag>,
     exec_state: &mut ExecState,
     args: Args,
@@ -237,7 +237,7 @@ async fn inner_shell(
             hollow: false,
             face_ids,
             object_id: solids[0].id,
-            shell_thickness: LengthUnit(thickness),
+            shell_thickness: LengthUnit(thickness.to_mm()),
         }),
     )
     .await?;
@@ -247,9 +247,10 @@ async fn inner_shell(
 
 /// Make the inside of a 3D object hollow.
 pub async fn hollow(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (thickness, solid) = args.get_data_and_solid(exec_state)?;
+    let solid = args.get_unlabeled_kw_arg_typed("solid", &RuntimeType::solid(), exec_state)?;
+    let thickness: TyF64 = args.get_kw_arg_typed("thickness", &RuntimeType::length(), exec_state)?;
 
-    let value = inner_hollow(thickness.n, solid, exec_state, args).await?;
+    let value = inner_hollow(solid, thickness, exec_state, args).await?;
     Ok(KclValue::Solid { value })
 }
 
@@ -267,7 +268,7 @@ pub async fn hollow(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 ///     |> line(end = [-24, 0])
 ///     |> close()
 ///     |> extrude(length = 6)
-///     |> hollow (0.25, %)
+///     |> hollow(thickness = 0.25)
 /// ```
 ///
 /// ```no_run
@@ -279,7 +280,7 @@ pub async fn hollow(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 ///     |> line(end = [-24, 0])
 ///     |> close()
 ///     |> extrude(length = 6)
-///     |> hollow (0.5, %)
+///     |> hollow(thickness = 0.5)
 /// ```
 ///
 /// ```no_run
@@ -301,15 +302,21 @@ pub async fn hollow(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 ///     |> circle( center = [size / 2, -size / 2], radius = 25 )
 ///     |> extrude(length = 50)
 ///
-/// hollow(0.5, case)
+/// hollow(case, thickness = 0.5)
 /// ```
 #[stdlib {
     name = "hollow",
     feature_tree_operation = true,
+    keywords = true,
+    unlabeled_first = true,
+    args = {
+        solid = { docs = "Which solid to shell out" },
+        thickness = {docs = "The thickness of the shell" },
+    }
 }]
 async fn inner_hollow(
-    thickness: f64,
     solid: Box<Solid>,
+    thickness: TyF64,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Box<Solid>, KclError> {
@@ -323,7 +330,7 @@ async fn inner_hollow(
             hollow: true,
             face_ids: Vec::new(), // This is empty because we want to hollow the entire object.
             object_id: solid.id,
-            shell_thickness: LengthUnit(thickness),
+            shell_thickness: LengthUnit(thickness.to_mm()),
         }),
     )
     .await?;

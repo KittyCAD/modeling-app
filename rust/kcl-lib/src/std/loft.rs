@@ -10,7 +10,10 @@ use kittycad_modeling_cmds as kcmc;
 use super::{args::TyF64, DEFAULT_TOLERANCE};
 use crate::{
     errors::{KclError, KclErrorDetails},
-    execution::{types::RuntimeType, ExecState, KclValue, Sketch, Solid},
+    execution::{
+        types::{NumericType, RuntimeType},
+        ExecState, KclValue, Sketch, Solid,
+    },
     parsing::ast::types::TagNode,
     std::{extrude::do_post_extrude, Args},
 };
@@ -30,7 +33,7 @@ pub async fn loft(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
     // This can be set to override the automatically determined topological base curve, which is usually the first section encountered.
     let base_curve_index: Option<u32> = args.get_kw_arg_opt("baseCurveIndex")?;
     // Tolerance for the loft operation.
-    let tolerance: Option<TyF64> = args.get_kw_arg_opt_typed("tolerance", &RuntimeType::count(), exec_state)?;
+    let tolerance: Option<TyF64> = args.get_kw_arg_opt_typed("tolerance", &RuntimeType::length(), exec_state)?;
     let tag_start = args.get_kw_arg_opt("tagStart")?;
     let tag_end = args.get_kw_arg_opt("tagEnd")?;
 
@@ -39,7 +42,7 @@ pub async fn loft(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
         v_degree,
         bez_approximate_rational,
         base_curve_index,
-        tolerance.map(|t| t.n),
+        tolerance,
         tag_start,
         tag_end,
         exec_state,
@@ -136,7 +139,7 @@ async fn inner_loft(
     v_degree: NonZeroU32,
     bez_approximate_rational: bool,
     base_curve_index: Option<u32>,
-    tolerance: Option<f64>,
+    tolerance: Option<TyF64>,
     tag_start: Option<TagNode>,
     tag_end: Option<TagNode>,
     exec_state: &mut ExecState,
@@ -160,7 +163,7 @@ async fn inner_loft(
             section_ids: sketches.iter().map(|group| group.id).collect(),
             base_curve_index,
             bez_approximate_rational,
-            tolerance: LengthUnit(tolerance.unwrap_or(DEFAULT_TOLERANCE)),
+            tolerance: LengthUnit(tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE)),
             v_degree,
         }),
     )
@@ -174,7 +177,7 @@ async fn inner_loft(
         do_post_extrude(
             &sketch,
             id.into(),
-            0.0,
+            TyF64::new(0.0, NumericType::mm()),
             false,
             &super::extrude::NamedCapTags {
                 start: tag_start.as_ref(),
