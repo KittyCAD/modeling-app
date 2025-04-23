@@ -3,7 +3,6 @@ import usePlatform from '@src/hooks/usePlatform'
 import { hotkeyDisplay } from '@src/lib/hotkeyWrapper'
 import { commandBarActor } from '@src/machines/commandBarMachine'
 import { CustomIcon } from './CustomIcon'
-import Tooltip from './Tooltip'
 
 export function CommandBarOpenButton() {
   const platform = usePlatform()
@@ -20,12 +19,6 @@ export function CommandBarOpenButton() {
       <kbd className="dark:bg-chalkboard-80 font-mono rounded-sm text-primary/70 dark:text-inherit inline-block px-1">
         {hotkeyDisplay(COMMAND_PALETTE_HOTKEY, platform)}
       </kbd>
-      <Tooltip
-        position="bottom-right"
-        contentClassName="max-w-none flex items-center gap-4"
-      >
-        <span className="flex-1">Open command palette to search</span>
-      </Tooltip>
     </button>
   )
 }
