@@ -104,7 +104,6 @@ import type CodeManager from '@src/lang/codeManager'
 import { ARG_END, ARG_AT, ARG_END_ABSOLUTE } from '@src/lang/constants'
 import {
   createArrayExpression,
-  createCallExpressionStdLib,
   createCallExpressionStdLibKw,
   createLabeledArg,
   createLiteral,
