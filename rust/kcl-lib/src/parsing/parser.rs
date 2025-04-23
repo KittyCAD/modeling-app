@@ -2074,6 +2074,7 @@ fn possible_operands(i: &mut TokenSlice) -> PResult<Expr> {
         member_expression.map(Box::new).map(Expr::MemberExpression),
         literal.map(Expr::Literal),
         fn_call.map(Box::new).map(Expr::CallExpression),
+        fn_call_kw.map(Box::new).map(Expr::CallExpressionKw),
         name.map(Box::new).map(Expr::Name),
         binary_expr_in_parens.map(Box::new).map(Expr::BinaryExpression),
         unnecessarily_bracketed,
@@ -3252,6 +3253,14 @@ mod tests {
         // TODO: Better comment. This should explain the compiler expected ) because the user had started declaring the function's parameters.
         // Part of https://github.com/KittyCAD/modeling-app/issues/784
         assert_eq!(err.message, "Unexpected end of file. The compiler expected )");
+    }
+
+    #[test]
+    fn kw_call_as_operand() {
+        let tokens = crate::parsing::token::lex("f(x = 1)", ModuleId::default()).unwrap();
+        let tokens = tokens.as_slice();
+        let op = operand.parse(tokens).unwrap();
+        println!("{op:#?}");
     }
 
     #[test]
@@ -5389,6 +5398,7 @@ my14 = 4 ^ 2 - 3 ^ 2 * 2
              bar = x,
            )"#
     );
+    snapshot_test!(kw_function_in_binary_op, r#"val = f(x = 1) + 1"#);
 }
 
 #[allow(unused)]
