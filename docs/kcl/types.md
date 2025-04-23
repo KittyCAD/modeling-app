@@ -169,7 +169,7 @@ startSketchOn(XZ)
 
 Note that we are still in the process of migrating KCL's standard library to use keyword arguments. So some
 functions are still unfortunately using positional arguments. We're moving them over, so keep checking back.
-Some functions like `angledLine`, `startProfileAt` etc are still using the old positional argument syntax.
+Some functions are still using the old positional argument syntax.
 Check the docs page for each function and look at its examples to see.
 
 ## Tags
