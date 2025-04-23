@@ -241,6 +241,31 @@ A circular arc, not necessarily tangential to the current point.
 
 
 ----
+An involute of a circle of start_radius ending at end_radius
+
+**Type:** `object`
+
+
+
+
+
+## Properties
+
+| Property | Type | Description | Required |
+|----------|------|-------------|----------|
+| `type` |enum: `CircularInvolute`|  | No |
+| `start_radius` |[`number`](/docs/kcl/types/number)| The radius of the base circle of the involute | No |
+| `end_radius` |[`number`](/docs/kcl/types/number)| The radius that the involute ends at | No |
+| `angle` |[`number`](/docs/kcl/types/number)| Angle about which the whole involute is rotated | No |
+| `reverse` |`boolean`| If true, the path segment starts at the end radius and goes towards the start radius | No |
+| `from` |`[number, number]`| The from point. | No |
+| `to` |`[number, number]`| The to point. | No |
+| `units` |[`UnitLen`](/docs/kcl/types/UnitLen)| A unit of length. | No |
+| [`tag`](/docs/kcl/types/tag) |[`TagDeclarator`](/docs/kcl/types#tag-declaration)| The tag of the path. | No |
+| `__geoMeta` |[`GeoMeta`](/docs/kcl/types/GeoMeta)| Metadata. | No |
+
+
+----
 
 
 
