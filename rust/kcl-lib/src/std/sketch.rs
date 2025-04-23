@@ -107,11 +107,14 @@ pub async fn involute_circular(exec_state: &mut ExecState, args: Args) -> Result
     let tag = args.get_kw_arg_opt(NEW_TAG_KW)?;
 
     if end_radius.n < start_radius.n {
-            return Err(KclError::Semantic(KclErrorDetails {
-                source_ranges: vec![args.source_range],
-                message: format!("endRadius: {0} cannot be less than startRadius: {1}", end_radius.n, start_radius.n)
-                    .to_owned(),
-            }));
+        return Err(KclError::Semantic(KclErrorDetails {
+            source_ranges: vec![args.source_range],
+            message: format!(
+                "endRadius: {0} cannot be less than startRadius: {1}",
+                end_radius.n, start_radius.n
+            )
+            .to_owned(),
+        }));
     }
 
     let new_sketch = inner_involute_circular(
