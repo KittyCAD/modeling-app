@@ -27,6 +27,8 @@ import { commandBarActor } from '@src/machines/commandBarMachine'
 import { onboardingPaths } from '@src/routes/Onboarding/paths'
 import { reportRejection } from '@src/lib/trap'
 import { refreshPage } from '@src/lib/utils'
+import { hotkeyDisplay } from '@src/lib/hotkeyWrapper'
+import usePlatform from '@src/hooks/usePlatform'
 
 interface ModelingSidebarProps {
   paneOpacity: '' | 'opacity-20' | 'opacity-40'
@@ -341,6 +343,7 @@ function ModelingPaneButton({
   disabledText,
   ...props
 }: ModelingPaneButtonProps) {
+  const platform = usePlatform()
   useHotkeys(paneConfig.keybinding, onClick, {
     scopes: ['modeling'],
   })
@@ -380,7 +383,7 @@ function ModelingPaneButton({
             {paneIsOpen !== undefined ? ` pane` : ''}
           </span>
           <kbd className="hotkey text-xs capitalize">
-            {paneConfig.keybinding}
+            {hotkeyDisplay(paneConfig.keybinding, platform)}
           </kbd>
         </Tooltip>
       </button>
