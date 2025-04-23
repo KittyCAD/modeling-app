@@ -90,9 +90,6 @@ description: Variables in memory after executing helix_simple.kcl
           "units": {
             "type": "Mm"
           }
-        },
-        "units": {
-          "type": "Mm"
         }
       },
       "start": {

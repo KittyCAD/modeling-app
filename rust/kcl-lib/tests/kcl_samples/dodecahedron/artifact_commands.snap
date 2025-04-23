@@ -33,14 +33,6 @@ description: Artifact commands dodecahedron.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "set_scene_units",
-      "unit": "in"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
       "type": "make_plane",
       "origin": {
         "x": 0.0,
@@ -92,7 +84,7 @@ description: Artifact commands dodecahedron.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 15.176549955167156,
+        "x": 385.48436886124574,
         "y": 0.0,
         "z": 0.0
       }
@@ -114,8 +106,8 @@ description: Artifact commands dodecahedron.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 4.6898,
-          "y": 14.4338,
+          "x": 119.1212,
+          "y": 366.6174,
           "z": 0.0
         },
         "relative": false
@@ -131,8 +123,8 @@ description: Artifact commands dodecahedron.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -12.2781,
-          "y": 8.9206,
+          "x": -311.8634,
+          "y": 226.582,
           "z": 0.0
         },
         "relative": false
@@ -148,8 +140,8 @@ description: Artifact commands dodecahedron.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -12.2781,
-          "y": -8.9206,
+          "x": -311.8634,
+          "y": -226.582,
           "z": 0.0
         },
         "relative": false
@@ -165,8 +157,8 @@ description: Artifact commands dodecahedron.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 4.6898,
-          "y": -14.4338,
+          "x": 119.1212,
+          "y": -366.6174,
           "z": 0.0
         },
         "relative": false
@@ -182,7 +174,7 @@ description: Artifact commands dodecahedron.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 15.1765,
+          "x": 385.4844,
           "y": 0.0,
           "z": 0.0
         },
@@ -204,9 +196,9 @@ description: Artifact commands dodecahedron.kcl
     "command": {
       "type": "make_plane",
       "origin": {
-        "x": -17.76901418668612,
+        "x": -451.33296034182746,
         "y": 0.0,
-        "z": 10.981854713951094
+        "z": 278.9391097343577
       },
       "x_axis": {
         "x": -0.4472135954999579,
@@ -253,7 +245,7 @@ description: Artifact commands dodecahedron.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 15.176549955167156,
+        "x": 385.48436886124574,
         "y": 0.0,
         "z": 0.0
       }
@@ -275,8 +267,8 @@ description: Artifact commands dodecahedron.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 4.6898,
-          "y": 14.4338,
+          "x": 119.1212,
+          "y": 366.6174,
           "z": 0.0
         },
         "relative": false
@@ -292,8 +284,8 @@ description: Artifact commands dodecahedron.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -12.2781,
-          "y": 8.9206,
+          "x": -311.8634,
+          "y": 226.582,
           "z": 0.0
         },
         "relative": false
@@ -309,8 +301,8 @@ description: Artifact commands dodecahedron.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -12.2781,
-          "y": -8.9206,
+          "x": -311.8634,
+          "y": -226.582,
           "z": 0.0
         },
         "relative": false
@@ -326,8 +318,8 @@ description: Artifact commands dodecahedron.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 4.6898,
-          "y": -14.4338,
+          "x": 119.1212,
+          "y": -366.6174,
           "z": 0.0
         },
         "relative": false
@@ -343,7 +335,7 @@ description: Artifact commands dodecahedron.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 15.1765,
+          "x": 385.4844,
           "y": 0.0,
           "z": 0.0
         },
@@ -381,7 +373,7 @@ description: Artifact commands dodecahedron.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 5.0,
+      "distance": 127.0,
       "faces": null,
       "opposite": "None"
     }
@@ -532,7 +524,7 @@ description: Artifact commands dodecahedron.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 5.0,
+      "distance": 127.0,
       "faces": null,
       "opposite": "None"
     }
@@ -696,7 +688,7 @@ description: Artifact commands dodecahedron.kcl
       "center": {
         "x": 0.0,
         "y": 0.0,
-        "z": 19.866361807294155
+        "z": 504.6055899052715
       },
       "num_repetitions": 1,
       "arc_degrees": 360.0,
@@ -717,7 +709,7 @@ description: Artifact commands dodecahedron.kcl
       "center": {
         "x": 0.0,
         "y": 0.0,
-        "z": 19.866361807294155
+        "z": 504.6055899052715
       },
       "num_repetitions": 1,
       "arc_degrees": 360.0,
@@ -738,7 +730,7 @@ description: Artifact commands dodecahedron.kcl
       "center": {
         "x": 0.0,
         "y": 0.0,
-        "z": 19.866361807294155
+        "z": 504.6055899052715
       },
       "num_repetitions": 1,
       "arc_degrees": 360.0,
@@ -759,7 +751,7 @@ description: Artifact commands dodecahedron.kcl
       "center": {
         "x": 0.0,
         "y": 0.0,
-        "z": 19.866361807294155
+        "z": 504.6055899052715
       },
       "num_repetitions": 1,
       "arc_degrees": 360.0,
@@ -780,7 +772,7 @@ description: Artifact commands dodecahedron.kcl
       "center": {
         "x": 0.0,
         "y": 0.0,
-        "z": 19.866361807294155
+        "z": 504.6055899052715
       },
       "num_repetitions": 1,
       "arc_degrees": 360.0,
@@ -801,7 +793,7 @@ description: Artifact commands dodecahedron.kcl
       "center": {
         "x": 0.0,
         "y": 0.0,
-        "z": 19.866361807294155
+        "z": 504.6055899052715
       },
       "num_repetitions": 1,
       "arc_degrees": 360.0,
@@ -815,38 +807,6 @@ description: Artifact commands dodecahedron.kcl
       "type": "object_visible",
       "object_id": "[uuid]",
       "hidden": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "set_scene_units",
-      "unit": "mm"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "set_scene_units",
-      "unit": "mm"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "set_scene_units",
-      "unit": "mm"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "set_scene_units",
-      "unit": "mm"
     }
   }
 ]
