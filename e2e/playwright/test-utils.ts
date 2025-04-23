@@ -36,7 +36,6 @@ export const headerMasks = (page: Page) => [
 ]
 
 export const networkingMasks = (page: Page) => [
-  page.getByTestId('model-state-indicator'),
   page.getByTestId('network-toggle'),
 ]
 
@@ -85,12 +84,6 @@ async function waitForPageLoadWithRetry(page: Page) {
   await expect(async () => {
     await page.goto('/')
     const errorMessage = 'App failed to load - 🔃 Retrying ...'
-    await expect(
-      page.getByTestId('model-state-indicator-playing'),
-      errorMessage
-    ).toBeAttached({
-      timeout: 20_000,
-    })
 
     await expect(
       page.getByRole('button', { name: 'sketch Start Sketch' }),
@@ -103,11 +96,6 @@ async function waitForPageLoadWithRetry(page: Page) {
 
 // lee: This needs to be replaced by scene.settled() eventually.
 async function waitForPageLoad(page: Page) {
-  // wait for all spinners to be gone
-  await expect(page.getByTestId('model-state-indicator-playing')).toBeVisible({
-    timeout: 20_000,
-  })
-
   await expect(page.getByRole('button', { name: 'Start Sketch' })).toBeEnabled({
     timeout: 20_000,
   })

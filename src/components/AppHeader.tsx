@@ -48,7 +48,7 @@ export const AppHeader = ({
       <div className="flex-grow flex justify-center max-w-lg md:max-w-xl lg:max-w-2xl xl:max-w-4xl 2xl:max-w-5xl">
         {showToolbar && <Toolbar />}
       </div>
-      <div className="flex items-center gap-1 py-1 ml-auto">
+      <div className="flex items-center gap-2 py-1 ml-auto">
         {/* If there are children, show them, otherwise show User menu */}
         {children || <CommandBarOpenButton />}
         <UserSidebarMenu user={user} />
