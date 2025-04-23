@@ -452,6 +452,7 @@ export type ModelingMachineEvent =
   | { type: 'Finish arc' }
   | { type: 'Artifact graph populated' }
   | { type: 'Artifact graph emptied' }
+  | { type: 'Artifact graph initialized' }
   | {
       type: 'Toggle default plane visibility'
       planeId: string
@@ -3151,12 +3152,16 @@ export const modelingMachine = setup({
         'Boolean Union': 'Boolean uniting',
         'Boolean Intersect': 'Boolean intersecting',
 
-        // Can only show planes after artifact graph is populated
+        // This runs only for empty artifactgraphs
         'Artifact graph populated': {
           actions: [
             'reset client scene mouse handlers',
-            'Restore default plane visibility', // This only works when artifact graph is populated, not on "entry"
             'reset camera position',
+          ],
+        },
+        'Artifact graph initialized': {
+          actions: [
+            'Restore default plane visibility', // This only works when artifact graph is initialized, not on "entry"
           ],
         },
       },

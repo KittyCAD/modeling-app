@@ -355,6 +355,11 @@ export class KclManager {
         })
       }, 200)(null)
     }
+    deferExecution((a?: null) => {
+      this.engineCommandManager.modelingSend({
+        type: 'Artifact graph initialized',
+      })
+    }, 200)(null)
   }
 
   async safeParse(code: string): Promise<Node<Program> | null> {
