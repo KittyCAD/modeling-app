@@ -273,7 +273,7 @@ const OperationItemWrapper = ({
     >
       <button
         {...props}
-        className={`reset flex-1 flex items-center gap-2 text-left text-base ${selectable ? 'border-transparent dark:border-transparent' : 'border-none'} ${className}`}
+        className={`reset flex-1 flex items-center gap-2 text-left text-base ${selectable ? 'border-transparent dark:border-transparent' : 'border-none cursor-default'} ${className}`}
       >
         <CustomIcon name={icon} className="w-5 h-5 block" />
         {name}
