@@ -25,6 +25,8 @@ import { isDesktop } from '@src/lib/isDesktop'
 import { useSettings } from '@src/machines/appMachine'
 import { commandBarActor } from '@src/machines/commandBarMachine'
 import { onboardingPaths } from '@src/routes/Onboarding/paths'
+import { reportRejection } from '@src/lib/trap'
+import { refreshPage } from '@src/lib/utils'
 
 interface ModelingSidebarProps {
   paneOpacity: '' | 'opacity-20' | 'opacity-40'
@@ -128,6 +130,17 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
       hide: () => !isDesktop(),
       disable: () => {
         return machineManager.noMachinesReason()
+      },
+    },
+    {
+      id: 'refresh',
+      title: 'Refresh app',
+      sidebarName: 'Refresh app',
+      icon: 'arrowRotateRight',
+      keybinding: 'Mod + R',
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises
+      action: async () => {
+        refreshPage('Sidebar button').catch(reportRejection)
       },
     },
   ]
