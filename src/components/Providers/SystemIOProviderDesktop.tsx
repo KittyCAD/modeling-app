@@ -35,14 +35,6 @@ export function SystemIOMachineLogicListenerDesktop() {
     setSearchParams(searchParams)
   }, [searchParams, setSearchParams])
 
-  const useClearQueryParams = () => {
-    useEffect(() => {
-      if (clearURLParams.value) {
-        clearImportSearchParams()
-      }
-    }, [clearURLParams])
-  }
-
   const useAddProjectCommandsToCommandBar = () => {
     useEffect(() => {
       commandBarActor.send({
@@ -147,8 +139,6 @@ export function SystemIOMachineLogicListenerDesktop() {
   useApplicationProjectDirectory()
   useDefaultProjectName()
   useWatchingApplicationProjectDirectory()
-  // Gotcha: not required on desktop right now.
-  /* useClearQueryParams() */
 
   return null
 }
