@@ -55,11 +55,7 @@ description: Operations executed pentagon_fillet_sugar.kcl
     "group": {
       "type": "FunctionCall",
       "name": "circl",
-      "functionSourceRange": [
-        351,
-        600,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -178,11 +174,7 @@ description: Operations executed pentagon_fillet_sugar.kcl
     "group": {
       "type": "FunctionCall",
       "name": "circl",
-      "functionSourceRange": [
-        351,
-        600,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },

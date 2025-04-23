@@ -38,11 +38,7 @@ description: Operations executed gridfinity-bins.kcl
     "group": {
       "type": "FunctionCall",
       "name": "face",
-      "functionSourceRange": [
-        875,
-        1218,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -282,11 +278,7 @@ description: Operations executed gridfinity-bins.kcl
     "group": {
       "type": "FunctionCall",
       "name": "face",
-      "functionSourceRange": [
-        875,
-        1218,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },

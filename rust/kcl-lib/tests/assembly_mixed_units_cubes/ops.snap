@@ -8,7 +8,7 @@ description: Operations executed assembly_mixed_units_cubes.kcl
     "group": {
       "type": "ModuleInstance",
       "name": "cubeIn",
-      "moduleId": 6
+      "moduleId": 0
     },
     "sourceRange": []
   },
@@ -67,7 +67,7 @@ description: Operations executed assembly_mixed_units_cubes.kcl
     "group": {
       "type": "ModuleInstance",
       "name": "cubeMm",
-      "moduleId": 7
+      "moduleId": 0
     },
     "sourceRange": []
   },

@@ -8,11 +8,7 @@ description: Operations executed mounting-plate.kcl
     "group": {
       "type": "FunctionCall",
       "name": "rectShape",
-      "functionSourceRange": [
-        520,
-        888,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },

@@ -299,6 +299,8 @@ fn assert_common_snapshots(
                 "[].labeledArgs.*.value.**[].from[]" => rounded_redaction(4),
                 "[].labeledArgs.*.value.**[].to[]" => rounded_redaction(4),
                 ".**.sourceRange" => Vec::new(),
+                ".**.functionSourceRange" => Vec::new(),
+                ".**.moduleId" => 0,
             });
         })
     }));
