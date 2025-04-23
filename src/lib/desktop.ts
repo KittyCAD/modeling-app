@@ -85,7 +85,7 @@ export async function ensureProjectDirectoryExists(
   return projectDir
 }
 
-export async function mkdirOrNOOP(directoryPath: string): Promise<string> {
+export async function mkdirOrNOOP(directoryPath: string) {
   try {
     await window.electron.stat(directoryPath)
   } catch (e) {
