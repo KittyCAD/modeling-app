@@ -1,15 +1,18 @@
 import { useFileSystemWatcher } from '@src/hooks/useFileSystemWatcher'
 import { PATHS } from '@src/lib/paths'
-import { systemIOActor, useSettings } from '@src/lib/singletons'
+import { systemIOActor, useSettings, useToken } from '@src/lib/singletons'
 import {
   useHasListedProjects,
   useProjectDirectoryPath,
   useRequestedFileName,
   useRequestedProjectName,
+  useRequestedTextToCadGeneration
 } from '@src/machines/systemIO/hooks'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { useNavigate } from 'react-router-dom'
 import { useEffect } from 'react'
+import { submitAndAwaitTextToKclSystemIO } from "@src/lib/textToCad"
+import { reportRejection} from '@src/lib/trap'
 
 export function SystemIOMachineLogicListenerDesktop() {
   const requestedProjectName = useRequestedProjectName()
@@ -18,8 +21,9 @@ export function SystemIOMachineLogicListenerDesktop() {
   const hasListedProjects = useHasListedProjects()
   const navigate = useNavigate()
   const settings = useSettings()
+  const requestedTextToCadGeneration = useRequestedTextToCadGeneration()
+  const token = useToken()
 
-  const useGlobalProjectNavigation = () => {
     useEffect(() => {
       if (!requestedProjectName.name) {
         return
@@ -32,11 +36,10 @@ export function SystemIOMachineLogicListenerDesktop() {
       const requestedPath = `${PATHS.FILE}/${encodeURIComponent(
         projectPathWithoutSpecificKCLFile
       )}`
+
       navigate(requestedPath)
     }, [requestedProjectName])
-  }
 
-  const useGlobalFileNavigation = () => {
     useEffect(() => {
       if (!requestedFileName.file || !requestedFileName.project) {
         return
@@ -49,9 +52,7 @@ export function SystemIOMachineLogicListenerDesktop() {
       const requestedPath = `${PATHS.FILE}/${encodeURIComponent(filePath)}`
       navigate(requestedPath)
     }, [requestedFileName])
-  }
 
-  const useApplicationProjectDirectory = () => {
     useEffect(() => {
       systemIOActor.send({
         type: SystemIOMachineEvents.setProjectDirectoryPath,
@@ -61,9 +62,7 @@ export function SystemIOMachineLogicListenerDesktop() {
         },
       })
     }, [settings.app.projectDirectory.current])
-  }
 
-  const useDefaultProjectName = () => {
     useEffect(() => {
       systemIOActor.send({
         type: SystemIOMachineEvents.setDefaultProjectFolderName,
@@ -73,9 +72,7 @@ export function SystemIOMachineLogicListenerDesktop() {
         },
       })
     }, [settings.projects.defaultProjectName.current])
-  }
 
-  const useWatchingApplicationProjectDirectory = () => {
     useFileSystemWatcher(
       async () => {
         // Gotcha: Chokidar is buggy. It will emit addDir or add on files that did not get created.
@@ -95,13 +92,24 @@ export function SystemIOMachineLogicListenerDesktop() {
         ? [settings.app.projectDirectory.current]
         : []
     )
-  }
 
-  useGlobalProjectNavigation()
-  useGlobalFileNavigation()
-  useApplicationProjectDirectory()
-  useDefaultProjectName()
-  useWatchingApplicationProjectDirectory()
+
+
+  useEffect(()=>{
+    const requestedPromptTrimmed = requestedTextToCadGeneration.requestedPrompt.trim()
+    const requestedProjectName = requestedTextToCadGeneration.requestedProjectName
+    if (!requestedPromptTrimmed || !requestedProjectName) return
+    submitAndAwaitTextToKclSystemIO({
+      trimmedPrompt: requestedPromptTrimmed,
+      projectName: requestedProjectName,
+        navigate,
+        token,
+        settings: {
+          theme: settings.app.theme.current,
+          highlightEdges: settings.modeling.highlightEdges.current,
+        },
+      }).catch(reportRejection)
+  },[requestedTextToCadGeneration])
 
   return null
 }

@@ -18,6 +18,7 @@ import type { WebContentSendPayload } from '@src/menu/channels'
 
 export const RefreshButton = ({ children }: React.PropsWithChildren) => {
   const token = useToken()
+  window.token = token
   const coreDumpManager = useMemo(
     () =>
       new CoreDumpManager(

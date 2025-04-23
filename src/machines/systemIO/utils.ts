@@ -9,6 +9,7 @@ export enum SystemIOMachineActors {
   createKCLFile = 'create kcl file',
   checkReadWrite = 'check read write',
   importFileFromURL = 'import file from URL',
+  deleteKCLFile = 'delete kcl delete'
 }
 
 export enum SystemIOMachineStates {
@@ -21,6 +22,7 @@ export enum SystemIOMachineStates {
   creatingKCLFile = 'creatingKCLFile',
   checkingReadWrite = 'checkingReadWrite',
   importFileFromURL = 'importFileFromURL',
+  deletingKCLFile = 'deletingKCLFile'
 }
 
 const donePrefix = 'xstate.done.actor.'
@@ -40,6 +42,8 @@ export enum SystemIOMachineEvents {
   done_checkReadWrite = donePrefix + 'check read write',
   importFileFromURL = 'import file from URL',
   done_importFileFromURL = donePrefix + 'import file from URL',
+  generateTextToCAD = 'generate text to CAD',
+  deleteKCLFile = 'delete kcl file'
 }
 
 export enum SystemIOMachineActions {
@@ -51,6 +55,7 @@ export enum SystemIOMachineActions {
   toastSuccess = 'toastSuccess',
   toastError = 'toastError',
   setReadWriteProjectDirectory = 'set read write project directory',
+  setRequestedTextToCadGeneration = 'set requested text to cad generation'
 }
 
 export const NO_PROJECT_DIRECTORY = ''
@@ -70,4 +75,5 @@ export type SystemIOContext = {
   requestedFileName: { project: string; file: string }
   canReadWriteProjectDirectory: { value: boolean; error: unknown }
   clearURLParams: { value: boolean }
+  requestedTextToCadGeneration: { requestedPrompt: string, requestedProjectName: string}
 }

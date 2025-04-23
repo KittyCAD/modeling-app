@@ -29,12 +29,13 @@ import { base64Decode } from '@src/lang/wasm'
 import { isDesktop } from '@src/lib/isDesktop'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { PATHS } from '@src/lib/paths'
-import { codeManager, kclManager } from '@src/lib/singletons'
+import { codeManager, kclManager, systemIOActor } from '@src/lib/singletons'
 import { sendTelemetry } from '@src/lib/textToCadTelemetry'
 import type { Themes } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
 import { commandBarActor } from '@src/machines/commandBarMachine'
 import type { fileMachine } from '@src/machines/fileMachine'
+import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 
 const CANVAS_SIZE = 128
 const PROMPT_TRUNCATE_LENGTH = 128
@@ -143,20 +144,24 @@ export function ToastTextToCadSuccess({
   token,
   fileMachineSend,
   settings,
+  projectName,
+  fileName,
 }: {
   toastId: string
   data: TextToCad_type & { fileName: string }
   navigate: (to: string) => void
-  context: ReturnType<typeof useFileContext>['context']
+  context?: ReturnType<typeof useFileContext>['context']
   token?: string
-  fileMachineSend: (
+  fileMachineSend?: (
     event: EventFrom<typeof fileMachine>,
     data?: unknown
   ) => void
   settings: {
     theme: Themes
     highlightEdges: boolean
-  }
+  },
+  projectName?: string,
+  fileName?: string
 }) {
   const wrapperRef = useRef<HTMLDivElement | null>(null)
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
@@ -344,14 +349,23 @@ export function ToastTextToCadSuccess({
               }
               if (isDesktop()) {
                 // Delete the file from the project
-                fileMachineSend({
-                  type: 'Delete file',
-                  data: {
-                    name: data.fileName,
-                    path: `${context.project.path}${window.electron.sep}${data.fileName}`,
-                    children: null,
-                  },
-                })
+                const path = context ? `${context.project.path}${window.electron.sep}${data.fileName}` : `${projectName}${window.electron.sep}${fileName}`
+                if (projectName && fileName) {
+                  // Means you are doing the new workflow!!!
+                  systemIOActor.send({type: SystemIOMachineEvents.deleteKCLFile, data: {
+                    requestedProjectName: projectName,
+                    requestedFileName: fileName
+                  }})
+                } else if (fileMachineSend) {
+                  fileMachineSend({
+                    type: 'Delete file',
+                    data: {
+                      name: data.fileName,
+                      path,
+                       children: null,
+                     },
+                   })
+                 }
               }
               toast.dismiss(toastId)
             }}
@@ -368,10 +382,9 @@ export function ToastTextToCadSuccess({
               onClick={() => {
                 // eslint-disable-next-line @typescript-eslint/no-floating-promises
                 sendTelemetry(modelId, 'accepted', token)
+                const path = context ? `${context.project.path}${window.electron.sep}${data.fileName}` : `${projectName}${window.electron.sep}${fileName}`
                 navigate(
-                  `${PATHS.FILE}/${encodeURIComponent(
-                    `${context.project.path}${window.electron.sep}${data.fileName}`
-                  )}`
+                  `${PATHS.FILE}/${encodeURIComponent(path)}`
                 )
                 toast.dismiss(toastId)
               }}

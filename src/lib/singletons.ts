@@ -197,3 +197,4 @@ export const systemIOActor = appActor.getSnapshot().context.systemIOActor!
 
 export const engineStreamActor =
   appActor.getSnapshot().context.engineStreamActor!
+window.actor = systemIOActor

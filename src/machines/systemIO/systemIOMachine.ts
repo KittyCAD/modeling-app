@@ -11,6 +11,7 @@ import {
 import toast from 'react-hot-toast'
 import { assertEvent, assign, fromPromise, setup } from 'xstate'
 import type { AppMachineContext } from '@src/lib/types'
+import { submitTextToCadPrompt, getTextToCadResult } from '@src/lib/textToCad'
 
 /**
  * Handles any system level I/O for folders and files
@@ -64,19 +65,30 @@ export const systemIOMachine = setup({
             requestedFileName: string
             requestedCode: string
           }
-        }
+      }
       | {
-          type: SystemIOMachineEvents.importFileFromURL
+        type: SystemIOMachineEvents.importFileFromURL
+        data: {
+          requestedProjectName: string
+          requestedFileName: string
+          requestedCode: string
+        }
+      }
+      | {
+        type: SystemIOMachineEvents.setDefaultProjectFolderName
+        data: { requestedDefaultProjectFolderName: string }
+      }
+      | {
+        type: SystemIOMachineEvents.generateTextToCAD
+        data: { requestedPrompt: string, requestedProjectName: string}
+      }
+      | {
+          type: SystemIOMachineEvents.deleteKCLFile
           data: {
             requestedProjectName: string
             requestedFileName: string
-            requestedCode: string
           }
         }
-      | {
-          type: SystemIOMachineEvents.setDefaultProjectFolderName
-          data: { requestedDefaultProjectFolderName: string }
-        },
   },
   actions: {
     [SystemIOMachineActions.setFolders]: assign({
@@ -141,6 +153,12 @@ export const systemIOMachine = setup({
       canReadWriteProjectDirectory: ({ event }) => {
         assertEvent(event, SystemIOMachineEvents.done_checkReadWrite)
         return event.output
+      },
+    }),
+    [SystemIOMachineActions.setRequestedTextToCadGeneration]: assign({
+      requestedTextToCadGeneration: ({ event }) => {
+        assertEvent(event, SystemIOMachineEvents.generateTextToCAD)
+        return event.data
       },
     }),
   },
@@ -213,6 +231,23 @@ export const systemIOMachine = setup({
         return { value: true, error: undefined }
       }
     ),
+    [SystemIOMachineActors.deleteKCLFile]: fromPromise(
+      async ({
+        input,
+      }: {
+        input: {
+          context: SystemIOContext
+          requestedProjectName: string
+          requestedFileName: string
+        }
+      }): Promise<{
+        message: string
+        fileName: string
+        projectName: string
+      }> => {
+        return { message: '', fileName: '', projectName: '' }
+      }
+    ),
   },
 }).createMachine({
   initial: SystemIOMachineStates.idle,
@@ -231,6 +266,7 @@ export const systemIOMachine = setup({
     },
     canReadWriteProjectDirectory: { value: true, error: undefined },
     clearURLParams: { value: false },
+    requestedTextToCadGeneration: {requestedPrompt: '', requestedProjectName: NO_PROJECT_DIRECTORY}
   }),
   states: {
     [SystemIOMachineStates.idle]: {
@@ -266,6 +302,12 @@ export const systemIOMachine = setup({
         },
         [SystemIOMachineEvents.importFileFromURL]: {
           target: SystemIOMachineStates.importFileFromURL,
+        },
+        [SystemIOMachineEvents.generateTextToCAD]: {
+          actions: [SystemIOMachineActions.setRequestedTextToCadGeneration],
+        },
+        [SystemIOMachineEvents.deleteKCLFile]: {
+          target: SystemIOMachineStates.deletingKCLFile,
         },
       },
     },
@@ -428,11 +470,35 @@ export const systemIOMachine = setup({
           return {
             context,
             requestedProjectDirectoryPath:
-              event.data.requestedProjectDirectoryPath,
+            event.data.requestedProjectDirectoryPath,
           }
         },
         onDone: {
           target: SystemIOMachineStates.readingFolders,
+        },
+        onError: {
+          target: SystemIOMachineStates.readingFolders,
+          actions: [SystemIOMachineActions.toastError],
+        },
+      },
+    },
+    [SystemIOMachineStates.deletingKCLFile]: {
+      invoke: {
+        id: SystemIOMachineActors.deleteKCLFile,
+        src: SystemIOMachineActors.deleteKCLFile,
+        input: ({ context, event }) => {
+          assertEvent(event, SystemIOMachineEvents.deleteKCLFile)
+          return {
+            context,
+            requestedProjectName: event.data.requestedProjectName,
+            requestedFileName: event.data.requestedFileName
+          }
+        },
+        onDone: {
+          target: SystemIOMachineStates.readingFolders,
+          actions: [assign({requestedProjectName:(aaa)=>{
+            return {name:aaa.event.output.projectName}
+          }})]
         },
         onError: {
           target: SystemIOMachineStates.readingFolders,
