@@ -14,7 +14,7 @@ use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
         kcl_value::FunctionSource,
-        types::{NumericType, PrimitiveType, RuntimeType, UnitLen},
+        types::{NumericType, PrimitiveType, RuntimeType, UnitAngle, UnitLen, UnitType},
         ExecState, ExecutorContext, ExtrudeSurface, Helix, KclObjectFields, KclValue, Metadata, Sketch, SketchSurface,
         Solid, TagIdentifier,
     },
@@ -86,6 +86,34 @@ pub struct TyF64 {
 impl TyF64 {
     pub fn new(n: f64, ty: NumericType) -> Self {
         Self { n, ty }
+    }
+
+    pub fn to_mm(&self) -> f64 {
+        self.to_length_units(UnitLen::Mm)
+    }
+
+    pub fn to_length_units(&self, units: UnitLen) -> f64 {
+        let len = match &self.ty {
+            NumericType::Default { len, .. } => *len,
+            NumericType::Known(UnitType::Length(len)) => *len,
+            t => unreachable!("expected length, found {t:?}"),
+        };
+
+        assert_ne!(len, UnitLen::Unknown);
+
+        len.adjust_to(self.n, units).0
+    }
+
+    pub fn to_degrees(&self) -> f64 {
+        let angle = match self.ty {
+            NumericType::Default { angle, .. } => angle,
+            NumericType::Known(UnitType::Angle(angle)) => angle,
+            _ => unreachable!(),
+        };
+
+        assert_ne!(angle, UnitAngle::Unknown);
+
+        angle.adjust_to(self.n, UnitAngle::Degrees).0
     }
 
     pub fn count(n: f64) -> Self {
@@ -547,6 +575,29 @@ impl Args {
         FromArgs::from_args(self, 0)
     }
 
+    pub(crate) fn get_number_typed(&self, ty: &RuntimeType, exec_state: &mut ExecState) -> Result<f64, KclError> {
+        let Some(arg) = self.args.first() else {
+            return Err(KclError::Semantic(KclErrorDetails {
+                message: "Expected an argument".to_owned(),
+                source_ranges: vec![self.source_range],
+            }));
+        };
+
+        arg.value.coerce(ty, exec_state).map_err(|_| {
+            let actual_type_name = arg.value.human_friendly_type();
+            let message = format!(
+                "This function expected the input argument to be {} but it's actually of type {actual_type_name}",
+                ty.human_friendly_type(),
+            );
+            KclError::Semantic(KclErrorDetails {
+                source_ranges: arg.source_ranges(),
+                message,
+            })
+        })?;
+
+        Ok(TyF64::from_kcl_val(&arg.value).unwrap().n)
+    }
+
     pub(crate) fn get_number_array_with_types(&self) -> Result<Vec<TyF64>, KclError> {
         let numbers = self
             .args
@@ -577,7 +628,7 @@ impl Args {
         let mut numbers = numbers.into_iter();
         let a = numbers.next().unwrap();
         let b = numbers.next().unwrap();
-        Ok(NumericType::combine_eq(a, b))
+        Ok(NumericType::combine_eq_coerce(a, b))
     }
 
     pub(crate) fn get_sketches(&self, exec_state: &mut ExecState) -> Result<(Vec<Sketch>, Sketch), KclError> {
@@ -624,28 +675,6 @@ impl Args {
         Ok((sketches, sketch))
     }
 
-    pub(crate) fn get_sketch(&self, exec_state: &mut ExecState) -> Result<Sketch, KclError> {
-        let Some(arg0) = self.args.first() else {
-            return Err(KclError::Semantic(KclErrorDetails {
-                message: "Expected a sketch argument".to_owned(),
-                source_ranges: vec![self.source_range],
-            }));
-        };
-        let sarg = arg0
-            .value
-            .coerce(&RuntimeType::Primitive(PrimitiveType::Sketch), exec_state)
-            .map_err(|_| {
-                KclError::Type(KclErrorDetails {
-                    message: format!("Expected a sketch, found {}", arg0.value.human_friendly_type()),
-                    source_ranges: vec![self.source_range],
-                })
-            })?;
-        match sarg {
-            KclValue::Sketch { value } => Ok(*value),
-            _ => unreachable!(),
-        }
-    }
-
     pub(crate) fn get_data<'a, T>(&'a self) -> Result<T, KclError>
     where
         T: FromArgs<'a>,
@@ -655,33 +684,6 @@ impl Args {
 
     pub(crate) fn get_data_and_sketch_surface(&self) -> Result<([TyF64; 2], SketchSurface, Option<TagNode>), KclError> {
         FromArgs::from_args(self, 0)
-    }
-
-    pub(crate) fn get_data_and_solid(&self, exec_state: &mut ExecState) -> Result<(TyF64, Box<Solid>), KclError> {
-        let data = FromArgs::from_args(self, 0)?;
-        let Some(arg1) = self.args.get(1) else {
-            return Err(KclError::Semantic(KclErrorDetails {
-                message: "Expected a solid for second argument".to_owned(),
-                source_ranges: vec![self.source_range],
-            }));
-        };
-        let sarg = arg1
-            .value
-            .coerce(&RuntimeType::Primitive(PrimitiveType::Solid), exec_state)
-            .map_err(|_| {
-                KclError::Type(KclErrorDetails {
-                    message: format!(
-                        "Expected a solid for second argument, found {}",
-                        arg1.value.human_friendly_type()
-                    ),
-                    source_ranges: vec![self.source_range],
-                })
-            })?;
-        let solid = match sarg {
-            KclValue::Solid { value } => value,
-            _ => unreachable!(),
-        };
-        Ok((data, solid))
     }
 
     pub(crate) fn get_tag_to_number_sketch(&self) -> Result<(TagIdentifier, TyF64, Sketch), KclError> {

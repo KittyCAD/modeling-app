@@ -26078,9 +26078,6 @@ description: Variables in memory after executing mike_stress_test.kcl
             "units": {
               "type": "Mm"
             }
-          },
-          "units": {
-            "type": "Mm"
           }
         },
         "start": {

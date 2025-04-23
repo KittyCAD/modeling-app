@@ -180,10 +180,6 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         )
         .await?;
 
-        // Reset to the default units.  Modules assume the engine starts in the
-        // default state.
-        self.set_units(Default::default(), source_range, id_generator).await?;
-
         // Flush the batch queue, so clear is run right away.
         // Otherwise the hooks below won't work.
         self.flush_batch(false, source_range).await?;
@@ -295,23 +291,6 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
             range,
             command: cmd.clone(),
         });
-        Ok(())
-    }
-
-    async fn set_units(
-        &self,
-        units: crate::UnitLength,
-        source_range: SourceRange,
-        id_generator: &mut IdGenerator,
-    ) -> Result<(), crate::errors::KclError> {
-        // Before we even start executing the program, set the units.
-        self.batch_modeling_cmd(
-            id_generator.next_uuid(),
-            source_range,
-            &ModelingCmd::from(mcmd::SetSceneUnits { unit: units.into() }),
-        )
-        .await?;
-
         Ok(())
     }
 

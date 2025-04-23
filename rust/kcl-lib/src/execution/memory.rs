@@ -365,7 +365,7 @@ impl ProgramMemory {
         }
 
         Err(KclError::UndefinedValue(KclErrorDetails {
-            message: format!("memory item key `{}` is not defined", var),
+            message: format!("`{}` is not defined", var),
             source_ranges: vec![source_range],
         }))
     }
@@ -486,7 +486,7 @@ impl ProgramMemory {
         }
 
         Err(KclError::UndefinedValue(KclErrorDetails {
-            message: format!("memory item key `{}` is not defined", var),
+            message: format!("`{}` is not defined", var),
             source_ranges: vec![],
         }))
     }

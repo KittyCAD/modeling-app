@@ -90,9 +90,6 @@ description: Variables in memory after executing circle_three_point.kcl
             "units": {
               "type": "Mm"
             }
-          },
-          "units": {
-            "type": "Mm"
           }
         },
         "start": {
