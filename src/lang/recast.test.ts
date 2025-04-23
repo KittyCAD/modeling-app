@@ -322,7 +322,7 @@ describe('testing call Expressions in BinaryExpressions and UnaryExpressions', (
     const code = [
       'part001 = startSketchOn(XY)',
       '  |> startProfileAt([0, 0])',
-      '  |> line(end = [-2.21, -legLen(hypotenuse = 5, leg = min(3, 999))])',
+      '  |> line(end = [\n       -2.21,\n       -legLen(hypotenuse = 5, leg = min(3, 999))\n     ])',
     ].join('\n')
     const { ast } = code2ast(code)
     const recasted = recast(ast)
