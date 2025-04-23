@@ -631,28 +631,6 @@ impl Args {
         Ok(NumericType::combine_eq_coerce(a, b))
     }
 
-    pub(crate) fn get_sketch(&self, exec_state: &mut ExecState) -> Result<Sketch, KclError> {
-        let Some(arg0) = self.args.first() else {
-            return Err(KclError::Semantic(KclErrorDetails {
-                message: "Expected a sketch argument".to_owned(),
-                source_ranges: vec![self.source_range],
-            }));
-        };
-        let sarg = arg0
-            .value
-            .coerce(&RuntimeType::Primitive(PrimitiveType::Sketch), exec_state)
-            .map_err(|_| {
-                KclError::Type(KclErrorDetails {
-                    message: format!("Expected a sketch, found {}", arg0.value.human_friendly_type()),
-                    source_ranges: vec![self.source_range],
-                })
-            })?;
-        match sarg {
-            KclValue::Sketch { value } => Ok(*value),
-            _ => unreachable!(),
-        }
-    }
-
     pub(crate) fn get_data<'a, T>(&'a self) -> Result<T, KclError>
     where
         T: FromArgs<'a>,
