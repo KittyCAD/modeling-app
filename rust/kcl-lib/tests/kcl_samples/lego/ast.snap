@@ -768,41 +768,45 @@ description: Result of parsing lego.kcl
         "expression": {
           "arguments": [
             {
-              "abs_path": false,
-              "commentStart": 0,
-              "end": 0,
-              "name": {
+              "type": "LabeledArg",
+              "label": {
                 "commentStart": 0,
                 "end": 0,
-                "name": "lbumps",
+                "name": "isGreaterThan",
                 "start": 0,
                 "type": "Identifier"
               },
-              "path": [],
-              "start": 0,
-              "type": "Name",
-              "type": "Name"
-            },
-            {
-              "commentStart": 0,
-              "end": 0,
-              "raw": "1",
-              "start": 0,
-              "type": "Literal",
-              "type": "Literal",
-              "value": {
-                "value": 1.0,
-                "suffix": "None"
+              "arg": {
+                "commentStart": 0,
+                "end": 0,
+                "raw": "1",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 1.0,
+                  "suffix": "None"
+                }
               }
             },
             {
-              "commentStart": 0,
-              "end": 0,
-              "raw": "\"lbumps must be greater than 1\"",
-              "start": 0,
-              "type": "Literal",
-              "type": "Literal",
-              "value": "lbumps must be greater than 1"
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 0,
+                "end": 0,
+                "name": "error",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "arg": {
+                "commentStart": 0,
+                "end": 0,
+                "raw": "\"lbumps must be greater than 1\"",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": "lbumps must be greater than 1"
+              }
             }
           ],
           "callee": {
@@ -812,7 +816,7 @@ description: Result of parsing lego.kcl
             "name": {
               "commentStart": 0,
               "end": 0,
-              "name": "assertGreaterThan",
+              "name": "assert",
               "start": 0,
               "type": "Identifier"
             },
@@ -823,8 +827,24 @@ description: Result of parsing lego.kcl
           "commentStart": 0,
           "end": 0,
           "start": 0,
-          "type": "CallExpression",
-          "type": "CallExpression"
+          "type": "CallExpressionKw",
+          "type": "CallExpressionKw",
+          "unlabeled": {
+            "abs_path": false,
+            "commentStart": 0,
+            "end": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "name": "lbumps",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
+            "start": 0,
+            "type": "Name",
+            "type": "Name"
+          }
         },
         "preComments": [
           "",
@@ -841,41 +861,45 @@ description: Result of parsing lego.kcl
         "expression": {
           "arguments": [
             {
-              "abs_path": false,
-              "commentStart": 0,
-              "end": 0,
-              "name": {
+              "type": "LabeledArg",
+              "label": {
                 "commentStart": 0,
                 "end": 0,
-                "name": "wbumps",
+                "name": "isGreaterThan",
                 "start": 0,
                 "type": "Identifier"
               },
-              "path": [],
-              "start": 0,
-              "type": "Name",
-              "type": "Name"
-            },
-            {
-              "commentStart": 0,
-              "end": 0,
-              "raw": "1",
-              "start": 0,
-              "type": "Literal",
-              "type": "Literal",
-              "value": {
-                "value": 1.0,
-                "suffix": "None"
+              "arg": {
+                "commentStart": 0,
+                "end": 0,
+                "raw": "1",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 1.0,
+                  "suffix": "None"
+                }
               }
             },
             {
-              "commentStart": 0,
-              "end": 0,
-              "raw": "\"wbumps must be greater than 1\"",
-              "start": 0,
-              "type": "Literal",
-              "type": "Literal",
-              "value": "wbumps must be greater than 1"
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 0,
+                "end": 0,
+                "name": "error",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "arg": {
+                "commentStart": 0,
+                "end": 0,
+                "raw": "\"wbumps must be greater than 1\"",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": "wbumps must be greater than 1"
+              }
             }
           ],
           "callee": {
@@ -885,7 +909,7 @@ description: Result of parsing lego.kcl
             "name": {
               "commentStart": 0,
               "end": 0,
-              "name": "assertGreaterThan",
+              "name": "assert",
               "start": 0,
               "type": "Identifier"
             },
@@ -896,8 +920,24 @@ description: Result of parsing lego.kcl
           "commentStart": 0,
           "end": 0,
           "start": 0,
-          "type": "CallExpression",
-          "type": "CallExpression"
+          "type": "CallExpressionKw",
+          "type": "CallExpressionKw",
+          "unlabeled": {
+            "abs_path": false,
+            "commentStart": 0,
+            "end": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "name": "wbumps",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
+            "start": 0,
+            "type": "Name",
+            "type": "Name"
+          }
         },
         "start": 0,
         "type": "ExpressionStatement",

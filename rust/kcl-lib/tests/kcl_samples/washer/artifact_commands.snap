@@ -33,14 +33,6 @@ description: Artifact commands washer.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "set_scene_units",
-      "unit": "in"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
       "type": "make_plane",
       "origin": {
         "x": 0.0,
@@ -92,7 +84,7 @@ description: Artifact commands washer.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 0.219,
+        "x": 5.5626,
         "y": 0.0,
         "z": 0.0
       }
@@ -117,7 +109,7 @@ description: Artifact commands washer.kcl
           "x": 0.0,
           "y": 0.0
         },
-        "radius": 0.219,
+        "radius": 5.5626,
         "start": {
           "unit": "degrees",
           "value": 0.0
@@ -168,7 +160,7 @@ description: Artifact commands washer.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 0.1015,
+        "x": 2.5781,
         "y": 0.0,
         "z": 0.0
       }
@@ -193,7 +185,7 @@ description: Artifact commands washer.kcl
           "x": 0.0,
           "y": 0.0
         },
-        "radius": 0.1015,
+        "radius": 2.5781,
         "start": {
           "unit": "degrees",
           "value": 0.0
@@ -254,7 +246,7 @@ description: Artifact commands washer.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 0.032,
+      "distance": 0.8128,
       "faces": null,
       "opposite": "None"
     }
@@ -321,30 +313,6 @@ description: Artifact commands washer.kcl
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "set_scene_units",
-      "unit": "mm"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "set_scene_units",
-      "unit": "mm"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "set_scene_units",
-      "unit": "mm"
     }
   }
 ]

@@ -1,25 +1,25 @@
 import identity from "identity.kcl"
 
 answer = identity(42)
-assertEqual(answer, 42, 0.0001, "identity")
+assert(answer, isEqualTo = 42, error = "identity")
 
 import identity as id from "identity.kcl"
 
 answer43 = id(43)
-assertEqual(answer43, 43, 0.0001, "identity")
+assert(answer43, isEqualTo = 43, error = "identity")
 
 import increment, decrement from "numbers.kcl"
 
 answer3 = increment(2)
-assertEqual(answer3, 3, 0.0001, "increment")
+assert(answer3, isEqualTo = 3, error = "increment")
 
 answer5 = decrement(6)
-assertEqual(answer5, 5, 0.0001, "decrement")
+assert(answer5, isEqualTo = 5, error = "decrement")
 
 import increment as inc, decrement as dec from "numbers.kcl"
 
 answer4 = inc(3)
-assertEqual(answer4, 4, 0.0001, "inc")
+assert(answer4, isEqualTo = 4, error = "inc")
 
 answer6 = dec(7)
-assertEqual(answer6, 6, 0.0001, "dec")
+assert(answer6, isEqualTo = 6, error = "dec")

@@ -14,7 +14,7 @@ use winnow::{
 };
 
 use super::{
-    ast::types::{Ascription, ImportPath, LabelledExpression},
+    ast::types::{AscribedExpression, ImportPath, LabelledExpression},
     token::{NumericSuffix, RESERVED_WORDS},
     DeprecationKind,
 };
@@ -529,13 +529,6 @@ pub(crate) fn unsigned_number_literal(i: &mut TokenSlice) -> PResult<Node<Litera
                 let value: f64 = token.numeric_value().ok_or_else(|| {
                     CompilationError::fatal(token.as_source_range(), format!("Invalid float: {}", token.value))
                 })?;
-
-                if token.numeric_suffix().is_some() {
-                    ParseContext::warn(CompilationError::err(
-                        (&token).into(),
-                        "Unit of Measure suffixes are experimental and currently do nothing.",
-                    ));
-                }
 
                 Ok((
                     LiteralValue::Number {
@@ -1635,6 +1628,12 @@ fn function_body(i: &mut TokenSlice) -> PResult<Node<Program>> {
                 }
                 handle_pending_non_code!(attr);
                 if attr.is_inner() {
+                    if !body.is_empty() {
+                        ParseContext::warn(CompilationError::err(
+                            attr.as_source_range(),
+                            "Named attributes should appear before any declarations or expressions.\n\nBecause named attributes apply to the whole function or module, including code written before them, it can be confusing for readers to not have these attributes at the top of code blocks.",
+                        ));
+                    }
                     inner_attrs.push(attr);
                 } else {
                     pending_attrs.push(attr);
@@ -2015,9 +2014,7 @@ fn expression_but_not_pipe(i: &mut TokenSlice) -> PResult<Expr> {
 
     let ty = opt((colon, opt(whitespace), argument_type)).parse_next(i)?;
     if let Some((_, _, ty)) = ty {
-        ParseContext::warn(CompilationError::err((&ty).into(), "Type ascription is experimental."));
-
-        expr = Expr::AscribedExpression(Box::new(Ascription::new(expr, ty)))
+        expr = Expr::AscribedExpression(Box::new(AscribedExpression::new(expr, ty)))
     }
     let label = opt(label).parse_next(i)?;
     match label {
@@ -2810,13 +2807,6 @@ fn primitive_type(i: &mut TokenSlice) -> PResult<Node<PrimitiveType>> {
 
     let mut result = Node::new(PrimitiveType::Boolean, ident.start, ident.end, ident.module_id);
     result.inner = PrimitiveType::primitive_from_str(&ident.name, suffix).unwrap_or(PrimitiveType::Named(ident));
-
-    if suffix.is_some() {
-        ParseContext::warn(CompilationError::err(
-            result.as_source_range(),
-            "Unit of Measure types are experimental and currently do nothing.",
-        ));
-    }
 
     Ok(result)
 }
@@ -4529,22 +4519,31 @@ export fn cos(num: number(rad)): number(_) {}"#;
     }
 
     #[test]
+    fn warn_late_settings() {
+        let some_program_string = r#"foo = 42
+@settings(defaultLengthUnit = mm)
+"#;
+        let (_, errs) = assert_no_err(some_program_string);
+        assert_eq!(errs.len(), 1, "{errs:#?}");
+    }
+
+    #[test]
     fn fn_decl_uom_ty() {
         let some_program_string = r#"fn foo(x: number(mm)): number(_) { return 1 }"#;
         let (_, errs) = assert_no_fatal(some_program_string);
-        assert_eq!(errs.len(), 2);
+        assert!(errs.is_empty(), "Expected no errors, found: {errs:?}");
     }
 
     #[test]
     fn error_underscore() {
         let (_, errs) = assert_no_fatal("_foo(_blah, _)");
-        assert_eq!(errs.len(), 3, "found: {:#?}", errs);
+        assert_eq!(errs.len(), 3, "found: {errs:#?}");
     }
 
     #[test]
     fn error_type_ascription() {
         let (_, errs) = assert_no_fatal("a + b: number");
-        assert_eq!(errs.len(), 1, "found: {:#?}", errs);
+        assert!(errs.is_empty());
     }
 
     #[test]

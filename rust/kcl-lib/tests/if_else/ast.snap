@@ -145,53 +145,45 @@ description: Result of parsing if_else.kcl
         "expression": {
           "arguments": [
             {
-              "abs_path": false,
-              "commentStart": 0,
-              "end": 0,
-              "name": {
+              "type": "LabeledArg",
+              "label": {
                 "commentStart": 0,
                 "end": 0,
-                "name": "a",
+                "name": "isEqualTo",
                 "start": 0,
                 "type": "Identifier"
               },
-              "path": [],
-              "start": 0,
-              "type": "Name",
-              "type": "Name"
-            },
-            {
-              "commentStart": 0,
-              "end": 0,
-              "raw": "3",
-              "start": 0,
-              "type": "Literal",
-              "type": "Literal",
-              "value": {
-                "value": 3.0,
-                "suffix": "None"
+              "arg": {
+                "commentStart": 0,
+                "end": 0,
+                "raw": "3",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 3.0,
+                  "suffix": "None"
+                }
               }
             },
             {
-              "commentStart": 0,
-              "end": 0,
-              "raw": "0.001",
-              "start": 0,
-              "type": "Literal",
-              "type": "Literal",
-              "value": {
-                "value": 0.001,
-                "suffix": "None"
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 0,
+                "end": 0,
+                "name": "error",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "arg": {
+                "commentStart": 0,
+                "end": 0,
+                "raw": "\"the 'if' branch gets returned\"",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": "the 'if' branch gets returned"
               }
-            },
-            {
-              "commentStart": 0,
-              "end": 0,
-              "raw": "\"the 'if' branch gets returned\"",
-              "start": 0,
-              "type": "Literal",
-              "type": "Literal",
-              "value": "the 'if' branch gets returned"
             }
           ],
           "callee": {
@@ -201,7 +193,7 @@ description: Result of parsing if_else.kcl
             "name": {
               "commentStart": 0,
               "end": 0,
-              "name": "assertEqual",
+              "name": "assert",
               "start": 0,
               "type": "Identifier"
             },
@@ -212,8 +204,24 @@ description: Result of parsing if_else.kcl
           "commentStart": 0,
           "end": 0,
           "start": 0,
-          "type": "CallExpression",
-          "type": "CallExpression"
+          "type": "CallExpressionKw",
+          "type": "CallExpressionKw",
+          "unlabeled": {
+            "abs_path": false,
+            "commentStart": 0,
+            "end": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "name": "a",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
+            "start": 0,
+            "type": "Name",
+            "type": "Name"
+          }
         },
         "start": 0,
         "type": "ExpressionStatement",
@@ -359,53 +367,45 @@ description: Result of parsing if_else.kcl
         "expression": {
           "arguments": [
             {
-              "abs_path": false,
-              "commentStart": 0,
-              "end": 0,
-              "name": {
+              "type": "LabeledArg",
+              "label": {
                 "commentStart": 0,
                 "end": 0,
-                "name": "b",
+                "name": "isEqualTo",
                 "start": 0,
                 "type": "Identifier"
               },
-              "path": [],
-              "start": 0,
-              "type": "Name",
-              "type": "Name"
-            },
-            {
-              "commentStart": 0,
-              "end": 0,
-              "raw": "4",
-              "start": 0,
-              "type": "Literal",
-              "type": "Literal",
-              "value": {
-                "value": 4.0,
-                "suffix": "None"
+              "arg": {
+                "commentStart": 0,
+                "end": 0,
+                "raw": "4",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 4.0,
+                  "suffix": "None"
+                }
               }
             },
             {
-              "commentStart": 0,
-              "end": 0,
-              "raw": "0.001",
-              "start": 0,
-              "type": "Literal",
-              "type": "Literal",
-              "value": {
-                "value": 0.001,
-                "suffix": "None"
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 0,
+                "end": 0,
+                "name": "error",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "arg": {
+                "commentStart": 0,
+                "end": 0,
+                "raw": "\"the 'else if' branch gets returned\"",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": "the 'else if' branch gets returned"
               }
-            },
-            {
-              "commentStart": 0,
-              "end": 0,
-              "raw": "\"the 'else if' branch gets returned\"",
-              "start": 0,
-              "type": "Literal",
-              "type": "Literal",
-              "value": "the 'else if' branch gets returned"
             }
           ],
           "callee": {
@@ -415,7 +415,7 @@ description: Result of parsing if_else.kcl
             "name": {
               "commentStart": 0,
               "end": 0,
-              "name": "assertEqual",
+              "name": "assert",
               "start": 0,
               "type": "Identifier"
             },
@@ -426,8 +426,24 @@ description: Result of parsing if_else.kcl
           "commentStart": 0,
           "end": 0,
           "start": 0,
-          "type": "CallExpression",
-          "type": "CallExpression"
+          "type": "CallExpressionKw",
+          "type": "CallExpressionKw",
+          "unlabeled": {
+            "abs_path": false,
+            "commentStart": 0,
+            "end": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "name": "b",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
+            "start": 0,
+            "type": "Name",
+            "type": "Name"
+          }
         },
         "start": 0,
         "type": "ExpressionStatement",
@@ -573,53 +589,45 @@ description: Result of parsing if_else.kcl
         "expression": {
           "arguments": [
             {
-              "abs_path": false,
-              "commentStart": 0,
-              "end": 0,
-              "name": {
+              "type": "LabeledArg",
+              "label": {
                 "commentStart": 0,
                 "end": 0,
-                "name": "c",
+                "name": "isEqualTo",
                 "start": 0,
                 "type": "Identifier"
               },
-              "path": [],
-              "start": 0,
-              "type": "Name",
-              "type": "Name"
-            },
-            {
-              "commentStart": 0,
-              "end": 0,
-              "raw": "5",
-              "start": 0,
-              "type": "Literal",
-              "type": "Literal",
-              "value": {
-                "value": 5.0,
-                "suffix": "None"
+              "arg": {
+                "commentStart": 0,
+                "end": 0,
+                "raw": "5",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 5.0,
+                  "suffix": "None"
+                }
               }
             },
             {
-              "commentStart": 0,
-              "end": 0,
-              "raw": "0.001",
-              "start": 0,
-              "type": "Literal",
-              "type": "Literal",
-              "value": {
-                "value": 0.001,
-                "suffix": "None"
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 0,
+                "end": 0,
+                "name": "error",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "arg": {
+                "commentStart": 0,
+                "end": 0,
+                "raw": "\"the 'else' branch gets returned\"",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": "the 'else' branch gets returned"
               }
-            },
-            {
-              "commentStart": 0,
-              "end": 0,
-              "raw": "\"the 'else' branch gets returned\"",
-              "start": 0,
-              "type": "Literal",
-              "type": "Literal",
-              "value": "the 'else' branch gets returned"
             }
           ],
           "callee": {
@@ -629,7 +637,7 @@ description: Result of parsing if_else.kcl
             "name": {
               "commentStart": 0,
               "end": 0,
-              "name": "assertEqual",
+              "name": "assert",
               "start": 0,
               "type": "Identifier"
             },
@@ -640,8 +648,24 @@ description: Result of parsing if_else.kcl
           "commentStart": 0,
           "end": 0,
           "start": 0,
-          "type": "CallExpression",
-          "type": "CallExpression"
+          "type": "CallExpressionKw",
+          "type": "CallExpressionKw",
+          "unlabeled": {
+            "abs_path": false,
+            "commentStart": 0,
+            "end": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "name": "c",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
+            "start": 0,
+            "type": "Name",
+            "type": "Name"
+          }
         },
         "start": 0,
         "type": "ExpressionStatement",
