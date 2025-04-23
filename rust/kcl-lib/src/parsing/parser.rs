@@ -2819,7 +2819,7 @@ fn array_type(i: &mut TokenSlice) -> PResult<Node<Type>> {
     }
 
     open_bracket(i)?;
-    let ty = primitive_type(i)?;
+    let ty = argument_type(i)?;
     let len = opt((
         semi_colon,
         opt_whitespace,
@@ -2858,7 +2858,7 @@ fn array_type(i: &mut TokenSlice) -> PResult<Node<Type>> {
         ArrayLen::None
     };
 
-    Ok(ty.map(|ty| Type::Array { ty, len }))
+    Ok(ty.map(|ty| Type::Array { ty: Box::new(ty), len }))
 }
 
 fn uom_for_type(i: &mut TokenSlice) -> PResult<NumericSuffix> {

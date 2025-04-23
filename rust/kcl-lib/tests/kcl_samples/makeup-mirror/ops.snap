@@ -8,11 +8,7 @@ description: Operations executed makeup-mirror.kcl
     "group": {
       "type": "FunctionCall",
       "name": "hingeFn",
-      "functionSourceRange": [
-        507,
-        686,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -103,11 +99,7 @@ description: Operations executed makeup-mirror.kcl
     "group": {
       "type": "FunctionCall",
       "name": "hingeFn",
-      "functionSourceRange": [
-        507,
-        686,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -198,11 +190,7 @@ description: Operations executed makeup-mirror.kcl
     "group": {
       "type": "FunctionCall",
       "name": "hingeFn",
-      "functionSourceRange": [
-        507,
-        686,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -293,11 +281,7 @@ description: Operations executed makeup-mirror.kcl
     "group": {
       "type": "FunctionCall",
       "name": "hingeFn",
-      "functionSourceRange": [
-        507,
-        686,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -388,11 +372,7 @@ description: Operations executed makeup-mirror.kcl
     "group": {
       "type": "FunctionCall",
       "name": "hingeFn",
-      "functionSourceRange": [
-        507,
-        686,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -483,11 +463,7 @@ description: Operations executed makeup-mirror.kcl
     "group": {
       "type": "FunctionCall",
       "name": "hingeFn",
-      "functionSourceRange": [
-        507,
-        686,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -578,11 +554,7 @@ description: Operations executed makeup-mirror.kcl
     "group": {
       "type": "FunctionCall",
       "name": "hingeFn",
-      "functionSourceRange": [
-        507,
-        686,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -673,11 +645,7 @@ description: Operations executed makeup-mirror.kcl
     "group": {
       "type": "FunctionCall",
       "name": "armFn",
-      "functionSourceRange": [
-        1160,
-        1337,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -738,11 +706,7 @@ description: Operations executed makeup-mirror.kcl
     "group": {
       "type": "FunctionCall",
       "name": "armFn",
-      "functionSourceRange": [
-        1160,
-        1337,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -803,11 +767,7 @@ description: Operations executed makeup-mirror.kcl
     "group": {
       "type": "FunctionCall",
       "name": "mirrorFn",
-      "functionSourceRange": [
-        1510,
-        2267,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },

@@ -8,11 +8,7 @@ description: Operations executed 80-20-rail.kcl
     "group": {
       "type": "FunctionCall",
       "name": "rail8020",
-      "functionSourceRange": [
-        239,
-        6542,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },

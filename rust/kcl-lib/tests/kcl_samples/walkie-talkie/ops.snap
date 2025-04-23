@@ -8,7 +8,7 @@ description: Operations executed walkie-talkie.kcl
     "group": {
       "type": "ModuleInstance",
       "name": "body",
-      "moduleId": 7
+      "moduleId": 0
     },
     "sourceRange": []
   },
@@ -60,6 +60,17 @@ description: Operations executed walkie-talkie.kcl
     }
   },
   {
+    "type": "KclStdLibCall",
+    "name": "chamfer",
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    },
     "labeledArgs": {
       "length": {
         "value": {
@@ -102,18 +113,7 @@ description: Operations executed walkie-talkie.kcl
         "sourceRange": []
       }
     },
-    "name": "chamfer",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Solid",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": []
-    }
+    "sourceRange": []
   },
   {
     "labeledArgs": {
@@ -143,11 +143,7 @@ description: Operations executed walkie-talkie.kcl
     "group": {
       "type": "FunctionCall",
       "name": "toRadians",
-      "functionSourceRange": [
-        11503,
-        11552,
-        1
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -161,11 +157,7 @@ description: Operations executed walkie-talkie.kcl
     "group": {
       "type": "FunctionCall",
       "name": "cos",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -179,11 +171,7 @@ description: Operations executed walkie-talkie.kcl
     "group": {
       "type": "FunctionCall",
       "name": "toRadians",
-      "functionSourceRange": [
-        11503,
-        11552,
-        1
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -197,11 +185,7 @@ description: Operations executed walkie-talkie.kcl
     "group": {
       "type": "FunctionCall",
       "name": "cos",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -215,11 +199,7 @@ description: Operations executed walkie-talkie.kcl
     "group": {
       "type": "FunctionCall",
       "name": "toRadians",
-      "functionSourceRange": [
-        11503,
-        11552,
-        1
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -233,11 +213,7 @@ description: Operations executed walkie-talkie.kcl
     "group": {
       "type": "FunctionCall",
       "name": "cos",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -251,11 +227,7 @@ description: Operations executed walkie-talkie.kcl
     "group": {
       "type": "FunctionCall",
       "name": "toRadians",
-      "functionSourceRange": [
-        11503,
-        11552,
-        1
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -269,11 +241,7 @@ description: Operations executed walkie-talkie.kcl
     "group": {
       "type": "FunctionCall",
       "name": "cos",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -432,7 +400,7 @@ description: Operations executed walkie-talkie.kcl
     "group": {
       "type": "ModuleInstance",
       "name": "antenna",
-      "moduleId": 9
+      "moduleId": 0
     },
     "sourceRange": []
   },
@@ -532,7 +500,7 @@ description: Operations executed walkie-talkie.kcl
     "group": {
       "type": "ModuleInstance",
       "name": "case",
-      "moduleId": 8
+      "moduleId": 0
     },
     "sourceRange": []
   },
@@ -586,11 +554,7 @@ description: Operations executed walkie-talkie.kcl
     "group": {
       "type": "FunctionCall",
       "name": "toRadians",
-      "functionSourceRange": [
-        11503,
-        11552,
-        1
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -604,11 +568,7 @@ description: Operations executed walkie-talkie.kcl
     "group": {
       "type": "FunctionCall",
       "name": "cos",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -622,11 +582,7 @@ description: Operations executed walkie-talkie.kcl
     "group": {
       "type": "FunctionCall",
       "name": "toRadians",
-      "functionSourceRange": [
-        11503,
-        11552,
-        1
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -640,11 +596,7 @@ description: Operations executed walkie-talkie.kcl
     "group": {
       "type": "FunctionCall",
       "name": "cos",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -658,11 +610,7 @@ description: Operations executed walkie-talkie.kcl
     "group": {
       "type": "FunctionCall",
       "name": "toRadians",
-      "functionSourceRange": [
-        11503,
-        11552,
-        1
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -676,11 +624,7 @@ description: Operations executed walkie-talkie.kcl
     "group": {
       "type": "FunctionCall",
       "name": "cos",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -694,11 +638,7 @@ description: Operations executed walkie-talkie.kcl
     "group": {
       "type": "FunctionCall",
       "name": "toRadians",
-      "functionSourceRange": [
-        11503,
-        11552,
-        1
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -712,11 +652,7 @@ description: Operations executed walkie-talkie.kcl
     "group": {
       "type": "FunctionCall",
       "name": "cos",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -1652,11 +1588,7 @@ description: Operations executed walkie-talkie.kcl
     "group": {
       "type": "FunctionCall",
       "name": "zLogo",
-      "functionSourceRange": [
-        69,
-        977,
-        13
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -1710,11 +1642,7 @@ description: Operations executed walkie-talkie.kcl
     "group": {
       "type": "FunctionCall",
       "name": "oLogo",
-      "functionSourceRange": [
-        1035,
-        1456,
-        13
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -1768,11 +1696,7 @@ description: Operations executed walkie-talkie.kcl
     "group": {
       "type": "FunctionCall",
       "name": "oLogo2",
-      "functionSourceRange": [
-        1474,
-        1895,
-        13
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -1826,11 +1750,7 @@ description: Operations executed walkie-talkie.kcl
     "group": {
       "type": "FunctionCall",
       "name": "oLogo",
-      "functionSourceRange": [
-        1035,
-        1456,
-        13
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -1884,11 +1804,7 @@ description: Operations executed walkie-talkie.kcl
     "group": {
       "type": "FunctionCall",
       "name": "oLogo2",
-      "functionSourceRange": [
-        1474,
-        1895,
-        13
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -1962,7 +1878,7 @@ description: Operations executed walkie-talkie.kcl
     "group": {
       "type": "ModuleInstance",
       "name": "talkButton",
-      "moduleId": 10
+      "moduleId": 0
     },
     "sourceRange": []
   },
@@ -2077,7 +1993,7 @@ description: Operations executed walkie-talkie.kcl
     "group": {
       "type": "ModuleInstance",
       "name": "knob",
-      "moduleId": 11
+      "moduleId": 0
     },
     "sourceRange": []
   },
@@ -2190,11 +2106,7 @@ description: Operations executed walkie-talkie.kcl
     "group": {
       "type": "FunctionCall",
       "name": "button",
-      "functionSourceRange": [
-        308,
-        891,
-        12
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -2248,6 +2160,17 @@ description: Operations executed walkie-talkie.kcl
     }
   },
   {
+    "type": "KclStdLibCall",
+    "name": "chamfer",
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    },
     "labeledArgs": {
       "length": {
         "value": {
@@ -2282,18 +2205,7 @@ description: Operations executed walkie-talkie.kcl
         "sourceRange": []
       }
     },
-    "name": "chamfer",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Solid",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": []
-    }
+    "sourceRange": []
   },
   {
     "type": "GroupEnd"
@@ -2303,11 +2215,7 @@ description: Operations executed walkie-talkie.kcl
     "group": {
       "type": "FunctionCall",
       "name": "button",
-      "functionSourceRange": [
-        308,
-        891,
-        12
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -2361,6 +2269,17 @@ description: Operations executed walkie-talkie.kcl
     }
   },
   {
+    "type": "KclStdLibCall",
+    "name": "chamfer",
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    },
     "labeledArgs": {
       "length": {
         "value": {
@@ -2395,18 +2314,7 @@ description: Operations executed walkie-talkie.kcl
         "sourceRange": []
       }
     },
-    "name": "chamfer",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Solid",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": []
-    }
+    "sourceRange": []
   },
   {
     "type": "GroupEnd"
@@ -2416,11 +2324,7 @@ description: Operations executed walkie-talkie.kcl
     "group": {
       "type": "FunctionCall",
       "name": "button",
-      "functionSourceRange": [
-        308,
-        891,
-        12
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -2474,6 +2378,17 @@ description: Operations executed walkie-talkie.kcl
     }
   },
   {
+    "type": "KclStdLibCall",
+    "name": "chamfer",
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    },
     "labeledArgs": {
       "length": {
         "value": {
@@ -2508,18 +2423,7 @@ description: Operations executed walkie-talkie.kcl
         "sourceRange": []
       }
     },
-    "name": "chamfer",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Solid",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": []
-    }
+    "sourceRange": []
   },
   {
     "type": "GroupEnd"
@@ -2529,11 +2433,7 @@ description: Operations executed walkie-talkie.kcl
     "group": {
       "type": "FunctionCall",
       "name": "button",
-      "functionSourceRange": [
-        308,
-        891,
-        12
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -2587,6 +2487,17 @@ description: Operations executed walkie-talkie.kcl
     }
   },
   {
+    "type": "KclStdLibCall",
+    "name": "chamfer",
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    },
     "labeledArgs": {
       "length": {
         "value": {
@@ -2621,18 +2532,7 @@ description: Operations executed walkie-talkie.kcl
         "sourceRange": []
       }
     },
-    "name": "chamfer",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Solid",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": []
-    }
+    "sourceRange": []
   },
   {
     "type": "GroupEnd"

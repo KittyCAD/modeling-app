@@ -347,7 +347,7 @@ impl Node<Type> {
         let range = self.as_source_range();
         if range.contains(pos) {
             match &self.inner {
-                Type::Array { ty, .. } | Type::Primitive(ty) => {
+                ty @ Type::Array { .. } | ty @ Type::Primitive(_) => {
                     let mut name = ty.to_string();
                     if name.ends_with(')') {
                         name.truncate(name.find('(').unwrap());

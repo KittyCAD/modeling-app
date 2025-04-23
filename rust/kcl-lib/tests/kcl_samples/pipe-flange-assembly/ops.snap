@@ -8,11 +8,7 @@ description: Operations executed pipe-flange-assembly.kcl
     "group": {
       "type": "FunctionCall",
       "name": "toRadians",
-      "functionSourceRange": [
-        11503,
-        11552,
-        1
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -26,11 +22,7 @@ description: Operations executed pipe-flange-assembly.kcl
     "group": {
       "type": "FunctionCall",
       "name": "cos",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -44,11 +36,7 @@ description: Operations executed pipe-flange-assembly.kcl
     "group": {
       "type": "FunctionCall",
       "name": "toRadians",
-      "functionSourceRange": [
-        11503,
-        11552,
-        1
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -62,11 +50,7 @@ description: Operations executed pipe-flange-assembly.kcl
     "group": {
       "type": "FunctionCall",
       "name": "cos",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -80,11 +64,7 @@ description: Operations executed pipe-flange-assembly.kcl
     "group": {
       "type": "FunctionCall",
       "name": "flange",
-      "functionSourceRange": [
-        509,
-        1753,
-        8
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -373,11 +353,7 @@ description: Operations executed pipe-flange-assembly.kcl
     "group": {
       "type": "FunctionCall",
       "name": "flange",
-      "functionSourceRange": [
-        509,
-        1753,
-        8
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -666,7 +642,7 @@ description: Operations executed pipe-flange-assembly.kcl
     "group": {
       "type": "ModuleInstance",
       "name": "gasket",
-      "moduleId": 7
+      "moduleId": 0
     },
     "sourceRange": []
   },
@@ -780,11 +756,7 @@ description: Operations executed pipe-flange-assembly.kcl
     "group": {
       "type": "FunctionCall",
       "name": "washer",
-      "functionSourceRange": [
-        331,
-        757,
-        9
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -1167,11 +1139,7 @@ description: Operations executed pipe-flange-assembly.kcl
     "group": {
       "type": "FunctionCall",
       "name": "bolt",
-      "functionSourceRange": [
-        358,
-        1507,
-        10
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -1540,11 +1508,7 @@ description: Operations executed pipe-flange-assembly.kcl
     "group": {
       "type": "FunctionCall",
       "name": "hexNut",
-      "functionSourceRange": [
-        344,
-        1123,
-        11
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -1809,11 +1773,7 @@ description: Operations executed pipe-flange-assembly.kcl
     "group": {
       "type": "FunctionCall",
       "name": "pipe",
-      "functionSourceRange": [
-        256,
-        675,
-        12
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -1929,11 +1889,7 @@ description: Operations executed pipe-flange-assembly.kcl
     "group": {
       "type": "FunctionCall",
       "name": "pipe",
-      "functionSourceRange": [
-        256,
-        675,
-        12
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },

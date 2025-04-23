@@ -64,6 +64,14 @@ impl RuntimeType {
         RuntimeType::Primitive(PrimitiveType::Plane)
     }
 
+    pub fn face() -> Self {
+        RuntimeType::Primitive(PrimitiveType::Face)
+    }
+
+    pub fn tag() -> Self {
+        RuntimeType::Primitive(PrimitiveType::Tag)
+    }
+
     pub fn bool() -> Self {
         RuntimeType::Primitive(PrimitiveType::Boolean)
     }
@@ -130,7 +138,7 @@ impl RuntimeType {
         match value {
             Type::Primitive(pt) => Self::from_parsed_primitive(pt, exec_state, source_range),
             Type::Array { ty, len } => {
-                Self::from_parsed_primitive(ty, exec_state, source_range).map(|t| RuntimeType::Array(Box::new(t), len))
+                Self::from_parsed(*ty, exec_state, source_range).map(|t| RuntimeType::Array(Box::new(t), len))
             }
             Type::Union { tys } => tys
                 .into_iter()
@@ -1140,6 +1148,9 @@ impl KclValue {
             PrimitiveType::Tag => match value {
                 KclValue::TagDeclarator { .. } | KclValue::TagIdentifier { .. } | KclValue::Uuid { .. } => {
                     Ok(value.clone())
+                }
+                s @ KclValue::String { value, .. } if ["start", "end", "START", "END"].contains(&&**value) => {
+                    Ok(s.clone())
                 }
                 _ => Err(self.into()),
             },

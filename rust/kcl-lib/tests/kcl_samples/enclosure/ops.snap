@@ -107,6 +107,17 @@ description: Operations executed enclosure.kcl
     "sourceRange": []
   },
   {
+    "type": "KclStdLibCall",
+    "name": "shell",
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    },
     "labeledArgs": {
       "faces": {
         "value": {
@@ -137,29 +148,14 @@ description: Operations executed enclosure.kcl
         "sourceRange": []
       }
     },
-    "name": "shell",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Solid",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": []
-    }
+    "sourceRange": []
   },
   {
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
       "name": "function001",
-      "functionSourceRange": [
-        1285,
-        1864,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -422,11 +418,7 @@ description: Operations executed enclosure.kcl
     "group": {
       "type": "FunctionCall",
       "name": "function001",
-      "functionSourceRange": [
-        1285,
-        1864,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -689,11 +681,7 @@ description: Operations executed enclosure.kcl
     "group": {
       "type": "FunctionCall",
       "name": "function001",
-      "functionSourceRange": [
-        1285,
-        1864,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -956,11 +944,7 @@ description: Operations executed enclosure.kcl
     "group": {
       "type": "FunctionCall",
       "name": "function001",
-      "functionSourceRange": [
-        1285,
-        1864,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },

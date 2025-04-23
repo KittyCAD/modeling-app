@@ -105,8 +105,6 @@ lazy_static! {
         Box::new(crate::std::edge::GetNextAdjacentEdge),
         Box::new(crate::std::edge::GetPreviousAdjacentEdge),
         Box::new(crate::std::edge::GetCommonEdge),
-        Box::new(crate::std::shell::Shell),
-        Box::new(crate::std::shell::Hollow),
         Box::new(crate::std::sweep::Sweep),
         Box::new(crate::std::loft::Loft),
         Box::new(crate::std::math::Acos),
@@ -217,6 +215,14 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
         ("solid", "chamfer") => (
             |e, a| Box::pin(crate::std::chamfer::chamfer(e, a)),
             StdFnProps::default("std::solid::chamfer").include_in_feature_tree(),
+        ),
+        ("solid", "shell") => (
+            |e, a| Box::pin(crate::std::shell::shell(e, a)),
+            StdFnProps::default("std::solid::shell").include_in_feature_tree(),
+        ),
+        ("solid", "hollow") => (
+            |e, a| Box::pin(crate::std::shell::hollow(e, a)),
+            StdFnProps::default("std::solid::hollow").include_in_feature_tree(),
         ),
         _ => unreachable!(),
     }

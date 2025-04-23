@@ -8,7 +8,7 @@ description: Operations executed multi-axis-robot.kcl
     "group": {
       "type": "ModuleInstance",
       "name": "robotArmBase",
-      "moduleId": 6
+      "moduleId": 0
     },
     "sourceRange": []
   },
@@ -17,11 +17,7 @@ description: Operations executed multi-axis-robot.kcl
     "group": {
       "type": "FunctionCall",
       "name": "sin",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -35,11 +31,7 @@ description: Operations executed multi-axis-robot.kcl
     "group": {
       "type": "FunctionCall",
       "name": "cos",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -53,11 +45,7 @@ description: Operations executed multi-axis-robot.kcl
     "group": {
       "type": "FunctionCall",
       "name": "sin",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -71,11 +59,7 @@ description: Operations executed multi-axis-robot.kcl
     "group": {
       "type": "FunctionCall",
       "name": "cos",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -132,6 +116,17 @@ description: Operations executed multi-axis-robot.kcl
     }
   },
   {
+    "type": "KclStdLibCall",
+    "name": "chamfer",
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    },
     "labeledArgs": {
       "length": {
         "value": {
@@ -174,18 +169,7 @@ description: Operations executed multi-axis-robot.kcl
         "sourceRange": []
       }
     },
-    "name": "chamfer",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Solid",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": []
-    }
+    "sourceRange": []
   },
   {
     "labeledArgs": {
@@ -505,7 +489,7 @@ description: Operations executed multi-axis-robot.kcl
     "group": {
       "type": "ModuleInstance",
       "name": "rotatingBase",
-      "moduleId": 7
+      "moduleId": 0
     },
     "sourceRange": []
   },
@@ -933,11 +917,7 @@ description: Operations executed multi-axis-robot.kcl
     "group": {
       "type": "FunctionCall",
       "name": "toRadians",
-      "functionSourceRange": [
-        11503,
-        11552,
-        1
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -951,11 +931,7 @@ description: Operations executed multi-axis-robot.kcl
     "group": {
       "type": "FunctionCall",
       "name": "cos",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -969,11 +945,7 @@ description: Operations executed multi-axis-robot.kcl
     "group": {
       "type": "FunctionCall",
       "name": "toRadians",
-      "functionSourceRange": [
-        11503,
-        11552,
-        1
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -987,11 +959,7 @@ description: Operations executed multi-axis-robot.kcl
     "group": {
       "type": "FunctionCall",
       "name": "cos",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -1104,11 +1072,7 @@ description: Operations executed multi-axis-robot.kcl
     "group": {
       "type": "FunctionCall",
       "name": "toRadians",
-      "functionSourceRange": [
-        11503,
-        11552,
-        1
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -1122,11 +1086,7 @@ description: Operations executed multi-axis-robot.kcl
     "group": {
       "type": "FunctionCall",
       "name": "cos",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -1140,11 +1100,7 @@ description: Operations executed multi-axis-robot.kcl
     "group": {
       "type": "FunctionCall",
       "name": "toRadians",
-      "functionSourceRange": [
-        11503,
-        11552,
-        1
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -1158,11 +1114,7 @@ description: Operations executed multi-axis-robot.kcl
     "group": {
       "type": "FunctionCall",
       "name": "cos",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -1176,11 +1128,7 @@ description: Operations executed multi-axis-robot.kcl
     "group": {
       "type": "FunctionCall",
       "name": "toRadians",
-      "functionSourceRange": [
-        11503,
-        11552,
-        1
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -1194,11 +1142,7 @@ description: Operations executed multi-axis-robot.kcl
     "group": {
       "type": "FunctionCall",
       "name": "cos",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -1212,11 +1156,7 @@ description: Operations executed multi-axis-robot.kcl
     "group": {
       "type": "FunctionCall",
       "name": "toRadians",
-      "functionSourceRange": [
-        11503,
-        11552,
-        1
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -1230,11 +1170,7 @@ description: Operations executed multi-axis-robot.kcl
     "group": {
       "type": "FunctionCall",
       "name": "cos",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -1326,11 +1262,7 @@ description: Operations executed multi-axis-robot.kcl
     "group": {
       "type": "FunctionCall",
       "name": "toRadians",
-      "functionSourceRange": [
-        11503,
-        11552,
-        1
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -1344,11 +1276,7 @@ description: Operations executed multi-axis-robot.kcl
     "group": {
       "type": "FunctionCall",
       "name": "cos",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -1362,11 +1290,7 @@ description: Operations executed multi-axis-robot.kcl
     "group": {
       "type": "FunctionCall",
       "name": "toRadians",
-      "functionSourceRange": [
-        11503,
-        11552,
-        1
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -1380,11 +1304,7 @@ description: Operations executed multi-axis-robot.kcl
     "group": {
       "type": "FunctionCall",
       "name": "cos",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -1649,7 +1569,7 @@ description: Operations executed multi-axis-robot.kcl
     "group": {
       "type": "ModuleInstance",
       "name": "j2RobotArm",
-      "moduleId": 8
+      "moduleId": 0
     },
     "sourceRange": []
   },
@@ -1798,11 +1718,7 @@ description: Operations executed multi-axis-robot.kcl
     "group": {
       "type": "FunctionCall",
       "name": "toRadians",
-      "functionSourceRange": [
-        11503,
-        11552,
-        1
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -1816,11 +1732,7 @@ description: Operations executed multi-axis-robot.kcl
     "group": {
       "type": "FunctionCall",
       "name": "sin",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -1834,11 +1746,7 @@ description: Operations executed multi-axis-robot.kcl
     "group": {
       "type": "FunctionCall",
       "name": "toRadians",
-      "functionSourceRange": [
-        11503,
-        11552,
-        1
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -1852,11 +1760,7 @@ description: Operations executed multi-axis-robot.kcl
     "group": {
       "type": "FunctionCall",
       "name": "cos",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -2024,11 +1928,7 @@ description: Operations executed multi-axis-robot.kcl
     "group": {
       "type": "FunctionCall",
       "name": "toRadians",
-      "functionSourceRange": [
-        11503,
-        11552,
-        1
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -2042,11 +1942,7 @@ description: Operations executed multi-axis-robot.kcl
     "group": {
       "type": "FunctionCall",
       "name": "cos",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -2060,11 +1956,7 @@ description: Operations executed multi-axis-robot.kcl
     "group": {
       "type": "FunctionCall",
       "name": "toRadians",
-      "functionSourceRange": [
-        11503,
-        11552,
-        1
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -2078,11 +1970,7 @@ description: Operations executed multi-axis-robot.kcl
     "group": {
       "type": "FunctionCall",
       "name": "sin",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -2297,11 +2185,7 @@ description: Operations executed multi-axis-robot.kcl
     "group": {
       "type": "FunctionCall",
       "name": "toRadians",
-      "functionSourceRange": [
-        11503,
-        11552,
-        1
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -2315,11 +2199,7 @@ description: Operations executed multi-axis-robot.kcl
     "group": {
       "type": "FunctionCall",
       "name": "cos",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -2333,11 +2213,7 @@ description: Operations executed multi-axis-robot.kcl
     "group": {
       "type": "FunctionCall",
       "name": "toRadians",
-      "functionSourceRange": [
-        11503,
-        11552,
-        1
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -2351,11 +2227,7 @@ description: Operations executed multi-axis-robot.kcl
     "group": {
       "type": "FunctionCall",
       "name": "sin",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -2369,11 +2241,7 @@ description: Operations executed multi-axis-robot.kcl
     "group": {
       "type": "FunctionCall",
       "name": "toRadians",
-      "functionSourceRange": [
-        11503,
-        11552,
-        1
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -2387,11 +2255,7 @@ description: Operations executed multi-axis-robot.kcl
     "group": {
       "type": "FunctionCall",
       "name": "cos",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -2405,11 +2269,7 @@ description: Operations executed multi-axis-robot.kcl
     "group": {
       "type": "FunctionCall",
       "name": "toRadians",
-      "functionSourceRange": [
-        11503,
-        11552,
-        1
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -2423,11 +2283,7 @@ description: Operations executed multi-axis-robot.kcl
     "group": {
       "type": "FunctionCall",
       "name": "sin",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -2519,11 +2375,7 @@ description: Operations executed multi-axis-robot.kcl
     "group": {
       "type": "FunctionCall",
       "name": "toRadians",
-      "functionSourceRange": [
-        11503,
-        11552,
-        1
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -2537,11 +2389,7 @@ description: Operations executed multi-axis-robot.kcl
     "group": {
       "type": "FunctionCall",
       "name": "cos",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -2555,11 +2403,7 @@ description: Operations executed multi-axis-robot.kcl
     "group": {
       "type": "FunctionCall",
       "name": "toRadians",
-      "functionSourceRange": [
-        11503,
-        11552,
-        1
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -2573,11 +2417,7 @@ description: Operations executed multi-axis-robot.kcl
     "group": {
       "type": "FunctionCall",
       "name": "sin",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -2626,7 +2466,7 @@ description: Operations executed multi-axis-robot.kcl
     "group": {
       "type": "ModuleInstance",
       "name": "j3RobotArm",
-      "moduleId": 9
+      "moduleId": 0
     },
     "sourceRange": []
   },
@@ -2775,11 +2615,7 @@ description: Operations executed multi-axis-robot.kcl
     "group": {
       "type": "FunctionCall",
       "name": "toRadians",
-      "functionSourceRange": [
-        11503,
-        11552,
-        1
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -2793,11 +2629,7 @@ description: Operations executed multi-axis-robot.kcl
     "group": {
       "type": "FunctionCall",
       "name": "cos",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -2811,11 +2643,7 @@ description: Operations executed multi-axis-robot.kcl
     "group": {
       "type": "FunctionCall",
       "name": "toRadians",
-      "functionSourceRange": [
-        11503,
-        11552,
-        1
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -2829,11 +2657,7 @@ description: Operations executed multi-axis-robot.kcl
     "group": {
       "type": "FunctionCall",
       "name": "sin",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -2847,11 +2671,7 @@ description: Operations executed multi-axis-robot.kcl
     "group": {
       "type": "FunctionCall",
       "name": "toRadians",
-      "functionSourceRange": [
-        11503,
-        11552,
-        1
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -2865,11 +2685,7 @@ description: Operations executed multi-axis-robot.kcl
     "group": {
       "type": "FunctionCall",
       "name": "sin",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -2883,11 +2699,7 @@ description: Operations executed multi-axis-robot.kcl
     "group": {
       "type": "FunctionCall",
       "name": "toRadians",
-      "functionSourceRange": [
-        11503,
-        11552,
-        1
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -2901,11 +2713,7 @@ description: Operations executed multi-axis-robot.kcl
     "group": {
       "type": "FunctionCall",
       "name": "cos",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -2974,11 +2782,7 @@ description: Operations executed multi-axis-robot.kcl
     "group": {
       "type": "FunctionCall",
       "name": "toRadians",
-      "functionSourceRange": [
-        11503,
-        11552,
-        1
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -2992,11 +2796,7 @@ description: Operations executed multi-axis-robot.kcl
     "group": {
       "type": "FunctionCall",
       "name": "cos",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -3010,11 +2810,7 @@ description: Operations executed multi-axis-robot.kcl
     "group": {
       "type": "FunctionCall",
       "name": "toRadians",
-      "functionSourceRange": [
-        11503,
-        11552,
-        1
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -3028,11 +2824,7 @@ description: Operations executed multi-axis-robot.kcl
     "group": {
       "type": "FunctionCall",
       "name": "sin",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -3145,11 +2937,7 @@ description: Operations executed multi-axis-robot.kcl
     "group": {
       "type": "FunctionCall",
       "name": "toRadians",
-      "functionSourceRange": [
-        11503,
-        11552,
-        1
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -3163,11 +2951,7 @@ description: Operations executed multi-axis-robot.kcl
     "group": {
       "type": "FunctionCall",
       "name": "cos",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -3181,11 +2965,7 @@ description: Operations executed multi-axis-robot.kcl
     "group": {
       "type": "FunctionCall",
       "name": "toRadians",
-      "functionSourceRange": [
-        11503,
-        11552,
-        1
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -3199,11 +2979,7 @@ description: Operations executed multi-axis-robot.kcl
     "group": {
       "type": "FunctionCall",
       "name": "sin",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -3217,11 +2993,7 @@ description: Operations executed multi-axis-robot.kcl
     "group": {
       "type": "FunctionCall",
       "name": "toRadians",
-      "functionSourceRange": [
-        11503,
-        11552,
-        1
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -3235,11 +3007,7 @@ description: Operations executed multi-axis-robot.kcl
     "group": {
       "type": "FunctionCall",
       "name": "cos",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -3253,11 +3021,7 @@ description: Operations executed multi-axis-robot.kcl
     "group": {
       "type": "FunctionCall",
       "name": "toRadians",
-      "functionSourceRange": [
-        11503,
-        11552,
-        1
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -3271,11 +3035,7 @@ description: Operations executed multi-axis-robot.kcl
     "group": {
       "type": "FunctionCall",
       "name": "sin",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -3391,11 +3151,7 @@ description: Operations executed multi-axis-robot.kcl
     "group": {
       "type": "FunctionCall",
       "name": "toRadians",
-      "functionSourceRange": [
-        11503,
-        11552,
-        1
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -3409,11 +3165,7 @@ description: Operations executed multi-axis-robot.kcl
     "group": {
       "type": "FunctionCall",
       "name": "cos",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -3427,11 +3179,7 @@ description: Operations executed multi-axis-robot.kcl
     "group": {
       "type": "FunctionCall",
       "name": "toRadians",
-      "functionSourceRange": [
-        11503,
-        11552,
-        1
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -3445,11 +3193,7 @@ description: Operations executed multi-axis-robot.kcl
     "group": {
       "type": "FunctionCall",
       "name": "cos",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -3463,11 +3207,7 @@ description: Operations executed multi-axis-robot.kcl
     "group": {
       "type": "FunctionCall",
       "name": "toRadians",
-      "functionSourceRange": [
-        11503,
-        11552,
-        1
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -3481,11 +3221,7 @@ description: Operations executed multi-axis-robot.kcl
     "group": {
       "type": "FunctionCall",
       "name": "sin",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -3499,11 +3235,7 @@ description: Operations executed multi-axis-robot.kcl
     "group": {
       "type": "FunctionCall",
       "name": "toRadians",
-      "functionSourceRange": [
-        11503,
-        11552,
-        1
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -3517,11 +3249,7 @@ description: Operations executed multi-axis-robot.kcl
     "group": {
       "type": "FunctionCall",
       "name": "sin",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -3590,11 +3318,7 @@ description: Operations executed multi-axis-robot.kcl
     "group": {
       "type": "FunctionCall",
       "name": "toRadians",
-      "functionSourceRange": [
-        11503,
-        11552,
-        1
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -3608,11 +3332,7 @@ description: Operations executed multi-axis-robot.kcl
     "group": {
       "type": "FunctionCall",
       "name": "cos",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -3626,11 +3346,7 @@ description: Operations executed multi-axis-robot.kcl
     "group": {
       "type": "FunctionCall",
       "name": "toRadians",
-      "functionSourceRange": [
-        11503,
-        11552,
-        1
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -3644,11 +3360,7 @@ description: Operations executed multi-axis-robot.kcl
     "group": {
       "type": "FunctionCall",
       "name": "cos",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -3662,11 +3374,7 @@ description: Operations executed multi-axis-robot.kcl
     "group": {
       "type": "FunctionCall",
       "name": "toRadians",
-      "functionSourceRange": [
-        11503,
-        11552,
-        1
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -3680,11 +3388,7 @@ description: Operations executed multi-axis-robot.kcl
     "group": {
       "type": "FunctionCall",
       "name": "sin",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -3698,11 +3402,7 @@ description: Operations executed multi-axis-robot.kcl
     "group": {
       "type": "FunctionCall",
       "name": "toRadians",
-      "functionSourceRange": [
-        11503,
-        11552,
-        1
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -3716,11 +3416,7 @@ description: Operations executed multi-axis-robot.kcl
     "group": {
       "type": "FunctionCall",
       "name": "sin",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -3844,11 +3540,7 @@ description: Operations executed multi-axis-robot.kcl
     "group": {
       "type": "FunctionCall",
       "name": "toRadians",
-      "functionSourceRange": [
-        11503,
-        11552,
-        1
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -3862,11 +3554,7 @@ description: Operations executed multi-axis-robot.kcl
     "group": {
       "type": "FunctionCall",
       "name": "cos",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -3880,11 +3568,7 @@ description: Operations executed multi-axis-robot.kcl
     "group": {
       "type": "FunctionCall",
       "name": "toRadians",
-      "functionSourceRange": [
-        11503,
-        11552,
-        1
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -3898,11 +3582,7 @@ description: Operations executed multi-axis-robot.kcl
     "group": {
       "type": "FunctionCall",
       "name": "cos",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -3916,11 +3596,7 @@ description: Operations executed multi-axis-robot.kcl
     "group": {
       "type": "FunctionCall",
       "name": "toRadians",
-      "functionSourceRange": [
-        11503,
-        11552,
-        1
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -3934,11 +3610,7 @@ description: Operations executed multi-axis-robot.kcl
     "group": {
       "type": "FunctionCall",
       "name": "sin",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -3952,11 +3624,7 @@ description: Operations executed multi-axis-robot.kcl
     "group": {
       "type": "FunctionCall",
       "name": "toRadians",
-      "functionSourceRange": [
-        11503,
-        11552,
-        1
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -3970,11 +3638,7 @@ description: Operations executed multi-axis-robot.kcl
     "group": {
       "type": "FunctionCall",
       "name": "sin",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -4043,11 +3707,7 @@ description: Operations executed multi-axis-robot.kcl
     "group": {
       "type": "FunctionCall",
       "name": "toRadians",
-      "functionSourceRange": [
-        11503,
-        11552,
-        1
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -4061,11 +3721,7 @@ description: Operations executed multi-axis-robot.kcl
     "group": {
       "type": "FunctionCall",
       "name": "cos",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -4079,11 +3735,7 @@ description: Operations executed multi-axis-robot.kcl
     "group": {
       "type": "FunctionCall",
       "name": "toRadians",
-      "functionSourceRange": [
-        11503,
-        11552,
-        1
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -4097,11 +3749,7 @@ description: Operations executed multi-axis-robot.kcl
     "group": {
       "type": "FunctionCall",
       "name": "cos",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -4115,11 +3763,7 @@ description: Operations executed multi-axis-robot.kcl
     "group": {
       "type": "FunctionCall",
       "name": "toRadians",
-      "functionSourceRange": [
-        11503,
-        11552,
-        1
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -4133,11 +3777,7 @@ description: Operations executed multi-axis-robot.kcl
     "group": {
       "type": "FunctionCall",
       "name": "sin",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -4151,11 +3791,7 @@ description: Operations executed multi-axis-robot.kcl
     "group": {
       "type": "FunctionCall",
       "name": "toRadians",
-      "functionSourceRange": [
-        11503,
-        11552,
-        1
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -4169,11 +3805,7 @@ description: Operations executed multi-axis-robot.kcl
     "group": {
       "type": "FunctionCall",
       "name": "sin",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },

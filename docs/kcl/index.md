@@ -53,7 +53,6 @@ layout: manual
   * [`getOppositeEdge`](kcl/getOppositeEdge)
   * [`getPreviousAdjacentEdge`](kcl/getPreviousAdjacentEdge)
   * [`helix`](kcl/std-helix)
-  * [`hollow`](kcl/hollow)
   * [`intersect`](kcl/intersect)
   * [`involuteCircular`](kcl/involuteCircular)
   * [`lastSegX`](kcl/lastSegX)
@@ -98,7 +97,6 @@ layout: manual
   * [`segStart`](kcl/segStart)
   * [`segStartX`](kcl/segStartX)
   * [`segStartY`](kcl/segStartY)
-  * [`shell`](kcl/shell)
   * [`sqrt`](kcl/sqrt)
   * [`startProfile`](kcl/startProfile)
   * [`startSketchOn`](kcl/startSketchOn)
@@ -133,6 +131,8 @@ layout: manual
 * **std::solid**
   * [`chamfer`](kcl/std-solid-chamfer)
   * [`fillet`](kcl/std-solid-fillet)
+  * [`hollow`](kcl/std-solid-hollow)
+  * [`shell`](kcl/std-solid-shell)
 * **std::turns**
   * [`turns::HALF_TURN`](kcl/consts/std-turns-HALF_TURN)
   * [`turns::QUARTER_TURN`](kcl/consts/std-turns-QUARTER_TURN)

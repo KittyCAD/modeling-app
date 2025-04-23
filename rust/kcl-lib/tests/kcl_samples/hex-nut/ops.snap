@@ -8,11 +8,7 @@ description: Operations executed hex-nut.kcl
     "group": {
       "type": "FunctionCall",
       "name": "hexNut",
-      "functionSourceRange": [
-        504,
-        1030,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },

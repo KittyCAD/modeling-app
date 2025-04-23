@@ -1,6 +1,8 @@
 @no_std
 @settings(defaultLengthUnit = mm)
 
+import Face from "std::types"
+
 /// Blend a transitional edge along a tagged path, smoothing the sharp edge.
 ///
 /// Fillet is similar in function and use to a chamfer, except
@@ -144,4 +146,219 @@ export fn chamfer(
   tags: [Edge; 1+],
   /// Create a new tag which refers to this chamfer
   tag?: tag,
+): Solid {}
+
+/// Remove volume from a 3-dimensional shape such that a wall of the
+/// provided thickness remains, taking volume starting at the provided
+/// face, leaving it open in that direction.
+///
+/// ```
+/// // Remove the end face for the extrusion.
+/// firstSketch = startSketchOn(XY)
+///     |> startProfile(at = [-12, 12])
+///     |> line(end = [24, 0])
+///     |> line(end = [0, -24])
+///     |> line(end = [-24, 0])
+///     |> close()
+///     |> extrude(length = 6)
+///
+/// // Remove the end face for the extrusion.
+/// shell(
+///     firstSketch,
+///     faces = [END],
+///     thickness = 0.25,
+/// )
+/// ```
+///
+/// ```
+/// // Remove the start face for the extrusion.
+/// firstSketch = startSketchOn(-XZ)
+///     |> startProfile(at = [-12, 12])
+///     |> line(end = [24, 0])
+///     |> line(end = [0, -24])
+///     |> line(end = [-24, 0])
+///     |> close()
+///     |> extrude(length = 6)
+///
+/// // Remove the start face for the extrusion.
+/// shell(
+///     firstSketch,
+///     faces = [START],
+///     thickness = 0.25,
+/// )
+/// ```
+///
+/// ```
+/// // Remove a tagged face and the end face for the extrusion.
+/// firstSketch = startSketchOn(XY)
+///     |> startProfile(at = [-12, 12])
+///     |> line(end = [24, 0])
+///     |> line(end = [0, -24])
+///     |> line(end = [-24, 0], tag = $myTag)
+///     |> close()
+///     |> extrude(length = 6)
+///
+/// // Remove a tagged face for the extrusion.
+/// shell(
+///     firstSketch,
+///     faces = [myTag],
+///     thickness = 0.25,
+/// )
+/// ```
+///
+/// ```
+/// // Remove multiple faces at once.
+/// firstSketch = startSketchOn(XY)
+///     |> startProfile(at = [-12, 12])
+///     |> line(end = [24, 0])
+///     |> line(end = [0, -24])
+///     |> line(end = [-24, 0], tag = $myTag)
+///     |> close()
+///     |> extrude(length = 6)
+///
+/// // Remove a tagged face and the end face for the extrusion.
+/// shell(
+///     firstSketch,
+///     faces = [myTag, END],
+///     thickness = 0.25,
+/// )
+/// ```
+///
+/// ```
+/// // Shell a sketch on face.
+/// size = 100
+/// case = startSketchOn(-XZ)
+///     |> startProfile(at = [-size, -size])
+///     |> line(end = [2 * size, 0])
+///     |> line(end = [0, 2 * size])
+///     |> tangentialArc(endAbsolute = [-size, size])
+///     |> close()
+///     |> extrude(length = 65)
+///
+/// thing1 = startSketchOn(case, face = END)
+///     |> circle( center = [-size / 2, -size / 2], radius = 25 )
+///     |> extrude(length = 50)
+///
+/// thing2 = startSketchOn(case, face = END)
+///     |> circle( center = [size / 2, -size / 2], radius = 25 )
+///     |> extrude(length = 50)
+///
+/// // We put "case" in the shell function to shell the entire object.
+/// shell(case, faces = [START], thickness = 5)
+/// ```
+///
+/// ```
+/// // Shell a sketch on face object on the end face.
+/// size = 100
+/// case = startSketchOn(XY)
+///     |> startProfile(at = [-size, -size])
+///     |> line(end = [2 * size, 0])
+///     |> line(end = [0, 2 * size])
+///     |> tangentialArc(endAbsolute = [-size, size])
+///     |> close()
+///     |> extrude(length = 65)
+///
+/// thing1 = startSketchOn(case, face = END)
+///     |> circle( center = [-size / 2, -size / 2], radius = 25 )
+///     |> extrude(length = 50)
+///
+/// thing2 = startSketchOn(case, face = END)
+///     |> circle( center = [size / 2, -size / 2], radius = 25 )
+///     |> extrude(length = 50)
+///
+/// // We put "thing1" in the shell function to shell the end face of the object.
+/// shell(thing1, faces = [END], thickness = 5)
+/// ```
+///
+/// ```
+/// // Shell sketched on face objects on the end face, include all sketches to shell
+/// // the entire object.
+///
+/// size = 100
+/// case = startSketchOn(XY)
+///     |> startProfile(at = [-size, -size])
+///     |> line(end = [2 * size, 0])
+///     |> line(end = [0, 2 * size])
+///     |> tangentialArc(endAbsolute = [-size, size])
+///     |> close()
+///     |> extrude(length = 65)
+///
+/// thing1 = startSketchOn(case, face = END)
+///     |> circle( center = [-size / 2, -size / 2], radius = 25 )
+///     |> extrude(length = 50)
+///
+/// thing2 = startSketchOn(case, face = END)
+///     |> circle( center = [size / 2, -size / 2], radius = 25)
+///     |> extrude(length = 50)
+///
+/// // We put "thing1" and "thing2" in the shell function to shell the end face of the object.
+/// shell([thing1, thing2], faces = [END], thickness = 5)
+/// ```
+@(impl = std_rust)
+export fn shell(
+  /// Which solid (or solids) to shell out
+  @solids: [Solid; 1+],
+  /// The thickness of the shell
+  thickness: number(Length),
+  /// The faces you want removed
+  faces: [tag; 1+],
+): [Solid] {}
+
+
+/// Make the inside of a 3D object hollow.
+///
+/// Remove volume from a 3-dimensional shape such that a wall of the
+/// provided thickness remains around the exterior of the shape.
+///
+/// ```
+/// // Hollow a basic sketch.
+/// firstSketch = startSketchOn(XY)
+///     |> startProfile(at = [-12, 12])
+///     |> line(end = [24, 0])
+///     |> line(end = [0, -24])
+///     |> line(end = [-24, 0])
+///     |> close()
+///     |> extrude(length = 6)
+///     |> hollow (thickness = 0.25)
+/// ```
+///
+/// ```
+/// // Hollow a basic sketch.
+/// firstSketch = startSketchOn(-XZ)
+///     |> startProfile(at = [-12, 12])
+///     |> line(end = [24, 0])
+///     |> line(end = [0, -24])
+///     |> line(end = [-24, 0])
+///     |> close()
+///     |> extrude(length = 6)
+///     |> hollow (thickness = 0.5)
+/// ```
+///
+/// ```
+/// // Hollow a sketch on face object.
+/// size = 100
+/// case = startSketchOn(-XZ)
+///     |> startProfile(at = [-size, -size])
+///     |> line(end = [2 * size, 0])
+///     |> line(end = [0, 2 * size])
+///     |> tangentialArc(endAbsolute = [-size, size])
+///     |> close()
+///     |> extrude(length = 65)
+///
+/// thing1 = startSketchOn(case, face = END)
+///     |> circle( center = [-size / 2, -size / 2], radius = 25 )
+///     |> extrude(length = 50)
+///
+/// thing2 = startSketchOn(case, face = END)
+///     |> circle( center = [size / 2, -size / 2], radius = 25 )
+///     |> extrude(length = 50)
+///
+/// hollow(case, thickness = 0.5)
+/// ```
+@(impl = std_rust)
+export fn hollow(
+  /// Which solid to hollow out
+  @solid: Solid,
+  /// The thickness of the remaining shell
+  thickness: number(Length),
 ): Solid {}

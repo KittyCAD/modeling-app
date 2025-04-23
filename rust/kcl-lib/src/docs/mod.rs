@@ -918,10 +918,7 @@ mod tests {
             panic!();
         };
         let snippet = fillet_fn.to_autocomplete_snippet();
-        assert_eq!(
-            snippet,
-            r#"fillet(radius = ${0:3.14}, tags = [${1:tag_or_edge_fn}])"#
-        );
+        assert_eq!(snippet, r#"fillet(radius = ${0:3.14}, tags = [${1:tag_or_edge_fn}])"#);
     }
 
     #[test]
