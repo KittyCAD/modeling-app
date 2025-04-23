@@ -477,15 +477,7 @@ test.describe('Point-and-click assemblies tests', () => {
   test(
     'Assembly gets reexecuted when imported models are updated externally',
     { tag: ['@electron'] },
-    async ({
-      context,
-      page,
-      homePage,
-      scene,
-      toolbar,
-      cmdBar,
-      tronApp,
-    }) => {
+    async ({ context, page, homePage, scene, toolbar, cmdBar, tronApp }) => {
       if (!tronApp) {
         fail()
       }
