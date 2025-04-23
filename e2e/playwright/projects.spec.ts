@@ -1962,13 +1962,13 @@ test(
 test(
   'Settings persist across restarts',
   { tag: '@electron' },
-  async ({ page, scene, cmdBar }, testInfo) => {
+  async ({ page, toolbar }, testInfo) => {
     await test.step('We can change a user setting like theme', async () => {
       await page.setBodyDimensions({ width: 1200, height: 500 })
 
       page.on('console', console.log)
 
-      await page.getByTestId('user-sidebar-toggle').click()
+      await toolbar.userSidebarButton.click()
 
       await page.getByTestId('user-settings').click()
 
@@ -1995,7 +1995,7 @@ test(
 test(
   'Original project name persist after onboarding',
   { tag: '@electron' },
-  async ({ page }, testInfo) => {
+  async ({ page, toolbar }, testInfo) => {
     test.fixme(orRunWhenFullSuiteEnabled())
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
@@ -2007,7 +2007,7 @@ test(
     })
 
     await test.step('Should go through onboarding', async () => {
-      await page.getByTestId('user-sidebar-toggle').click()
+      await toolbar.userSidebarButton.click()
       await page.getByTestId('user-settings').click()
       await page.getByRole('button', { name: 'Replay Onboarding' }).click()
 
