@@ -1013,13 +1013,18 @@ export class SceneEntities {
         // Snapping logic for the profile start handle
         if (intersectsProfileStart) {
           const originCoords = createArrayExpression([
-            createCallExpressionStdLib('profileStartX', [
+            createCallExpressionStdLibKw(
+              'profileStartX',
               createPipeSubstitution(),
-            ]),
-            createCallExpressionStdLib('profileStartY', [
+              []
+            ),
+            createCallExpressionStdLibKw(
+              'profileStartY',
               createPipeSubstitution(),
-            ]),
+              []
+            ),
           ])
+
           modifiedAst = addCallExpressionsToPipe({
             node: this.kclManager.ast,
             variables: this.kclManager.variables,
@@ -2213,13 +2218,18 @@ export class SceneEntities {
           modded = moddedResult.modifiedAst
           if (intersectsProfileStart) {
             const originCoords = createArrayExpression([
-              createCallExpressionStdLib('profileStartX', [
+              createCallExpressionStdLibKw(
+                'profileStartX',
                 createPipeSubstitution(),
-              ]),
-              createCallExpressionStdLib('profileStartY', [
+                []
+              ),
+              createCallExpressionStdLibKw(
+                'profileStartY',
                 createPipeSubstitution(),
-              ]),
+                []
+              ),
             ])
+
             const arcToCallExp = getNodeFromPath<CallExpression>(
               modded,
               mod.pathToNode,
