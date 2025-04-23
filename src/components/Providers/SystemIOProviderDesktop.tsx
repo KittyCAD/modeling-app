@@ -9,10 +9,7 @@ import {
 } from '@src/machines/systemIO/hooks'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { useNavigate } from 'react-router-dom'
-import { useEffect, useCallback } from 'react'
-import { useClearURLParams } from '@src/machines/systemIO/hooks'
-import { useSearchParams } from 'react-router-dom'
-import { CREATE_FILE_URL_PARAM } from '@src/lib/constants'
+import { useEffect } from 'react'
 
 export function SystemIOMachineLogicListenerDesktop() {
   const requestedProjectName = useRequestedProjectName()
