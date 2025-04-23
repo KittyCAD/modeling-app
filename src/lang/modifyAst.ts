@@ -451,9 +451,11 @@ export function loftSketches(
   const modifiedAst = structuredClone(node)
   const name = findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.LOFT)
   const elements = declarators.map((d) => createLocalName(d.id.name))
-  const loft = createCallExpressionStdLib('loft', [
+  const loft = createCallExpressionStdLibKw(
+    'loft',
     createArrayExpression(elements),
-  ])
+    []
+  )
   const declaration = createVariableDeclaration(name, loft)
   modifiedAst.body.push(declaration)
   const pathToNode: PathToNode = [
@@ -461,8 +463,7 @@ export function loftSketches(
     [modifiedAst.body.length - 1, 'index'],
     ['declaration', 'VariableDeclaration'],
     ['init', 'VariableDeclarator'],
-    ['arguments', 'CallExpression'],
-    [0, 'index'],
+    ['unlabeled', UNLABELED_ARG],
   ]
 
   return {
@@ -1379,10 +1380,11 @@ export async function deleteFromSelection(
               extrudeNameToDelete = dec.id.name
             }
             if (
-              dec.init.type === 'CallExpression' &&
+              dec.init.type === 'CallExpressionKw' &&
               dec.init.callee.name.name === 'loft' &&
-              dec.init.arguments?.[0].type === 'ArrayExpression' &&
-              dec.init.arguments?.[0].elements.some(
+              dec.init.unlabeled !== null &&
+              dec.init.unlabeled.type === 'ArrayExpression' &&
+              dec.init.unlabeled.elements.some(
                 (a) => a.type === 'Name' && a.name.name === varDecName
               )
             ) {
