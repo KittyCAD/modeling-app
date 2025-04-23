@@ -221,9 +221,6 @@ description: Variables in memory after executing parametric.kcl
             "units": {
               "type": "Mm"
             }
-          },
-          "units": {
-            "type": "Mm"
           }
         },
         "start": {

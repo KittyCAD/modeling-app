@@ -37,11 +37,65 @@ description: Operations executed food-service-spatula.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
+      "name": "toDegrees",
+      "functionSourceRange": [
+        12033,
+        12082,
+        1
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "toRadians",
+      "functionSourceRange": [
+        11603,
+        11652,
+        1
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
       "name": "cos",
       "functionSourceRange": [
         0,
         0,
         0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "toRadians",
+      "functionSourceRange": [
+        11603,
+        11652,
+        1
       ],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -91,11 +145,65 @@ description: Operations executed food-service-spatula.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
+      "name": "toDegrees",
+      "functionSourceRange": [
+        12033,
+        12082,
+        1
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "toRadians",
+      "functionSourceRange": [
+        11603,
+        11652,
+        1
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
       "name": "cos",
       "functionSourceRange": [
         0,
         0,
         0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "toRadians",
+      "functionSourceRange": [
+        11603,
+        11652,
+        1
       ],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -145,11 +253,65 @@ description: Operations executed food-service-spatula.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
+      "name": "toDegrees",
+      "functionSourceRange": [
+        12033,
+        12082,
+        1
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "toRadians",
+      "functionSourceRange": [
+        11603,
+        11652,
+        1
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
       "name": "cos",
       "functionSourceRange": [
         0,
         0,
         0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "toRadians",
+      "functionSourceRange": [
+        11603,
+        11652,
+        1
       ],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -727,11 +889,47 @@ description: Operations executed food-service-spatula.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
+      "name": "toRadians",
+      "functionSourceRange": [
+        11603,
+        11652,
+        1
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
       "name": "cos",
       "functionSourceRange": [
         0,
         0,
         0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "toRadians",
+      "functionSourceRange": [
+        11603,
+        11652,
+        1
       ],
       "unlabeledArg": null,
       "labeledArgs": {}

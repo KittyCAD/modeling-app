@@ -63,7 +63,7 @@ test.describe('Onboarding tests', () => {
     {
       tag: '@electron',
     },
-    async ({ page, tronApp }) => {
+    async ({ page, tronApp, scene }) => {
       if (!tronApp) {
         fail()
       }
@@ -72,7 +72,6 @@ test.describe('Onboarding tests', () => {
           onboarding_status: '',
         },
       })
-      const u = await getUtils(page)
 
       const viewportSize = { width: 1200, height: 500 }
       await page.setBodyDimensions(viewportSize)
@@ -80,7 +79,7 @@ test.describe('Onboarding tests', () => {
       await test.step(`Create a project and open to the onboarding`, async () => {
         await createProject({ name: 'project-link', page })
         await test.step(`Ensure the engine connection works by testing the sketch button`, async () => {
-          await u.waitForPageLoad()
+          await scene.connectionEstablished()
         })
       })
 

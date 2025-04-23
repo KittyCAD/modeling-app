@@ -33,23 +33,15 @@ description: Artifact commands walkie-talkie.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "set_scene_units",
-      "unit": "in"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
       "type": "set_object_transform",
       "object_id": "[uuid]",
       "transforms": [
         {
           "translate": {
             "property": {
-              "x": -0.8,
-              "y": -0.1,
-              "z": 2.0
+              "x": -20.32,
+              "y": -2.54,
+              "z": 50.8
             },
             "set": false,
             "is_local": true
@@ -72,7 +64,7 @@ description: Artifact commands walkie-talkie.kcl
           "translate": {
             "property": {
               "x": 0.0,
-              "y": -1.0,
+              "y": -25.4,
               "z": 0.0
             },
             "set": false,
@@ -95,9 +87,9 @@ description: Artifact commands walkie-talkie.kcl
         {
           "translate": {
             "property": {
-              "x": 1.25,
-              "y": -0.5,
-              "z": 0.5
+              "x": 31.75,
+              "y": -12.7,
+              "z": 12.7
             },
             "set": false,
             "is_local": true
@@ -119,9 +111,9 @@ description: Artifact commands walkie-talkie.kcl
         {
           "translate": {
             "property": {
-              "x": 0.55,
-              "y": -0.5,
-              "z": 2.0
+              "x": 13.97,
+              "y": -12.7,
+              "z": 50.8
             },
             "set": false,
             "is_local": true
@@ -143,9 +135,9 @@ description: Artifact commands walkie-talkie.kcl
         {
           "translate": {
             "property": {
-              "x": -0.895,
-              "y": -1.0,
-              "z": 1.25
+              "x": -22.733,
+              "y": -25.4,
+              "z": 31.75
             },
             "set": false,
             "is_local": true
@@ -167,9 +159,9 @@ description: Artifact commands walkie-talkie.kcl
         {
           "translate": {
             "property": {
-              "x": -0.895,
-              "y": -1.0,
-              "z": 0.73
+              "x": -22.733,
+              "y": -25.4,
+              "z": 18.541999999999998
             },
             "set": false,
             "is_local": true
@@ -215,9 +207,9 @@ description: Artifact commands walkie-talkie.kcl
         {
           "translate": {
             "property": {
-              "x": 0.895,
-              "y": -1.0,
-              "z": 0.77
+              "x": 22.733,
+              "y": -25.4,
+              "z": 19.558
             },
             "set": false,
             "is_local": false
@@ -263,9 +255,9 @@ description: Artifact commands walkie-talkie.kcl
         {
           "translate": {
             "property": {
-              "x": 0.895,
-              "y": -1.0,
-              "z": 0.25000000000000006
+              "x": 22.733,
+              "y": -25.4,
+              "z": 6.350000000000001
             },
             "set": false,
             "is_local": false
@@ -275,54 +267,6 @@ description: Artifact commands walkie-talkie.kcl
           "scale": null
         }
       ]
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "set_scene_units",
-      "unit": "mm"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "set_scene_units",
-      "unit": "mm"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "set_scene_units",
-      "unit": "mm"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "set_scene_units",
-      "unit": "mm"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "set_scene_units",
-      "unit": "in"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "set_scene_units",
-      "unit": "in"
     }
   },
   {
@@ -380,8 +324,8 @@ description: Artifact commands walkie-talkie.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": -1.25,
-        "y": 2.0,
+        "x": -31.75,
+        "y": 50.8,
         "z": 0.0
       }
     }
@@ -402,7 +346,7 @@ description: Artifact commands walkie-talkie.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 2.5,
+          "x": 63.5,
           "y": 0.0,
           "z": 0.0
         },
@@ -420,7 +364,7 @@ description: Artifact commands walkie-talkie.kcl
         "type": "line",
         "end": {
           "x": 0.0,
-          "y": -4.0,
+          "y": -101.6,
           "z": 0.0
         },
         "relative": true
@@ -436,7 +380,7 @@ description: Artifact commands walkie-talkie.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -2.5,
+          "x": -63.5,
           "y": 0.0,
           "z": 0.0
         },
@@ -474,7 +418,7 @@ description: Artifact commands walkie-talkie.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 1.0,
+      "distance": 25.4,
       "faces": null,
       "opposite": "None"
     }
@@ -630,7 +574,7 @@ description: Artifact commands walkie-talkie.kcl
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
-      "radius": 0.325,
+      "radius": 8.254999999999999,
       "tolerance": 0.0000001,
       "cut_type": "chamfer"
     }
@@ -642,7 +586,7 @@ description: Artifact commands walkie-talkie.kcl
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
-      "radius": 0.325,
+      "radius": 8.254999999999999,
       "tolerance": 0.0000001,
       "cut_type": "chamfer"
     }
@@ -654,7 +598,7 @@ description: Artifact commands walkie-talkie.kcl
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
-      "radius": 0.325,
+      "radius": 8.254999999999999,
       "tolerance": 0.0000001,
       "cut_type": "chamfer"
     }
@@ -666,7 +610,7 @@ description: Artifact commands walkie-talkie.kcl
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
-      "radius": 0.325,
+      "radius": 8.254999999999999,
       "tolerance": 0.0000001,
       "cut_type": "chamfer"
     }
@@ -697,8 +641,8 @@ description: Artifact commands walkie-talkie.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": -1.125,
-        "y": 1.6308058261758407,
+        "x": -28.575,
+        "y": 41.42246798486635,
         "z": 0.0
       }
     }
@@ -719,8 +663,8 @@ description: Artifact commands walkie-talkie.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -0.8808,
-          "y": 1.875,
+          "x": -22.3725,
+          "y": 47.625,
           "z": 0.0
         },
         "relative": false
@@ -736,8 +680,8 @@ description: Artifact commands walkie-talkie.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 0.8808,
-          "y": 1.875,
+          "x": 22.3725,
+          "y": 47.625,
           "z": 0.0
         },
         "relative": false
@@ -753,8 +697,8 @@ description: Artifact commands walkie-talkie.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 1.125,
-          "y": 1.6308,
+          "x": 28.575,
+          "y": 41.4225,
           "z": 0.0
         },
         "relative": false
@@ -770,8 +714,8 @@ description: Artifact commands walkie-talkie.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 1.125,
-          "y": -1.6308,
+          "x": 28.575,
+          "y": -41.4225,
           "z": 0.0
         },
         "relative": false
@@ -787,8 +731,8 @@ description: Artifact commands walkie-talkie.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 0.8808,
-          "y": -1.875,
+          "x": 22.3725,
+          "y": -47.625,
           "z": 0.0
         },
         "relative": false
@@ -804,8 +748,8 @@ description: Artifact commands walkie-talkie.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -0.8808,
-          "y": -1.875,
+          "x": -22.3725,
+          "y": -47.625,
           "z": 0.0
         },
         "relative": false
@@ -821,8 +765,8 @@ description: Artifact commands walkie-talkie.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -1.125,
-          "y": -1.6308,
+          "x": -28.575,
+          "y": -41.4225,
           "z": 0.0
         },
         "relative": false
@@ -855,7 +799,7 @@ description: Artifact commands walkie-talkie.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": -0.0625,
+      "distance": -1.5875,
       "faces": null,
       "opposite": "None"
     }
@@ -1070,8 +1014,8 @@ description: Artifact commands walkie-talkie.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": -0.875,
-        "y": 1.25,
+        "x": -22.224999999999998,
+        "y": 31.75,
         "z": 0.0
       }
     }
@@ -1092,7 +1036,7 @@ description: Artifact commands walkie-talkie.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 1.75,
+          "x": 44.45,
           "y": 0.0,
           "z": 0.0
         },
@@ -1110,7 +1054,7 @@ description: Artifact commands walkie-talkie.kcl
         "type": "line",
         "end": {
           "x": 0.0,
-          "y": -1.0,
+          "y": -25.4,
           "z": 0.0
         },
         "relative": true
@@ -1126,7 +1070,7 @@ description: Artifact commands walkie-talkie.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -1.75,
+          "x": -44.45,
           "y": 0.0,
           "z": 0.0
         },
@@ -1143,8 +1087,8 @@ description: Artifact commands walkie-talkie.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -0.875,
-          "y": 1.25,
+          "x": -22.225,
+          "y": 31.75,
           "z": 0.0
         },
         "relative": false
@@ -1177,7 +1121,7 @@ description: Artifact commands walkie-talkie.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": -0.0625,
+      "distance": -1.5875,
       "faces": null,
       "opposite": "None"
     }
@@ -1312,8 +1256,8 @@ description: Artifact commands walkie-talkie.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": -0.625,
-        "y": -0.125,
+        "x": -15.875,
+        "y": -3.175,
         "z": 0.0
       }
     }
@@ -1334,7 +1278,7 @@ description: Artifact commands walkie-talkie.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 1.25,
+          "x": 31.75,
           "y": 0.0,
           "z": 0.0
         },
@@ -1352,7 +1296,7 @@ description: Artifact commands walkie-talkie.kcl
         "type": "line",
         "end": {
           "x": 0.0,
-          "y": -1.25,
+          "y": -31.75,
           "z": 0.0
         },
         "relative": true
@@ -1368,7 +1312,7 @@ description: Artifact commands walkie-talkie.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -1.25,
+          "x": -31.75,
           "y": 0.0,
           "z": 0.0
         },
@@ -1402,7 +1346,7 @@ description: Artifact commands walkie-talkie.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": -0.5,
+      "distance": -12.7,
       "faces": null,
       "opposite": "None"
     }
@@ -1532,14 +1476,6 @@ description: Artifact commands walkie-talkie.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "set_scene_units",
-      "unit": "in"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
       "type": "make_plane",
       "origin": {
         "x": 0.0,
@@ -1591,8 +1527,8 @@ description: Artifact commands walkie-talkie.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": -0.875,
-        "y": 1.25,
+        "x": -22.224999999999998,
+        "y": 31.75,
         "z": 0.0
       }
     }
@@ -1613,7 +1549,7 @@ description: Artifact commands walkie-talkie.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 1.75,
+          "x": 44.45,
           "y": 0.0,
           "z": 0.0
         },
@@ -1631,7 +1567,7 @@ description: Artifact commands walkie-talkie.kcl
         "type": "line",
         "end": {
           "x": 0.0,
-          "y": -1.0,
+          "y": -25.4,
           "z": 0.0
         },
         "relative": true
@@ -1647,7 +1583,7 @@ description: Artifact commands walkie-talkie.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -1.75,
+          "x": -44.45,
           "y": 0.0,
           "z": 0.0
         },
@@ -1664,8 +1600,8 @@ description: Artifact commands walkie-talkie.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -0.875,
-          "y": 1.25,
+          "x": -22.225,
+          "y": 31.75,
           "z": 0.0
         },
         "relative": false
@@ -1735,7 +1671,7 @@ description: Artifact commands walkie-talkie.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": -0.775,
+        "x": -19.685,
         "y": 0.0,
         "z": 0.0
       }
@@ -1757,7 +1693,7 @@ description: Artifact commands walkie-talkie.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 0.0313,
+          "x": 0.7938,
           "y": 0.0,
           "z": 0.0
         },
@@ -1775,7 +1711,7 @@ description: Artifact commands walkie-talkie.kcl
         "type": "line",
         "end": {
           "x": 0.0,
-          "y": -0.0313,
+          "y": -0.7938,
           "z": 0.0
         },
         "relative": true
@@ -1791,7 +1727,7 @@ description: Artifact commands walkie-talkie.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -0.0313,
+          "x": -0.7938,
           "y": 0.0,
           "z": 0.0
         },
@@ -1818,7 +1754,7 @@ description: Artifact commands walkie-talkie.kcl
         [
           {
             "translate": {
-              "x": 0.125,
+              "x": 3.175,
               "y": 0.0,
               "z": 0.0
             },
@@ -1847,7 +1783,7 @@ description: Artifact commands walkie-talkie.kcl
         [
           {
             "translate": {
-              "x": 0.25,
+              "x": 6.35,
               "y": 0.0,
               "z": 0.0
             },
@@ -1876,7 +1812,7 @@ description: Artifact commands walkie-talkie.kcl
         [
           {
             "translate": {
-              "x": 0.375,
+              "x": 9.524999999999999,
               "y": 0.0,
               "z": 0.0
             },
@@ -1905,7 +1841,7 @@ description: Artifact commands walkie-talkie.kcl
         [
           {
             "translate": {
-              "x": 0.5,
+              "x": 12.7,
               "y": 0.0,
               "z": 0.0
             },
@@ -1934,7 +1870,7 @@ description: Artifact commands walkie-talkie.kcl
         [
           {
             "translate": {
-              "x": 0.625,
+              "x": 15.875,
               "y": 0.0,
               "z": 0.0
             },
@@ -1963,7 +1899,7 @@ description: Artifact commands walkie-talkie.kcl
         [
           {
             "translate": {
-              "x": 0.75,
+              "x": 19.049999999999997,
               "y": 0.0,
               "z": 0.0
             },
@@ -1992,7 +1928,7 @@ description: Artifact commands walkie-talkie.kcl
         [
           {
             "translate": {
-              "x": 0.875,
+              "x": 22.224999999999998,
               "y": 0.0,
               "z": 0.0
             },
@@ -2021,7 +1957,7 @@ description: Artifact commands walkie-talkie.kcl
         [
           {
             "translate": {
-              "x": 1.0,
+              "x": 25.4,
               "y": 0.0,
               "z": 0.0
             },
@@ -2050,7 +1986,7 @@ description: Artifact commands walkie-talkie.kcl
         [
           {
             "translate": {
-              "x": 1.125,
+              "x": 28.575,
               "y": 0.0,
               "z": 0.0
             },
@@ -2079,7 +2015,7 @@ description: Artifact commands walkie-talkie.kcl
         [
           {
             "translate": {
-              "x": 1.25,
+              "x": 31.75,
               "y": 0.0,
               "z": 0.0
             },
@@ -2108,7 +2044,7 @@ description: Artifact commands walkie-talkie.kcl
         [
           {
             "translate": {
-              "x": 1.375,
+              "x": 34.925,
               "y": 0.0,
               "z": 0.0
             },
@@ -2137,7 +2073,7 @@ description: Artifact commands walkie-talkie.kcl
         [
           {
             "translate": {
-              "x": 1.5,
+              "x": 38.099999999999994,
               "y": 0.0,
               "z": 0.0
             },
@@ -2178,7 +2114,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -0.125,
+              "y": -3.175,
               "z": 0.0
             },
             "scale": {
@@ -2207,7 +2143,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -0.25,
+              "y": -6.35,
               "z": 0.0
             },
             "scale": {
@@ -2236,7 +2172,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -0.375,
+              "y": -9.524999999999999,
               "z": 0.0
             },
             "scale": {
@@ -2265,7 +2201,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -0.5,
+              "y": -12.7,
               "z": 0.0
             },
             "scale": {
@@ -2294,7 +2230,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -0.625,
+              "y": -15.875,
               "z": 0.0
             },
             "scale": {
@@ -2323,7 +2259,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -0.75,
+              "y": -19.049999999999997,
               "z": 0.0
             },
             "scale": {
@@ -2352,7 +2288,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -0.875,
+              "y": -22.224999999999998,
               "z": 0.0
             },
             "scale": {
@@ -2381,7 +2317,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -1.0,
+              "y": -25.4,
               "z": 0.0
             },
             "scale": {
@@ -2410,7 +2346,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -1.125,
+              "y": -28.575,
               "z": 0.0
             },
             "scale": {
@@ -2439,308 +2375,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -1.25,
-              "z": 0.0
-            },
-            "scale": {
-              "x": 1.0,
-              "y": 1.0,
-              "z": 1.0
-            },
-            "rotation": {
-              "axis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0
-              },
-              "angle": {
-                "unit": "degrees",
-                "value": 0.0
-              },
-              "origin": {
-                "type": "local"
-              }
-            },
-            "replicate": true
-          }
-        ]
-      ]
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "entity_linear_pattern_transform",
-      "entity_id": "[uuid]",
-      "transform": [],
-      "transforms": [
-        [
-          {
-            "translate": {
-              "x": 0.0,
-              "y": -0.125,
-              "z": 0.0
-            },
-            "scale": {
-              "x": 1.0,
-              "y": 1.0,
-              "z": 1.0
-            },
-            "rotation": {
-              "axis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0
-              },
-              "angle": {
-                "unit": "degrees",
-                "value": 0.0
-              },
-              "origin": {
-                "type": "local"
-              }
-            },
-            "replicate": true
-          }
-        ],
-        [
-          {
-            "translate": {
-              "x": 0.0,
-              "y": -0.25,
-              "z": 0.0
-            },
-            "scale": {
-              "x": 1.0,
-              "y": 1.0,
-              "z": 1.0
-            },
-            "rotation": {
-              "axis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0
-              },
-              "angle": {
-                "unit": "degrees",
-                "value": 0.0
-              },
-              "origin": {
-                "type": "local"
-              }
-            },
-            "replicate": true
-          }
-        ],
-        [
-          {
-            "translate": {
-              "x": 0.0,
-              "y": -0.375,
-              "z": 0.0
-            },
-            "scale": {
-              "x": 1.0,
-              "y": 1.0,
-              "z": 1.0
-            },
-            "rotation": {
-              "axis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0
-              },
-              "angle": {
-                "unit": "degrees",
-                "value": 0.0
-              },
-              "origin": {
-                "type": "local"
-              }
-            },
-            "replicate": true
-          }
-        ],
-        [
-          {
-            "translate": {
-              "x": 0.0,
-              "y": -0.5,
-              "z": 0.0
-            },
-            "scale": {
-              "x": 1.0,
-              "y": 1.0,
-              "z": 1.0
-            },
-            "rotation": {
-              "axis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0
-              },
-              "angle": {
-                "unit": "degrees",
-                "value": 0.0
-              },
-              "origin": {
-                "type": "local"
-              }
-            },
-            "replicate": true
-          }
-        ],
-        [
-          {
-            "translate": {
-              "x": 0.0,
-              "y": -0.625,
-              "z": 0.0
-            },
-            "scale": {
-              "x": 1.0,
-              "y": 1.0,
-              "z": 1.0
-            },
-            "rotation": {
-              "axis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0
-              },
-              "angle": {
-                "unit": "degrees",
-                "value": 0.0
-              },
-              "origin": {
-                "type": "local"
-              }
-            },
-            "replicate": true
-          }
-        ],
-        [
-          {
-            "translate": {
-              "x": 0.0,
-              "y": -0.75,
-              "z": 0.0
-            },
-            "scale": {
-              "x": 1.0,
-              "y": 1.0,
-              "z": 1.0
-            },
-            "rotation": {
-              "axis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0
-              },
-              "angle": {
-                "unit": "degrees",
-                "value": 0.0
-              },
-              "origin": {
-                "type": "local"
-              }
-            },
-            "replicate": true
-          }
-        ],
-        [
-          {
-            "translate": {
-              "x": 0.0,
-              "y": -0.875,
-              "z": 0.0
-            },
-            "scale": {
-              "x": 1.0,
-              "y": 1.0,
-              "z": 1.0
-            },
-            "rotation": {
-              "axis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0
-              },
-              "angle": {
-                "unit": "degrees",
-                "value": 0.0
-              },
-              "origin": {
-                "type": "local"
-              }
-            },
-            "replicate": true
-          }
-        ],
-        [
-          {
-            "translate": {
-              "x": 0.0,
-              "y": -1.0,
-              "z": 0.0
-            },
-            "scale": {
-              "x": 1.0,
-              "y": 1.0,
-              "z": 1.0
-            },
-            "rotation": {
-              "axis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0
-              },
-              "angle": {
-                "unit": "degrees",
-                "value": 0.0
-              },
-              "origin": {
-                "type": "local"
-              }
-            },
-            "replicate": true
-          }
-        ],
-        [
-          {
-            "translate": {
-              "x": 0.0,
-              "y": -1.125,
-              "z": 0.0
-            },
-            "scale": {
-              "x": 1.0,
-              "y": 1.0,
-              "z": 1.0
-            },
-            "rotation": {
-              "axis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0
-              },
-              "angle": {
-                "unit": "degrees",
-                "value": 0.0
-              },
-              "origin": {
-                "type": "local"
-              }
-            },
-            "replicate": true
-          }
-        ],
-        [
-          {
-            "translate": {
-              "x": 0.0,
-              "y": -1.25,
+              "y": -31.75,
               "z": 0.0
             },
             "scale": {
@@ -2780,7 +2415,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -0.125,
+              "y": -3.175,
               "z": 0.0
             },
             "scale": {
@@ -2809,7 +2444,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -0.25,
+              "y": -6.35,
               "z": 0.0
             },
             "scale": {
@@ -2838,7 +2473,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -0.375,
+              "y": -9.524999999999999,
               "z": 0.0
             },
             "scale": {
@@ -2867,7 +2502,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -0.5,
+              "y": -12.7,
               "z": 0.0
             },
             "scale": {
@@ -2896,7 +2531,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -0.625,
+              "y": -15.875,
               "z": 0.0
             },
             "scale": {
@@ -2925,7 +2560,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -0.75,
+              "y": -19.049999999999997,
               "z": 0.0
             },
             "scale": {
@@ -2954,7 +2589,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -0.875,
+              "y": -22.224999999999998,
               "z": 0.0
             },
             "scale": {
@@ -2983,7 +2618,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -1.0,
+              "y": -25.4,
               "z": 0.0
             },
             "scale": {
@@ -3012,7 +2647,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -1.125,
+              "y": -28.575,
               "z": 0.0
             },
             "scale": {
@@ -3041,308 +2676,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -1.25,
-              "z": 0.0
-            },
-            "scale": {
-              "x": 1.0,
-              "y": 1.0,
-              "z": 1.0
-            },
-            "rotation": {
-              "axis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0
-              },
-              "angle": {
-                "unit": "degrees",
-                "value": 0.0
-              },
-              "origin": {
-                "type": "local"
-              }
-            },
-            "replicate": true
-          }
-        ]
-      ]
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "entity_linear_pattern_transform",
-      "entity_id": "[uuid]",
-      "transform": [],
-      "transforms": [
-        [
-          {
-            "translate": {
-              "x": 0.0,
-              "y": -0.125,
-              "z": 0.0
-            },
-            "scale": {
-              "x": 1.0,
-              "y": 1.0,
-              "z": 1.0
-            },
-            "rotation": {
-              "axis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0
-              },
-              "angle": {
-                "unit": "degrees",
-                "value": 0.0
-              },
-              "origin": {
-                "type": "local"
-              }
-            },
-            "replicate": true
-          }
-        ],
-        [
-          {
-            "translate": {
-              "x": 0.0,
-              "y": -0.25,
-              "z": 0.0
-            },
-            "scale": {
-              "x": 1.0,
-              "y": 1.0,
-              "z": 1.0
-            },
-            "rotation": {
-              "axis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0
-              },
-              "angle": {
-                "unit": "degrees",
-                "value": 0.0
-              },
-              "origin": {
-                "type": "local"
-              }
-            },
-            "replicate": true
-          }
-        ],
-        [
-          {
-            "translate": {
-              "x": 0.0,
-              "y": -0.375,
-              "z": 0.0
-            },
-            "scale": {
-              "x": 1.0,
-              "y": 1.0,
-              "z": 1.0
-            },
-            "rotation": {
-              "axis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0
-              },
-              "angle": {
-                "unit": "degrees",
-                "value": 0.0
-              },
-              "origin": {
-                "type": "local"
-              }
-            },
-            "replicate": true
-          }
-        ],
-        [
-          {
-            "translate": {
-              "x": 0.0,
-              "y": -0.5,
-              "z": 0.0
-            },
-            "scale": {
-              "x": 1.0,
-              "y": 1.0,
-              "z": 1.0
-            },
-            "rotation": {
-              "axis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0
-              },
-              "angle": {
-                "unit": "degrees",
-                "value": 0.0
-              },
-              "origin": {
-                "type": "local"
-              }
-            },
-            "replicate": true
-          }
-        ],
-        [
-          {
-            "translate": {
-              "x": 0.0,
-              "y": -0.625,
-              "z": 0.0
-            },
-            "scale": {
-              "x": 1.0,
-              "y": 1.0,
-              "z": 1.0
-            },
-            "rotation": {
-              "axis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0
-              },
-              "angle": {
-                "unit": "degrees",
-                "value": 0.0
-              },
-              "origin": {
-                "type": "local"
-              }
-            },
-            "replicate": true
-          }
-        ],
-        [
-          {
-            "translate": {
-              "x": 0.0,
-              "y": -0.75,
-              "z": 0.0
-            },
-            "scale": {
-              "x": 1.0,
-              "y": 1.0,
-              "z": 1.0
-            },
-            "rotation": {
-              "axis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0
-              },
-              "angle": {
-                "unit": "degrees",
-                "value": 0.0
-              },
-              "origin": {
-                "type": "local"
-              }
-            },
-            "replicate": true
-          }
-        ],
-        [
-          {
-            "translate": {
-              "x": 0.0,
-              "y": -0.875,
-              "z": 0.0
-            },
-            "scale": {
-              "x": 1.0,
-              "y": 1.0,
-              "z": 1.0
-            },
-            "rotation": {
-              "axis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0
-              },
-              "angle": {
-                "unit": "degrees",
-                "value": 0.0
-              },
-              "origin": {
-                "type": "local"
-              }
-            },
-            "replicate": true
-          }
-        ],
-        [
-          {
-            "translate": {
-              "x": 0.0,
-              "y": -1.0,
-              "z": 0.0
-            },
-            "scale": {
-              "x": 1.0,
-              "y": 1.0,
-              "z": 1.0
-            },
-            "rotation": {
-              "axis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0
-              },
-              "angle": {
-                "unit": "degrees",
-                "value": 0.0
-              },
-              "origin": {
-                "type": "local"
-              }
-            },
-            "replicate": true
-          }
-        ],
-        [
-          {
-            "translate": {
-              "x": 0.0,
-              "y": -1.125,
-              "z": 0.0
-            },
-            "scale": {
-              "x": 1.0,
-              "y": 1.0,
-              "z": 1.0
-            },
-            "rotation": {
-              "axis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0
-              },
-              "angle": {
-                "unit": "degrees",
-                "value": 0.0
-              },
-              "origin": {
-                "type": "local"
-              }
-            },
-            "replicate": true
-          }
-        ],
-        [
-          {
-            "translate": {
-              "x": 0.0,
-              "y": -1.25,
+              "y": -31.75,
               "z": 0.0
             },
             "scale": {
@@ -3382,7 +2716,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -0.125,
+              "y": -3.175,
               "z": 0.0
             },
             "scale": {
@@ -3411,7 +2745,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -0.25,
+              "y": -6.35,
               "z": 0.0
             },
             "scale": {
@@ -3440,7 +2774,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -0.375,
+              "y": -9.524999999999999,
               "z": 0.0
             },
             "scale": {
@@ -3469,7 +2803,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -0.5,
+              "y": -12.7,
               "z": 0.0
             },
             "scale": {
@@ -3498,7 +2832,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -0.625,
+              "y": -15.875,
               "z": 0.0
             },
             "scale": {
@@ -3527,7 +2861,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -0.75,
+              "y": -19.049999999999997,
               "z": 0.0
             },
             "scale": {
@@ -3556,7 +2890,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -0.875,
+              "y": -22.224999999999998,
               "z": 0.0
             },
             "scale": {
@@ -3585,7 +2919,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -1.0,
+              "y": -25.4,
               "z": 0.0
             },
             "scale": {
@@ -3614,7 +2948,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -1.125,
+              "y": -28.575,
               "z": 0.0
             },
             "scale": {
@@ -3643,308 +2977,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -1.25,
-              "z": 0.0
-            },
-            "scale": {
-              "x": 1.0,
-              "y": 1.0,
-              "z": 1.0
-            },
-            "rotation": {
-              "axis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0
-              },
-              "angle": {
-                "unit": "degrees",
-                "value": 0.0
-              },
-              "origin": {
-                "type": "local"
-              }
-            },
-            "replicate": true
-          }
-        ]
-      ]
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "entity_linear_pattern_transform",
-      "entity_id": "[uuid]",
-      "transform": [],
-      "transforms": [
-        [
-          {
-            "translate": {
-              "x": 0.0,
-              "y": -0.125,
-              "z": 0.0
-            },
-            "scale": {
-              "x": 1.0,
-              "y": 1.0,
-              "z": 1.0
-            },
-            "rotation": {
-              "axis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0
-              },
-              "angle": {
-                "unit": "degrees",
-                "value": 0.0
-              },
-              "origin": {
-                "type": "local"
-              }
-            },
-            "replicate": true
-          }
-        ],
-        [
-          {
-            "translate": {
-              "x": 0.0,
-              "y": -0.25,
-              "z": 0.0
-            },
-            "scale": {
-              "x": 1.0,
-              "y": 1.0,
-              "z": 1.0
-            },
-            "rotation": {
-              "axis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0
-              },
-              "angle": {
-                "unit": "degrees",
-                "value": 0.0
-              },
-              "origin": {
-                "type": "local"
-              }
-            },
-            "replicate": true
-          }
-        ],
-        [
-          {
-            "translate": {
-              "x": 0.0,
-              "y": -0.375,
-              "z": 0.0
-            },
-            "scale": {
-              "x": 1.0,
-              "y": 1.0,
-              "z": 1.0
-            },
-            "rotation": {
-              "axis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0
-              },
-              "angle": {
-                "unit": "degrees",
-                "value": 0.0
-              },
-              "origin": {
-                "type": "local"
-              }
-            },
-            "replicate": true
-          }
-        ],
-        [
-          {
-            "translate": {
-              "x": 0.0,
-              "y": -0.5,
-              "z": 0.0
-            },
-            "scale": {
-              "x": 1.0,
-              "y": 1.0,
-              "z": 1.0
-            },
-            "rotation": {
-              "axis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0
-              },
-              "angle": {
-                "unit": "degrees",
-                "value": 0.0
-              },
-              "origin": {
-                "type": "local"
-              }
-            },
-            "replicate": true
-          }
-        ],
-        [
-          {
-            "translate": {
-              "x": 0.0,
-              "y": -0.625,
-              "z": 0.0
-            },
-            "scale": {
-              "x": 1.0,
-              "y": 1.0,
-              "z": 1.0
-            },
-            "rotation": {
-              "axis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0
-              },
-              "angle": {
-                "unit": "degrees",
-                "value": 0.0
-              },
-              "origin": {
-                "type": "local"
-              }
-            },
-            "replicate": true
-          }
-        ],
-        [
-          {
-            "translate": {
-              "x": 0.0,
-              "y": -0.75,
-              "z": 0.0
-            },
-            "scale": {
-              "x": 1.0,
-              "y": 1.0,
-              "z": 1.0
-            },
-            "rotation": {
-              "axis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0
-              },
-              "angle": {
-                "unit": "degrees",
-                "value": 0.0
-              },
-              "origin": {
-                "type": "local"
-              }
-            },
-            "replicate": true
-          }
-        ],
-        [
-          {
-            "translate": {
-              "x": 0.0,
-              "y": -0.875,
-              "z": 0.0
-            },
-            "scale": {
-              "x": 1.0,
-              "y": 1.0,
-              "z": 1.0
-            },
-            "rotation": {
-              "axis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0
-              },
-              "angle": {
-                "unit": "degrees",
-                "value": 0.0
-              },
-              "origin": {
-                "type": "local"
-              }
-            },
-            "replicate": true
-          }
-        ],
-        [
-          {
-            "translate": {
-              "x": 0.0,
-              "y": -1.0,
-              "z": 0.0
-            },
-            "scale": {
-              "x": 1.0,
-              "y": 1.0,
-              "z": 1.0
-            },
-            "rotation": {
-              "axis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0
-              },
-              "angle": {
-                "unit": "degrees",
-                "value": 0.0
-              },
-              "origin": {
-                "type": "local"
-              }
-            },
-            "replicate": true
-          }
-        ],
-        [
-          {
-            "translate": {
-              "x": 0.0,
-              "y": -1.125,
-              "z": 0.0
-            },
-            "scale": {
-              "x": 1.0,
-              "y": 1.0,
-              "z": 1.0
-            },
-            "rotation": {
-              "axis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0
-              },
-              "angle": {
-                "unit": "degrees",
-                "value": 0.0
-              },
-              "origin": {
-                "type": "local"
-              }
-            },
-            "replicate": true
-          }
-        ],
-        [
-          {
-            "translate": {
-              "x": 0.0,
-              "y": -1.25,
+              "y": -31.75,
               "z": 0.0
             },
             "scale": {
@@ -3984,7 +3017,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -0.125,
+              "y": -3.175,
               "z": 0.0
             },
             "scale": {
@@ -4013,7 +3046,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -0.25,
+              "y": -6.35,
               "z": 0.0
             },
             "scale": {
@@ -4042,7 +3075,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -0.375,
+              "y": -9.524999999999999,
               "z": 0.0
             },
             "scale": {
@@ -4071,7 +3104,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -0.5,
+              "y": -12.7,
               "z": 0.0
             },
             "scale": {
@@ -4100,7 +3133,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -0.625,
+              "y": -15.875,
               "z": 0.0
             },
             "scale": {
@@ -4129,7 +3162,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -0.75,
+              "y": -19.049999999999997,
               "z": 0.0
             },
             "scale": {
@@ -4158,7 +3191,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -0.875,
+              "y": -22.224999999999998,
               "z": 0.0
             },
             "scale": {
@@ -4187,7 +3220,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -1.0,
+              "y": -25.4,
               "z": 0.0
             },
             "scale": {
@@ -4216,7 +3249,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -1.125,
+              "y": -28.575,
               "z": 0.0
             },
             "scale": {
@@ -4245,7 +3278,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -1.25,
+              "y": -31.75,
               "z": 0.0
             },
             "scale": {
@@ -4285,7 +3318,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -0.125,
+              "y": -3.175,
               "z": 0.0
             },
             "scale": {
@@ -4314,7 +3347,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -0.25,
+              "y": -6.35,
               "z": 0.0
             },
             "scale": {
@@ -4343,7 +3376,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -0.375,
+              "y": -9.524999999999999,
               "z": 0.0
             },
             "scale": {
@@ -4372,7 +3405,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -0.5,
+              "y": -12.7,
               "z": 0.0
             },
             "scale": {
@@ -4401,7 +3434,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -0.625,
+              "y": -15.875,
               "z": 0.0
             },
             "scale": {
@@ -4430,7 +3463,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -0.75,
+              "y": -19.049999999999997,
               "z": 0.0
             },
             "scale": {
@@ -4459,7 +3492,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -0.875,
+              "y": -22.224999999999998,
               "z": 0.0
             },
             "scale": {
@@ -4488,7 +3521,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -1.0,
+              "y": -25.4,
               "z": 0.0
             },
             "scale": {
@@ -4517,7 +3550,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -1.125,
+              "y": -28.575,
               "z": 0.0
             },
             "scale": {
@@ -4546,7 +3579,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -1.25,
+              "y": -31.75,
               "z": 0.0
             },
             "scale": {
@@ -4586,7 +3619,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -0.125,
+              "y": -3.175,
               "z": 0.0
             },
             "scale": {
@@ -4615,7 +3648,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -0.25,
+              "y": -6.35,
               "z": 0.0
             },
             "scale": {
@@ -4644,7 +3677,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -0.375,
+              "y": -9.524999999999999,
               "z": 0.0
             },
             "scale": {
@@ -4673,7 +3706,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -0.5,
+              "y": -12.7,
               "z": 0.0
             },
             "scale": {
@@ -4702,7 +3735,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -0.625,
+              "y": -15.875,
               "z": 0.0
             },
             "scale": {
@@ -4731,7 +3764,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -0.75,
+              "y": -19.049999999999997,
               "z": 0.0
             },
             "scale": {
@@ -4760,7 +3793,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -0.875,
+              "y": -22.224999999999998,
               "z": 0.0
             },
             "scale": {
@@ -4789,7 +3822,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -1.0,
+              "y": -25.4,
               "z": 0.0
             },
             "scale": {
@@ -4818,7 +3851,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -1.125,
+              "y": -28.575,
               "z": 0.0
             },
             "scale": {
@@ -4847,7 +3880,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -1.25,
+              "y": -31.75,
               "z": 0.0
             },
             "scale": {
@@ -4887,7 +3920,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -0.125,
+              "y": -3.175,
               "z": 0.0
             },
             "scale": {
@@ -4916,7 +3949,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -0.25,
+              "y": -6.35,
               "z": 0.0
             },
             "scale": {
@@ -4945,7 +3978,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -0.375,
+              "y": -9.524999999999999,
               "z": 0.0
             },
             "scale": {
@@ -4974,7 +4007,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -0.5,
+              "y": -12.7,
               "z": 0.0
             },
             "scale": {
@@ -5003,7 +4036,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -0.625,
+              "y": -15.875,
               "z": 0.0
             },
             "scale": {
@@ -5032,7 +4065,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -0.75,
+              "y": -19.049999999999997,
               "z": 0.0
             },
             "scale": {
@@ -5061,7 +4094,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -0.875,
+              "y": -22.224999999999998,
               "z": 0.0
             },
             "scale": {
@@ -5090,7 +4123,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -1.0,
+              "y": -25.4,
               "z": 0.0
             },
             "scale": {
@@ -5119,7 +4152,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -1.125,
+              "y": -28.575,
               "z": 0.0
             },
             "scale": {
@@ -5148,7 +4181,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -1.25,
+              "y": -31.75,
               "z": 0.0
             },
             "scale": {
@@ -5188,7 +4221,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -0.125,
+              "y": -3.175,
               "z": 0.0
             },
             "scale": {
@@ -5217,7 +4250,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -0.25,
+              "y": -6.35,
               "z": 0.0
             },
             "scale": {
@@ -5246,7 +4279,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -0.375,
+              "y": -9.524999999999999,
               "z": 0.0
             },
             "scale": {
@@ -5275,7 +4308,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -0.5,
+              "y": -12.7,
               "z": 0.0
             },
             "scale": {
@@ -5304,7 +4337,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -0.625,
+              "y": -15.875,
               "z": 0.0
             },
             "scale": {
@@ -5333,7 +4366,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -0.75,
+              "y": -19.049999999999997,
               "z": 0.0
             },
             "scale": {
@@ -5362,7 +4395,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -0.875,
+              "y": -22.224999999999998,
               "z": 0.0
             },
             "scale": {
@@ -5391,7 +4424,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -1.0,
+              "y": -25.4,
               "z": 0.0
             },
             "scale": {
@@ -5420,7 +4453,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -1.125,
+              "y": -28.575,
               "z": 0.0
             },
             "scale": {
@@ -5449,7 +4482,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -1.25,
+              "y": -31.75,
               "z": 0.0
             },
             "scale": {
@@ -5489,7 +4522,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -0.125,
+              "y": -3.175,
               "z": 0.0
             },
             "scale": {
@@ -5518,7 +4551,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -0.25,
+              "y": -6.35,
               "z": 0.0
             },
             "scale": {
@@ -5547,7 +4580,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -0.375,
+              "y": -9.524999999999999,
               "z": 0.0
             },
             "scale": {
@@ -5576,7 +4609,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -0.5,
+              "y": -12.7,
               "z": 0.0
             },
             "scale": {
@@ -5605,7 +4638,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -0.625,
+              "y": -15.875,
               "z": 0.0
             },
             "scale": {
@@ -5634,7 +4667,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -0.75,
+              "y": -19.049999999999997,
               "z": 0.0
             },
             "scale": {
@@ -5663,7 +4696,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -0.875,
+              "y": -22.224999999999998,
               "z": 0.0
             },
             "scale": {
@@ -5692,7 +4725,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -1.0,
+              "y": -25.4,
               "z": 0.0
             },
             "scale": {
@@ -5721,7 +4754,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -1.125,
+              "y": -28.575,
               "z": 0.0
             },
             "scale": {
@@ -5750,7 +4783,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -1.25,
+              "y": -31.75,
               "z": 0.0
             },
             "scale": {
@@ -5790,7 +4823,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -0.125,
+              "y": -3.175,
               "z": 0.0
             },
             "scale": {
@@ -5819,7 +4852,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -0.25,
+              "y": -6.35,
               "z": 0.0
             },
             "scale": {
@@ -5848,7 +4881,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -0.375,
+              "y": -9.524999999999999,
               "z": 0.0
             },
             "scale": {
@@ -5877,7 +4910,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -0.5,
+              "y": -12.7,
               "z": 0.0
             },
             "scale": {
@@ -5906,7 +4939,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -0.625,
+              "y": -15.875,
               "z": 0.0
             },
             "scale": {
@@ -5935,7 +4968,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -0.75,
+              "y": -19.049999999999997,
               "z": 0.0
             },
             "scale": {
@@ -5964,7 +4997,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -0.875,
+              "y": -22.224999999999998,
               "z": 0.0
             },
             "scale": {
@@ -5993,7 +5026,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -1.0,
+              "y": -25.4,
               "z": 0.0
             },
             "scale": {
@@ -6022,7 +5055,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -1.125,
+              "y": -28.575,
               "z": 0.0
             },
             "scale": {
@@ -6051,7 +5084,910 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -1.25,
+              "y": -31.75,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ]
+      ]
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "entity_linear_pattern_transform",
+      "entity_id": "[uuid]",
+      "transform": [],
+      "transforms": [
+        [
+          {
+            "translate": {
+              "x": 0.0,
+              "y": -3.175,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 0.0,
+              "y": -6.35,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 0.0,
+              "y": -9.524999999999999,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 0.0,
+              "y": -12.7,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 0.0,
+              "y": -15.875,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 0.0,
+              "y": -19.049999999999997,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 0.0,
+              "y": -22.224999999999998,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 0.0,
+              "y": -25.4,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 0.0,
+              "y": -28.575,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 0.0,
+              "y": -31.75,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ]
+      ]
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "entity_linear_pattern_transform",
+      "entity_id": "[uuid]",
+      "transform": [],
+      "transforms": [
+        [
+          {
+            "translate": {
+              "x": 0.0,
+              "y": -3.175,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 0.0,
+              "y": -6.35,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 0.0,
+              "y": -9.524999999999999,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 0.0,
+              "y": -12.7,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 0.0,
+              "y": -15.875,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 0.0,
+              "y": -19.049999999999997,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 0.0,
+              "y": -22.224999999999998,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 0.0,
+              "y": -25.4,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 0.0,
+              "y": -28.575,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 0.0,
+              "y": -31.75,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ]
+      ]
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "entity_linear_pattern_transform",
+      "entity_id": "[uuid]",
+      "transform": [],
+      "transforms": [
+        [
+          {
+            "translate": {
+              "x": 0.0,
+              "y": -3.175,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 0.0,
+              "y": -6.35,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 0.0,
+              "y": -9.524999999999999,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 0.0,
+              "y": -12.7,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 0.0,
+              "y": -15.875,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 0.0,
+              "y": -19.049999999999997,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 0.0,
+              "y": -22.224999999999998,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 0.0,
+              "y": -25.4,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 0.0,
+              "y": -28.575,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 0.0,
+              "y": -31.75,
               "z": 0.0
             },
             "scale": {
@@ -6134,8 +6070,8 @@ description: Artifact commands walkie-talkie.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": -1.115,
-        "y": 1.627270292269908,
+        "x": -28.320999999999998,
+        "y": 41.33266542365566,
         "z": 0.0
       }
     }
@@ -6156,8 +6092,8 @@ description: Artifact commands walkie-talkie.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -0.8773,
-          "y": 1.865,
+          "x": -22.2827,
+          "y": 47.371,
           "z": 0.0
         },
         "relative": false
@@ -6173,8 +6109,8 @@ description: Artifact commands walkie-talkie.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 0.8773,
-          "y": 1.865,
+          "x": 22.2827,
+          "y": 47.371,
           "z": 0.0
         },
         "relative": false
@@ -6190,8 +6126,8 @@ description: Artifact commands walkie-talkie.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 1.115,
-          "y": 1.6273,
+          "x": 28.321,
+          "y": 41.3327,
           "z": 0.0
         },
         "relative": false
@@ -6207,8 +6143,8 @@ description: Artifact commands walkie-talkie.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 1.115,
-          "y": -1.6273,
+          "x": 28.321,
+          "y": -41.3327,
           "z": 0.0
         },
         "relative": false
@@ -6224,8 +6160,8 @@ description: Artifact commands walkie-talkie.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 0.8773,
-          "y": -1.865,
+          "x": 22.2827,
+          "y": -47.371,
           "z": 0.0
         },
         "relative": false
@@ -6241,8 +6177,8 @@ description: Artifact commands walkie-talkie.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -0.8773,
-          "y": -1.865,
+          "x": -22.2827,
+          "y": -47.371,
           "z": 0.0
         },
         "relative": false
@@ -6258,8 +6194,8 @@ description: Artifact commands walkie-talkie.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -1.115,
-          "y": -1.6273,
+          "x": -28.321,
+          "y": -41.3327,
           "z": 0.0
         },
         "relative": false
@@ -9103,7 +9039,7 @@ description: Artifact commands walkie-talkie.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": -0.0625,
+      "distance": -1.5875,
       "faces": null,
       "opposite": "None"
     }
@@ -21473,14 +21409,6 @@ description: Artifact commands walkie-talkie.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "set_scene_units",
-      "unit": "in"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
       "type": "make_plane",
       "origin": {
         "x": 0.0,
@@ -21554,7 +21482,7 @@ description: Artifact commands walkie-talkie.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 0.5,
+          "x": 12.7,
           "y": 0.0,
           "z": 0.0
         },
@@ -21572,7 +21500,7 @@ description: Artifact commands walkie-talkie.kcl
         "type": "line",
         "end": {
           "x": 0.0,
-          "y": -0.25,
+          "y": -6.35,
           "z": 0.0
         },
         "relative": true
@@ -21588,7 +21516,7 @@ description: Artifact commands walkie-talkie.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -0.5,
+          "x": -12.7,
           "y": 0.0,
           "z": 0.0
         },
@@ -21612,7 +21540,7 @@ description: Artifact commands walkie-talkie.kcl
       "origin": {
         "x": 0.0,
         "y": 0.0,
-        "z": 3.0
+        "z": 76.19999999999999
       },
       "x_axis": {
         "x": 1.0,
@@ -21673,8 +21601,8 @@ description: Artifact commands walkie-talkie.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 0.1,
-        "y": 0.1,
+        "x": 2.54,
+        "y": 2.54,
         "z": 0.0
       }
     }
@@ -21695,7 +21623,7 @@ description: Artifact commands walkie-talkie.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 0.3,
+          "x": 7.62,
           "y": 0.0,
           "z": 0.0
         },
@@ -21713,7 +21641,7 @@ description: Artifact commands walkie-talkie.kcl
         "type": "line",
         "end": {
           "x": 0.0,
-          "y": -0.05,
+          "y": -1.27,
           "z": 0.0
         },
         "relative": true
@@ -21729,7 +21657,7 @@ description: Artifact commands walkie-talkie.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -0.3,
+          "x": -7.62,
           "y": 0.0,
           "z": 0.0
         },
@@ -21887,14 +21815,6 @@ description: Artifact commands walkie-talkie.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "set_scene_units",
-      "unit": "in"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
       "type": "make_plane",
       "origin": {
         "x": 0.0,
@@ -21946,8 +21866,8 @@ description: Artifact commands walkie-talkie.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": -0.25,
-        "y": 0.25,
+        "x": -6.35,
+        "y": 6.35,
         "z": 0.0
       }
     }
@@ -21968,7 +21888,7 @@ description: Artifact commands walkie-talkie.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 0.5,
+          "x": 12.7,
           "y": 0.0,
           "z": 0.0
         },
@@ -21986,7 +21906,7 @@ description: Artifact commands walkie-talkie.kcl
         "type": "line",
         "end": {
           "x": 0.0,
-          "y": -0.5,
+          "y": -12.7,
           "z": 0.0
         },
         "relative": true
@@ -22002,7 +21922,7 @@ description: Artifact commands walkie-talkie.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -0.5,
+          "x": -12.7,
           "y": 0.0,
           "z": 0.0
         },
@@ -22040,7 +21960,7 @@ description: Artifact commands walkie-talkie.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 0.05,
+      "distance": 1.27,
       "faces": null,
       "opposite": "None"
     }
@@ -22213,7 +22133,7 @@ description: Artifact commands walkie-talkie.kcl
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
-      "radius": 0.05,
+      "radius": 1.27,
       "tolerance": 0.0000001,
       "cut_type": "fillet"
     }
@@ -22225,7 +22145,7 @@ description: Artifact commands walkie-talkie.kcl
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
-      "radius": 0.05,
+      "radius": 1.27,
       "tolerance": 0.0000001,
       "cut_type": "fillet"
     }
@@ -22237,7 +22157,7 @@ description: Artifact commands walkie-talkie.kcl
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
-      "radius": 0.05,
+      "radius": 1.27,
       "tolerance": 0.0000001,
       "cut_type": "fillet"
     }
@@ -22249,17 +22169,9 @@ description: Artifact commands walkie-talkie.kcl
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
-      "radius": 0.05,
+      "radius": 1.27,
       "tolerance": 0.0000001,
       "cut_type": "fillet"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "set_scene_units",
-      "unit": "in"
     }
   },
   {
@@ -22317,7 +22229,7 @@ description: Artifact commands walkie-talkie.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 0.0001,
+        "x": 0.00254,
         "y": 0.0,
         "z": 0.0
       }
@@ -22339,7 +22251,7 @@ description: Artifact commands walkie-talkie.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 0.25,
+          "x": 6.35,
           "y": 0.0,
           "z": 0.0
         },
@@ -22357,7 +22269,7 @@ description: Artifact commands walkie-talkie.kcl
         "type": "line",
         "end": {
           "x": 0.0,
-          "y": 0.2,
+          "y": 5.08,
           "z": 0.0
         },
         "relative": true
@@ -22373,10 +22285,10 @@ description: Artifact commands walkie-talkie.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": 0.2001,
-          "y": 0.2
+          "x": 5.0825,
+          "y": 5.08
         },
-        "radius": 0.05,
+        "radius": 1.27,
         "start": {
           "unit": "degrees",
           "value": 0.0
@@ -22398,8 +22310,8 @@ description: Artifact commands walkie-talkie.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 0.0001,
-          "y": 0.25,
+          "x": 0.0025,
+          "y": 6.35,
           "z": 0.0
         },
         "relative": false
@@ -22577,14 +22489,6 @@ description: Artifact commands walkie-talkie.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "set_scene_units",
-      "unit": "in"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
       "type": "make_plane",
       "origin": {
         "x": 0.0,
@@ -22658,7 +22562,7 @@ description: Artifact commands walkie-talkie.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -0.15,
+          "x": -3.81,
           "y": 0.0,
           "z": 0.0
         },
@@ -22676,7 +22580,7 @@ description: Artifact commands walkie-talkie.kcl
         "type": "line",
         "end": {
           "x": -0.0,
-          "y": -0.48,
+          "y": -12.192,
           "z": 0.0
         },
         "relative": true
@@ -22692,7 +22596,7 @@ description: Artifact commands walkie-talkie.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 0.15,
+          "x": 3.81,
           "y": 0.0,
           "z": 0.0
         },
@@ -22730,7 +22634,7 @@ description: Artifact commands walkie-talkie.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 0.04,
+      "distance": 1.016,
       "faces": null,
       "opposite": "None"
     }
@@ -22883,7 +22787,7 @@ description: Artifact commands walkie-talkie.kcl
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
-      "radius": 0.05,
+      "radius": 1.27,
       "tolerance": 0.0000001,
       "cut_type": "chamfer"
     }
@@ -22895,7 +22799,7 @@ description: Artifact commands walkie-talkie.kcl
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
-      "radius": 0.05,
+      "radius": 1.27,
       "tolerance": 0.0000001,
       "cut_type": "chamfer"
     }
@@ -22977,7 +22881,7 @@ description: Artifact commands walkie-talkie.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -0.15,
+          "x": -3.81,
           "y": 0.0,
           "z": 0.0
         },
@@ -22995,7 +22899,7 @@ description: Artifact commands walkie-talkie.kcl
         "type": "line",
         "end": {
           "x": -0.0,
-          "y": -0.48,
+          "y": -12.192,
           "z": 0.0
         },
         "relative": true
@@ -23011,7 +22915,7 @@ description: Artifact commands walkie-talkie.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 0.15,
+          "x": 3.81,
           "y": 0.0,
           "z": 0.0
         },
@@ -23049,7 +22953,7 @@ description: Artifact commands walkie-talkie.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 0.04,
+      "distance": 1.016,
       "faces": null,
       "opposite": "None"
     }
@@ -23202,7 +23106,7 @@ description: Artifact commands walkie-talkie.kcl
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
-      "radius": 0.05,
+      "radius": 1.27,
       "tolerance": 0.0000001,
       "cut_type": "chamfer"
     }
@@ -23214,7 +23118,7 @@ description: Artifact commands walkie-talkie.kcl
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
-      "radius": 0.05,
+      "radius": 1.27,
       "tolerance": 0.0000001,
       "cut_type": "chamfer"
     }
@@ -23296,7 +23200,7 @@ description: Artifact commands walkie-talkie.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -0.15,
+          "x": -3.81,
           "y": 0.0,
           "z": 0.0
         },
@@ -23314,7 +23218,7 @@ description: Artifact commands walkie-talkie.kcl
         "type": "line",
         "end": {
           "x": -0.0,
-          "y": -0.48,
+          "y": -12.192,
           "z": 0.0
         },
         "relative": true
@@ -23330,7 +23234,7 @@ description: Artifact commands walkie-talkie.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 0.15,
+          "x": 3.81,
           "y": 0.0,
           "z": 0.0
         },
@@ -23368,7 +23272,7 @@ description: Artifact commands walkie-talkie.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 0.04,
+      "distance": 1.016,
       "faces": null,
       "opposite": "None"
     }
@@ -23521,7 +23425,7 @@ description: Artifact commands walkie-talkie.kcl
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
-      "radius": 0.05,
+      "radius": 1.27,
       "tolerance": 0.0000001,
       "cut_type": "chamfer"
     }
@@ -23533,7 +23437,7 @@ description: Artifact commands walkie-talkie.kcl
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
-      "radius": 0.05,
+      "radius": 1.27,
       "tolerance": 0.0000001,
       "cut_type": "chamfer"
     }
@@ -23615,7 +23519,7 @@ description: Artifact commands walkie-talkie.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -0.15,
+          "x": -3.81,
           "y": 0.0,
           "z": 0.0
         },
@@ -23633,7 +23537,7 @@ description: Artifact commands walkie-talkie.kcl
         "type": "line",
         "end": {
           "x": -0.0,
-          "y": -0.48,
+          "y": -12.192,
           "z": 0.0
         },
         "relative": true
@@ -23649,7 +23553,7 @@ description: Artifact commands walkie-talkie.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 0.15,
+          "x": 3.81,
           "y": 0.0,
           "z": 0.0
         },
@@ -23687,7 +23591,7 @@ description: Artifact commands walkie-talkie.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 0.04,
+      "distance": 1.016,
       "faces": null,
       "opposite": "None"
     }
@@ -23840,7 +23744,7 @@ description: Artifact commands walkie-talkie.kcl
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
-      "radius": 0.05,
+      "radius": 1.27,
       "tolerance": 0.0000001,
       "cut_type": "chamfer"
     }
@@ -23852,7 +23756,7 @@ description: Artifact commands walkie-talkie.kcl
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
-      "radius": 0.05,
+      "radius": 1.27,
       "tolerance": 0.0000001,
       "cut_type": "chamfer"
     }
@@ -23887,8 +23791,8 @@ description: Artifact commands walkie-talkie.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": -0.3,
-        "y": -1.795,
+        "x": -7.619999999999999,
+        "y": -45.592999999999996,
         "z": 0.0
       }
     }
@@ -23910,7 +23814,7 @@ description: Artifact commands walkie-talkie.kcl
         "type": "line",
         "end": {
           "x": 0.0,
-          "y": -0.03,
+          "y": -0.762,
           "z": 0.0
         },
         "relative": true
@@ -23926,7 +23830,7 @@ description: Artifact commands walkie-talkie.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 0.03,
+          "x": 0.762,
           "y": 0.0,
           "z": 0.0
         },
@@ -23943,8 +23847,8 @@ description: Artifact commands walkie-talkie.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -0.24,
-          "y": -1.7927,
+          "x": -6.096,
+          "y": -45.5336,
           "z": 0.0
         },
         "relative": false
@@ -23960,8 +23864,8 @@ description: Artifact commands walkie-talkie.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -0.24,
-          "y": -1.825,
+          "x": -6.096,
+          "y": -46.355,
           "z": 0.0
         },
         "relative": false
@@ -23977,7 +23881,7 @@ description: Artifact commands walkie-talkie.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 0.126,
+          "x": 3.2004,
           "y": 0.0,
           "z": 0.0
         },
@@ -23995,7 +23899,7 @@ description: Artifact commands walkie-talkie.kcl
         "type": "line",
         "end": {
           "x": 0.0,
-          "y": 0.045,
+          "y": 1.143,
           "z": 0.0
         },
         "relative": true
@@ -24011,7 +23915,7 @@ description: Artifact commands walkie-talkie.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -0.114,
+          "x": -2.8956,
           "y": 0.0,
           "z": 0.0
         },
@@ -24028,8 +23932,8 @@ description: Artifact commands walkie-talkie.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -0.114,
-          "y": -1.6571,
+          "x": -2.8956,
+          "y": -42.0905,
           "z": 0.0
         },
         "relative": false
@@ -24046,7 +23950,7 @@ description: Artifact commands walkie-talkie.kcl
         "type": "line",
         "end": {
           "x": 0.0,
-          "y": 0.03,
+          "y": 0.762,
           "z": 0.0
         },
         "relative": true
@@ -24062,7 +23966,7 @@ description: Artifact commands walkie-talkie.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -0.03,
+          "x": -0.762,
           "y": 0.0,
           "z": 0.0
         },
@@ -24079,8 +23983,8 @@ description: Artifact commands walkie-talkie.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -0.03,
-          "y": -0.0323,
+          "x": -0.762,
+          "y": -0.8214,
           "z": 0.0
         },
         "relative": true
@@ -24097,7 +24001,7 @@ description: Artifact commands walkie-talkie.kcl
         "type": "line",
         "end": {
           "x": 0.0,
-          "y": 0.0323,
+          "y": 0.8214,
           "z": 0.0
         },
         "relative": true
@@ -24113,8 +24017,8 @@ description: Artifact commands walkie-talkie.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -0.3,
-          "y": -1.6271,
+          "x": -7.62,
+          "y": -41.3285,
           "z": 0.0
         },
         "relative": false
@@ -24131,7 +24035,7 @@ description: Artifact commands walkie-talkie.kcl
         "type": "line",
         "end": {
           "x": 0.0,
-          "y": -0.045,
+          "y": -1.143,
           "z": 0.0
         },
         "relative": true
@@ -24147,8 +24051,8 @@ description: Artifact commands walkie-talkie.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -0.1857,
-          "y": -1.6721,
+          "x": -4.7179,
+          "y": -42.4715,
           "z": 0.0
         },
         "relative": false
@@ -24193,8 +24097,8 @@ description: Artifact commands walkie-talkie.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 0.08260000000000002,
-        "y": -1.6408,
+        "x": 2.0980400000000006,
+        "y": -41.67632,
         "z": 0.0
       }
     }
@@ -24215,10 +24119,10 @@ description: Artifact commands walkie-talkie.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": 0.0196,
-          "y": -1.7248
+          "x": 0.4986,
+          "y": -43.8105
         },
-        "radius": 0.10500000000000001,
+        "radius": 2.6670000000000003,
         "start": {
           "unit": "degrees",
           "value": 53.15
@@ -24240,8 +24144,8 @@ description: Artifact commands walkie-talkie.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 0.0326,
-          "y": 0.0352,
+          "x": 0.8292,
+          "y": 0.8938,
           "z": 0.0
         },
         "relative": true
@@ -24257,10 +24161,10 @@ description: Artifact commands walkie-talkie.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": 0.0197,
-          "y": -1.7247
+          "x": 0.5009,
+          "y": -43.8086
         },
-        "radius": 0.0576,
+        "radius": 1.46304,
         "start": {
           "unit": "degrees",
           "value": 216.15
@@ -24311,8 +24215,8 @@ description: Artifact commands walkie-talkie.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": -0.043,
-        "y": -1.8092,
+        "x": -1.0921999999999998,
+        "y": -45.95368,
         "z": 0.0
       }
     }
@@ -24333,10 +24237,10 @@ description: Artifact commands walkie-talkie.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": 0.02,
-          "y": -1.7252
+          "x": 0.5073,
+          "y": -43.8195
         },
-        "radius": 0.10500000000000001,
+        "radius": 2.6670000000000003,
         "start": {
           "unit": "degrees",
           "value": -126.85
@@ -24358,8 +24262,8 @@ description: Artifact commands walkie-talkie.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -0.0326,
-          "y": -0.0352,
+          "x": -0.8292,
+          "y": -0.8938,
           "z": 0.0
         },
         "relative": true
@@ -24375,10 +24279,10 @@ description: Artifact commands walkie-talkie.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": 0.0199,
-          "y": -1.7253
+          "x": 0.505,
+          "y": -43.8214
         },
-        "radius": 0.0576,
+        "radius": 1.46304,
         "start": {
           "unit": "degrees",
           "value": 36.15
@@ -24429,8 +24333,8 @@ description: Artifact commands walkie-talkie.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 0.3326,
-        "y": -1.6408,
+        "x": 8.448039999999999,
+        "y": -41.67632,
         "z": 0.0
       }
     }
@@ -24451,10 +24355,10 @@ description: Artifact commands walkie-talkie.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": 0.2696,
-          "y": -1.7248
+          "x": 6.8486,
+          "y": -43.8105
         },
-        "radius": 0.10500000000000001,
+        "radius": 2.6670000000000003,
         "start": {
           "unit": "degrees",
           "value": 53.15
@@ -24476,8 +24380,8 @@ description: Artifact commands walkie-talkie.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 0.0326,
-          "y": 0.0352,
+          "x": 0.8292,
+          "y": 0.8938,
           "z": 0.0
         },
         "relative": true
@@ -24493,10 +24397,10 @@ description: Artifact commands walkie-talkie.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": 0.2697,
-          "y": -1.7247
+          "x": 6.8509,
+          "y": -43.8086
         },
-        "radius": 0.0576,
+        "radius": 1.46304,
         "start": {
           "unit": "degrees",
           "value": 216.15
@@ -24547,8 +24451,8 @@ description: Artifact commands walkie-talkie.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 0.207,
-        "y": -1.8092,
+        "x": 5.2578,
+        "y": -45.95368,
         "z": 0.0
       }
     }
@@ -24569,10 +24473,10 @@ description: Artifact commands walkie-talkie.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": 0.27,
-          "y": -1.7252
+          "x": 6.8573,
+          "y": -43.8195
         },
-        "radius": 0.10500000000000001,
+        "radius": 2.6670000000000003,
         "start": {
           "unit": "degrees",
           "value": -126.85
@@ -24594,8 +24498,8 @@ description: Artifact commands walkie-talkie.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -0.0326,
-          "y": -0.0352,
+          "x": -0.8292,
+          "y": -0.8938,
           "z": 0.0
         },
         "relative": true
@@ -24611,10 +24515,10 @@ description: Artifact commands walkie-talkie.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": 0.2699,
-          "y": -1.7253
+          "x": 6.855,
+          "y": -43.8214
         },
-        "radius": 0.0576,
+        "radius": 1.46304,
         "start": {
           "unit": "degrees",
           "value": 36.15
