@@ -19,6 +19,13 @@ test.describe('Authentication tests', () => {
         await expect(signInPage.signInButton).toBeVisible()
       })
 
+      // TODO: fix this, it's not working yet.
+      // But doing this in the app doesn't log the user back in. Likely due to the test setup
+      // await test.step("Refresh doesn't log the user back in", async () => {
+      //   await page.reload()
+      //   await expect(signInPage.signInButton).toBeVisible()
+      // })
+
       await test.step('Click on sign in and cancel, click again and expect different code', async () => {
         await signInPage.signInButton.click()
         await expect(signInPage.userCode).toBeVisible()
