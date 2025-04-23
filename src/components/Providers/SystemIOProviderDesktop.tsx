@@ -21,17 +21,6 @@ export function SystemIOMachineLogicListenerDesktop() {
   const hasListedProjects = useHasListedProjects()
   const navigate = useNavigate()
   const settings = useSettings()
-  const clearURLParams = useClearURLParams()
-  const [searchParams, setSearchParams] = useSearchParams()
-  const clearImportSearchParams = useCallback(() => {
-    // Clear the search parameters related to the "Import file from URL" command
-    // or we'll never be able cancel or submit it.
-    searchParams.delete(CREATE_FILE_URL_PARAM)
-    searchParams.delete('code')
-    searchParams.delete('name')
-    searchParams.delete('units')
-    setSearchParams(searchParams)
-  }, [searchParams, setSearchParams])
 
   const useGlobalProjectNavigation = () => {
     useEffect(() => {
