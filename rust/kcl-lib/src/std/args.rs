@@ -1032,7 +1032,26 @@ impl<'a> FromKclValue<'a> for crate::execution::PlaneType {
             "Custom" => Self::Custom,
             _ => return None,
         };
-        Some(plane_type)
+        #[cfg(target_arch = "wasm32")]
+        web_sys::console::log_1(&format!("PlaneData::from_kcl_val with string: {}", arg.as_str()?).into());
+        
+        return match plane_type {
+            Self::XY => {
+                #[cfg(target_arch = "wasm32")]
+                web_sys::console::log_1(&format!("PlaneData::from_kcl_val matching XY").into());
+                Some(Self::XY)
+            },
+            Self::NegXY => {
+                #[cfg(target_arch = "wasm32")]
+                web_sys::console::log_1(&format!("PlaneData::from_kcl_val matching -XY").into());
+                Some(Self::NegXY)
+            },
+            Self::XZ => Some(Self::XZ),
+            Self::NegXZ => Some(Self::NegXZ),
+            Self::YZ => Some(Self::YZ),
+            Self::NegYZ => Some(Self::NegYZ),
+            _ => None,
+        };
     }
 }
 
@@ -1148,18 +1167,30 @@ impl<'a> FromKclValue<'a> for super::sketch::PlaneData {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         // Case 0: actual plane
         if let KclValue::Plane { value } = arg {
+            #[cfg(target_arch = "wasm32")]
+            web_sys::console::log_1(&format!("PlaneData::from_kcl_val with plane: {:?}", value).into());
             return Some(Self::Plane {
                 origin: value.origin,
                 x_axis: value.x_axis,
                 y_axis: value.y_axis,
-                z_axis: value.z_axis,
             });
         }
         // Case 1: predefined plane
         if let Some(s) = arg.as_str() {
+            #[cfg(target_arch = "wasm32")]
+            web_sys::console::log_1(&format!("PlaneData::from_kcl_val with string: {}", s).into());
+            
             return match s {
-                "XY" | "xy" => Some(Self::XY),
-                "-XY" | "-xy" => Some(Self::NegXY),
+                "XY" | "xy" => {
+                    #[cfg(target_arch = "wasm32")]
+                    web_sys::console::log_1(&format!("PlaneData::from_kcl_val matching XY").into());
+                    Some(Self::XY)
+                },
+                "-XY" | "-xy" => {
+                    #[cfg(target_arch = "wasm32")]
+                    web_sys::console::log_1(&format!("PlaneData::from_kcl_val matching -XY").into());
+                    Some(Self::NegXY)
+                },
                 "XZ" | "xz" => Some(Self::XZ),
                 "-XZ" | "-xz" => Some(Self::NegXZ),
                 "YZ" | "yz" => Some(Self::YZ),
@@ -1167,18 +1198,18 @@ impl<'a> FromKclValue<'a> for super::sketch::PlaneData {
                 _ => None,
             };
         }
+        #[cfg(target_arch = "wasm32")]
+        web_sys::console::log_1(&format!("PlaneData::from_kcl_val with object: {:?}", arg).into());
         // Case 2: custom plane
         let obj = arg.as_object()?;
         let_field_of!(obj, plane, &KclObjectFields);
         let origin = plane.get("origin").and_then(FromKclValue::from_kcl_val)?;
         let x_axis = plane.get("xAxis").and_then(FromKclValue::from_kcl_val)?;
         let y_axis = plane.get("yAxis").and_then(FromKclValue::from_kcl_val)?;
-        let z_axis = plane.get("zAxis").and_then(FromKclValue::from_kcl_val)?;
         Some(Self::Plane {
             origin,
             x_axis,
             y_axis,
-            z_axis,
         })
     }
 }

@@ -13,6 +13,7 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use super::utils::{point_to_len_unit, point_to_mm, untype_point, untyped_point_to_mm};
+use crate::log;
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
@@ -960,9 +961,6 @@ pub enum PlaneData {
         /// What should the plane’s Y axis be?
         #[serde(rename = "yAxis")]
         y_axis: Point3d,
-        /// The z-axis (normal).
-        #[serde(rename = "zAxis")]
-        z_axis: Point3d,
     },
 }
 
@@ -973,6 +971,15 @@ pub async fn start_sketch_on(exec_state: &mut ExecState, args: Args) -> Result<K
         &RuntimeType::Union(vec![RuntimeType::solid(), RuntimeType::plane()]),
         exec_state,
     )?;
+    
+    #[cfg(target_arch = "wasm32")]
+    if let SketchData::PlaneOrientation(plane_data) = &data {
+        web_sys::console::log_1(&format!("start_sketch_on called with plane_data={:?}", plane_data).into());
+    }
+    // log out args
+    #[cfg(target_arch = "wasm32")]
+    web_sys::console::log_1(&format!("start_sketch_on called with args={:?}", args).into());
+    
     let face = args.get_kw_arg_opt("face")?;
 
     match inner_start_sketch_on(data, face, exec_state, &args).await? {
@@ -1171,8 +1178,13 @@ async fn inner_start_sketch_on(
     exec_state: &mut ExecState,
     args: &Args,
 ) -> Result<SketchSurface, KclError> {
+    #[cfg(target_arch = "wasm32")]
+    web_sys::console::log_1(&format!("inner_start_sketch_on with plane_or_solid={:?}", plane_or_solid).into());
+    
     match plane_or_solid {
         SketchData::PlaneOrientation(plane_data) => {
+            #[cfg(target_arch = "wasm32")]
+            web_sys::console::log_1(&format!("inner_start_sketch_on PlaneOrientation case with plane_data={:?}", plane_data).into());
             let plane = make_sketch_plane_from_orientation(plane_data, exec_state, args).await?;
             Ok(SketchSurface::Plane(plane))
         }
@@ -1241,40 +1253,46 @@ async fn make_sketch_plane_from_orientation(
     exec_state: &mut ExecState,
     args: &Args,
 ) -> Result<Box<Plane>, KclError> {
-    let plane = Plane::from_plane_data(data.clone(), exec_state);
+    #[cfg(target_arch = "wasm32")]
+    web_sys::console::log_1(&format!("make_sketch_plane_from_orientation called with data={:?}", data).into());
+    
+    let mut plane = Plane::from_plane_data(data.clone(), exec_state);
+    #[cfg(target_arch = "wasm32")]
+    web_sys::console::log_1(&format!("After from_plane_data: plane.x_axis={:?}, plane type={:?}", plane.x_axis, plane.value).into());
 
     // Create the plane on the fly.
     let clobber = false;
     let size = LengthUnit(60.0);
     let hide = Some(true);
+    
     match data {
         PlaneData::XY | PlaneData::NegXY | PlaneData::XZ | PlaneData::NegXZ | PlaneData::YZ | PlaneData::NegYZ => {
-            // TODO: ignoring the default planes here since we already created them, breaks the
-            // front end for the feature tree which is stupid and we should fix it.
-            let x_axis = match data {
-                PlaneData::NegXY => Point3d::new(-1.0, 0.0, 0.0, UnitLen::Mm),
-                PlaneData::NegXZ => Point3d::new(1.0, 0.0, 0.0, UnitLen::Mm),
-                PlaneData::NegYZ => Point3d::new(0.0, -1.0, 0.0, UnitLen::Mm),
-                _ => plane.x_axis,
-            };
+            // Use the x_axis directly from the plane object created by from_plane_data
+            // No need to recompute it here as it's already correctly set based on the plane type
+            
+            #[cfg(target_arch = "wasm32")]
+            web_sys::console::log_1(&format!("Before modeling cmd: data={:?}, plane.x_axis={:?}", data, plane.x_axis).into());
+            
             args.batch_modeling_cmd(
                 plane.id,
                 ModelingCmd::from(mcmd::MakePlane {
                     clobber,
                     origin: plane.origin.into(),
                     size,
-                    x_axis: x_axis.into(),
+                    x_axis: plane.x_axis.into(),
                     y_axis: plane.y_axis.into(),
                     hide,
                 }),
             )
             .await?;
+            
+            #[cfg(target_arch = "wasm32")]
+            web_sys::console::log_1(&format!("After modeling cmd: plane.x_axis={:?}", plane.x_axis).into());
         }
         PlaneData::Plane {
             origin,
             x_axis,
             y_axis,
-            z_axis: _,
         } => {
             args.batch_modeling_cmd(
                 plane.id,
@@ -1291,6 +1309,8 @@ async fn make_sketch_plane_from_orientation(
         }
     }
 
+    #[cfg(target_arch = "wasm32")]
+    web_sys::console::log_1(&format!("Returning plane with x_axis={:?}", plane.x_axis).into());
     Ok(Box::new(plane))
 }
 
@@ -1384,8 +1404,16 @@ pub(crate) async fn inner_start_profile_at(
                 adjust_camera: false,
                 planar_normal: if let SketchSurface::Plane(plane) = &sketch_surface {
                     // We pass in the normal for the plane here.
-                    Some(plane.z_axis.into())
+                    let z_axis = Some(plane.x_axis.cross(&plane.y_axis).into());
+                    #[cfg(target_arch = "wasm32")]
+                    web_sys::console::log_1(&format!("Calculating planar_normal: plane.x_axis={:?}, plane.y_axis={:?}, z_axis={:?}", 
+                                           plane.x_axis, plane.y_axis, z_axis).into());
+                    #[cfg(target_arch = "wasm32")]
+                    web_sys::console::log_1(&format!("plane normal sketch: {:?}, x_axis: {:?}, y_axis: {:?}", z_axis, plane.x_axis, plane.y_axis).into());
+                    z_axis
                 } else {
+                    #[cfg(target_arch = "wasm32")]
+                    web_sys::console::log_1(&format!("no Plane normal").into());
                     None
                 },
             }),

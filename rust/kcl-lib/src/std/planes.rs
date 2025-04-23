@@ -29,7 +29,10 @@ async fn inner_offset_plane(
     // standard planes themselves.
     plane.value = PlaneType::Custom;
 
-    plane.origin += plane.z_axis * offset.to_length_units(plane.origin.units);
+    // Calculate z_axis as the cross product of x_axis and y_axis
+    let z_axis = plane.x_axis.cross(&plane.y_axis);
+    
+    plane.origin += z_axis * offset.to_length_units(plane.origin.units);
     make_offset_plane_in_engine(&plane, exec_state, args).await?;
 
     Ok(plane)

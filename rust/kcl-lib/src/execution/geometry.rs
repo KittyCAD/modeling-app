@@ -262,14 +262,15 @@ pub struct Plane {
     pub x_axis: Point3d,
     /// What should the plane's Y axis be?
     pub y_axis: Point3d,
-    /// The z-axis (normal).
-    pub z_axis: Point3d,
     #[serde(skip)]
     pub meta: Vec<Metadata>,
 }
 
 impl Plane {
     pub(crate) fn into_plane_data(self) -> PlaneData {
+        crate::log::log(format!("planeTEST!!"));
+        #[cfg(target_arch = "wasm32")]
+        web_sys::console::log_1(&format!("foo=").into());
         if self.origin.is_zero() {
             match self {
                 Self {
@@ -296,13 +297,6 @@ impl Plane {
                             z: 0.0,
                             units: UnitLen::Mm,
                         },
-                    z_axis:
-                        Point3d {
-                            x: 0.0,
-                            y: 0.0,
-                            z: 1.0,
-                            units: UnitLen::Mm,
-                        },
                     ..
                 } => return PlaneData::XY,
                 Self {
@@ -315,7 +309,7 @@ impl Plane {
                         },
                     x_axis:
                         Point3d {
-                            x: 1.0,
+                            x: -1.0,
                             y: 0.0,
                             z: 0.0,
                             units: UnitLen::Mm,
@@ -325,13 +319,6 @@ impl Plane {
                             x: 0.0,
                             y: 1.0,
                             z: 0.0,
-                            units: UnitLen::Mm,
-                        },
-                    z_axis:
-                        Point3d {
-                            x: 0.0,
-                            y: 0.0,
-                            z: -1.0,
                             units: UnitLen::Mm,
                         },
                     ..
@@ -358,13 +345,6 @@ impl Plane {
                             z: 1.0,
                             units: UnitLen::Mm,
                         },
-                    z_axis:
-                        Point3d {
-                            x: 0.0,
-                            y: -1.0,
-                            z: 0.0,
-                            units: UnitLen::Mm,
-                        },
                     ..
                 } => return PlaneData::XZ,
                 Self {
@@ -377,7 +357,7 @@ impl Plane {
                         },
                     x_axis:
                         Point3d {
-                            x: 1.0,
+                            x: -1.0,
                             y: 0.0,
                             z: 0.0,
                             units: UnitLen::Mm,
@@ -387,13 +367,6 @@ impl Plane {
                             x: 0.0,
                             y: 0.0,
                             z: 1.0,
-                            units: UnitLen::Mm,
-                        },
-                    z_axis:
-                        Point3d {
-                            x: 0.0,
-                            y: 1.0,
-                            z: 0.0,
                             units: UnitLen::Mm,
                         },
                     ..
@@ -420,13 +393,6 @@ impl Plane {
                             z: 1.0,
                             units: UnitLen::Mm,
                         },
-                    z_axis:
-                        Point3d {
-                            x: 1.0,
-                            y: 0.0,
-                            z: 0.0,
-                            units: UnitLen::Mm,
-                        },
                     ..
                 } => return PlaneData::YZ,
                 Self {
@@ -440,7 +406,7 @@ impl Plane {
                     x_axis:
                         Point3d {
                             x: 0.0,
-                            y: 1.0,
+                            y: -1.0,
                             z: 0.0,
                             units: UnitLen::Mm,
                         },
@@ -449,13 +415,6 @@ impl Plane {
                             x: 0.0,
                             y: 0.0,
                             z: 1.0,
-                            units: UnitLen::Mm,
-                        },
-                    z_axis:
-                        Point3d {
-                            x: -1.0,
-                            y: 0.0,
-                            z: 0.0,
                             units: UnitLen::Mm,
                         },
                     ..
@@ -468,12 +427,13 @@ impl Plane {
             origin: self.origin,
             x_axis: self.x_axis,
             y_axis: self.y_axis,
-            z_axis: self.z_axis,
         }
     }
 
     pub(crate) fn from_plane_data(value: PlaneData, exec_state: &mut ExecState) -> Self {
         let id = exec_state.next_uuid();
+        #[cfg(target_arch = "wasm32")]
+        web_sys::console::log_1(&format!("value: {:?}", value).into());
         match value {
             PlaneData::XY => Plane {
                 id,
@@ -481,7 +441,6 @@ impl Plane {
                 origin: Point3d::new(0.0, 0.0, 0.0, UnitLen::Mm),
                 x_axis: Point3d::new(1.0, 0.0, 0.0, UnitLen::Mm),
                 y_axis: Point3d::new(0.0, 1.0, 0.0, UnitLen::Mm),
-                z_axis: Point3d::new(0.0, 0.0, 1.0, UnitLen::Mm),
                 value: PlaneType::XY,
                 meta: vec![],
             },
@@ -489,10 +448,9 @@ impl Plane {
                 id,
                 artifact_id: id.into(),
                 origin: Point3d::new(0.0, 0.0, 0.0, UnitLen::Mm),
-                x_axis: Point3d::new(1.0, 0.0, 0.0, UnitLen::Mm),
+                x_axis: Point3d::new(-1.0, 0.0, 0.0, UnitLen::Mm),
                 y_axis: Point3d::new(0.0, 1.0, 0.0, UnitLen::Mm),
-                z_axis: Point3d::new(0.0, 0.0, -1.0, UnitLen::Mm),
-                value: PlaneType::XY,
+                value: PlaneType::NegXY,
                 meta: vec![],
             },
             PlaneData::XZ => Plane {
@@ -501,7 +459,6 @@ impl Plane {
                 origin: Point3d::new(0.0, 0.0, 0.0, UnitLen::Mm),
                 x_axis: Point3d::new(1.0, 0.0, 0.0, UnitLen::Mm),
                 y_axis: Point3d::new(0.0, 0.0, 1.0, UnitLen::Mm),
-                z_axis: Point3d::new(0.0, -1.0, 0.0, UnitLen::Mm),
                 value: PlaneType::XZ,
                 meta: vec![],
             },
@@ -509,10 +466,9 @@ impl Plane {
                 id,
                 artifact_id: id.into(),
                 origin: Point3d::new(0.0, 0.0, 0.0, UnitLen::Mm),
-                x_axis: Point3d::new(1.0, 0.0, 0.0, UnitLen::Mm),
+                x_axis: Point3d::new(-1.0, 0.0, 0.0, UnitLen::Mm),
                 y_axis: Point3d::new(0.0, 0.0, 1.0, UnitLen::Mm),
-                z_axis: Point3d::new(0.0, 1.0, 0.0, UnitLen::Mm),
-                value: PlaneType::XZ,
+                value: PlaneType::NegXZ,
                 meta: vec![],
             },
             PlaneData::YZ => Plane {
@@ -521,7 +477,6 @@ impl Plane {
                 origin: Point3d::new(0.0, 0.0, 0.0, UnitLen::Mm),
                 x_axis: Point3d::new(0.0, 1.0, 0.0, UnitLen::Mm),
                 y_axis: Point3d::new(0.0, 0.0, 1.0, UnitLen::Mm),
-                z_axis: Point3d::new(1.0, 0.0, 0.0, UnitLen::Mm),
                 value: PlaneType::YZ,
                 meta: vec![],
             },
@@ -529,17 +484,15 @@ impl Plane {
                 id,
                 artifact_id: id.into(),
                 origin: Point3d::new(0.0, 0.0, 0.0, UnitLen::Mm),
-                x_axis: Point3d::new(0.0, 1.0, 0.0, UnitLen::Mm),
+                x_axis: Point3d::new(0.0, -1.0, 0.0, UnitLen::Mm),
                 y_axis: Point3d::new(0.0, 0.0, 1.0, UnitLen::Mm),
-                z_axis: Point3d::new(-1.0, 0.0, 0.0, UnitLen::Mm),
-                value: PlaneType::YZ,
+                value: PlaneType::NegYZ,
                 meta: vec![],
             },
             PlaneData::Plane {
                 origin,
                 x_axis,
                 y_axis,
-                z_axis,
             } => {
                 let id = exec_state.next_uuid();
                 Plane {
@@ -548,7 +501,6 @@ impl Plane {
                     origin,
                     x_axis,
                     y_axis,
-                    z_axis,
                     value: PlaneType::Custom,
                     meta: vec![],
                 }
@@ -594,12 +546,21 @@ pub enum PlaneType {
     #[serde(rename = "XY", alias = "xy")]
     #[display("XY")]
     XY,
+    #[serde(rename = "-XY", alias = "-xy")]
+    #[display("-XY")]
+    NegXY,
     #[serde(rename = "XZ", alias = "xz")]
     #[display("XZ")]
     XZ,
+    #[serde(rename = "-XZ", alias = "-xz")]
+    #[display("-XZ")]
+    NegXZ,
     #[serde(rename = "YZ", alias = "yz")]
     #[display("YZ")]
     YZ,
+    #[serde(rename = "-YZ", alias = "-yz")]
+    #[display("-YZ")]
+    NegYZ,
     /// A custom plane.
     #[display("Custom")]
     Custom,
@@ -656,8 +617,12 @@ impl Sketch {
                     adjust_camera: false,
                     planar_normal: if let SketchSurface::Plane(plane) = &self.on {
                         // We pass in the normal for the plane here.
-                        Some(plane.z_axis.into())
+                        let z_axis = Some(plane.x_axis.cross(&plane.y_axis).into());
+                        #[cfg(target_arch = "wasm32")]
+                        web_sys::console::log_1(&format!("plane normal geo: {:?}, x_axis: {:?}, y_axis: {:?}", z_axis, plane.x_axis, plane.y_axis).into());
+                        z_axis
                     } else {
+                        crate::log::log(format!("no Plane normal"));
                         None
                     },
                 }),
@@ -702,7 +667,7 @@ impl SketchSurface {
     }
     pub(crate) fn z_axis(&self) -> Point3d {
         match self {
-            SketchSurface::Plane(plane) => plane.z_axis,
+            SketchSurface::Plane(plane) => plane.x_axis.cross(&plane.y_axis),
             SketchSurface::Face(face) => face.z_axis,
         }
     }
@@ -928,6 +893,16 @@ impl Point3d {
 
     pub const fn is_zero(&self) -> bool {
         self.x == 0.0 && self.y == 0.0 && self.z == 0.0
+    }
+    
+    /// Calculate the cross product of this vector with another
+    pub fn cross(&self, other: &Self) -> Self {
+        Self {
+            x: self.y * other.z - self.z * other.y,
+            y: self.z * other.x - self.x * other.z,
+            z: self.x * other.y - self.y * other.x,
+            units: self.units,
+        }
     }
 }
 
