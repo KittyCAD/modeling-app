@@ -5,7 +5,7 @@ import type { Channel } from '@src/channels'
 // types for knowing what menu sends what webContent payload
 export type MenuLabels =
   | 'Help.Command Palette...'
-  | 'Help.Refresh and report a bug'
+  | 'Help.Report a bug'
   | 'Help.Reset onboarding'
   | 'Edit.Rename project'
   | 'Edit.Delete project'
