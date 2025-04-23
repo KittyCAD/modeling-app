@@ -128,8 +128,6 @@ lazy_static! {
         Box::new(crate::std::math::Log2),
         Box::new(crate::std::math::Log10),
         Box::new(crate::std::math::Ln),
-        Box::new(crate::std::math::ToDegrees),
-        Box::new(crate::std::math::ToRadians),
         Box::new(crate::std::units::FromMm),
         Box::new(crate::std::units::FromInches),
         Box::new(crate::std::units::FromFt),

@@ -3294,7 +3294,7 @@ profile003 = startProfile(sketch002, at = [-201.08, 254.17])
         )
         await editor.expectState({
           activeLines: [],
-          diagnostics: ['memoryitemkey`badBadBadFn`isnotdefined'],
+          diagnostics: ['`badBadBadFn`isnotdefined'],
           highlightedCode: '',
         })
         await expect(

@@ -10,7 +10,10 @@ use serde::Serialize;
 use super::{args::TyF64, DEFAULT_TOLERANCE};
 use crate::{
     errors::KclError,
-    execution::{types::RuntimeType, ExecState, Helix, KclValue, Sketch, Solid},
+    execution::{
+        types::{NumericType, RuntimeType},
+        ExecState, Helix, KclValue, Sketch, Solid,
+    },
     parsing::ast::types::TagNode,
     std::{extrude::do_post_extrude, Args},
 };
@@ -27,21 +30,18 @@ pub enum SweepPath {
 /// Extrude a sketch along a path.
 pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let sketches = args.get_unlabeled_kw_arg_typed("sketches", &RuntimeType::sketches(), exec_state)?;
-    let path: SweepPath = args.get_kw_arg("path")?;
+    let path: SweepPath = args.get_kw_arg_typed(
+        "path",
+        &RuntimeType::Union(vec![RuntimeType::sketch(), RuntimeType::helix()]),
+        exec_state,
+    )?;
     let sectional = args.get_kw_arg_opt("sectional")?;
-    let tolerance: Option<TyF64> = args.get_kw_arg_opt_typed("tolerance", &RuntimeType::count(), exec_state)?;
+    let tolerance: Option<TyF64> = args.get_kw_arg_opt_typed("tolerance", &RuntimeType::length(), exec_state)?;
     let tag_start = args.get_kw_arg_opt("tagStart")?;
     let tag_end = args.get_kw_arg_opt("tagEnd")?;
 
     let value = inner_sweep(
-        sketches,
-        path,
-        sectional,
-        tolerance.map(|t| t.n),
-        tag_start,
-        tag_end,
-        exec_state,
-        args,
+        sketches, path, sectional, tolerance, tag_start, tag_end, exec_state, args,
     )
     .await?;
     Ok(value.into())
@@ -167,7 +167,7 @@ async fn inner_sweep(
     sketches: Vec<Sketch>,
     path: SweepPath,
     sectional: Option<bool>,
-    tolerance: Option<f64>,
+    tolerance: Option<TyF64>,
     tag_start: Option<TagNode>,
     tag_end: Option<TagNode>,
     exec_state: &mut ExecState,
@@ -187,7 +187,7 @@ async fn inner_sweep(
                 target: sketch.id.into(),
                 trajectory,
                 sectional: sectional.unwrap_or(false),
-                tolerance: LengthUnit(tolerance.unwrap_or(DEFAULT_TOLERANCE)),
+                tolerance: LengthUnit(tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE)),
             }),
         )
         .await?;
@@ -196,7 +196,7 @@ async fn inner_sweep(
             do_post_extrude(
                 sketch,
                 id.into(),
-                0.0,
+                TyF64::new(0.0, NumericType::mm()),
                 sectional.unwrap_or(false),
                 &super::extrude::NamedCapTags {
                     start: tag_start.as_ref(),

@@ -135,9 +135,6 @@ description: Variables in memory after executing tangential_arc.kcl
             "units": {
               "type": "Mm"
             }
-          },
-          "units": {
-            "type": "Mm"
           }
         },
         "start": {

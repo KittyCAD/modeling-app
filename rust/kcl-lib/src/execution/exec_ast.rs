@@ -3,11 +3,7 @@ use std::collections::HashMap;
 use async_recursion::async_recursion;
 use indexmap::IndexMap;
 
-use super::{
-    cad_op::Group,
-    kcl_value::TypeDef,
-    types::{PrimitiveType, CHECK_NUMERIC_TYPES},
-};
+use super::{cad_op::Group, kcl_value::TypeDef, types::PrimitiveType};
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
@@ -64,14 +60,6 @@ impl ExecutorContext {
                     if exec_state.mod_local.settings.update_from_annotation(annotation)? {
                         exec_state.mod_local.explicit_length_units = true;
                     }
-                    let new_units = exec_state.length_unit();
-                    self.engine
-                        .set_units(
-                            new_units.into(),
-                            annotation.as_source_range(),
-                            exec_state.id_generator(),
-                        )
-                        .await?;
                 } else {
                     exec_state.err(CompilationError::err(
                         annotation.as_source_range(),
@@ -873,7 +861,10 @@ impl Node<MemberExpression> {
                     source_ranges: vec![self.clone().into()],
                 }))
             }
-            (KclValue::MixedArray { value: arr, meta: _ }, Property::UInt(index)) => {
+            (
+                KclValue::MixedArray { value: arr, .. } | KclValue::HomArray { value: arr, .. },
+                Property::UInt(index),
+            ) => {
                 let value_of_arr = arr.get(index);
                 if let Some(value) = value_of_arr {
                     Ok(value.to_owned())
@@ -884,7 +875,7 @@ impl Node<MemberExpression> {
                     }))
                 }
             }
-            (KclValue::MixedArray { .. }, p) => {
+            (KclValue::MixedArray { .. } | KclValue::HomArray { .. }, p) => {
                 let t = p.type_name();
                 let article = article_for(t);
                 Err(KclError::Semantic(KclErrorDetails {
@@ -1051,7 +1042,7 @@ impl Node<BinaryExpression> {
             BinaryOperator::Pow => KclValue::Number {
                 value: left.n.powf(right.n),
                 meta,
-                ty: NumericType::Unknown,
+                ty: exec_state.current_default_units(),
             },
             BinaryOperator::Neq => {
                 let (l, r, ty) = NumericType::combine_eq(left, right);
@@ -1090,7 +1081,7 @@ impl Node<BinaryExpression> {
     }
 
     fn warn_on_unknown(&self, ty: &NumericType, verb: &str, exec_state: &mut ExecState) {
-        if *CHECK_NUMERIC_TYPES && ty == &NumericType::Unknown {
+        if ty == &NumericType::Unknown {
             // TODO suggest how to fix this
             exec_state.warn(CompilationError::err(
                 self.as_source_range(),
@@ -1999,11 +1990,39 @@ fn assign_args_to_params(
     for (index, param) in function_expression.params.iter().enumerate() {
         if let Some(arg) = args.get(index) {
             // Argument was provided.
-            exec_state.mut_stack().add(
-                param.identifier.name.clone(),
-                arg.value.clone(),
-                (&param.identifier).into(),
-            )?;
+
+            if let Some(ty) = &param.type_ {
+                let value = arg
+                        .value
+                        .coerce(
+                            &RuntimeType::from_parsed(ty.inner.clone(), exec_state, arg.source_range).unwrap(),
+                            exec_state,
+                        )
+                        .map_err(|e| {
+                            let mut message = format!(
+                                "Argument requires a value with type `{}`, but found {}",
+                                ty.inner,
+                                arg.value.human_friendly_type(),
+                            );
+                            if let Some(ty) = e.explicit_coercion {
+                                // TODO if we have access to the AST for the argument we could choose which example to suggest.
+                                message = format!("{message}\n\nYou may need to add information about the type of the argument, for example:\n  using a numeric suffix: `42{ty}`\n  or using type ascription: `foo(): number({ty})`");
+                            }
+                            KclError::Semantic(KclErrorDetails {
+                                message,
+                                source_ranges: vec![arg.source_range],
+                            })
+                        })?;
+                exec_state
+                    .mut_stack()
+                    .add(param.identifier.name.clone(), value, (&param.identifier).into())?;
+            } else {
+                exec_state.mut_stack().add(
+                    param.identifier.name.clone(),
+                    arg.value.clone(),
+                    (&param.identifier).into(),
+                )?;
+            }
         } else {
             // Argument was not provided.
             if let Some(ref default_val) = param.default_value {

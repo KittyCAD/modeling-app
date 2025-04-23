@@ -601,7 +601,7 @@ ${!replace1 ? `  |> ${line}\n` : ''}  |> angledLine(angle = -65, length = ${
       !replace1 ? 'segLen(a)' : replace1
     })
   |> line(end = [306.21, 198.87])
-  |> angledLine(angle = 65, length = ${!replace2 ? 'segAng(a)' : replace2})
+  |> angledLine(angle = ${!replace2 ? 'segAng(a)' : replace2}, length = 300)
   |> line(end = [-963.39, -154.67])
 `
     test.each([
@@ -609,7 +609,7 @@ ${!replace1 ? `  |> ${line}\n` : ''}  |> angledLine(angle = -65, length = ${
       [
         'lineTo',
         'line(endAbsolute = [306.21, 198.85], tag = $a)',
-        ['110.48', '119.73'],
+        ['110.48', '120'],
       ],
       ['yLine', 'yLine(length = 198.85, tag = $a)', ['198.85', '90']],
       ['xLine', 'xLine(length = 198.85, tag = $a)', ['198.85', '0']],
@@ -618,32 +618,32 @@ ${!replace1 ? `  |> ${line}\n` : ''}  |> angledLine(angle = -65, length = ${
       [
         'angledLine',
         'angledLine(angle = 45.5, length = 198.85, tag = $a)',
-        ['198.85', '45.5'],
+        ['198.85', '46'],
       ],
       [
         'angledLine',
         'angledLine(angle = 45.5, lengthX = 198.85, tag = $a)',
-        ['283.7', '45.5'],
+        ['283.7', '46'],
       ],
       [
         'angledLine',
         'angledLine(angle = 45.5, lengthY = 198.85, tag = $a)',
-        ['278.79', '45.5'],
+        ['278.79', '46'],
       ],
       [
         'angledLine',
         'angledLine(angle = 45.5, endAbsoluteX = 198.85, tag = $a)',
-        ['231.33', '134.5'],
+        ['231.33', '-134'],
       ],
       [
         'angledLine',
         'angledLine(angle = 45.5, endAbsoluteY = 198.85, tag = $a)',
-        ['134.51', '45.5'],
+        ['134.51', '46'],
       ],
       [
         'angledLineThatIntersects',
         `angledLineThatIntersects(angle = 45.5, intersectTag = b, offset = 198.85, tag = $a)`,
-        ['918.4', '45.5'],
+        ['918.4', '46'],
       ],
     ])(`%s`, async (_, line, [replace1, replace2]) => {
       const code = makeCode(line)

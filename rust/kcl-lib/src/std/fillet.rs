@@ -64,14 +64,14 @@ pub(super) fn validate_unique<T: Eq + std::hash::Hash>(tags: &[(T, SourceRange)]
 pub async fn fillet(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let solid = args.get_unlabeled_kw_arg_typed("solid", &RuntimeType::solid(), exec_state)?;
     let radius: TyF64 = args.get_kw_arg_typed("radius", &RuntimeType::length(), exec_state)?;
-    let tolerance: Option<TyF64> = args.get_kw_arg_opt_typed("tolerance", &RuntimeType::count(), exec_state)?;
+    let tolerance: Option<TyF64> = args.get_kw_arg_opt_typed("tolerance", &RuntimeType::length(), exec_state)?;
     let tags = args.kw_arg_array_and_source::<EdgeReference>("tags")?;
     let tag = args.get_kw_arg_opt("tag")?;
 
     // Run the function.
     validate_unique(&tags)?;
     let tags: Vec<EdgeReference> = tags.into_iter().map(|item| item.0).collect();
-    let value = inner_fillet(solid, radius, tags, tolerance.map(|t| t.n), tag, exec_state, args).await?;
+    let value = inner_fillet(solid, radius, tags, tolerance, tag, exec_state, args).await?;
     Ok(KclValue::Solid { value })
 }
 
@@ -148,7 +148,7 @@ async fn inner_fillet(
     solid: Box<Solid>,
     radius: TyF64,
     tags: Vec<EdgeReference>,
-    tolerance: Option<f64>,
+    tolerance: Option<TyF64>,
     tag: Option<TagNode>,
     exec_state: &mut ExecState,
     args: Args,
@@ -163,8 +163,8 @@ async fn inner_fillet(
             ModelingCmd::from(mcmd::Solid3dFilletEdge {
                 edge_id,
                 object_id: solid.id,
-                radius: LengthUnit(radius.n),
-                tolerance: LengthUnit(tolerance.unwrap_or(DEFAULT_TOLERANCE)),
+                radius: LengthUnit(radius.to_mm()),
+                tolerance: LengthUnit(tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE)),
                 cut_type: CutType::Fillet,
             }),
         )

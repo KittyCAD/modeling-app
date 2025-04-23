@@ -464,7 +464,7 @@ fn inner_segment_angle(tag: &TagIdentifier, exec_state: &mut ExecState, args: Ar
         })
     })?;
 
-    let result = between(path.get_from().into(), path.get_to().into());
+    let result = between(path.get_base().from, path.get_base().to);
 
     Ok(result.to_degrees())
 }
@@ -584,7 +584,7 @@ async fn inner_tangent_to_end(tag: &TagIdentifier, exec_state: &mut ExecState, a
 /// Returns the angle to match the given length for x.
 pub async fn angle_to_match_length_x(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (tag, to, sketch) = args.get_tag_to_number_sketch()?;
-    let result = inner_angle_to_match_length_x(&tag, to.n, sketch, exec_state, args.clone())?;
+    let result = inner_angle_to_match_length_x(&tag, to, sketch, exec_state, args.clone())?;
     Ok(args.make_user_val_from_f64_with_type(TyF64::new(result, NumericType::degrees())))
 }
 
@@ -607,7 +607,7 @@ pub async fn angle_to_match_length_x(exec_state: &mut ExecState, args: Args) -> 
 }]
 fn inner_angle_to_match_length_x(
     tag: &TagIdentifier,
-    to: f64,
+    to: TyF64,
     sketch: Sketch,
     exec_state: &mut ExecState,
     args: Args,
@@ -633,8 +633,7 @@ fn inner_angle_to_match_length_x(
         })?
         .get_base();
 
-    // TODO assumption about the units of to
-    let diff = (to - last_line.to[0]).abs();
+    let diff = (to.to_length_units(sketch.units) - last_line.to[0]).abs();
 
     let angle_r = (diff / length).acos();
 
@@ -648,7 +647,7 @@ fn inner_angle_to_match_length_x(
 /// Returns the angle to match the given length for y.
 pub async fn angle_to_match_length_y(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (tag, to, sketch) = args.get_tag_to_number_sketch()?;
-    let result = inner_angle_to_match_length_y(&tag, to.n, sketch, exec_state, args.clone())?;
+    let result = inner_angle_to_match_length_y(&tag, to, sketch, exec_state, args.clone())?;
     Ok(args.make_user_val_from_f64_with_type(TyF64::new(result, NumericType::degrees())))
 }
 
@@ -672,7 +671,7 @@ pub async fn angle_to_match_length_y(exec_state: &mut ExecState, args: Args) -> 
 }]
 fn inner_angle_to_match_length_y(
     tag: &TagIdentifier,
-    to: f64,
+    to: TyF64,
     sketch: Sketch,
     exec_state: &mut ExecState,
     args: Args,
@@ -698,8 +697,7 @@ fn inner_angle_to_match_length_y(
         })?
         .get_base();
 
-    // TODO assumption about the units of to
-    let diff = (to - last_line.to[1]).abs();
+    let diff = (to.to_length_units(sketch.units) - last_line.to[1]).abs();
 
     let angle_r = (diff / length).asin();
 

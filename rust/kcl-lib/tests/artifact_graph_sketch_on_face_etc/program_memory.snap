@@ -161,9 +161,6 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
             "units": {
               "type": "Mm"
             }
-          },
-          "units": {
-            "type": "Mm"
           }
         },
         "start": {
@@ -499,9 +496,6 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                   "units": {
                     "type": "Mm"
                   }
-                },
-                "units": {
-                  "type": "Mm"
                 }
               },
               "start": {
@@ -1021,9 +1015,6 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                         "units": {
                           "type": "Mm"
                         }
-                      },
-                      "units": {
-                        "type": "Mm"
                       }
                     },
                     "start": {
@@ -1721,9 +1712,6 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                               "units": {
                                 "type": "Mm"
                               }
-                            },
-                            "units": {
-                              "type": "Mm"
                             }
                           },
                           "start": {
@@ -2010,9 +1998,6 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
           "units": {
             "type": "Mm"
           }
-        },
-        "units": {
-          "type": "Mm"
         }
       },
       "start": {
@@ -2314,9 +2299,6 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -2796,9 +2778,6 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                       "units": {
                         "type": "Mm"
                       }
-                    },
-                    "units": {
-                      "type": "Mm"
                     }
                   },
                   "start": {
@@ -3462,9 +3441,6 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                             "units": {
                               "type": "Mm"
                             }
-                          },
-                          "units": {
-                            "type": "Mm"
                           }
                         },
                         "start": {
