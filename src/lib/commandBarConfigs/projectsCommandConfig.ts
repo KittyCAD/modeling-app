@@ -39,7 +39,7 @@ export const openProjectCommand: Command = {
       inputType: 'options',
       options: () => {
         const folders = folderSnapshot()
-        const options: CommandArgumentOption<any>[] = []
+        const options: CommandArgumentOption<string>[] = []
         folders.forEach((folder) => {
           options.push({
             name: folder.name,
@@ -103,7 +103,7 @@ export const deleteProjectCommand: Command = {
       required: true,
       options: () => {
         const folders = folderSnapshot()
-        const options: CommandArgumentOption<any>[] = []
+        const options: CommandArgumentOption<string>[] = []
         folders.forEach((folder) => {
           options.push({
             name: folder.name,
@@ -141,7 +141,7 @@ export const renameProjectCommand: Command = {
       required: true,
       options: () => {
         const folders = folderSnapshot()
-        const options: CommandArgumentOption<any>[] = []
+        const options: CommandArgumentOption<string>[] = []
         folders.forEach((folder) => {
           options.push({
             name: folder.name,
@@ -207,7 +207,7 @@ export const importFileFromURL: Command = {
       skip: true,
       options: (_, context) => {
         const folders = folderSnapshot()
-        const options: CommandArgumentOption<any>[] = []
+        const options: CommandArgumentOption<string>[] = []
         folders.forEach((folder) => {
           options.push({
             name: folder.name,
