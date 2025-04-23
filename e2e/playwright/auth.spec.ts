@@ -42,7 +42,7 @@ test.describe('Authentication tests', () => {
         await expect(signInPage.userCode).toBeVisible()
         const userCode = await signInPage.userCode.textContent()
         expect(userCode).not.toBeNull()
-        await signInPage.vefifyAndConfirmAuth(userCode!)
+        await signInPage.verifyAndConfirmAuth(userCode!)
 
         // Longer timeout than usual here for the wait on home page
         await expect(homePage.projectSection).toBeVisible({ timeout: 10000 })
