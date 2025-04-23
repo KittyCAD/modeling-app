@@ -224,7 +224,11 @@ const VisibilityToggle = (props: VisibilityToggleProps) => {
   return (
     <button
       onClick={handleToggleVisible}
-      className="border-transparent p-0 m-0"
+      className={`p-0 m-0 ${
+        visible
+          ? 'invisible group-hover/item:visible group-focus-within/item:visible'
+          : ''
+      }`}
     >
       <CustomIcon
         name={visible ? 'eyeOpen' : 'eyeCrossedOut'}
