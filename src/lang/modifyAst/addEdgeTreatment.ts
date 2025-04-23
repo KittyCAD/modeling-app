@@ -873,10 +873,10 @@ export async function deleteEdgeTreatment(
   if (inPipe) {
     // Retrieve the CallExpression path
     const callExp =
-      getNodeFromPath<CallExpression>(
+      getNodeFromPath<CallExpression | CallExpressionKw>(
         ast,
         selection?.codeRef?.pathToNode,
-        'CallExpression'
+        ['CallExpression', 'CallExpressionKw']
       ) ?? null
     if (err(callExp)) return callExp
 
