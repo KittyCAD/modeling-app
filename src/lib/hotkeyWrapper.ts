@@ -60,6 +60,7 @@ export function hotkeyDisplay(hotkey: string, platform: Platform): string {
     // Capitalize letters.  We want Ctrl+K, not Ctrl+k, since Shift should be
     // shown as a separate modifier.
     .split('+')
+    .map((word) => word.trim().toLocaleLowerCase())
     .map((word) => {
       if (word.length === 1 && LOWER_CASE_LETTER.test(word)) {
         return word.toUpperCase()
