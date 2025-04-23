@@ -121,9 +121,6 @@ description: Variables in memory after executing tangent_to_3_point_arc.kcl
           "units": {
             "type": "Mm"
           }
-        },
-        "units": {
-          "type": "Mm"
         }
       },
       "start": {
@@ -199,9 +196,6 @@ description: Variables in memory after executing tangent_to_3_point_arc.kcl
         "units": {
           "type": "Mm"
         }
-      },
-      "units": {
-        "type": "Mm"
       }
     }
   }

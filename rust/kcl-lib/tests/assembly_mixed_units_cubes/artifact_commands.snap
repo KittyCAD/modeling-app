@@ -33,46 +33,6 @@ description: Artifact commands assembly_mixed_units_cubes.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "set_scene_units",
-      "unit": "in"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "set_scene_units",
-      "unit": "mm"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "set_scene_units",
-      "unit": "mm"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "set_scene_units",
-      "unit": "mm"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "set_scene_units",
-      "unit": "in"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
       "type": "make_plane",
       "origin": {
         "x": 0.0,
@@ -124,8 +84,8 @@ description: Artifact commands assembly_mixed_units_cubes.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": -10.0,
-        "y": -10.0,
+        "x": -254.0,
+        "y": -254.0,
         "z": 0.0
       }
     }
@@ -146,7 +106,7 @@ description: Artifact commands assembly_mixed_units_cubes.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.0,
+          "x": 127.0,
           "y": 0.0,
           "z": 0.0
         },
@@ -164,7 +124,7 @@ description: Artifact commands assembly_mixed_units_cubes.kcl
         "type": "line",
         "end": {
           "x": 0.0,
-          "y": -5.0,
+          "y": -127.0,
           "z": 0.0
         },
         "relative": true
@@ -180,7 +140,7 @@ description: Artifact commands assembly_mixed_units_cubes.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -5.0,
+          "x": -127.0,
           "y": 0.0,
           "z": 0.0
         },
@@ -197,8 +157,8 @@ description: Artifact commands assembly_mixed_units_cubes.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -10.0,
-          "y": -10.0,
+          "x": -254.0,
+          "y": -254.0,
           "z": 0.0
         },
         "relative": false
@@ -235,7 +195,7 @@ description: Artifact commands assembly_mixed_units_cubes.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 5.0,
+      "distance": 127.0,
       "faces": null,
       "opposite": "None"
     }
@@ -342,14 +302,6 @@ description: Artifact commands assembly_mixed_units_cubes.kcl
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "set_scene_units",
-      "unit": "mm"
     }
   },
   {

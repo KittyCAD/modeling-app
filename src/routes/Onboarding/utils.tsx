@@ -14,10 +14,12 @@ import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
 import { PATHS } from '@src/lib/paths'
 import { codeManager, editorManager, kclManager } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
-import { toSync } from '@src/lib/utils'
 import { settingsActor } from '@src/lib/singletons'
 import { onboardingRoutes } from '@src/routes/Onboarding'
 import { onboardingPaths } from '@src/routes/Onboarding/paths'
+import { parse, resultIsOk } from '@src/lang/wasm'
+import { updateModelingState } from '@src/lang/modelingWorkflows'
+import { EXECUTION_TYPE_REAL } from '@src/lib/constants'
 
 export const kbdClasses =
   'py-0.5 px-1 text-sm rounded bg-chalkboard-10 dark:bg-chalkboard-100 border border-chalkboard-50 border-b-2'
@@ -39,26 +41,33 @@ export function useDemoCode() {
   const { overallState, immediateState } = useNetworkContext()
 
   useEffect(() => {
-    // Don't run if the editor isn't loaded or the code is already the bracket
-    if (!editorManager.editorView || codeManager.code === bracket) {
-      return
+    async function setCodeToDemoIfNeeded() {
+      // Don't run if the editor isn't loaded or the code is already the bracket
+      if (!editorManager.editorView || codeManager.code === bracket) {
+        return
+      }
+      // Don't run if the network isn't healthy or the connection isn't established
+      if (
+        overallState === NetworkHealthState.Disconnected ||
+        overallState === NetworkHealthState.Issue ||
+        immediateState.type !== EngineConnectionStateType.ConnectionEstablished
+      ) {
+        return
+      }
+      const pResult = parse(bracket)
+      if (trap(pResult) || !resultIsOk(pResult)) {
+        return Promise.reject(pResult)
+      }
+      const ast = pResult.program
+      await updateModelingState(ast, EXECUTION_TYPE_REAL, {
+        kclManager: kclManager,
+        editorManager: editorManager,
+        codeManager: codeManager,
+      })
     }
-    // Don't run if the network isn't healthy or the connection isn't established
-    if (
-      overallState === NetworkHealthState.Disconnected ||
-      overallState === NetworkHealthState.Issue ||
-      immediateState.type !== EngineConnectionStateType.ConnectionEstablished
-    ) {
-      return
-    }
-    setTimeout(
-      toSync(async () => {
-        codeManager.updateCodeStateEditor(bracket)
-        await kclManager.executeCode()
-        await codeManager.writeToFile()
-      }, reportRejection)
-    )
-  }, [editorManager.editorView, immediateState, overallState])
+
+    setCodeToDemoIfNeeded().catch(reportRejection)
+  }, [editorManager.editorView, immediateState.type, overallState])
 }
 
 export function useNextClick(newStatus: string) {

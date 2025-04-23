@@ -4,7 +4,7 @@ const arr = [0, 0, 0, 10]
 const i = 3
 const ten = arr[i]
 
-assertEqual(ten, 10, 0.000001, "oops")
+assert(ten, isEqualTo = 10, error = "oops")
 
 const p = "foo"
 const obj = {
@@ -13,4 +13,4 @@ const obj = {
 }
 const one = obj[p]
 
-assertEqual(one, 1, 0.0000001, "oops")
+assert(one, isEqualTo = 1, error = "oops")
