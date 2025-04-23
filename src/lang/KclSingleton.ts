@@ -48,7 +48,7 @@ import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 
 import { err, reportRejection } from '@src/lib/trap'
 import { deferExecution, uuidv4 } from '@src/lib/utils'
-import { PlaneVisibilityMap } from '@src/machines/modelingMachine'
+import type { PlaneVisibilityMap } from '@src/machines/modelingMachine'
 
 interface ExecuteArgs {
   ast?: Node<Program>
