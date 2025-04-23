@@ -686,49 +686,6 @@ impl Args {
         FromArgs::from_args(self, 0)
     }
 
-    pub(crate) fn get_length_and_solid(&self, exec_state: &mut ExecState) -> Result<(TyF64, Box<Solid>), KclError> {
-        let Some(arg0) = self.args.first() else {
-            return Err(KclError::Semantic(KclErrorDetails {
-                message: "Expected a `number(Length)` for first argument".to_owned(),
-                source_ranges: vec![self.source_range],
-            }));
-        };
-        let val0 = arg0.value.coerce(&RuntimeType::length(), exec_state).map_err(|_| {
-            KclError::Type(KclErrorDetails {
-                message: format!(
-                    "Expected a `number(Length)` for first argument, found {}",
-                    arg0.value.human_friendly_type()
-                ),
-                source_ranges: vec![self.source_range],
-            })
-        })?;
-        let data = TyF64::from_kcl_val(&val0).unwrap();
-
-        let Some(arg1) = self.args.get(1) else {
-            return Err(KclError::Semantic(KclErrorDetails {
-                message: "Expected a solid for second argument".to_owned(),
-                source_ranges: vec![self.source_range],
-            }));
-        };
-        let sarg = arg1
-            .value
-            .coerce(&RuntimeType::Primitive(PrimitiveType::Solid), exec_state)
-            .map_err(|_| {
-                KclError::Type(KclErrorDetails {
-                    message: format!(
-                        "Expected a solid for second argument, found {}",
-                        arg1.value.human_friendly_type()
-                    ),
-                    source_ranges: vec![self.source_range],
-                })
-            })?;
-        let solid = match sarg {
-            KclValue::Solid { value } => value,
-            _ => unreachable!(),
-        };
-        Ok((data, solid))
-    }
-
     pub(crate) fn get_tag_to_number_sketch(&self) -> Result<(TagIdentifier, TyF64, Sketch), KclError> {
         FromArgs::from_args(self, 0)
     }
