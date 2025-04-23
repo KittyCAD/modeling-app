@@ -12,11 +12,7 @@ startSketchOn(XZ)
   |> startProfileAt([0.0001, 0], %)
   |> xLine(length = knobDiameter / 2)
   |> yLine(length = knobHeight - 0.05)
-  |> arc({
-       angleStart = 0,
-       angleEnd = 90,
-       radius = .05
-     }, %)
+  |> arc(angleStart = 0, angleEnd = 90, radius = .05)
   |> xLine(endAbsolute = 0.0001)
   |> close()
   |> revolve(axis = Y)

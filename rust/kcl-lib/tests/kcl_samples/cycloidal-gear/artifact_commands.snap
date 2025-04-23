@@ -33,14 +33,6 @@ description: Artifact commands cycloidal-gear.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "set_scene_units",
-      "unit": "in"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
       "type": "make_plane",
       "origin": {
         "x": 0.0,
@@ -106,8 +98,8 @@ description: Artifact commands cycloidal-gear.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 0.46499999999999997,
-        "y": 0.3,
+        "x": 11.810999999999998,
+        "y": 7.619999999999999,
         "z": 0.0
       }
     }
@@ -128,10 +120,10 @@ description: Artifact commands cycloidal-gear.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": 0.465,
+          "x": 11.811,
           "y": -0.0
         },
-        "radius": 0.3,
+        "radius": 7.619999999999999,
         "start": {
           "unit": "degrees",
           "value": 90.0
@@ -152,7 +144,7 @@ description: Artifact commands cycloidal-gear.kcl
       "path": "[uuid]",
       "segment": {
         "type": "tangential_arc",
-        "radius": 0.501,
+        "radius": 12.725399999999999,
         "offset": {
           "unit": "degrees",
           "value": 60.0
@@ -168,7 +160,7 @@ description: Artifact commands cycloidal-gear.kcl
       "path": "[uuid]",
       "segment": {
         "type": "tangential_arc",
-        "radius": 0.3,
+        "radius": 7.619999999999999,
         "offset": {
           "unit": "degrees",
           "value": -180.0
@@ -184,7 +176,7 @@ description: Artifact commands cycloidal-gear.kcl
       "path": "[uuid]",
       "segment": {
         "type": "tangential_arc",
-        "radius": 0.501,
+        "radius": 12.725399999999999,
         "offset": {
           "unit": "degrees",
           "value": 60.0
@@ -200,7 +192,7 @@ description: Artifact commands cycloidal-gear.kcl
       "path": "[uuid]",
       "segment": {
         "type": "tangential_arc",
-        "radius": 0.3,
+        "radius": 7.619999999999999,
         "offset": {
           "unit": "degrees",
           "value": -180.0
@@ -217,8 +209,8 @@ description: Artifact commands cycloidal-gear.kcl
       "segment": {
         "type": "tangential_arc_to",
         "to": {
-          "x": 0.4339,
-          "y": -0.2505,
+          "x": 11.0205,
+          "y": -6.3627,
           "z": 0.0
         },
         "angle_snap_increment": null
@@ -263,7 +255,7 @@ description: Artifact commands cycloidal-gear.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 0.1485,
+        "x": 3.7718999999999996,
         "y": 0.0,
         "z": 0.0
       }
@@ -288,7 +280,7 @@ description: Artifact commands cycloidal-gear.kcl
           "x": 0.0,
           "y": 0.0
         },
-        "radius": 0.1485,
+        "radius": 3.7718999999999996,
         "start": {
           "unit": "degrees",
           "value": 0.0
@@ -335,7 +327,7 @@ description: Artifact commands cycloidal-gear.kcl
       "origin": {
         "x": 0.0,
         "y": 0.0,
-        "z": 0.75
+        "z": 19.049999999999997
       },
       "x_axis": {
         "x": 1.0,
@@ -396,8 +388,8 @@ description: Artifact commands cycloidal-gear.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 0.5490469489562866,
-        "y": -0.06908290556854735,
+        "x": 13.94579250348968,
+        "y": -1.7547058014411026,
         "z": 0.0
       }
     }
@@ -418,10 +410,10 @@ description: Artifact commands cycloidal-gear.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": 0.3562,
-          "y": -0.2989
+          "x": 9.0478,
+          "y": -7.592
         },
-        "radius": 0.3,
+        "radius": 7.619999999999999,
         "start": {
           "unit": "degrees",
           "value": 50.0
@@ -442,7 +434,7 @@ description: Artifact commands cycloidal-gear.kcl
       "path": "[uuid]",
       "segment": {
         "type": "tangential_arc",
-        "radius": 0.501,
+        "radius": 12.725399999999999,
         "offset": {
           "unit": "degrees",
           "value": 60.0
@@ -458,7 +450,7 @@ description: Artifact commands cycloidal-gear.kcl
       "path": "[uuid]",
       "segment": {
         "type": "tangential_arc",
-        "radius": 0.3,
+        "radius": 7.619999999999999,
         "offset": {
           "unit": "degrees",
           "value": -180.0
@@ -474,7 +466,7 @@ description: Artifact commands cycloidal-gear.kcl
       "path": "[uuid]",
       "segment": {
         "type": "tangential_arc",
-        "radius": 0.501,
+        "radius": 12.725399999999999,
         "offset": {
           "unit": "degrees",
           "value": 60.0
@@ -490,7 +482,7 @@ description: Artifact commands cycloidal-gear.kcl
       "path": "[uuid]",
       "segment": {
         "type": "tangential_arc",
-        "radius": 0.3,
+        "radius": 7.619999999999999,
         "offset": {
           "unit": "degrees",
           "value": -180.0
@@ -507,8 +499,8 @@ description: Artifact commands cycloidal-gear.kcl
       "segment": {
         "type": "tangential_arc_to",
         "to": {
-          "x": 0.1714,
-          "y": -0.4708,
+          "x": 4.3523,
+          "y": -11.958,
           "z": 0.0
         },
         "angle_snap_increment": null
@@ -553,7 +545,7 @@ description: Artifact commands cycloidal-gear.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 0.1485,
+        "x": 3.7718999999999996,
         "y": 0.0,
         "z": 0.0
       }
@@ -578,7 +570,7 @@ description: Artifact commands cycloidal-gear.kcl
           "x": 0.0,
           "y": 0.0
         },
-        "radius": 0.1485,
+        "radius": 3.7718999999999996,
         "start": {
           "unit": "degrees",
           "value": 0.0
@@ -625,7 +617,7 @@ description: Artifact commands cycloidal-gear.kcl
       "origin": {
         "x": 0.0,
         "y": 0.0,
-        "z": 1.5
+        "z": 38.099999999999994
       },
       "x_axis": {
         "x": 1.0,
@@ -686,8 +678,8 @@ description: Artifact commands cycloidal-gear.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 0.37618872851878504,
-        "y": -0.4058411518505976,
+        "x": 9.555193704377139,
+        "y": -10.308365257005178,
         "z": 0.0
       }
     }
@@ -708,10 +700,10 @@ description: Artifact commands cycloidal-gear.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": 0.0807,
-          "y": -0.4579
+          "x": 2.051,
+          "y": -11.6316
         },
-        "radius": 0.3,
+        "radius": 7.619999999999999,
         "start": {
           "unit": "degrees",
           "value": 10.0
@@ -732,7 +724,7 @@ description: Artifact commands cycloidal-gear.kcl
       "path": "[uuid]",
       "segment": {
         "type": "tangential_arc",
-        "radius": 0.501,
+        "radius": 12.725399999999999,
         "offset": {
           "unit": "degrees",
           "value": 60.0
@@ -748,7 +740,7 @@ description: Artifact commands cycloidal-gear.kcl
       "path": "[uuid]",
       "segment": {
         "type": "tangential_arc",
-        "radius": 0.3,
+        "radius": 7.619999999999999,
         "offset": {
           "unit": "degrees",
           "value": -180.0
@@ -764,7 +756,7 @@ description: Artifact commands cycloidal-gear.kcl
       "path": "[uuid]",
       "segment": {
         "type": "tangential_arc",
-        "radius": 0.501,
+        "radius": 12.725399999999999,
         "offset": {
           "unit": "degrees",
           "value": 60.0
@@ -780,7 +772,7 @@ description: Artifact commands cycloidal-gear.kcl
       "path": "[uuid]",
       "segment": {
         "type": "tangential_arc",
-        "radius": 0.3,
+        "radius": 7.619999999999999,
         "offset": {
           "unit": "degrees",
           "value": -180.0
@@ -797,8 +789,8 @@ description: Artifact commands cycloidal-gear.kcl
       "segment": {
         "type": "tangential_arc_to",
         "to": {
-          "x": -0.1714,
-          "y": -0.4708,
+          "x": -4.3523,
+          "y": -11.958,
           "z": 0.0
         },
         "angle_snap_increment": null
@@ -843,7 +835,7 @@ description: Artifact commands cycloidal-gear.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 0.1485,
+        "x": 3.7718999999999996,
         "y": 0.0,
         "z": 0.0
       }
@@ -868,7 +860,7 @@ description: Artifact commands cycloidal-gear.kcl
           "x": 0.0,
           "y": 0.0
         },
-        "radius": 0.1485,
+        "radius": 3.7718999999999996,
         "start": {
           "unit": "degrees",
           "value": 0.0
@@ -1112,30 +1104,6 @@ description: Artifact commands cycloidal-gear.kcl
       "type": "object_visible",
       "object_id": "[uuid]",
       "hidden": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "set_scene_units",
-      "unit": "mm"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "set_scene_units",
-      "unit": "mm"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "set_scene_units",
-      "unit": "mm"
     }
   }
 ]

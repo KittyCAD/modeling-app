@@ -36,6 +36,7 @@ flowchart LR
   30["Cap End"]
   31["SweepEdge Opposite"]
   32["SweepEdge Adjacent"]
+  33["CompositeSolid Subtract<br>[461, 497, 0]"]
   1 --- 2
   2 --- 3
   2 --- 4
@@ -81,4 +82,6 @@ flowchart LR
   27 --- 30
   27 --- 31
   27 --- 32
+  2 <--x 33
+  24 <--x 33
 ```

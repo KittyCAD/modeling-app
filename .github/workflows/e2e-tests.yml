@@ -226,8 +226,8 @@ jobs:
         with:
           shell: bash
           command: npm run test:snapshots
-          timeout_minutes: 30
-          max_attempts: 3
+          timeout_minutes: 5
+          max_attempts: 5
         env:
           token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
           snapshottoken: ${{ secrets.KITTYCAD_API_TOKEN }}
@@ -285,7 +285,7 @@ jobs:
         # TODO: enable namespace-profile-windows-latest once available
         os:
           - "runs-on=${{ github.run_id }}/family=i7ie.2xlarge/image=ubuntu22-full-x64"
-          - namespace-profile-macos-6-cores
+          - namespace-profile-macos-8-cores
           - windows-latest-8-cores
         shardIndex: [1, 2, 3, 4]
         shardTotal: [4]
@@ -295,7 +295,7 @@ jobs:
         isScheduled:
           - ${{ github.event_name == 'schedule' }}
         exclude:
-          - os: namespace-profile-macos-6-cores
+          - os: namespace-profile-macos-8-cores
             isScheduled: true
           - os: windows-latest-8-cores
             isScheduled: true

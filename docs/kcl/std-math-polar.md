@@ -11,7 +11,7 @@ cartesian (x/y/z grid) coordinates.
 
 ```js
 polar(
-  angle: number(Angle),
+  angle: number(rad),
   length: number(Length),
 ): Point2d
 ```
@@ -21,7 +21,7 @@ polar(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `angle` | `number(Angle)` |  | Yes |
+| `angle` | `number(rad)` |  | Yes |
 | `length` | `number(Length)` |  | Yes |
 
 ### Returns

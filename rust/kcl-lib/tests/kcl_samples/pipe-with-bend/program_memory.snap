@@ -110,9 +110,6 @@ description: Variables in memory after executing pipe-with-bend.kcl
           "units": {
             "type": "Mm"
           }
-        },
-        "units": {
-          "type": "Inches"
         }
       },
       "start": {
@@ -221,9 +218,6 @@ description: Variables in memory after executing pipe-with-bend.kcl
           "units": {
             "type": "Mm"
           }
-        },
-        "units": {
-          "type": "Inches"
         }
       },
       "start": {
@@ -332,9 +326,6 @@ description: Variables in memory after executing pipe-with-bend.kcl
             "units": {
               "type": "Mm"
             }
-          },
-          "units": {
-            "type": "Inches"
           }
         },
         "start": {
@@ -437,9 +428,6 @@ description: Variables in memory after executing pipe-with-bend.kcl
           "units": {
             "type": "Mm"
           }
-        },
-        "units": {
-          "type": "Inches"
         }
       },
       "start": {
@@ -504,9 +492,6 @@ description: Variables in memory after executing pipe-with-bend.kcl
         "units": {
           "type": "Mm"
         }
-      },
-      "units": {
-        "type": "Inches"
       }
     }
   }

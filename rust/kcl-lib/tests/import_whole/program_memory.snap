@@ -84,9 +84,6 @@ description: Variables in memory after executing import_whole.kcl
             "units": {
               "type": "Mm"
             }
-          },
-          "units": {
-            "type": "Inches"
           }
         },
         "start": {
@@ -123,6 +120,6 @@ description: Variables in memory after executing import_whole.kcl
   },
   "foo": {
     "type": "Module",
-    "value": 5
+    "value": 6
   }
 }

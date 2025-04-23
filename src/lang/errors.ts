@@ -37,7 +37,7 @@ export class KCLError extends Error {
     filenames: { [x: number]: ModulePath | undefined },
     defaultPlanes: DefaultPlanes | null
   ) {
-    super()
+    super(`${kind}: ${msg}`)
     this.kind = kind
     this.msg = msg
     this.sourceRange = sourceRange

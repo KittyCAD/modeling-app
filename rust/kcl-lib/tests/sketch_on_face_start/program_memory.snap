@@ -159,9 +159,6 @@ description: Variables in memory after executing sketch_on_face_start.kcl
             "units": {
               "type": "Mm"
             }
-          },
-          "units": {
-            "type": "Mm"
           }
         },
         "start": {
@@ -349,9 +346,6 @@ description: Variables in memory after executing sketch_on_face_start.kcl
             "units": {
               "type": "Mm"
             }
-          },
-          "units": {
-            "type": "Mm"
           }
         },
         "start": {
@@ -683,9 +677,6 @@ description: Variables in memory after executing sketch_on_face_start.kcl
                   "units": {
                     "type": "Mm"
                   }
-                },
-                "units": {
-                  "type": "Mm"
                 }
               },
               "start": {
