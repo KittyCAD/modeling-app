@@ -13,7 +13,7 @@ bench = false
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 bson = { workspace = true, features = ["uuid-1", "chrono"] }
 console_error_panic_hook = "0.1.7"
-data-encoding = "2.6.0"
+data-encoding = "2.9.0"
 futures = "0.3.31"
 # Enable the feature in a transitive dependency.
 getrandom_2 = { package = "getrandom", version = "0.2", features = ["js"] }
