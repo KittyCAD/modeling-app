@@ -9,7 +9,7 @@ Extract the provided 2-dimensional sketch's profile's origin's 'y' value.
 
 
 ```js
-profileStartY(sketch: Sketch): number
+profileStartY(profile: Sketch): number
 ```
 
 
@@ -17,7 +17,7 @@ profileStartY(sketch: Sketch): number
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `sketch` | [`Sketch`](/docs/kcl/types/Sketch) |  | Yes |
+| `profile` | [`Sketch`](/docs/kcl/types/Sketch) | Profile whose start is being used | Yes |
 
 ### Returns
 
