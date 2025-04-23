@@ -254,6 +254,7 @@ const OperationItemWrapper = ({
   menuItems,
   errors,
   className,
+  selectable = true,
   ...props
 }: React.HTMLAttributes<HTMLButtonElement> & {
   icon: CustomIconName
@@ -261,17 +262,18 @@ const OperationItemWrapper = ({
   visibilityToggle?: VisibilityToggleProps
   menuItems?: ComponentProps<typeof ContextMenu>['items']
   errors?: Diagnostic[]
+  selectable?: boolean
 }) => {
   const menuRef = useRef<HTMLDivElement>(null)
 
   return (
     <div
       ref={menuRef}
-      className="flex select-none items-center group/item my-0 py-0.5 px-1 focus-within:bg-primary/10 hover:bg-primary/5"
+      className={`flex select-none items-center group/item my-0 py-0.5 px-1 ${selectable ? 'focus-within:bg-primary/10 hover:bg-primary/5' : ''}`}
     >
       <button
         {...props}
-        className={`reset flex-1 flex items-center gap-2 border-transparent dark:border-transparent text-left text-base ${className}`}
+        className={`reset flex-1 flex items-center gap-2 text-left text-base ${selectable ? 'border-transparent dark:border-transparent' : 'border-none'} ${className}`}
       >
         <CustomIcon name={icon} className="w-5 h-5 block" />
         {name}
@@ -532,6 +534,7 @@ const DefaultPlanes = () => {
           key={plane.key}
           icon={'plane'}
           name={plane.name}
+          selectable={false}
           visibilityToggle={{
             visible: modelingState.context.defaultPlaneVisibility[plane.key],
             onVisibilityChange: () => {
