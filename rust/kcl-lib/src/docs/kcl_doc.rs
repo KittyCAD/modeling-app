@@ -624,7 +624,9 @@ impl ArgData {
                     index + 2
                 ),
             )),
-            Some("Axis2d | Edge") | Some("Axis3d | Edge") => Some((index, format!(r#"{label}${{{}:X}}"#, index))),
+            Some("Axis2d | Edge") | Some("Axis3d | Edge") => Some((index, format!(r#"{label}${{{index}:X}}"#))),
+            Some("Edge") => Some((index, format!(r#"{label}${{{index}:tag_or_edge_fn}}"#))),
+            Some("[Edge; 1+]") => Some((index, format!(r#"{label}[${{{index}:tag_or_edge_fn}}]"#))),
 
             Some("string") => Some((index, format!(r#"{label}${{{}:"string"}}"#, index))),
             Some("bool") => Some((index, format!(r#"{label}${{{}:false}}"#, index))),

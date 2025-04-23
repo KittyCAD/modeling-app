@@ -2,12 +2,12 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Error from executing object_prop_not_found.kcl
 ---
-KCL Engine error
+KCL UndefinedValue error
 
-  × engine: Modeling command failed: websocket closed early
-   ╭─[1:1]
+  × undefined value: Property 'age' not found in object
+   ╭─[2:5]
  1 │ obj = {  }
-   · ▲
-   · ╰── main
  2 │ k = obj["age"]
+   ·     ─────┬────
+   ·          ╰── tests/object_prop_not_found/input.kcl
    ╰────

@@ -47,7 +47,6 @@ layout: manual
   * [`clone`](kcl/clone)
   * [`close`](kcl/close)
   * [`extrude`](kcl/extrude)
-  * [`fillet`](kcl/fillet)
   * [`floor`](kcl/floor)
   * [`getCommonEdge`](kcl/getCommonEdge)
   * [`getNextAdjacentEdge`](kcl/getNextAdjacentEdge)
@@ -133,6 +132,7 @@ layout: manual
   * [`mirror2d`](kcl/std-sketch-mirror2d)
 * **std::solid**
   * [`chamfer`](kcl/std-solid-chamfer)
+  * [`fillet`](kcl/std-solid-fillet)
 * **std::turns**
   * [`turns::HALF_TURN`](kcl/consts/std-turns-HALF_TURN)
   * [`turns::QUARTER_TURN`](kcl/consts/std-turns-QUARTER_TURN)
