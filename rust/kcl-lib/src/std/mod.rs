@@ -316,10 +316,11 @@ fn inner_leg_length(hypotenuse: f64, leg: f64) -> f64 {
 }
 
 /// Compute the angle of the given leg for x.
-pub async fn leg_angle_x(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let hypotenuse: TyF64 = args.get_kw_arg("hypotenuse")?;
-    let leg: TyF64 = args.get_kw_arg("leg")?;
-    let result = inner_leg_angle_x(hypotenuse.n, leg.n);
+pub async fn leg_angle_x(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let hypotenuse: TyF64 = args.get_kw_arg_typed("hypotenuse", &RuntimeType::length(), exec_state)?;
+    let leg: TyF64 = args.get_kw_arg_typed("leg", &RuntimeType::length(), exec_state)?;
+    let (hypotenuse, leg, _ty) = NumericType::combine_eq_coerce(hypotenuse, leg);
+    let result = inner_leg_angle_x(hypotenuse, leg);
     Ok(KclValue::from_number_with_type(
         result,
         NumericType::Known(UnitType::Angle(UnitAngle::Degrees)),
@@ -347,10 +348,11 @@ fn inner_leg_angle_x(hypotenuse: f64, leg: f64) -> f64 {
 }
 
 /// Compute the angle of the given leg for y.
-pub async fn leg_angle_y(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let hypotenuse: TyF64 = args.get_kw_arg("hypotenuse")?;
-    let leg: TyF64 = args.get_kw_arg("leg")?;
-    let result = inner_leg_angle_y(hypotenuse.n, leg.n);
+pub async fn leg_angle_y(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let hypotenuse: TyF64 = args.get_kw_arg_typed("hypotenuse", &RuntimeType::length(), exec_state)?;
+    let leg: TyF64 = args.get_kw_arg_typed("leg", &RuntimeType::length(), exec_state)?;
+    let (hypotenuse, leg, _ty) = NumericType::combine_eq_coerce(hypotenuse, leg);
+    let result = inner_leg_angle_y(hypotenuse, leg);
     Ok(KclValue::from_number_with_type(
         result,
         NumericType::Known(UnitType::Angle(UnitAngle::Degrees)),
