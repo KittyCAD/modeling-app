@@ -3829,7 +3829,10 @@ export function getSketchQuaternion(
     kclManager,
   })
   if (err(sketch)) return sketch
-  const zAxis = (sketch?.on.xAxis && sketch?.on.yAxis) ? crossProduct(sketch?.on.xAxis, sketch?.on.yAxis) : sketchNormalBackUp
+  const zAxis =
+    sketch?.on.xAxis && sketch?.on.yAxis
+      ? crossProduct(sketch?.on.xAxis, sketch?.on.yAxis)
+      : sketchNormalBackUp
   if (!zAxis) return Error('Sketch zAxis not found')
 
   return getQuaternionFromZAxis(massageFormats(zAxis))
@@ -3855,7 +3858,9 @@ export function getQuaternionFromZAxis(zAxis: Vector3): Quaternion {
   return quaternion
 }
 
-function massageFormats(a: Vec3Array | {x: number, y: number, z: number}): Vector3 {
+function massageFormats(
+  a: Vec3Array | { x: number; y: number; z: number }
+): Vector3 {
   return isArray(a) ? new Vector3(a[0], a[1], a[2]) : new Vector3(a.x, a.y, a.z)
 }
 
