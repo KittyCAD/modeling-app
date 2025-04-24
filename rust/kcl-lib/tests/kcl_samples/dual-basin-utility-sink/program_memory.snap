@@ -248,14 +248,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
               }
             },
             "start": {
@@ -287,7 +279,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -425,14 +418,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
               }
             },
             "start": {
@@ -464,7 +449,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -602,14 +588,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
               }
             },
             "start": {
@@ -641,7 +619,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -779,14 +758,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
               }
             },
             "start": {
@@ -818,7 +789,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -956,14 +928,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
               }
             },
             "start": {
@@ -995,7 +959,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -1133,14 +1098,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
               }
             },
             "start": {
@@ -1172,7 +1129,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       }
     ]
@@ -1258,14 +1216,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
         "units": {
           "type": "Mm"
         }
-      },
-      "zAxis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0,
-        "units": {
-          "type": "Mm"
-        }
       }
     }
   },
@@ -1321,14 +1271,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "zAxis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0,
         "units": {
           "type": "Mm"
         }
@@ -1411,14 +1353,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
               }
             },
             "start": {
@@ -1450,7 +1384,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -1526,14 +1461,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
               }
             },
             "start": {
@@ -1565,7 +1492,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -1641,14 +1569,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
               }
             },
             "start": {
@@ -1680,7 +1600,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -1756,14 +1677,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
               }
             },
             "start": {
@@ -1795,7 +1708,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -1871,14 +1785,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
               }
             },
             "start": {
@@ -1910,7 +1816,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -1986,14 +1893,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
               }
             },
             "start": {
@@ -2025,7 +1924,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       }
     ]
@@ -2134,14 +2034,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "zAxis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0,
         "units": {
           "type": "Mm"
         }
@@ -2288,14 +2180,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
           "units": {
             "type": "Mm"
           }
-        },
-        "zAxis": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0,
-          "units": {
-            "type": "Mm"
-          }
         }
       },
       "start": {
@@ -2383,14 +2267,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
           "units": {
             "type": "Mm"
           }
-        },
-        "zAxis": {
-          "x": 0.0,
-          "y": -1.0,
-          "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
         }
       },
       "start": {
@@ -2444,14 +2320,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "zAxis": {
-        "x": 0.0,
-        "y": -1.0,
-        "z": 0.0,
         "units": {
           "type": "Mm"
         }
@@ -2638,14 +2506,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
               }
             },
             "start": {
@@ -2677,7 +2537,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -2815,14 +2676,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
               }
             },
             "start": {
@@ -2854,7 +2707,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -2992,14 +2846,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
               }
             },
             "start": {
@@ -3031,7 +2877,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -3169,14 +3016,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
               }
             },
             "start": {
@@ -3208,7 +3047,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -3346,14 +3186,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
               }
             },
             "start": {
@@ -3385,7 +3217,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -3523,14 +3356,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
               }
             },
             "start": {
@@ -3562,7 +3387,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -3700,14 +3526,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
               }
             },
             "start": {
@@ -3739,7 +3557,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -3877,14 +3696,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
               }
             },
             "start": {
@@ -3916,7 +3727,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       }
     ]
@@ -4114,14 +3926,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
               }
             },
             "start": {
@@ -4153,7 +3957,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -4291,14 +4096,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
               }
             },
             "start": {
@@ -4330,7 +4127,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -4468,14 +4266,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
               }
             },
             "start": {
@@ -4507,7 +4297,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -4645,14 +4436,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
               }
             },
             "start": {
@@ -4684,7 +4467,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -4822,14 +4606,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
               }
             },
             "start": {
@@ -4861,7 +4637,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -4999,14 +4776,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
               }
             },
             "start": {
@@ -5038,7 +4807,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       }
     ]
@@ -5210,14 +4980,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
               }
             },
             "start": {
@@ -5249,7 +5011,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -5387,14 +5150,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
               }
             },
             "start": {
@@ -5426,7 +5181,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       }
     ]
@@ -5496,14 +5252,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "zAxis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0,
         "units": {
           "type": "Mm"
         }
@@ -5690,14 +5438,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
               }
             },
             "start": {
@@ -5729,7 +5469,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -5867,14 +5608,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
               }
             },
             "start": {
@@ -5906,7 +5639,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       }
     ]
@@ -6117,14 +5851,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
               }
             },
             "start": {
@@ -6156,7 +5882,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -6294,14 +6021,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
               }
             },
             "start": {
@@ -6333,7 +6052,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -6471,14 +6191,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
               }
             },
             "start": {
@@ -6510,7 +6222,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -6648,14 +6361,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
               }
             },
             "start": {
@@ -6687,7 +6392,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -6825,14 +6531,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
               }
             },
             "start": {
@@ -6864,7 +6562,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -7002,14 +6701,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
               }
             },
             "start": {
@@ -7041,7 +6732,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       }
     ]
@@ -7085,14 +6777,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "zAxis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0,
         "units": {
           "type": "Mm"
         }
@@ -7285,14 +6969,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                   "type": "Mm"
                 }
               },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
               "solid": {
                 "type": "Solid",
                 "id": "[uuid]",
@@ -7455,14 +7131,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                       "units": {
                         "type": "Mm"
                       }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": 0.0,
-                      "z": 1.0,
-                      "units": {
-                        "type": "Mm"
-                      }
                     }
                   },
                   "start": {
@@ -7494,7 +7162,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Mm"
@@ -7529,7 +7198,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -7689,14 +7359,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                   "type": "Mm"
                 }
               },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
               "solid": {
                 "type": "Solid",
                 "id": "[uuid]",
@@ -7859,14 +7521,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                       "units": {
                         "type": "Mm"
                       }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": 0.0,
-                      "z": 1.0,
-                      "units": {
-                        "type": "Mm"
-                      }
                     }
                   },
                   "start": {
@@ -7898,7 +7552,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Mm"
@@ -7933,7 +7588,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       }
     ]
@@ -8098,14 +7754,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                   "type": "Mm"
                 }
               },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
               "solid": {
                 "type": "Solid",
                 "id": "[uuid]",
@@ -8268,14 +7916,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                       "units": {
                         "type": "Mm"
                       }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": 0.0,
-                      "z": 1.0,
-                      "units": {
-                        "type": "Mm"
-                      }
                     }
                   },
                   "start": {
@@ -8307,7 +7947,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Mm"
@@ -8342,7 +7983,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -8502,14 +8144,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                   "type": "Mm"
                 }
               },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
               "solid": {
                 "type": "Solid",
                 "id": "[uuid]",
@@ -8672,14 +8306,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                       "units": {
                         "type": "Mm"
                       }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": 0.0,
-                      "z": 1.0,
-                      "units": {
-                        "type": "Mm"
-                      }
                     }
                   },
                   "start": {
@@ -8711,7 +8337,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Mm"
@@ -8746,7 +8373,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       }
     ]
@@ -8838,14 +8466,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
           "type": "Mm"
         }
       },
-      "zAxis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0,
-        "units": {
-          "type": "Mm"
-        }
-      },
       "solid": {
         "type": "Solid",
         "id": "[uuid]",
@@ -9008,14 +8628,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
               "units": {
                 "type": "Mm"
               }
-            },
-            "zAxis": {
-              "x": 0.0,
-              "y": 0.0,
-              "z": 1.0,
-              "units": {
-                "type": "Mm"
-              }
             }
           },
           "start": {
@@ -9047,7 +8659,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        }
+        },
+        "sectional": false
       },
       "units": {
         "type": "Mm"
@@ -9076,14 +8689,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
           "type": "Mm"
         }
       },
-      "zAxis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0,
-        "units": {
-          "type": "Mm"
-        }
-      },
       "solid": {
         "type": "Solid",
         "id": "[uuid]",
@@ -9246,14 +8851,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
               "units": {
                 "type": "Mm"
               }
-            },
-            "zAxis": {
-              "x": 0.0,
-              "y": 0.0,
-              "z": 1.0,
-              "units": {
-                "type": "Mm"
-              }
             }
           },
           "start": {
@@ -9285,7 +8882,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        }
+        },
+        "sectional": false
       },
       "units": {
         "type": "Mm"
@@ -9508,14 +9106,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
             "units": {
               "type": "Mm"
             }
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 1.0,
-            "units": {
-              "type": "Mm"
-            }
           }
         },
         "start": {
@@ -9547,7 +9137,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "tableTopPlane": {
@@ -9576,14 +9167,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "zAxis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0,
         "units": {
           "type": "Mm"
         }
@@ -9770,14 +9353,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
               }
             },
             "start": {
@@ -9809,7 +9384,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -9947,14 +9523,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
               }
             },
             "start": {
@@ -9986,7 +9554,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       }
     ]
@@ -10158,14 +9727,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
               }
             },
             "start": {
@@ -10197,7 +9758,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -10335,14 +9897,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
               }
             },
             "start": {
@@ -10374,7 +9928,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       }
     ]
@@ -10418,14 +9973,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "zAxis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0,
         "units": {
           "type": "Mm"
         }
