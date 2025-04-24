@@ -277,11 +277,11 @@ pub async fn appearance(exec_state: &mut ExecState, args: Args) -> Result<KclVal
 /// import "tests/inputs/cube.sldprt" as cube
 ///
 /// cube
-/// //    |> appearance(
-/// //        color = "#ff0000",
-/// //        metalness = 50,
-/// //        roughness = 50
-/// //    )
+///    |> appearance(
+///        color = "#ff0000",
+///        metalness = 50,
+///        roughness = 50
+///    )
 /// ```
 #[stdlib {
     name = "appearance",

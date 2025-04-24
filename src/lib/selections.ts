@@ -43,7 +43,7 @@ import {
   isOverlap,
   uuidv4,
 } from '@src/lib/utils'
-import { engineStreamActor } from '@src/machines/appMachine'
+import { engineStreamActor } from '@src/lib/singletons'
 import type { ModelingMachineEvent } from '@src/machines/modelingMachine'
 import { showUnsupportedSelectionToast } from '@src/components/ToastUnsupportedSelection'
 

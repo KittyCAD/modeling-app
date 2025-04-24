@@ -31,7 +31,6 @@ import type { CallExpressionKw } from '@rust/kcl-lib/bindings/CallExpressionKw'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { Path } from '@rust/kcl-lib/bindings/Path'
 import type { PipeExpression } from '@rust/kcl-lib/bindings/PipeExpression'
-import type { Point3d } from '@rust/kcl-lib/bindings/Point3d'
 import type { Program } from '@rust/kcl-lib/bindings/Program'
 import type { Sketch } from '@rust/kcl-lib/bindings/Sketch'
 import type { SourceRange } from '@rust/kcl-lib/bindings/SourceRange'
@@ -140,7 +139,7 @@ import {
   updateStartProfileAtArgs,
 } from '@src/lang/std/sketch'
 import type { SegmentInputs } from '@src/lang/std/stdTypes'
-import { topLevelRange } from '@src/lang/util'
+import { crossProduct, topLevelRange } from '@src/lang/util'
 import type { PathToNode, VariableMap } from '@src/lang/wasm'
 import {
   defaultSourceRange,
@@ -3532,7 +3531,7 @@ export class SceneEntities {
     >
   }> {
     if (sketch.on.type === 'plane') {
-      const zAxis = sketch?.on.zAxis
+      const zAxis = crossProduct(sketch?.on.xAxis, sketch?.on.yAxis)
       return {
         quat: getQuaternionFromZAxis(massageFormats(zAxis)),
         sketchDetails: {
@@ -3830,7 +3829,10 @@ export function getSketchQuaternion(
     kclManager,
   })
   if (err(sketch)) return sketch
-  const zAxis = sketch?.on.zAxis || sketchNormalBackUp
+  const zAxis =
+    sketch?.on.xAxis && sketch?.on.yAxis
+      ? crossProduct(sketch?.on.xAxis, sketch?.on.yAxis)
+      : sketchNormalBackUp
   if (!zAxis) return Error('Sketch zAxis not found')
 
   return getQuaternionFromZAxis(massageFormats(zAxis))
@@ -3856,7 +3858,9 @@ export function getQuaternionFromZAxis(zAxis: Vector3): Quaternion {
   return quaternion
 }
 
-function massageFormats(a: Vec3Array | Point3d): Vector3 {
+function massageFormats(
+  a: Vec3Array | { x: number; y: number; z: number }
+): Vector3 {
   return isArray(a) ? new Vector3(a[0], a[1], a[2]) : new Vector3(a.x, a.y, a.z)
 }
 

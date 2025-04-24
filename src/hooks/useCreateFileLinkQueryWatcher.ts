@@ -9,7 +9,7 @@ import { CREATE_FILE_URL_PARAM, DEFAULT_FILE_NAME } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 import type { FileLinkParams } from '@src/lib/links'
 import { PATHS } from '@src/lib/paths'
-import { useSettings } from '@src/machines/appMachine'
+import { useSettings } from '@src/lib/singletons'
 
 // For initializing the command arguments, we actually want `method` to be undefined
 // so that we don't skip it in the command palette.

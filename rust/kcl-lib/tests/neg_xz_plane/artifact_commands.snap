@@ -66,7 +66,7 @@ description: Artifact commands neg_xz_plane.kcl
       "planar_normal": {
         "x": 0.0,
         "y": 1.0,
-        "z": 0.0
+        "z": -0.0
       }
     }
   },
@@ -151,7 +151,7 @@ description: Artifact commands neg_xz_plane.kcl
       "planar_normal": {
         "x": 0.0,
         "y": 1.0,
-        "z": 0.0
+        "z": -0.0
       }
     }
   },

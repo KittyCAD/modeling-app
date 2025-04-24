@@ -85,10 +85,23 @@ export async function ensureProjectDirectoryExists(
   return projectDir
 }
 
+export async function mkdirOrNOOP(directoryPath: string) {
+  try {
+    await window.electron.stat(directoryPath)
+  } catch (e) {
+    if (e === 'ENOENT') {
+      await window.electron.mkdir(directoryPath, { recursive: true })
+    }
+  }
+
+  return directoryPath
+}
+
 export async function createNewProjectDirectory(
   projectName: string,
   initialCode?: string,
-  configuration?: DeepPartial<Configuration> | Error
+  configuration?: DeepPartial<Configuration> | Error,
+  initialFileName?: string
 ): Promise<Project> {
   if (!configuration) {
     configuration = await readAppSettingsFile()
@@ -114,7 +127,8 @@ export async function createNewProjectDirectory(
     }
   }
 
-  const projectFile = window.electron.path.join(projectDir, PROJECT_ENTRYPOINT)
+  const kclFileName = initialFileName || PROJECT_ENTRYPOINT
+  const projectFile = window.electron.path.join(projectDir, kclFileName)
   // When initialCode is present, we're loading existing code.  If it's not
   // present, we're creating a new project, and we want to incorporate the
   // user's settings.
