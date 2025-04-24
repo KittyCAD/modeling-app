@@ -21,4 +21,7 @@ export const useClearURLParams = () =>
   useSelector(systemIOActor, (state) => state.context.clearURLParams)
 
 export const useRequestedTextToCadGeneration = () =>
-  useSelector(systemIOActor, (state) => state.context.requestedTextToCadGeneration)
+  useSelector(
+    systemIOActor,
+    (state) => state.context.requestedTextToCadGeneration
+  )

@@ -4,6 +4,15 @@ description: Operations executed color-cube.kcl
 ---
 [
   {
+    "type": "KclStdLibCall",
+    "name": "offsetPlane",
+    "unlabeledArg": {
+      "value": {
+        "type": "Plane",
+        "artifact_id": "[uuid]"
+      },
+      "sourceRange": []
+    },
     "labeledArgs": {
       "offset": {
         "value": {
@@ -22,18 +31,18 @@ description: Operations executed color-cube.kcl
         "sourceRange": []
       }
     },
+    "sourceRange": []
+  },
+  {
+    "type": "KclStdLibCall",
     "name": "offsetPlane",
-    "sourceRange": [],
-    "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
         "type": "Plane",
         "artifact_id": "[uuid]"
       },
       "sourceRange": []
-    }
-  },
-  {
+    },
     "labeledArgs": {
       "offset": {
         "value": {
@@ -52,18 +61,18 @@ description: Operations executed color-cube.kcl
         "sourceRange": []
       }
     },
+    "sourceRange": []
+  },
+  {
+    "type": "KclStdLibCall",
     "name": "offsetPlane",
-    "sourceRange": [],
-    "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
         "type": "Plane",
         "artifact_id": "[uuid]"
       },
       "sourceRange": []
-    }
-  },
-  {
+    },
     "labeledArgs": {
       "offset": {
         "value": {
@@ -82,18 +91,18 @@ description: Operations executed color-cube.kcl
         "sourceRange": []
       }
     },
+    "sourceRange": []
+  },
+  {
+    "type": "KclStdLibCall",
     "name": "offsetPlane",
-    "sourceRange": [],
-    "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
         "type": "Plane",
         "artifact_id": "[uuid]"
       },
       "sourceRange": []
-    }
-  },
-  {
+    },
     "labeledArgs": {
       "offset": {
         "value": {
@@ -112,18 +121,18 @@ description: Operations executed color-cube.kcl
         "sourceRange": []
       }
     },
+    "sourceRange": []
+  },
+  {
+    "type": "KclStdLibCall",
     "name": "offsetPlane",
-    "sourceRange": [],
-    "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
         "type": "Plane",
         "artifact_id": "[uuid]"
       },
       "sourceRange": []
-    }
-  },
-  {
+    },
     "labeledArgs": {
       "offset": {
         "value": {
@@ -142,18 +151,18 @@ description: Operations executed color-cube.kcl
         "sourceRange": []
       }
     },
+    "sourceRange": []
+  },
+  {
+    "type": "KclStdLibCall",
     "name": "offsetPlane",
-    "sourceRange": [],
-    "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
         "type": "Plane",
         "artifact_id": "[uuid]"
       },
       "sourceRange": []
-    }
-  },
-  {
+    },
     "labeledArgs": {
       "offset": {
         "value": {
@@ -172,16 +181,7 @@ description: Operations executed color-cube.kcl
         "sourceRange": []
       }
     },
-    "name": "offsetPlane",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Plane",
-        "artifact_id": "[uuid]"
-      },
-      "sourceRange": []
-    }
+    "sourceRange": []
   },
   {
     "type": "GroupBegin",

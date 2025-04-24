@@ -1,11 +1,13 @@
-import { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
-import { ActorRefFrom } from 'xstate'
+import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
+import type { ActorRefFrom } from 'xstate'
 import type { Command, CommandArgumentOption } from '@src/lib/commandTypes'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { isDesktop } from '@src/lib/isDesktop'
 
-export function createApplicationCommands ({systemIOActor}:{systemIOActor:ActorRefFrom<typeof systemIOMachine>}) {
-  const textToCADCommand: Command= {
+export function createApplicationCommands({
+  systemIOActor,
+}: { systemIOActor: ActorRefFrom<typeof systemIOMachine> }) {
+  const textToCADCommand: Command = {
     name: 'Text To CAD',
     description: 'Use the Zoo Text-to-CAD API to generate part starters.',
     displayName: `Text To CAD`,
@@ -17,7 +19,10 @@ export function createApplicationCommands ({systemIOActor}:{systemIOActor:ActorR
         const requestedProjectName = record.projectName || record.newProjectName
         const requestedPrompt = record.prompt
         const isProjectNew = !!record.newProjectName
-        systemIOActor.send({type: SystemIOMachineEvents.generateTextToCAD, data:{requestedPrompt, requestedProjectName, isProjectNew}})
+        systemIOActor.send({
+          type: SystemIOMachineEvents.generateTextToCAD,
+          data: { requestedPrompt, requestedProjectName, isProjectNew },
+        })
       }
     },
     args: {
@@ -27,16 +32,16 @@ export function createApplicationCommands ({systemIOActor}:{systemIOActor:ActorR
         skip: true,
         options: isDesktop()
           ? [
-            { name: 'New project', value: 'newProject' },
-            { name: 'Existing project', value: 'existingProject' },
-          ]
+              { name: 'New project', value: 'newProject' },
+              { name: 'Existing project', value: 'existingProject' },
+            ]
           : [{ name: 'Overwrite', value: 'existingProject' }],
         valueSummary(value) {
           return isDesktop()
             ? value === 'newProject'
-            ? 'New project'
-            : 'Existing project'
-          : 'Overwrite'
+              ? 'New project'
+              : 'Existing project'
+            : 'Overwrite'
         },
       },
       projectName: {
@@ -72,5 +77,5 @@ export function createApplicationCommands ({systemIOActor}:{systemIOActor:ActorR
     },
   }
 
-return [textToCADCommand]
+  return [textToCADCommand]
 }

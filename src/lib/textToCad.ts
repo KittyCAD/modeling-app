@@ -12,7 +12,7 @@ import crossPlatformFetch from '@src/lib/crossPlatformFetch'
 import { getNextFileName } from '@src/lib/desktopFS'
 import { isDesktop } from '@src/lib/isDesktop'
 import { kclManager, systemIOActor } from '@src/lib/singletons'
-import { SystemIOMachineEvents } from "@src/machines/systemIO/utils"
+import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import type { Themes } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
 import { toSync } from '@src/lib/utils'
@@ -256,13 +256,12 @@ export async function submitAndAwaitTextToKcl({
   return textToCadOutputCreated
 }
 
-
 export async function submitAndAwaitTextToKclSystemIO({
   trimmedPrompt,
   token,
   projectName,
   navigate,
-  isProjectNew
+  isProjectNew,
 }: TextToKclProps) {
   const toastId = toast.loading('Submitting to Text-to-CAD API...')
   const showFailureToast = (message: string) => {
@@ -301,7 +300,7 @@ export async function submitAndAwaitTextToKclSystemIO({
     return
   }
 
-  console.log("queued")
+  console.log('queued')
   console.log(textToCadQueued)
   toast.loading('Generating parametric model...', {
     id: toastId,
@@ -357,7 +356,7 @@ export async function submitAndAwaitTextToKclSystemIO({
       return e
     })
     .then(async (value) => {
-      console.log("completed")
+      console.log('completed')
       console.log(value)
       if (value.code === undefined || !value.code || value.code.length === 0) {
         // We want to show the real error message to the user.
@@ -421,7 +420,7 @@ export async function submitAndAwaitTextToKclSystemIO({
         projectName: projectName,
         fileName: newFileName,
         navigate,
-        isProjectNew
+        isProjectNew,
       }),
     {
       id: toastId,

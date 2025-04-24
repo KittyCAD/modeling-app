@@ -309,50 +309,6 @@ description: Operations executed poopy-shoe.kcl
                   }
                 }
               }
-            },
-            "zAxis": {
-              "type": "Object",
-              "value": {
-                "x": {
-                  "type": "Number",
-                  "value": 0.0,
-                  "ty": {
-                    "type": "Default",
-                    "len": {
-                      "type": "Inches"
-                    },
-                    "angle": {
-                      "type": "Degrees"
-                    }
-                  }
-                },
-                "y": {
-                  "type": "Number",
-                  "value": -1.0,
-                  "ty": {
-                    "type": "Default",
-                    "len": {
-                      "type": "Inches"
-                    },
-                    "angle": {
-                      "type": "Degrees"
-                    }
-                  }
-                },
-                "z": {
-                  "type": "Number",
-                  "value": 0.0,
-                  "ty": {
-                    "type": "Default",
-                    "len": {
-                      "type": "Inches"
-                    },
-                    "angle": {
-                      "type": "Degrees"
-                    }
-                  }
-                }
-              }
             }
           }
         },
@@ -519,7 +475,7 @@ description: Operations executed poopy-shoe.kcl
                 },
                 "y": {
                   "type": "Number",
-                  "value": -1.0,
+                  "value": 1.0,
                   "ty": {
                     "type": "Default",
                     "len": {
@@ -577,50 +533,6 @@ description: Operations executed poopy-shoe.kcl
                 "z": {
                   "type": "Number",
                   "value": 1.0,
-                  "ty": {
-                    "type": "Default",
-                    "len": {
-                      "type": "Inches"
-                    },
-                    "angle": {
-                      "type": "Degrees"
-                    }
-                  }
-                }
-              }
-            },
-            "zAxis": {
-              "type": "Object",
-              "value": {
-                "x": {
-                  "type": "Number",
-                  "value": 1.0,
-                  "ty": {
-                    "type": "Default",
-                    "len": {
-                      "type": "Inches"
-                    },
-                    "angle": {
-                      "type": "Degrees"
-                    }
-                  }
-                },
-                "y": {
-                  "type": "Number",
-                  "value": 0.0,
-                  "ty": {
-                    "type": "Default",
-                    "len": {
-                      "type": "Inches"
-                    },
-                    "angle": {
-                      "type": "Degrees"
-                    }
-                  }
-                },
-                "z": {
-                  "type": "Number",
-                  "value": 0.0,
                   "ty": {
                     "type": "Default",
                     "len": {
@@ -912,50 +824,6 @@ description: Operations executed poopy-shoe.kcl
                 "z": {
                   "type": "Number",
                   "value": 0.0,
-                  "ty": {
-                    "type": "Default",
-                    "len": {
-                      "type": "Inches"
-                    },
-                    "angle": {
-                      "type": "Degrees"
-                    }
-                  }
-                }
-              }
-            },
-            "zAxis": {
-              "type": "Object",
-              "value": {
-                "x": {
-                  "type": "Number",
-                  "value": 0.0,
-                  "ty": {
-                    "type": "Default",
-                    "len": {
-                      "type": "Inches"
-                    },
-                    "angle": {
-                      "type": "Degrees"
-                    }
-                  }
-                },
-                "y": {
-                  "type": "Number",
-                  "value": 0.0,
-                  "ty": {
-                    "type": "Default",
-                    "len": {
-                      "type": "Inches"
-                    },
-                    "angle": {
-                      "type": "Degrees"
-                    }
-                  }
-                },
-                "z": {
-                  "type": "Number",
-                  "value": 1.0,
                   "ty": {
                     "type": "Default",
                     "len": {

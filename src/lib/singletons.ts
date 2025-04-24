@@ -212,8 +212,6 @@ export const systemIOActor = appActor.getSnapshot().context.systemIOActor!
 export const engineStreamActor =
   appActor.getSnapshot().context.engineStreamActor!
 
-window.actor = systemIOActor
-
 export const commandBarActor = appActor.getSnapshot().context.commandBarActor!
 
 const cmdBarStateSelector = (state: SnapshotFrom<typeof commandBarActor>) =>
@@ -229,7 +227,7 @@ commandBarActor.send({
     commands: [
       ...createAuthCommands({ authActor }),
       ...createProjectCommands({ systemIOActor }),
-      ...createApplicationCommands({systemIOActor})
+      ...createApplicationCommands({ systemIOActor }),
     ],
   },
 })

@@ -304,14 +304,6 @@ description: Variables in memory after executing bracket.kcl
             "units": {
               "type": "Mm"
             }
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": -1.0,
-            "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
           }
         },
         "start": {
@@ -369,7 +361,8 @@ description: Variables in memory after executing bracket.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Inches"
-      }
+      },
+      "sectional": false
     }
   },
   "extBendRadius": {
@@ -588,14 +581,6 @@ description: Variables in memory after executing bracket.kcl
                   "type": "Mm"
                 }
               },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
               "solid": {
                 "type": "Solid",
                 "id": "[uuid]",
@@ -882,14 +867,6 @@ description: Variables in memory after executing bracket.kcl
                       "units": {
                         "type": "Mm"
                       }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": -1.0,
-                      "z": 0.0,
-                      "units": {
-                        "type": "Mm"
-                      }
                     }
                   },
                   "start": {
@@ -947,7 +924,8 @@ description: Variables in memory after executing bracket.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Inches"
@@ -982,7 +960,8 @@ description: Variables in memory after executing bracket.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -1051,14 +1030,6 @@ description: Variables in memory after executing bracket.kcl
                   "type": "Mm"
                 }
               },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
               "solid": {
                 "type": "Solid",
                 "id": "[uuid]",
@@ -1345,14 +1316,6 @@ description: Variables in memory after executing bracket.kcl
                       "units": {
                         "type": "Mm"
                       }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": -1.0,
-                      "z": 0.0,
-                      "units": {
-                        "type": "Mm"
-                      }
                     }
                   },
                   "start": {
@@ -1410,7 +1373,8 @@ description: Variables in memory after executing bracket.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Inches"
@@ -1445,7 +1409,8 @@ description: Variables in memory after executing bracket.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -1514,14 +1479,6 @@ description: Variables in memory after executing bracket.kcl
                   "type": "Mm"
                 }
               },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
               "solid": {
                 "type": "Solid",
                 "id": "[uuid]",
@@ -1808,14 +1765,6 @@ description: Variables in memory after executing bracket.kcl
                       "units": {
                         "type": "Mm"
                       }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": -1.0,
-                      "z": 0.0,
-                      "units": {
-                        "type": "Mm"
-                      }
                     }
                   },
                   "start": {
@@ -1873,7 +1822,8 @@ description: Variables in memory after executing bracket.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Inches"
@@ -1908,7 +1858,8 @@ description: Variables in memory after executing bracket.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -1977,14 +1928,6 @@ description: Variables in memory after executing bracket.kcl
                   "type": "Mm"
                 }
               },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
               "solid": {
                 "type": "Solid",
                 "id": "[uuid]",
@@ -2271,14 +2214,6 @@ description: Variables in memory after executing bracket.kcl
                       "units": {
                         "type": "Mm"
                       }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": -1.0,
-                      "z": 0.0,
-                      "units": {
-                        "type": "Mm"
-                      }
                     }
                   },
                   "start": {
@@ -2336,7 +2271,8 @@ description: Variables in memory after executing bracket.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Inches"
@@ -2371,7 +2307,8 @@ description: Variables in memory after executing bracket.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       }
     ]
@@ -2510,14 +2447,6 @@ description: Variables in memory after executing bracket.kcl
                   "type": "Mm"
                 }
               },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
               "solid": {
                 "type": "Solid",
                 "id": "[uuid]",
@@ -2804,14 +2733,6 @@ description: Variables in memory after executing bracket.kcl
                       "units": {
                         "type": "Mm"
                       }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": -1.0,
-                      "z": 0.0,
-                      "units": {
-                        "type": "Mm"
-                      }
                     }
                   },
                   "start": {
@@ -2869,7 +2790,8 @@ description: Variables in memory after executing bracket.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Inches"
@@ -2904,7 +2826,8 @@ description: Variables in memory after executing bracket.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -2973,14 +2896,6 @@ description: Variables in memory after executing bracket.kcl
                   "type": "Mm"
                 }
               },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
               "solid": {
                 "type": "Solid",
                 "id": "[uuid]",
@@ -3267,14 +3182,6 @@ description: Variables in memory after executing bracket.kcl
                       "units": {
                         "type": "Mm"
                       }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": -1.0,
-                      "z": 0.0,
-                      "units": {
-                        "type": "Mm"
-                      }
                     }
                   },
                   "start": {
@@ -3332,7 +3239,8 @@ description: Variables in memory after executing bracket.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Inches"
@@ -3367,7 +3275,8 @@ description: Variables in memory after executing bracket.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       }
     ]

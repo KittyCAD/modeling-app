@@ -9,19 +9,20 @@ export enum SystemIOMachineActors {
   createKCLFile = 'create kcl file',
   checkReadWrite = 'check read write',
   importFileFromURL = 'import file from URL',
-  deleteKCLFile = 'delete kcl delete'
+  deleteKCLFile = 'delete kcl delete',
 }
 
 export enum SystemIOMachineStates {
   idle = 'idle',
   readingFolders = 'readingFolders',
+  settingProjectDirectoryPath = 'settingProjectDirectoryPath',
   creatingProject = 'creatingProject',
   renamingProject = 'renamingProject',
   deletingProject = 'deletingProject',
   creatingKCLFile = 'creatingKCLFile',
   checkingReadWrite = 'checkingReadWrite',
   importFileFromURL = 'importFileFromURL',
-  deletingKCLFile = 'deletingKCLFile'
+  deletingKCLFile = 'deletingKCLFile',
 }
 
 const donePrefix = 'xstate.done.actor.'
@@ -43,7 +44,7 @@ export enum SystemIOMachineEvents {
   done_importFileFromURL = donePrefix + 'import file from URL',
   generateTextToCAD = 'generate text to CAD',
   deleteKCLFile = 'delete kcl file',
-  deleteKCLFileAndNavigate = 'delete kcl file and navigate'
+  deleteKCLFileAndNavigate = 'delete kcl file and navigate',
 }
 
 export enum SystemIOMachineActions {
@@ -55,11 +56,11 @@ export enum SystemIOMachineActions {
   toastSuccess = 'toastSuccess',
   toastError = 'toastError',
   setReadWriteProjectDirectory = 'set read write project directory',
-  setRequestedTextToCadGeneration = 'set requested text to cad generation'
+  setRequestedTextToCadGeneration = 'set requested text to cad generation',
 }
 
 export enum SystemIOMachineGuards {
-  shouldNavigateAfterKCLFileDelete = 'should navigate after kcl file delete'
+  shouldNavigateAfterKCLFileDelete = 'should navigate after kcl file delete',
 }
 
 export const NO_PROJECT_DIRECTORY = ''
@@ -79,5 +80,9 @@ export type SystemIOContext = {
   requestedFileName: { project: string; file: string }
   canReadWriteProjectDirectory: { value: boolean; error: unknown }
   clearURLParams: { value: boolean }
-  requestedTextToCadGeneration: { requestedPrompt: string, requestedProjectName: string, isProjectNew: boolean}
+  requestedTextToCadGeneration: {
+    requestedPrompt: string
+    requestedProjectName: string
+    isProjectNew: boolean
+  }
 }

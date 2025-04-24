@@ -36,9 +36,7 @@ import { reportRejection } from '@src/lib/trap'
 import { commandBarActor } from '@src/lib/singletons'
 import type { fileMachine } from '@src/machines/fileMachine'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
-import {
-  useProjectDirectoryPath,
-} from '@src/machines/systemIO/hooks'
+import { useProjectDirectoryPath } from '@src/machines/systemIO/hooks'
 
 const CANVAS_SIZE = 128
 const PROMPT_TRUNCATE_LENGTH = 128
@@ -149,7 +147,7 @@ export function ToastTextToCadSuccess({
   settings,
   projectName,
   fileName,
-  isProjectNew
+  isProjectNew,
 }: {
   toastId: string
   data: TextToCad_type & { fileName: string }
@@ -163,8 +161,8 @@ export function ToastTextToCadSuccess({
   settings: {
     theme: Themes
     highlightEdges: boolean
-  },
-  projectName?: string,
+  }
+  projectName?: string
   fileName?: string
   isProjectNew?: boolean
 }) {
@@ -360,18 +358,22 @@ export function ToastTextToCadSuccess({
                   // You are in the new workflow for text to cad at the global application level
                   if (isProjectNew) {
                     // Delete the entire project if it was newly created from text to CAD
-                    systemIOActor.send({type: SystemIOMachineEvents.deleteProject, data: {
-                      requestedProjectName: projectName,
-                    }})
-
+                    systemIOActor.send({
+                      type: SystemIOMachineEvents.deleteProject,
+                      data: {
+                        requestedProjectName: projectName,
+                      },
+                    })
                   } else {
                     // Only delete the file if the project was prexisting
-                    systemIOActor.send({type: SystemIOMachineEvents.deleteKCLFile, data: {
-                      requestedProjectName: projectName,
-                      requestedFileName: fileName
-                    }})
+                    systemIOActor.send({
+                      type: SystemIOMachineEvents.deleteKCLFile,
+                      data: {
+                        requestedProjectName: projectName,
+                        requestedFileName: fileName,
+                      },
+                    })
                   }
-
                 } else if (fileMachineSend && context) {
                   // Workflow within the modeling page
                   const path = `${context.project.path}${window.electron.sep}${data.fileName}`
@@ -398,13 +400,13 @@ export function ToastTextToCadSuccess({
                 icon: 'checkmark',
               }}
               name="Accept"
-                        onClick={() => {
+              onClick={() => {
                 // eslint-disable-next-line @typescript-eslint/no-floating-promises
                 sendTelemetry(modelId, 'accepted', token)
-                const path = context ? `${context.project.path}${window.electron.sep}${data.fileName}` : `${projectDirectoryPath}${window.electron.path.sep}${projectName}${window.electron.sep}${fileName}`
-                navigate(
-                  `${PATHS.FILE}/${encodeURIComponent(path)}`
-                )
+                const path = context
+                  ? `${context.project.path}${window.electron.sep}${data.fileName}`
+                  : `${projectDirectoryPath}${window.electron.path.sep}${projectName}${window.electron.sep}${fileName}`
+                navigate(`${PATHS.FILE}/${encodeURIComponent(path)}`)
                 toast.dismiss(toastId)
               }}
             >

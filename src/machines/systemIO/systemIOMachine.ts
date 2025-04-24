@@ -7,12 +7,11 @@ import {
   SystemIOMachineActors,
   SystemIOMachineEvents,
   SystemIOMachineStates,
-  SystemIOMachineGuards
+  SystemIOMachineGuards,
 } from '@src/machines/systemIO/utils'
 import toast from 'react-hot-toast'
 import { assertEvent, assign, fromPromise, setup } from 'xstate'
 import type { AppMachineContext } from '@src/lib/types'
-import { submitTextToCadPrompt, getTextToCadResult } from '@src/lib/textToCad'
 
 /**
  * Handles any system level I/O for folders and files
@@ -66,31 +65,35 @@ export const systemIOMachine = setup({
             requestedFileName: string
             requestedCode: string
           }
-      }
-      | {
-        type: SystemIOMachineEvents.importFileFromURL
-        data: {
-          requestedProjectName: string
-          requestedFileName: string
-          requestedCode: string
         }
-      }
       | {
-        type: SystemIOMachineEvents.setDefaultProjectFolderName
-        data: { requestedDefaultProjectFolderName: string }
-      }
+          type: SystemIOMachineEvents.importFileFromURL
+          data: {
+            requestedProjectName: string
+            requestedFileName: string
+            requestedCode: string
+          }
+        }
+      | {
+          type: SystemIOMachineEvents.setDefaultProjectFolderName
+          data: { requestedDefaultProjectFolderName: string }
+        }
       // TODO: Move this generateTextToCAD to another machine in the future and make a whole machine out of it.
       | {
-        type: SystemIOMachineEvents.generateTextToCAD
-        data: { requestedPrompt: string, requestedProjectName: string, isProjectNew: boolean}
-      }
+          type: SystemIOMachineEvents.generateTextToCAD
+          data: {
+            requestedPrompt: string
+            requestedProjectName: string
+            isProjectNew: boolean
+          }
+        }
       | {
           type: SystemIOMachineEvents.deleteKCLFile
           data: {
             requestedProjectName: string
             requestedFileName: string
           }
-        }
+        },
   },
   actions: {
     [SystemIOMachineActions.setFolders]: assign({
@@ -268,7 +271,11 @@ export const systemIOMachine = setup({
     },
     canReadWriteProjectDirectory: { value: true, error: undefined },
     clearURLParams: { value: false },
-    requestedTextToCadGeneration: {requestedPrompt: '', requestedProjectName: NO_PROJECT_DIRECTORY, isProjectNew: true}
+    requestedTextToCadGeneration: {
+      requestedPrompt: '',
+      requestedProjectName: NO_PROJECT_DIRECTORY,
+      isProjectNew: true,
+    },
   }),
   states: {
     [SystemIOMachineStates.idle]: {
@@ -475,7 +482,7 @@ export const systemIOMachine = setup({
           return {
             context,
             requestedProjectDirectoryPath:
-            event.data.requestedProjectDirectoryPath,
+              event.data.requestedProjectDirectoryPath,
           }
         },
         onDone: {
@@ -496,7 +503,7 @@ export const systemIOMachine = setup({
           return {
             context,
             requestedProjectName: event.data.requestedProjectName,
-            requestedFileName: event.data.requestedFileName
+            requestedFileName: event.data.requestedFileName,
           }
         },
         onDone: {
@@ -510,9 +517,12 @@ export const systemIOMachine = setup({
     },
   },
   gaurds: {
-    [SystemIOMachineGuards.shouldNavigateAfterKCLFileDelete] : (context, event)=>{
+    [SystemIOMachineGuards.shouldNavigateAfterKCLFileDelete]: (
+      context,
+      event
+    ) => {
       console.log(context, event)
       return true
-    }
-  }
+    },
+  },
 })

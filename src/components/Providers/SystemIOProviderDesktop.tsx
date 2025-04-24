@@ -6,13 +6,13 @@ import {
   useProjectDirectoryPath,
   useRequestedFileName,
   useRequestedProjectName,
-  useRequestedTextToCadGeneration
+  useRequestedTextToCadGeneration,
 } from '@src/machines/systemIO/hooks'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { useNavigate } from 'react-router-dom'
 import { useEffect } from 'react'
-import { submitAndAwaitTextToKclSystemIO } from "@src/lib/textToCad"
-import { reportRejection} from '@src/lib/trap'
+import { submitAndAwaitTextToKclSystemIO } from '@src/lib/textToCad'
+import { reportRejection } from '@src/lib/trap'
 
 export function SystemIOMachineLogicListenerDesktop() {
   const requestedProjectName = useRequestedProjectName()
@@ -24,6 +24,7 @@ export function SystemIOMachineLogicListenerDesktop() {
   const requestedTextToCadGeneration = useRequestedTextToCadGeneration()
   const token = useToken()
 
+  const useGlobalProjectNavigation = () => {
     useEffect(() => {
       if (!requestedProjectName.name) {
         return
@@ -36,11 +37,11 @@ export function SystemIOMachineLogicListenerDesktop() {
       const requestedPath = `${PATHS.FILE}/${encodeURIComponent(
         projectPathWithoutSpecificKCLFile
       )}`
-
-      console.log(requestedPath)
       navigate(requestedPath)
     }, [requestedProjectName])
+  }
 
+  const useGlobalFileNavigation = () => {
     useEffect(() => {
       if (!requestedFileName.file || !requestedFileName.project) {
         return
@@ -53,7 +54,9 @@ export function SystemIOMachineLogicListenerDesktop() {
       const requestedPath = `${PATHS.FILE}/${encodeURIComponent(filePath)}`
       navigate(requestedPath)
     }, [requestedFileName])
+  }
 
+  const useApplicationProjectDirectory = () => {
     useEffect(() => {
       systemIOActor.send({
         type: SystemIOMachineEvents.setProjectDirectoryPath,
@@ -63,7 +66,9 @@ export function SystemIOMachineLogicListenerDesktop() {
         },
       })
     }, [settings.app.projectDirectory.current])
+  }
 
+  const useDefaultProjectName = () => {
     useEffect(() => {
       systemIOActor.send({
         type: SystemIOMachineEvents.setDefaultProjectFolderName,
@@ -73,7 +78,9 @@ export function SystemIOMachineLogicListenerDesktop() {
         },
       })
     }, [settings.projects.defaultProjectName.current])
+  }
 
+  const useWatchingApplicationProjectDirectory = () => {
     useFileSystemWatcher(
       async () => {
         // Gotcha: Chokidar is buggy. It will emit addDir or add on files that did not get created.
@@ -94,22 +101,29 @@ export function SystemIOMachineLogicListenerDesktop() {
         : []
     )
 
+    // TODO: Move this generateTextToCAD to another machine in the future and make a whole machine out of it.
+    useEffect(() => {
+      const requestedPromptTrimmed =
+        requestedTextToCadGeneration.requestedPrompt.trim()
+      const requestedProjectName =
+        requestedTextToCadGeneration.requestedProjectName
+      const isProjectNew = requestedTextToCadGeneration.isProjectNew
+      if (!requestedPromptTrimmed || !requestedProjectName) return
+      submitAndAwaitTextToKclSystemIO({
+        trimmedPrompt: requestedPromptTrimmed,
+        projectName: requestedProjectName,
+        navigate,
+        token,
+        isProjectNew,
+      }).catch(reportRejection)
+    }, [requestedTextToCadGeneration])
+  }
 
-
-  // TODO: Move this generateTextToCAD to another machine in the future and make a whole machine out of it.
-  useEffect(()=>{
-    const requestedPromptTrimmed = requestedTextToCadGeneration.requestedPrompt.trim()
-    const requestedProjectName = requestedTextToCadGeneration.requestedProjectName
-    const isProjectNew = requestedTextToCadGeneration.isProjectNew
-    if (!requestedPromptTrimmed || !requestedProjectName) return
-    submitAndAwaitTextToKclSystemIO({
-      trimmedPrompt: requestedPromptTrimmed,
-      projectName: requestedProjectName,
-      navigate,
-      token,
-      isProjectNew
-    }).catch(reportRejection)
-  },[requestedTextToCadGeneration])
+  useGlobalProjectNavigation()
+  useGlobalFileNavigation()
+  useApplicationProjectDirectory()
+  useDefaultProjectName()
+  useWatchingApplicationProjectDirectory()
 
   return null
 }
