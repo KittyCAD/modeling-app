@@ -81,7 +81,7 @@ pub mod walk;
 mod wasm;
 
 pub use coredump::CoreDump;
-pub use engine::{EngineManager, EngineStats};
+pub use engine::{AsyncTasks, EngineManager, EngineStats};
 pub use errors::{
     CompilationError, ConnectionError, ExecError, KclError, KclErrorWithOutputs, Report, ReportWithOutputs,
 };

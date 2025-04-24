@@ -29,6 +29,9 @@ pub struct ExecState {
     pub(super) global: GlobalState,
     pub(super) mod_local: ModuleState,
     pub(super) exec_context: Option<super::ExecutorContext>,
+    /// If we should not parallelize execution.
+    #[cfg(test)]
+    pub single_threaded: bool,
 }
 
 pub type ModuleInfoMap = IndexMap<ModuleId, ModuleInfo>;
@@ -85,6 +88,8 @@ impl ExecState {
             global: GlobalState::new(&exec_context.settings),
             mod_local: ModuleState::new(None, ProgramMemory::new(), Default::default()),
             exec_context: Some(exec_context.clone()),
+            #[cfg(test)]
+            single_threaded: false,
         }
     }
 
@@ -95,6 +100,8 @@ impl ExecState {
             global,
             mod_local: ModuleState::new(None, ProgramMemory::new(), Default::default()),
             exec_context: Some(exec_context.clone()),
+            #[cfg(test)]
+            single_threaded: false,
         };
     }
 

@@ -18,9 +18,8 @@ use tokio::sync::{mpsc, oneshot, RwLock};
 use tokio_tungstenite::tungstenite::Message as WsMsg;
 use uuid::Uuid;
 
-use super::EngineStats;
 use crate::{
-    engine::EngineManager,
+    engine::{AsyncTasks, EngineManager, EngineStats},
     errors::{KclError, KclErrorDetails},
     execution::{ArtifactCommand, DefaultPlanes, IdGenerator},
     SourceRange,
@@ -53,6 +52,8 @@ pub struct EngineConnection {
     session_data: Arc<RwLock<Option<ModelingSessionData>>>,
 
     stats: EngineStats,
+
+    async_tasks: AsyncTasks,
 }
 
 pub struct TcpRead {
@@ -367,6 +368,7 @@ impl EngineConnection {
             default_planes: Default::default(),
             session_data,
             stats: Default::default(),
+            async_tasks: AsyncTasks::new(),
         })
     }
 }
@@ -391,6 +393,10 @@ impl EngineManager for EngineConnection {
 
     fn ids_of_async_commands(&self) -> Arc<RwLock<IndexMap<Uuid, SourceRange>>> {
         self.ids_of_async_commands.clone()
+    }
+
+    fn async_tasks(&self) -> AsyncTasks {
+        self.async_tasks.clone()
     }
 
     fn stats(&self) -> &EngineStats {

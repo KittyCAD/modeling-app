@@ -1,5 +1,6 @@
 //! Functions for managing engine communications.
 
+pub mod async_tasks;
 #[cfg(not(target_arch = "wasm32"))]
 #[cfg(feature = "engine")]
 pub mod conn;
@@ -7,6 +8,8 @@ pub mod conn_mock;
 #[cfg(target_arch = "wasm32")]
 #[cfg(feature = "engine")]
 pub mod conn_wasm;
+
+pub use async_tasks::AsyncTasks;
 
 use std::{
     collections::HashMap,
@@ -79,6 +82,9 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
     /// Get the ids of the async commands we are waiting for.
     fn ids_of_async_commands(&self) -> Arc<RwLock<IndexMap<Uuid, SourceRange>>>;
 
+    /// Get the async tasks we are waiting for.
+    fn async_tasks(&self) -> AsyncTasks;
+
     /// Take the batch of commands that have accumulated so far and clear them.
     async fn take_batch(&self) -> Vec<(WebSocketRequest, SourceRange)> {
         std::mem::take(&mut *self.batch().write().await)
@@ -145,6 +151,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         self.batch().write().await.clear();
         self.batch_end().write().await.clear();
         self.ids_of_async_commands().write().await.clear();
+        self.async_tasks().clear().await;
     }
 
     /// Send a modeling command and do not wait for the response message.
@@ -252,6 +259,16 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         for (id, source_range) in ids {
             self.ensure_async_command_completed(id, Some(source_range)).await?;
         }
+
+        // Make sure we check for all async tasks as well.
+        // The reason why we ignore the error here is that, if a model fillets an edge
+        // we previously called something on, it might no longer exist. In which case,
+        // the artifact graph won't care either if its gone since you can't select it
+        // anymore anyways.
+        self.async_tasks().join_all().await.unwrap_or_default();
+
+        // Flush the batch to make sure nothing remains.
+        self.flush_batch(true, SourceRange::default()).await?;
 
         Ok(())
     }

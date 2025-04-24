@@ -327,28 +327,21 @@ pub(crate) async fn do_post_extrude<'a>(
         // So, there's no need to await them.
         // Instead, the Typescript codebases (which handles WebSocket sends when compiled via Wasm)
         // uses this to build the artifact graph, which the UI needs.
-        let opposite_edge_id = args
-            .send_modeling_cmd(
-                exec_state.next_uuid(),
-                ModelingCmd::from(mcmd::Solid3dGetOppositeEdge {
-                    edge_id: curve_id,
-                    object_id: sketch.id,
-                    face_id,
-                }),
-            )
-            .await?;
-        let next_adjacent_edge_id = args
-            .send_modeling_cmd(
-                exec_state.next_uuid(),
-                ModelingCmd::from(mcmd::Solid3dGetNextAdjacentEdge {
-                    edge_id: curve_id,
-                    object_id: sketch.id,
-                    face_id,
-                }),
-            )
-            .await?;
+        //
+        // Spawn this in the background, because we don't care about the result.
+        // Only the artifact graph needs at the end.
+        let args_cloned = args.clone();
+        let opposite_edge_uuid = exec_state.next_uuid();
+        let next_adjacent_edge_uuid = exec_state.next_uuid();
+        let get_all_edge_faces_opposite_uuid = exec_state.next_uuid();
+        let get_all_edge_faces_next_uuid = exec_state.next_uuid();
+        #[cfg(test)]
+        let single_threaded = exec_state.single_threaded;
+        #[cfg(not(test))]
+        let single_threaded = false;
 
         // Get faces for original edge
+        // Since this one is batched we can just run it.
         args.batch_modeling_cmd(
             exec_state.next_uuid(),
             ModelingCmd::from(mcmd::Solid3dGetAllEdgeFaces {
@@ -358,36 +351,35 @@ pub(crate) async fn do_post_extrude<'a>(
         )
         .await?;
 
-        // Get faces for opposite edge
-        if let OkWebSocketResponseData::Modeling {
-            modeling_response: OkModelingCmdResponse::Solid3dGetOppositeEdge(opposite_edge),
-        } = opposite_edge_id
-        {
-            args.batch_modeling_cmd(
-                exec_state.next_uuid(),
-                ModelingCmd::from(mcmd::Solid3dGetAllEdgeFaces {
-                    edge_id: opposite_edge.edge,
-                    object_id: sketch.id,
-                }),
+        if !single_threaded {
+            args.ctx
+                .engine
+                .async_tasks()
+                .spawn(get_bg_edge_info(
+                    args_cloned,
+                    curve_id,
+                    sketch.id,
+                    face_id,
+                    opposite_edge_uuid,
+                    next_adjacent_edge_uuid,
+                    get_all_edge_faces_opposite_uuid,
+                    get_all_edge_faces_next_uuid,
+                    single_threaded,
+                ))
+                .await;
+        } else {
+            get_bg_edge_info(
+                args_cloned,
+                curve_id,
+                sketch.id,
+                face_id,
+                opposite_edge_uuid,
+                next_adjacent_edge_uuid,
+                get_all_edge_faces_opposite_uuid,
+                get_all_edge_faces_next_uuid,
+                single_threaded,
             )
             .await?;
-        }
-
-        // Get faces for next adjacent edge
-        if let OkWebSocketResponseData::Modeling {
-            modeling_response: OkModelingCmdResponse::Solid3dGetNextAdjacentEdge(next_adjacent_edge),
-        } = next_adjacent_edge_id
-        {
-            if let Some(edge_id) = next_adjacent_edge.edge {
-                args.batch_modeling_cmd(
-                    exec_state.next_uuid(),
-                    ModelingCmd::from(mcmd::Solid3dGetAllEdgeFaces {
-                        edge_id,
-                        object_id: sketch.id,
-                    }),
-                )
-                .await?;
-            }
         }
     }
 
@@ -558,4 +550,83 @@ async fn analyze_faces(exec_state: &mut ExecState, args: &Args, face_infos: Vec<
         }
     }
     faces
+}
+
+#[allow(clippy::too_many_arguments)]
+async fn get_bg_edge_info(
+    args: Args,
+    curve_id: uuid::Uuid,
+    sketch_id: uuid::Uuid,
+    face_id: uuid::Uuid,
+    opposite_edge_uuid: uuid::Uuid,
+    next_adjacent_edge_uuid: uuid::Uuid,
+    get_all_edge_faces_opposite_uuid: uuid::Uuid,
+    get_all_edge_faces_next_uuid: uuid::Uuid,
+    single_threaded: bool,
+) -> Result<(), KclError> {
+    let opposite_edge_id = args
+        .send_modeling_cmd(
+            opposite_edge_uuid,
+            ModelingCmd::from(mcmd::Solid3dGetOppositeEdge {
+                edge_id: curve_id,
+                object_id: sketch_id,
+                face_id,
+            }),
+        )
+        .await?;
+    let next_adjacent_edge_id = args
+        .send_modeling_cmd(
+            next_adjacent_edge_uuid,
+            ModelingCmd::from(mcmd::Solid3dGetNextAdjacentEdge {
+                edge_id: curve_id,
+                object_id: sketch_id,
+                face_id,
+            }),
+        )
+        .await?;
+
+    let send_fn = async |id: uuid::Uuid, cmd: ModelingCmd| -> Result<(), KclError> {
+        if single_threaded {
+            // In single threaded mode, we can safely batch the command.
+            args.batch_modeling_cmd(id, cmd).await
+        } else {
+            // We cannot batch this call, becasue otherwise it might batch after say
+            // a shell that makes this edge no longer relevant.
+            args.send_modeling_cmd(id, cmd).await.map(|_| ())
+        }
+    };
+
+    // Get faces for opposite edge
+    if let OkWebSocketResponseData::Modeling {
+        modeling_response: OkModelingCmdResponse::Solid3dGetOppositeEdge(opposite_edge),
+    } = opposite_edge_id
+    {
+        send_fn(
+            get_all_edge_faces_opposite_uuid,
+            ModelingCmd::from(mcmd::Solid3dGetAllEdgeFaces {
+                edge_id: opposite_edge.edge,
+                object_id: sketch_id,
+            }),
+        )
+        .await?;
+    }
+
+    // Get faces for next adjacent edge
+    if let OkWebSocketResponseData::Modeling {
+        modeling_response: OkModelingCmdResponse::Solid3dGetNextAdjacentEdge(next_adjacent_edge),
+    } = next_adjacent_edge_id
+    {
+        if let Some(edge_id) = next_adjacent_edge.edge {
+            send_fn(
+                get_all_edge_faces_next_uuid,
+                ModelingCmd::from(mcmd::Solid3dGetAllEdgeFaces {
+                    edge_id,
+                    object_id: sketch_id,
+                }),
+            )
+            .await?;
+        }
+    }
+
+    Ok(())
 }

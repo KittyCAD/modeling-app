@@ -721,6 +721,12 @@ impl ExecutorContext {
         exec_state: &mut ExecState,
     ) -> Result<(EnvironmentRef, Option<ModelingSessionData>), KclErrorWithOutputs> {
         exec_state.add_root_module_contents(program);
+
+        #[cfg(test)]
+        {
+            exec_state.single_threaded = true;
+        }
+
         self.eval_prelude(exec_state, SourceRange::synthetic())
             .await
             .map_err(KclErrorWithOutputs::no_outputs)?;

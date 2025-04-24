@@ -18,6 +18,7 @@ use uuid::Uuid;
 
 use super::EngineStats;
 use crate::{
+    engine::AsyncTasks,
     errors::KclError,
     exec::DefaultPlanes,
     execution::{ArtifactCommand, IdGenerator},
@@ -34,6 +35,7 @@ pub struct EngineConnection {
     /// The default planes for the scene.
     default_planes: Arc<RwLock<Option<DefaultPlanes>>>,
     stats: EngineStats,
+    async_tasks: AsyncTasks,
 }
 
 impl EngineConnection {
@@ -46,6 +48,7 @@ impl EngineConnection {
             responses: Arc::new(RwLock::new(IndexMap::new())),
             default_planes: Default::default(),
             stats: Default::default(),
+            async_tasks: AsyncTasks::new(),
         })
     }
 }
@@ -74,6 +77,10 @@ impl crate::engine::EngineManager for EngineConnection {
 
     fn ids_of_async_commands(&self) -> Arc<RwLock<IndexMap<Uuid, SourceRange>>> {
         self.ids_of_async_commands.clone()
+    }
+
+    fn async_tasks(&self) -> AsyncTasks {
+        self.async_tasks.clone()
     }
 
     fn get_default_planes(&self) -> Arc<RwLock<Option<DefaultPlanes>>> {
