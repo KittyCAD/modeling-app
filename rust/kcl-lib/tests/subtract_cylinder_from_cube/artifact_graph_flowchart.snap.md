@@ -8,10 +8,10 @@ flowchart LR
     6["Segment<br>[291, 298, 0]"]
     7[Solid2d]
   end
-  subgraph path24 [Path]
-    24["Path<br>[388, 423, 0]"]
-    25["Segment<br>[388, 423, 0]"]
-    26[Solid2d]
+  subgraph path19 [Path]
+    19["Path<br>[388, 423, 0]"]
+    20["Segment<br>[388, 423, 0]"]
+    21[Solid2d]
   end
   1["Plane<br>[27, 44, 0]"]
   8["Sweep Extrusion<br>[306, 326, 0]"]
@@ -22,21 +22,14 @@ flowchart LR
   13["Cap Start"]
   14["Cap End"]
   15["SweepEdge Opposite"]
-  16["SweepEdge Adjacent"]
+  16["SweepEdge Opposite"]
   17["SweepEdge Opposite"]
-  18["SweepEdge Adjacent"]
-  19["SweepEdge Opposite"]
-  20["SweepEdge Adjacent"]
-  21["SweepEdge Opposite"]
-  22["SweepEdge Adjacent"]
-  23["Plane<br>[363, 382, 0]"]
-  27["Sweep Extrusion<br>[429, 448, 0]"]
-  28[Wall]
-  29["Cap Start"]
-  30["Cap End"]
-  31["SweepEdge Opposite"]
-  32["SweepEdge Adjacent"]
-  33["CompositeSolid Subtract<br>[461, 497, 0]"]
+  18["Plane<br>[363, 382, 0]"]
+  22["Sweep Extrusion<br>[429, 448, 0]"]
+  23[Wall]
+  24["Cap Start"]
+  25["Cap End"]
+  26["CompositeSolid Subtract<br>[461, 497, 0]"]
   1 --- 2
   2 --- 3
   2 --- 4
@@ -45,17 +38,16 @@ flowchart LR
   2 ---- 8
   2 --- 7
   3 --- 9
-  3 --- 15
-  3 --- 16
+  3 x--> 13
   4 --- 10
-  4 --- 17
-  4 --- 18
+  4 --- 15
+  4 x--> 13
   5 --- 11
-  5 --- 19
-  5 --- 20
+  5 --- 16
+  5 x--> 13
   6 --- 12
-  6 --- 21
-  6 --- 22
+  6 --- 17
+  6 x--> 13
   8 --- 9
   8 --- 10
   8 --- 11
@@ -65,23 +57,21 @@ flowchart LR
   8 --- 15
   8 --- 16
   8 --- 17
-  8 --- 18
-  8 --- 19
-  8 --- 20
-  8 --- 21
-  8 --- 22
-  23 --- 24
-  24 --- 25
-  24 ---- 27
-  24 --- 26
-  25 --- 28
-  25 --- 31
-  25 --- 32
-  27 --- 28
-  27 --- 29
-  27 --- 30
-  27 --- 31
-  27 --- 32
-  2 <--x 33
-  24 <--x 33
+  15 <--x 10
+  15 <--x 14
+  16 <--x 11
+  16 <--x 14
+  17 <--x 12
+  17 <--x 14
+  18 --- 19
+  19 --- 20
+  19 ---- 22
+  19 --- 21
+  20 --- 23
+  20 x--> 24
+  22 --- 23
+  22 --- 24
+  22 --- 25
+  2 <--x 26
+  19 <--x 26
 ```
