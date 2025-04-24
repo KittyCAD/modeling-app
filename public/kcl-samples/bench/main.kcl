@@ -17,8 +17,8 @@ import armRest from "bench-parts.kcl"
 
 // Create the dividers, these hold the seat and back slats
 divider(YZ)
-divider(offsetPlane(-YZ, offset = benchLength / 2))
 divider(offsetPlane(YZ, offset = benchLength / 2))
+divider(offsetPlane(YZ, offset = -benchLength / 2))
 
 // Create the connectors to join the dividers
 connector(offsetPlane(YZ, offset = -benchLength / 2), benchLength)
@@ -30,5 +30,5 @@ seatSlats(offsetPlane(YZ, offset = -benchLength / 2 - (dividerThickness / 2)), b
 backSlats(offsetPlane(YZ, offset = -benchLength / 2 - (dividerThickness / 2)), benchLength + dividerThickness)
 
 // Create the arm rests
-armRest(-YZ, benchLength / 2)
-armRest(-YZ, -benchLength / 2)
+armRest(YZ, benchLength / 2)
+armRest(YZ, -benchLength / 2)

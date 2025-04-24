@@ -18,7 +18,7 @@ import { expect, test } from '@e2e/playwright/zoo-test'
 
 test(
   'projects reload if a new one is created, deleted, or renamed externally',
-  { tag: '@electron' },
+  { tag: ['@electron', '@macOS'] },
   async ({ context, page }, testInfo) => {
     let externalCreatedProjectName = 'external-created-project'
 
@@ -1815,8 +1815,8 @@ test(
         'basic_fillet_cube_next_adjacent.kcl',
         'basic_fillet_cube_previous_adjacent.kcl',
         'basic_fillet_cube_start.kcl',
-        'big_number_angle_to_match_length_x.kcl',
-        'big_number_angle_to_match_length_y.kcl',
+        'broken-code-test.kcl',
+        'circular_pattern3d_a_pattern.kcl',
         'close_arc.kcl',
         'computed_var.kcl',
         'cube-embedded.gltf',

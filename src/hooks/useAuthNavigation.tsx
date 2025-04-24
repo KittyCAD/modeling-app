@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
 import { PATHS } from '@src/lib/paths'
-import { useAuthState } from '@src/machines/appMachine'
+import { useAuthState } from '@src/lib/singletons'
 
 /**
  * A simple hook that listens to the auth state of the app and navigates

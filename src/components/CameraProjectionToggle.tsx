@@ -1,7 +1,7 @@
 import { Switch } from '@headlessui/react'
 import { useEffect, useState } from 'react'
 
-import { settingsActor, useSettings } from '@src/machines/appMachine'
+import { settingsActor, useSettings } from '@src/lib/singletons'
 
 export function CameraProjectionToggle() {
   const settings = useSettings()

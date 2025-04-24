@@ -1716,8 +1716,8 @@ description: Artifact commands multi-axis-robot.kcl
       "animated": false,
       "adjust_camera": false,
       "planar_normal": {
-        "x": 1.0,
-        "y": 0.0,
+        "x": 0.17364817766693041,
+        "y": -0.984807753012208,
         "z": 0.0
       }
     }
@@ -1843,8 +1843,8 @@ description: Artifact commands multi-axis-robot.kcl
       "animated": false,
       "adjust_camera": false,
       "planar_normal": {
-        "x": 1.0,
-        "y": 0.0,
+        "x": 0.17364817766693041,
+        "y": -0.984807753012208,
         "z": 0.0
       }
     }
@@ -2687,8 +2687,8 @@ description: Artifact commands multi-axis-robot.kcl
       "animated": false,
       "adjust_camera": false,
       "planar_normal": {
-        "x": 1.0,
-        "y": 0.0,
+        "x": 0.17364817766693041,
+        "y": -0.984807753012208,
         "z": 0.0
       }
     }
@@ -2763,8 +2763,8 @@ description: Artifact commands multi-axis-robot.kcl
       "animated": false,
       "adjust_camera": false,
       "planar_normal": {
-        "x": 1.0,
-        "y": 0.0,
+        "x": 0.17364817766693041,
+        "y": -0.984807753012208,
         "z": 0.0
       }
     }
@@ -2910,8 +2910,8 @@ description: Artifact commands multi-axis-robot.kcl
       "animated": false,
       "adjust_camera": false,
       "planar_normal": {
-        "x": 1.0,
-        "y": 0.0,
+        "x": 0.17364817766693041,
+        "y": -0.984807753012208,
         "z": 0.0
       }
     }
@@ -3045,8 +3045,8 @@ description: Artifact commands multi-axis-robot.kcl
       "animated": false,
       "adjust_camera": false,
       "planar_normal": {
-        "x": 1.0,
-        "y": 0.0,
+        "x": 0.17364817766693041,
+        "y": -0.984807753012208,
         "z": 0.0
       }
     }
@@ -4678,8 +4678,8 @@ description: Artifact commands multi-axis-robot.kcl
       "animated": false,
       "adjust_camera": false,
       "planar_normal": {
-        "x": 1.0,
-        "y": 0.0,
+        "x": 0.17364817766693041,
+        "y": -0.984807753012208,
         "z": 0.0
       }
     }
@@ -4813,8 +4813,8 @@ description: Artifact commands multi-axis-robot.kcl
       "animated": false,
       "adjust_camera": false,
       "planar_normal": {
-        "x": 1.0,
-        "y": 0.0,
+        "x": 0.17364817766693041,
+        "y": -0.984807753012208,
         "z": 0.0
       }
     }

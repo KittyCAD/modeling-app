@@ -10,7 +10,7 @@ import { createAndOpenNewTutorialProject } from '@src/lib/desktopFS'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { PATHS } from '@src/lib/paths'
 import { reportRejection } from '@src/lib/trap'
-import { settingsActor } from '@src/machines/appMachine'
+import { settingsActor } from '@src/lib/singletons'
 import type { WebContentSendPayload } from '@src/menu/channels'
 
 const HelpMenuDivider = () => (
