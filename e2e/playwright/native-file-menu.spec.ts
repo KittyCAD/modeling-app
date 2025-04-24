@@ -6,7 +6,7 @@ import { expect, test } from '@e2e/playwright/zoo-test'
  * Not all menu actions are tested. Some are default electron menu actions.
  * Test file menu actions that trigger something in the frontend
  */
-test.describe('Native file menu', { tag: ['@electron'] }, () => {
+test.describe('Native file menu', { tag: ['@electron', '@macOS'] }, () => {
   test.skip() // TODO: Reimplement native file menu tests
   test.describe('Home page', () => {
     test.describe('File role', () => {
