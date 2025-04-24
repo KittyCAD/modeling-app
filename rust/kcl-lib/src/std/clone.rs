@@ -124,7 +124,7 @@ pub async fn clone(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///     |> translate(x = 10, y = 20, z = 0)
 ///     |> extrude(length = 5)
 ///
-/// startSketchOn(sketch002, sketchingFace)
+/// startSketchOn(sketch002, face = sketchingFace)
 ///   |> startProfileAt([1, 1], %)
 ///   |> line(end = [8, 0])
 ///   |> line(end = [0, 8])
@@ -178,13 +178,13 @@ pub async fn clone(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///   |> line(end = [-2, 0])
 ///   |> close()
 ///
-/// example001 = revolve(exampleSketch, axis = 'y', angle = 180, tagEnd = $end01)
+/// example001 = revolve(exampleSketch, axis = Y, angle = 180, tagEnd = $end01)
 ///
 /// example002 = clone(example001)
 ///  |> translate(x = 0, y = 20, z = 0)
 ///
 /// // Sketch on the cloned face.
-/// exampleSketch002 = startSketchOn(example002, end01)
+/// exampleSketch002 = startSketchOn(example002, face = end01)
 ///   |> startProfileAt([4.5, -5], %)
 ///   |> line(end = [0, 5])
 ///   |> line(end = [5, 0])
