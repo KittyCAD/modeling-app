@@ -148,14 +148,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "units": {
               "type": "Mm"
             }
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": -1.0,
-            "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
           }
         },
         "start": {
@@ -339,11 +331,183 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": {
                   "type": "Mm"
                 }
+              }
+            },
+            "start": {
+              "from": [
+                0.0,
+                0.0
+              ],
+              "to": [
+                0.0,
+                0.0
+              ],
+              "units": {
+                "type": "Mm"
               },
-              "zAxis": {
+              "tag": null,
+              "__geoMeta": {
+                "id": "[uuid]",
+                "sourceRange": []
+              }
+            },
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          "height": 1.0,
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
+          "units": {
+            "type": "Mm"
+          },
+          "sectional": false
+        }
+      },
+      {
+        "type": "Solid",
+        "value": {
+          "type": "Solid",
+          "id": "[uuid]",
+          "artifactId": "[uuid]",
+          "value": [
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudePlane"
+            }
+          ],
+          "sketch": {
+            "type": "Sketch",
+            "id": "[uuid]",
+            "paths": [
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  0.0,
+                  0.0
+                ],
+                "tag": null,
+                "to": [
+                  0.0,
+                  2.0
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  0.0,
+                  2.0
+                ],
+                "tag": null,
+                "to": [
+                  3.0,
+                  3.0
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  3.0,
+                  3.0
+                ],
+                "tag": null,
+                "to": [
+                  3.0,
+                  -1.0
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  3.0,
+                  -1.0
+                ],
+                "tag": null,
+                "to": [
+                  0.0,
+                  0.0
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              }
+            ],
+            "on": {
+              "type": "plane",
+              "id": "[uuid]",
+              "artifactId": "[uuid]",
+              "value": "XZ",
+              "origin": {
                 "x": 0.0,
-                "y": -1.0,
+                "y": 0.0,
                 "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              "xAxis": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              "yAxis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -527,11 +691,183 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": {
                   "type": "Mm"
                 }
+              }
+            },
+            "start": {
+              "from": [
+                0.0,
+                0.0
+              ],
+              "to": [
+                0.0,
+                0.0
+              ],
+              "units": {
+                "type": "Mm"
               },
-              "zAxis": {
+              "tag": null,
+              "__geoMeta": {
+                "id": "[uuid]",
+                "sourceRange": []
+              }
+            },
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          "height": 1.0,
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
+          "units": {
+            "type": "Mm"
+          },
+          "sectional": false
+        }
+      },
+      {
+        "type": "Solid",
+        "value": {
+          "type": "Solid",
+          "id": "[uuid]",
+          "artifactId": "[uuid]",
+          "value": [
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudePlane"
+            }
+          ],
+          "sketch": {
+            "type": "Sketch",
+            "id": "[uuid]",
+            "paths": [
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  0.0,
+                  0.0
+                ],
+                "tag": null,
+                "to": [
+                  0.0,
+                  2.0
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  0.0,
+                  2.0
+                ],
+                "tag": null,
+                "to": [
+                  3.0,
+                  3.0
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  3.0,
+                  3.0
+                ],
+                "tag": null,
+                "to": [
+                  3.0,
+                  -1.0
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  3.0,
+                  -1.0
+                ],
+                "tag": null,
+                "to": [
+                  0.0,
+                  0.0
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              }
+            ],
+            "on": {
+              "type": "plane",
+              "id": "[uuid]",
+              "artifactId": "[uuid]",
+              "value": "XZ",
+              "origin": {
                 "x": 0.0,
-                "y": -1.0,
+                "y": 0.0,
                 "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              "xAxis": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              "yAxis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -715,14 +1051,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
               }
             },
             "start": {
@@ -903,14 +1231,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
               }
             },
             "start": {
@@ -1088,390 +1408,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              }
-            },
-            "start": {
-              "from": [
-                0.0,
-                0.0
-              ],
-              "to": [
-                0.0,
-                0.0
-              ],
-              "units": {
-                "type": "Mm"
-              },
-              "tag": null,
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              }
-            },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
-          },
-          "height": 1.0,
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          },
-          "sectional": false
-        }
-      },
-      {
-        "type": "Solid",
-        "value": {
-          "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            }
-          ],
-          "sketch": {
-            "type": "Sketch",
-            "id": "[uuid]",
-            "paths": [
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  2.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  2.0
-                ],
-                "tag": null,
-                "to": [
-                  3.0,
-                  3.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  3.0,
-                  3.0
-                ],
-                "tag": null,
-                "to": [
-                  3.0,
-                  -1.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  3.0,
-                  -1.0
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              }
-            ],
-            "on": {
-              "type": "plane",
-              "id": "[uuid]",
-              "artifactId": "[uuid]",
-              "value": "XZ",
-              "origin": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "xAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "yAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              }
-            },
-            "start": {
-              "from": [
-                0.0,
-                0.0
-              ],
-              "to": [
-                0.0,
-                0.0
-              ],
-              "units": {
-                "type": "Mm"
-              },
-              "tag": null,
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              }
-            },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
-          },
-          "height": 1.0,
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          },
-          "sectional": false
-        }
-      },
-      {
-        "type": "Solid",
-        "value": {
-          "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            }
-          ],
-          "sketch": {
-            "type": "Sketch",
-            "id": "[uuid]",
-            "paths": [
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  2.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  2.0
-                ],
-                "tag": null,
-                "to": [
-                  3.0,
-                  3.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  3.0,
-                  3.0
-                ],
-                "tag": null,
-                "to": [
-                  3.0,
-                  -1.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  3.0,
-                  -1.0
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              }
-            ],
-            "on": {
-              "type": "plane",
-              "id": "[uuid]",
-              "artifactId": "[uuid]",
-              "value": "XZ",
-              "origin": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "xAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "yAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -1660,14 +1596,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
               }
             },
             "start": {
@@ -1845,14 +1773,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -2033,14 +1953,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -2221,14 +2133,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -2412,14 +2316,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
               }
             },
             "start": {
@@ -2597,14 +2493,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -2785,14 +2673,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -2973,14 +2853,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -3164,14 +3036,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
               }
             },
             "start": {
@@ -3349,14 +3213,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -3537,14 +3393,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -3725,14 +3573,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -3916,14 +3756,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
               }
             },
             "start": {
@@ -4101,14 +3933,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -4289,14 +4113,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -4477,14 +4293,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -4668,14 +4476,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
               }
             },
             "start": {
@@ -4853,14 +4653,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -5041,14 +4833,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -5229,14 +5013,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -5420,14 +5196,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
               }
             },
             "start": {
@@ -5605,14 +5373,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -5793,14 +5553,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -5981,14 +5733,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -6172,14 +5916,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
               }
             },
             "start": {
@@ -6357,14 +6093,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -6545,14 +6273,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -6733,14 +6453,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -6924,14 +6636,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
               }
             },
             "start": {
@@ -7109,14 +6813,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -7297,14 +6993,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -7485,14 +7173,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -7676,14 +7356,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
               }
             },
             "start": {
@@ -7861,14 +7533,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -8049,14 +7713,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -8237,14 +7893,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -8428,14 +8076,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
               }
             },
             "start": {
@@ -8613,14 +8253,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -8801,14 +8433,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -8989,14 +8613,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -9180,14 +8796,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
               }
             },
             "start": {
@@ -9365,14 +8973,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -9556,14 +9156,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
               }
             },
             "start": {
@@ -9741,14 +9333,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -9929,14 +9513,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -10117,14 +9693,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -10305,14 +9873,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -10493,14 +10053,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -10681,14 +10233,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -10869,14 +10413,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -11057,14 +10593,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -11245,14 +10773,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -11433,14 +10953,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -11621,14 +11133,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -11809,14 +11313,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -11997,14 +11493,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -12185,14 +11673,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -12373,14 +11853,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -12561,14 +12033,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -12749,14 +12213,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -12937,14 +12393,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -13125,14 +12573,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -13313,14 +12753,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -13501,14 +12933,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -13689,14 +13113,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -13877,14 +13293,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -14065,14 +13473,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -14253,14 +13653,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -14441,14 +13833,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -14629,14 +14013,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -14817,14 +14193,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -15005,14 +14373,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -15193,14 +14553,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -15381,14 +14733,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -15569,14 +14913,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -15757,14 +15093,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -15945,14 +15273,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -16133,14 +15453,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -16321,14 +15633,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -16509,14 +15813,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -16697,14 +15993,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -16885,14 +16173,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -17073,14 +16353,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -17261,14 +16533,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -17449,14 +16713,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -17640,14 +16896,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
               }
             },
             "start": {
@@ -17825,14 +17073,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -18016,14 +17256,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
               }
             },
             "start": {
@@ -18201,14 +17433,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -18389,14 +17613,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -18577,14 +17793,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -18768,14 +17976,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
               }
             },
             "start": {
@@ -18953,14 +18153,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -19141,14 +18333,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -19329,14 +18513,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -19520,14 +18696,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
               }
             },
             "start": {
@@ -19705,14 +18873,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -19893,14 +19053,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -20081,14 +19233,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -20272,14 +19416,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
               }
             },
             "start": {
@@ -20457,14 +19593,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -20645,14 +19773,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -20833,14 +19953,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -21024,14 +20136,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
               }
             },
             "start": {
@@ -21209,14 +20313,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -21397,14 +20493,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -21585,14 +20673,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -21776,14 +20856,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
               }
             },
             "start": {
@@ -21961,14 +21033,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -22149,14 +21213,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -22337,14 +21393,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -22528,14 +21576,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
               }
             },
             "start": {
@@ -22713,14 +21753,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -22901,14 +21933,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -23089,14 +22113,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -23280,14 +22296,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
               }
             },
             "start": {
@@ -23465,14 +22473,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -23653,14 +22653,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -23841,14 +22833,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -24032,14 +23016,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
               }
             },
             "start": {
@@ -24217,14 +23193,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -24405,14 +23373,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -24593,14 +23553,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -24784,14 +23736,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
               }
             },
             "start": {
@@ -24969,14 +23913,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -25157,14 +24093,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -25345,14 +24273,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -25536,14 +24456,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
               }
             },
             "start": {
@@ -25724,14 +24636,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
               }
             },
             "start": {
@@ -25909,14 +24813,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -26097,14 +24993,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -26285,14 +25173,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -26473,14 +25353,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -26661,14 +25533,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -26849,14 +25713,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -27037,14 +25893,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -27225,14 +26073,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -27413,14 +26253,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -27601,14 +26433,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -27789,14 +26613,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -27977,14 +26793,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -28165,14 +26973,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -28353,14 +27153,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -28541,14 +27333,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -28729,14 +27513,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -28917,14 +27693,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -29105,14 +27873,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -29293,14 +28053,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -29481,14 +28233,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -29669,14 +28413,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -29857,14 +28593,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -30045,14 +28773,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -30233,14 +28953,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -30421,14 +29133,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -30609,14 +29313,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -30797,14 +29493,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -30985,14 +29673,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -31173,14 +29853,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -31361,14 +30033,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -31549,14 +30213,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -31737,14 +30393,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -31925,14 +30573,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -32113,14 +30753,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -32301,14 +30933,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -32489,14 +31113,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -32677,14 +31293,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -32865,14 +31473,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -33053,14 +31653,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -33241,14 +31833,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -33429,14 +32013,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -33617,14 +32193,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -33808,14 +32376,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
               }
             },
             "start": {
@@ -33993,14 +32553,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -34181,14 +32733,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -34369,14 +32913,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -34557,14 +33093,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -34745,14 +33273,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -34936,14 +33456,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
               }
             },
             "start": {
@@ -35121,14 +33633,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -35309,14 +33813,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -35497,14 +33993,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -35685,14 +34173,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -35873,14 +34353,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -36061,14 +34533,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -36252,14 +34716,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
               }
             },
             "start": {
@@ -36437,14 +34893,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -36625,14 +35073,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -36813,14 +35253,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -37001,14 +35433,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -37189,14 +35613,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -37377,14 +35793,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -37565,14 +35973,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -37756,14 +36156,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
               }
             },
             "start": {
@@ -37941,14 +36333,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -38129,14 +36513,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -38317,14 +36693,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -38505,14 +36873,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -38693,14 +37053,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -38881,14 +37233,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -39072,14 +37416,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
               }
             },
             "start": {
@@ -39257,14 +37593,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -39445,14 +37773,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -39633,14 +37953,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -39821,14 +38133,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -40009,14 +38313,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -40197,14 +38493,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -40388,14 +38676,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
               }
             },
             "start": {
@@ -40573,14 +38853,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -40761,14 +39033,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -40949,14 +39213,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -41137,14 +39393,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -41325,14 +39573,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -41513,14 +39753,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -41701,14 +39933,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -41892,14 +40116,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
               }
             },
             "start": {
@@ -42077,14 +40293,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -42265,14 +40473,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -42453,14 +40653,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -42641,14 +40833,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -42829,14 +41013,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -43017,14 +41193,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -43208,14 +41376,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
               }
             },
             "start": {
@@ -43393,14 +41553,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -43581,14 +41733,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -43769,14 +41913,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -43957,14 +42093,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -44145,14 +42273,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -44333,14 +42453,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -44524,14 +42636,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
               }
             },
             "start": {
@@ -44709,14 +42813,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -44897,14 +42993,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -45085,14 +43173,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -45273,14 +43353,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -45461,14 +43533,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -45649,14 +43713,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -45840,14 +43896,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
               }
             },
             "start": {
@@ -46025,14 +44073,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -46213,14 +44253,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -46401,14 +44433,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -46589,14 +44613,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -46777,14 +44793,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -46965,14 +44973,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -47156,14 +45156,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
               }
             },
             "start": {
@@ -47341,14 +45333,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -47519,24 +45503,16 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
               },
               "xAxis": {
                 "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "yAxis": {
-                "x": 0.0,
                 "y": 0.0,
-                "z": 1.0,
+                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
               },
-              "zAxis": {
+              "yAxis": {
                 "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
+                "y": 0.0,
+                "z": 1.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -47717,14 +45693,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -47905,14 +45873,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -48093,14 +46053,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -48281,14 +46233,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -48469,14 +46413,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -48657,14 +46593,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -48845,14 +46773,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -49033,14 +46953,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -49221,14 +47133,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -49409,14 +47313,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -49597,14 +47493,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -49785,14 +47673,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -49973,14 +47853,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -50161,14 +48033,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -50349,14 +48213,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -50537,14 +48393,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -50725,14 +48573,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -50913,14 +48753,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -51101,14 +48933,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -51289,14 +49113,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -51477,14 +49293,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -51665,14 +49473,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -51853,14 +49653,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -52041,14 +49833,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -52229,14 +50013,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -52417,14 +50193,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -52605,14 +50373,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -52793,14 +50553,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -52981,14 +50733,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -53169,14 +50913,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -53357,14 +51093,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -53545,14 +51273,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -53733,14 +51453,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -53921,14 +51633,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -54109,14 +51813,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -54297,14 +51993,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -54485,14 +52173,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -54673,14 +52353,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -54861,14 +52533,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -55049,14 +52713,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -55237,14 +52893,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -55425,14 +53073,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }

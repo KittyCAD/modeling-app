@@ -137,14 +137,6 @@ description: Variables in memory after executing french-press.kcl
             "units": {
               "type": "Mm"
             }
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 1.0,
-            "units": {
-              "type": "Mm"
-            }
           }
         },
         "start": {
@@ -320,14 +312,6 @@ description: Variables in memory after executing french-press.kcl
                   "type": "Mm"
                 }
               },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
               "solid": {
                 "type": "Solid",
                 "id": "[uuid]",
@@ -396,14 +380,6 @@ description: Variables in memory after executing french-press.kcl
                       "x": 0.0,
                       "y": 1.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": 0.0,
-                      "z": 1.0,
                       "units": {
                         "type": "Mm"
                       }
@@ -615,14 +591,6 @@ description: Variables in memory after executing french-press.kcl
                   "type": "Mm"
                 }
               },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
               "solid": {
                 "type": "Solid",
                 "id": "[uuid]",
@@ -691,14 +659,6 @@ description: Variables in memory after executing french-press.kcl
                       "x": 0.0,
                       "y": 1.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": 0.0,
-                      "z": 1.0,
                       "units": {
                         "type": "Mm"
                       }
@@ -910,14 +870,6 @@ description: Variables in memory after executing french-press.kcl
                   "type": "Mm"
                 }
               },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
               "solid": {
                 "type": "Solid",
                 "id": "[uuid]",
@@ -986,14 +938,6 @@ description: Variables in memory after executing french-press.kcl
                       "x": 0.0,
                       "y": 1.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": 0.0,
-                      "z": 1.0,
                       "units": {
                         "type": "Mm"
                       }
@@ -1143,14 +1087,6 @@ description: Variables in memory after executing french-press.kcl
             "units": {
               "type": "Mm"
             }
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 1.0,
-            "units": {
-              "type": "Mm"
-            }
           }
         },
         "start": {
@@ -1255,14 +1191,6 @@ description: Variables in memory after executing french-press.kcl
                   "type": "Mm"
                 }
               },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
               "solid": {
                 "type": "Solid",
                 "id": "[uuid]",
@@ -1331,14 +1259,6 @@ description: Variables in memory after executing french-press.kcl
                       "x": 0.0,
                       "y": 1.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": 0.0,
-                      "z": 1.0,
                       "units": {
                         "type": "Mm"
                       }
@@ -1479,14 +1399,6 @@ description: Variables in memory after executing french-press.kcl
                   "type": "Mm"
                 }
               },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
               "solid": {
                 "type": "Solid",
                 "id": "[uuid]",
@@ -1555,14 +1467,6 @@ description: Variables in memory after executing french-press.kcl
                       "x": 0.0,
                       "y": 1.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": 0.0,
-                      "z": 1.0,
                       "units": {
                         "type": "Mm"
                       }
@@ -1703,14 +1607,6 @@ description: Variables in memory after executing french-press.kcl
                   "type": "Mm"
                 }
               },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
               "solid": {
                 "type": "Solid",
                 "id": "[uuid]",
@@ -1779,14 +1675,6 @@ description: Variables in memory after executing french-press.kcl
                       "x": 0.0,
                       "y": 1.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": 0.0,
-                      "z": 1.0,
                       "units": {
                         "type": "Mm"
                       }
@@ -1927,14 +1815,6 @@ description: Variables in memory after executing french-press.kcl
                   "type": "Mm"
                 }
               },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
               "solid": {
                 "type": "Solid",
                 "id": "[uuid]",
@@ -2003,14 +1883,6 @@ description: Variables in memory after executing french-press.kcl
                       "x": 0.0,
                       "y": 1.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": 0.0,
-                      "z": 1.0,
                       "units": {
                         "type": "Mm"
                       }
@@ -2151,14 +2023,6 @@ description: Variables in memory after executing french-press.kcl
                   "type": "Mm"
                 }
               },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
               "solid": {
                 "type": "Solid",
                 "id": "[uuid]",
@@ -2227,14 +2091,6 @@ description: Variables in memory after executing french-press.kcl
                       "x": 0.0,
                       "y": 1.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": 0.0,
-                      "z": 1.0,
                       "units": {
                         "type": "Mm"
                       }
@@ -2375,14 +2231,6 @@ description: Variables in memory after executing french-press.kcl
                   "type": "Mm"
                 }
               },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
               "solid": {
                 "type": "Solid",
                 "id": "[uuid]",
@@ -2451,14 +2299,6 @@ description: Variables in memory after executing french-press.kcl
                       "x": 0.0,
                       "y": 1.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": 0.0,
-                      "z": 1.0,
                       "units": {
                         "type": "Mm"
                       }
@@ -2599,14 +2439,6 @@ description: Variables in memory after executing french-press.kcl
                   "type": "Mm"
                 }
               },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
               "solid": {
                 "type": "Solid",
                 "id": "[uuid]",
@@ -2675,14 +2507,6 @@ description: Variables in memory after executing french-press.kcl
                       "x": 0.0,
                       "y": 1.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": 0.0,
-                      "z": 1.0,
                       "units": {
                         "type": "Mm"
                       }
@@ -2823,14 +2647,6 @@ description: Variables in memory after executing french-press.kcl
                   "type": "Mm"
                 }
               },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
               "solid": {
                 "type": "Solid",
                 "id": "[uuid]",
@@ -2899,14 +2715,6 @@ description: Variables in memory after executing french-press.kcl
                       "x": 0.0,
                       "y": 1.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": 0.0,
-                      "z": 1.0,
                       "units": {
                         "type": "Mm"
                       }
@@ -3052,14 +2860,6 @@ description: Variables in memory after executing french-press.kcl
                   "type": "Mm"
                 }
               },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
               "solid": {
                 "type": "Solid",
                 "id": "[uuid]",
@@ -3128,14 +2928,6 @@ description: Variables in memory after executing french-press.kcl
                       "x": 0.0,
                       "y": 1.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": 0.0,
-                      "z": 1.0,
                       "units": {
                         "type": "Mm"
                       }
@@ -3276,14 +3068,6 @@ description: Variables in memory after executing french-press.kcl
                   "type": "Mm"
                 }
               },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
               "solid": {
                 "type": "Solid",
                 "id": "[uuid]",
@@ -3352,14 +3136,6 @@ description: Variables in memory after executing french-press.kcl
                       "x": 0.0,
                       "y": 1.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": 0.0,
-                      "z": 1.0,
                       "units": {
                         "type": "Mm"
                       }
@@ -3500,14 +3276,6 @@ description: Variables in memory after executing french-press.kcl
                   "type": "Mm"
                 }
               },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
               "solid": {
                 "type": "Solid",
                 "id": "[uuid]",
@@ -3576,14 +3344,6 @@ description: Variables in memory after executing french-press.kcl
                       "x": 0.0,
                       "y": 1.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": 0.0,
-                      "z": 1.0,
                       "units": {
                         "type": "Mm"
                       }
@@ -3724,14 +3484,6 @@ description: Variables in memory after executing french-press.kcl
                   "type": "Mm"
                 }
               },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
               "solid": {
                 "type": "Solid",
                 "id": "[uuid]",
@@ -3800,14 +3552,6 @@ description: Variables in memory after executing french-press.kcl
                       "x": 0.0,
                       "y": 1.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": 0.0,
-                      "z": 1.0,
                       "units": {
                         "type": "Mm"
                       }
@@ -3954,14 +3698,6 @@ description: Variables in memory after executing french-press.kcl
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 1.0,
             "units": {
               "type": "Mm"
             }
@@ -4399,14 +4135,6 @@ description: Variables in memory after executing french-press.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Mm"
-            }
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": -1.0,
-            "z": 0.0,
             "units": {
               "type": "Mm"
             }
@@ -4856,14 +4584,6 @@ description: Variables in memory after executing french-press.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Mm"
-            }
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": -1.0,
-            "z": 0.0,
             "units": {
               "type": "Mm"
             }
@@ -5515,11 +5235,664 @@ description: Variables in memory after executing french-press.kcl
                 "units": {
                   "type": "Inches"
                 }
+              }
+            },
+            "start": {
+              "from": [
+                2.205,
+                5.7
+              ],
+              "to": [
+                2.205,
+                5.7
+              ],
+              "units": {
+                "type": "Inches"
               },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
+              "tag": null,
+              "__geoMeta": {
+                "id": "[uuid]",
+                "sourceRange": []
+              }
+            },
+            "tags": {
+              "edge1": {
+                "type": "TagIdentifier",
+                "value": "edge1"
+              },
+              "edge2": {
+                "type": "TagIdentifier",
+                "value": "edge2"
+              },
+              "edge3": {
+                "type": "TagIdentifier",
+                "value": "edge3"
+              },
+              "edge4": {
+                "type": "TagIdentifier",
+                "value": "edge4"
+              },
+              "edge5": {
+                "type": "TagIdentifier",
+                "value": "edge5"
+              },
+              "edge6": {
+                "type": "TagIdentifier",
+                "value": "edge6"
+              },
+              "edgeLen": {
+                "type": "TagIdentifier",
+                "value": "edgeLen"
+              }
+            },
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
+            "units": {
+              "type": "Inches"
+            }
+          },
+          "height": 0.75,
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
+          "units": {
+            "type": "Inches"
+          },
+          "sectional": false
+        }
+      },
+      {
+        "type": "Solid",
+        "value": {
+          "type": "Solid",
+          "id": "[uuid]",
+          "artifactId": "[uuid]",
+          "value": [
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 1073,
+                "end": 1079,
+                "start": 1073,
+                "type": "TagDeclarator",
+                "value": "edge1"
+              },
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudeArc"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 1187,
+                "end": 1193,
+                "start": 1187,
+                "type": "TagDeclarator",
+                "value": "edge2"
+              },
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudeArc"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 1308,
+                "end": 1314,
+                "start": 1308,
+                "type": "TagDeclarator",
+                "value": "edge3"
+              },
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudeArc"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 1407,
+                "end": 1415,
+                "start": 1407,
+                "type": "TagDeclarator",
+                "value": "edgeLen"
+              },
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 1493,
+                "end": 1499,
+                "start": 1493,
+                "type": "TagDeclarator",
+                "value": "edge4"
+              },
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudeArc"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 1624,
+                "end": 1630,
+                "start": 1624,
+                "type": "TagDeclarator",
+                "value": "edge5"
+              },
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudeArc"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 1757,
+                "end": 1763,
+                "start": 1757,
+                "type": "TagDeclarator",
+                "value": "edge6"
+              },
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudeArc"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudePlane"
+            }
+          ],
+          "sketch": {
+            "type": "Sketch",
+            "id": "[uuid]",
+            "paths": [
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  2.205,
+                  5.7
+                ],
+                "tag": null,
+                "to": [
+                  2.305,
+                  5.7
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Inches"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  2.305,
+                  5.7
+                ],
+                "tag": {
+                  "commentStart": 1073,
+                  "end": 1079,
+                  "start": 1073,
+                  "type": "TagDeclarator",
+                  "value": "edge1"
+                },
+                "to": [
+                  2.305,
+                  0.5
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Inches"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "ccw": true,
+                "center": [
+                  2.605,
+                  0.5
+                ],
+                "from": [
+                  2.305,
+                  0.5
+                ],
+                "radius": 0.3,
+                "tag": null,
+                "to": [
+                  2.3331,
+                  0.3732
+                ],
+                "type": "Arc",
+                "units": {
+                  "type": "Inches"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  2.3331,
+                  0.3732
+                ],
+                "tag": {
+                  "commentStart": 1187,
+                  "end": 1193,
+                  "start": 1187,
+                  "type": "TagDeclarator",
+                  "value": "edge2"
+                },
+                "to": [
+                  2.6331,
+                  -0.1464
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Inches"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "ccw": false,
+                "center": [
+                  2.1135,
+                  -0.4464
+                ],
+                "from": [
+                  2.6331,
+                  -0.1464
+                ],
+                "radius": 0.6,
+                "tag": null,
+                "to": [
+                  1.8135,
+                  -0.966
+                ],
+                "type": "Arc",
+                "units": {
+                  "type": "Inches"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  1.8135,
+                  -0.966
+                ],
+                "tag": {
+                  "commentStart": 1308,
+                  "end": 1314,
+                  "start": 1308,
+                  "type": "TagDeclarator",
+                  "value": "edge3"
+                },
+                "to": [
+                  0.4867,
+                  -0.2
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Inches"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "ccw": true,
+                "center": [
+                  0.2367,
+                  -0.633
+                ],
+                "from": [
+                  0.4867,
+                  -0.2
+                ],
+                "radius": 0.5,
+                "tag": null,
+                "to": [
+                  0.2367,
+                  -0.133
+                ],
+                "type": "Arc",
+                "units": {
+                  "type": "Inches"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  0.2367,
+                  -0.133
+                ],
+                "tag": {
+                  "commentStart": 1407,
+                  "end": 1415,
+                  "start": 1407,
+                  "type": "TagDeclarator",
+                  "value": "edgeLen"
+                },
+                "to": [
+                  0.1,
+                  -0.133
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Inches"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  0.1,
+                  -0.133
+                ],
+                "tag": null,
+                "to": [
+                  0.1,
+                  -0.033
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Inches"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  0.1,
+                  -0.033
+                ],
+                "tag": {
+                  "commentStart": 1493,
+                  "end": 1499,
+                  "start": 1493,
+                  "type": "TagDeclarator",
+                  "value": "edge4"
+                },
+                "to": [
+                  0.2717,
+                  -0.033
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Inches"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "ccw": false,
+                "center": [
+                  0.2717,
+                  -0.633
+                ],
+                "from": [
+                  0.2717,
+                  -0.033
+                ],
+                "radius": 0.6,
+                "tag": null,
+                "to": [
+                  0.5717,
+                  -0.1134
+                ],
+                "type": "Arc",
+                "units": {
+                  "type": "Inches"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  0.5717,
+                  -0.1134
+                ],
+                "tag": {
+                  "commentStart": 1624,
+                  "end": 1630,
+                  "start": 1624,
+                  "type": "TagDeclarator",
+                  "value": "edge5"
+                },
+                "to": [
+                  1.8682,
+                  -0.8619
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Inches"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "ccw": true,
+                "center": [
+                  2.1182,
+                  -0.4289
+                ],
+                "from": [
+                  1.8682,
+                  -0.8619
+                ],
+                "radius": 0.5,
+                "tag": null,
+                "to": [
+                  2.5512,
+                  -0.1789
+                ],
+                "type": "Arc",
+                "units": {
+                  "type": "Inches"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  2.5512,
+                  -0.1789
+                ],
+                "tag": {
+                  "commentStart": 1757,
+                  "end": 1763,
+                  "start": 1757,
+                  "type": "TagDeclarator",
+                  "value": "edge6"
+                },
+                "to": [
+                  2.2687,
+                  0.3104
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Inches"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "ccw": false,
+                "center": [
+                  2.8125,
+                  0.564
+                ],
+                "from": [
+                  2.2687,
+                  0.3104
+                ],
+                "radius": 0.6,
+                "tag": null,
+                "to": [
+                  2.2125,
+                  0.564
+                ],
+                "type": "Arc",
+                "units": {
+                  "type": "Inches"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  2.2125,
+                  0.564
+                ],
+                "tag": null,
+                "to": [
+                  2.205,
+                  5.7
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Inches"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  2.205,
+                  5.7
+                ],
+                "tag": null,
+                "to": [
+                  2.205,
+                  5.7
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Inches"
+                }
+              }
+            ],
+            "on": {
+              "type": "plane",
+              "id": "[uuid]",
+              "artifactId": "[uuid]",
+              "value": "Custom",
+              "origin": {
+                "x": -0.26,
+                "y": 0.26,
                 "z": 0.0,
+                "units": {
+                  "type": "Inches"
+                }
+              },
+              "xAxis": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 0.0,
+                "units": {
+                  "type": "Inches"
+                }
+              },
+              "yAxis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0,
                 "units": {
                   "type": "Inches"
                 }
@@ -6184,14 +6557,6 @@ description: Variables in memory after executing french-press.kcl
                 "units": {
                   "type": "Inches"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Inches"
-                }
               }
             },
             "start": {
@@ -6850,683 +7215,6 @@ description: Variables in memory after executing french-press.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Inches"
-                }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Inches"
-                }
-              }
-            },
-            "start": {
-              "from": [
-                2.205,
-                5.7
-              ],
-              "to": [
-                2.205,
-                5.7
-              ],
-              "units": {
-                "type": "Inches"
-              },
-              "tag": null,
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              }
-            },
-            "tags": {
-              "edge1": {
-                "type": "TagIdentifier",
-                "value": "edge1"
-              },
-              "edge2": {
-                "type": "TagIdentifier",
-                "value": "edge2"
-              },
-              "edge3": {
-                "type": "TagIdentifier",
-                "value": "edge3"
-              },
-              "edge4": {
-                "type": "TagIdentifier",
-                "value": "edge4"
-              },
-              "edge5": {
-                "type": "TagIdentifier",
-                "value": "edge5"
-              },
-              "edge6": {
-                "type": "TagIdentifier",
-                "value": "edge6"
-              },
-              "edgeLen": {
-                "type": "TagIdentifier",
-                "value": "edgeLen"
-              }
-            },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            }
-          },
-          "height": 0.75,
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
-          "units": {
-            "type": "Inches"
-          },
-          "sectional": false
-        }
-      },
-      {
-        "type": "Solid",
-        "value": {
-          "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 1073,
-                "end": 1079,
-                "start": 1073,
-                "type": "TagDeclarator",
-                "value": "edge1"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudeArc"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 1187,
-                "end": 1193,
-                "start": 1187,
-                "type": "TagDeclarator",
-                "value": "edge2"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudeArc"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 1308,
-                "end": 1314,
-                "start": 1308,
-                "type": "TagDeclarator",
-                "value": "edge3"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudeArc"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 1407,
-                "end": 1415,
-                "start": 1407,
-                "type": "TagDeclarator",
-                "value": "edgeLen"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 1493,
-                "end": 1499,
-                "start": 1493,
-                "type": "TagDeclarator",
-                "value": "edge4"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudeArc"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 1624,
-                "end": 1630,
-                "start": 1624,
-                "type": "TagDeclarator",
-                "value": "edge5"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudeArc"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 1757,
-                "end": 1763,
-                "start": 1757,
-                "type": "TagDeclarator",
-                "value": "edge6"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudeArc"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            }
-          ],
-          "sketch": {
-            "type": "Sketch",
-            "id": "[uuid]",
-            "paths": [
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  2.205,
-                  5.7
-                ],
-                "tag": null,
-                "to": [
-                  2.305,
-                  5.7
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  2.305,
-                  5.7
-                ],
-                "tag": {
-                  "commentStart": 1073,
-                  "end": 1079,
-                  "start": 1073,
-                  "type": "TagDeclarator",
-                  "value": "edge1"
-                },
-                "to": [
-                  2.305,
-                  0.5
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "ccw": true,
-                "center": [
-                  2.605,
-                  0.5
-                ],
-                "from": [
-                  2.305,
-                  0.5
-                ],
-                "radius": 0.3,
-                "tag": null,
-                "to": [
-                  2.3331,
-                  0.3732
-                ],
-                "type": "Arc",
-                "units": {
-                  "type": "Inches"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  2.3331,
-                  0.3732
-                ],
-                "tag": {
-                  "commentStart": 1187,
-                  "end": 1193,
-                  "start": 1187,
-                  "type": "TagDeclarator",
-                  "value": "edge2"
-                },
-                "to": [
-                  2.6331,
-                  -0.1464
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "ccw": false,
-                "center": [
-                  2.1135,
-                  -0.4464
-                ],
-                "from": [
-                  2.6331,
-                  -0.1464
-                ],
-                "radius": 0.6,
-                "tag": null,
-                "to": [
-                  1.8135,
-                  -0.966
-                ],
-                "type": "Arc",
-                "units": {
-                  "type": "Inches"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  1.8135,
-                  -0.966
-                ],
-                "tag": {
-                  "commentStart": 1308,
-                  "end": 1314,
-                  "start": 1308,
-                  "type": "TagDeclarator",
-                  "value": "edge3"
-                },
-                "to": [
-                  0.4867,
-                  -0.2
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "ccw": true,
-                "center": [
-                  0.2367,
-                  -0.633
-                ],
-                "from": [
-                  0.4867,
-                  -0.2
-                ],
-                "radius": 0.5,
-                "tag": null,
-                "to": [
-                  0.2367,
-                  -0.133
-                ],
-                "type": "Arc",
-                "units": {
-                  "type": "Inches"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.2367,
-                  -0.133
-                ],
-                "tag": {
-                  "commentStart": 1407,
-                  "end": 1415,
-                  "start": 1407,
-                  "type": "TagDeclarator",
-                  "value": "edgeLen"
-                },
-                "to": [
-                  0.1,
-                  -0.133
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.1,
-                  -0.133
-                ],
-                "tag": null,
-                "to": [
-                  0.1,
-                  -0.033
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.1,
-                  -0.033
-                ],
-                "tag": {
-                  "commentStart": 1493,
-                  "end": 1499,
-                  "start": 1493,
-                  "type": "TagDeclarator",
-                  "value": "edge4"
-                },
-                "to": [
-                  0.2717,
-                  -0.033
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "ccw": false,
-                "center": [
-                  0.2717,
-                  -0.633
-                ],
-                "from": [
-                  0.2717,
-                  -0.033
-                ],
-                "radius": 0.6,
-                "tag": null,
-                "to": [
-                  0.5717,
-                  -0.1134
-                ],
-                "type": "Arc",
-                "units": {
-                  "type": "Inches"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.5717,
-                  -0.1134
-                ],
-                "tag": {
-                  "commentStart": 1624,
-                  "end": 1630,
-                  "start": 1624,
-                  "type": "TagDeclarator",
-                  "value": "edge5"
-                },
-                "to": [
-                  1.8682,
-                  -0.8619
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "ccw": true,
-                "center": [
-                  2.1182,
-                  -0.4289
-                ],
-                "from": [
-                  1.8682,
-                  -0.8619
-                ],
-                "radius": 0.5,
-                "tag": null,
-                "to": [
-                  2.5512,
-                  -0.1789
-                ],
-                "type": "Arc",
-                "units": {
-                  "type": "Inches"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  2.5512,
-                  -0.1789
-                ],
-                "tag": {
-                  "commentStart": 1757,
-                  "end": 1763,
-                  "start": 1757,
-                  "type": "TagDeclarator",
-                  "value": "edge6"
-                },
-                "to": [
-                  2.2687,
-                  0.3104
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "ccw": false,
-                "center": [
-                  2.8125,
-                  0.564
-                ],
-                "from": [
-                  2.2687,
-                  0.3104
-                ],
-                "radius": 0.6,
-                "tag": null,
-                "to": [
-                  2.2125,
-                  0.564
-                ],
-                "type": "Arc",
-                "units": {
-                  "type": "Inches"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  2.2125,
-                  0.564
-                ],
-                "tag": null,
-                "to": [
-                  2.205,
-                  5.7
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  2.205,
-                  5.7
-                ],
-                "tag": null,
-                "to": [
-                  2.205,
-                  5.7
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
-              }
-            ],
-            "on": {
-              "type": "plane",
-              "id": "[uuid]",
-              "artifactId": "[uuid]",
-              "value": "Custom",
-              "origin": {
-                "x": -0.26,
-                "y": 0.26,
-                "z": 0.0,
-                "units": {
-                  "type": "Inches"
-                }
-              },
-              "xAxis": {
-                "x": 1.0,
-                "y": 1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Inches"
-                }
-              },
-              "yAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Inches"
-                }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
                 "units": {
                   "type": "Inches"
                 }
@@ -7654,14 +7342,6 @@ description: Variables in memory after executing french-press.kcl
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
-        },
-        "zAxis": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0,
           "units": {
             "type": "Mm"
           }
@@ -7805,14 +7485,6 @@ description: Variables in memory after executing french-press.kcl
                 "type": "Mm"
               }
             },
-            "zAxis": {
-              "x": 0.0,
-              "y": 0.0,
-              "z": 1.0,
-              "units": {
-                "type": "Mm"
-              }
-            },
             "solid": {
               "type": "Solid",
               "id": "[uuid]",
@@ -7881,14 +7553,6 @@ description: Variables in memory after executing french-press.kcl
                     "x": 0.0,
                     "y": 1.0,
                     "z": 0.0,
-                    "units": {
-                      "type": "Mm"
-                    }
-                  },
-                  "zAxis": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 1.0,
                     "units": {
                       "type": "Mm"
                     }
@@ -8065,14 +7729,6 @@ description: Variables in memory after executing french-press.kcl
                 "type": "Mm"
               }
             },
-            "zAxis": {
-              "x": 0.0,
-              "y": 0.0,
-              "z": 1.0,
-              "units": {
-                "type": "Mm"
-              }
-            },
             "solid": {
               "type": "Solid",
               "id": "[uuid]",
@@ -8141,14 +7797,6 @@ description: Variables in memory after executing french-press.kcl
                     "x": 0.0,
                     "y": 1.0,
                     "z": 0.0,
-                    "units": {
-                      "type": "Mm"
-                    }
-                  },
-                  "zAxis": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 1.0,
                     "units": {
                       "type": "Mm"
                     }
@@ -8325,14 +7973,6 @@ description: Variables in memory after executing french-press.kcl
                 "type": "Mm"
               }
             },
-            "zAxis": {
-              "x": 0.0,
-              "y": 0.0,
-              "z": 1.0,
-              "units": {
-                "type": "Mm"
-              }
-            },
             "solid": {
               "type": "Solid",
               "id": "[uuid]",
@@ -8401,14 +8041,6 @@ description: Variables in memory after executing french-press.kcl
                     "x": 0.0,
                     "y": 1.0,
                     "z": 0.0,
-                    "units": {
-                      "type": "Mm"
-                    }
-                  },
-                  "zAxis": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 1.0,
                     "units": {
                       "type": "Mm"
                     }
@@ -8705,14 +8337,6 @@ description: Variables in memory after executing french-press.kcl
             "units": {
               "type": "Mm"
             }
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": -1.0,
-            "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
           }
         },
         "start": {
@@ -9001,14 +8625,6 @@ description: Variables in memory after executing french-press.kcl
             "units": {
               "type": "Mm"
             }
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": -1.0,
-            "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
           }
         },
         "start": {
@@ -9104,14 +8720,6 @@ description: Variables in memory after executing french-press.kcl
           "units": {
             "type": "Mm"
           }
-        },
-        "zAxis": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0,
-          "units": {
-            "type": "Mm"
-          }
         }
       },
       "start": {
@@ -9195,14 +8803,6 @@ description: Variables in memory after executing french-press.kcl
                 "type": "Mm"
               }
             },
-            "zAxis": {
-              "x": 0.0,
-              "y": 0.0,
-              "z": 1.0,
-              "units": {
-                "type": "Mm"
-              }
-            },
             "solid": {
               "type": "Solid",
               "id": "[uuid]",
@@ -9271,14 +8871,6 @@ description: Variables in memory after executing french-press.kcl
                     "x": 0.0,
                     "y": 1.0,
                     "z": 0.0,
-                    "units": {
-                      "type": "Mm"
-                    }
-                  },
-                  "zAxis": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 1.0,
                     "units": {
                       "type": "Mm"
                     }
@@ -9398,14 +8990,6 @@ description: Variables in memory after executing french-press.kcl
                 "type": "Mm"
               }
             },
-            "zAxis": {
-              "x": 0.0,
-              "y": 0.0,
-              "z": 1.0,
-              "units": {
-                "type": "Mm"
-              }
-            },
             "solid": {
               "type": "Solid",
               "id": "[uuid]",
@@ -9474,14 +9058,6 @@ description: Variables in memory after executing french-press.kcl
                     "x": 0.0,
                     "y": 1.0,
                     "z": 0.0,
-                    "units": {
-                      "type": "Mm"
-                    }
-                  },
-                  "zAxis": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 1.0,
                     "units": {
                       "type": "Mm"
                     }
@@ -9601,14 +9177,6 @@ description: Variables in memory after executing french-press.kcl
                 "type": "Mm"
               }
             },
-            "zAxis": {
-              "x": 0.0,
-              "y": 0.0,
-              "z": 1.0,
-              "units": {
-                "type": "Mm"
-              }
-            },
             "solid": {
               "type": "Solid",
               "id": "[uuid]",
@@ -9677,14 +9245,6 @@ description: Variables in memory after executing french-press.kcl
                     "x": 0.0,
                     "y": 1.0,
                     "z": 0.0,
-                    "units": {
-                      "type": "Mm"
-                    }
-                  },
-                  "zAxis": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 1.0,
                     "units": {
                       "type": "Mm"
                     }
@@ -9804,14 +9364,6 @@ description: Variables in memory after executing french-press.kcl
                 "type": "Mm"
               }
             },
-            "zAxis": {
-              "x": 0.0,
-              "y": 0.0,
-              "z": 1.0,
-              "units": {
-                "type": "Mm"
-              }
-            },
             "solid": {
               "type": "Solid",
               "id": "[uuid]",
@@ -9880,14 +9432,6 @@ description: Variables in memory after executing french-press.kcl
                     "x": 0.0,
                     "y": 1.0,
                     "z": 0.0,
-                    "units": {
-                      "type": "Mm"
-                    }
-                  },
-                  "zAxis": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 1.0,
                     "units": {
                       "type": "Mm"
                     }
@@ -10007,14 +9551,6 @@ description: Variables in memory after executing french-press.kcl
                 "type": "Mm"
               }
             },
-            "zAxis": {
-              "x": 0.0,
-              "y": 0.0,
-              "z": 1.0,
-              "units": {
-                "type": "Mm"
-              }
-            },
             "solid": {
               "type": "Solid",
               "id": "[uuid]",
@@ -10083,14 +9619,6 @@ description: Variables in memory after executing french-press.kcl
                     "x": 0.0,
                     "y": 1.0,
                     "z": 0.0,
-                    "units": {
-                      "type": "Mm"
-                    }
-                  },
-                  "zAxis": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 1.0,
                     "units": {
                       "type": "Mm"
                     }
@@ -10210,14 +9738,6 @@ description: Variables in memory after executing french-press.kcl
                 "type": "Mm"
               }
             },
-            "zAxis": {
-              "x": 0.0,
-              "y": 0.0,
-              "z": 1.0,
-              "units": {
-                "type": "Mm"
-              }
-            },
             "solid": {
               "type": "Solid",
               "id": "[uuid]",
@@ -10286,14 +9806,6 @@ description: Variables in memory after executing french-press.kcl
                     "x": 0.0,
                     "y": 1.0,
                     "z": 0.0,
-                    "units": {
-                      "type": "Mm"
-                    }
-                  },
-                  "zAxis": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 1.0,
                     "units": {
                       "type": "Mm"
                     }
@@ -10413,14 +9925,6 @@ description: Variables in memory after executing french-press.kcl
                 "type": "Mm"
               }
             },
-            "zAxis": {
-              "x": 0.0,
-              "y": 0.0,
-              "z": 1.0,
-              "units": {
-                "type": "Mm"
-              }
-            },
             "solid": {
               "type": "Solid",
               "id": "[uuid]",
@@ -10489,14 +9993,6 @@ description: Variables in memory after executing french-press.kcl
                     "x": 0.0,
                     "y": 1.0,
                     "z": 0.0,
-                    "units": {
-                      "type": "Mm"
-                    }
-                  },
-                  "zAxis": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 1.0,
                     "units": {
                       "type": "Mm"
                     }
@@ -10616,14 +10112,6 @@ description: Variables in memory after executing french-press.kcl
                 "type": "Mm"
               }
             },
-            "zAxis": {
-              "x": 0.0,
-              "y": 0.0,
-              "z": 1.0,
-              "units": {
-                "type": "Mm"
-              }
-            },
             "solid": {
               "type": "Solid",
               "id": "[uuid]",
@@ -10692,14 +10180,6 @@ description: Variables in memory after executing french-press.kcl
                     "x": 0.0,
                     "y": 1.0,
                     "z": 0.0,
-                    "units": {
-                      "type": "Mm"
-                    }
-                  },
-                  "zAxis": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 1.0,
                     "units": {
                       "type": "Mm"
                     }
@@ -10824,14 +10304,6 @@ description: Variables in memory after executing french-press.kcl
                 "type": "Mm"
               }
             },
-            "zAxis": {
-              "x": 0.0,
-              "y": 0.0,
-              "z": 1.0,
-              "units": {
-                "type": "Mm"
-              }
-            },
             "solid": {
               "type": "Solid",
               "id": "[uuid]",
@@ -10900,14 +10372,6 @@ description: Variables in memory after executing french-press.kcl
                     "x": 0.0,
                     "y": 1.0,
                     "z": 0.0,
-                    "units": {
-                      "type": "Mm"
-                    }
-                  },
-                  "zAxis": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 1.0,
                     "units": {
                       "type": "Mm"
                     }
@@ -11027,14 +10491,6 @@ description: Variables in memory after executing french-press.kcl
                 "type": "Mm"
               }
             },
-            "zAxis": {
-              "x": 0.0,
-              "y": 0.0,
-              "z": 1.0,
-              "units": {
-                "type": "Mm"
-              }
-            },
             "solid": {
               "type": "Solid",
               "id": "[uuid]",
@@ -11103,14 +10559,6 @@ description: Variables in memory after executing french-press.kcl
                     "x": 0.0,
                     "y": 1.0,
                     "z": 0.0,
-                    "units": {
-                      "type": "Mm"
-                    }
-                  },
-                  "zAxis": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 1.0,
                     "units": {
                       "type": "Mm"
                     }
@@ -11230,14 +10678,6 @@ description: Variables in memory after executing french-press.kcl
                 "type": "Mm"
               }
             },
-            "zAxis": {
-              "x": 0.0,
-              "y": 0.0,
-              "z": 1.0,
-              "units": {
-                "type": "Mm"
-              }
-            },
             "solid": {
               "type": "Solid",
               "id": "[uuid]",
@@ -11306,14 +10746,6 @@ description: Variables in memory after executing french-press.kcl
                     "x": 0.0,
                     "y": 1.0,
                     "z": 0.0,
-                    "units": {
-                      "type": "Mm"
-                    }
-                  },
-                  "zAxis": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 1.0,
                     "units": {
                       "type": "Mm"
                     }
@@ -11433,14 +10865,6 @@ description: Variables in memory after executing french-press.kcl
                 "type": "Mm"
               }
             },
-            "zAxis": {
-              "x": 0.0,
-              "y": 0.0,
-              "z": 1.0,
-              "units": {
-                "type": "Mm"
-              }
-            },
             "solid": {
               "type": "Solid",
               "id": "[uuid]",
@@ -11509,14 +10933,6 @@ description: Variables in memory after executing french-press.kcl
                     "x": 0.0,
                     "y": 1.0,
                     "z": 0.0,
-                    "units": {
-                      "type": "Mm"
-                    }
-                  },
-                  "zAxis": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 1.0,
                     "units": {
                       "type": "Mm"
                     }
@@ -11642,14 +11058,6 @@ description: Variables in memory after executing french-press.kcl
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
-        },
-        "zAxis": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0,
           "units": {
             "type": "Mm"
           }
@@ -11919,14 +11327,6 @@ description: Variables in memory after executing french-press.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Mm"
-            }
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": -1.0,
-            "z": 0.0,
             "units": {
               "type": "Mm"
             }
@@ -12274,14 +11674,6 @@ description: Variables in memory after executing french-press.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Mm"
-          }
-        },
-        "zAxis": {
-          "x": 0.0,
-          "y": -1.0,
-          "z": 0.0,
           "units": {
             "type": "Mm"
           }
