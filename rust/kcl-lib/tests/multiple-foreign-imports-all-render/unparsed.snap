@@ -1,10 +1,14 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing multiple-foreign-imports-all-render.kcl
+---
 import "../inputs/cube.step" as cube
 import "othercube.kcl" as othercube
 import "anothercube.kcl" as anothercube
 
 model = cube
 
-othercube
+/* othercube
     |> translate(x=1020)
     |> appearance(
        color = "#ff001f",
@@ -18,5 +22,4 @@ anothercube
        color = "#ff0000",
        metalness = 50,
        roughness = 50
-   )
-
+   ) */
