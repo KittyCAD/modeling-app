@@ -981,7 +981,7 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": 0.0,
+        "y": -0.12186934340514748,
         "z": 1.0
       }
     }
@@ -1173,7 +1173,7 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": 0.0,
+        "y": -0.12186934340514748,
         "z": 1.0
       }
     }
@@ -1436,7 +1436,7 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": 0.0,
+        "y": -0.12186934340514748,
         "z": 1.0
       }
     }
@@ -1628,7 +1628,7 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": 0.0,
+        "y": -0.12186934340514748,
         "z": 1.0
       }
     }
@@ -1950,7 +1950,7 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": 0.0,
+        "y": -0.12186934340514748,
         "z": 1.0
       }
     }
@@ -2142,7 +2142,7 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": 0.0,
+        "y": -0.12186934340514748,
         "z": 1.0
       }
     }
@@ -2405,7 +2405,7 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": 0.0,
+        "y": -0.12186934340514748,
         "z": 1.0
       }
     }
@@ -2597,7 +2597,7 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": 0.0,
+        "y": -0.12186934340514748,
         "z": 1.0
       }
     }
@@ -2860,7 +2860,7 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": 0.0,
+        "y": -0.12186934340514748,
         "z": 1.0
       }
     }
@@ -3052,7 +3052,7 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": 0.0,
+        "y": -0.12186934340514748,
         "z": 1.0
       }
     }
@@ -3315,7 +3315,7 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": 0.0,
+        "y": -0.12186934340514748,
         "z": 1.0
       }
     }
@@ -3507,7 +3507,7 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": 0.0,
+        "y": -0.12186934340514748,
         "z": 1.0
       }
     }
@@ -3770,7 +3770,7 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": 0.0,
+        "y": -0.12186934340514748,
         "z": 1.0
       }
     }
@@ -3962,7 +3962,7 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": 0.0,
+        "y": -0.12186934340514748,
         "z": 1.0
       }
     }
@@ -4225,7 +4225,7 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": 0.0,
+        "y": -0.12186934340514748,
         "z": 1.0
       }
     }
@@ -4417,7 +4417,7 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": 0.0,
+        "y": -0.12186934340514748,
         "z": 1.0
       }
     }
@@ -4680,7 +4680,7 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": 0.0,
+        "y": -0.12186934340514748,
         "z": 1.0
       }
     }
@@ -4872,7 +4872,7 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": 0.0,
+        "y": -0.12186934340514748,
         "z": 1.0
       }
     }
@@ -5397,7 +5397,7 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": 0.0,
+        "y": -0.12186934340514748,
         "z": 1.0
       }
     }
@@ -5589,7 +5589,7 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": 0.0,
+        "y": -0.12186934340514748,
         "z": 1.0
       }
     }
@@ -5852,7 +5852,7 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": 0.0,
+        "y": -0.12186934340514748,
         "z": 1.0
       }
     }
@@ -6044,7 +6044,7 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": 0.0,
+        "y": -0.12186934340514748,
         "z": 1.0
       }
     }
@@ -6307,7 +6307,7 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": 0.0,
+        "y": -0.12186934340514748,
         "z": 1.0
       }
     }
@@ -6499,7 +6499,7 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": 0.0,
+        "y": -0.12186934340514748,
         "z": 1.0
       }
     }
@@ -7053,7 +7053,7 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": 0.0,
+        "y": -0.12186934340514748,
         "z": 1.0
       }
     }
@@ -7245,7 +7245,7 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": 0.0,
+        "y": -0.12186934340514748,
         "z": 1.0
       }
     }
@@ -7508,7 +7508,7 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": 0.0,
+        "y": -0.12186934340514748,
         "z": 1.0
       }
     }
@@ -7700,7 +7700,7 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": 0.0,
+        "y": -0.12186934340514748,
         "z": 1.0
       }
     }
@@ -7963,7 +7963,7 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": 0.0,
+        "y": -0.12186934340514748,
         "z": 1.0
       }
     }
@@ -8155,7 +8155,7 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": 0.0,
+        "y": -0.12186934340514748,
         "z": 1.0
       }
     }
@@ -8738,7 +8738,7 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": 0.0,
+        "y": -0.12186934340514748,
         "z": 1.0
       }
     }
@@ -8930,7 +8930,7 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": 0.0,
+        "y": -0.12186934340514748,
         "z": 1.0
       }
     }
@@ -9193,7 +9193,7 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": 0.0,
+        "y": -0.12186934340514748,
         "z": 1.0
       }
     }
@@ -9385,7 +9385,7 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": 0.0,
+        "y": -0.12186934340514748,
         "z": 1.0
       }
     }
@@ -9997,7 +9997,7 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": 0.0,
+        "y": -0.12186934340514748,
         "z": 1.0
       }
     }
@@ -10189,7 +10189,7 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": 0.0,
+        "y": -0.12186934340514748,
         "z": 1.0
       }
     }
@@ -10452,7 +10452,7 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": 0.0,
+        "y": -0.12186934340514748,
         "z": 1.0
       }
     }
@@ -10644,7 +10644,7 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": 0.0,
+        "y": -0.12186934340514748,
         "z": 1.0
       }
     }
@@ -10907,7 +10907,7 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": 0.0,
+        "y": -0.12186934340514748,
         "z": 1.0
       }
     }
@@ -11099,7 +11099,7 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": 0.0,
+        "y": -0.12186934340514748,
         "z": 1.0
       }
     }
@@ -11682,7 +11682,7 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": 0.0,
+        "y": -0.12186934340514748,
         "z": 1.0
       }
     }
@@ -11874,7 +11874,7 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": 0.0,
+        "y": -0.12186934340514748,
         "z": 1.0
       }
     }
@@ -12137,7 +12137,7 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": 0.0,
+        "y": -0.12186934340514748,
         "z": 1.0
       }
     }
@@ -12443,7 +12443,7 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": 0.0,
+        "y": -0.12186934340514748,
         "z": 1.0
       }
     }
@@ -12856,7 +12856,7 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": 0.0,
+        "y": -0.12186934340514748,
         "z": 1.0
       }
     }
@@ -12974,7 +12974,7 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": 0.0,
+        "y": -0.12186934340514748,
         "z": 1.0
       }
     }
@@ -13147,7 +13147,7 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": 0.0,
+        "y": -0.12186934340514748,
         "z": 1.0
       }
     }
@@ -13265,7 +13265,7 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": 0.0,
+        "y": -0.12186934340514748,
         "z": 1.0
       }
     }
@@ -13438,7 +13438,7 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": 0.0,
+        "y": -0.12186934340514748,
         "z": 1.0
       }
     }
@@ -13556,7 +13556,7 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": 0.0,
+        "y": -0.12186934340514748,
         "z": 1.0
       }
     }
@@ -13729,7 +13729,7 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": 0.0,
+        "y": -0.12186934340514748,
         "z": 1.0
       }
     }
@@ -13847,7 +13847,7 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": 0.0,
+        "y": -0.12186934340514748,
         "z": 1.0
       }
     }

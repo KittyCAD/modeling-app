@@ -74,6 +74,7 @@ import {
   EngineConnectionStateType,
 } from '@src/lang/std/engineConnection'
 import {
+  crossProduct,
   isCursorInSketchCommandRange,
   updateSketchDetailsNodePaths,
 } from '@src/lang/util'
@@ -914,11 +915,12 @@ export const ModelingMachineProvider = ({
                   engineCommandManager,
                   artifact.id
                 )
+                const normal = crossProduct(planeVar.xAxis, planeVar.yAxis)
                 return {
                   sketchEntryNodePath: [],
                   planeNodePath: planPath,
                   sketchNodePaths: [],
-                  zAxis: toTuple(planeVar.zAxis),
+                  zAxis: toTuple(normal),
                   yAxis: toTuple(planeVar.yAxis),
                   origin: toTuple(planeVar.origin),
                 }
