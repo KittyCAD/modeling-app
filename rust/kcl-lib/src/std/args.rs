@@ -598,23 +598,6 @@ impl Args {
         Ok(TyF64::from_kcl_val(&arg.value).unwrap().n)
     }
 
-    pub(crate) fn get_number_array_with_types(&self) -> Result<Vec<TyF64>, KclError> {
-        let numbers = self
-            .args
-            .iter()
-            .map(|arg| {
-                let Some(num) = <TyF64>::from_kcl_val(&arg.value) else {
-                    return Err(KclError::Semantic(KclErrorDetails {
-                        source_ranges: arg.source_ranges(),
-                        message: format!("Expected a number but found {}", arg.value.human_friendly_type()),
-                    }));
-                };
-                Ok(num)
-            })
-            .collect::<Result<_, _>>()?;
-        Ok(numbers)
-    }
-
     pub(crate) async fn get_adjacent_face_to_tag(
         &self,
         exec_state: &mut ExecState,
@@ -1159,6 +1142,7 @@ impl_from_kcl_for_vec!(crate::execution::EdgeCut);
 impl_from_kcl_for_vec!(crate::execution::Metadata);
 impl_from_kcl_for_vec!(super::fillet::EdgeReference);
 impl_from_kcl_for_vec!(ExtrudeSurface);
+impl_from_kcl_for_vec!(TyF64);
 
 impl<'a> FromKclValue<'a> for SourceRange {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {

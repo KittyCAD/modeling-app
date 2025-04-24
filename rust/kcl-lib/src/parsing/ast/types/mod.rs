@@ -3683,7 +3683,7 @@ fn ghi = (x) => {
 
     #[test]
     fn test_ast_in_comment() {
-        let some_program_string = r#"const r = 20 / pow(pi(), 1 / 3)
+        let some_program_string = r#"r = 20 / pow(pi(), exp = 1 / 3)
 const h = 30
 
 // st
@@ -3703,7 +3703,7 @@ const cylinder = startSketchOn('-XZ')
 
     #[test]
     fn test_ast_in_comment_pipe() {
-        let some_program_string = r#"const r = 20 / pow(pi(), 1 / 3)
+        let some_program_string = r#"r = 20 / pow(pi(), exp = 1 / 3)
 const h = 30
 
 // st

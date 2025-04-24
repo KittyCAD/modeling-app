@@ -298,21 +298,21 @@ mySk1 = startSketchOn(XY)
 
 describe('testing call Expressions in BinaryExpressions and UnaryExpressions', () => {
   it('nested callExpression in binaryExpression', () => {
-    const code = 'myVar = 2 + min(100, legLen(hypotenuse = 5, leg = 3))'
+    const code = 'myVar = 2 + min([100, legLen(hypotenuse = 5, leg = 3)])'
     const { ast } = code2ast(code)
     const recasted = recast(ast)
     if (err(recasted)) throw recasted
     expect(recasted.trim()).toBe(code)
   })
   it('nested callExpression in unaryExpression', () => {
-    const code = 'myVar = -min(100, legLen(hypotenuse = 5, leg = 3))'
+    const code = 'myVar = -min([100, legLen(hypotenuse = 5, leg = 3)])'
     const { ast } = code2ast(code)
     const recasted = recast(ast)
     if (err(recasted)) throw recasted
     expect(recasted.trim()).toBe(code)
   })
   it('with unaryExpression in callExpression', () => {
-    const code = 'myVar = min(5, -legLen(hypotenuse = 5, leg = 4))'
+    const code = 'myVar = min([5, -legLen(hypotenuse = 5, leg = 4)])'
     const { ast } = code2ast(code)
     const recasted = recast(ast)
     if (err(recasted)) throw recasted
@@ -322,7 +322,7 @@ describe('testing call Expressions in BinaryExpressions and UnaryExpressions', (
     const code = [
       'part001 = startSketchOn(XY)',
       '  |> startProfile(at = [0, 0])',
-      '  |> line(end = [\n       -2.21,\n       -legLen(hypotenuse = 5, leg = min(3, 999))\n     ])',
+      '  |> line(end = [\n       -2.21,\n       -legLen(hypotenuse = 5, leg = min([3, 999]))\n     ])',
     ].join('\n')
     const { ast } = code2ast(code)
     const recasted = recast(ast)

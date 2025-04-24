@@ -452,7 +452,11 @@ const getMinAndSegLenVals = (
 ): [Expr, BinaryPart] => {
   const segLenVal = createSegLen(referenceSegName)
   return [
-    createCallExpression('min', [segLenVal, varVal]),
+    createCallExpressionStdLibKw(
+      'min',
+      createArrayExpression([segLenVal, varVal]),
+      []
+    ),
     createCallExpressionStdLibKw('legLen', null, [
       createLabeledArg('hypotenuse', segLenVal),
       createLabeledArg('leg', varVal),
@@ -465,10 +469,11 @@ const getMinAndSegAngVals = (
   varVal: Expr,
   fnName: 'legAngX' | 'legAngY' = 'legAngX'
 ): [Expr, BinaryPart] => {
-  const minVal = createCallExpression('min', [
-    createSegLen(referenceSegName),
-    varVal,
-  ])
+  const minVal = createCallExpressionStdLibKw(
+    'min',
+    createArrayExpression([createSegLen(referenceSegName), varVal]),
+    []
+  )
   const legAngle = createCallExpression(fnName, [
     createSegLen(referenceSegName),
     varVal,

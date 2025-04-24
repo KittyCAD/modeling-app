@@ -4,9 +4,9 @@ use anyhow::Result;
 use kcl_derive_docs::stdlib;
 
 use crate::{
-    errors::{KclError, KclErrorDetails},
+    errors::KclError,
     execution::{
-        types::{NumericType, RuntimeType, UnitAngle, UnitType},
+        types::{ArrayLen, NumericType, RuntimeType, UnitAngle, UnitType},
         ExecState, KclValue,
     },
     std::args::{Args, TyF64},
@@ -147,8 +147,8 @@ fn inner_pi() -> Result<f64, KclError> {
 
 /// Compute the square root of a number.
 pub async fn sqrt(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let num = args.get_number_with_type()?;
-    let result = inner_sqrt(num.n)?;
+    let input: TyF64 = args.get_unlabeled_kw_arg_typed("input", &RuntimeType::num_any(), exec_state)?;
+    let result = inner_sqrt(input.n);
 
     Ok(args.make_user_val_from_f64_with_type(TyF64::new(result, exec_state.current_default_units())))
 }
@@ -170,17 +170,22 @@ pub async fn sqrt(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 #[stdlib {
     name = "sqrt",
     tags = ["math"],
+    keywords = true,
+    unlabeled_first = true,
+    args = {
+        input = {docs = "The number to compute the square root of."},
+    }
 }]
-fn inner_sqrt(num: f64) -> Result<f64, KclError> {
-    Ok(num.sqrt())
+fn inner_sqrt(input: f64) -> f64 {
+    input.sqrt()
 }
 
 /// Compute the absolute value of a number.
-pub async fn abs(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let num = args.get_number_with_type()?;
-    let result = inner_abs(num.n)?;
+pub async fn abs(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let input: TyF64 = args.get_unlabeled_kw_arg_typed("input", &RuntimeType::num_any(), exec_state)?;
+    let result = inner_abs(input.n);
 
-    Ok(args.make_user_val_from_f64_with_type(num.map_value(result)))
+    Ok(args.make_user_val_from_f64_with_type(input.map_value(result)))
 }
 
 /// Compute the absolute value of a number.
@@ -207,17 +212,22 @@ pub async fn abs(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 #[stdlib {
     name = "abs",
     tags = ["math"],
+    keywords = true,
+    unlabeled_first = true,
+    args = {
+        input = {docs = "The number to compute the absolute value of."},
+    }
 }]
-fn inner_abs(num: f64) -> Result<f64, KclError> {
-    Ok(num.abs())
+fn inner_abs(input: f64) -> f64 {
+    input.abs()
 }
 
 /// Round a number to the nearest integer.
-pub async fn round(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let num = args.get_number_with_type()?;
-    let result = inner_round(num.n)?;
+pub async fn round(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let input: TyF64 = args.get_unlabeled_kw_arg_typed("input", &RuntimeType::num_any(), exec_state)?;
+    let result = inner_round(input.n);
 
-    Ok(args.make_user_val_from_f64_with_type(num.map_value(result)))
+    Ok(args.make_user_val_from_f64_with_type(input.map_value(result)))
 }
 
 /// Round a number to the nearest integer.
@@ -235,17 +245,22 @@ pub async fn round(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 #[stdlib {
     name = "round",
     tags = ["math"],
+    keywords = true,
+    unlabeled_first = true,
+    args = {
+        input = {docs = "The number to round."},
+    }
 }]
-fn inner_round(num: f64) -> Result<f64, KclError> {
-    Ok(num.round())
+fn inner_round(input: f64) -> f64 {
+    input.round()
 }
 
 /// Compute the largest integer less than or equal to a number.
-pub async fn floor(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let num = args.get_number_with_type()?;
-    let result = inner_floor(num.n)?;
+pub async fn floor(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let input: TyF64 = args.get_unlabeled_kw_arg_typed("input", &RuntimeType::num_any(), exec_state)?;
+    let result = inner_floor(input.n);
 
-    Ok(args.make_user_val_from_f64_with_type(num.map_value(result)))
+    Ok(args.make_user_val_from_f64_with_type(input.map_value(result)))
 }
 
 /// Compute the largest integer less than or equal to a number.
@@ -263,17 +278,22 @@ pub async fn floor(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 #[stdlib {
     name = "floor",
     tags = ["math"],
+    keywords = true,
+    unlabeled_first = true,
+    args = {
+        input = {docs = "The number to round."},
+    }
 }]
-fn inner_floor(num: f64) -> Result<f64, KclError> {
-    Ok(num.floor())
+fn inner_floor(input: f64) -> f64 {
+    input.floor()
 }
 
 /// Compute the smallest integer greater than or equal to a number.
-pub async fn ceil(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let num = args.get_number_with_type()?;
-    let result = inner_ceil(num.n)?;
+pub async fn ceil(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let input: TyF64 = args.get_unlabeled_kw_arg_typed("input", &RuntimeType::num_any(), exec_state)?;
+    let result = inner_ceil(input.n);
 
-    Ok(args.make_user_val_from_f64_with_type(num.map_value(result)))
+    Ok(args.make_user_val_from_f64_with_type(input.map_value(result)))
 }
 
 /// Compute the smallest integer greater than or equal to a number.
@@ -291,14 +311,23 @@ pub async fn ceil(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 #[stdlib {
     name = "ceil",
     tags = ["math"],
+    keywords = true,
+    unlabeled_first = true,
+    args = {
+        input = {docs = "The number to round."},
+    }
 }]
-fn inner_ceil(num: f64) -> Result<f64, KclError> {
-    Ok(num.ceil())
+fn inner_ceil(input: f64) -> f64 {
+    input.ceil()
 }
 
 /// Compute the minimum of the given arguments.
 pub async fn min(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let nums = args.get_number_array_with_types()?;
+    let nums: Vec<TyF64> = args.get_unlabeled_kw_arg_typed(
+        "input",
+        &RuntimeType::Array(Box::new(RuntimeType::num_any()), ArrayLen::None),
+        exec_state,
+    )?;
     let (nums, ty) = NumericType::combine_eq_array(&nums);
     if ty == NumericType::Unknown {
         exec_state.warn(CompilationError::err(
@@ -318,7 +347,7 @@ pub async fn min(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
 ///   |> startProfile(at = [0, 0])
 ///   |> angledLine(
 ///     angle = 70,
-///     length = min(15, 31, 4, 13, 22)
+///     length = min([15, 31, 4, 13, 22])
 ///   )
 ///   |> line(end = [20, 0])
 ///   |> close()
@@ -328,12 +357,17 @@ pub async fn min(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
 #[stdlib {
     name = "min",
     tags = ["math"],
+    keywords = true,
+    unlabeled_first = true,
+    args = {
+        input = {docs = "An array of numbers to compute the minimum of."},
+    }
 }]
-fn inner_min(args: Vec<f64>) -> f64 {
+fn inner_min(input: Vec<f64>) -> f64 {
     let mut min = f64::MAX;
-    for arg in args.iter() {
-        if *arg < min {
-            min = *arg;
+    for num in input.iter() {
+        if *num < min {
+            min = *num;
         }
     }
 
@@ -342,7 +376,11 @@ fn inner_min(args: Vec<f64>) -> f64 {
 
 /// Compute the maximum of the given arguments.
 pub async fn max(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let nums = args.get_number_array_with_types()?;
+    let nums: Vec<TyF64> = args.get_unlabeled_kw_arg_typed(
+        "input",
+        &RuntimeType::Array(Box::new(RuntimeType::num_any()), ArrayLen::None),
+        exec_state,
+    )?;
     let (nums, ty) = NumericType::combine_eq_array(&nums);
     if ty == NumericType::Unknown {
         exec_state.warn(CompilationError::err(
@@ -362,7 +400,7 @@ pub async fn max(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
 ///   |> startProfile(at = [0, 0])
 ///   |> angledLine(
 ///     angle = 70,
-///     length = max(15, 31, 4, 13, 22)
+///     length = max([15, 31, 4, 13, 22])
 ///   )
 ///   |> line(end = [20, 0])
 ///   |> close()
@@ -372,12 +410,17 @@ pub async fn max(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
 #[stdlib {
     name = "max",
     tags = ["math"],
+    keywords = true,
+    unlabeled_first = true,
+    args = {
+        input = {docs = "An array of numbers to compute the maximum of."},
+    }
 }]
-fn inner_max(args: Vec<f64>) -> f64 {
+fn inner_max(input: Vec<f64>) -> f64 {
     let mut max = f64::MIN;
-    for arg in args.iter() {
-        if *arg > max {
-            max = *arg;
+    for num in input.iter() {
+        if *num > max {
+            max = *num;
         }
     }
 
@@ -386,22 +429,9 @@ fn inner_max(args: Vec<f64>) -> f64 {
 
 /// Compute the number to a power.
 pub async fn pow(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let nums = args.get_number_array_with_types()?;
-    if nums.len() > 2 {
-        return Err(KclError::Type(KclErrorDetails {
-            message: format!("expected 2 arguments, got {}", nums.len()),
-            source_ranges: vec![args.source_range],
-        }));
-    }
-
-    if nums.len() <= 1 {
-        return Err(KclError::Type(KclErrorDetails {
-            message: format!("expected 2 arguments, got {}", nums.len()),
-            source_ranges: vec![args.source_range],
-        }));
-    }
-
-    let result = inner_pow(nums[0].n, nums[1].n)?;
+    let input: TyF64 = args.get_unlabeled_kw_arg_typed("input", &RuntimeType::num_any(), exec_state)?;
+    let exp: TyF64 = args.get_kw_arg_typed("exp", &RuntimeType::count(), exec_state)?;
+    let result = inner_pow(input.n, exp.n);
 
     Ok(args.make_user_val_from_f64_with_type(TyF64::new(result, exec_state.current_default_units())))
 }
@@ -413,7 +443,7 @@ pub async fn pow(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
 ///   |> startProfile(at = [0, 0])
 ///   |> angledLine(
 ///     angle = 50,
-///     length = pow(5, 2),
+///     length = pow(5, exp = 2),
 ///   )
 ///   |> yLine(endAbsolute = 0)
 ///   |> close()
@@ -423,27 +453,21 @@ pub async fn pow(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
 #[stdlib {
     name = "pow",
     tags = ["math"],
+    keywords = true,
+    unlabeled_first = true,
+    args = {
+        input = {docs = "The number to raise."},
+        exp = {docs = "The power to raise to."},
+    }
 }]
-fn inner_pow(num: f64, pow: f64) -> Result<f64, KclError> {
-    Ok(num.powf(pow))
+fn inner_pow(input: f64, exp: f64) -> f64 {
+    input.powf(exp)
 }
 
 /// Compute the arccosine of a number (in radians).
 pub async fn acos(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let num = args.get_number_with_type()?;
-    if matches!(
-        num.ty,
-        NumericType::Default {
-            angle: UnitAngle::Degrees,
-            ..
-        }
-    ) {
-        exec_state.warn(CompilationError::err(
-            args.source_range,
-            "`acos` requires its input in radians, but the input is assumed to be in degrees. You can use a numeric suffix (e.g., `0rad`) or type ascription (e.g., `(1/2): number(rad)`) to show the number is in radians, or `toRadians` to convert from degrees to radians",
-        ));
-    }
-    let result = inner_acos(num.n)?;
+    let input: TyF64 = args.get_unlabeled_kw_arg_typed("input", &RuntimeType::count(), exec_state)?;
+    let result = inner_acos(input.n);
 
     Ok(args.make_user_val_from_f64_with_type(TyF64::new(result, NumericType::radians())))
 }
@@ -466,27 +490,20 @@ pub async fn acos(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 #[stdlib {
     name = "acos",
     tags = ["math"],
+    keywords = true,
+    unlabeled_first = true,
+    args = {
+        input = {docs = "The number to compute arccosine of."},
+    }
 }]
-fn inner_acos(num: f64) -> Result<f64, KclError> {
-    Ok(num.acos())
+fn inner_acos(input: f64) -> f64 {
+    input.acos()
 }
 
 /// Compute the arcsine of a number (in radians).
 pub async fn asin(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let num = args.get_number_with_type()?;
-    if matches!(
-        num.ty,
-        NumericType::Default {
-            angle: UnitAngle::Degrees,
-            ..
-        }
-    ) {
-        exec_state.warn(CompilationError::err(
-            args.source_range,
-            "`asin` requires its input in radians, but the input is assumed to be in degrees. You can use a numeric suffix (e.g., `0rad`) or type ascription (e.g., `(1/2): number(rad)`) to show the number is in radians, or `toRadians` to convert from degrees to radians",
-        ));
-    }
-    let result = inner_asin(num.n)?;
+    let input: TyF64 = args.get_unlabeled_kw_arg_typed("input", &RuntimeType::count(), exec_state)?;
+    let result = inner_asin(input.n);
 
     Ok(args.make_user_val_from_f64_with_type(TyF64::new(result, NumericType::radians())))
 }
@@ -508,32 +525,27 @@ pub async fn asin(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 #[stdlib {
     name = "asin",
     tags = ["math"],
+    keywords = true,
+    unlabeled_first = true,
+    args = {
+        input = {docs = "The number to compute arcsine of."},
+    }
 }]
-fn inner_asin(num: f64) -> Result<f64, KclError> {
-    Ok(num.asin())
+fn inner_asin(input: f64) -> f64 {
+    input.asin()
 }
 
 /// Compute the arctangent of a number (in radians).
 pub async fn atan(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let num = args.get_number_with_type()?;
-    if matches!(
-        num.ty,
-        NumericType::Default {
-            angle: UnitAngle::Degrees,
-            ..
-        }
-    ) {
-        exec_state.warn(CompilationError::err(
-            args.source_range,
-            "`atan` requires its input in radians, but the input is assumed to be in degrees. You can use a numeric suffix (e.g., `0rad`) or type ascription (e.g., `(1/2): number(rad)`) to show the number is in radians, or `toRadians` to convert from degrees to radians",
-        ));
-    }
-    let result = inner_atan(num.n)?;
+    let input: TyF64 = args.get_unlabeled_kw_arg_typed("input", &RuntimeType::count(), exec_state)?;
+    let result = inner_atan(input.n);
 
     Ok(args.make_user_val_from_f64_with_type(TyF64::new(result, NumericType::radians())))
 }
 
 /// Compute the arctangent of a number (in radians).
+///
+/// Consider using `atan2()` instead for the true inverse of tangent.
 ///
 /// ```no_run
 /// sketch001 = startSketchOn('XZ')
@@ -550,9 +562,14 @@ pub async fn atan(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 #[stdlib {
     name = "atan",
     tags = ["math"],
+    keywords = true,
+    unlabeled_first = true,
+    args = {
+        input = {docs = "The number to compute arctangent of."},
+    }
 }]
-fn inner_atan(num: f64) -> Result<f64, KclError> {
-    Ok(num.atan())
+fn inner_atan(input: f64) -> f64 {
+    input.atan()
 }
 
 /// Compute the four quadrant arctangent of Y and X (in radians).
@@ -560,7 +577,7 @@ pub async fn atan2(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     let y = args.get_kw_arg_typed("y", &RuntimeType::length(), exec_state)?;
     let x = args.get_kw_arg_typed("x", &RuntimeType::length(), exec_state)?;
     let (y, x, _) = NumericType::combine_eq_coerce(y, x);
-    let result = inner_atan2(y, x)?;
+    let result = inner_atan2(y, x);
 
     Ok(args.make_user_val_from_f64_with_type(TyF64::new(result, NumericType::radians())))
 }
@@ -589,8 +606,8 @@ pub async fn atan2(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
         x = { docs = "X"},
     }
 }]
-fn inner_atan2(y: f64, x: f64) -> Result<f64, KclError> {
-    Ok(y.atan2(x))
+fn inner_atan2(y: f64, x: f64) -> f64 {
+    y.atan2(x)
 }
 
 /// Compute the logarithm of the number with respect to an arbitrary base.
@@ -599,21 +616,9 @@ fn inner_atan2(y: f64, x: f64) -> Result<f64, KclError> {
 /// details; `log2()` can produce more accurate results for base 2,
 /// and `log10()` can produce more accurate results for base 10.
 pub async fn log(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let nums = args.get_number_array_with_types()?;
-    if nums.len() > 2 {
-        return Err(KclError::Type(KclErrorDetails {
-            message: format!("expected 2 arguments, got {}", nums.len()),
-            source_ranges: vec![args.source_range],
-        }));
-    }
-
-    if nums.len() <= 1 {
-        return Err(KclError::Type(KclErrorDetails {
-            message: format!("expected 2 arguments, got {}", nums.len()),
-            source_ranges: vec![args.source_range],
-        }));
-    }
-    let result = inner_log(nums[0].n, nums[1].n)?;
+    let input: TyF64 = args.get_unlabeled_kw_arg_typed("input", &RuntimeType::num_any(), exec_state)?;
+    let base: TyF64 = args.get_kw_arg_typed("base", &RuntimeType::count(), exec_state)?;
+    let result = inner_log(input.n, base.n);
 
     Ok(args.make_user_val_from_f64_with_type(TyF64::new(result, exec_state.current_default_units())))
 }
@@ -627,7 +632,7 @@ pub async fn log(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
 /// ```no_run
 /// exampleSketch = startSketchOn("XZ")
 ///   |> startProfile(at = [0, 0])
-///   |> line(end = [log(100, 5), 0])
+///   |> line(end = [log(100, base = 5), 0])
 ///   |> line(end = [5, 8])
 ///   |> line(end = [-10, 0])
 ///   |> close()
@@ -637,15 +642,21 @@ pub async fn log(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
 #[stdlib {
     name = "log",
     tags = ["math"],
+    keywords = true,
+    unlabeled_first = true,
+    args = {
+        input = {docs = "The number to compute the logarithm of."},
+        base = {docs = "The base of the logarithm."},
+    }
 }]
-fn inner_log(num: f64, base: f64) -> Result<f64, KclError> {
-    Ok(num.log(base))
+fn inner_log(input: f64, base: f64) -> f64 {
+    input.log(base)
 }
 
 /// Compute the base 2 logarithm of the number.
 pub async fn log2(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let num = args.get_number_with_type()?;
-    let result = inner_log2(num.n)?;
+    let input: TyF64 = args.get_unlabeled_kw_arg_typed("input", &RuntimeType::num_any(), exec_state)?;
+    let result = inner_log2(input.n);
 
     Ok(args.make_user_val_from_f64_with_type(TyF64::new(result, exec_state.current_default_units())))
 }
@@ -665,15 +676,20 @@ pub async fn log2(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 #[stdlib {
     name = "log2",
     tags = ["math"],
+    keywords = true,
+    unlabeled_first = true,
+    args = {
+        input = {docs = "The number to compute the logarithm of."},
+    }
 }]
-fn inner_log2(num: f64) -> Result<f64, KclError> {
-    Ok(num.log2())
+fn inner_log2(input: f64) -> f64 {
+    input.log2()
 }
 
 /// Compute the base 10 logarithm of the number.
 pub async fn log10(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let num = args.get_number_with_type()?;
-    let result = inner_log10(num.n)?;
+    let input: TyF64 = args.get_unlabeled_kw_arg_typed("input", &RuntimeType::num_any(), exec_state)?;
+    let result = inner_log10(input.n);
 
     Ok(args.make_user_val_from_f64_with_type(TyF64::new(result, exec_state.current_default_units())))
 }
@@ -694,14 +710,14 @@ pub async fn log10(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     name = "log10",
     tags = ["math"],
 }]
-fn inner_log10(num: f64) -> Result<f64, KclError> {
-    Ok(num.log10())
+fn inner_log10(num: f64) -> f64 {
+    num.log10()
 }
 
 /// Compute the natural logarithm of the number.
 pub async fn ln(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let num = args.get_number_with_type()?;
-    let result = inner_ln(num.n)?;
+    let input: TyF64 = args.get_unlabeled_kw_arg_typed("input", &RuntimeType::num_any(), exec_state)?;
+    let result = inner_ln(input.n);
 
     Ok(args.make_user_val_from_f64_with_type(TyF64::new(result, exec_state.current_default_units())))
 }
@@ -721,9 +737,14 @@ pub async fn ln(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclE
 #[stdlib {
     name = "ln",
     tags = ["math"],
+    keywords = true,
+    unlabeled_first = true,
+    args = {
+        input = {docs = "The number to compute the logarithm of."},
+    }
 }]
-fn inner_ln(num: f64) -> Result<f64, KclError> {
-    Ok(num.ln())
+fn inner_ln(input: f64) -> f64 {
+    input.ln()
 }
 
 /// Return the value of Euler’s number `e`.
