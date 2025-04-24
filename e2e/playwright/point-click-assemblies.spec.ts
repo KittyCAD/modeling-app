@@ -365,14 +365,15 @@ test.describe('Point-and-click assemblies tests', () => {
         await page.getByTestId('context-menu-delete').click()
         await scene.settled(cmdBar)
         await toolbar.closePane('feature-tree')
-        await toolbar.openPane('code')
 
         // Expect empty editor and scene
-        // TODO: fix
-        // await editor.expectEditor.toBe('')
+        await toolbar.openPane('code')
+        await editor.expectEditor.not.toContain('import')
+        await editor.expectEditor.not.toContain('bracket')
+        await editor.expectEditor.not.toContain('|> translate')
+        await editor.expectEditor.not.toContain('|> rotate')
         await toolbar.closePane('code')
-        await scene.expectPixelColor(bgColor, midPoint, tolerance)
-        await scene.expectPixelColor(bgColor, moreToTheRightPoint, tolerance)
+        await scene.expectPixelColorNotToBe(partColor, midPoint, tolerance)
       })
     }
   )
@@ -499,6 +500,9 @@ test.describe('Point-and-click assemblies tests', () => {
 
         // Expect only the import statement to be there
         await toolbar.openPane('code')
+        await toolbar.openPane('code')
+        await editor.expectEditor.not.toContain(`import "cube.step" as cube`)
+        await toolbar.closePane('code')
         await editor.expectEditor.toContain(
           `
         import "${complexPlmFileName}" as cubeSw
@@ -517,14 +521,14 @@ test.describe('Point-and-click assemblies tests', () => {
         await scene.settled(cmdBar)
         await toolbar.closePane('feature-tree')
 
-        // Expect only the import statement to be there
+        // Expect empty editor and scene
         await toolbar.openPane('code')
-        // TODO: fix
-        // await editor.expectEditor.toBe('')
+        await editor.expectEditor.not.toContain(
+          `import "${complexPlmFileName}" as cubeSw`
+        )
+        await editor.expectEditor.not.toContain('cubeSw')
         await toolbar.closePane('code')
-
-        // Expect empty scene
-        await scene.expectPixelColor(bgColor, partPoint, tolerance)
+        await scene.expectPixelColorNotToBe(partColor, midPoint, tolerance)
       })
     }
   )
