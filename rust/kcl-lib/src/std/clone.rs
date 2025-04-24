@@ -623,7 +623,7 @@ clonedCube = clone(cube)
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_clone_sketch_with_tags() {
         let code = r#"cube = startSketchOn(XY)
-    |> startProfile(at = [0,0], %) // tag this one
+    |> startProfile(at = [0,0]) // tag this one
     |> line(end = [0, 10], tag = $tag02)
     |> line(end = [10, 0], tag = $tag03)
     |> line(end = [0, -10], tag = $tag04)
@@ -676,7 +676,7 @@ clonedCube = clone(cube)
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_clone_solid_with_tags() {
         let code = r#"cube = startSketchOn(XY)
-    |> startProfile(at = [0,0], %) // tag this one
+    |> startProfile(at = [0,0]) // tag this one
     |> line(end = [0, 10], tag = $tag02)
     |> line(end = [10, 0], tag = $tag03)
     |> line(end = [0, -10], tag = $tag04)
@@ -816,7 +816,7 @@ clonedCube = clone(cube)
     #[ignore = "this test is not working yet, need to fix the edge cut ids"]
     async fn kcl_test_clone_solid_with_edge_cuts() {
         let code = r#"cube = startSketchOn(XY)
-    |> startProfile(at = [0,0], %) // tag this one
+    |> startProfile(at = [0,0]) // tag this one
     |> line(end = [0, 10], tag = $tag02)
     |> line(end = [10, 0], tag = $tag03)
     |> line(end = [0, -10], tag = $tag04)
