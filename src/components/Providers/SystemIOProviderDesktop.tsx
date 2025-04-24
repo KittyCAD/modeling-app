@@ -37,6 +37,7 @@ export function SystemIOMachineLogicListenerDesktop() {
         projectPathWithoutSpecificKCLFile
       )}`
 
+      console.log(requestedPath)
       navigate(requestedPath)
     }, [requestedProjectName])
 
@@ -95,20 +96,19 @@ export function SystemIOMachineLogicListenerDesktop() {
 
 
 
+  // TODO: Move this generateTextToCAD to another machine in the future and make a whole machine out of it.
   useEffect(()=>{
     const requestedPromptTrimmed = requestedTextToCadGeneration.requestedPrompt.trim()
     const requestedProjectName = requestedTextToCadGeneration.requestedProjectName
+    const isProjectNew = requestedTextToCadGeneration.isProjectNew
     if (!requestedPromptTrimmed || !requestedProjectName) return
     submitAndAwaitTextToKclSystemIO({
       trimmedPrompt: requestedPromptTrimmed,
       projectName: requestedProjectName,
-        navigate,
-        token,
-        settings: {
-          theme: settings.app.theme.current,
-          highlightEdges: settings.modeling.highlightEdges.current,
-        },
-      }).catch(reportRejection)
+      navigate,
+      token,
+      isProjectNew
+    }).catch(reportRejection)
   },[requestedTextToCadGeneration])
 
   return null

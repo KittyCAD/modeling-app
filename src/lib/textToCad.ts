@@ -261,7 +261,8 @@ export async function submitAndAwaitTextToKclSystemIO({
   trimmedPrompt,
   token,
   projectName,
-  navigate
+  navigate,
+  isProjectNew
 }: TextToKclProps) {
   const toastId = toast.loading('Submitting to Text-to-CAD API...')
   const showFailureToast = (message: string) => {
@@ -300,6 +301,8 @@ export async function submitAndAwaitTextToKclSystemIO({
     return
   }
 
+  console.log("queued")
+  console.log(textToCadQueued)
   toast.loading('Generating parametric model...', {
     id: toastId,
   })
@@ -354,6 +357,8 @@ export async function submitAndAwaitTextToKclSystemIO({
       return e
     })
     .then(async (value) => {
+      console.log("completed")
+      console.log(value)
       if (value.code === undefined || !value.code || value.code.length === 0) {
         // We want to show the real error message to the user.
         if (value.error && value.error.length > 0) {
@@ -415,7 +420,8 @@ export async function submitAndAwaitTextToKclSystemIO({
         token,
         projectName: projectName,
         fileName: newFileName,
-        navigate
+        navigate,
+        isProjectNew
       }),
     {
       id: toastId,

@@ -15,7 +15,6 @@ export enum SystemIOMachineActors {
 export enum SystemIOMachineStates {
   idle = 'idle',
   readingFolders = 'readingFolders',
-  settingProjectDirectoryPath = 'settingProjectDirectoryPath',
   creatingProject = 'creatingProject',
   renamingProject = 'renamingProject',
   deletingProject = 'deletingProject',
@@ -43,7 +42,8 @@ export enum SystemIOMachineEvents {
   importFileFromURL = 'import file from URL',
   done_importFileFromURL = donePrefix + 'import file from URL',
   generateTextToCAD = 'generate text to CAD',
-  deleteKCLFile = 'delete kcl file'
+  deleteKCLFile = 'delete kcl file',
+  deleteKCLFileAndNavigate = 'delete kcl file and navigate'
 }
 
 export enum SystemIOMachineActions {
@@ -56,6 +56,10 @@ export enum SystemIOMachineActions {
   toastError = 'toastError',
   setReadWriteProjectDirectory = 'set read write project directory',
   setRequestedTextToCadGeneration = 'set requested text to cad generation'
+}
+
+export enum SystemIOMachineGuards {
+  shouldNavigateAfterKCLFileDelete = 'should navigate after kcl file delete'
 }
 
 export const NO_PROJECT_DIRECTORY = ''
@@ -75,5 +79,5 @@ export type SystemIOContext = {
   requestedFileName: { project: string; file: string }
   canReadWriteProjectDirectory: { value: boolean; error: unknown }
   clearURLParams: { value: boolean }
-  requestedTextToCadGeneration: { requestedPrompt: string, requestedProjectName: string}
+  requestedTextToCadGeneration: { requestedPrompt: string, requestedProjectName: string, isProjectNew: boolean}
 }

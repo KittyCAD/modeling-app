@@ -263,7 +263,7 @@ function ProjectMenuPopover({
         data-testid="project-sidebar-toggle"
       >
         <div className="flex flex-col items-start py-0.5">
-          <span className="hidden text-sm text-chalkboard-110 dark:text-chalkboard-20 whitespace-nowrap lg:block">
+          <span className="hidden text-sm text-chalkboard-110 dark:text-chalkboard-20 whitespace-nowrap lg:block" data-testid="app-header-file-name">
             {isDesktop() && file?.name
               ? file.name.slice(
                   file.name.lastIndexOf(window.electron.path.sep) + 1
@@ -271,7 +271,7 @@ function ProjectMenuPopover({
               : APP_NAME}
           </span>
           {isDesktop() && project?.name && (
-            <span className="hidden text-xs text-chalkboard-70 dark:text-chalkboard-40 whitespace-nowrap lg:block">
+            <span className="hidden text-xs text-chalkboard-70 dark:text-chalkboard-40 whitespace-nowrap lg:block" data-testid="app-header-project-name">
               {project.name}
             </span>
           )}

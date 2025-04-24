@@ -7,6 +7,7 @@ import {
   SystemIOMachineActors,
   SystemIOMachineEvents,
   SystemIOMachineStates,
+  SystemIOMachineGuards
 } from '@src/machines/systemIO/utils'
 import toast from 'react-hot-toast'
 import { assertEvent, assign, fromPromise, setup } from 'xstate'
@@ -78,9 +79,10 @@ export const systemIOMachine = setup({
         type: SystemIOMachineEvents.setDefaultProjectFolderName
         data: { requestedDefaultProjectFolderName: string }
       }
+      // TODO: Move this generateTextToCAD to another machine in the future and make a whole machine out of it.
       | {
         type: SystemIOMachineEvents.generateTextToCAD
-        data: { requestedPrompt: string, requestedProjectName: string}
+        data: { requestedPrompt: string, requestedProjectName: string, isProjectNew: boolean}
       }
       | {
           type: SystemIOMachineEvents.deleteKCLFile
@@ -266,7 +268,7 @@ export const systemIOMachine = setup({
     },
     canReadWriteProjectDirectory: { value: true, error: undefined },
     clearURLParams: { value: false },
-    requestedTextToCadGeneration: {requestedPrompt: '', requestedProjectName: NO_PROJECT_DIRECTORY}
+    requestedTextToCadGeneration: {requestedPrompt: '', requestedProjectName: NO_PROJECT_DIRECTORY, isProjectNew: true}
   }),
   states: {
     [SystemIOMachineStates.idle]: {
@@ -307,6 +309,9 @@ export const systemIOMachine = setup({
           actions: [SystemIOMachineActions.setRequestedTextToCadGeneration],
         },
         [SystemIOMachineEvents.deleteKCLFile]: {
+          target: SystemIOMachineStates.deletingKCLFile,
+        },
+        [SystemIOMachineEvents.deleteKCLFileAndNavigate]: {
           target: SystemIOMachineStates.deletingKCLFile,
         },
       },
@@ -416,7 +421,7 @@ export const systemIOMachine = setup({
           }
         },
         onDone: {
-          target: SystemIOMachineStates.idle,
+          target: SystemIOMachineStates.readingFolders,
         },
         onError: {
           target: SystemIOMachineStates.idle,
@@ -504,4 +509,10 @@ export const systemIOMachine = setup({
       },
     },
   },
+  gaurds: {
+    [SystemIOMachineGuards.shouldNavigateAfterKCLFileDelete] : (context, event)=>{
+      console.log(context, event)
+      return true
+    }
+  }
 })
