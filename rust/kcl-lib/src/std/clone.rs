@@ -32,6 +32,7 @@ pub async fn clone(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
         &RuntimeType::Union(vec![
             RuntimeType::Primitive(PrimitiveType::Sketch),
             RuntimeType::Primitive(PrimitiveType::Solid),
+            RuntimeType::imported(),
         ]),
         exec_state,
     )?;
@@ -256,7 +257,7 @@ pub async fn clone(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///
 /// clonedCube = clone(myCube)
 ///    |> translate(
-///    z = 100,
+///    x = 1020,
 ///    )
 ///    |> appearance(
 ///        color = "#ff0000",
