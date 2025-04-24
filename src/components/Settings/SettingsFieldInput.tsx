@@ -9,7 +9,7 @@ import type {
   WildcardSetEvent,
 } from '@src/lib/settings/settingsTypes'
 import { getSettingInputType } from '@src/lib/settings/settingsUtils'
-import { settingsActor, useSettings } from '@src/machines/appMachine'
+import { settingsActor, useSettings } from '@src/lib/singletons'
 
 interface SettingsFieldInputProps {
   // We don't need the fancy types here,

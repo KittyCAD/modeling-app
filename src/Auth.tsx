@@ -1,5 +1,5 @@
 import Loading from '@src/components/Loading'
-import { useAuthState } from '@src/machines/appMachine'
+import { useAuthState } from '@src/lib/singletons'
 
 // Wrapper around protected routes, used in src/Router.tsx
 export const Auth = ({ children }: React.PropsWithChildren) => {

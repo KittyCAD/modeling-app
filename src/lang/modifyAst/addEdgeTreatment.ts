@@ -7,7 +7,6 @@ import type CodeManager from '@src/lang/codeManager'
 import { ARG_TAG } from '@src/lang/constants'
 import {
   createArrayExpression,
-  createCallExpressionStdLib,
   createCallExpressionStdLibKw,
   createLabeledArg,
   createLocalName,
@@ -371,9 +370,9 @@ export function getEdgeTagCall(
 
   // Modify the tag based on selectionType
   if (artifact.type === 'sweepEdge' && artifact.subType === 'opposite') {
-    tagCall = createCallExpressionStdLib('getOppositeEdge', [tagCall])
+    tagCall = createCallExpressionStdLibKw('getOppositeEdge', tagCall, [])
   } else if (artifact.type === 'sweepEdge' && artifact.subType === 'adjacent') {
-    tagCall = createCallExpressionStdLib('getNextAdjacentEdge', [tagCall])
+    tagCall = createCallExpressionStdLibKw('getNextAdjacentEdge', tagCall, [])
   }
   return tagCall
 }

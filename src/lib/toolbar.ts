@@ -4,7 +4,7 @@ import type { EventFrom, StateFrom } from 'xstate'
 import type { CustomIconName } from '@src/components/CustomIcon'
 import { createLiteral } from '@src/lang/create'
 import { isDesktop } from '@src/lib/isDesktop'
-import { commandBarActor } from '@src/machines/commandBarMachine'
+import { commandBarActor } from '@src/lib/singletons'
 import type { modelingMachine } from '@src/machines/modelingMachine'
 import {
   isEditingExistingSketch,
@@ -493,37 +493,6 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         id: 'arcs',
         array: [
           {
-            id: 'tangential-arc',
-            onClick: ({ modelingState, modelingSend }) =>
-              modelingSend({
-                type: 'change tool',
-                data: {
-                  tool: !modelingState.matches({ Sketch: 'Tangential arc to' })
-                    ? 'tangentialArc'
-                    : 'none',
-                },
-              }),
-            icon: 'arc',
-            status: 'available',
-            disabled: (state) =>
-              (!isEditingExistingSketch(state.context) &&
-                !state.matches({ Sketch: 'Tangential arc to' })) ||
-              pipeHasCircle(state.context),
-            disabledReason: (state) =>
-              !isEditingExistingSketch(state.context) &&
-              !state.matches({ Sketch: 'Tangential arc to' })
-                ? "Cannot start a tangential arc because there's no previous line to be tangential to.  Try drawing a line first or selecting an existing sketch to edit."
-                : undefined,
-            title: 'Tangential Arc',
-            hotkey: (state) =>
-              state.matches({ Sketch: 'Tangential arc to' })
-                ? ['Esc', 'A']
-                : 'A',
-            description: 'Start drawing an arc tangent to the current segment',
-            links: [],
-            isActive: (state) => state.matches({ Sketch: 'Tangential arc to' }),
-          },
-          {
             id: 'three-point-arc',
             onClick: ({ modelingState, modelingSend }) =>
               modelingSend({
@@ -553,6 +522,37 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             ],
             isActive: (state) =>
               state.matches({ Sketch: 'Arc three point tool' }),
+          },
+          {
+            id: 'tangential-arc',
+            onClick: ({ modelingState, modelingSend }) =>
+              modelingSend({
+                type: 'change tool',
+                data: {
+                  tool: !modelingState.matches({ Sketch: 'Tangential arc to' })
+                    ? 'tangentialArc'
+                    : 'none',
+                },
+              }),
+            icon: 'arc',
+            status: 'available',
+            disabled: (state) =>
+              (!isEditingExistingSketch(state.context) &&
+                !state.matches({ Sketch: 'Tangential arc to' })) ||
+              pipeHasCircle(state.context),
+            disabledReason: (state) =>
+              !isEditingExistingSketch(state.context) &&
+              !state.matches({ Sketch: 'Tangential arc to' })
+                ? "Cannot start a tangential arc because there's no previous line to be tangential to.  Try drawing a line first or selecting an existing sketch to edit."
+                : undefined,
+            title: 'Tangential Arc',
+            hotkey: (state) =>
+              state.matches({ Sketch: 'Tangential arc to' })
+                ? ['Esc', 'A']
+                : 'A',
+            description: 'Start drawing an arc tangent to the current segment',
+            links: [],
+            isActive: (state) => state.matches({ Sketch: 'Tangential arc to' }),
           },
           {
             id: 'arc',
