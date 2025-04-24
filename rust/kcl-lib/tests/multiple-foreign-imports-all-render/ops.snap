@@ -37,6 +37,21 @@ description: Operations executed multiple-foreign-imports-all-render.kcl
     "type": "GroupEnd"
   },
   {
+    "labeledArgs": {
+      "geometry": {
+        "value": {
+          "type": "ImportedGeometry",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "clone",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
     "type": "GroupEnd"
   },
   {
@@ -59,6 +74,21 @@ description: Operations executed multiple-foreign-imports-all-render.kcl
   },
   {
     "type": "GroupEnd"
+  },
+  {
+    "labeledArgs": {
+      "geometry": {
+        "value": {
+          "type": "ImportedGeometry",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "clone",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": null
   },
   {
     "type": "GroupEnd"

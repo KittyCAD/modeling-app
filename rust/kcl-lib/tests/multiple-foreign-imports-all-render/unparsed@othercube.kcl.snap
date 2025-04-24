@@ -4,4 +4,4 @@ description: Result of unparsing tests/multiple-foreign-imports-all-render/other
 ---
 import "../inputs/cube.step" as cube
 
-cube
+clone(cube)
