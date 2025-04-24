@@ -1318,13 +1318,14 @@ export const modelingMachine = setup({
     }),
     'Init default plane visibility': assign(({ context }) => {
       // Opening a project:
-      // - project is empty: show planes
-      // - not empty: don't show planes
-      const isEmpty = kclManager.artifactGraph.size === 0
+      // - project is empty and there are no errors: show planes
+      // - not empty, or there are errors: don't show planes
+      const showPlanes =
+        kclManager.artifactGraph.size === 0 && !kclManager.hasErrors()
       const initialValue: PlaneVisibilityMap = {
-        xy: isEmpty,
-        xz: isEmpty,
-        yz: isEmpty,
+        xy: showPlanes,
+        xz: showPlanes,
+        yz: showPlanes,
       }
 
       for (const planeKey of Object.keys(
