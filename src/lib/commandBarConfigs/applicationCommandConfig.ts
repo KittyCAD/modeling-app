@@ -8,15 +8,15 @@ export function createApplicationCommands({
   systemIOActor,
 }: { systemIOActor: ActorRefFrom<typeof systemIOMachine> }) {
   const textToCADCommand: Command = {
-    name: 'Text To CAD',
+    name: 'Text-to-CAD',
     description: 'Use the Zoo Text-to-CAD API to generate part starters.',
-    displayName: `Text To CAD`,
+    displayName: `Text to CAD`,
     groupId: 'application',
     needsReview: false,
-    icon: 'chat',
+    icon: 'sparkles',
     onSubmit: (record) => {
       if (record) {
-        const requestedProjectName = record.projectName || record.newProjectName
+        const requestedProjectName = record.newProjectName || record.projectName
         const requestedPrompt = record.prompt
         const isProjectNew = !!record.newProjectName
         systemIOActor.send({
@@ -77,5 +77,5 @@ export function createApplicationCommands({
     },
   }
 
-  return [textToCADCommand]
+  return isDesktop() ? [textToCADCommand]: []
 }

@@ -107,7 +107,7 @@ import {
   sceneEntitiesManager,
   sceneInfra,
 } from '@src/lib/singletons'
-import { submitAndAwaitTextToKcl } from '@src/lib/textToCad'
+import { submitAndAwaitTextToKclSystemIO } from '@src/lib/textToCad'
 import { err, reject, reportRejection, trap } from '@src/lib/trap'
 import type { IndexLoaderData } from '@src/lib/types'
 import { platform, uuidv4 } from '@src/lib/utils'
@@ -537,17 +537,18 @@ export const ModelingMachineProvider = ({
           if (event.type !== 'Text-to-CAD') return
           const trimmedPrompt = event.data.prompt.trim()
           if (!trimmedPrompt) return
-
-          submitAndAwaitTextToKcl({
+          const isProjectNew = !!event.data.newProjectName
+          const requestedProjectName = event.data.newProjectName || event.data.projectName
+          submitAndAwaitTextToKclSystemIO({
+            projectName: requestedProjectName,
             trimmedPrompt,
-            fileMachineSend,
             navigate,
-            context,
             token,
             settings: {
               theme: theme.current,
               highlightEdges: highlightEdges.current,
             },
+            isProjectNew
           }).catch(reportRejection)
         },
       },
