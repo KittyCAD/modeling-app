@@ -11,8 +11,8 @@ Take a starting value. Then, for each element of an array, calculate the next va
 ```js
 reduce(
   array: [KclValue],
-  start: KclValue,
-  reduceFn: FunctionSource,
+  initial: KclValue,
+  f: FunctionSource,
 ): KclValue
 ```
 
@@ -21,9 +21,9 @@ reduce(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `array` | [`[KclValue]`](/docs/kcl/types/KclValue) |  | Yes |
-| `start` | [`KclValue`](/docs/kcl/types/KclValue) | Any KCL value. | Yes |
-| `reduceFn` | `FunctionSource` |  | Yes |
+| `array` | [`[KclValue]`](/docs/kcl/types/KclValue) | Each element of this array gets run through the function `f`, combined with the previous output from `f`, and then used for the next run. | Yes |
+| `initial` | [`KclValue`](/docs/kcl/types/KclValue) | The first time `f` is run, it will be called with the first item of `array` and this initial starting value. | Yes |
+| `f` | `FunctionSource` | Run once per item in the input `array`. This function takes an item from the array, and the previous output from `f` (or `initial` on the very first run). The final time `f` is run, its output is returned as the final output from `reduce`. | Yes |
 
 ### Returns
 
@@ -42,7 +42,7 @@ fn add(a, b) {
 // It uses the `reduce` function, to call the `add` function on every
 // element of the `arr` parameter. The starting value is 0.
 fn sum(arr) {
-  return reduce(arr, 0, add)
+  return reduce(arr, initial = 0, f = add)
 }
 
 /* The above is basically like this pseudo-code:
@@ -69,9 +69,13 @@ assert(
 // an anonymous `add` function as its parameter, instead of declaring a
 // named function outside.
 arr = [1, 2, 3]
-sum = reduce(arr, 0, fn(i, result_so_far) {
-  return i + result_so_far
-})
+sum = reduce(
+  arr,
+  initial = 0,
+  f = fn(i, result_so_far) {
+    return i + result_so_far
+  },
+)
 
 // We use `assert` to check that our `sum` function gives the
 // expected result. It's good to check your work!
@@ -98,12 +102,16 @@ fn decagon(radius) {
     // Use a `reduce` to draw the remaining decagon sides.
     // For each number in the array 1..10, run the given function,
   // which takes a partially-sketched decagon and adds one more edge to it.
-  fullDecagon = reduce([1..10], startOfDecagonSketch, fn(i, partialDecagon) {
-    // Draw one edge of the decagon.
-    x = cos(stepAngle * i) * radius
-    y = sin(stepAngle * i) * radius
-    return line(partialDecagon, end = [x, y])
-  })
+  fullDecagon = reduce(
+    [1..10],
+    initial = startOfDecagonSketch,
+    f = fn(i, partialDecagon) {
+      // Draw one edge of the decagon.
+      x = cos(stepAngle * i) * radius
+      y = sin(stepAngle * i) * radius
+      return line(partialDecagon, end = [x, y])
+    },
+  )
 
   return fullDecagon
 }
