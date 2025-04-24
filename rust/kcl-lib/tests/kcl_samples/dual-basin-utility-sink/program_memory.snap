@@ -248,11 +248,173 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                 "units": {
                   "type": "Mm"
                 }
+              }
+            },
+            "start": {
+              "from": [
+                15.0,
+                0.0
+              ],
+              "to": [
+                15.0,
+                0.0
+              ],
+              "units": {
+                "type": "Mm"
               },
-              "zAxis": {
+              "tag": null,
+              "__geoMeta": {
+                "id": "[uuid]",
+                "sourceRange": []
+              }
+            },
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          "height": 667.5,
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
+          "units": {
+            "type": "Mm"
+          },
+          "sectional": false
+        }
+      },
+      {
+        "type": "Solid",
+        "value": {
+          "type": "Solid",
+          "id": "[uuid]",
+          "artifactId": "[uuid]",
+          "value": [],
+          "sketch": {
+            "type": "Sketch",
+            "id": "[uuid]",
+            "paths": [
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  15.0,
+                  0.0
+                ],
+                "tag": null,
+                "to": [
+                  15.0,
+                  13.0
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  15.0,
+                  13.0
+                ],
+                "tag": null,
+                "to": [
+                  562.5,
+                  13.0
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  562.5,
+                  13.0
+                ],
+                "tag": null,
+                "to": [
+                  562.5,
+                  0.0
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  562.5,
+                  0.0
+                ],
+                "tag": null,
+                "to": [
+                  15.0,
+                  0.0
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  15.0,
+                  0.0
+                ],
+                "tag": null,
+                "to": [
+                  15.0,
+                  0.0
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              }
+            ],
+            "on": {
+              "type": "plane",
+              "id": "[uuid]",
+              "artifactId": "[uuid]",
+              "value": "Custom",
+              "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0,
+                "z": 165.0,
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              "xAxis": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              "yAxis": {
+                "x": 0.0,
+                "y": 1.0,
+                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -426,11 +588,173 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                 "units": {
                   "type": "Mm"
                 }
+              }
+            },
+            "start": {
+              "from": [
+                15.0,
+                0.0
+              ],
+              "to": [
+                15.0,
+                0.0
+              ],
+              "units": {
+                "type": "Mm"
               },
-              "zAxis": {
+              "tag": null,
+              "__geoMeta": {
+                "id": "[uuid]",
+                "sourceRange": []
+              }
+            },
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          "height": 667.5,
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
+          "units": {
+            "type": "Mm"
+          },
+          "sectional": false
+        }
+      },
+      {
+        "type": "Solid",
+        "value": {
+          "type": "Solid",
+          "id": "[uuid]",
+          "artifactId": "[uuid]",
+          "value": [],
+          "sketch": {
+            "type": "Sketch",
+            "id": "[uuid]",
+            "paths": [
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  15.0,
+                  0.0
+                ],
+                "tag": null,
+                "to": [
+                  15.0,
+                  13.0
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  15.0,
+                  13.0
+                ],
+                "tag": null,
+                "to": [
+                  562.5,
+                  13.0
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  562.5,
+                  13.0
+                ],
+                "tag": null,
+                "to": [
+                  562.5,
+                  0.0
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  562.5,
+                  0.0
+                ],
+                "tag": null,
+                "to": [
+                  15.0,
+                  0.0
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  15.0,
+                  0.0
+                ],
+                "tag": null,
+                "to": [
+                  15.0,
+                  0.0
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              }
+            ],
+            "on": {
+              "type": "plane",
+              "id": "[uuid]",
+              "artifactId": "[uuid]",
+              "value": "Custom",
+              "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0,
+                "z": 165.0,
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              "xAxis": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              "yAxis": {
+                "x": 0.0,
+                "y": 1.0,
+                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -604,14 +928,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
               }
             },
             "start": {
@@ -779,370 +1095,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              }
-            },
-            "start": {
-              "from": [
-                15.0,
-                0.0
-              ],
-              "to": [
-                15.0,
-                0.0
-              ],
-              "units": {
-                "type": "Mm"
-              },
-              "tag": null,
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              }
-            },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
-          },
-          "height": 667.5,
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          },
-          "sectional": false
-        }
-      },
-      {
-        "type": "Solid",
-        "value": {
-          "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
-          "value": [],
-          "sketch": {
-            "type": "Sketch",
-            "id": "[uuid]",
-            "paths": [
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  15.0,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  15.0,
-                  13.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  15.0,
-                  13.0
-                ],
-                "tag": null,
-                "to": [
-                  562.5,
-                  13.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  562.5,
-                  13.0
-                ],
-                "tag": null,
-                "to": [
-                  562.5,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  562.5,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  15.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  15.0,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  15.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              }
-            ],
-            "on": {
-              "type": "plane",
-              "id": "[uuid]",
-              "artifactId": "[uuid]",
-              "value": "Custom",
-              "origin": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 165.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "xAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "yAxis": {
-                "x": 0.0,
-                "y": 1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              }
-            },
-            "start": {
-              "from": [
-                15.0,
-                0.0
-              ],
-              "to": [
-                15.0,
-                0.0
-              ],
-              "units": {
-                "type": "Mm"
-              },
-              "tag": null,
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              }
-            },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
-          },
-          "height": 667.5,
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          },
-          "sectional": false
-        }
-      },
-      {
-        "type": "Solid",
-        "value": {
-          "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
-          "value": [],
-          "sketch": {
-            "type": "Sketch",
-            "id": "[uuid]",
-            "paths": [
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  15.0,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  15.0,
-                  13.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  15.0,
-                  13.0
-                ],
-                "tag": null,
-                "to": [
-                  562.5,
-                  13.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  562.5,
-                  13.0
-                ],
-                "tag": null,
-                "to": [
-                  562.5,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  562.5,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  15.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  15.0,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  15.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              }
-            ],
-            "on": {
-              "type": "plane",
-              "id": "[uuid]",
-              "artifactId": "[uuid]",
-              "value": "Custom",
-              "origin": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 165.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "xAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "yAxis": {
-                "x": 0.0,
-                "y": 1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -1264,14 +1216,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
         "units": {
           "type": "Mm"
         }
-      },
-      "zAxis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0,
-        "units": {
-          "type": "Mm"
-        }
       }
     }
   },
@@ -1327,14 +1271,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "zAxis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0,
         "units": {
           "type": "Mm"
         }
@@ -1417,11 +1353,111 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                 "units": {
                   "type": "Mm"
                 }
+              }
+            },
+            "start": {
+              "from": [
+                230.75,
+                780.0
+              ],
+              "to": [
+                230.75,
+                780.0
+              ],
+              "units": {
+                "type": "Mm"
               },
-              "zAxis": {
+              "tag": null,
+              "__geoMeta": {
+                "id": "[uuid]",
+                "sourceRange": []
+              }
+            },
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          "height": 0.0,
+          "startCapId": "[uuid]",
+          "endCapId": null,
+          "units": {
+            "type": "Mm"
+          },
+          "sectional": false
+        }
+      },
+      {
+        "type": "Solid",
+        "value": {
+          "type": "Solid",
+          "id": "[uuid]",
+          "artifactId": "[uuid]",
+          "value": [
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudeArc"
+            }
+          ],
+          "sketch": {
+            "type": "Sketch",
+            "id": "[uuid]",
+            "paths": [
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "ccw": true,
+                "center": [
+                  228.75,
+                  780.0
+                ],
+                "from": [
+                  230.75,
+                  780.0
+                ],
+                "radius": 2.0,
+                "tag": null,
+                "to": [
+                  230.75,
+                  780.0
+                ],
+                "type": "Circle",
+                "units": {
+                  "type": "Mm"
+                }
+              }
+            ],
+            "on": {
+              "type": "plane",
+              "id": "[uuid]",
+              "artifactId": "[uuid]",
+              "value": "XZ",
+              "origin": {
                 "x": 0.0,
-                "y": -1.0,
+                "y": 0.0,
                 "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              "xAxis": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              "yAxis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -1533,11 +1569,111 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                 "units": {
                   "type": "Mm"
                 }
+              }
+            },
+            "start": {
+              "from": [
+                230.75,
+                780.0
+              ],
+              "to": [
+                230.75,
+                780.0
+              ],
+              "units": {
+                "type": "Mm"
               },
-              "zAxis": {
+              "tag": null,
+              "__geoMeta": {
+                "id": "[uuid]",
+                "sourceRange": []
+              }
+            },
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          "height": 0.0,
+          "startCapId": "[uuid]",
+          "endCapId": null,
+          "units": {
+            "type": "Mm"
+          },
+          "sectional": false
+        }
+      },
+      {
+        "type": "Solid",
+        "value": {
+          "type": "Solid",
+          "id": "[uuid]",
+          "artifactId": "[uuid]",
+          "value": [
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudeArc"
+            }
+          ],
+          "sketch": {
+            "type": "Sketch",
+            "id": "[uuid]",
+            "paths": [
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "ccw": true,
+                "center": [
+                  228.75,
+                  780.0
+                ],
+                "from": [
+                  230.75,
+                  780.0
+                ],
+                "radius": 2.0,
+                "tag": null,
+                "to": [
+                  230.75,
+                  780.0
+                ],
+                "type": "Circle",
+                "units": {
+                  "type": "Mm"
+                }
+              }
+            ],
+            "on": {
+              "type": "plane",
+              "id": "[uuid]",
+              "artifactId": "[uuid]",
+              "value": "XZ",
+              "origin": {
                 "x": 0.0,
-                "y": -1.0,
+                "y": 0.0,
                 "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              "xAxis": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              "yAxis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -1649,14 +1785,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
               }
             },
             "start": {
@@ -1762,246 +1890,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              }
-            },
-            "start": {
-              "from": [
-                230.75,
-                780.0
-              ],
-              "to": [
-                230.75,
-                780.0
-              ],
-              "units": {
-                "type": "Mm"
-              },
-              "tag": null,
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              }
-            },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
-          },
-          "height": 0.0,
-          "startCapId": "[uuid]",
-          "endCapId": null,
-          "units": {
-            "type": "Mm"
-          },
-          "sectional": false
-        }
-      },
-      {
-        "type": "Solid",
-        "value": {
-          "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudeArc"
-            }
-          ],
-          "sketch": {
-            "type": "Sketch",
-            "id": "[uuid]",
-            "paths": [
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "ccw": true,
-                "center": [
-                  228.75,
-                  780.0
-                ],
-                "from": [
-                  230.75,
-                  780.0
-                ],
-                "radius": 2.0,
-                "tag": null,
-                "to": [
-                  230.75,
-                  780.0
-                ],
-                "type": "Circle",
-                "units": {
-                  "type": "Mm"
-                }
-              }
-            ],
-            "on": {
-              "type": "plane",
-              "id": "[uuid]",
-              "artifactId": "[uuid]",
-              "value": "XZ",
-              "origin": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "xAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "yAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              }
-            },
-            "start": {
-              "from": [
-                230.75,
-                780.0
-              ],
-              "to": [
-                230.75,
-                780.0
-              ],
-              "units": {
-                "type": "Mm"
-              },
-              "tag": null,
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              }
-            },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
-          },
-          "height": 0.0,
-          "startCapId": "[uuid]",
-          "endCapId": null,
-          "units": {
-            "type": "Mm"
-          },
-          "sectional": false
-        }
-      },
-      {
-        "type": "Solid",
-        "value": {
-          "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudeArc"
-            }
-          ],
-          "sketch": {
-            "type": "Sketch",
-            "id": "[uuid]",
-            "paths": [
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "ccw": true,
-                "center": [
-                  228.75,
-                  780.0
-                ],
-                "from": [
-                  230.75,
-                  780.0
-                ],
-                "radius": 2.0,
-                "tag": null,
-                "to": [
-                  230.75,
-                  780.0
-                ],
-                "type": "Circle",
-                "units": {
-                  "type": "Mm"
-                }
-              }
-            ],
-            "on": {
-              "type": "plane",
-              "id": "[uuid]",
-              "artifactId": "[uuid]",
-              "value": "XZ",
-              "origin": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "xAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "yAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -2149,14 +2037,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
         "units": {
           "type": "Mm"
         }
-      },
-      "zAxis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0,
-        "units": {
-          "type": "Mm"
-        }
       }
     }
   },
@@ -2300,14 +2180,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
           "units": {
             "type": "Mm"
           }
-        },
-        "zAxis": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0,
-          "units": {
-            "type": "Mm"
-          }
         }
       },
       "start": {
@@ -2395,14 +2267,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
           "units": {
             "type": "Mm"
           }
-        },
-        "zAxis": {
-          "x": 0.0,
-          "y": -1.0,
-          "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
         }
       },
       "start": {
@@ -2456,14 +2320,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "zAxis": {
-        "x": 0.0,
-        "y": -1.0,
-        "z": 0.0,
         "units": {
           "type": "Mm"
         }
@@ -2650,11 +2506,173 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                 "units": {
                   "type": "Mm"
                 }
+              }
+            },
+            "start": {
+              "from": [
+                0.0,
+                0.0
+              ],
+              "to": [
+                0.0,
+                0.0
+              ],
+              "units": {
+                "type": "Mm"
               },
-              "zAxis": {
+              "tag": null,
+              "__geoMeta": {
+                "id": "[uuid]",
+                "sourceRange": []
+              }
+            },
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          "height": 834.5,
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
+          "units": {
+            "type": "Mm"
+          },
+          "sectional": false
+        }
+      },
+      {
+        "type": "Solid",
+        "value": {
+          "type": "Solid",
+          "id": "[uuid]",
+          "artifactId": "[uuid]",
+          "value": [],
+          "sketch": {
+            "type": "Sketch",
+            "id": "[uuid]",
+            "paths": [
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  0.0,
+                  0.0
+                ],
+                "tag": null,
+                "to": [
+                  0.0,
+                  13.0
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  0.0,
+                  13.0
+                ],
+                "tag": null,
+                "to": [
+                  13.0,
+                  13.0
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  13.0,
+                  13.0
+                ],
+                "tag": null,
+                "to": [
+                  13.0,
+                  0.0
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  13.0,
+                  0.0
+                ],
+                "tag": null,
+                "to": [
+                  0.0,
+                  0.0
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  0.0,
+                  0.0
+                ],
+                "tag": null,
+                "to": [
+                  0.0,
+                  0.0
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              }
+            ],
+            "on": {
+              "type": "plane",
+              "id": "[uuid]",
+              "artifactId": "[uuid]",
+              "value": "XY",
+              "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0,
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              "xAxis": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              "yAxis": {
+                "x": 0.0,
+                "y": 1.0,
+                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -2828,11 +2846,173 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                 "units": {
                   "type": "Mm"
                 }
+              }
+            },
+            "start": {
+              "from": [
+                0.0,
+                0.0
+              ],
+              "to": [
+                0.0,
+                0.0
+              ],
+              "units": {
+                "type": "Mm"
               },
-              "zAxis": {
+              "tag": null,
+              "__geoMeta": {
+                "id": "[uuid]",
+                "sourceRange": []
+              }
+            },
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          "height": 834.5,
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
+          "units": {
+            "type": "Mm"
+          },
+          "sectional": false
+        }
+      },
+      {
+        "type": "Solid",
+        "value": {
+          "type": "Solid",
+          "id": "[uuid]",
+          "artifactId": "[uuid]",
+          "value": [],
+          "sketch": {
+            "type": "Sketch",
+            "id": "[uuid]",
+            "paths": [
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  0.0,
+                  0.0
+                ],
+                "tag": null,
+                "to": [
+                  0.0,
+                  13.0
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  0.0,
+                  13.0
+                ],
+                "tag": null,
+                "to": [
+                  13.0,
+                  13.0
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  13.0,
+                  13.0
+                ],
+                "tag": null,
+                "to": [
+                  13.0,
+                  0.0
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  13.0,
+                  0.0
+                ],
+                "tag": null,
+                "to": [
+                  0.0,
+                  0.0
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  0.0,
+                  0.0
+                ],
+                "tag": null,
+                "to": [
+                  0.0,
+                  0.0
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              }
+            ],
+            "on": {
+              "type": "plane",
+              "id": "[uuid]",
+              "artifactId": "[uuid]",
+              "value": "XY",
+              "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0,
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              "xAxis": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              "yAxis": {
+                "x": 0.0,
+                "y": 1.0,
+                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -3006,11 +3186,173 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                 "units": {
                   "type": "Mm"
                 }
+              }
+            },
+            "start": {
+              "from": [
+                0.0,
+                0.0
+              ],
+              "to": [
+                0.0,
+                0.0
+              ],
+              "units": {
+                "type": "Mm"
               },
-              "zAxis": {
+              "tag": null,
+              "__geoMeta": {
+                "id": "[uuid]",
+                "sourceRange": []
+              }
+            },
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          "height": 834.5,
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
+          "units": {
+            "type": "Mm"
+          },
+          "sectional": false
+        }
+      },
+      {
+        "type": "Solid",
+        "value": {
+          "type": "Solid",
+          "id": "[uuid]",
+          "artifactId": "[uuid]",
+          "value": [],
+          "sketch": {
+            "type": "Sketch",
+            "id": "[uuid]",
+            "paths": [
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  0.0,
+                  0.0
+                ],
+                "tag": null,
+                "to": [
+                  0.0,
+                  13.0
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  0.0,
+                  13.0
+                ],
+                "tag": null,
+                "to": [
+                  13.0,
+                  13.0
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  13.0,
+                  13.0
+                ],
+                "tag": null,
+                "to": [
+                  13.0,
+                  0.0
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  13.0,
+                  0.0
+                ],
+                "tag": null,
+                "to": [
+                  0.0,
+                  0.0
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  0.0,
+                  0.0
+                ],
+                "tag": null,
+                "to": [
+                  0.0,
+                  0.0
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              }
+            ],
+            "on": {
+              "type": "plane",
+              "id": "[uuid]",
+              "artifactId": "[uuid]",
+              "value": "XY",
+              "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0,
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              "xAxis": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              "yAxis": {
+                "x": 0.0,
+                "y": 1.0,
+                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -3184,14 +3526,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
               }
             },
             "start": {
@@ -3359,548 +3693,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              }
-            },
-            "start": {
-              "from": [
-                0.0,
-                0.0
-              ],
-              "to": [
-                0.0,
-                0.0
-              ],
-              "units": {
-                "type": "Mm"
-              },
-              "tag": null,
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              }
-            },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
-          },
-          "height": 834.5,
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          },
-          "sectional": false
-        }
-      },
-      {
-        "type": "Solid",
-        "value": {
-          "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
-          "value": [],
-          "sketch": {
-            "type": "Sketch",
-            "id": "[uuid]",
-            "paths": [
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  13.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  13.0
-                ],
-                "tag": null,
-                "to": [
-                  13.0,
-                  13.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  13.0,
-                  13.0
-                ],
-                "tag": null,
-                "to": [
-                  13.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  13.0,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              }
-            ],
-            "on": {
-              "type": "plane",
-              "id": "[uuid]",
-              "artifactId": "[uuid]",
-              "value": "XY",
-              "origin": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "xAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "yAxis": {
-                "x": 0.0,
-                "y": 1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              }
-            },
-            "start": {
-              "from": [
-                0.0,
-                0.0
-              ],
-              "to": [
-                0.0,
-                0.0
-              ],
-              "units": {
-                "type": "Mm"
-              },
-              "tag": null,
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              }
-            },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
-          },
-          "height": 834.5,
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          },
-          "sectional": false
-        }
-      },
-      {
-        "type": "Solid",
-        "value": {
-          "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
-          "value": [],
-          "sketch": {
-            "type": "Sketch",
-            "id": "[uuid]",
-            "paths": [
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  13.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  13.0
-                ],
-                "tag": null,
-                "to": [
-                  13.0,
-                  13.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  13.0,
-                  13.0
-                ],
-                "tag": null,
-                "to": [
-                  13.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  13.0,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              }
-            ],
-            "on": {
-              "type": "plane",
-              "id": "[uuid]",
-              "artifactId": "[uuid]",
-              "value": "XY",
-              "origin": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "xAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "yAxis": {
-                "x": 0.0,
-                "y": 1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              }
-            },
-            "start": {
-              "from": [
-                0.0,
-                0.0
-              ],
-              "to": [
-                0.0,
-                0.0
-              ],
-              "units": {
-                "type": "Mm"
-              },
-              "tag": null,
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              }
-            },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
-          },
-          "height": 834.5,
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          },
-          "sectional": false
-        }
-      },
-      {
-        "type": "Solid",
-        "value": {
-          "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
-          "value": [],
-          "sketch": {
-            "type": "Sketch",
-            "id": "[uuid]",
-            "paths": [
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  13.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  13.0
-                ],
-                "tag": null,
-                "to": [
-                  13.0,
-                  13.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  13.0,
-                  13.0
-                ],
-                "tag": null,
-                "to": [
-                  13.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  13.0,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              }
-            ],
-            "on": {
-              "type": "plane",
-              "id": "[uuid]",
-              "artifactId": "[uuid]",
-              "value": "XY",
-              "origin": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "xAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "yAxis": {
-                "x": 0.0,
-                "y": 1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -4134,11 +3926,173 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                 "units": {
                   "type": "Mm"
                 }
+              }
+            },
+            "start": {
+              "from": [
+                13.0,
+                0.0
+              ],
+              "to": [
+                13.0,
+                0.0
+              ],
+              "units": {
+                "type": "Mm"
               },
-              "zAxis": {
+              "tag": null,
+              "__geoMeta": {
+                "id": "[uuid]",
+                "sourceRange": []
+              }
+            },
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          "height": 13.0,
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
+          "units": {
+            "type": "Mm"
+          },
+          "sectional": false
+        }
+      },
+      {
+        "type": "Solid",
+        "value": {
+          "type": "Solid",
+          "id": "[uuid]",
+          "artifactId": "[uuid]",
+          "value": [],
+          "sketch": {
+            "type": "Sketch",
+            "id": "[uuid]",
+            "paths": [
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  13.0,
+                  0.0
+                ],
+                "tag": null,
+                "to": [
+                  13.0,
+                  13.0
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  13.0,
+                  13.0
+                ],
+                "tag": null,
+                "to": [
+                  1129.0,
+                  13.0
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  1129.0,
+                  13.0
+                ],
+                "tag": null,
+                "to": [
+                  1129.0,
+                  0.0
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  1129.0,
+                  0.0
+                ],
+                "tag": null,
+                "to": [
+                  13.0,
+                  0.0
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  13.0,
+                  0.0
+                ],
+                "tag": null,
+                "to": [
+                  13.0,
+                  0.0
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              }
+            ],
+            "on": {
+              "type": "plane",
+              "id": "[uuid]",
+              "artifactId": "[uuid]",
+              "value": "Custom",
+              "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0,
+                "z": 150.0,
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              "xAxis": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              "yAxis": {
+                "x": 0.0,
+                "y": 1.0,
+                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -4312,11 +4266,173 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                 "units": {
                   "type": "Mm"
                 }
+              }
+            },
+            "start": {
+              "from": [
+                13.0,
+                0.0
+              ],
+              "to": [
+                13.0,
+                0.0
+              ],
+              "units": {
+                "type": "Mm"
               },
-              "zAxis": {
+              "tag": null,
+              "__geoMeta": {
+                "id": "[uuid]",
+                "sourceRange": []
+              }
+            },
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          "height": 13.0,
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
+          "units": {
+            "type": "Mm"
+          },
+          "sectional": false
+        }
+      },
+      {
+        "type": "Solid",
+        "value": {
+          "type": "Solid",
+          "id": "[uuid]",
+          "artifactId": "[uuid]",
+          "value": [],
+          "sketch": {
+            "type": "Sketch",
+            "id": "[uuid]",
+            "paths": [
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  13.0,
+                  0.0
+                ],
+                "tag": null,
+                "to": [
+                  13.0,
+                  13.0
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  13.0,
+                  13.0
+                ],
+                "tag": null,
+                "to": [
+                  1129.0,
+                  13.0
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  1129.0,
+                  13.0
+                ],
+                "tag": null,
+                "to": [
+                  1129.0,
+                  0.0
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  1129.0,
+                  0.0
+                ],
+                "tag": null,
+                "to": [
+                  13.0,
+                  0.0
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  13.0,
+                  0.0
+                ],
+                "tag": null,
+                "to": [
+                  13.0,
+                  0.0
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              }
+            ],
+            "on": {
+              "type": "plane",
+              "id": "[uuid]",
+              "artifactId": "[uuid]",
+              "value": "Custom",
+              "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0,
+                "z": 150.0,
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              "xAxis": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              "yAxis": {
+                "x": 0.0,
+                "y": 1.0,
+                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -4490,14 +4606,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
               }
             },
             "start": {
@@ -4665,370 +4773,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              }
-            },
-            "start": {
-              "from": [
-                13.0,
-                0.0
-              ],
-              "to": [
-                13.0,
-                0.0
-              ],
-              "units": {
-                "type": "Mm"
-              },
-              "tag": null,
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              }
-            },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
-          },
-          "height": 13.0,
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          },
-          "sectional": false
-        }
-      },
-      {
-        "type": "Solid",
-        "value": {
-          "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
-          "value": [],
-          "sketch": {
-            "type": "Sketch",
-            "id": "[uuid]",
-            "paths": [
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  13.0,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  13.0,
-                  13.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  13.0,
-                  13.0
-                ],
-                "tag": null,
-                "to": [
-                  1129.0,
-                  13.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  1129.0,
-                  13.0
-                ],
-                "tag": null,
-                "to": [
-                  1129.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  1129.0,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  13.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  13.0,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  13.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              }
-            ],
-            "on": {
-              "type": "plane",
-              "id": "[uuid]",
-              "artifactId": "[uuid]",
-              "value": "Custom",
-              "origin": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 150.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "xAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "yAxis": {
-                "x": 0.0,
-                "y": 1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              }
-            },
-            "start": {
-              "from": [
-                13.0,
-                0.0
-              ],
-              "to": [
-                13.0,
-                0.0
-              ],
-              "units": {
-                "type": "Mm"
-              },
-              "tag": null,
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              }
-            },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
-          },
-          "height": 13.0,
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          },
-          "sectional": false
-        }
-      },
-      {
-        "type": "Solid",
-        "value": {
-          "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
-          "value": [],
-          "sketch": {
-            "type": "Sketch",
-            "id": "[uuid]",
-            "paths": [
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  13.0,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  13.0,
-                  13.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  13.0,
-                  13.0
-                ],
-                "tag": null,
-                "to": [
-                  1129.0,
-                  13.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  1129.0,
-                  13.0
-                ],
-                "tag": null,
-                "to": [
-                  1129.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  1129.0,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  13.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  13.0,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  13.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              }
-            ],
-            "on": {
-              "type": "plane",
-              "id": "[uuid]",
-              "artifactId": "[uuid]",
-              "value": "Custom",
-              "origin": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 150.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "xAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "yAxis": {
-                "x": 0.0,
-                "y": 1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -5236,14 +4980,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
               }
             },
             "start": {
@@ -5414,14 +5150,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
               }
             },
             "start": {
@@ -5524,14 +5252,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "zAxis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0,
         "units": {
           "type": "Mm"
         }
@@ -5718,14 +5438,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
               }
             },
             "start": {
@@ -5893,14 +5605,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -6147,11 +5851,173 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                 "units": {
                   "type": "Mm"
                 }
+              }
+            },
+            "start": {
+              "from": [
+                564.5,
+                0.0
+              ],
+              "to": [
+                564.5,
+                0.0
+              ],
+              "units": {
+                "type": "Mm"
               },
-              "zAxis": {
+              "tag": null,
+              "__geoMeta": {
+                "id": "[uuid]",
+                "sourceRange": []
+              }
+            },
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          "height": 671.5,
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
+          "units": {
+            "type": "Mm"
+          },
+          "sectional": false
+        }
+      },
+      {
+        "type": "Solid",
+        "value": {
+          "type": "Solid",
+          "id": "[uuid]",
+          "artifactId": "[uuid]",
+          "value": [],
+          "sketch": {
+            "type": "Sketch",
+            "id": "[uuid]",
+            "paths": [
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  564.5,
+                  0.0
+                ],
+                "tag": null,
+                "to": [
+                  564.5,
+                  13.0
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  564.5,
+                  13.0
+                ],
+                "tag": null,
+                "to": [
+                  577.5,
+                  13.0
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  577.5,
+                  13.0
+                ],
+                "tag": null,
+                "to": [
+                  577.5,
+                  0.0
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  577.5,
+                  0.0
+                ],
+                "tag": null,
+                "to": [
+                  564.5,
+                  0.0
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  564.5,
+                  0.0
+                ],
+                "tag": null,
+                "to": [
+                  564.5,
+                  0.0
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              }
+            ],
+            "on": {
+              "type": "plane",
+              "id": "[uuid]",
+              "artifactId": "[uuid]",
+              "value": "Custom",
+              "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0,
+                "z": 163.0,
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              "xAxis": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              "yAxis": {
+                "x": 0.0,
+                "y": 1.0,
+                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -6325,11 +6191,173 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                 "units": {
                   "type": "Mm"
                 }
+              }
+            },
+            "start": {
+              "from": [
+                564.5,
+                0.0
+              ],
+              "to": [
+                564.5,
+                0.0
+              ],
+              "units": {
+                "type": "Mm"
               },
-              "zAxis": {
+              "tag": null,
+              "__geoMeta": {
+                "id": "[uuid]",
+                "sourceRange": []
+              }
+            },
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          "height": 671.5,
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
+          "units": {
+            "type": "Mm"
+          },
+          "sectional": false
+        }
+      },
+      {
+        "type": "Solid",
+        "value": {
+          "type": "Solid",
+          "id": "[uuid]",
+          "artifactId": "[uuid]",
+          "value": [],
+          "sketch": {
+            "type": "Sketch",
+            "id": "[uuid]",
+            "paths": [
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  564.5,
+                  0.0
+                ],
+                "tag": null,
+                "to": [
+                  564.5,
+                  13.0
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  564.5,
+                  13.0
+                ],
+                "tag": null,
+                "to": [
+                  577.5,
+                  13.0
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  577.5,
+                  13.0
+                ],
+                "tag": null,
+                "to": [
+                  577.5,
+                  0.0
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  577.5,
+                  0.0
+                ],
+                "tag": null,
+                "to": [
+                  564.5,
+                  0.0
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  564.5,
+                  0.0
+                ],
+                "tag": null,
+                "to": [
+                  564.5,
+                  0.0
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              }
+            ],
+            "on": {
+              "type": "plane",
+              "id": "[uuid]",
+              "artifactId": "[uuid]",
+              "value": "Custom",
+              "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0,
+                "z": 163.0,
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              "xAxis": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              "yAxis": {
+                "x": 0.0,
+                "y": 1.0,
+                "z": 0.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -6503,14 +6531,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
               }
             },
             "start": {
@@ -6678,370 +6698,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              }
-            },
-            "start": {
-              "from": [
-                564.5,
-                0.0
-              ],
-              "to": [
-                564.5,
-                0.0
-              ],
-              "units": {
-                "type": "Mm"
-              },
-              "tag": null,
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              }
-            },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
-          },
-          "height": 671.5,
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          },
-          "sectional": false
-        }
-      },
-      {
-        "type": "Solid",
-        "value": {
-          "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
-          "value": [],
-          "sketch": {
-            "type": "Sketch",
-            "id": "[uuid]",
-            "paths": [
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  564.5,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  564.5,
-                  13.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  564.5,
-                  13.0
-                ],
-                "tag": null,
-                "to": [
-                  577.5,
-                  13.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  577.5,
-                  13.0
-                ],
-                "tag": null,
-                "to": [
-                  577.5,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  577.5,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  564.5,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  564.5,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  564.5,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              }
-            ],
-            "on": {
-              "type": "plane",
-              "id": "[uuid]",
-              "artifactId": "[uuid]",
-              "value": "Custom",
-              "origin": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 163.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "xAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "yAxis": {
-                "x": 0.0,
-                "y": 1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              }
-            },
-            "start": {
-              "from": [
-                564.5,
-                0.0
-              ],
-              "to": [
-                564.5,
-                0.0
-              ],
-              "units": {
-                "type": "Mm"
-              },
-              "tag": null,
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              }
-            },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
-          },
-          "height": 671.5,
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          },
-          "sectional": false
-        }
-      },
-      {
-        "type": "Solid",
-        "value": {
-          "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
-          "value": [],
-          "sketch": {
-            "type": "Sketch",
-            "id": "[uuid]",
-            "paths": [
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  564.5,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  564.5,
-                  13.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  564.5,
-                  13.0
-                ],
-                "tag": null,
-                "to": [
-                  577.5,
-                  13.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  577.5,
-                  13.0
-                ],
-                "tag": null,
-                "to": [
-                  577.5,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  577.5,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  564.5,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  564.5,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  564.5,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              }
-            ],
-            "on": {
-              "type": "plane",
-              "id": "[uuid]",
-              "artifactId": "[uuid]",
-              "value": "Custom",
-              "origin": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 163.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "xAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "yAxis": {
-                "x": 0.0,
-                "y": 1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -7121,14 +6777,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "zAxis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0,
         "units": {
           "type": "Mm"
         }
@@ -7321,14 +6969,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                   "type": "Mm"
                 }
               },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
               "solid": {
                 "type": "Solid",
                 "id": "[uuid]",
@@ -7488,14 +7128,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                       "x": 0.0,
                       "y": 1.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": 0.0,
-                      "z": 1.0,
                       "units": {
                         "type": "Mm"
                       }
@@ -7727,14 +7359,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                   "type": "Mm"
                 }
               },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
               "solid": {
                 "type": "Solid",
                 "id": "[uuid]",
@@ -7894,14 +7518,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                       "x": 0.0,
                       "y": 1.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": 0.0,
-                      "z": 1.0,
                       "units": {
                         "type": "Mm"
                       }
@@ -8138,14 +7754,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                   "type": "Mm"
                 }
               },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
               "solid": {
                 "type": "Solid",
                 "id": "[uuid]",
@@ -8305,14 +7913,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                       "x": 0.0,
                       "y": 1.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": 0.0,
-                      "z": 1.0,
                       "units": {
                         "type": "Mm"
                       }
@@ -8544,14 +8144,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                   "type": "Mm"
                 }
               },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
               "solid": {
                 "type": "Solid",
                 "id": "[uuid]",
@@ -8711,14 +8303,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                       "x": 0.0,
                       "y": 1.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": 0.0,
-                      "z": 1.0,
                       "units": {
                         "type": "Mm"
                       }
@@ -8882,14 +8466,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
           "type": "Mm"
         }
       },
-      "zAxis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0,
-        "units": {
-          "type": "Mm"
-        }
-      },
       "solid": {
         "type": "Solid",
         "id": "[uuid]",
@@ -9049,14 +8625,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
               "x": 0.0,
               "y": 1.0,
               "z": 0.0,
-              "units": {
-                "type": "Mm"
-              }
-            },
-            "zAxis": {
-              "x": 0.0,
-              "y": 0.0,
-              "z": 1.0,
               "units": {
                 "type": "Mm"
               }
@@ -9121,14 +8689,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
           "type": "Mm"
         }
       },
-      "zAxis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0,
-        "units": {
-          "type": "Mm"
-        }
-      },
       "solid": {
         "type": "Solid",
         "id": "[uuid]",
@@ -9288,14 +8848,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
               "x": 0.0,
               "y": 1.0,
               "z": 0.0,
-              "units": {
-                "type": "Mm"
-              }
-            },
-            "zAxis": {
-              "x": 0.0,
-              "y": 0.0,
-              "z": 1.0,
               "units": {
                 "type": "Mm"
               }
@@ -9554,14 +9106,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
             "units": {
               "type": "Mm"
             }
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 1.0,
-            "units": {
-              "type": "Mm"
-            }
           }
         },
         "start": {
@@ -9623,14 +9167,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "zAxis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0,
         "units": {
           "type": "Mm"
         }
@@ -9817,14 +9353,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
               }
             },
             "start": {
@@ -9992,14 +9520,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
                 "units": {
                   "type": "Mm"
                 }
@@ -10207,14 +9727,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
               }
             },
             "start": {
@@ -10385,14 +9897,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
               }
             },
             "start": {
@@ -10469,14 +9973,6 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "zAxis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0,
         "units": {
           "type": "Mm"
         }

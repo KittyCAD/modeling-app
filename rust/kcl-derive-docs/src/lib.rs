@@ -6,11 +6,12 @@
 mod tests;
 mod unbox;
 
-use std::collections::HashMap;
+use std::{collections::HashMap, fs};
 
 use convert_case::Casing;
 use inflector::{cases::camelcase::to_camel_case, Inflector};
 use once_cell::sync::Lazy;
+use proc_macro2::Span;
 use quote::{format_ident, quote, quote_spanned, ToTokens};
 use regex::Regex;
 use serde::Deserialize;
@@ -20,6 +21,16 @@ use syn::{
     Attribute, Signature, Visibility,
 };
 use unbox::unbox;
+
+#[proc_macro_attribute]
+pub fn stdlib(attr: proc_macro::TokenStream, item: proc_macro::TokenStream) -> proc_macro::TokenStream {
+    do_output(do_stdlib(attr.into(), item.into()))
+}
+
+#[proc_macro_attribute]
+pub fn for_each_std_mod(_attr: proc_macro::TokenStream, item: proc_macro::TokenStream) -> proc_macro::TokenStream {
+    do_for_each_std_mod(item.into()).into()
+}
 
 /// Describes an argument of a stdlib function.
 #[derive(Deserialize, Debug)]
@@ -73,17 +84,37 @@ struct StdlibMetadata {
     args: HashMap<String, ArgMetadata>,
 }
 
-#[proc_macro_attribute]
-pub fn stdlib(attr: proc_macro::TokenStream, item: proc_macro::TokenStream) -> proc_macro::TokenStream {
-    do_output(do_stdlib(attr.into(), item.into()))
-}
-
 fn do_stdlib(
     attr: proc_macro2::TokenStream,
     item: proc_macro2::TokenStream,
 ) -> Result<(proc_macro2::TokenStream, Vec<Error>), Error> {
     let metadata = from_tokenstream(&attr)?;
     do_stdlib_inner(metadata, attr, item)
+}
+
+fn do_for_each_std_mod(item: proc_macro2::TokenStream) -> proc_macro2::TokenStream {
+    let item: syn::ItemFn = syn::parse2(item.clone()).unwrap();
+    let mut result = proc_macro2::TokenStream::new();
+    for name in fs::read_dir("kcl-lib/std").unwrap().filter_map(|e| {
+        let e = e.unwrap();
+        let filename = e.file_name();
+        filename.to_str().unwrap().strip_suffix(".kcl").map(str::to_owned)
+    }) {
+        let mut item = item.clone();
+        item.sig.ident = syn::Ident::new(&format!("{}_{}", item.sig.ident, name), Span::call_site());
+        let stmts = &item.block.stmts;
+        //let name = format!("\"{name}\"");
+        let block = quote! {
+            {
+                const STD_MOD_NAME: &str = #name;
+                #(#stmts)*
+            }
+        };
+        item.block = Box::new(syn::parse2(block).unwrap());
+        result.extend(Some(item.into_token_stream()));
+    }
+
+    result
 }
 
 fn do_output(res: Result<(proc_macro2::TokenStream, Vec<Error>), Error>) -> proc_macro::TokenStream {
@@ -671,6 +702,7 @@ fn normalize_comment_string(s: String) -> Vec<String> {
 
 /// Represent an item without concern for its body which may (or may not)
 /// contain syntax errors.
+#[derive(Clone)]
 struct ItemFnForSignature {
     pub attrs: Vec<Attribute>,
     pub vis: Visibility,

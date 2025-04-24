@@ -66,7 +66,7 @@ description: Artifact commands exhaust-manifold.kcl
       "planar_normal": {
         "x": 1.0,
         "y": 0.0,
-        "z": 0.0
+        "z": -0.0
       }
     }
   },
@@ -467,9 +467,9 @@ description: Artifact commands exhaust-manifold.kcl
       "animated": false,
       "adjust_camera": false,
       "planar_normal": {
-        "x": 1.0,
-        "y": 0.0,
-        "z": 0.0
+        "x": 0.9998476951563913,
+        "y": 0.01745240643728351,
+        "z": -0.0
       }
     }
   },
@@ -870,9 +870,9 @@ description: Artifact commands exhaust-manifold.kcl
       "animated": false,
       "adjust_camera": false,
       "planar_normal": {
-        "x": 1.0,
-        "y": 0.0,
-        "z": 0.0
+        "x": 0.9114032766354453,
+        "y": 0.4115143586051088,
+        "z": -0.0
       }
     }
   },
@@ -1273,9 +1273,9 @@ description: Artifact commands exhaust-manifold.kcl
       "animated": false,
       "adjust_camera": false,
       "planar_normal": {
-        "x": 1.0,
-        "y": 0.0,
-        "z": 0.0
+        "x": 0.9048270524660196,
+        "y": 0.4257792915650726,
+        "z": -0.0
       }
     }
   },
