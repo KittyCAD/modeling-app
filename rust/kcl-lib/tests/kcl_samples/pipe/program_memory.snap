@@ -187,7 +187,8 @@ description: Variables in memory after executing pipe.kcl
             "endCapId": "[uuid]",
             "units": {
               "type": "Inches"
-            }
+            },
+            "sectional": false
           },
           "units": {
             "type": "Inches"
@@ -222,7 +223,8 @@ description: Variables in memory after executing pipe.kcl
       "endCapId": null,
       "units": {
         "type": "Inches"
-      }
+      },
+      "sectional": false
     }
   },
   "pipeBase": {
@@ -337,7 +339,8 @@ description: Variables in memory after executing pipe.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Inches"
-      }
+      },
+      "sectional": false
     }
   },
   "pipeInnerDiameter": {

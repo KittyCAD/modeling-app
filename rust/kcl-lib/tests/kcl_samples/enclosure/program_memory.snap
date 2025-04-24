@@ -346,7 +346,8 @@ description: Variables in memory after executing enclosure.kcl
       ],
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "extrude003": {
@@ -692,7 +693,8 @@ description: Variables in memory after executing enclosure.kcl
       ],
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "extrude004": {
@@ -1249,7 +1251,8 @@ description: Variables in memory after executing enclosure.kcl
             ],
             "units": {
               "type": "Mm"
-            }
+            },
+            "sectional": false
           },
           "units": {
             "type": "Mm"
@@ -1376,7 +1379,8 @@ description: Variables in memory after executing enclosure.kcl
       ],
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "function001": {
@@ -2391,7 +2395,8 @@ description: Variables in memory after executing enclosure.kcl
           ],
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         },
         "units": {
           "type": "Mm"

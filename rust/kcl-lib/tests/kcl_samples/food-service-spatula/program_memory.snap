@@ -242,7 +242,8 @@ description: Variables in memory after executing food-service-spatula.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "flipperFilletRadius": {
@@ -869,7 +870,8 @@ description: Variables in memory after executing food-service-spatula.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "gripEdgeTop": {
@@ -1391,7 +1393,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         },
         "units": {
           "type": "Mm"
@@ -2074,7 +2077,8 @@ description: Variables in memory after executing food-service-spatula.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "handleBottomEdge": {
@@ -2923,7 +2927,8 @@ description: Variables in memory after executing food-service-spatula.kcl
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        }
+        },
+        "sectional": false
       },
       "units": {
         "type": "Mm"

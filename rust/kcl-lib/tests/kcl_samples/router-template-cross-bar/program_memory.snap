@@ -811,7 +811,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "extrude002": {
@@ -1799,7 +1800,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "endCapId": "[uuid]",
             "units": {
               "type": "Mm"
-            }
+            },
+            "sectional": false
           },
           "units": {
             "type": "Mm"
@@ -1848,7 +1850,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "extrude003": {
@@ -2836,7 +2839,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "endCapId": "[uuid]",
             "units": {
               "type": "Mm"
-            }
+            },
+            "sectional": false
           },
           "units": {
             "type": "Mm"
@@ -2885,7 +2889,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "extrude004": {
@@ -4072,7 +4077,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "endCapId": "[uuid]",
                   "units": {
                     "type": "Mm"
-                  }
+                  },
+                  "sectional": false
                 },
                 "units": {
                   "type": "Mm"
@@ -4121,7 +4127,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "endCapId": "[uuid]",
             "units": {
               "type": "Mm"
-            }
+            },
+            "sectional": false
           },
           "units": {
             "type": "Mm"
@@ -4170,7 +4177,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "minClampingDistance": {
@@ -5823,7 +5831,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         },
         "units": {
           "type": "Mm"
@@ -6801,7 +6810,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         },
         "units": {
           "type": "Mm"
@@ -7978,7 +7988,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Mm"
@@ -8027,7 +8038,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         },
         "units": {
           "type": "Mm"

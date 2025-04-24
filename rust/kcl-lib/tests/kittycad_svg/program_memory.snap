@@ -7408,7 +7408,8 @@ description: Variables in memory after executing kittycad_svg.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   }
 }

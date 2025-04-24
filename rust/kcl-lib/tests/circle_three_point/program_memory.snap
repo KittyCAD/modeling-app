@@ -121,7 +121,8 @@ description: Variables in memory after executing circle_three_point.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   }
 }

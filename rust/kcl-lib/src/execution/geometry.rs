@@ -47,6 +47,29 @@ impl Geometry {
     }
 }
 
+/// A geometry including an imported geometry.
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(tag = "type")]
+pub enum GeometryWithImportedGeometry {
+    Sketch(Sketch),
+    Solid(Solid),
+    ImportedGeometry(Box<ImportedGeometry>),
+}
+
+impl GeometryWithImportedGeometry {
+    pub async fn id(&mut self, ctx: &ExecutorContext) -> Result<uuid::Uuid, KclError> {
+        match self {
+            GeometryWithImportedGeometry::Sketch(s) => Ok(s.id),
+            GeometryWithImportedGeometry::Solid(e) => Ok(e.id),
+            GeometryWithImportedGeometry::ImportedGeometry(i) => {
+                let id = i.id(ctx).await?;
+                Ok(id)
+            }
+        }
+    }
+}
+
 /// A set of geometry.
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
@@ -807,7 +830,10 @@ pub struct Solid {
     /// Chamfers or fillets on this solid.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub edge_cuts: Vec<EdgeCut>,
+    /// The units of the solid.
     pub units: UnitLen,
+    /// Is this a sectional solid?
+    pub sectional: bool,
     /// Metadata.
     #[serde(skip)]
     pub meta: Vec<Metadata>,
@@ -858,10 +884,24 @@ impl EdgeCut {
         }
     }
 
+    pub fn set_id(&mut self, id: uuid::Uuid) {
+        match self {
+            EdgeCut::Fillet { id: ref mut i, .. } => *i = id,
+            EdgeCut::Chamfer { id: ref mut i, .. } => *i = id,
+        }
+    }
+
     pub fn edge_id(&self) -> uuid::Uuid {
         match self {
             EdgeCut::Fillet { edge_id, .. } => *edge_id,
             EdgeCut::Chamfer { edge_id, .. } => *edge_id,
+        }
+    }
+
+    pub fn set_edge_id(&mut self, id: uuid::Uuid) {
+        match self {
+            EdgeCut::Fillet { edge_id: ref mut i, .. } => *i = id,
+            EdgeCut::Chamfer { edge_id: ref mut i, .. } => *i = id,
         }
     }
 
@@ -1181,6 +1221,21 @@ impl Path {
             Path::CircleThreePoint { base, .. } => base.geo_meta.id,
             Path::Arc { base, .. } => base.geo_meta.id,
             Path::ArcThreePoint { base, .. } => base.geo_meta.id,
+        }
+    }
+
+    pub fn set_id(&mut self, id: uuid::Uuid) {
+        match self {
+            Path::ToPoint { base } => base.geo_meta.id = id,
+            Path::Horizontal { base, .. } => base.geo_meta.id = id,
+            Path::AngledLineTo { base, .. } => base.geo_meta.id = id,
+            Path::Base { base } => base.geo_meta.id = id,
+            Path::TangentialArcTo { base, .. } => base.geo_meta.id = id,
+            Path::TangentialArc { base, .. } => base.geo_meta.id = id,
+            Path::Circle { base, .. } => base.geo_meta.id = id,
+            Path::CircleThreePoint { base, .. } => base.geo_meta.id = id,
+            Path::Arc { base, .. } => base.geo_meta.id = id,
+            Path::ArcThreePoint { base, .. } => base.geo_meta.id = id,
         }
     }
 

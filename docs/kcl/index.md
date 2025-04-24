@@ -47,6 +47,7 @@ layout: manual
   * [`ceil`](kcl/ceil)
   * [`chamfer`](kcl/chamfer)
   * [`circleThreePoint`](kcl/circleThreePoint)
+  * [`clone`](kcl/clone)
   * [`close`](kcl/close)
   * [`extrude`](kcl/extrude)
   * [`fillet`](kcl/fillet)

@@ -1028,6 +1028,27 @@ impl<'a> FromKclValue<'a> for kittycad_modeling_cmds::coord::Direction {
     }
 }
 
+impl<'a> FromKclValue<'a> for crate::execution::Geometry {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        match arg {
+            KclValue::Sketch { value } => Some(Self::Sketch(*value.to_owned())),
+            KclValue::Solid { value } => Some(Self::Solid(*value.to_owned())),
+            _ => None,
+        }
+    }
+}
+
+impl<'a> FromKclValue<'a> for crate::execution::GeometryWithImportedGeometry {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        match arg {
+            KclValue::Sketch { value } => Some(Self::Sketch(*value.to_owned())),
+            KclValue::Solid { value } => Some(Self::Solid(*value.to_owned())),
+            KclValue::ImportedGeometry(value) => Some(Self::ImportedGeometry(Box::new(value.clone()))),
+            _ => None,
+        }
+    }
+}
+
 impl<'a> FromKclValue<'a> for FaceTag {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let case1 = || match arg.as_str() {

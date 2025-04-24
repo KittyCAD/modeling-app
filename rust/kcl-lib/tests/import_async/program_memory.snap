@@ -1064,7 +1064,8 @@ description: Variables in memory after executing import_async.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "cmo": {
@@ -2157,7 +2158,8 @@ description: Variables in memory after executing import_async.kcl
             "endCapId": "[uuid]",
             "units": {
               "type": "Mm"
-            }
+            },
+            "sectional": false
           },
           "units": {
             "type": "Mm"
@@ -2192,7 +2194,8 @@ description: Variables in memory after executing import_async.kcl
       "endCapId": null,
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "keywayDepth": {
@@ -7703,7 +7706,8 @@ description: Variables in memory after executing import_async.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -11667,7 +11671,8 @@ description: Variables in memory after executing import_async.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -15631,7 +15636,8 @@ description: Variables in memory after executing import_async.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -19595,7 +19601,8 @@ description: Variables in memory after executing import_async.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -23559,7 +23566,8 @@ description: Variables in memory after executing import_async.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -27523,7 +27531,8 @@ description: Variables in memory after executing import_async.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -31487,7 +31496,8 @@ description: Variables in memory after executing import_async.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -35451,7 +35461,8 @@ description: Variables in memory after executing import_async.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -39415,7 +39426,8 @@ description: Variables in memory after executing import_async.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -43379,7 +43391,8 @@ description: Variables in memory after executing import_async.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -47343,7 +47356,8 @@ description: Variables in memory after executing import_async.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -51307,7 +51321,8 @@ description: Variables in memory after executing import_async.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -55271,7 +55286,8 @@ description: Variables in memory after executing import_async.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -59235,7 +59251,8 @@ description: Variables in memory after executing import_async.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -63199,7 +63216,8 @@ description: Variables in memory after executing import_async.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -67163,7 +67181,8 @@ description: Variables in memory after executing import_async.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -71127,7 +71146,8 @@ description: Variables in memory after executing import_async.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -75091,7 +75111,8 @@ description: Variables in memory after executing import_async.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -79055,7 +79076,8 @@ description: Variables in memory after executing import_async.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -83019,7 +83041,8 @@ description: Variables in memory after executing import_async.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -86983,7 +87006,8 @@ description: Variables in memory after executing import_async.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       }
     ]
