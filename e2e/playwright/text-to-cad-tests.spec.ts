@@ -968,99 +968,99 @@ test.describe('Mocked Text-to-CAD API tests', { tag: ['@skipWin'] }, () => {
       await expect(page.getByTestId('app-header-file-name')).toContainText('2x2x2-cube.kcl')
     })
 
-    test(
-      'Home Page -> Text To CAD -> Exisiting Project -> Navigate to the project -> Reject -> should load main.kcl',
-      { tag: '@electron' },
-      async ({ context, page }, testInfo) => {
-        const u = await getUtils(page)
-        const projectName = 'my-project-name'
-        const prompt = '2x2x2 cube'
-        await mockPageTextToCAD(page)
-  
-        // Create and navigate to the project then come home
-        await createProject({ name: projectName, page, returnHome: true })
+  test(
+    'Home Page -> Text To CAD -> Exisiting Project -> Navigate to the project -> Reject -> should load main.kcl',
+    { tag: '@electron' },
+    async ({ context, page }, testInfo) => {
+      const u = await getUtils(page)
+      const projectName = 'my-project-name'
+      const prompt = '2x2x2 cube'
+      await mockPageTextToCAD(page)
 
-        // open commands
-        await page.getByTestId('command-bar-open-button').click()
-  
-        // search Text To CAD
-        await page.keyboard.type('Text To CAD')
-        await page.keyboard.press('Enter')
-  
-        // new project
-        await page.keyboard.type('Existing project')
-        await page.keyboard.press('Enter')
-  
-        // write name
-        await page.keyboard.type(projectName)
-        await page.keyboard.press('Enter')
-  
-        // prompt
-        await page.keyboard.type(prompt)
-        await page.keyboard.press('Enter')
-  
-        // Go into the project that was created from Text to CAD
-        // This only works because there is only 1 project. Each project has the same value of `data-test-id='project-title'`
-        await page.getByTestId('project-title').click()
-  
-        await page.getByRole('button', { name: 'Reject' }).click()
-  
-        // Check header is populated with the project and file name
-        await expect(page.getByTestId('app-header-project-name')).toBeVisible()
-        await expect(page.getByTestId('app-header-project-name')).toContainText(projectName)
-        await expect(page.getByTestId('app-header-file-name')).toBeVisible()
-        await expect(page.getByTestId('app-header-file-name')).toContainText('main.kcl')
+      // Create and navigate to the project then come home
+      await createProject({ name: projectName, page, returnHome: true })
 
-        // Check file is deleted
-        await u.openFilePanel()
-        await expect(page.getByText('2x2x2-cube.kcl')).not.toBeVisible()
-      })
+      // open commands
+      await page.getByTestId('command-bar-open-button').click()
 
-    test(
-      'Home Page -> Text To CAD -> Exisiting Project -> Navigate to the project -> Accept -> should load 2x2x2-cube.kcl',
-      { tag: '@electron' },
-      async ({ context, page }, testInfo) => {
-        const u = await getUtils(page)
-        const projectName = 'my-project-name'
-        const prompt = '2x2x2 cube'
-        await mockPageTextToCAD(page)
-  
-        // Create and navigate to the project then come home
-        await createProject({ name: projectName, page, returnHome: true })
+      // search Text To CAD
+      await page.keyboard.type('Text To CAD')
+      await page.keyboard.press('Enter')
 
-        // open commands
-        await page.getByTestId('command-bar-open-button').click()
-  
-        // search Text To CAD
-        await page.keyboard.type('Text To CAD')
-        await page.keyboard.press('Enter')
-  
-        // new project
-        await page.keyboard.type('Existing project')
-        await page.keyboard.press('Enter')
-  
-        // write name
-        await page.keyboard.type(projectName)
-        await page.keyboard.press('Enter')
-  
-        // prompt
-        await page.keyboard.type(prompt)
-        await page.keyboard.press('Enter')
-  
-        // Go into the project that was created from Text to CAD
-        // This only works because there is only 1 project. Each project has the same value of `data-test-id='project-title'`
-        await page.getByTestId('project-title').click()
-  
-        await page.getByRole('button', { name: 'Accept' }).click()
-  
-        // Check header is populated with the project and file name
-        await expect(page.getByTestId('app-header-project-name')).toBeVisible()
-        await expect(page.getByTestId('app-header-project-name')).toContainText(projectName)
-        await expect(page.getByTestId('app-header-file-name')).toBeVisible()
-        await expect(page.getByTestId('app-header-file-name')).toContainText('2x2x2-cube.kcl')
+      // new project
+      await page.keyboard.type('Existing project')
+      await page.keyboard.press('Enter')
 
-        // Check file is created
-        await u.openFilePanel()
-        await expect(page.getByTestId('file-tree-item').getByText('2x2x2-cube.kcl')).toBeVisible()
-      })
+      // write name
+      await page.keyboard.type(projectName)
+      await page.keyboard.press('Enter')
+
+      // prompt
+      await page.keyboard.type(prompt)
+      await page.keyboard.press('Enter')
+
+      // Go into the project that was created from Text to CAD
+      // This only works because there is only 1 project. Each project has the same value of `data-test-id='project-title'`
+      await page.getByTestId('project-title').click()
+
+      await page.getByRole('button', { name: 'Reject' }).click()
+
+      // Check header is populated with the project and file name
+      await expect(page.getByTestId('app-header-project-name')).toBeVisible()
+      await expect(page.getByTestId('app-header-project-name')).toContainText(projectName)
+      await expect(page.getByTestId('app-header-file-name')).toBeVisible()
+      await expect(page.getByTestId('app-header-file-name')).toContainText('main.kcl')
+
+      // Check file is deleted
+      await u.openFilePanel()
+      await expect(page.getByText('2x2x2-cube.kcl')).not.toBeVisible()
+    })
+
+  test(
+    'Home Page -> Text To CAD -> Exisiting Project -> Navigate to the project -> Accept -> should load 2x2x2-cube.kcl',
+    { tag: '@electron' },
+    async ({ context, page }, testInfo) => {
+      const u = await getUtils(page)
+      const projectName = 'my-project-name'
+      const prompt = '2x2x2 cube'
+      await mockPageTextToCAD(page)
+
+      // Create and navigate to the project then come home
+      await createProject({ name: projectName, page, returnHome: true })
+
+      // open commands
+      await page.getByTestId('command-bar-open-button').click()
+
+      // search Text To CAD
+      await page.keyboard.type('Text To CAD')
+      await page.keyboard.press('Enter')
+
+      // new project
+      await page.keyboard.type('Existing project')
+      await page.keyboard.press('Enter')
+
+      // write name
+      await page.keyboard.type(projectName)
+      await page.keyboard.press('Enter')
+
+      // prompt
+      await page.keyboard.type(prompt)
+      await page.keyboard.press('Enter')
+
+      // Go into the project that was created from Text to CAD
+      // This only works because there is only 1 project. Each project has the same value of `data-test-id='project-title'`
+      await page.getByTestId('project-title').click()
+
+      await page.getByRole('button', { name: 'Accept' }).click()
+
+      // Check header is populated with the project and file name
+      await expect(page.getByTestId('app-header-project-name')).toBeVisible()
+      await expect(page.getByTestId('app-header-project-name')).toContainText(projectName)
+      await expect(page.getByTestId('app-header-file-name')).toBeVisible()
+      await expect(page.getByTestId('app-header-file-name')).toContainText('2x2x2-cube.kcl')
+
+      // Check file is created
+      await u.openFilePanel()
+      await expect(page.getByTestId('file-tree-item').getByText('2x2x2-cube.kcl')).toBeVisible()
+    })
 })
