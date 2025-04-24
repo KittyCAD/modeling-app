@@ -391,6 +391,7 @@ export const EngineStream = (props: {
     <div
       ref={videoWrapperRef}
       className="absolute inset-0 z-0"
+      style={{ paddingLeft: '500px' }}
       id="stream"
       data-testid="stream"
       onMouseUp={handleMouseUp}

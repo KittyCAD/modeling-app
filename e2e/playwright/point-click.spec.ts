@@ -203,7 +203,7 @@ test.describe('Point-and-click tests', () => {
       await context.addInitScript((file) => {
         localStorage.setItem('persistCode', file)
       }, file)
-      await page.setBodyDimensions({ width: 1000, height: 500 })
+      await page.setBodyDimensions({ width: 1500, height: 500 })
       await homePage.goToModelingScene()
       await scene.settled(cmdBar)
 
@@ -366,7 +366,7 @@ profile001 = startProfileAt([205.96, 254.59], sketch002)
       await context.addInitScript((file) => {
         localStorage.setItem('persistCode', file)
       }, file)
-      await page.setBodyDimensions({ width: 1000, height: 500 })
+      await page.setBodyDimensions({ width: 1500, height: 500 })
       await homePage.goToModelingScene()
 
       await scene.settled(cmdBar)
@@ -689,7 +689,7 @@ openSketch = startSketchOn(XY)
       await context.addInitScript((initialCode) => {
         localStorage.setItem('persistCode', initialCode)
       }, initialCode)
-      await page.setBodyDimensions({ width: 1000, height: 500 })
+      await page.setBodyDimensions({ width: 1500, height: 500 })
       await homePage.goToModelingScene()
 
       // Wait for the scene and stream to load
@@ -864,7 +864,7 @@ openSketch = startSketchOn(XY)
 
     // Setup
     await test.step(`Initial test setup`, async () => {
-      await page.setBodyDimensions({ width: 1000, height: 500 })
+      await page.setBodyDimensions({ width: 1500, height: 500 })
       await homePage.goToModelingScene()
 
       // Wait for the scene and stream to load
@@ -1215,7 +1215,7 @@ openSketch = startSketchOn(XY)
         await context.addInitScript((initialCode) => {
           localStorage.setItem('persistCode', initialCode)
         }, initialCode)
-        await page.setBodyDimensions({ width: 1000, height: 500 })
+        await page.setBodyDimensions({ width: 1500, height: 500 })
         await homePage.goToModelingScene()
         await scene.settled(cmdBar)
 
@@ -1360,7 +1360,7 @@ extrude001 = extrude(profile001, length = 100)
     await context.addInitScript((initialCode) => {
       localStorage.setItem('persistCode', initialCode)
     }, initialCode)
-    await page.setBodyDimensions({ width: 1000, height: 500 })
+    await page.setBodyDimensions({ width: 1500, height: 500 })
     await homePage.goToModelingScene()
     await scene.settled(cmdBar)
 
@@ -1496,7 +1496,7 @@ extrude001 = extrude(profile001, length = 100)
       await context.addInitScript((initialCode) => {
         localStorage.setItem('persistCode', initialCode)
       }, initialCode)
-      await page.setBodyDimensions({ width: 1000, height: 500 })
+      await page.setBodyDimensions({ width: 1500, height: 500 })
       await homePage.goToModelingScene()
 
       // One dumb hardcoded screen pixel value
@@ -1587,7 +1587,7 @@ loft001 = loft([sketch001, sketch002])
     await context.addInitScript((initialCode) => {
       localStorage.setItem('persistCode', initialCode)
     }, initialCode)
-    await page.setBodyDimensions({ width: 1000, height: 500 })
+    await page.setBodyDimensions({ width: 1500, height: 500 })
     await homePage.goToModelingScene()
     await scene.settled(cmdBar)
 
@@ -1676,7 +1676,7 @@ sketch002 = startSketchOn(XZ)
       await context.addInitScript((initialCode) => {
         localStorage.setItem('persistCode', initialCode)
       }, initialCode)
-      await page.setBodyDimensions({ width: 1000, height: 500 })
+      await page.setBodyDimensions({ width: 1500, height: 500 })
       await homePage.goToModelingScene()
       await scene.settled(cmdBar)
 
@@ -1818,7 +1818,7 @@ sketch002 = startSketchOn(XZ)
     await context.addInitScript((initialCode) => {
       localStorage.setItem('persistCode', initialCode)
     }, initialCode)
-    await page.setBodyDimensions({ width: 1000, height: 500 })
+    await page.setBodyDimensions({ width: 1500, height: 500 })
     await homePage.goToModelingScene()
     await scene.settled(cmdBar)
 
@@ -1924,7 +1924,7 @@ extrude001 = extrude(sketch001, length = -12)
       await context.addInitScript((initialCode) => {
         localStorage.setItem('persistCode', initialCode)
       }, initialCode)
-      await page.setBodyDimensions({ width: 1000, height: 500 })
+      await page.setBodyDimensions({ width: 1500, height: 500 })
       await homePage.goToModelingScene()
 
       // verify modeling scene is loaded
@@ -2199,7 +2199,7 @@ fillet001 = fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg01)])
     await context.addInitScript((initialCode) => {
       localStorage.setItem('persistCode', initialCode)
     }, initialCode)
-    await page.setBodyDimensions({ width: 1000, height: 500 })
+    await page.setBodyDimensions({ width: 1500, height: 500 })
     await homePage.goToModelingScene()
     await scene.settled(cmdBar)
 
@@ -2263,7 +2263,7 @@ fillet04 = fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg02)])
       await context.addInitScript((initialCode) => {
         localStorage.setItem('persistCode', initialCode)
       }, initialCode)
-      await page.setBodyDimensions({ width: 1000, height: 500 })
+      await page.setBodyDimensions({ width: 1500, height: 500 })
       await homePage.goToModelingScene()
 
       // verify modeling scene is loaded
@@ -2397,7 +2397,7 @@ extrude001 = extrude(profile001, length = 5)
       await context.addInitScript((initialCode) => {
         localStorage.setItem('persistCode', initialCode)
       }, initialCode)
-      await page.setBodyDimensions({ width: 1000, height: 500 })
+      await page.setBodyDimensions({ width: 1500, height: 500 })
       await homePage.goToModelingScene()
 
       // verify modeling scene is loaded
@@ -2520,7 +2520,7 @@ extrude001 = extrude(sketch001, length = -12)
       await context.addInitScript((initialCode) => {
         localStorage.setItem('persistCode', initialCode)
       }, initialCode)
-      await page.setBodyDimensions({ width: 1000, height: 500 })
+      await page.setBodyDimensions({ width: 1500, height: 500 })
       await homePage.goToModelingScene()
       await scene.settled(cmdBar)
     })
@@ -2821,7 +2821,7 @@ chamfer04 = chamfer(extrude001, length = 5, tags = [getOppositeEdge(seg02)])
       await context.addInitScript((initialCode) => {
         localStorage.setItem('persistCode', initialCode)
       }, initialCode)
-      await page.setBodyDimensions({ width: 1000, height: 500 })
+      await page.setBodyDimensions({ width: 1500, height: 500 })
       await homePage.goToModelingScene()
       await scene.settled(cmdBar)
 
@@ -2946,7 +2946,7 @@ extrude001 = extrude(sketch001, length = 30)
         localStorage.setItem('persistCode', initialCode)
       }, initialCode)
 
-      await page.setBodyDimensions({ width: 1000, height: 500 })
+      await page.setBodyDimensions({ width: 1500, height: 500 })
 
       await homePage.goToModelingScene()
       await scene.connectionEstablished()
@@ -3089,7 +3089,7 @@ extrude001 = extrude(sketch001, length = 40)
     await context.addInitScript((initialCode) => {
       localStorage.setItem('persistCode', initialCode)
     }, initialCode)
-    await page.setBodyDimensions({ width: 1000, height: 500 })
+    await page.setBodyDimensions({ width: 1500, height: 500 })
     await homePage.goToModelingScene()
     await scene.settled(cmdBar)
 
@@ -3236,7 +3236,7 @@ extrude002 = extrude(sketch002, length = 50)
       await context.addInitScript((initialCode) => {
         localStorage.setItem('persistCode', initialCode)
       }, initialCode)
-      await page.setBodyDimensions({ width: 1200, height: 500 })
+      await page.setBodyDimensions({ width: 1700, height: 500 })
       await homePage.goToModelingScene()
       await scene.settled(cmdBar)
 
@@ -3325,7 +3325,7 @@ profile001 = startProfileAt([-20, 20], sketch001)
       await context.addInitScript((initialCode) => {
         localStorage.setItem('persistCode', initialCode)
       }, initialCode)
-      await page.setBodyDimensions({ width: 1000, height: 500 })
+      await page.setBodyDimensions({ width: 1500, height: 500 })
       await homePage.goToModelingScene()
       await scene.settled(cmdBar)
       await toolbar.openPane('feature-tree')
@@ -3405,7 +3405,7 @@ sweep001 = sweep(sketch001, path = sketch002)
     await context.addInitScript((initialCode) => {
       localStorage.setItem('persistCode', initialCode)
     }, initialCode)
-    await page.setBodyDimensions({ width: 1000, height: 500 })
+    await page.setBodyDimensions({ width: 1500, height: 500 })
     await homePage.goToModelingScene()
     await scene.settled(cmdBar)
 
@@ -3487,7 +3487,7 @@ tag=$rectangleSegmentC002,
       await context.addInitScript((initialCode) => {
         localStorage.setItem('persistCode', initialCode)
       }, initialCode)
-      await page.setBodyDimensions({ width: 1000, height: 500 })
+      await page.setBodyDimensions({ width: 1500, height: 500 })
       await homePage.goToModelingScene()
       await scene.settled(cmdBar)
 
@@ -3565,7 +3565,7 @@ sketch002 = startSketchOn(extrude001, face = rectangleSegmentA001)
       await context.addInitScript((initialCode) => {
         localStorage.setItem('persistCode', initialCode)
       }, initialCode)
-      await page.setBodyDimensions({ width: 1000, height: 500 })
+      await page.setBodyDimensions({ width: 1500, height: 500 })
       await homePage.goToModelingScene()
       await scene.connectionEstablished()
       await scene.settled(cmdBar)
@@ -3656,7 +3656,7 @@ sketch002 = startSketchOn(extrude001, face = rectangleSegmentA001)
       await context.addInitScript((initialCode) => {
         localStorage.setItem('persistCode', initialCode)
       }, initialCode)
-      await page.setBodyDimensions({ width: 1000, height: 500 })
+      await page.setBodyDimensions({ width: 1500, height: 500 })
       await homePage.goToModelingScene()
       await scene.connectionEstablished()
       await scene.settled(cmdBar)
@@ -3736,7 +3736,7 @@ extrude001 = extrude(profile001, length = 100)
     await context.addInitScript((initialCode) => {
       localStorage.setItem('persistCode', initialCode)
     }, initialCode)
-    await page.setBodyDimensions({ width: 1000, height: 500 })
+    await page.setBodyDimensions({ width: 1500, height: 500 })
     await homePage.goToModelingScene()
     await scene.settled(cmdBar)
 
@@ -3867,7 +3867,7 @@ extrude001 = extrude(profile001, length = 100)
       await context.addInitScript((initialCode) => {
         localStorage.setItem('persistCode', initialCode)
       }, initialCode)
-      await page.setBodyDimensions({ width: 1000, height: 500 })
+      await page.setBodyDimensions({ width: 1500, height: 500 })
       await homePage.goToModelingScene()
       await scene.settled(cmdBar)
 
@@ -4023,7 +4023,7 @@ extrude001 = extrude(profile001, length = 100)
       await context.addInitScript((initialCode) => {
         localStorage.setItem('persistCode', initialCode)
       }, initialCode)
-      await page.setBodyDimensions({ width: 1000, height: 500 })
+      await page.setBodyDimensions({ width: 1500, height: 500 })
       await homePage.goToModelingScene()
       await scene.settled(cmdBar)
 
@@ -4152,7 +4152,7 @@ extrude001 = extrude(profile001, length = 1)
     await context.addInitScript((initialCode) => {
       localStorage.setItem('persistCode', initialCode)
     }, initialCode)
-    await page.setBodyDimensions({ width: 1000, height: 500 })
+    await page.setBodyDimensions({ width: 1500, height: 500 })
     await homePage.goToModelingScene()
     await scene.settled(cmdBar)
 

@@ -406,6 +406,7 @@ profile003 = startProfileAt([0, -4.93], sketch001)
       await fsp.mkdir(testProject, { recursive: true })
       await fsp.writeFile(join(testProject, 'main.kcl'), beforeKclCode, 'utf-8')
     })
+    await page.setBodyDimensions({ width: 1500, height: 500 })
     // One dumb hardcoded screen pixel value
     const testPoint = { x: 650, y: 250 }
     const sketchColor: [number, number, number] = [149, 149, 149]

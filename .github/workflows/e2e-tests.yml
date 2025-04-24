@@ -4,6 +4,7 @@ on:
     branches:
       - main
       - all-e2e # this bypasses `fixme()` using `orRunWhenFullSuiteEnabled()`
+      - pierremtb/adhoc/quick-eval-stream-offset-impact-on-e2e
   pull_request:
   schedule:
     - cron: 0 * * * *  # hourly

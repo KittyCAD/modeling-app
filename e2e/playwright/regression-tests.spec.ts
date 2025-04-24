@@ -343,7 +343,7 @@ extrude002 = extrude(profile002, length = 150)
       )
 
       const websocketPromise = page.waitForEvent('websocket')
-      await page.setBodyDimensions({ width: 500, height: 500 })
+      await page.setBodyDimensions({ width: 1000, height: 500 })
 
       await homePage.goToModelingScene()
       const websocket = await websocketPromise
@@ -679,10 +679,12 @@ extrude002 = extrude(profile002, length = 150)
     scene,
     toolbar,
     viewport,
+    page,
   }) => {
     await context.folderSetupFn(async (dir) => {
       const legoDir = path.join(dir, 'lego')
       await fsp.mkdir(legoDir, { recursive: true })
+      await page.setBodyDimensions({ width: 1500, height: 500 })
       await fsp.copyFile(
         executorInputPath('e2e-can-sketch-on-chamfer.kcl'),
         path.join(legoDir, 'main.kcl')

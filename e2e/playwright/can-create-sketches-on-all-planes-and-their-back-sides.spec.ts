@@ -21,7 +21,7 @@ test.describe(
       clickCoords: { x: number; y: number }
     ) => {
       const u = await getUtils(page)
-      await page.setBodyDimensions({ width: 1200, height: 500 })
+      await page.setBodyDimensions({ width: 1700, height: 500 })
 
       await homePage.goToModelingScene()
       const XYPlanRed: [number, number, number] = [98, 50, 51]

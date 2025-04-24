@@ -488,6 +488,7 @@ test('Restarting onboarding on desktop takes one attempt', async ({
       join(routerTemplateDir, 'main.kcl')
     )
   })
+  await page.setBodyDimensions({ width: 1500, height: 500 })
 
   // Our constants
   const u = await getUtils(page)

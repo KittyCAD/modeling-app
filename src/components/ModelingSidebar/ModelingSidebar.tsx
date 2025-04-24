@@ -215,7 +215,7 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
     <Resizable
       className={`group flex-1 flex flex-col z-10 my-2 pr-1 ${paneOpacity} ${pointerEventsCssClass}`}
       defaultSize={{
-        width: '550px',
+        width: '500px',
         height: 'auto',
       }}
       minWidth={200}

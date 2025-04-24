@@ -87,7 +87,7 @@ test.describe('Point-and-click assemblies tests', () => {
             fsp.writeFile(path.join(bracketDir, 'main.kcl'), ''),
           ])
         })
-        await page.setBodyDimensions({ width: 1000, height: 500 })
+        await page.setBodyDimensions({ width: 1500, height: 500 })
         await homePage.openProject(projectName)
         await scene.settled(cmdBar)
         await toolbar.closePane('code')
@@ -225,7 +225,7 @@ test.describe('Point-and-click assemblies tests', () => {
             fsp.writeFile(path.join(bracketDir, 'main.kcl'), ''),
           ])
         })
-        await page.setBodyDimensions({ width: 1000, height: 500 })
+        await page.setBodyDimensions({ width: 1500, height: 500 })
         await homePage.openProject(projectName)
         await scene.settled(cmdBar)
         await toolbar.closePane('code')
@@ -403,7 +403,7 @@ test.describe('Point-and-click assemblies tests', () => {
             fsp.writeFile(path.join(bracketDir, 'main.kcl'), ''),
           ])
         })
-        await page.setBodyDimensions({ width: 1000, height: 500 })
+        await page.setBodyDimensions({ width: 1500, height: 500 })
         await homePage.openProject(projectName)
         await scene.settled(cmdBar)
         await toolbar.closePane('code')

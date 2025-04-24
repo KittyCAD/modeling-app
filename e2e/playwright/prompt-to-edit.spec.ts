@@ -53,6 +53,7 @@ test.describe('Prompt-to-edit tests', { tag: '@skipWin' }, () => {
         await context.addInitScript((file) => {
           localStorage.setItem('persistCode', file)
         }, file)
+        await page.setBodyDimensions({ width: 1500, height: 500 })
         await homePage.goToModelingScene()
         await scene.settled(cmdBar)
 
@@ -148,6 +149,7 @@ test.describe('Prompt-to-edit tests', { tag: '@skipWin' }, () => {
     await context.addInitScript((file) => {
       localStorage.setItem('persistCode', file)
     }, file)
+    await page.setBodyDimensions({ width: 1500, height: 500 })
     await homePage.goToModelingScene()
     await scene.settled(cmdBar)
 
@@ -203,6 +205,7 @@ test.describe('Prompt-to-edit tests', { tag: '@skipWin' }, () => {
     await context.addInitScript((file) => {
       localStorage.setItem('persistCode', file)
     }, file)
+    await page.setBodyDimensions({ width: 1500, height: 500 })
     await homePage.goToModelingScene()
     await scene.settled(cmdBar)
 
@@ -272,6 +275,7 @@ test.describe('Prompt-to-edit tests', { tag: '@skipWin' }, () => {
     await context.addInitScript((file) => {
       localStorage.setItem('persistCode', file)
     }, file)
+    await page.setBodyDimensions({ width: 1500, height: 500 })
     await homePage.goToModelingScene()
     await scene.settled(cmdBar)
 

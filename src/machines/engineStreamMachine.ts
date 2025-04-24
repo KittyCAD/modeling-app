@@ -166,7 +166,7 @@ export const engineStreamMachine = setup({
         if (!canvas) return
 
         const { width, height } = getDimensions(
-          window.innerWidth,
+          window.innerWidth - 500,
           window.innerHeight
         )
 

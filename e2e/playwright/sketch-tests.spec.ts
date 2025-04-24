@@ -115,6 +115,7 @@ sketch001 = startSketchOn(XZ)
       )
     })
 
+    await page.setBodyDimensions({ width: 1500, height: 500 })
     await homePage.goToModelingScene()
     await scene.settled(cmdBar)
 
@@ -1541,6 +1542,7 @@ profile003 = startProfileAt([206.63, -56.73], sketch001)
         )
       })
 
+      await page.setBodyDimensions({ width: 1500, height: 500 })
       await homePage.goToModelingScene()
       await scene.settled(cmdBar)
 
@@ -2230,7 +2232,7 @@ profile003 = circle(sketch001, center = [6.92, -4.2], radius = 3.16)
         )
       })
 
-      await page.setBodyDimensions({ width: 1000, height: 500 })
+      await page.setBodyDimensions({ width: 1500, height: 500 })
       await homePage.goToModelingScene()
       await scene.settled(cmdBar)
       await expect(
@@ -2339,7 +2341,7 @@ extrude001 = extrude(profile003, length = 5)
         )
       })
 
-      await page.setBodyDimensions({ width: 1000, height: 500 })
+      await page.setBodyDimensions({ width: 1500, height: 500 })
       await homePage.goToModelingScene()
       await scene.connectionEstablished()
       await scene.settled(cmdBar)
@@ -2437,7 +2439,7 @@ profile002 = startProfileAt([85.81, 52.55], sketch002)
         )
       })
 
-      await page.setBodyDimensions({ width: 1000, height: 500 })
+      await page.setBodyDimensions({ width: 1500, height: 500 })
       await homePage.goToModelingScene()
       await expect(
         page.getByRole('button', { name: 'Start Sketch' })
@@ -2595,7 +2597,7 @@ extrude003 = extrude(profile011, length = 2.5)
         )
       })
 
-      await page.setBodyDimensions({ width: 1000, height: 500 })
+      await page.setBodyDimensions({ width: 1500, height: 500 })
       await homePage.goToModelingScene()
       await scene.connectionEstablished()
       await scene.settled(cmdBar)
@@ -2710,7 +2712,7 @@ loft([profile001, profile002])
         )
       })
 
-      await page.setBodyDimensions({ width: 1000, height: 500 })
+      await page.setBodyDimensions({ width: 1500, height: 500 })
       await homePage.goToModelingScene()
       await expect(
         page.getByRole('button', { name: 'Start Sketch' })
@@ -2768,7 +2770,7 @@ loft([profile001, profile002])
       )
     })
 
-    await page.setBodyDimensions({ width: 1000, height: 500 })
+    await page.setBodyDimensions({ width: 1500, height: 500 })
     await homePage.goToModelingScene()
     await expect(
       page.getByRole('button', { name: 'Start Sketch' })
@@ -3260,6 +3262,7 @@ profile003 = startProfileAt([-201.08, 254.17], sketch002)
       await context.addInitScript((file) => {
         localStorage.setItem('persistCode', file)
       }, file)
+      await page.setBodyDimensions({ width: 1500, height: 500 })
       await homePage.goToModelingScene()
 
       const [objClick] = scene.makeMouseHelpers(600, 250)
