@@ -4,7 +4,7 @@ import { TEST_CODE_GIZMO } from '@e2e/playwright/storageStates'
 import { getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
-test.describe('Testing Gizmo', { tag: ['@skipWin'] }, () => {
+test.describe('Testing Gizmo', () => {
   const cases = [
     {
       testDescription: 'top view',
