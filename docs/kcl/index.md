@@ -32,8 +32,6 @@ layout: manual
   * [`Z`](kcl/consts/std-Z)
   * [`abs`](kcl/abs)
   * [`acos`](kcl/acos)
-  * [`angleToMatchLengthX`](kcl/angleToMatchLengthX)
-  * [`angleToMatchLengthY`](kcl/angleToMatchLengthY)
   * [`angledLine`](kcl/angledLine)
   * [`angledLineThatIntersects`](kcl/angledLineThatIntersects)
   * [`appearance`](kcl/appearance)

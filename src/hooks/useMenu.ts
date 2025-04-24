@@ -2,7 +2,7 @@ import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
 import { isDesktop } from '@src/lib/isDesktop'
 import type { ToolbarModeName } from '@src/lib/toolbar'
 import { reportRejection } from '@src/lib/trap'
-import { useCommandBarState } from '@src/machines/commandBarMachine'
+import { useCommandBarState } from '@src/lib/singletons'
 import type { MenuLabels, WebContentSendPayload } from '@src/menu/channels'
 import { useEffect } from 'react'
 
