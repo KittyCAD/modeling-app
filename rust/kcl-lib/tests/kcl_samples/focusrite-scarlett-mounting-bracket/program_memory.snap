@@ -495,7 +495,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
       ],
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "bracketPlane": {
@@ -1305,7 +1306,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "retFront": {
@@ -1466,7 +1468,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "retPlane": {
@@ -2161,7 +2164,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           ],
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -2452,7 +2456,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           ],
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       }
     ]
@@ -2748,7 +2753,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           ],
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -3039,7 +3045,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           ],
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       }
     ]

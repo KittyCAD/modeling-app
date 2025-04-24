@@ -213,7 +213,8 @@ description: Variables in memory after executing flange.kcl
             "endCapId": "[uuid]",
             "units": {
               "type": "Inches"
-            }
+            },
+            "sectional": false
           },
           "units": {
             "type": "Inches"
@@ -248,7 +249,8 @@ description: Variables in memory after executing flange.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Inches"
-      }
+      },
+      "sectional": false
     }
   },
   "bottomThickness": {
@@ -774,7 +776,8 @@ description: Variables in memory after executing flange.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Inches"
-      }
+      },
+      "sectional": false
     }
   },
   "mountingHoleDia": {
@@ -1085,7 +1088,8 @@ description: Variables in memory after executing flange.kcl
                   "endCapId": "[uuid]",
                   "units": {
                     "type": "Inches"
-                  }
+                  },
+                  "sectional": false
                 },
                 "units": {
                   "type": "Inches"
@@ -1120,7 +1124,8 @@ description: Variables in memory after executing flange.kcl
             "endCapId": "[uuid]",
             "units": {
               "type": "Inches"
-            }
+            },
+            "sectional": false
           },
           "units": {
             "type": "Inches"
@@ -1155,7 +1160,8 @@ description: Variables in memory after executing flange.kcl
       "endCapId": null,
       "units": {
         "type": "Inches"
-      }
+      },
+      "sectional": false
     }
   },
   "topExtrusion": {
@@ -1342,7 +1348,8 @@ description: Variables in memory after executing flange.kcl
             "endCapId": "[uuid]",
             "units": {
               "type": "Inches"
-            }
+            },
+            "sectional": false
           },
           "units": {
             "type": "Inches"
@@ -1377,7 +1384,8 @@ description: Variables in memory after executing flange.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Inches"
-      }
+      },
+      "sectional": false
     }
   },
   "topTotalDiameter": {

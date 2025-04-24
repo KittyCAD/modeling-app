@@ -556,7 +556,8 @@ description: Variables in memory after executing poop_chute.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "seg01": {
@@ -1334,7 +1335,8 @@ description: Variables in memory after executing poop_chute.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "wall_thickness": {

@@ -396,7 +396,8 @@ description: Variables in memory after executing flush_batch_on_end.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Inches"
-      }
+      },
+      "sectional": false
     }
   },
   "pipeProfile": {

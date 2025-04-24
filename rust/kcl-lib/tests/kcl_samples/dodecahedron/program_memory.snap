@@ -213,7 +213,8 @@ description: Variables in memory after executing dodecahedron.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Inches"
-      }
+      },
+      "sectional": false
     }
   },
   "bottomBowl": {
@@ -429,7 +430,8 @@ description: Variables in memory after executing dodecahedron.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -642,7 +644,8 @@ description: Variables in memory after executing dodecahedron.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -855,7 +858,8 @@ description: Variables in memory after executing dodecahedron.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -1068,7 +1072,8 @@ description: Variables in memory after executing dodecahedron.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -1281,7 +1286,8 @@ description: Variables in memory after executing dodecahedron.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       }
     ]
@@ -1661,7 +1667,8 @@ description: Variables in memory after executing dodecahedron.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Inches"
-      }
+      },
+      "sectional": false
     }
   },
   "bottomSideFace": {

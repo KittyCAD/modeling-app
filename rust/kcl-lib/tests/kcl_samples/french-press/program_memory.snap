@@ -176,7 +176,8 @@ description: Variables in memory after executing french-press.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Inches"
-      }
+      },
+      "sectional": false
     }
   },
   "extrude002": {
@@ -437,7 +438,8 @@ description: Variables in memory after executing french-press.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Inches"
@@ -472,7 +474,8 @@ description: Variables in memory after executing french-press.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -730,7 +733,8 @@ description: Variables in memory after executing french-press.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Inches"
@@ -765,7 +769,8 @@ description: Variables in memory after executing french-press.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -1023,7 +1028,8 @@ description: Variables in memory after executing french-press.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Inches"
@@ -1058,7 +1064,8 @@ description: Variables in memory after executing french-press.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       }
     ]
@@ -1175,7 +1182,8 @@ description: Variables in memory after executing french-press.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Inches"
-      }
+      },
+      "sectional": false
     }
   },
   "extrude004": {
@@ -1365,7 +1373,8 @@ description: Variables in memory after executing french-press.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Inches"
@@ -1400,7 +1409,8 @@ description: Variables in memory after executing french-press.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -1587,7 +1597,8 @@ description: Variables in memory after executing french-press.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Inches"
@@ -1622,7 +1633,8 @@ description: Variables in memory after executing french-press.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -1809,7 +1821,8 @@ description: Variables in memory after executing french-press.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Inches"
@@ -1844,7 +1857,8 @@ description: Variables in memory after executing french-press.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -2031,7 +2045,8 @@ description: Variables in memory after executing french-press.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Inches"
@@ -2066,7 +2081,8 @@ description: Variables in memory after executing french-press.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -2253,7 +2269,8 @@ description: Variables in memory after executing french-press.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Inches"
@@ -2288,7 +2305,8 @@ description: Variables in memory after executing french-press.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -2475,7 +2493,8 @@ description: Variables in memory after executing french-press.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Inches"
@@ -2510,7 +2529,8 @@ description: Variables in memory after executing french-press.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -2697,7 +2717,8 @@ description: Variables in memory after executing french-press.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Inches"
@@ -2732,7 +2753,8 @@ description: Variables in memory after executing french-press.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -2919,7 +2941,8 @@ description: Variables in memory after executing french-press.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Inches"
@@ -2954,7 +2977,8 @@ description: Variables in memory after executing french-press.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       }
     ]
@@ -3146,7 +3170,8 @@ description: Variables in memory after executing french-press.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Inches"
@@ -3181,7 +3206,8 @@ description: Variables in memory after executing french-press.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -3368,7 +3394,8 @@ description: Variables in memory after executing french-press.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Inches"
@@ -3403,7 +3430,8 @@ description: Variables in memory after executing french-press.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -3590,7 +3618,8 @@ description: Variables in memory after executing french-press.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Inches"
@@ -3625,7 +3654,8 @@ description: Variables in memory after executing french-press.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -3812,7 +3842,8 @@ description: Variables in memory after executing french-press.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Inches"
@@ -3847,7 +3878,8 @@ description: Variables in memory after executing french-press.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       }
     ]
@@ -3964,7 +3996,8 @@ description: Variables in memory after executing french-press.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Inches"
-      }
+      },
+      "sectional": false
     }
   },
   "extrude007": {
@@ -4408,7 +4441,8 @@ description: Variables in memory after executing french-press.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Inches"
-      }
+      },
+      "sectional": false
     }
   },
   "handleThickness": {
@@ -4878,7 +4912,8 @@ description: Variables in memory after executing french-press.kcl
       "endCapId": null,
       "units": {
         "type": "Inches"
-      }
+      },
+      "sectional": false
     }
   },
   "sketch002": {
@@ -5549,7 +5584,8 @@ description: Variables in memory after executing french-press.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -6217,7 +6253,8 @@ description: Variables in memory after executing french-press.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -6885,7 +6922,8 @@ description: Variables in memory after executing french-press.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -7553,7 +7591,8 @@ description: Variables in memory after executing french-press.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       }
     ]
@@ -7884,7 +7923,8 @@ description: Variables in memory after executing french-press.kcl
               "endCapId": "[uuid]",
               "units": {
                 "type": "Inches"
-              }
+              },
+              "sectional": false
             },
             "units": {
               "type": "Inches"
@@ -8143,7 +8183,8 @@ description: Variables in memory after executing french-press.kcl
               "endCapId": "[uuid]",
               "units": {
                 "type": "Inches"
-              }
+              },
+              "sectional": false
             },
             "units": {
               "type": "Inches"
@@ -8402,7 +8443,8 @@ description: Variables in memory after executing french-press.kcl
               "endCapId": "[uuid]",
               "units": {
                 "type": "Inches"
-              }
+              },
+              "sectional": false
             },
             "units": {
               "type": "Inches"
@@ -8708,7 +8750,8 @@ description: Variables in memory after executing french-press.kcl
       "endCapId": null,
       "units": {
         "type": "Inches"
-      }
+      },
+      "sectional": false
     }
   },
   "sketch006": {
@@ -8997,7 +9040,8 @@ description: Variables in memory after executing french-press.kcl
       "endCapId": null,
       "units": {
         "type": "Inches"
-      }
+      },
+      "sectional": false
     }
   },
   "sketch007": {
@@ -9269,7 +9313,8 @@ description: Variables in memory after executing french-press.kcl
               "endCapId": "[uuid]",
               "units": {
                 "type": "Inches"
-              }
+              },
+              "sectional": false
             },
             "units": {
               "type": "Inches"
@@ -9471,7 +9516,8 @@ description: Variables in memory after executing french-press.kcl
               "endCapId": "[uuid]",
               "units": {
                 "type": "Inches"
-              }
+              },
+              "sectional": false
             },
             "units": {
               "type": "Inches"
@@ -9673,7 +9719,8 @@ description: Variables in memory after executing french-press.kcl
               "endCapId": "[uuid]",
               "units": {
                 "type": "Inches"
-              }
+              },
+              "sectional": false
             },
             "units": {
               "type": "Inches"
@@ -9875,7 +9922,8 @@ description: Variables in memory after executing french-press.kcl
               "endCapId": "[uuid]",
               "units": {
                 "type": "Inches"
-              }
+              },
+              "sectional": false
             },
             "units": {
               "type": "Inches"
@@ -10077,7 +10125,8 @@ description: Variables in memory after executing french-press.kcl
               "endCapId": "[uuid]",
               "units": {
                 "type": "Inches"
-              }
+              },
+              "sectional": false
             },
             "units": {
               "type": "Inches"
@@ -10279,7 +10328,8 @@ description: Variables in memory after executing french-press.kcl
               "endCapId": "[uuid]",
               "units": {
                 "type": "Inches"
-              }
+              },
+              "sectional": false
             },
             "units": {
               "type": "Inches"
@@ -10481,7 +10531,8 @@ description: Variables in memory after executing french-press.kcl
               "endCapId": "[uuid]",
               "units": {
                 "type": "Inches"
-              }
+              },
+              "sectional": false
             },
             "units": {
               "type": "Inches"
@@ -10683,7 +10734,8 @@ description: Variables in memory after executing french-press.kcl
               "endCapId": "[uuid]",
               "units": {
                 "type": "Inches"
-              }
+              },
+              "sectional": false
             },
             "units": {
               "type": "Inches"
@@ -10890,7 +10942,8 @@ description: Variables in memory after executing french-press.kcl
               "endCapId": "[uuid]",
               "units": {
                 "type": "Inches"
-              }
+              },
+              "sectional": false
             },
             "units": {
               "type": "Inches"
@@ -11092,7 +11145,8 @@ description: Variables in memory after executing french-press.kcl
               "endCapId": "[uuid]",
               "units": {
                 "type": "Inches"
-              }
+              },
+              "sectional": false
             },
             "units": {
               "type": "Inches"
@@ -11294,7 +11348,8 @@ description: Variables in memory after executing french-press.kcl
               "endCapId": "[uuid]",
               "units": {
                 "type": "Inches"
-              }
+              },
+              "sectional": false
             },
             "units": {
               "type": "Inches"
@@ -11496,7 +11551,8 @@ description: Variables in memory after executing french-press.kcl
               "endCapId": "[uuid]",
               "units": {
                 "type": "Inches"
-              }
+              },
+              "sectional": false
             },
             "units": {
               "type": "Inches"
@@ -11905,7 +11961,8 @@ description: Variables in memory after executing french-press.kcl
       "endCapId": null,
       "units": {
         "type": "Inches"
-      }
+      },
+      "sectional": false
     }
   },
   "sketch012": {

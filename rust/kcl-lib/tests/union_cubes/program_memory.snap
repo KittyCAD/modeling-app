@@ -190,7 +190,8 @@ description: Variables in memory after executing union_cubes.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "part001": {
@@ -377,7 +378,8 @@ description: Variables in memory after executing union_cubes.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "part002": {
@@ -564,7 +566,8 @@ description: Variables in memory after executing union_cubes.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   }
 }

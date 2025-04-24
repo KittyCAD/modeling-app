@@ -187,7 +187,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "pattn1": {
@@ -377,7 +378,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -564,7 +566,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -751,7 +754,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -938,7 +942,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -1125,7 +1130,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -1312,7 +1318,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -1499,7 +1506,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       }
     ]
@@ -1691,7 +1699,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -1878,7 +1887,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -2065,7 +2075,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -2252,7 +2263,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -2439,7 +2451,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -2626,7 +2639,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -2813,7 +2827,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -3000,7 +3015,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -3187,7 +3203,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -3374,7 +3391,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -3561,7 +3579,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -3748,7 +3767,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -3935,7 +3955,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -4122,7 +4143,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -4309,7 +4331,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -4496,7 +4519,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -4683,7 +4707,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -4870,7 +4895,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -5057,7 +5083,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -5244,7 +5271,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -5431,7 +5459,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -5618,7 +5647,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -5805,7 +5835,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -5992,7 +6023,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -6179,7 +6211,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -6366,7 +6399,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -6553,7 +6587,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -6740,7 +6775,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -6927,7 +6963,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -7114,7 +7151,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -7301,7 +7339,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -7488,7 +7527,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -7675,7 +7715,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -7862,7 +7903,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -8049,7 +8091,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -8236,7 +8279,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -8423,7 +8467,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -8610,7 +8655,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -8797,7 +8843,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -8984,7 +9031,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -9171,7 +9219,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -9358,7 +9407,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -9545,7 +9595,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -9732,7 +9783,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -9919,7 +9971,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -10106,7 +10159,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -10293,7 +10347,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -10480,7 +10535,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -10667,7 +10723,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -10854,7 +10911,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -11041,7 +11099,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -11228,7 +11287,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -11415,7 +11475,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -11602,7 +11663,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -11789,7 +11851,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -11976,7 +12039,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -12163,7 +12227,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -12350,7 +12415,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -12537,7 +12603,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -12724,7 +12791,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -12911,7 +12979,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -13098,7 +13167,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -13285,7 +13355,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -13472,7 +13543,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -13659,7 +13731,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -13846,7 +13919,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -14033,7 +14107,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -14220,7 +14295,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -14407,7 +14483,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -14594,7 +14671,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -14781,7 +14859,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -14968,7 +15047,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -15155,7 +15235,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -15342,7 +15423,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -15529,7 +15611,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -15716,7 +15799,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -15903,7 +15987,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -16090,7 +16175,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -16277,7 +16363,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -16464,7 +16551,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -16651,7 +16739,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -16838,7 +16927,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -17025,7 +17115,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -17212,7 +17303,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -17399,7 +17491,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -17586,7 +17679,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -17773,7 +17867,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -17960,7 +18055,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -18147,7 +18243,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -18334,7 +18431,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -18521,7 +18619,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -18708,7 +18807,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -18895,7 +18995,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -19082,7 +19183,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -19269,7 +19371,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -19456,7 +19559,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -19643,7 +19747,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -19830,7 +19935,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -20017,7 +20123,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -20204,7 +20311,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -20391,7 +20499,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -20578,7 +20687,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -20765,7 +20875,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -20952,7 +21063,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -21139,7 +21251,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -21326,7 +21439,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -21513,7 +21627,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -21700,7 +21815,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -21887,7 +22003,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -22074,7 +22191,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -22261,7 +22379,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -22448,7 +22567,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -22635,7 +22755,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -22822,7 +22943,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -23009,7 +23131,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -23196,7 +23319,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -23383,7 +23507,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -23570,7 +23695,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -23757,7 +23883,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -23944,7 +24071,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -24131,7 +24259,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -24318,7 +24447,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -24505,7 +24635,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -24692,7 +24823,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -24879,7 +25011,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -25066,7 +25199,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -25253,7 +25387,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -25440,7 +25575,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -25627,7 +25763,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -25814,7 +25951,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -26001,7 +26139,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -26188,7 +26327,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -26375,7 +26515,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -26562,7 +26703,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -26749,7 +26891,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -26936,7 +27079,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -27123,7 +27267,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -27310,7 +27455,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -27497,7 +27643,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -27684,7 +27831,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -27871,7 +28019,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -28058,7 +28207,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -28245,7 +28395,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -28432,7 +28583,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -28619,7 +28771,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -28806,7 +28959,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -28993,7 +29147,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -29180,7 +29335,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -29367,7 +29523,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -29554,7 +29711,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -29741,7 +29899,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -29928,7 +30087,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -30115,7 +30275,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -30302,7 +30463,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -30489,7 +30651,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -30676,7 +30839,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -30863,7 +31027,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -31050,7 +31215,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -31237,7 +31403,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -31424,7 +31591,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -31611,7 +31779,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -31798,7 +31967,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -31985,7 +32155,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -32172,7 +32343,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -32359,7 +32531,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -32546,7 +32719,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -32733,7 +32907,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -32920,7 +33095,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -33107,7 +33283,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -33294,7 +33471,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -33481,7 +33659,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -33668,7 +33847,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -33855,7 +34035,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -34042,7 +34223,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -34229,7 +34411,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -34416,7 +34599,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -34603,7 +34787,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -34790,7 +34975,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -34977,7 +35163,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -35164,7 +35351,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -35351,7 +35539,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -35538,7 +35727,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -35725,7 +35915,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -35912,7 +36103,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -36099,7 +36291,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -36286,7 +36479,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -36473,7 +36667,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -36660,7 +36855,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -36847,7 +37043,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -37034,7 +37231,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -37221,7 +37419,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -37408,7 +37607,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -37595,7 +37795,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -37782,7 +37983,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -37969,7 +38171,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -38156,7 +38359,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -38343,7 +38547,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -38530,7 +38735,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -38717,7 +38923,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -38904,7 +39111,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -39091,7 +39299,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -39278,7 +39487,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -39465,7 +39675,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -39652,7 +39863,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -39839,7 +40051,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -40026,7 +40239,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -40213,7 +40427,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -40400,7 +40615,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -40587,7 +40803,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -40774,7 +40991,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -40961,7 +41179,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -41148,7 +41367,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -41335,7 +41555,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -41522,7 +41743,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -41709,7 +41931,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -41896,7 +42119,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -42083,7 +42307,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -42270,7 +42495,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -42457,7 +42683,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -42644,7 +42871,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -42831,7 +43059,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -43018,7 +43247,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -43205,7 +43435,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -43392,7 +43623,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -43579,7 +43811,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -43766,7 +43999,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -43953,7 +44187,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -44140,7 +44375,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -44327,7 +44563,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -44514,7 +44751,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -44701,7 +44939,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -44888,7 +45127,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -45075,7 +45315,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -45262,7 +45503,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -45449,7 +45691,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -45636,7 +45879,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -45823,7 +46067,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -46010,7 +46255,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -46197,7 +46443,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -46384,7 +46631,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -46571,7 +46819,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -46758,7 +47007,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -46945,7 +47195,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -47132,7 +47383,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -47319,7 +47571,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -47506,7 +47759,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -47693,7 +47947,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -47880,7 +48135,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -48067,7 +48323,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -48254,7 +48511,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -48441,7 +48699,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -48628,7 +48887,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -48815,7 +49075,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -49002,7 +49263,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -49189,7 +49451,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -49376,7 +49639,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -49563,7 +49827,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -49750,7 +50015,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -49937,7 +50203,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -50124,7 +50391,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -50311,7 +50579,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -50498,7 +50767,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -50685,7 +50955,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -50872,7 +51143,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -51059,7 +51331,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -51246,7 +51519,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -51433,7 +51707,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -51620,7 +51895,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -51807,7 +52083,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -51994,7 +52271,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -52181,7 +52459,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -52368,7 +52647,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -52555,7 +52835,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -52742,7 +53023,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -52929,7 +53211,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -53116,7 +53399,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -53303,7 +53587,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -53490,7 +53775,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -53677,7 +53963,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -53864,7 +54151,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -54051,7 +54339,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -54238,7 +54527,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -54425,7 +54715,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -54612,7 +54903,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -54799,7 +55091,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -54986,7 +55279,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -55173,7 +55467,8 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       }
     ]

@@ -190,7 +190,8 @@ description: Variables in memory after executing function_sketch_with_position.k
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   }
 }

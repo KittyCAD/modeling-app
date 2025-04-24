@@ -255,7 +255,8 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
             ],
             "units": {
               "type": "Inches"
-            }
+            },
+            "sectional": false
           },
           "units": {
             "type": "Inches"
@@ -316,7 +317,8 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
       ],
       "units": {
         "type": "Inches"
-      }
+      },
+      "sectional": false
     }
   },
   "boltDiameter": {
@@ -500,7 +502,8 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
       ],
       "units": {
         "type": "Inches"
-      }
+      },
+      "sectional": false
     }
   },
   "boltHeadDiameter": {
@@ -937,7 +940,8 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
             ],
             "units": {
               "type": "Inches"
-            }
+            },
+            "sectional": false
           },
           "units": {
             "type": "Inches"
@@ -972,7 +976,8 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
       "endCapId": null,
       "units": {
         "type": "Inches"
-      }
+      },
+      "sectional": false
     }
   },
   "topEdge": {
