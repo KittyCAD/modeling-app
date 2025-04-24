@@ -6,6 +6,7 @@ import type { ToolbarFixture } from '@e2e/playwright/fixtures/toolbarFixture'
 import {
   executorInputPath,
   getUtils,
+  kclSamplesPath,
   testsInputPath,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
@@ -469,6 +470,96 @@ test.describe('Point-and-click assemblies tests', () => {
         await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
         await toolbar.closePane('code')
         await scene.expectPixelColor(partColor, partPoint, tolerance)
+      })
+    }
+  )
+
+  test(
+    'Assembly gets reexecuted when imported models are updated externally',
+    { tag: ['@electron'] },
+    async ({ context, page, homePage, scene, toolbar, cmdBar, tronApp }) => {
+      if (!tronApp) {
+        fail()
+      }
+
+      const midPoint = { x: 500, y: 250 }
+      const washerPoint = { x: 645, y: 250 }
+      const partColor: [number, number, number] = [120, 120, 120]
+      const redPartColor: [number, number, number] = [200, 0, 0]
+      const bgColor: [number, number, number] = [30, 30, 30]
+      const tolerance = 50
+      const projectName = 'assembly'
+
+      await test.step('Setup parts and expect imported model', async () => {
+        await context.folderSetupFn(async (dir) => {
+          const projectDir = path.join(dir, projectName)
+          await fsp.mkdir(projectDir, { recursive: true })
+          await Promise.all([
+            fsp.copyFile(
+              executorInputPath('cube.kcl'),
+              path.join(projectDir, 'cube.kcl')
+            ),
+            fsp.copyFile(
+              kclSamplesPath(
+                path.join(
+                  'pipe-flange-assembly',
+                  'mcmaster-parts',
+                  '98017a257-washer.step'
+                )
+              ),
+              path.join(projectDir, 'foreign.step')
+            ),
+            fsp.writeFile(
+              path.join(projectDir, 'main.kcl'),
+              `
+import "cube.kcl" as cube
+import "foreign.step" as foreign
+cube
+foreign
+  |> translate(x = 40, z = 10)`
+            ),
+          ])
+        })
+        await page.setBodyDimensions({ width: 1000, height: 500 })
+        await homePage.openProject(projectName)
+        await scene.settled(cmdBar)
+        await toolbar.closePane('code')
+        await scene.expectPixelColor(partColor, midPoint, tolerance)
+      })
+
+      await test.step('Change imported kcl file and expect change', async () => {
+        await context.folderSetupFn(async (dir) => {
+          // Append appearance to the cube.kcl file
+          await fsp.appendFile(
+            path.join(dir, projectName, 'cube.kcl'),
+            `\n  |> appearance(color = "#ff0000")`
+          )
+        })
+        await scene.settled(cmdBar)
+        await toolbar.closePane('code')
+        await scene.expectPixelColor(redPartColor, midPoint, tolerance)
+        await scene.expectPixelColor(partColor, washerPoint, tolerance)
+      })
+
+      await test.step('Change imported step file and expect change', async () => {
+        await context.folderSetupFn(async (dir) => {
+          // Replace the washer with a pipe
+          await fsp.copyFile(
+            kclSamplesPath(
+              path.join(
+                'pipe-flange-assembly',
+                'mcmaster-parts',
+                '1120t74-pipe.step'
+              )
+            ),
+            path.join(dir, projectName, 'foreign.step')
+          )
+        })
+        await scene.settled(cmdBar)
+        await toolbar.closePane('code')
+        // Expect pipe to take over the red cube but leave some space where the washer was
+        await scene.expectPixelColor(partColor, midPoint, tolerance)
+        await scene.expectPixelColor(bgColor, washerPoint, tolerance)
       })
     }
   )
