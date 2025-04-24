@@ -54,7 +54,7 @@ impl Geometry {
 pub enum GeometryWithImportedGeometry {
     Sketch(Sketch),
     Solid(Solid),
-    ImportedGeometry(ImportedGeometry),
+    ImportedGeometry(Box<ImportedGeometry>),
 }
 
 impl GeometryWithImportedGeometry {

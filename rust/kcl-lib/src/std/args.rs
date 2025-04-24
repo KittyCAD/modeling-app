@@ -1043,7 +1043,7 @@ impl<'a> FromKclValue<'a> for crate::execution::GeometryWithImportedGeometry {
         match arg {
             KclValue::Sketch { value } => Some(Self::Sketch(*value.to_owned())),
             KclValue::Solid { value } => Some(Self::Solid(*value.to_owned())),
-            KclValue::ImportedGeometry(value) => Some(Self::ImportedGeometry(value.clone())),
+            KclValue::ImportedGeometry(value) => Some(Self::ImportedGeometry(Box::new(value.clone()))),
             _ => None,
         }
     }

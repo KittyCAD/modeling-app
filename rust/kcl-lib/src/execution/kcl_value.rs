@@ -626,7 +626,7 @@ impl From<GeometryWithImportedGeometry> for KclValue {
         match value {
             GeometryWithImportedGeometry::Sketch(x) => Self::Sketch { value: Box::new(x) },
             GeometryWithImportedGeometry::Solid(x) => Self::Solid { value: Box::new(x) },
-            GeometryWithImportedGeometry::ImportedGeometry(x) => Self::ImportedGeometry(x),
+            GeometryWithImportedGeometry::ImportedGeometry(x) => Self::ImportedGeometry(*x),
         }
     }
 }

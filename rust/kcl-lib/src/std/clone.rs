@@ -246,6 +246,24 @@ pub async fn clone(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///
 /// // example003 = extrude(exampleSketch002, length = 5)
 /// ```
+///
+/// ```no_run
+/// // Clone an imported model.
+///
+/// import "tests/inputs/cube.sldprt" as cube
+///
+/// myCube = cube
+///
+/// clonedCube = clone(myCube)
+///    |> translate(
+///    z = 100,
+///    )
+///    |> appearance(
+///        color = "#ff0000",
+///        metalness = 50,
+///        roughness = 50
+///    )
+/// ```
 #[stdlib {
     name = "clone",
     feature_tree_operation = true,
