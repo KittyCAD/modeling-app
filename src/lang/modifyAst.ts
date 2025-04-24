@@ -1343,6 +1343,51 @@ export async function deleteFromSelection(
     'VariableDeclarator'
   )
   if (err(varDec)) return varDec
+  // Module import and expression case, need to find and delete both
+  if (
+    varDec.node.type !== 'VariableDeclarator' &&
+    varDec.node.type === 'Name'
+  ) {
+    const pathToNode = selection.codeRef.pathToNode
+    const statement = getNodeFromPath<ExpressionStatement>(
+      astClone,
+      selection.codeRef.pathToNode,
+      'ExpressionStatement'
+    )
+    if (err(statement)) {
+      return statement
+    }
+
+    let expressionIndexToDelete: number | undefined
+    let importAliasToDelete: string | undefined
+    if (
+      statement.node.expression.type === 'Name' &&
+      statement.node.expression.name.type === 'Identifier'
+    ) {
+      expressionIndexToDelete = Number(pathToNode[1][0])
+      importAliasToDelete = statement.node.expression.name.name
+    } else if (
+      statement.node.expression.type === 'PipeExpression' &&
+      statement.node.expression.body[0].type === 'Name' &&
+      statement.node.expression.body[0].name.type === 'Identifier'
+    ) {
+      expressionIndexToDelete = Number(pathToNode[1][0])
+      importAliasToDelete = statement.node.expression.body[0].name.name
+    } else {
+      return new Error('Expected expression to be a Name or PipeExpression')
+    }
+
+    astClone.body.splice(expressionIndexToDelete, 1)
+    const importIndexToDelete = astClone.body.findIndex(
+      (n) =>
+        n.type === 'ImportStatement' &&
+        n.selector.type === 'None' &&
+        n.selector.alias?.type === 'Identifier' &&
+        n.selector.alias.name === importAliasToDelete
+    )
+    astClone.body.splice(importIndexToDelete, 1)
+    return astClone
+  }
   if (
     ((selection?.artifact?.type === 'wall' ||
       selection?.artifact?.type === 'cap') &&
@@ -1415,21 +1460,6 @@ export async function deleteFromSelection(
         )
         if (err(statement)) {
           return statement
-        }
-
-        if (
-          statement.node.expression.type === 'Name' &&
-          statement.node.expression.name.type === 'Identifier'
-        ) {
-          extrudeNameToDelete = statement.node.expression.name.name
-        } else if (
-          statement.node.expression.type === 'PipeExpression' &&
-          statement.node.expression.body[0].type === 'Name' &&
-          statement.node.expression.body[0].name.type === 'Identifier'
-        ) {
-          extrudeNameToDelete = statement.node.expression.body[0].name.name
-        } else {
-          return new Error('Could not find statement to delete')
         }
       } else {
         return new Error('Could not find extrude variable or call')
