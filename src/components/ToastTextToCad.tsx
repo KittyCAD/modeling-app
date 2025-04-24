@@ -84,10 +84,16 @@ export function ToastTextToCadError({
   toastId,
   message,
   prompt,
+  method,
+  projectName,
+  newProjectName
 }: {
   toastId: string
   message: string
   prompt: string
+  method: string,
+  projectName: string,
+  newProjectName: string
 }) {
   return (
     <div className="flex flex-col justify-between gap-6">
@@ -120,10 +126,13 @@ export function ToastTextToCadError({
             commandBarActor.send({
               type: 'Find and select command',
               data: {
-                groupId: 'modeling',
+                groupId: 'application',
                 name: 'Text-to-CAD',
                 argDefaultValues: {
                   prompt,
+                  method,
+                  projectName,
+                  newProjectName
                 },
               },
             })

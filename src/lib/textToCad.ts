@@ -95,6 +95,9 @@ export async function submitAndAwaitTextToKclSystemIO({
           toastId,
           message,
           prompt: trimmedPrompt,
+          method: isProjectNew ? 'newProject' : 'existingProject',
+          projectName: isProjectNew ? '' : projectName,
+          newProjectName : isProjectNew ? projectName : ''
         }),
       {
         id: toastId,
