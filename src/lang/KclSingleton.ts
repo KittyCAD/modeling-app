@@ -71,7 +71,7 @@ export class KclManager {
    */
   artifactGraph: ArtifactGraph = new Map()
   artifactIndex: ArtifactIndex = []
-  defaultPlanesShown: boolean = false
+  artifactInitSent = false
 
   private _ast: Node<Program> = {
     body: [],
@@ -355,10 +355,15 @@ export class KclManager {
         })
       }, 200)(null)
     }
+
+    // Send the 'artifact graph initialized' event for modelingMachine, only once, when default planes are also initialized.
     deferExecution((a?: null) => {
-      this.engineCommandManager.modelingSend({
-        type: 'Artifact graph initialized',
-      })
+      if (this.defaultPlanes && !this.artifactInitSent) {
+        this.engineCommandManager.modelingSend({
+          type: 'Artifact graph initialized',
+        })
+        this.artifactInitSent = true
+      }
     }, 200)(null)
   }
 
@@ -715,7 +720,7 @@ export class KclManager {
   ) {
     const planeId = this.defaultPlanes?.[planeKey]
     if (!planeId) {
-      reportError(new Error(`Plane ${planeKey} not found`))
+      console.warn(`Plane ${planeKey} not found`)
       return
     }
     return this.engineCommandManager.setPlaneHidden(planeId, !visible)
