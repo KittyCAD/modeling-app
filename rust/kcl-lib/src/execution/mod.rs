@@ -906,11 +906,7 @@ impl ExecutorContext {
             while let Some((module_id, _, result)) = results_rx.recv().await {
                 match result {
                     Ok(new_repr) => {
-                        let mut repr = exec_state.global.module_infos[&module_id].take_repr();
-
-                        repr = new_repr;
-
-                        exec_state.global.module_infos[&module_id].restore_repr(repr);
+                        exec_state.global.module_infos[&module_id].restore_repr(new_repr);
                     }
                     Err(e) => {
                         let module_id_to_module_path: IndexMap<ModuleId, ModulePath> = exec_state
