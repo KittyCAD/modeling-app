@@ -589,7 +589,7 @@ profile001 = startProfile(sketch002, at = [-12.34, 12.34])
   await page.getByRole('button', { name: 'Exit Sketch' }).click()
   await u.expectCmdLog('[data-message-type="execution-done"]')
 
-  await page.getByText('startProfile(at = [-12').click()
+  await page.getByText('startProfile(sketch002, at = [-12').click()
 
   await expect(page.getByRole('button', { name: 'Extrude' })).not.toBeDisabled()
   await page.waitForTimeout(100)
