@@ -3468,23 +3468,36 @@ function addTagToChamfer(
 
     // e.g. chamfer(tags: [getOppositeEdge(tagOfInterest), tag2])
     //                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    // Note: Single unlabeled arg calls could be either CallExpression or
+    // CallExpressionKw.
     const tagMatchesOppositeTagType =
       edgeCutMeta?.subType === 'opposite' &&
-      tag.type === 'CallExpression' &&
-      tag.callee.name.name === 'getOppositeEdge' &&
-      tag.arguments[0].type === 'Name' &&
-      tag.arguments[0].name.name === edgeCutMeta.tagName
+      ((tag.type === 'CallExpression' &&
+        tag.callee.name.name === 'getOppositeEdge' &&
+        tag.arguments[0].type === 'Name' &&
+        tag.arguments[0].name.name === edgeCutMeta.tagName) ||
+        (tag.type === 'CallExpressionKw' &&
+          tag.callee.name.name === 'getOppositeEdge' &&
+          tag.unlabeled?.type === 'Name' &&
+          tag.unlabeled.name.name === edgeCutMeta.tagName))
     if (tagMatchesOppositeTagType) return true
 
     // e.g. chamfer(tags: [getNextAdjacentEdge(tagOfInterest), tag2])
     //                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    // Note: Single unlabeled arg calls could be either CallExpression or
+    // CallExpressionKw.
     const tagMatchesAdjacentTagType =
       edgeCutMeta?.subType === 'adjacent' &&
-      tag.type === 'CallExpression' &&
-      (tag.callee.name.name === 'getNextAdjacentEdge' ||
-        tag.callee.name.name === 'getPrevAdjacentEdge') &&
-      tag.arguments[0].type === 'Name' &&
-      tag.arguments[0].name.name === edgeCutMeta.tagName
+      ((tag.type === 'CallExpression' &&
+        (tag.callee.name.name === 'getNextAdjacentEdge' ||
+          tag.callee.name.name === 'getPrevAdjacentEdge') &&
+        tag.arguments[0].type === 'Name' &&
+        tag.arguments[0].name.name === edgeCutMeta.tagName) ||
+        (tag.type === 'CallExpressionKw' &&
+          (tag.callee.name.name === 'getNextAdjacentEdge' ||
+            tag.callee.name.name === 'getPrevAdjacentEdge') &&
+          tag.unlabeled?.type === 'Name' &&
+          tag.unlabeled.name.name === edgeCutMeta.tagName))
     if (tagMatchesAdjacentTagType) return true
     return false
   })

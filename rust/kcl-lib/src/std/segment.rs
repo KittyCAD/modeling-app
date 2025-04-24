@@ -4,6 +4,7 @@ use anyhow::Result;
 use kcl_derive_docs::stdlib;
 use kittycad_modeling_cmds::shared::Angle;
 
+use super::utils::untype_point;
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
@@ -12,8 +13,6 @@ use crate::{
     },
     std::{args::TyF64, utils::between, Args},
 };
-
-use super::utils::untype_point;
 
 /// Returns the point at the end of the given segment.
 pub async fn segment_end(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
@@ -579,131 +578,4 @@ async fn inner_tangent_to_end(tag: &TagIdentifier, exec_state: &mut ExecState, a
     ));
 
     Ok(previous_end_tangent.to_degrees())
-}
-
-/// Returns the angle to match the given length for x.
-pub async fn angle_to_match_length_x(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (tag, to, sketch) = args.get_tag_to_number_sketch()?;
-    let result = inner_angle_to_match_length_x(&tag, to, sketch, exec_state, args.clone())?;
-    Ok(args.make_user_val_from_f64_with_type(TyF64::new(result, NumericType::degrees())))
-}
-
-/// Returns the angle to match the given length for x.
-///
-/// ```no_run
-/// sketch001 = startSketchOn('XZ')
-///   |> startProfileAt([0, 0], %)
-///   |> line(end = [2, 5], tag = $seg01)
-///   |> angledLine(
-///        angle = -angleToMatchLengthX(seg01, 7, %),
-///        endAbsoluteX = 10,
-///      )
-///   |> close()
-///
-/// extrusion = extrude(sketch001, length = 5)
-/// ```
-#[stdlib {
-    name = "angleToMatchLengthX",
-}]
-fn inner_angle_to_match_length_x(
-    tag: &TagIdentifier,
-    to: TyF64,
-    sketch: Sketch,
-    exec_state: &mut ExecState,
-    args: Args,
-) -> Result<f64, KclError> {
-    let line = args.get_tag_engine_info(exec_state, tag)?;
-    let path = line.path.clone().ok_or_else(|| {
-        KclError::Type(KclErrorDetails {
-            message: format!("Expected a line segment with a path, found `{:?}`", line),
-            source_ranges: vec![args.source_range],
-        })
-    })?;
-
-    let length = path.length().n;
-
-    let last_line = sketch
-        .paths
-        .last()
-        .ok_or_else(|| {
-            KclError::Type(KclErrorDetails {
-                message: format!("Expected a Sketch with at least one segment, found `{:?}`", sketch),
-                source_ranges: vec![args.source_range],
-            })
-        })?
-        .get_base();
-
-    let diff = (to.to_length_units(sketch.units) - last_line.to[0]).abs();
-
-    let angle_r = (diff / length).acos();
-
-    if diff > length {
-        Ok(0.0)
-    } else {
-        Ok(angle_r.to_degrees())
-    }
-}
-
-/// Returns the angle to match the given length for y.
-pub async fn angle_to_match_length_y(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (tag, to, sketch) = args.get_tag_to_number_sketch()?;
-    let result = inner_angle_to_match_length_y(&tag, to, sketch, exec_state, args.clone())?;
-    Ok(args.make_user_val_from_f64_with_type(TyF64::new(result, NumericType::degrees())))
-}
-
-/// Returns the angle to match the given length for y.
-///
-/// ```no_run
-/// sketch001 = startSketchOn('XZ')
-///   |> startProfileAt([0, 0], %)
-///   |> line(end = [1, 2], tag = $seg01)
-///   |> angledLine(
-///     angle = angleToMatchLengthY(seg01, 15, %),
-///     length = 5,
-///   )
-///   |> yLine(endAbsolute = 0)
-///   |> close()
-///  
-/// extrusion = extrude(sketch001, length = 5)
-/// ```
-#[stdlib {
-    name = "angleToMatchLengthY",
-}]
-fn inner_angle_to_match_length_y(
-    tag: &TagIdentifier,
-    to: TyF64,
-    sketch: Sketch,
-    exec_state: &mut ExecState,
-    args: Args,
-) -> Result<f64, KclError> {
-    let line = args.get_tag_engine_info(exec_state, tag)?;
-    let path = line.path.clone().ok_or_else(|| {
-        KclError::Type(KclErrorDetails {
-            message: format!("Expected a line segment with a path, found `{:?}`", line),
-            source_ranges: vec![args.source_range],
-        })
-    })?;
-
-    let length = path.length().n;
-
-    let last_line = sketch
-        .paths
-        .last()
-        .ok_or_else(|| {
-            KclError::Type(KclErrorDetails {
-                message: format!("Expected a Sketch with at least one segment, found `{:?}`", sketch),
-                source_ranges: vec![args.source_range],
-            })
-        })?
-        .get_base();
-
-    let diff = (to.to_length_units(sketch.units) - last_line.to[1]).abs();
-
-    let angle_r = (diff / length).asin();
-
-    if diff > length {
-        Ok(0.0)
-    } else {
-        Ok(angle_r.to_degrees())
-    }
 }
