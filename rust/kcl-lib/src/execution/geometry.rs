@@ -1209,6 +1209,7 @@ impl Path {
             Path::CircleThreePoint { base, .. } => base.geo_meta.id = id,
             Path::Arc { base, .. } => base.geo_meta.id = id,
             Path::ArcThreePoint { base, .. } => base.geo_meta.id = id,
+            Path::CircularInvolute { base, .. } => base.geo_meta.id = id,
         }
     }
 
