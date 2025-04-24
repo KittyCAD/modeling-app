@@ -3817,7 +3817,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       "type": "make_plane",
       "origin": {
         "x": 0.0,
-        "y": 3.75,
+        "y": 122.25,
         "z": 11.75
       },
       "x_axis": {
@@ -3846,7 +3846,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": 1.0,
+        "y": -1.0,
         "z": 0.0
       }
     }
@@ -4024,7 +4024,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": 1.0,
+        "y": -1.0,
         "z": 0.0
       }
     }
