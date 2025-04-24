@@ -52,7 +52,7 @@ pub async fn clone(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///
 /// ```no_run
 /// // Clone a basic sketch and move it and extrude it.
-/// exampleSketch = startSketchOn("XY")
+/// exampleSketch = startSketchOn(XY)
 ///   |> startProfileAt([0, 0], %)
 ///   |> line(end = [10, 0])
 ///   |> line(end = [0, 10])
@@ -76,7 +76,7 @@ pub async fn clone(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// ```no_run
 /// // Clone a basic solid and move it.
 ///
-/// exampleSketch = startSketchOn("XY")
+/// exampleSketch = startSketchOn(XY)
 ///   |> startProfileAt([0, 0], %)
 ///   |> line(end = [10, 0])
 ///   |> line(end = [0, 10])
@@ -87,15 +87,13 @@ pub async fn clone(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// clonedPart = clone(myPart)
 ///     |> translate(
 ///         x = 25.0,
-///         y = 0.0,
-///         z = 0,
 ///     )
 /// ```
 ///
 /// ```no_run
 /// // Translate and rotate a cloned sketch to create a loft.
 ///
-/// sketch001 = startSketchOn('XY')
+/// sketch001 = startSketchOn(XY)
 ///         |> startProfileAt([-10, 10], %)
 ///         |> xLine(length = 20)
 ///         |> yLine(length = -20)
@@ -141,7 +139,7 @@ pub async fn clone(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// thickness = 1
 /// filletRadius = 2
 ///
-/// mountingPlateSketch = startSketchOn("XY")
+/// mountingPlateSketch = startSketchOn(XY)
 ///   |> startProfileAt([-width/2, -length/2], %)
 ///   |> line(endAbsolute = [width/2, -length/2], tag = $edge1)
 ///   |> line(endAbsolute = [width/2, length/2], tag = $edge2)
