@@ -6,6 +6,7 @@ pub mod array;
 pub mod assert;
 pub mod axis_or_reference;
 pub mod chamfer;
+pub mod clone;
 pub mod convert;
 pub mod csg;
 pub mod edge;
@@ -87,6 +88,7 @@ lazy_static! {
         Box::new(crate::std::sketch::TangentialArc),
         Box::new(crate::std::sketch::BezierCurve),
         Box::new(crate::std::sketch::Hole),
+        Box::new(crate::std::clone::Clone),
         Box::new(crate::std::patterns::PatternLinear2D),
         Box::new(crate::std::patterns::PatternLinear3D),
         Box::new(crate::std::patterns::PatternCircular2D),
@@ -107,7 +109,6 @@ lazy_static! {
         Box::new(crate::std::shell::Hollow),
         Box::new(crate::std::sweep::Sweep),
         Box::new(crate::std::loft::Loft),
-        Box::new(crate::std::planes::OffsetPlane),
         Box::new(crate::std::math::Acos),
         Box::new(crate::std::math::Asin),
         Box::new(crate::std::math::Atan),
@@ -204,6 +205,10 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
         ("prelude", "revolve") => (
             |e, a| Box::pin(crate::std::revolve::revolve(e, a)),
             StdFnProps::default("std::revolve").include_in_feature_tree(),
+        ),
+        ("prelude", "offsetPlane") => (
+            |e, a| Box::pin(crate::std::planes::offset_plane(e, a)),
+            StdFnProps::default("std::offsetPlane").include_in_feature_tree(),
         ),
         _ => unreachable!(),
     }

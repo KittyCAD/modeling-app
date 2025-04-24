@@ -1028,6 +1028,27 @@ impl<'a> FromKclValue<'a> for kittycad_modeling_cmds::coord::Direction {
     }
 }
 
+impl<'a> FromKclValue<'a> for crate::execution::Geometry {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        match arg {
+            KclValue::Sketch { value } => Some(Self::Sketch(*value.to_owned())),
+            KclValue::Solid { value } => Some(Self::Solid(*value.to_owned())),
+            _ => None,
+        }
+    }
+}
+
+impl<'a> FromKclValue<'a> for crate::execution::GeometryWithImportedGeometry {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        match arg {
+            KclValue::Sketch { value } => Some(Self::Sketch(*value.to_owned())),
+            KclValue::Solid { value } => Some(Self::Solid(*value.to_owned())),
+            KclValue::ImportedGeometry(value) => Some(Self::ImportedGeometry(Box::new(value.clone()))),
+            _ => None,
+        }
+    }
+}
+
 impl<'a> FromKclValue<'a> for FaceTag {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let case1 = || match arg.as_str() {
@@ -1087,7 +1108,6 @@ impl<'a> FromKclValue<'a> for super::sketch::PlaneData {
                 origin: value.origin,
                 x_axis: value.x_axis,
                 y_axis: value.y_axis,
-                z_axis: value.z_axis,
             });
         }
         // Case 1: predefined plane
@@ -1108,13 +1128,7 @@ impl<'a> FromKclValue<'a> for super::sketch::PlaneData {
         let origin = plane.get("origin").and_then(FromKclValue::from_kcl_val)?;
         let x_axis = plane.get("xAxis").and_then(FromKclValue::from_kcl_val)?;
         let y_axis = plane.get("yAxis").and_then(FromKclValue::from_kcl_val)?;
-        let z_axis = plane.get("zAxis").and_then(FromKclValue::from_kcl_val)?;
-        Some(Self::Plane {
-            origin,
-            x_axis,
-            y_axis,
-            z_axis,
-        })
+        Some(Self::Plane { origin, x_axis, y_axis })
     }
 }
 
