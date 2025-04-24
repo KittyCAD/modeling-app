@@ -247,9 +247,10 @@ async fn inner_shell(
 
 /// Make the inside of a 3D object hollow.
 pub async fn hollow(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (thickness, solid) = args.get_length_and_solid(exec_state)?;
+    let solid = args.get_unlabeled_kw_arg_typed("solid", &RuntimeType::solid(), exec_state)?;
+    let thickness: TyF64 = args.get_kw_arg_typed("thickness", &RuntimeType::length(), exec_state)?;
 
-    let value = inner_hollow(thickness, solid, exec_state, args).await?;
+    let value = inner_hollow(solid, thickness, exec_state, args).await?;
     Ok(KclValue::Solid { value })
 }
 
@@ -267,7 +268,7 @@ pub async fn hollow(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 ///     |> line(end = [-24, 0])
 ///     |> close()
 ///     |> extrude(length = 6)
-///     |> hollow (0.25, %)
+///     |> hollow(thickness = 0.25)
 /// ```
 ///
 /// ```no_run
@@ -279,7 +280,7 @@ pub async fn hollow(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 ///     |> line(end = [-24, 0])
 ///     |> close()
 ///     |> extrude(length = 6)
-///     |> hollow (0.5, %)
+///     |> hollow(thickness = 0.5)
 /// ```
 ///
 /// ```no_run
@@ -301,15 +302,21 @@ pub async fn hollow(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 ///     |> circle( center = [size / 2, -size / 2], radius = 25 )
 ///     |> extrude(length = 50)
 ///
-/// hollow(0.5, case)
+/// hollow(case, thickness = 0.5)
 /// ```
 #[stdlib {
     name = "hollow",
     feature_tree_operation = true,
+    keywords = true,
+    unlabeled_first = true,
+    args = {
+        solid = { docs = "Which solid to shell out" },
+        thickness = {docs = "The thickness of the shell" },
+    }
 }]
 async fn inner_hollow(
-    thickness: TyF64,
     solid: Box<Solid>,
+    thickness: TyF64,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Box<Solid>, KclError> {

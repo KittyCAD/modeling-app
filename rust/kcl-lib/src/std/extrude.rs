@@ -482,6 +482,7 @@ pub(crate) async fn do_post_extrude<'a>(
         meta: sketch.meta.clone(),
         units: sketch.units,
         height: length.to_length_units(sketch.units),
+        sectional,
         sketch,
         start_cap_id,
         end_cap_id,

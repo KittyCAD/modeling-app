@@ -24,8 +24,8 @@ legAngY(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `hypotenuse` | [`number`](/docs/kcl/types/number) |  | Yes |
-| `leg` | [`number`](/docs/kcl/types/number) |  | Yes |
+| `hypotenuse` | [`number`](/docs/kcl/types/number) | The length of the triangle's hypotenuse | Yes |
+| `leg` | [`number`](/docs/kcl/types/number) | The length of one of the triangle's legs (i.e. non-hypotenuse side) | Yes |
 
 ### Returns
 
@@ -35,7 +35,7 @@ legAngY(
 ### Examples
 
 ```js
-legAngY(5, 3)
+legAngY(hypotenuse = 5, leg = 3)
 ```
 
 

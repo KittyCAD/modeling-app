@@ -758,14 +758,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "units": {
               "type": "Mm"
             }
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": -1.0,
-            "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
           }
         },
         "start": {
@@ -901,7 +893,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
       ],
       "units": {
         "type": "Inches"
-      }
+      },
+      "sectional": false
     }
   },
   "centeredHole": {
@@ -966,14 +959,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Mm"
-            }
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": -1.0,
-            "z": 0.0,
             "units": {
               "type": "Mm"
             }
@@ -1718,14 +1703,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   "units": {
                     "type": "Mm"
                   }
-                },
-                "zAxis": {
-                  "x": 0.0,
-                  "y": -1.0,
-                  "z": 0.0,
-                  "units": {
-                    "type": "Mm"
-                  }
                 }
               },
               "start": {
@@ -1861,7 +1838,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             ],
             "units": {
               "type": "Inches"
-            }
+            },
+            "sectional": false
           },
           "units": {
             "type": "Inches"
@@ -1896,7 +1874,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
       "endCapId": null,
       "units": {
         "type": "Inches"
-      }
+      },
+      "sectional": false
     }
   },
   "componentBoltDiameter": {
@@ -2072,14 +2051,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   "type": "Mm"
                 }
               },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
               "solid": {
                 "type": "Solid",
                 "id": "[uuid]",
@@ -2820,14 +2791,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       "units": {
                         "type": "Mm"
                       }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": -1.0,
-                      "z": 0.0,
-                      "units": {
-                        "type": "Mm"
-                      }
                     }
                   },
                   "start": {
@@ -2963,7 +2926,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 ],
                 "units": {
                   "type": "Inches"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Inches"
@@ -2998,7 +2962,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -3067,14 +3032,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   "type": "Mm"
                 }
               },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
               "solid": {
                 "type": "Solid",
                 "id": "[uuid]",
@@ -3815,14 +3772,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       "units": {
                         "type": "Mm"
                       }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": -1.0,
-                      "z": 0.0,
-                      "units": {
-                        "type": "Mm"
-                      }
                     }
                   },
                   "start": {
@@ -3958,7 +3907,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 ],
                 "units": {
                   "type": "Inches"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Inches"
@@ -3993,7 +3943,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       }
     ]
@@ -4119,14 +4070,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   "type": "Mm"
                 }
               },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
               "solid": {
                 "type": "Solid",
                 "id": "[uuid]",
@@ -4867,14 +4810,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       "units": {
                         "type": "Mm"
                       }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": -1.0,
-                      "z": 0.0,
-                      "units": {
-                        "type": "Mm"
-                      }
                     }
                   },
                   "start": {
@@ -5010,7 +4945,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 ],
                 "units": {
                   "type": "Inches"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Inches"
@@ -5045,7 +4981,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -5114,14 +5051,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   "type": "Mm"
                 }
               },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
               "solid": {
                 "type": "Solid",
                 "id": "[uuid]",
@@ -5862,14 +5791,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       "units": {
                         "type": "Mm"
                       }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": -1.0,
-                      "z": 0.0,
-                      "units": {
-                        "type": "Mm"
-                      }
                     }
                   },
                   "start": {
@@ -6005,7 +5926,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 ],
                 "units": {
                   "type": "Inches"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Inches"
@@ -6040,7 +5962,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       }
     ]
@@ -6162,14 +6085,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   "type": "Mm"
                 }
               },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
               "solid": {
                 "type": "Solid",
                 "id": "[uuid]",
@@ -6910,14 +6825,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       "units": {
                         "type": "Mm"
                       }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": -1.0,
-                      "z": 0.0,
-                      "units": {
-                        "type": "Mm"
-                      }
                     }
                   },
                   "start": {
@@ -7053,7 +6960,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 ],
                 "units": {
                   "type": "Inches"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Inches"
@@ -7088,7 +6996,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -7157,14 +7066,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   "type": "Mm"
                 }
               },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
               "solid": {
                 "type": "Solid",
                 "id": "[uuid]",
@@ -7905,14 +7806,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       "units": {
                         "type": "Mm"
                       }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": -1.0,
-                      "z": 0.0,
-                      "units": {
-                        "type": "Mm"
-                      }
                     }
                   },
                   "start": {
@@ -8048,7 +7941,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 ],
                 "units": {
                   "type": "Inches"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Inches"
@@ -8083,7 +7977,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -8152,14 +8047,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   "type": "Mm"
                 }
               },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
               "solid": {
                 "type": "Solid",
                 "id": "[uuid]",
@@ -8900,14 +8787,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       "units": {
                         "type": "Mm"
                       }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": -1.0,
-                      "z": 0.0,
-                      "units": {
-                        "type": "Mm"
-                      }
                     }
                   },
                   "start": {
@@ -9043,7 +8922,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 ],
                 "units": {
                   "type": "Inches"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Inches"
@@ -9078,7 +8958,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -9147,14 +9028,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   "type": "Mm"
                 }
               },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
               "solid": {
                 "type": "Solid",
                 "id": "[uuid]",
@@ -9895,14 +9768,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       "units": {
                         "type": "Mm"
                       }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": -1.0,
-                      "z": 0.0,
-                      "units": {
-                        "type": "Mm"
-                      }
                     }
                   },
                   "start": {
@@ -10038,7 +9903,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 ],
                 "units": {
                   "type": "Inches"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Inches"
@@ -10073,7 +9939,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       }
     ]

@@ -1955,7 +1955,7 @@ description: Artifact commands poopy-shoe.kcl
       },
       "x_axis": {
         "x": 0.0,
-        "y": -1.0,
+        "y": 1.0,
         "z": 0.0
       },
       "y_axis": {
@@ -2037,7 +2037,7 @@ description: Artifact commands poopy-shoe.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 76.2,
+          "x": -76.2,
           "y": 130.175,
           "z": 0.0
         },
@@ -2054,7 +2054,7 @@ description: Artifact commands poopy-shoe.kcl
       "segment": {
         "type": "tangential_arc_to",
         "to": {
-          "x": 50.8,
+          "x": -50.8,
           "y": -52.3875,
           "z": 0.0
         },
@@ -2071,7 +2071,7 @@ description: Artifact commands poopy-shoe.kcl
       "segment": {
         "type": "tangential_arc_to",
         "to": {
-          "x": 50.8,
+          "x": -50.8,
           "y": -52.3875,
           "z": 0.0
         },
@@ -2088,7 +2088,7 @@ description: Artifact commands poopy-shoe.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 177.8,
+          "x": -177.8,
           "y": 0.0,
           "z": 0.0
         },
@@ -2760,7 +2760,7 @@ description: Artifact commands poopy-shoe.kcl
       "animated": false,
       "adjust_camera": false,
       "planar_normal": {
-        "x": 0.0,
+        "x": -0.0,
         "y": 0.0,
         "z": 1.0
       }
@@ -2862,7 +2862,7 @@ description: Artifact commands poopy-shoe.kcl
       "animated": false,
       "adjust_camera": false,
       "planar_normal": {
-        "x": 0.0,
+        "x": -0.0,
         "y": 0.0,
         "z": 1.0
       }

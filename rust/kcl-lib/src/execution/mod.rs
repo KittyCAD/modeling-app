@@ -1277,7 +1277,7 @@ const part001 = startSketchOn(XY)
   |> line(end = [3, 4], tag = $seg01)
   |> line(end = [
   min(segLen(seg01), myVar),
-  -legLen(segLen(seg01), myVar)
+  -legLen(hypotenuse = segLen(seg01), leg = myVar)
 ])
 "#;
 
@@ -1292,7 +1292,7 @@ const part001 = startSketchOn(XY)
   |> line(end = [3, 4], tag = $seg01)
   |> line(end = [
   min(segLen(seg01), myVar),
-  legLen(segLen(seg01), myVar)
+  legLen(hypotenuse = segLen(seg01), leg = myVar)
 ])
 "#;
 
@@ -1684,7 +1684,7 @@ let shape = layer() |> patternTransform(instances = 10, transform = transform)
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_math_execute_with_functions() {
-        let ast = r#"const myVar = 2 + min(100, -1 + legLen(5, 3))"#;
+        let ast = r#"const myVar = 2 + min(100, -1 + legLen(hypotenuse = 5, leg = 3))"#;
         let result = parse_execute(ast).await.unwrap();
         assert_eq!(
             5.0,
@@ -1818,18 +1818,6 @@ const bracket = startSketchOn(XY)
   |> line(end = [-leg2 + thickness(), 0])
 "#;
         parse_execute(ast).await.unwrap();
-    }
-
-    #[tokio::test(flavor = "multi_thread")]
-    async fn test_bad_arg_count_std() {
-        let ast = "startSketchOn(XY)
-  |> startProfileAt([0, 0], %)
-  |> profileStartX()";
-        assert!(parse_execute(ast)
-            .await
-            .unwrap_err()
-            .message()
-            .contains("Expected a sketch argument"));
     }
 
     #[tokio::test(flavor = "multi_thread")]

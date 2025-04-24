@@ -4,6 +4,15 @@ description: Operations executed ball-bearing.kcl
 ---
 [
   {
+    "type": "KclStdLibCall",
+    "name": "offsetPlane",
+    "unlabeledArg": {
+      "value": {
+        "type": "Plane",
+        "artifact_id": "[uuid]"
+      },
+      "sourceRange": []
+    },
     "labeledArgs": {
       "offset": {
         "value": {
@@ -22,16 +31,7 @@ description: Operations executed ball-bearing.kcl
         "sourceRange": []
       }
     },
-    "name": "offsetPlane",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Plane",
-        "artifact_id": "[uuid]"
-      },
-      "sourceRange": []
-    }
+    "sourceRange": []
   },
   {
     "labeledArgs": {
@@ -382,8 +382,8 @@ description: Operations executed ball-bearing.kcl
       "type": "FunctionCall",
       "name": "toRadians",
       "functionSourceRange": [
-        11603,
-        11652,
+        11497,
+        11546,
         1
       ],
       "unlabeledArg": null,
@@ -924,6 +924,15 @@ description: Operations executed ball-bearing.kcl
     }
   },
   {
+    "type": "KclStdLibCall",
+    "name": "offsetPlane",
+    "unlabeledArg": {
+      "value": {
+        "type": "Plane",
+        "artifact_id": "[uuid]"
+      },
+      "sourceRange": []
+    },
     "labeledArgs": {
       "offset": {
         "value": {
@@ -942,16 +951,7 @@ description: Operations executed ball-bearing.kcl
         "sourceRange": []
       }
     },
-    "name": "offsetPlane",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Plane",
-        "artifact_id": "[uuid]"
-      },
-      "sourceRange": []
-    }
+    "sourceRange": []
   },
   {
     "labeledArgs": {

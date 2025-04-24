@@ -976,9 +976,6 @@ pub enum PlaneData {
         /// What should the plane’s Y axis be?
         #[serde(rename = "yAxis")]
         y_axis: Point3d,
-        /// The z-axis (normal).
-        #[serde(rename = "zAxis")]
-        z_axis: Point3d,
     },
 }
 
@@ -1245,7 +1242,6 @@ async fn start_sketch_on_face(
         // TODO: get this from the extrude plane data.
         x_axis: solid.sketch.on.x_axis(),
         y_axis: solid.sketch.on.y_axis(),
-        z_axis: solid.sketch.on.z_axis(),
         units: solid.units,
         solid,
         meta: vec![args.source_range.into()],
@@ -1263,49 +1259,18 @@ async fn make_sketch_plane_from_orientation(
     let clobber = false;
     let size = LengthUnit(60.0);
     let hide = Some(true);
-    match data {
-        PlaneData::XY | PlaneData::NegXY | PlaneData::XZ | PlaneData::NegXZ | PlaneData::YZ | PlaneData::NegYZ => {
-            // TODO: ignoring the default planes here since we already created them, breaks the
-            // front end for the feature tree which is stupid and we should fix it.
-            let x_axis = match data {
-                PlaneData::NegXY => Point3d::new(-1.0, 0.0, 0.0, UnitLen::Mm),
-                PlaneData::NegXZ => Point3d::new(-1.0, 0.0, 0.0, UnitLen::Mm),
-                PlaneData::NegYZ => Point3d::new(0.0, -1.0, 0.0, UnitLen::Mm),
-                _ => plane.x_axis,
-            };
-            args.batch_modeling_cmd(
-                plane.id,
-                ModelingCmd::from(mcmd::MakePlane {
-                    clobber,
-                    origin: plane.origin.into(),
-                    size,
-                    x_axis: x_axis.into(),
-                    y_axis: plane.y_axis.into(),
-                    hide,
-                }),
-            )
-            .await?;
-        }
-        PlaneData::Plane {
-            origin,
-            x_axis,
-            y_axis,
-            z_axis: _,
-        } => {
-            args.batch_modeling_cmd(
-                plane.id,
-                ModelingCmd::from(mcmd::MakePlane {
-                    clobber,
-                    origin: origin.into(),
-                    size,
-                    x_axis: x_axis.into(),
-                    y_axis: y_axis.into(),
-                    hide,
-                }),
-            )
-            .await?;
-        }
-    }
+    args.batch_modeling_cmd(
+        plane.id,
+        ModelingCmd::from(mcmd::MakePlane {
+            clobber,
+            origin: plane.origin.into(),
+            size,
+            x_axis: plane.x_axis.into(),
+            y_axis: plane.y_axis.into(),
+            hide,
+        }),
+    )
+    .await?;
 
     Ok(Box::new(plane))
 }
@@ -1400,7 +1365,8 @@ pub(crate) async fn inner_start_profile_at(
                 adjust_camera: false,
                 planar_normal: if let SketchSurface::Plane(plane) = &sketch_surface {
                     // We pass in the normal for the plane here.
-                    Some(plane.z_axis.into())
+                    let normal = plane.x_axis.cross(&plane.y_axis);
+                    Some(normal.into())
                 } else {
                     None
                 },
@@ -1470,7 +1436,7 @@ pub(crate) async fn inner_start_profile_at(
 
 /// Returns the X component of the sketch profile start point.
 pub async fn profile_start_x(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let sketch: Sketch = args.get_sketch(exec_state)?;
+    let sketch: Sketch = args.get_unlabeled_kw_arg_typed("sketch", &RuntimeType::sketch(), exec_state)?;
     let ty = sketch.units.into();
     let x = inner_profile_start_x(sketch)?;
     Ok(args.make_user_val_from_f64_with_type(TyF64::new(x, ty)))
@@ -1487,15 +1453,20 @@ pub async fn profile_start_x(exec_state: &mut ExecState, args: Args) -> Result<K
 ///  |> angledLine(angle = 30, endAbsoluteX = profileStartX(%))
 /// ```
 #[stdlib {
-    name = "profileStartX"
+    name = "profileStartX",
+    keywords = true,
+    unlabeled_first = true,
+    args = {
+        profile = {docs = "Profile whose start is being used"},
+    }
 }]
-pub(crate) fn inner_profile_start_x(sketch: Sketch) -> Result<f64, KclError> {
-    Ok(sketch.start.to[0])
+pub(crate) fn inner_profile_start_x(profile: Sketch) -> Result<f64, KclError> {
+    Ok(profile.start.to[0])
 }
 
 /// Returns the Y component of the sketch profile start point.
 pub async fn profile_start_y(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let sketch: Sketch = args.get_sketch(exec_state)?;
+    let sketch: Sketch = args.get_unlabeled_kw_arg_typed("sketch", &RuntimeType::sketch(), exec_state)?;
     let ty = sketch.units.into();
     let x = inner_profile_start_y(sketch)?;
     Ok(args.make_user_val_from_f64_with_type(TyF64::new(x, ty)))
@@ -1511,15 +1482,20 @@ pub async fn profile_start_y(exec_state: &mut ExecState, args: Args) -> Result<K
 ///  |> angledLine(angle = 30, endAbsoluteY =  profileStartY(%))
 /// ```
 #[stdlib {
-    name = "profileStartY"
+    name = "profileStartY",
+    keywords = true,
+    unlabeled_first = true,
+    args = {
+        profile = {docs = "Profile whose start is being used"},
+    }
 }]
-pub(crate) fn inner_profile_start_y(sketch: Sketch) -> Result<f64, KclError> {
-    Ok(sketch.start.to[1])
+pub(crate) fn inner_profile_start_y(profile: Sketch) -> Result<f64, KclError> {
+    Ok(profile.start.to[1])
 }
 
 /// Returns the sketch profile start point.
 pub async fn profile_start(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let sketch: Sketch = args.get_sketch(exec_state)?;
+    let sketch: Sketch = args.get_unlabeled_kw_arg_typed("sketch", &RuntimeType::sketch(), exec_state)?;
     let ty = sketch.units.into();
     let point = inner_profile_start(sketch)?;
     Ok(KclValue::from_point2d(point, ty, args.into()))
@@ -1538,10 +1514,15 @@ pub async fn profile_start(exec_state: &mut ExecState, args: Args) -> Result<Kcl
 ///  |> extrude(length = 20)
 /// ```
 #[stdlib {
-    name = "profileStart"
+    name = "profileStart",
+    keywords = true,
+    unlabeled_first = true,
+    args = {
+        profile = {docs = "Profile whose start is being used"},
+    }
 }]
-pub(crate) fn inner_profile_start(sketch: Sketch) -> Result<[f64; 2], KclError> {
-    Ok(sketch.start.to)
+pub(crate) fn inner_profile_start(profile: Sketch) -> Result<[f64; 2], KclError> {
+    Ok(profile.start.to)
 }
 
 /// Close the current sketch.
