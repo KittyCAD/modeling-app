@@ -1043,10 +1043,6 @@ impl KclValue {
                         .get("yAxis")
                         .and_then(Point3d::from_kcl_val)
                         .ok_or(CoercionError::from(self))?;
-                    let z_axis = value
-                        .get("zAxis")
-                        .and_then(Point3d::from_kcl_val)
-                        .ok_or(CoercionError::from(self))?;
 
                     let id = exec_state.mod_local.id_generator.next_uuid();
                     let plane = Plane {
@@ -1055,7 +1051,6 @@ impl KclValue {
                         origin,
                         x_axis,
                         y_axis,
-                        z_axis,
                         value: super::PlaneType::Uninit,
                         meta: meta.clone(),
                     };

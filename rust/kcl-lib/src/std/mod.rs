@@ -6,6 +6,7 @@ pub mod array;
 pub mod assert;
 pub mod axis_or_reference;
 pub mod chamfer;
+pub mod clone;
 pub mod convert;
 pub mod csg;
 pub mod edge;
@@ -29,6 +30,7 @@ pub mod utils;
 
 use anyhow::Result;
 pub use args::Args;
+use args::TyF64;
 use indexmap::IndexMap;
 use kcl_derive_docs::stdlib;
 use lazy_static::lazy_static;
@@ -39,7 +41,10 @@ use serde::{Deserialize, Serialize};
 use crate::{
     docs::StdLibFn,
     errors::KclError,
-    execution::{types::PrimitiveType, ExecState, KclValue},
+    execution::{
+        types::{NumericType, PrimitiveType, RuntimeType, UnitAngle, UnitType},
+        ExecState, KclValue,
+    },
     parsing::ast::types::Name,
 };
 
@@ -67,8 +72,6 @@ lazy_static! {
         Box::new(crate::std::segment::SegLen),
         Box::new(crate::std::segment::SegAng),
         Box::new(crate::std::segment::TangentToEnd),
-        Box::new(crate::std::segment::AngleToMatchLengthX),
-        Box::new(crate::std::segment::AngleToMatchLengthY),
         Box::new(crate::std::shapes::CircleThreePoint),
         Box::new(crate::std::shapes::Polygon),
         Box::new(crate::std::sketch::InvoluteCircular),
@@ -87,6 +90,7 @@ lazy_static! {
         Box::new(crate::std::sketch::TangentialArc),
         Box::new(crate::std::sketch::BezierCurve),
         Box::new(crate::std::sketch::Subtract2D),
+        Box::new(crate::std::clone::Clone),
         Box::new(crate::std::patterns::PatternLinear2D),
         Box::new(crate::std::patterns::PatternLinear3D),
         Box::new(crate::std::patterns::PatternCircular2D),
@@ -107,7 +111,6 @@ lazy_static! {
         Box::new(crate::std::shell::Hollow),
         Box::new(crate::std::sweep::Sweep),
         Box::new(crate::std::loft::Loft),
-        Box::new(crate::std::planes::OffsetPlane),
         Box::new(crate::std::math::Acos),
         Box::new(crate::std::math::Asin),
         Box::new(crate::std::math::Atan),
@@ -205,6 +208,10 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
             |e, a| Box::pin(crate::std::revolve::revolve(e, a)),
             StdFnProps::default("std::revolve").include_in_feature_tree(),
         ),
+        ("prelude", "offsetPlane") => (
+            |e, a| Box::pin(crate::std::planes::offset_plane(e, a)),
+            StdFnProps::default("std::offsetPlane").include_in_feature_tree(),
+        ),
         _ => unreachable!(),
     }
 }
@@ -284,8 +291,10 @@ pub enum FunctionKind {
 const DEFAULT_TOLERANCE: f64 = 0.0000001;
 
 /// Compute the length of the given leg.
-pub async fn leg_length(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (hypotenuse, leg, ty) = args.get_hypotenuse_leg()?;
+pub async fn leg_length(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let hypotenuse: TyF64 = args.get_kw_arg_typed("hypotenuse", &RuntimeType::length(), exec_state)?;
+    let leg: TyF64 = args.get_kw_arg_typed("leg", &RuntimeType::length(), exec_state)?;
+    let (hypotenuse, leg, ty) = NumericType::combine_eq_coerce(hypotenuse, leg);
     let result = inner_leg_length(hypotenuse, leg);
     Ok(KclValue::from_number_with_type(result, ty, vec![args.into()]))
 }
@@ -293,10 +302,16 @@ pub async fn leg_length(_exec_state: &mut ExecState, args: Args) -> Result<KclVa
 /// Compute the length of the given leg.
 ///
 /// ```no_run
-/// legLen(5, 3)
+/// legLen(hypotenuse = 5, leg = 3)
 /// ```
 #[stdlib {
     name = "legLen",
+    keywords = true,
+    unlabeled_first = false,
+    args = {
+        hypotenuse = { docs = "The length of the triangle's hypotenuse" },
+        leg = { docs = "The length of one of the triangle's legs (i.e. non-hypotenuse side)" },
+    },
     tags = ["utilities"],
 }]
 fn inner_leg_length(hypotenuse: f64, leg: f64) -> f64 {
@@ -304,19 +319,31 @@ fn inner_leg_length(hypotenuse: f64, leg: f64) -> f64 {
 }
 
 /// Compute the angle of the given leg for x.
-pub async fn leg_angle_x(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (hypotenuse, leg, ty) = args.get_hypotenuse_leg()?;
+pub async fn leg_angle_x(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let hypotenuse: TyF64 = args.get_kw_arg_typed("hypotenuse", &RuntimeType::length(), exec_state)?;
+    let leg: TyF64 = args.get_kw_arg_typed("leg", &RuntimeType::length(), exec_state)?;
+    let (hypotenuse, leg, _ty) = NumericType::combine_eq_coerce(hypotenuse, leg);
     let result = inner_leg_angle_x(hypotenuse, leg);
-    Ok(KclValue::from_number_with_type(result, ty, vec![args.into()]))
+    Ok(KclValue::from_number_with_type(
+        result,
+        NumericType::Known(UnitType::Angle(UnitAngle::Degrees)),
+        vec![args.into()],
+    ))
 }
 
 /// Compute the angle of the given leg for x.
 ///
 /// ```no_run
-/// legAngX(5, 3)
+/// legAngX(hypotenuse = 5, leg = 3)
 /// ```
 #[stdlib {
     name = "legAngX",
+    keywords = true,
+    unlabeled_first = false,
+    args = {
+        hypotenuse = { docs = "The length of the triangle's hypotenuse" },
+        leg = { docs = "The length of one of the triangle's legs (i.e. non-hypotenuse side)" },
+    },
     tags = ["utilities"],
 }]
 fn inner_leg_angle_x(hypotenuse: f64, leg: f64) -> f64 {
@@ -324,19 +351,31 @@ fn inner_leg_angle_x(hypotenuse: f64, leg: f64) -> f64 {
 }
 
 /// Compute the angle of the given leg for y.
-pub async fn leg_angle_y(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (hypotenuse, leg, ty) = args.get_hypotenuse_leg()?;
+pub async fn leg_angle_y(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let hypotenuse: TyF64 = args.get_kw_arg_typed("hypotenuse", &RuntimeType::length(), exec_state)?;
+    let leg: TyF64 = args.get_kw_arg_typed("leg", &RuntimeType::length(), exec_state)?;
+    let (hypotenuse, leg, _ty) = NumericType::combine_eq_coerce(hypotenuse, leg);
     let result = inner_leg_angle_y(hypotenuse, leg);
-    Ok(KclValue::from_number_with_type(result, ty, vec![args.into()]))
+    Ok(KclValue::from_number_with_type(
+        result,
+        NumericType::Known(UnitType::Angle(UnitAngle::Degrees)),
+        vec![args.into()],
+    ))
 }
 
 /// Compute the angle of the given leg for y.
 ///
 /// ```no_run
-/// legAngY(5, 3)
+/// legAngY(hypotenuse = 5, leg = 3)
 /// ```
 #[stdlib {
     name = "legAngY",
+    keywords = true,
+    unlabeled_first = false,
+    args = {
+        hypotenuse = { docs = "The length of the triangle's hypotenuse" },
+        leg = { docs = "The length of one of the triangle's legs (i.e. non-hypotenuse side)" },
+    },
     tags = ["utilities"],
 }]
 fn inner_leg_angle_y(hypotenuse: f64, leg: f64) -> f64 {

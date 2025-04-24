@@ -2291,7 +2291,7 @@ description: Artifact commands car-wheel-assembly.kcl
       "animated": false,
       "adjust_camera": false,
       "planar_normal": {
-        "x": 0.0,
+        "x": -0.02,
         "y": 0.0,
         "z": 1.0
       }
@@ -2430,7 +2430,7 @@ description: Artifact commands car-wheel-assembly.kcl
       "animated": false,
       "adjust_camera": false,
       "planar_normal": {
-        "x": 0.0,
+        "x": -0.02,
         "y": 0.0,
         "z": 1.0
       }
@@ -2709,8 +2709,8 @@ description: Artifact commands car-wheel-assembly.kcl
       "animated": false,
       "adjust_camera": false,
       "planar_normal": {
-        "x": 0.0,
-        "y": 0.0,
+        "x": 0.02,
+        "y": -0.0,
         "z": 1.0
       }
     }
@@ -2848,8 +2848,8 @@ description: Artifact commands car-wheel-assembly.kcl
       "animated": false,
       "adjust_camera": false,
       "planar_normal": {
-        "x": 0.0,
-        "y": 0.0,
+        "x": 0.02,
+        "y": -0.0,
         "z": 1.0
       }
     }
@@ -9231,7 +9231,7 @@ description: Artifact commands car-wheel-assembly.kcl
       "planar_normal": {
         "x": 0.0,
         "y": 0.0,
-        "z": 1.0
+        "z": -1.0
       }
     }
   },
