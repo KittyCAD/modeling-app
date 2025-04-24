@@ -86,7 +86,7 @@ async fn do_execute_and_snapshot(
 ) -> Result<(ExecState, EnvironmentRef, image::DynamicImage), ExecErrorWithState> {
     let mut exec_state = ExecState::new(ctx);
     let result = ctx
-        .run_single_threaded(&program, &mut exec_state)
+        .run(&program, &mut exec_state)
         .await
         .map_err(|err| ExecErrorWithState::new(err.into(), exec_state.clone()))?;
     for e in exec_state.errors() {

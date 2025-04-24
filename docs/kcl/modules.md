@@ -69,25 +69,17 @@ import "tests/inputs/cube.obj"
 // Use `cube` just like a KCL object.
 ```
 
-```norun
+```
 import "tests/inputs/cube-2.sldprt" as cube
 
 // Use `cube` just like a KCL object.
-```
-
-You can make the file format explicit using a format attribute (useful if using a different
-extension), e.g.,
-
-```norun
-@(format = obj)
-import "tests/inputs/cube"
 ```
 
 For formats lacking unit data (such as STL, OBJ, or PLY files), the default
 unit of measurement is millimeters. Alternatively you may specify the unit
 by using an attirbute. Likewise, you can also specify a coordinate system. E.g.,
 
-```norun
+```
 @(unitLength = ft, coords = opengl)
 import "tests/inputs/cube.obj"
 ```
@@ -142,8 +134,7 @@ stages—reading, initializing (background render start), and invocation (blocki
 ##### 1. Defer Blocking Calls
 Initialize early but delay all transformations until after your heavy computation:
 ```kcl
-import "tests/inputs/cube.step" as cube     // 1) Read / Background render
-starts
+import "tests/inputs/cube.step" as cube     // 1) Read / Background render starts
 
 
 // --- perform other operations and calculations or setup here ---
