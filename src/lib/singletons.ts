@@ -10,6 +10,7 @@ import { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { BaseUnit } from '@src/lib/settings/settingsTypes'
 
 import { useSelector } from '@xstate/react'
+import type { SnapshotFrom } from 'xstate'
 import { createActor, setup, assign } from 'xstate'
 
 import { isDesktop } from '@src/lib/isDesktop'
@@ -24,6 +25,9 @@ import { settingsMachine } from '@src/machines/settingsMachine'
 import { systemIOMachineDesktop } from '@src/machines/systemIO/systemIOMachineDesktop'
 import { systemIOMachineWeb } from '@src/machines/systemIO/systemIOMachineWeb'
 import type { AppMachineContext } from '@src/lib/types'
+import { createAuthCommands } from '@src/lib/commandBarConfigs/authCommandConfig'
+import { commandBarMachine } from '@src/machines/commandBarMachine'
+import { createProjectCommands } from '@src/lib/commandBarConfigs/projectsCommandConfig'
 
 export const codeManager = new CodeManager()
 export const engineCommandManager = new EngineCommandManager()
@@ -106,12 +110,13 @@ if (typeof window !== 'undefined') {
       },
     })
 }
-const { AUTH, SETTINGS, SYSTEM_IO, ENGINE_STREAM } = ACTOR_IDS
+const { AUTH, SETTINGS, SYSTEM_IO, ENGINE_STREAM, COMMAND_BAR } = ACTOR_IDS
 const appMachineActors = {
   [AUTH]: authMachine,
   [SETTINGS]: settingsMachine,
   [SYSTEM_IO]: isDesktop() ? systemIOMachineDesktop : systemIOMachineWeb,
   [ENGINE_STREAM]: engineStreamMachine,
+  [COMMAND_BAR]: commandBarMachine,
 } as const
 
 const appMachine = setup({
@@ -156,6 +161,14 @@ const appMachine = setup({
           systemId: ENGINE_STREAM,
           input: engineStreamContextCreate(),
         }),
+      commandBarActor: ({ spawn }) =>
+        spawn(COMMAND_BAR, {
+          id: COMMAND_BAR,
+          systemId: COMMAND_BAR,
+          input: {
+            commands: [],
+          },
+        }),
     }),
   ],
 })
@@ -197,3 +210,22 @@ export const systemIOActor = appActor.getSnapshot().context.systemIOActor!
 
 export const engineStreamActor =
   appActor.getSnapshot().context.engineStreamActor!
+
+export const commandBarActor = appActor.getSnapshot().context.commandBarActor!
+
+const cmdBarStateSelector = (state: SnapshotFrom<typeof commandBarActor>) =>
+  state
+export const useCommandBarState = () => {
+  return useSelector(commandBarActor, cmdBarStateSelector)
+}
+
+// Initialize global commands
+commandBarActor.send({
+  type: 'Add commands',
+  data: {
+    commands: [
+      ...createAuthCommands({ authActor }),
+      ...createProjectCommands({ systemIOActor }),
+    ],
+  },
+})
