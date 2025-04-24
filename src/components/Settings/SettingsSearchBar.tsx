@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { interactionMap } from '@src/lib/settings/initialKeybindings'
 import type { SettingsLevel } from '@src/lib/settings/settingsTypes'
-import { useSettings } from '@src/machines/appMachine'
+import { useSettings } from '@src/lib/singletons'
 
 type ExtendedSettingsLevel = SettingsLevel | 'keybindings'
 
