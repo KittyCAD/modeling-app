@@ -20,7 +20,7 @@ import {
   traverse,
 } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
-import type { Artifact, getSweepArtifactFromSelection } from '@src/lang/std/artifactGraph'
+import type { Artifact } from '@src/lang/std/artifactGraph'
 import { getSweepArtifactFromSelection } from '@src/lang/std/artifactGraph'
 import type { EngineCommandManager } from '@src/lang/std/engineConnection'
 import {
@@ -50,7 +50,7 @@ import { isArray } from '@src/lib/utils'
 import {
   createTagExpressions,
   modifyAstWithTagsForSelection,
-} from './tagManagement'
+} from '@src/lang/modifyAst/tagManagement'
 
 // Edge Treatment Types
 export enum EdgeTreatmentType {
@@ -148,7 +148,6 @@ export function modifyAstWithEdgeTreatmentAndTag(
       clonedAst,
       selection,
       artifactGraph
-      // ['oppositeAndAdjacentEdges']
     )
 
     if (err(tagResult)) return tagResult
@@ -194,10 +193,7 @@ export function modifyAstWithEdgeTreatmentAndTag(
     })
     const firstTag = tagCalls[0] // can be Identifier or CallExpression (for opposite and adjacent edges)
 
-    const tagExpressions = createTagExpressions(
-      tagInfos
-      // ['oppositeAndAdjacentEdges']
-    )
+    const tagExpressions = createTagExpressions(tagInfos)
 
     // edge treatment call
     const edgeTreatmentCall = createCallExpressionStdLibKw(
