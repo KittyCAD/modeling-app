@@ -1640,7 +1640,7 @@ profile003 = startProfile(sketch001, at = [206.63, -56.73])
       .toBe('true')
 
     await startProfile1()
-    await editor.expectEditor.toContain(`profile001 = startProfileAt`)
+    await editor.expectEditor.toContain(`profile001 = startProfile`)
     await segment1Clk()
     await editor.expectEditor.toContain(`|> line(end`)
   })
@@ -2414,7 +2414,7 @@ extrude001 = extrude(profile003, length = 5)
     })
   })
   test(
-    'A sketch with only "startProfileAt" and no segments should still be able to be continued',
+    'A sketch with only "startProfile" and no segments should still be able to be continued',
     { tag: ['@skipWin'] },
     async ({ homePage, scene, toolbar, editor, page }) => {
       await page.addInitScript(async () => {
