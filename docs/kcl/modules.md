@@ -58,6 +58,42 @@ Imported symbols can be renamed for convenience or to avoid name collisions.
 import increment as inc, decrement as dec from "util.kcl"
 ```
 
+## Multiple instances of the same import
+
+Whether you are importing a file from another CAD system or a KCL file, that
+file represents object(s) in memory. If you import the same file multiple times,
+it will only be rendered once.
+
+If you want to have multiple instances of the same object, you can use the
+[`clone`](/docs/kcl/clone) function. This will render a new instance of the object in memory.
+
+```norun
+import cube from "tests/inputs/cube.kcl"
+
+cube  
+  |> translate(x=10)
+clone(cube)
+  |> translate(x=20)
+```
+
+In the sample above, the `cube` object is imported from a KCL file. The first
+instance is translated 10 units in the x direction. The second instance is
+cloned and translated 20 units in the x direction. The two instances are now
+separate objects in memory, and can be manipulated independently.
+
+
+Here is an example with a file from another CAD system:
+
+```
+import "tests/inputs/cube.step" as cube
+
+cube
+  |> translate(x=10)
+clone(cube)
+  |> translate(x=20)
+```
+
+
 ## Importing files from other CAD systems
 
 `import` can also be used to import files from other CAD systems. The format of the statement is the
