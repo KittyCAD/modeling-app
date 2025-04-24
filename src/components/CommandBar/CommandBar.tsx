@@ -11,10 +11,7 @@ import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import { EngineConnectionStateType } from '@src/lang/std/engineConnection'
 import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
 import { engineCommandManager } from '@src/lib/singletons'
-import {
-  commandBarActor,
-  useCommandBarState,
-} from '@src/machines/commandBarMachine'
+import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
 import toast from 'react-hot-toast'
 
 export const COMMAND_PALETTE_HOTKEY = 'mod+k'

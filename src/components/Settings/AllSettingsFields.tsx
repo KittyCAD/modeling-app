@@ -28,7 +28,7 @@ import {
 } from '@src/lib/settings/settingsUtils'
 import { reportRejection } from '@src/lib/trap'
 import { toSync } from '@src/lib/utils'
-import { settingsActor, useSettings } from '@src/machines/appMachine'
+import { settingsActor, useSettings } from '@src/lib/singletons'
 import { APP_VERSION, IS_NIGHTLY, getReleaseUrl } from '@src/routes/utils'
 import { waitFor } from 'xstate'
 

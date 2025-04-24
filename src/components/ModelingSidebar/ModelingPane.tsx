@@ -5,7 +5,7 @@ import { ActionButton } from '@src/components/ActionButton'
 import { ActionIcon } from '@src/components/ActionIcon'
 import type { CustomIconName } from '@src/components/CustomIcon'
 import Tooltip from '@src/components/Tooltip'
-import { useSettings } from '@src/machines/appMachine'
+import { useSettings } from '@src/lib/singletons'
 import { onboardingPaths } from '@src/routes/Onboarding/paths'
 
 import styles from './ModelingPane.module.css'
