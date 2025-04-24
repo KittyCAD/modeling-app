@@ -1110,6 +1110,16 @@ export const modelingMachine = setup({
         return { xy: true, xz: true, yz: true }
       },
     }),
+    'show default planes if no errors': assign({
+      defaultPlaneVisibility: ({ context }) => {
+        if (!kclManager.hasErrors()) {
+          // eslint-disable-next-line @typescript-eslint/no-floating-promises
+          kclManager.showPlanes()
+          return { xy: true, xz: true, yz: true }
+        }
+        return { ...context.defaultPlaneVisibility }
+      },
+    }),
     'setup noPoints onClick listener': ({
       context: { sketchDetails, currentTool },
     }) => {
@@ -3179,10 +3189,14 @@ export const modelingMachine = setup({
         'Boolean Union': 'Boolean uniting',
         'Boolean Intersect': 'Boolean intersecting',
 
-        // This runs only for empty artifactgraphs
+        // This runs only for empty artifact graphs
         'Artifact graph populated': {
-          actions: ['reset camera position', 'show default planes'],
+          actions: [
+            'reset camera position',
+            'show default planes if no errors',
+          ],
         },
+        // This runs only for non-empty artifact graphs
         'Artifact graph emptied': {
           actions: ['hide default planes'],
         },
