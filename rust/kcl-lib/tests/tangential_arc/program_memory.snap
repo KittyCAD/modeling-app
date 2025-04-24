@@ -166,7 +166,8 @@ description: Variables in memory after executing tangential_arc.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   }
 }
