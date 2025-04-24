@@ -13,9 +13,19 @@ test.describe('Authentication tests', () => {
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.projectSection.waitFor()
 
+      // This is only needed as an override to test-utils' setup() for this test
+      await page.addInitScript(() => {
+        localStorage.setItem('TOKEN_PERSIST_KEY', '')
+      })
+
       await test.step('Click on sign out and expect sign in page', async () => {
         await toolbar.userSidebarButton.click()
         await toolbar.signOutButton.click()
+        await expect(signInPage.signInButton).toBeVisible()
+      })
+
+      await test.step("Refresh doesn't log the user back in", async () => {
+        await page.reload()
         await expect(signInPage.signInButton).toBeVisible()
       })
 
@@ -30,6 +40,7 @@ test.describe('Authentication tests', () => {
         await expect(signInPage.userCode).toBeVisible()
         const secondUserCode = await signInPage.userCode.textContent()
         expect(secondUserCode).not.toEqual(firstUserCode)
+        await signInPage.cancelSignInButton.click()
       })
 
       await test.step('Press back button and remain on home page', async () => {
@@ -47,6 +58,12 @@ test.describe('Authentication tests', () => {
 
         // Longer timeout than usual here for the wait on home page
         await expect(homePage.projectSection).toBeVisible({ timeout: 10000 })
+      })
+
+      await test.step('Click on sign out and expect sign in page', async () => {
+        await toolbar.userSidebarButton.click()
+        await toolbar.signOutButton.click()
+        await expect(signInPage.signInButton).toBeVisible()
       })
     }
   )
