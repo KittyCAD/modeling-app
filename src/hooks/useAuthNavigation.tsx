@@ -15,6 +15,7 @@ export function useAuthNavigation() {
 
   // Subscribe to the auth state of the app and navigate accordingly.
   useEffect(() => {
+    console.log('authState', authState.value)
     if (
       authState.matches('loggedIn') &&
       location.pathname.includes(PATHS.SIGN_IN)
@@ -26,5 +27,5 @@ export function useAuthNavigation() {
     ) {
       navigate(PATHS.SIGN_IN)
     }
-  }, [authState])
+  }, [authState, location.pathname])
 }

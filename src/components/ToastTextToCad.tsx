@@ -33,7 +33,7 @@ import { codeManager, kclManager, systemIOActor } from '@src/lib/singletons'
 import { sendTelemetry } from '@src/lib/textToCadTelemetry'
 import type { Themes } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
-import { commandBarActor } from '@src/machines/commandBarMachine'
+import { commandBarActor } from '@src/lib/singletons'
 import type { fileMachine } from '@src/machines/fileMachine'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 

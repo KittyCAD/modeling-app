@@ -61,15 +61,15 @@ export enum SystemIOMachineActions {
 export const NO_PROJECT_DIRECTORY = ''
 
 export type SystemIOContext = {
-  // Only store folders under the projectDirectory, do not maintain folders outside this directory
+  /** Only store folders under the projectDirectory, do not maintain folders outside this directory */
   folders: Project[]
-  // For this machines runtime, this is the default string when creating a project
-  // A project is defined by creating a folder at the one level below the working project directory
+  /** For this machines runtime, this is the default string when creating a project
+   * A project is defined by creating a folder at the one level below the working project directory */
   defaultProjectFolderName: string
-  // working project directory that stores all the project folders
+  /** working project directory that stores all the project folders */
   projectDirectoryPath: string
-  // has the application gone through the initialization of systemIOMachine at least once.
-  // this is required to prevent chokidar from spamming invalid events during initialization.
+  /** has the application gone through the initialization of systemIOMachine at least once.
+   * this is required to prevent chokidar from spamming invalid events during initialization. */
   hasListedProjects: boolean
   requestedProjectName: { name: string }
   requestedFileName: { project: string; file: string }

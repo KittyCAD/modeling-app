@@ -1,10 +1,6 @@
-import { useSelector } from '@xstate/react'
 import toast from 'react-hot-toast'
-import type { SnapshotFrom } from 'xstate'
-import { assign, createActor, fromPromise, setup } from 'xstate'
-
+import { assign, fromPromise, setup } from 'xstate'
 import type { MachineManager } from '@src/components/MachineManagerProvider'
-import { authCommands } from '@src/lib/commandBarConfigs/authCommandConfig'
 import type {
   Command,
   CommandArgument,
@@ -12,7 +8,6 @@ import type {
   KclCommandValue,
 } from '@src/lib/commandTypes'
 import { getCommandArgumentKclValuesOnly } from '@src/lib/commandUtils'
-import { projectCommands } from '@src/lib/commandBarConfigs/projectsCommandConfig'
 
 export type CommandBarContext = {
   commands: Command[]
@@ -658,17 +653,4 @@ function sortCommands(a: Command, b: Command) {
   if (b.groupId === 'settings' && !(a.groupId === 'settings')) return -1
   if (a.groupId === 'settings' && !(b.groupId === 'settings')) return 1
   return a.name.localeCompare(b.name)
-}
-
-export const commandBarActor = createActor(commandBarMachine, {
-  input: {
-    commands: [...authCommands, ...projectCommands],
-  },
-}).start()
-
-/** Basic state snapshot selector */
-const cmdBarStateSelector = (state: SnapshotFrom<typeof commandBarActor>) =>
-  state
-export const useCommandBarState = () => {
-  return useSelector(commandBarActor, cmdBarStateSelector)
 }

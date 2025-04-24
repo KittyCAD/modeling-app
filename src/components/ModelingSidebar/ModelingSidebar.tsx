@@ -23,8 +23,12 @@ import { EngineConnectionStateType } from '@src/lang/std/engineConnection'
 import { SIDEBAR_BUTTON_SUFFIX } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 import { useSettings } from '@src/lib/singletons'
-import { commandBarActor } from '@src/machines/commandBarMachine'
+import { commandBarActor } from '@src/lib/singletons'
 import { onboardingPaths } from '@src/routes/Onboarding/paths'
+import { reportRejection } from '@src/lib/trap'
+import { refreshPage } from '@src/lib/utils'
+import { hotkeyDisplay } from '@src/lib/hotkeyWrapper'
+import usePlatform from '@src/hooks/usePlatform'
 
 interface ModelingSidebarProps {
   paneOpacity: '' | 'opacity-20' | 'opacity-40'
@@ -87,18 +91,6 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
         }),
     },
     {
-      id: 'share-link',
-      title: 'Share part via Zoo link',
-      sidebarName: 'Share part via Zoo link',
-      icon: 'link',
-      keybinding: 'Mod + Alt + S',
-      action: () =>
-        commandBarActor.send({
-          type: 'Find and select command',
-          data: { name: 'share-file-link', groupId: 'code' },
-        }),
-    },
-    {
       id: 'export',
       title: 'Export part',
       sidebarName: 'Export part',
@@ -128,6 +120,17 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
       hide: () => !isDesktop(),
       disable: () => {
         return machineManager.noMachinesReason()
+      },
+    },
+    {
+      id: 'refresh',
+      title: 'Refresh app',
+      sidebarName: 'Refresh app',
+      icon: 'arrowRotateRight',
+      keybinding: 'Mod + R',
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises
+      action: async () => {
+        refreshPage('Sidebar button').catch(reportRejection)
       },
     },
   ]
@@ -340,6 +343,7 @@ function ModelingPaneButton({
   disabledText,
   ...props
 }: ModelingPaneButtonProps) {
+  const platform = usePlatform()
   useHotkeys(paneConfig.keybinding, onClick, {
     scopes: ['modeling'],
   })
@@ -379,7 +383,7 @@ function ModelingPaneButton({
             {paneIsOpen !== undefined ? ` pane` : ''}
           </span>
           <kbd className="hotkey text-xs capitalize">
-            {paneConfig.keybinding}
+            {hotkeyDisplay(paneConfig.keybinding, platform)}
           </kbd>
         </Tooltip>
       </button>

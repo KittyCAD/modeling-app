@@ -18,6 +18,7 @@ import type { Settings } from '@rust/kcl-lib/bindings/Settings'
 import { CmdBarFixture } from '@e2e/playwright/fixtures/cmdBarFixture'
 import { EditorFixture } from '@e2e/playwright/fixtures/editorFixture'
 import { HomePageFixture } from '@e2e/playwright/fixtures/homePageFixture'
+import { SignInPageFixture } from '@e2e/playwright/fixtures/signInPageFixture'
 import { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
 import { ToolbarFixture } from '@e2e/playwright/fixtures/toolbarFixture'
 
@@ -66,6 +67,7 @@ export interface Fixtures {
   toolbar: ToolbarFixture
   scene: SceneFixture
   homePage: HomePageFixture
+  signInPage: SignInPageFixture
 }
 
 export class ElectronZoo {
@@ -386,6 +388,9 @@ const fixturesBasedOnProcessEnvPlatform = {
   },
   homePage: async ({ page }: { page: Page }, use: FnUse) => {
     await use(new HomePageFixture(page))
+  },
+  signInPage: async ({ page }: { page: Page }, use: FnUse) => {
+    await use(new SignInPageFixture(page))
   },
 }
 

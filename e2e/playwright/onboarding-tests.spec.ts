@@ -331,6 +331,7 @@ test.describe('Onboarding tests', () => {
   test('Avatar text updates depending on image load success', async ({
     context,
     page,
+    toolbar,
     homePage,
     tronApp,
   }) => {
@@ -362,7 +363,7 @@ test.describe('Onboarding tests', () => {
     await homePage.goToModelingScene()
 
     // Test that the text in this step is correct
-    const avatarLocator = page.getByTestId('user-sidebar-toggle').locator('img')
+    const avatarLocator = toolbar.userSidebarButton.locator('img')
     const onboardingOverlayLocator = page
       .getByTestId('onboarding-content')
       .locator('div')
@@ -404,6 +405,7 @@ test.describe('Onboarding tests', () => {
   test("Avatar text doesn't mention avatar when no avatar", async ({
     context,
     page,
+    toolbar,
     homePage,
     tronApp,
   }) => {
@@ -435,7 +437,7 @@ test.describe('Onboarding tests', () => {
     await homePage.goToModelingScene()
 
     // Test that the text in this step is correct
-    const sidebar = page.getByTestId('user-sidebar-toggle')
+    const sidebar = toolbar.userSidebarButton
     const avatar = sidebar.locator('img')
     const onboardingOverlayLocator = page
       .getByTestId('onboarding-content')
@@ -464,6 +466,7 @@ test.describe('Onboarding tests', () => {
 test('Restarting onboarding on desktop takes one attempt', async ({
   context,
   page,
+  toolbar,
   tronApp,
 }) => {
   test.fixme(orRunWhenFullSuiteEnabled())
@@ -502,7 +505,7 @@ test('Restarting onboarding on desktop takes one attempt', async ({
     .filter({ hasText: 'Tutorial Project 00' })
   const tutorialModalText = page.getByText('Welcome to Design Studio!')
   const tutorialDismissButton = page.getByRole('button', { name: 'Dismiss' })
-  const userMenuButton = page.getByTestId('user-sidebar-toggle')
+  const userMenuButton = toolbar.userSidebarButton
   const userMenuSettingsButton = page.getByRole('button', {
     name: 'User settings',
   })

@@ -505,7 +505,3 @@ export const systemIOMachine = setup({
     },
   },
 })
-
-// Watcher handler
-// look at projectDirectory useEffect then send this event if it changes or if we need to do this?
-// The handler needs to live somewhere... aka the provider?

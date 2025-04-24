@@ -39,7 +39,7 @@ type EditRoleLabel =
   | 'Format code'
 
 type HelpRoleLabel =
-  | 'Refresh and report a bug'
+  | 'Report a bug'
   | 'Request a feature'
   | 'Ask the community discord'
   | 'Ask the community discourse'

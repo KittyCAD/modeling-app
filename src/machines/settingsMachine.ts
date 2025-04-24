@@ -43,7 +43,6 @@ import {
   setThemeClass,
 } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
-import { commandBarActor } from '@src/machines/commandBarMachine'
 
 type SettingsMachineContext = SettingsType & {
   currentProject?: Project
@@ -141,7 +140,9 @@ export const settingsMachine = setup({
     registerCommands: fromCallback<
       { type: 'update' },
       { settings: SettingsType; actor: AnyActorRef }
-    >(({ input, receive }) => {
+    >(({ input, receive, self }) => {
+      const commandBarActor = self.system.get('root').getSnapshot()
+        .context.commandBarActor
       // If the user wants to hide the settings commands
       //from the command bar don't add them.
       if (settings.commandBar.includeSettings.current === false) return

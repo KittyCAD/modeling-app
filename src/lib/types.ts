@@ -9,6 +9,7 @@ import type { authMachine } from '@src/machines/authMachine'
 import type { settingsMachine } from '@src/machines/settingsMachine'
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import type { ActorRefFrom } from 'xstate'
+import type { commandBarMachine } from '@src/machines/commandBarMachine'
 
 export type IndexLoaderData = {
   code: string | null
@@ -132,4 +133,5 @@ export type AppMachineContext = {
   settingsActor?: ActorRefFrom<typeof settingsMachine>
   systemIOActor?: ActorRefFrom<typeof systemIOMachine>
   engineStreamActor?: ActorRefFrom<typeof engineStreamMachine>
+  commandBarActor?: ActorRefFrom<typeof commandBarMachine>
 }

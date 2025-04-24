@@ -111,7 +111,7 @@ import { err, reject, reportRejection, trap } from '@src/lib/trap'
 import type { IndexLoaderData } from '@src/lib/types'
 import { platform, uuidv4 } from '@src/lib/utils'
 import { useSettings, useToken } from '@src/lib/singletons'
-import { commandBarActor } from '@src/machines/commandBarMachine'
+import { commandBarActor } from '@src/lib/singletons'
 import { kclEditorActor } from '@src/machines/kclEditorMachine'
 import {
   getPersistedContext,
