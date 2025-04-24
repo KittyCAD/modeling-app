@@ -44,7 +44,6 @@ export enum SystemIOMachineEvents {
   done_importFileFromURL = donePrefix + 'import file from URL',
   generateTextToCAD = 'generate text to CAD',
   deleteKCLFile = 'delete kcl file',
-  deleteKCLFileAndNavigate = 'delete kcl file and navigate',
 }
 
 export enum SystemIOMachineActions {
@@ -57,10 +56,6 @@ export enum SystemIOMachineActions {
   toastError = 'toastError',
   setReadWriteProjectDirectory = 'set read write project directory',
   setRequestedTextToCadGeneration = 'set requested text to cad generation',
-}
-
-export enum SystemIOMachineGuards {
-  shouldNavigateAfterKCLFileDelete = 'should navigate after kcl file delete',
 }
 
 export const NO_PROJECT_DIRECTORY = ''

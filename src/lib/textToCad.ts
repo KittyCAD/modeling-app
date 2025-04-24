@@ -52,8 +52,6 @@ export async function submitTextToCadPrompt(
   return data
 }
 
-window.dog = submitTextToCadPrompt
-
 export async function getTextToCadResult(
   id: string,
   token?: string
@@ -70,8 +68,6 @@ export async function getTextToCadResult(
   return data
 }
 
-window.getDog = getTextToCadResult
-
 interface TextToKclProps {
   trimmedPrompt: string
   fileMachineSend: (
@@ -85,6 +81,16 @@ interface TextToKclProps {
     theme: Themes
     highlightEdges: boolean
   }
+  projectName?: string
+  isProjectNew?: boolean
+}
+
+interface TextToKclPropsApplicationLevel {
+  trimmedPrompt: string
+  navigate: NavigateFunction
+  token?: string
+  projectName: string
+  isProjectNew: boolean
 }
 
 export async function submitAndAwaitTextToKcl({
@@ -262,7 +268,7 @@ export async function submitAndAwaitTextToKclSystemIO({
   projectName,
   navigate,
   isProjectNew,
-}: TextToKclProps) {
+}: TextToKclPropsApplicationLevel) {
   const toastId = toast.loading('Submitting to Text-to-CAD API...')
   const showFailureToast = (message: string) => {
     toast.error(

@@ -7,7 +7,6 @@ import {
   SystemIOMachineActors,
   SystemIOMachineEvents,
   SystemIOMachineStates,
-  SystemIOMachineGuards,
 } from '@src/machines/systemIO/utils'
 import toast from 'react-hot-toast'
 import { assertEvent, assign, fromPromise, setup } from 'xstate'
@@ -318,9 +317,6 @@ export const systemIOMachine = setup({
         [SystemIOMachineEvents.deleteKCLFile]: {
           target: SystemIOMachineStates.deletingKCLFile,
         },
-        [SystemIOMachineEvents.deleteKCLFileAndNavigate]: {
-          target: SystemIOMachineStates.deletingKCLFile,
-        },
       },
     },
     [SystemIOMachineStates.readingFolders]: {
@@ -514,15 +510,6 @@ export const systemIOMachine = setup({
           actions: [SystemIOMachineActions.toastError],
         },
       },
-    },
-  },
-  gaurds: {
-    [SystemIOMachineGuards.shouldNavigateAfterKCLFileDelete]: (
-      context,
-      event
-    ) => {
-      console.log(context, event)
-      return true
     },
   },
 })

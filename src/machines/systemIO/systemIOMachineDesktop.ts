@@ -244,7 +244,11 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           input.requestedFileName
         )
         await window.electron.rm(path)
-        return { message: 'yadda', projectName: input.requestedProjectName }
+        return {
+          message: 'File deleted successfully',
+          projectName: input.requestedProjectName,
+          fileName: input.requestedFileName,
+        }
       }
     ),
   },

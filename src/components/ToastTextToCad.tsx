@@ -158,7 +158,7 @@ export function ToastTextToCadSuccess({
     event: EventFrom<typeof fileMachine>,
     data?: unknown
   ) => void
-  settings: {
+  settings?: {
     theme: Themes
     highlightEdges: boolean
   }
@@ -460,7 +460,6 @@ function traverseSceneToStyleObjects({
 }: {
   scene: Scene
   color?: number
-  theme: Themes
   highlightEdges?: boolean
 }) {
   scene.traverse((child) => {

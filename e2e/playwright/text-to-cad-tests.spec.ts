@@ -698,7 +698,7 @@ test(
 )
 
 test.describe('Mocked Text-to-CAD API tests', { tag: ['@skipWin'] }, () => {
-  async function mockPageTextToCAD(page) {
+  async function mockPageTextToCAD(page: Page) {
     await page.route(
       'https://api.dev.zoo.dev/ai/text-to-cad/glb?kcl=true',
       async (route) => {
