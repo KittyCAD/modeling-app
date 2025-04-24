@@ -503,6 +503,7 @@ export interface ModelingMachineContext {
   store: Store
   defaultPlaneVisibility: PlaneVisibilityMap
   savedDefaultPlaneVisibility: PlaneVisibilityMap
+  planesInitialized: boolean
 }
 
 export type PlaneVisibilityMap = {
@@ -556,6 +557,7 @@ export const modelingMachineDefaultContext: ModelingMachineContext = {
     xz: true,
     yz: true,
   },
+  planesInitialized: false,
 }
 
 export const modelingMachine = setup({
@@ -569,8 +571,8 @@ export const modelingMachine = setup({
     'Has exportable geometry': () => false,
     'has valid selection for deletion': () => false,
     'is-error-free': () => false,
-    'no kcl errors': () => {
-      return !kclManager.hasErrors()
+    'planes not initialized yet': ({ context }) => {
+      return !context.planesInitialized
     },
     'is editing existing sketch': ({ context: { sketchDetails } }) =>
       isEditingExistingSketch({ sketchDetails }),
@@ -1338,6 +1340,7 @@ export const modelingMachine = setup({
       return {
         defaultPlaneVisibility: { ...initialValue },
         savedDefaultPlaneVisibility: { ...initialValue },
+        planesInitialized: true,
       }
     }),
     'Restore default plane visibility': assign(({ context }) => {
@@ -3189,6 +3192,7 @@ export const modelingMachine = setup({
             // it cannot be invoked on "entry" immediately
             'Init default plane visibility',
           ],
+          guard: 'planes not initialized yet',
         },
       },
 

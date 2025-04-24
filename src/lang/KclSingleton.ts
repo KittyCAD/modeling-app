@@ -71,7 +71,6 @@ export class KclManager {
    */
   artifactGraph: ArtifactGraph = new Map()
   artifactIndex: ArtifactIndex = []
-  artifactInitSent = false
 
   private _ast: Node<Program> = {
     body: [],
@@ -358,11 +357,10 @@ export class KclManager {
 
     // Send the 'artifact graph initialized' event for modelingMachine, only once, when default planes are also initialized.
     deferExecution((a?: null) => {
-      if (this.defaultPlanes && !this.artifactInitSent) {
+      if (this.defaultPlanes) {
         this.engineCommandManager.modelingSend({
           type: 'Artifact graph initialized',
         })
-        this.artifactInitSent = true
       }
     }, 200)(null)
   }
