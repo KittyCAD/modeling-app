@@ -1,88 +1,79 @@
-// Hollow Dodecahedron
-// A regular dodecahedron or pentagonal dodecahedron is a dodecahedron composed of regular pentagonal faces, three meeting at each vertex. This example shows constructing the individual faces of the dodecahedron and extruding inwards.
+// Dodecahedron
+// A regular dodecahedron or pentagonal dodecahedron is a dodecahedron composed of regular pentagonal faces, three meeting at each vertex. This example shows constructing the a dodecahedron with a series of intersects.
 
 // Set units
 @settings(defaultLengthUnit = in)
 
-// Input parameters
-// circumscribed radius
-circR = 25
+// Define the dihedral angle for a regular dodecahedron
+dihedral = 116.565
 
-// Calculated parameters
-// Thickness of the dodecahedron
-wallThickness = circR * 0.2
-
-// Angle between faces in radians
-dihedral = acos(-(sqrt(5) / 5))
-
-// Inscribed radius
-inscR = circR / 15 * sqrt(75 + 30 * sqrt(5))
-
-// Pentagon edge length
-edgeL = 4 * circR / (sqrt(3) * (1 + sqrt(5)))
-
-// Pentagon radius
-pentR = edgeL / 2 / sin(toRadians(36))
-
-// Define a plane for the bottom angled face
-plane = {
-  origin = [
-    -inscR * cos(toRadians(toDegrees(dihedral) - 90)),
-    0,
-    inscR - (inscR * sin(toRadians(toDegrees(dihedral) - 90)))
-  ],
-  xAxis = [cos(dihedral), 0.0, sin(dihedral)],
-  yAxis = [0, 1, 0],
-  zAxis = [sin(dihedral), 0, -cos(dihedral)]
+// Create a face template function that makes a large thin cube
+fn createFaceTemplate(dither) {
+  baseSketch = startSketchOn(XY)
+    |> startProfileAt([-1000 - dither, -1000 - dither], %)
+    |> line(endAbsolute = [1000 + dither, -1000 - dither])
+    |> line(endAbsolute = [1000 + dither, 1000 + dither])
+    |> line(endAbsolute = [-1000 - dither, 1000 + dither])
+    |> close()
+  extruded = extrude(baseSketch, length = 1000 + dither + 1000)
+  return extruded
+    |> translate(x = 0, y = 0, z = -260 - dither)
 }
 
-// Create a regular pentagon inscribed in a circle of radius pentR
-bottomFace = startSketchOn(XY)
-  |> polygon(
-       radius = pentR,
-       numSides = 5,
-       center = [0, 0],
-       inscribed = true,
-     )
+// Define the rotations array with [pitch, roll, yaw, dither] for each face
+faceRotations = [
+  [0, 0, 0, 0],
+  // face1 - reference face
+  [dihedral, 0, 0, 0.1],
+  // face2
+  [dihedral, 0, 72, 0.2],
+  // face3
+  [dihedral, 0, 144, 0.3],
+  // face4
+  [dihedral, 0, 216, 0.4],
+  // face5
+  [dihedral, 0, 288, 0.5],
+  // face6
+  [180, 0, 0, 0.6],
+  // face7
+  [180 - dihedral, 0, 36, 0.7],
+  // face8
+  [180 - dihedral, 0, 108, 0.8],
+  // face9
+  [180 - dihedral, 0, 180, 0.9],
+  // face10
+  [180 - dihedral, 0, 252, 0.11],
+  // face11
+  [180 - dihedral, 0, 324, 0.12],
+  // face12
+]
 
-bottomSideFace = startSketchOn(plane)
-  |> polygon(
-       radius = pentR,
-       numSides = 5,
-       center = [0, 0],
-       inscribed = true,
-     )
+// Create faces by mapping over the rotations array
+dodecFaces = map(faceRotations, fn(rotation) {
+  return createFaceTemplate(rotation[3])
+    |> rotate(
+         pitch = rotation[0],
+         roll = rotation[1],
+         yaw = rotation[2],
+         global = true,
+       )
+})
 
-// Extrude the faces in each plane
-bottom = extrude(bottomFace, length = wallThickness)
-bottomSide = extrude(bottomSideFace, length = wallThickness)
+fn calculateArrayLength(arr) {
+  return reduce(arr, 0, fn(item, accumulator) {
+    return accumulator + 1
+  })
+}
 
-// Pattern the sides so we have a full dodecahedron
-bottomBowl = patternCircular3d(
-  bottomSide,
-  instances = 5,
-  axis = [0, 0, 1],
-  center = [0, 0, 0],
-  arcDegrees = 360,
-  rotateDuplicates = true,
-)
+fn createIntersection(solids) {
+  fn reduceIntersect(previous, current) {
+    return intersect([previous, current])
+  }
+  lastIndex = calculateArrayLength(solids) - 1
+  lastSolid = solids[lastIndex]
+  remainingSolids = pop(solids)
+  return reduce(remainingSolids, lastSolid, reduceIntersect)
+}
 
-// Pattern the bottom to create the top face
-patternCircular3d(
-  bottom,
-  instances = 2,
-  axis = [0, 1, 0],
-  center = [0, 0, inscR],
-  arcDegrees = 360,
-  rotateDuplicates = true,
-)
-
-// Pattern the bottom angled faces to create the top
-patternCircular3d(
-  bottomBowl,
-  instances = 2,
-  axis = [0, 1, 0],
-  center = [0, 0, inscR],
-  arcDegrees = 360,
-  rotateDuplicates = true,
-)
+// Apply intersection to all faces
+createIntersection(dodecFaces)

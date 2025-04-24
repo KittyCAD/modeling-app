@@ -1461,7 +1461,8 @@ description: Variables in memory after executing i_shape.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "hand_thickness": {

@@ -190,7 +190,8 @@ description: Variables in memory after executing subtract_cylinder_from_cube.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "part001": {
@@ -377,7 +378,8 @@ description: Variables in memory after executing subtract_cylinder_from_cube.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "part002": {
@@ -492,7 +494,8 @@ description: Variables in memory after executing subtract_cylinder_from_cube.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   }
 }

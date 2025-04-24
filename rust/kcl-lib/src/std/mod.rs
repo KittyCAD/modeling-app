@@ -6,6 +6,7 @@ pub mod array;
 pub mod assert;
 pub mod axis_or_reference;
 pub mod chamfer;
+pub mod clone;
 pub mod convert;
 pub mod csg;
 pub mod edge;
@@ -87,6 +88,7 @@ lazy_static! {
         Box::new(crate::std::sketch::TangentialArc),
         Box::new(crate::std::sketch::BezierCurve),
         Box::new(crate::std::sketch::Hole),
+        Box::new(crate::std::clone::Clone),
         Box::new(crate::std::patterns::PatternLinear2D),
         Box::new(crate::std::patterns::PatternLinear3D),
         Box::new(crate::std::patterns::PatternCircular2D),

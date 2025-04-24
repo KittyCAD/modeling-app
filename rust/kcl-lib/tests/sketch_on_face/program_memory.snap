@@ -210,7 +210,8 @@ description: Variables in memory after executing sketch_on_face.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "part002": {
@@ -559,7 +560,8 @@ description: Variables in memory after executing sketch_on_face.kcl
             "endCapId": "[uuid]",
             "units": {
               "type": "Mm"
-            }
+            },
+            "sectional": false
           },
           "units": {
             "type": "Mm"
@@ -594,7 +596,8 @@ description: Variables in memory after executing sketch_on_face.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   }
 }

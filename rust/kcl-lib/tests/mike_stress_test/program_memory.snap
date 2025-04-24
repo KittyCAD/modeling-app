@@ -26109,7 +26109,8 @@ description: Variables in memory after executing mike_stress_test.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   }
 }

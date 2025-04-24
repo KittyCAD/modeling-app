@@ -764,7 +764,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
       ],
       "units": {
         "type": "Inches"
-      }
+      },
+      "sectional": false
     }
   },
   "plateHeight": {

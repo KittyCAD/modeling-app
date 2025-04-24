@@ -226,7 +226,8 @@ description: Variables in memory after executing riddle_small.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "t": {
