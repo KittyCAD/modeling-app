@@ -203,6 +203,19 @@ pub async fn clone(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///     |> sweep(path = helixPath)
 /// ```
 ///
+/// ```
+/// // A donut shape from a cloned sketch.
+/// sketch001 = startSketchOn(XY)
+///     |> circle( center = [15, 0], radius = 5 )
+///
+/// sketch002 = clone(sketch001)
+///    |> translate( z = 30)
+///     |> revolve(
+///         angle = 360,
+///         axis = Y,
+///     )
+/// ```
+///
 /// ```no_run
 /// // Sketch on the end of a revolved face by tagging the end face.
 /// // This shows the cloned geometry will have the same tags as the original geometry.
