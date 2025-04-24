@@ -1430,3 +1430,34 @@ export async function enterRotateFlow({
     },
   }
 }
+
+export async function enterCloneFlow({
+  operation,
+}: EnterEditFlowProps): Promise<Error | CommandBarMachineEvent> {
+  const isModuleImport = operation.type === 'GroupBegin'
+  const isSupportedStdLibCall =
+    (operation.type === 'KclStdLibCall' || operation.type === 'StdLibCall') &&
+    stdLibMap[operation.name]?.supportsTransform
+  if (!isModuleImport && !isSupportedStdLibCall) {
+    return new Error(
+      'Unsupported operation type. Please edit in the code editor.'
+    )
+  }
+
+  const nodeToEdit = getNodePathFromSourceRange(
+    kclManager.ast,
+    sourceRangeFromRust(operation.sourceRange)
+  )
+
+  // Won't be used since we provide nodeToEdit
+  const selection: Selections = { graphSelections: [], otherSelections: [] }
+  const argDefaultValues = { nodeToEdit, selection }
+  return {
+    type: 'Find and select command',
+    data: {
+      name: 'Clone',
+      groupId: 'modeling',
+      argDefaultValues,
+    },
+  }
+}

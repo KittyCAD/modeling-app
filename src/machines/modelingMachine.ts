@@ -45,6 +45,7 @@ import { angleLengthInfo } from '@src/components/Toolbar/angleLengthInfo'
 import { createLiteral, createLocalName } from '@src/lang/create'
 import { updateModelingState } from '@src/lang/modelingWorkflows'
 import {
+  addClone,
   addHelix,
   addOffsetPlane,
   addShell,
@@ -100,6 +101,7 @@ import type {
   CallExpression,
   CallExpressionKw,
   Expr,
+  ExpressionStatement,
   Literal,
   Name,
   PathToNode,
@@ -380,6 +382,7 @@ export type ModelingMachineEvent =
   | { type: 'Appearance'; data: ModelingCommandSchema['Appearance'] }
   | { type: 'Translate'; data: ModelingCommandSchema['Translate'] }
   | { type: 'Rotate'; data: ModelingCommandSchema['Rotate'] }
+  | { type: 'Clone'; data: ModelingCommandSchema['Clone'] }
   | {
       type:
         | 'Add circle origin'
@@ -2766,6 +2769,80 @@ export const modelingMachine = setup({
         )
       }
     ),
+    cloneAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input: ModelingCommandSchema['Clone'] | undefined
+      }) => {
+        if (!input) return new Error('No input provided')
+        const ast = kclManager.ast
+        const modifiedAst = structuredClone(ast)
+        const { nodeToEdit, selection } = input
+        let pathToNode = nodeToEdit
+        console.log('pathToNode', structuredClone(pathToNode))
+        if (!(pathToNode && typeof pathToNode[1][0] === 'number')) {
+          if (selection?.graphSelections[0].artifact) {
+            const children = findAllChildrenAndOrderByPlaceInCode(
+              selection?.graphSelections[0].artifact,
+              kclManager.artifactGraph
+            )
+            const variable = getLastVariable(children, modifiedAst)
+            if (!variable) {
+              return new Error("Couldn't find corresponding path to node")
+            }
+            pathToNode = variable.pathToNode
+          } else if (selection?.graphSelections[0].codeRef.pathToNode) {
+            pathToNode = selection?.graphSelections[0].codeRef.pathToNode
+          } else {
+            return new Error("Couldn't find corresponding path to node")
+          }
+        }
+
+        const geometryNode = getNodeFromPath<
+          VariableDeclaration | ExpressionStatement
+        >(modifiedAst, pathToNode, [
+          'VariableDeclaration',
+          'ExpressionStatement',
+        ])
+        if (err(geometryNode)) {
+          return new Error("Couldn't find corresponding path to node")
+        }
+
+        let geometryName: string | undefined
+        if (geometryNode.node.type === 'VariableDeclaration') {
+          geometryName = geometryNode.node.declaration.id.name
+        } else if (
+          geometryNode.node.type === 'ExpressionStatement' &&
+          geometryNode.node.expression.type === 'Name'
+        ) {
+          geometryName = geometryNode.node.expression.name.name
+        } else {
+          return new Error("Couldn't find corresponding geometry")
+        }
+
+        const result = addClone({
+          geometryName,
+          modifiedAst,
+        })
+        if (err(result)) {
+          return err(result)
+        }
+
+        await updateModelingState(
+          result.modifiedAst,
+          EXECUTION_TYPE_REAL,
+          {
+            kclManager,
+            editorManager,
+            codeManager,
+          },
+          {
+            focusPath: [result.pathToNode],
+          }
+        )
+      }
+    ),
     exportFromEngine: fromPromise(
       async ({}: { input?: ModelingCommandSchema['Export'] }) => {
         return undefined as Error | undefined
@@ -3041,6 +3118,11 @@ export const modelingMachine = setup({
 
         Rotate: {
           target: 'Applying rotate',
+          reenter: true,
+        },
+
+        Clone: {
+          target: 'Applying clone',
           reenter: true,
         },
 
@@ -4469,6 +4551,19 @@ export const modelingMachine = setup({
         id: 'rotateAstMod',
         input: ({ event }) => {
           if (event.type !== 'Rotate') return undefined
+          return event.data
+        },
+        onDone: ['idle'],
+        onError: ['idle'],
+      },
+    },
+
+    'Applying clone': {
+      invoke: {
+        src: 'cloneAstMod',
+        id: 'cloneAstMod',
+        input: ({ event }) => {
+          if (event.type !== 'Clone') return undefined
           return event.data
         },
         onDone: ['idle'],

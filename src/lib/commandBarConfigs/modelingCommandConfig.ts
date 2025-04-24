@@ -181,6 +181,10 @@ export type ModelingCommandSchema = {
     pitch: KclCommandValue
     yaw: KclCommandValue
   }
+  Clone: {
+    nodeToEdit?: PathToNode
+    selection: Selections
+  }
   'Boolean Subtract': {
     target: Selections
     tool: Selections
@@ -1121,6 +1125,32 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_TRANSFORM,
         required: true,
+      },
+    },
+  },
+  Clone: {
+    description: 'Clone a solid or sketch.',
+    icon: 'questionMark', // TODO: likely not the best icon
+    needsReview: true,
+    hide: DEV || IS_NIGHTLY_OR_DEBUG ? undefined : 'both',
+    args: {
+      nodeToEdit: {
+        description:
+          'Path to the node in the AST to edit. Never shown to the user.',
+        skip: true,
+        inputType: 'text',
+        required: false,
+        hidden: true,
+      },
+      selection: {
+        // selectionMixed allows for feature tree selection of module imports
+        inputType: 'selectionMixed',
+        multiple: false,
+        required: true,
+        skip: true,
+        selectionTypes: ['path'],
+        selectionFilter: ['object'],
+        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
     },
   },

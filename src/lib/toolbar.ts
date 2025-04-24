@@ -395,6 +395,23 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
               },
             ],
           },
+          {
+            id: 'clone',
+            onClick: () =>
+              commandBarActor.send({
+                type: 'Find and select command',
+                data: { name: 'Clone', groupId: 'modeling' },
+              }),
+            status: DEV || IS_NIGHTLY_OR_DEBUG ? 'available' : 'kcl-only',
+            title: 'Clone',
+            description: 'Clone a solid or sketch.',
+            links: [
+              {
+                label: 'API docs',
+                url: 'https://zoo.dev/docs/kcl/clone',
+              },
+            ],
+          },
         ],
       },
       'break',

@@ -952,6 +952,40 @@ export function addHelix({
 }
 
 /**
+ * Add clone statement
+ */
+export function addClone({
+  modifiedAst,
+  geometryName,
+}: {
+  modifiedAst: Node<Program>
+  geometryName: string
+}): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
+  const variableName = findUniqueName(
+    modifiedAst,
+    KCL_DEFAULT_CONSTANT_PREFIXES.CLONE
+  )
+  const variable = createVariableDeclaration(
+    variableName,
+    createCallExpressionStdLibKw('clone', createLocalName(geometryName), [])
+  )
+
+  const insertAt = modifiedAst.body.length - 1
+  modifiedAst.body.push(variable)
+  const pathToNode: PathToNode = [
+    ['body', ''],
+    [insertAt, 'index'],
+    ['declaration', 'VariableDeclaration'],
+    ['init', 'VariableDeclarator'],
+  ]
+
+  return {
+    modifiedAst,
+    pathToNode,
+  }
+}
+
+/**
  * Return a modified clone of an AST with a named constant inserted into the body
  */
 export function insertNamedConstant({
