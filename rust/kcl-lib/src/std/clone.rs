@@ -98,14 +98,33 @@ pub async fn clone(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///         |> xLine(length = 20)
 ///         |> yLine(length = -20)
 ///         |> xLine(length = -20)
-///         |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
 ///         |> close()
 ///
-/// // sketch002 = clone(sketch001)
-/// //    |> translate(x = 0, y = 0, z = 20)
-/// //    |> rotate(axis = [0, 0, 1.0], angle = 45)
+/// sketch002 = clone(sketch001)
+///     |> translate(x = 0, y = 0, z = 20)
+///     |> rotate(axis = [0, 0, 1.0], angle = 45)
 ///
-/// // loft([sketch001, sketch002])
+/// loft([sketch001, sketch002])
+/// ```
+///
+/// ```no_run
+/// // Translate a cloned solid. Fillet only the clone.
+///
+/// sketch001 = startSketchOn(XY)
+///         |> startProfileAt([-10, 10], %)
+///         |> xLine(length = 20)
+///         |> yLine(length = -20)
+///         |> xLine(length = -20, tag = $filletTag)
+///         |> close()
+///         |> extrude(length = 5)
+///
+///
+/// sketch002 = clone(sketch001)
+///     |> translate(x = 0, y = 0, z = 20)
+///     |> fillet(
+///     radius = 2,
+///     tags = [getNextAdjacentEdge(filletTag)],
+///     )
 /// ```
 ///
 /// ```no_run
