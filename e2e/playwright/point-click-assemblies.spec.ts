@@ -399,7 +399,6 @@ test.describe('Point-and-click assemblies tests', () => {
       const partPoint = { x: midPoint.x + 30, y: midPoint.y - 30 } // mid point, just off top right
       const defaultPlanesColor: [number, number, number] = [180, 220, 180]
       const partColor: [number, number, number] = [150, 150, 150]
-      const bgColor: [number, number, number] = [30, 30, 30]
       const tolerance = 50
 
       const complexPlmFileName = 'cube_Complex-PLM_Name_-001.sldprt'
