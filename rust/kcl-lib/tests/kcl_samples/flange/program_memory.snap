@@ -95,14 +95,6 @@ description: Variables in memory after executing flange.kcl
               "type": "Mm"
             }
           },
-          "zAxis": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 1.0,
-            "units": {
-              "type": "Mm"
-            }
-          },
           "solid": {
             "type": "Solid",
             "id": "[uuid]",
@@ -171,14 +163,6 @@ description: Variables in memory after executing flange.kcl
                   "x": 0.0,
                   "y": 1.0,
                   "z": 0.0,
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "zAxis": {
-                  "x": 0.0,
-                  "y": 0.0,
-                  "z": 1.0,
                   "units": {
                     "type": "Mm"
                   }
@@ -342,11 +326,90 @@ description: Variables in memory after executing flange.kcl
               "units": {
                 "type": "Mm"
               }
+            }
+          },
+          "start": {
+            "from": [
+              2.0625,
+              0.0
+            ],
+            "to": [
+              2.0625,
+              0.0
+            ],
+            "units": {
+              "type": "Inches"
             },
-            "zAxis": {
+            "tag": null,
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            }
+          },
+          "artifactId": "[uuid]",
+          "originalId": "[uuid]",
+          "units": {
+            "type": "Inches"
+          }
+        }
+      },
+      {
+        "type": "Sketch",
+        "value": {
+          "type": "Sketch",
+          "id": "[uuid]",
+          "paths": [
+            {
+              "__geoMeta": {
+                "id": "[uuid]",
+                "sourceRange": []
+              },
+              "ccw": true,
+              "center": [
+                1.75,
+                0.0
+              ],
+              "from": [
+                2.0625,
+                0.0
+              ],
+              "radius": 0.3125,
+              "tag": null,
+              "to": [
+                2.0625,
+                0.0
+              ],
+              "type": "Circle",
+              "units": {
+                "type": "Inches"
+              }
+            }
+          ],
+          "on": {
+            "type": "plane",
+            "id": "[uuid]",
+            "artifactId": "[uuid]",
+            "value": "XY",
+            "origin": {
               "x": 0.0,
               "y": 0.0,
-              "z": 1.0,
+              "z": 0.0,
+              "units": {
+                "type": "Mm"
+              }
+            },
+            "xAxis": {
+              "x": 1.0,
+              "y": 0.0,
+              "z": 0.0,
+              "units": {
+                "type": "Mm"
+              }
+            },
+            "yAxis": {
+              "x": 0.0,
+              "y": 1.0,
+              "z": 0.0,
               "units": {
                 "type": "Mm"
               }
@@ -437,14 +500,6 @@ description: Variables in memory after executing flange.kcl
               "units": {
                 "type": "Mm"
               }
-            },
-            "zAxis": {
-              "x": 0.0,
-              "y": 0.0,
-              "z": 1.0,
-              "units": {
-                "type": "Mm"
-              }
             }
           },
           "start": {
@@ -529,109 +584,6 @@ description: Variables in memory after executing flange.kcl
               "x": 0.0,
               "y": 1.0,
               "z": 0.0,
-              "units": {
-                "type": "Mm"
-              }
-            },
-            "zAxis": {
-              "x": 0.0,
-              "y": 0.0,
-              "z": 1.0,
-              "units": {
-                "type": "Mm"
-              }
-            }
-          },
-          "start": {
-            "from": [
-              2.0625,
-              0.0
-            ],
-            "to": [
-              2.0625,
-              0.0
-            ],
-            "units": {
-              "type": "Inches"
-            },
-            "tag": null,
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            }
-          },
-          "artifactId": "[uuid]",
-          "originalId": "[uuid]",
-          "units": {
-            "type": "Inches"
-          }
-        }
-      },
-      {
-        "type": "Sketch",
-        "value": {
-          "type": "Sketch",
-          "id": "[uuid]",
-          "paths": [
-            {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              },
-              "ccw": true,
-              "center": [
-                1.75,
-                0.0
-              ],
-              "from": [
-                2.0625,
-                0.0
-              ],
-              "radius": 0.3125,
-              "tag": null,
-              "to": [
-                2.0625,
-                0.0
-              ],
-              "type": "Circle",
-              "units": {
-                "type": "Inches"
-              }
-            }
-          ],
-          "on": {
-            "type": "plane",
-            "id": "[uuid]",
-            "artifactId": "[uuid]",
-            "value": "XY",
-            "origin": {
-              "x": 0.0,
-              "y": 0.0,
-              "z": 0.0,
-              "units": {
-                "type": "Mm"
-              }
-            },
-            "xAxis": {
-              "x": 1.0,
-              "y": 0.0,
-              "z": 0.0,
-              "units": {
-                "type": "Mm"
-              }
-            },
-            "yAxis": {
-              "x": 0.0,
-              "y": 1.0,
-              "z": 0.0,
-              "units": {
-                "type": "Mm"
-              }
-            },
-            "zAxis": {
-              "x": 0.0,
-              "y": 0.0,
-              "z": 1.0,
               "units": {
                 "type": "Mm"
               }
@@ -734,14 +686,6 @@ description: Variables in memory after executing flange.kcl
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 1.0,
             "units": {
               "type": "Mm"
             }
@@ -898,14 +842,6 @@ description: Variables in memory after executing flange.kcl
               "type": "Mm"
             }
           },
-          "zAxis": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 1.0,
-            "units": {
-              "type": "Mm"
-            }
-          },
           "solid": {
             "type": "Solid",
             "id": "[uuid]",
@@ -966,14 +902,6 @@ description: Variables in memory after executing flange.kcl
                   "x": 0.0,
                   "y": 1.0,
                   "z": 0.0,
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "zAxis": {
-                  "x": 0.0,
-                  "y": 0.0,
-                  "z": 1.0,
                   "units": {
                     "type": "Mm"
                   }
@@ -1046,14 +974,6 @@ description: Variables in memory after executing flange.kcl
                         "x": 0.0,
                         "y": 1.0,
                         "z": 0.0,
-                        "units": {
-                          "type": "Mm"
-                        }
-                      },
-                      "zAxis": {
-                        "x": 0.0,
-                        "y": 0.0,
-                        "z": 1.0,
                         "units": {
                           "type": "Mm"
                         }
@@ -1230,14 +1150,6 @@ description: Variables in memory after executing flange.kcl
               "type": "Mm"
             }
           },
-          "zAxis": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 1.0,
-            "units": {
-              "type": "Mm"
-            }
-          },
           "solid": {
             "type": "Solid",
             "id": "[uuid]",
@@ -1306,14 +1218,6 @@ description: Variables in memory after executing flange.kcl
                   "x": 0.0,
                   "y": 1.0,
                   "z": 0.0,
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "zAxis": {
-                  "x": 0.0,
-                  "y": 0.0,
-                  "z": 1.0,
                   "units": {
                     "type": "Mm"
                   }

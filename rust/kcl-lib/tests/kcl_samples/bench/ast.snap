@@ -353,28 +353,20 @@ description: Result of parsing bench.kcl
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
               "unlabeled": {
-                "argument": {
-                  "abs_path": false,
-                  "commentStart": 0,
-                  "end": 0,
-                  "name": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "name": "YZ",
-                    "start": 0,
-                    "type": "Identifier"
-                  },
-                  "path": [],
-                  "start": 0,
-                  "type": "Name",
-                  "type": "Name"
-                },
+                "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
-                "operator": "-",
+                "name": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "name": "YZ",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 0,
-                "type": "UnaryExpression",
-                "type": "UnaryExpression"
+                "type": "Name",
+                "type": "Name"
               }
             }
           ],
@@ -423,20 +415,28 @@ description: Result of parsing bench.kcl
                     "commentStart": 0,
                     "end": 0,
                     "left": {
-                      "abs_path": false,
-                      "commentStart": 0,
-                      "end": 0,
-                      "name": {
+                      "argument": {
+                        "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
-                        "name": "benchLength",
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "name": "benchLength",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 0,
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
-                      "path": [],
+                      "commentStart": 0,
+                      "end": 0,
+                      "operator": "-",
                       "start": 0,
-                      "type": "Name",
-                      "type": "Name"
+                      "type": "UnaryExpression",
+                      "type": "UnaryExpression"
                     },
                     "operator": "/",
                     "right": {
@@ -1100,28 +1100,20 @@ description: Result of parsing bench.kcl
         "expression": {
           "arguments": [
             {
-              "argument": {
-                "abs_path": false,
-                "commentStart": 0,
-                "end": 0,
-                "name": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "name": "YZ",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "path": [],
-                "start": 0,
-                "type": "Name",
-                "type": "Name"
-              },
+              "abs_path": false,
               "commentStart": 0,
               "end": 0,
-              "operator": "-",
+              "name": {
+                "commentStart": 0,
+                "end": 0,
+                "name": "YZ",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "UnaryExpression",
-              "type": "UnaryExpression"
+              "type": "Name",
+              "type": "Name"
             },
             {
               "commentStart": 0,
@@ -1196,28 +1188,20 @@ description: Result of parsing bench.kcl
         "expression": {
           "arguments": [
             {
-              "argument": {
-                "abs_path": false,
-                "commentStart": 0,
-                "end": 0,
-                "name": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "name": "YZ",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "path": [],
-                "start": 0,
-                "type": "Name",
-                "type": "Name"
-              },
+              "abs_path": false,
               "commentStart": 0,
               "end": 0,
-              "operator": "-",
+              "name": {
+                "commentStart": 0,
+                "end": 0,
+                "name": "YZ",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "UnaryExpression",
-              "type": "UnaryExpression"
+              "type": "Name",
+              "type": "Name"
             },
             {
               "commentStart": 0,

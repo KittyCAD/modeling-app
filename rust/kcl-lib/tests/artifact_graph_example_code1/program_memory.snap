@@ -191,14 +191,6 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
             "units": {
               "type": "Mm"
             }
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 1.0,
-            "units": {
-              "type": "Mm"
-            }
           }
         },
         "start": {
@@ -395,14 +387,6 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
               "type": "Mm"
             }
           },
-          "zAxis": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 1.0,
-            "units": {
-              "type": "Mm"
-            }
-          },
           "solid": {
             "type": "Solid",
             "id": "[uuid]",
@@ -586,14 +570,6 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
                   "x": 0.0,
                   "y": 1.0,
                   "z": 0.0,
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "zAxis": {
-                  "x": 0.0,
-                  "y": 0.0,
-                  "z": 1.0,
                   "units": {
                     "type": "Mm"
                   }
@@ -850,14 +826,6 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
           "units": {
             "type": "Mm"
           }
-        },
-        "zAxis": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0,
-          "units": {
-            "type": "Mm"
-          }
         }
       },
       "start": {
@@ -995,14 +963,6 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
-        },
-        "zAxis": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0,
           "units": {
             "type": "Mm"
           }
@@ -1190,14 +1150,6 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
                 "units": {
                   "type": "Mm"
                 }

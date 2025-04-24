@@ -61,8 +61,10 @@ impl CollectionVisitor {
                         format!("std::{}::", self.name)
                     };
                     let mut dd = match var.kind {
-                        VariableKind::Fn => DocData::Fn(FnData::from_ast(var, qual_name, preferred_prefix)),
-                        VariableKind::Const => DocData::Const(ConstData::from_ast(var, qual_name, preferred_prefix)),
+                        VariableKind::Fn => DocData::Fn(FnData::from_ast(var, qual_name, preferred_prefix, name)),
+                        VariableKind::Const => {
+                            DocData::Const(ConstData::from_ast(var, qual_name, preferred_prefix, name))
+                        }
                     };
 
                     dd.with_meta(&var.outer_attrs);
@@ -79,7 +81,7 @@ impl CollectionVisitor {
                     } else {
                         format!("std::{}::", self.name)
                     };
-                    let mut dd = DocData::Ty(TyData::from_ast(ty, qual_name, preferred_prefix));
+                    let mut dd = DocData::Ty(TyData::from_ast(ty, qual_name, preferred_prefix, name));
 
                     dd.with_meta(&ty.outer_attrs);
                     for a in &ty.outer_attrs {
@@ -114,6 +116,16 @@ impl DocData {
         }
     }
 
+    /// The name of the module in which the item is declared, e.g., `sketch`
+    #[allow(dead_code)]
+    pub fn module_name(&self) -> &str {
+        match self {
+            DocData::Fn(f) => &f.module_name,
+            DocData::Const(c) => &c.module_name,
+            DocData::Ty(t) => &t.module_name,
+        }
+    }
+
     #[allow(dead_code)]
     pub fn file_name(&self) -> String {
         match self {
@@ -132,6 +144,7 @@ impl DocData {
         }
     }
 
+    /// The path to the module through which the item is accessed, e.g., `std::sketch`
     #[allow(dead_code)]
     pub fn mod_name(&self) -> String {
         let q = match self {
@@ -217,6 +230,8 @@ pub struct ConstData {
     /// Code examples.
     /// These are tested and we know they compile and execute.
     pub examples: Vec<(String, ExampleProperties)>,
+
+    pub module_name: String,
 }
 
 impl ConstData {
@@ -224,6 +239,7 @@ impl ConstData {
         var: &crate::parsing::ast::types::VariableDeclaration,
         mut qual_name: String,
         preferred_prefix: &str,
+        module_name: &str,
     ) -> Self {
         assert_eq!(var.kind, crate::parsing::ast::types::VariableKind::Const);
 
@@ -263,6 +279,7 @@ impl ConstData {
             summary: None,
             description: None,
             examples: Vec::new(),
+            module_name: module_name.to_owned(),
         }
     }
 
@@ -334,6 +351,8 @@ pub struct FnData {
     pub examples: Vec<(String, ExampleProperties)>,
     #[allow(dead_code)]
     pub referenced_types: Vec<String>,
+
+    pub module_name: String,
 }
 
 impl FnData {
@@ -341,6 +360,7 @@ impl FnData {
         var: &crate::parsing::ast::types::VariableDeclaration,
         mut qual_name: String,
         preferred_prefix: &str,
+        module_name: &str,
     ) -> Self {
         assert_eq!(var.kind, crate::parsing::ast::types::VariableKind::Fn);
         let crate::parsing::ast::types::Expr::FunctionExpression(expr) = &var.declaration.init else {
@@ -375,6 +395,7 @@ impl FnData {
             description: None,
             examples: Vec::new(),
             referenced_types: referenced_types.into_iter().collect(),
+            module_name: module_name.to_owned(),
         }
     }
 
@@ -654,6 +675,8 @@ pub struct TyData {
     pub examples: Vec<(String, ExampleProperties)>,
     #[allow(dead_code)]
     pub referenced_types: Vec<String>,
+
+    pub module_name: String,
 }
 
 impl TyData {
@@ -661,6 +684,7 @@ impl TyData {
         ty: &crate::parsing::ast::types::TypeDeclaration,
         mut qual_name: String,
         preferred_prefix: &str,
+        module_name: &str,
     ) -> Self {
         let name = ty.name.name.clone();
         qual_name.push_str(&name);
@@ -684,6 +708,7 @@ impl TyData {
             description: None,
             examples: Vec::new(),
             referenced_types: referenced_types.into_iter().collect(),
+            module_name: module_name.to_owned(),
         }
     }
 
@@ -1009,6 +1034,8 @@ fn collect_type_names_from_primitive(ty: &PrimitiveType) -> String {
 
 #[cfg(test)]
 mod test {
+    use kcl_derive_docs::for_each_std_mod;
+
     use super::*;
 
     #[test]
@@ -1047,18 +1074,28 @@ mod test {
         );
     }
 
-    #[tokio::test(flavor = "multi_thread", worker_threads = 5)]
-    async fn test_examples() -> miette::Result<()> {
+    #[for_each_std_mod]
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_examples() {
         let std = walk_prelude();
+        let mut errs = Vec::new();
         for d in std {
+            if d.module_name() != STD_MOD_NAME {
+                continue;
+            }
+
             for (i, eg) in d.examples().enumerate() {
                 let result = match crate::test_server::execute_and_snapshot(eg, None).await {
                     Err(crate::errors::ExecError::Kcl(e)) => {
-                        return Err(miette::Report::new(crate::errors::Report {
-                            error: e.error,
-                            filename: format!("{}{i}", d.name()),
-                            kcl_source: eg.to_string(),
-                        }));
+                        errs.push(
+                            miette::Report::new(crate::errors::Report {
+                                error: e.error,
+                                filename: format!("{}{i}", d.name()),
+                                kcl_source: eg.to_string(),
+                            })
+                            .to_string(),
+                        );
+                        continue;
                     }
                     Err(other_err) => panic!("{}", other_err),
                     Ok(img) => img,
@@ -1071,6 +1108,8 @@ mod test {
             }
         }
 
-        Ok(())
+        if !errs.is_empty() {
+            panic!("{}", errs.join("\n\n"));
+        }
     }
 }
