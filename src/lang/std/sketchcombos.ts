@@ -453,7 +453,10 @@ const getMinAndSegLenVals = (
   const segLenVal = createSegLen(referenceSegName)
   return [
     createCallExpression('min', [segLenVal, varVal]),
-    createCallExpression('legLen', [segLenVal, varVal]),
+    createCallExpressionStdLibKw('legLen', null, [
+      createLabeledArg('hypotenuse', segLenVal),
+      createLabeledArg('leg', varVal),
+    ]),
   ]
 }
 

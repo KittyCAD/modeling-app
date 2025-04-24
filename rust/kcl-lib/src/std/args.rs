@@ -615,22 +615,6 @@ impl Args {
         Ok(numbers)
     }
 
-    pub(crate) fn get_hypotenuse_leg(&self) -> Result<(f64, f64, NumericType), KclError> {
-        let numbers = self.get_number_array_with_types()?;
-
-        if numbers.len() != 2 {
-            return Err(KclError::Type(KclErrorDetails {
-                message: format!("Expected a number array of length 2, found `{:?}`", numbers),
-                source_ranges: vec![self.source_range],
-            }));
-        }
-
-        let mut numbers = numbers.into_iter();
-        let a = numbers.next().unwrap();
-        let b = numbers.next().unwrap();
-        Ok(NumericType::combine_eq_coerce(a, b))
-    }
-
     pub(crate) fn get_sketches(&self, exec_state: &mut ExecState) -> Result<(Vec<Sketch>, Sketch), KclError> {
         let Some(arg0) = self.args.first() else {
             return Err(KclError::Semantic(KclErrorDetails {
