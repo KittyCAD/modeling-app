@@ -1,5 +1,5 @@
-import { defineConfig, devices } from '@playwright/test'
 import os from 'os'
+import { defineConfig, devices } from '@playwright/test'
 
 const platform = os.platform() // 'linux' (Ubuntu), 'darwin' (macOS), 'win32' (Windows)
 
@@ -20,7 +20,7 @@ if (process.env.E2E_WORKERS) {
     case 'darwin':
     case 'win32':
     default:
-      workers = '25%' // Lower concurrency for heavier Electron processes
+      workers = '40%' // Lower concurrency for heavier Electron processes
       break
   }
 }
@@ -32,11 +32,13 @@ export default defineConfig({
   timeout: 120_000, // override the default 30s timeout
   testDir: './e2e/playwright',
   testIgnore: '*.test.ts', // ignore unit tests
+  /* Share snapshots across all platforms */
+  snapshotPathTemplate: '{testDir}/{testFileName}-snapshots/{arg}{ext}',
   /* Run tests in files in parallel */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
-  forbidOnly: true,
-  /* Do not retry */
+  forbidOnly: Boolean(process.env.CI),
+  /* Do not retry using Playwright's built-in retry mechanism */
   retries: 0,
   /* Use all available CPU cores */
   workers: workers,

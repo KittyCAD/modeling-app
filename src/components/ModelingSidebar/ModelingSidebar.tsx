@@ -15,7 +15,6 @@ import type {
 } from '@src/components/ModelingSidebar/ModelingPanes'
 import { sidebarPanes } from '@src/components/ModelingSidebar/ModelingPanes'
 import Tooltip from '@src/components/Tooltip'
-import { DEV } from '@src/env'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
@@ -26,7 +25,10 @@ import { isDesktop } from '@src/lib/isDesktop'
 import { useSettings } from '@src/machines/appMachine'
 import { commandBarActor } from '@src/machines/commandBarMachine'
 import { onboardingPaths } from '@src/routes/Onboarding/paths'
-import { IS_NIGHTLY_OR_DEBUG } from '@src/routes/utils'
+import { reportRejection } from '@src/lib/trap'
+import { refreshPage } from '@src/lib/utils'
+import { hotkeyDisplay } from '@src/lib/hotkeyWrapper'
+import usePlatform from '@src/hooks/usePlatform'
 
 interface ModelingSidebarProps {
   paneOpacity: '' | 'opacity-20' | 'opacity-40'
@@ -77,28 +79,15 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
 
   const sidebarActions: SidebarAction[] = [
     {
-      id: 'insert',
-      title: 'Insert from project file',
-      sidebarName: 'Insert from project file',
-      icon: 'import',
-      keybinding: 'Ctrl + Shift + I',
-      hide: (a) => a.platform === 'web' || !(DEV || IS_NIGHTLY_OR_DEBUG),
+      id: 'load-external-model',
+      title: 'Load external model',
+      sidebarName: 'Load external model',
+      icon: 'importFile',
+      keybinding: 'Mod + Alt + L',
       action: () =>
         commandBarActor.send({
           type: 'Find and select command',
-          data: { name: 'Insert', groupId: 'code' },
-        }),
-    },
-    {
-      id: 'share-link',
-      title: 'Create share link',
-      sidebarName: 'Create share link',
-      icon: 'link',
-      keybinding: 'Mod + Alt + S',
-      action: () =>
-        commandBarActor.send({
-          type: 'Find and select command',
-          data: { name: 'share-file-link', groupId: 'code' },
+          data: { name: 'load-external-model', groupId: 'code' },
         }),
     },
     {
@@ -131,6 +120,17 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
       hide: () => !isDesktop(),
       disable: () => {
         return machineManager.noMachinesReason()
+      },
+    },
+    {
+      id: 'refresh',
+      title: 'Refresh app',
+      sidebarName: 'Refresh app',
+      icon: 'arrowRotateRight',
+      keybinding: 'Mod + R',
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises
+      action: async () => {
+        refreshPage('Sidebar button').catch(reportRejection)
       },
     },
   ]
@@ -343,6 +343,7 @@ function ModelingPaneButton({
   disabledText,
   ...props
 }: ModelingPaneButtonProps) {
+  const platform = usePlatform()
   useHotkeys(paneConfig.keybinding, onClick, {
     scopes: ['modeling'],
   })
@@ -382,7 +383,7 @@ function ModelingPaneButton({
             {paneIsOpen !== undefined ? ` pane` : ''}
           </span>
           <kbd className="hotkey text-xs capitalize">
-            {paneConfig.keybinding}
+            {hotkeyDisplay(paneConfig.keybinding, platform)}
           </kbd>
         </Tooltip>
       </button>

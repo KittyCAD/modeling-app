@@ -24,7 +24,7 @@ export function modelingMenuCallbackMostActions(
 ) {
   // Menu listeners
   const cb = (data: WebContentSendPayload) => {
-    if (data.menuLabel === 'File.New project') {
+    if (data.menuLabel === 'File.Create project') {
       commandBarActor.send({
         type: 'Find and select command',
         data: {
@@ -84,7 +84,7 @@ export function modelingMenuCallbackMostActions(
       })
     } else if (data.menuLabel === 'File.Preferences.Theme color') {
       navigate(filePath + PATHS.SETTINGS_USER + '#themeColor')
-    } else if (data.menuLabel === 'File.Share current part (via Zoo link)') {
+    } else if (data.menuLabel === 'File.Share part via Zoo link') {
       copyFileShareLink({
         token: token ?? '',
         code: codeManager.code,
@@ -92,12 +92,12 @@ export function modelingMenuCallbackMostActions(
       }).catch(reportRejection)
     } else if (data.menuLabel === 'File.Preferences.User default units') {
       navigate(filePath + PATHS.SETTINGS_USER + '#defaultUnit')
-    } else if (data.menuLabel === 'File.Insert from project file') {
+    } else if (data.menuLabel === 'File.Load external model') {
       commandBarActor.send({
         type: 'Find and select command',
         data: {
           groupId: 'code',
-          name: 'Insert',
+          name: 'load-external-model',
         },
       })
     } else if (data.menuLabel === 'File.Export current part') {
@@ -106,14 +106,6 @@ export function modelingMenuCallbackMostActions(
         data: {
           groupId: 'modeling',
           name: 'Export',
-        },
-      })
-    } else if (data.menuLabel === 'File.Load a sample model') {
-      commandBarActor.send({
-        type: 'Find and select command',
-        data: {
-          groupId: 'code',
-          name: 'open-kcl-example',
         },
       })
     } else if (data.menuLabel === 'File.Create new file') {
@@ -255,6 +247,14 @@ export function modelingMenuCallbackMostActions(
       commandBarActor.send({
         type: 'Find and select command',
         data: { name: 'Shell', groupId: 'modeling' },
+      })
+    } else if (data.menuLabel === 'Design.Insert from project file') {
+      commandBarActor.send({
+        type: 'Find and select command',
+        data: {
+          groupId: 'code',
+          name: 'Insert',
+        },
       })
     } else if (data.menuLabel === 'Design.Create with Zoo Text-To-CAD') {
       commandBarActor.send({

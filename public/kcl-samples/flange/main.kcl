@@ -18,7 +18,7 @@ topTotalThickness = totalThickness - (bottomThickness + baseThickness)
 nHoles = 4
 
 // Add assertion so nHoles are always greater than 1
-assertGreaterThan(nHoles, 1, "nHoles must be greater than 1")
+assert(nHoles, isGreaterThan = 1, error = "nHoles must be greater than 1")
 
 // Create the circular pattern for the mounting holes
 circles = startSketchOn(XY)

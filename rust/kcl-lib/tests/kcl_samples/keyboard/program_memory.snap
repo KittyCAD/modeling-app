@@ -678,9 +678,6 @@ description: Variables in memory after executing keyboard.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Inches"
               }
             },
             "start": {
@@ -804,7 +801,8 @@ description: Variables in memory after executing keyboard.kcl
           ],
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         },
         "units": {
           "type": "Inches"
@@ -1114,9 +1112,6 @@ description: Variables in memory after executing keyboard.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Inches"
               }
             },
             "start": {
@@ -1240,7 +1235,8 @@ description: Variables in memory after executing keyboard.kcl
           ],
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         },
         "units": {
           "type": "Inches"
@@ -1550,9 +1546,6 @@ description: Variables in memory after executing keyboard.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Inches"
               }
             },
             "start": {
@@ -1676,7 +1669,8 @@ description: Variables in memory after executing keyboard.kcl
           ],
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         },
         "units": {
           "type": "Inches"
@@ -1986,9 +1980,6 @@ description: Variables in memory after executing keyboard.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Inches"
               }
             },
             "start": {
@@ -2112,7 +2103,8 @@ description: Variables in memory after executing keyboard.kcl
           ],
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         },
         "units": {
           "type": "Inches"
@@ -2461,9 +2453,6 @@ description: Variables in memory after executing keyboard.kcl
             "units": {
               "type": "Mm"
             }
-          },
-          "units": {
-            "type": "Inches"
           }
         },
         "start": {
@@ -2587,7 +2576,8 @@ description: Variables in memory after executing keyboard.kcl
       ],
       "units": {
         "type": "Inches"
-      }
+      },
+      "sectional": false
     }
   },
   "sketch003": {
@@ -2838,9 +2828,6 @@ description: Variables in memory after executing keyboard.kcl
               "units": {
                 "type": "Mm"
               }
-            },
-            "units": {
-              "type": "Inches"
             }
           },
           "start": {
@@ -2964,7 +2951,8 @@ description: Variables in memory after executing keyboard.kcl
         ],
         "units": {
           "type": "Inches"
-        }
+        },
+        "sectional": false
       },
       "units": {
         "type": "Inches"

@@ -25,7 +25,7 @@ jobs:
           node-version-file: '.nvmrc'
           cache: 'npm'
       - run: npm install
-      - run: npm run fmt-check
+      - run: npm run fmt:check
 
   npm-build-wasm:
     # Build the wasm blob once on the fastest runner.

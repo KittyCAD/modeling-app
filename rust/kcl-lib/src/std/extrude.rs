@@ -40,9 +40,9 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 
     let result = inner_extrude(
         sketches,
-        length.n,
+        length,
         symmetric,
-        bidirectional_length.map(|t| t.n),
+        bidirectional_length,
         tag_start,
         tag_end,
         exec_state,
@@ -64,18 +64,18 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 /// example = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> line(end = [10, 0])
-///   |> arc({
+///   |> arc(
 ///     angleStart = 120,
 ///     angleEnd = 0,
 ///     radius = 5,
-///   }, %)
+///   )
 ///   |> line(end = [5, 0])
 ///   |> line(end = [0, 10])
-///   |> bezierCurve({
-///     control1 = [-10, 0],
-///     control2 = [2, 10],
-///     to = [-5, 10],
-///   }, %)
+///   |> bezierCurve(
+///        control1 = [-10, 0],
+///        control2 = [2, 10],
+///        end = [-5, 10],
+///      )
 ///   |> line(end = [-5, -2])
 ///   |> close()
 ///   |> extrude(length = 10)
@@ -84,18 +84,18 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 /// ```no_run
 /// exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([-10, 0], %)
-///   |> arc({
+///   |> arc(
 ///     angleStart = 120,
 ///     angleEnd = -60,
 ///     radius = 5,
-///   }, %)
+///   )
 ///   |> line(end = [10, 0])
 ///   |> line(end = [5, 0])
-///   |> bezierCurve({
-///     control1 = [-3, 0],
-///     control2 = [2, 10],
-///     to = [-5, 10],
-///   }, %)
+///   |> bezierCurve(
+///        control1 = [-3, 0],
+///        control2 = [2, 10],
+///        end = [-5, 10],
+///      )
 ///   |> line(end = [-4, 10])
 ///   |> line(end = [-5, -2])
 ///   |> close()
@@ -106,18 +106,18 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 /// ```no_run
 /// exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([-10, 0], %)
-///   |> arc({
+///   |> arc(
 ///     angleStart = 120,
 ///     angleEnd = -60,
 ///     radius = 5,
-///   }, %)
+///   )
 ///   |> line(end = [10, 0])
 ///   |> line(end = [5, 0])
-///   |> bezierCurve({
-///     control1 = [-3, 0],
-///     control2 = [2, 10],
-///     to = [-5, 10],
-///   }, %)
+///   |> bezierCurve(
+///        control1 = [-3, 0],
+///        control2 = [2, 10],
+///        end = [-5, 10],
+///      )
 ///   |> line(end = [-4, 10])
 ///   |> line(end = [-5, -2])
 ///   |> close()
@@ -128,18 +128,18 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 /// ```no_run
 /// exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([-10, 0], %)
-///   |> arc({
+///   |> arc(
 ///     angleStart = 120,
 ///     angleEnd = -60,
 ///     radius = 5,
-///   }, %)
+///   )
 ///   |> line(end = [10, 0])
 ///   |> line(end = [5, 0])
-///   |> bezierCurve({
-///     control1 = [-3, 0],
-///     control2 = [2, 10],
-///     to = [-5, 10],
-///   }, %)
+///   |> bezierCurve(
+///        control1 = [-3, 0],
+///        control2 = [2, 10],
+///        end = [-5, 10],
+///      )
 ///   |> line(end = [-4, 10])
 ///   |> line(end = [-5, -2])
 ///   |> close()
@@ -164,9 +164,9 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 #[allow(clippy::too_many_arguments)]
 async fn inner_extrude(
     sketches: Vec<Sketch>,
-    length: f64,
+    length: TyF64,
     symmetric: Option<bool>,
-    bidirectional_length: Option<f64>,
+    bidirectional_length: Option<TyF64>,
     tag_start: Option<TagNode>,
     tag_end: Option<TagNode>,
     exec_state: &mut ExecState,
@@ -183,7 +183,7 @@ async fn inner_extrude(
         }));
     }
 
-    let bidirection = bidirectional_length.map(LengthUnit);
+    let bidirection = bidirectional_length.map(|l| LengthUnit(l.to_mm()));
 
     let opposite = match (symmetric, bidirection) {
         (Some(true), _) => Opposite::Symmetric,
@@ -201,7 +201,7 @@ async fn inner_extrude(
                 cmd_id: id.into(),
                 cmd: ModelingCmd::from(mcmd::Extrude {
                     target: sketch.id.into(),
-                    distance: LengthUnit(length),
+                    distance: LengthUnit(length.to_mm()),
                     faces: Default::default(),
                     opposite: opposite.clone(),
                 }),
@@ -213,7 +213,7 @@ async fn inner_extrude(
             do_post_extrude(
                 sketch,
                 id.into(),
-                length,
+                length.clone(),
                 false,
                 &NamedCapTags {
                     start: tag_start.as_ref(),
@@ -238,7 +238,7 @@ pub(crate) struct NamedCapTags<'a> {
 pub(crate) async fn do_post_extrude<'a>(
     sketch: &Sketch,
     solid_id: ArtifactId,
-    length: f64,
+    length: TyF64,
     sectional: bool,
     named_cap_tags: &'a NamedCapTags<'a>,
     exec_state: &mut ExecState,
@@ -514,8 +514,9 @@ pub(crate) async fn do_post_extrude<'a>(
         value: new_value,
         meta: sketch.meta.clone(),
         units: sketch.units,
+        height: length.to_length_units(sketch.units),
+        sectional,
         sketch,
-        height: length,
         start_cap_id,
         end_cap_id,
         edge_cuts: vec![],

@@ -3,13 +3,8 @@ use std::collections::HashMap;
 use async_recursion::async_recursion;
 use indexmap::IndexMap;
 
-use super::{
-    cad_op::Group,
-    kcl_value::TypeDef,
-    types::{PrimitiveType, CHECK_NUMERIC_TYPES},
-};
+use super::{cad_op::Group, kcl_value::TypeDef, types::PrimitiveType};
 use crate::{
-    engine::ExecutionKind,
     errors::{KclError, KclErrorDetails},
     execution::{
         annotations,
@@ -65,16 +60,6 @@ impl ExecutorContext {
                     if exec_state.mod_local.settings.update_from_annotation(annotation)? {
                         exec_state.mod_local.explicit_length_units = true;
                     }
-                    let new_units = exec_state.length_unit();
-                    if !self.engine.execution_kind().await.is_isolated() {
-                        self.engine
-                            .set_units(
-                                new_units.into(),
-                                annotation.as_source_range(),
-                                exec_state.id_generator(),
-                            )
-                            .await?;
-                    }
                 } else {
                     exec_state.err(CompilationError::err(
                         annotation.as_source_range(),
@@ -104,15 +89,11 @@ impl ExecutorContext {
         &self,
         program: &Node<Program>,
         exec_state: &mut ExecState,
-        exec_kind: ExecutionKind,
         preserve_mem: bool,
         module_id: ModuleId,
         path: &ModulePath,
     ) -> Result<(Option<KclValue>, EnvironmentRef, Vec<String>), KclError> {
-        crate::log::log(format!("enter module {path} {} {exec_kind:?}", exec_state.stack()));
-
-        let old_units = exec_state.length_unit();
-        let original_execution = self.engine.replace_execution_kind(exec_kind).await;
+        crate::log::log(format!("enter module {path} {}", exec_state.stack()));
 
         let mut local_state = ModuleState::new(path.std_path(), exec_state.stack().memory.clone(), Some(module_id));
         if !preserve_mem {
@@ -131,7 +112,6 @@ impl ExecutorContext {
             .exec_block(program, exec_state, crate::execution::BodyType::Root)
             .await;
 
-        let new_units = exec_state.length_unit();
         let env_ref = if preserve_mem {
             exec_state.mut_stack().pop_and_preserve_env()
         } else {
@@ -140,17 +120,6 @@ impl ExecutorContext {
         if !preserve_mem {
             std::mem::swap(&mut exec_state.mod_local, &mut local_state);
         }
-
-        // We only need to reset the units if we are not on the Main path.
-        // If we reset at the end of the main path, then we just add on an extra
-        // command and we'd need to flush the batch again.
-        // This avoids that.
-        if !exec_kind.is_isolated() && new_units != old_units && *path != ModulePath::Main {
-            self.engine
-                .set_units(old_units.into(), Default::default(), exec_state.id_generator())
-                .await?;
-        }
-        self.engine.replace_execution_kind(original_execution).await;
 
         crate::log::log(format!("leave {path}"));
 
@@ -161,7 +130,7 @@ impl ExecutorContext {
     #[async_recursion]
     pub(super) async fn exec_block<'a>(
         &'a self,
-        program: NodeRef<'a, crate::parsing::ast::types::Program>,
+        program: NodeRef<'a, Program>,
         exec_state: &mut ExecState,
         body_type: BodyType,
     ) -> Result<Option<KclValue>, KclError> {
@@ -185,25 +154,27 @@ impl ExecutorContext {
 
                     match &import_stmt.selector {
                         ImportSelector::List { items } => {
-                            let (env_ref, module_exports) = self
-                                .exec_module_for_items(module_id, exec_state, ExecutionKind::Isolated, source_range)
-                                .await?;
+                            let (env_ref, module_exports) =
+                                self.exec_module_for_items(module_id, exec_state, source_range).await?;
                             for import_item in items {
                                 // Extract the item from the module.
-                                let item = exec_state
-                                    .stack()
-                                    .memory
+                                let mem = &exec_state.stack().memory;
+                                let mut value = mem
                                     .get_from(&import_item.name.name, env_ref, import_item.into(), 0)
-                                    .map_err(|_err| {
-                                        KclError::UndefinedValue(KclErrorDetails {
-                                            message: format!("{} is not defined in module", import_item.name.name),
-                                            source_ranges: vec![SourceRange::from(&import_item.name)],
-                                        })
-                                    })?
-                                    .clone();
-                                // Check that the item is allowed to be imported.
-                                if !module_exports.contains(&import_item.name.name) {
-                                    return Err(KclError::Semantic(KclErrorDetails {
+                                    .cloned();
+                                let ty_name = format!("{}{}", memory::TYPE_PREFIX, import_item.name.name);
+                                let mut ty = mem.get_from(&ty_name, env_ref, import_item.into(), 0).cloned();
+
+                                if value.is_err() && ty.is_err() {
+                                    return Err(KclError::UndefinedValue(KclErrorDetails {
+                                        message: format!("{} is not defined in module", import_item.name.name),
+                                        source_ranges: vec![SourceRange::from(&import_item.name)],
+                                    }));
+                                }
+
+                                // Check that the item is allowed to be imported (in at least one namespace).
+                                if value.is_ok() && !module_exports.contains(&import_item.name.name) {
+                                    value = Err(KclError::Semantic(KclErrorDetails {
                                         message: format!(
                                             "Cannot import \"{}\" from module because it is not exported. Add \"export\" before the definition to export it.",
                                             import_item.name.name
@@ -212,25 +183,51 @@ impl ExecutorContext {
                                     }));
                                 }
 
-                                // Add the item to the current module.
-                                exec_state.mut_stack().add(
-                                    import_item.identifier().to_owned(),
-                                    item,
-                                    SourceRange::from(&import_item.name),
-                                )?;
+                                if ty.is_ok() && !module_exports.contains(&ty_name) {
+                                    ty = Err(KclError::Semantic(KclErrorDetails {
+                                        message: String::new(),
+                                        source_ranges: vec![],
+                                    }));
+                                }
 
-                                if let ItemVisibility::Export = import_stmt.visibility {
-                                    exec_state
-                                        .mod_local
-                                        .module_exports
-                                        .push(import_item.identifier().to_owned());
+                                if value.is_err() && ty.is_err() {
+                                    return value.map(Option::Some);
+                                }
+
+                                // Add the item to the current module.
+                                if let Ok(value) = value {
+                                    exec_state.mut_stack().add(
+                                        import_item.identifier().to_owned(),
+                                        value,
+                                        SourceRange::from(&import_item.name),
+                                    )?;
+
+                                    if let ItemVisibility::Export = import_stmt.visibility {
+                                        exec_state
+                                            .mod_local
+                                            .module_exports
+                                            .push(import_item.identifier().to_owned());
+                                    }
+                                }
+
+                                if let Ok(ty) = ty {
+                                    let ty_name = format!("{}{}", memory::TYPE_PREFIX, import_item.identifier());
+                                    // Add the item to the current module.
+                                    exec_state.mut_stack().add(
+                                        ty_name.clone(),
+                                        ty,
+                                        SourceRange::from(&import_item.name),
+                                    )?;
+
+                                    if let ItemVisibility::Export = import_stmt.visibility {
+                                        exec_state.mod_local.module_exports.push(ty_name);
+                                    }
                                 }
                             }
                         }
                         ImportSelector::Glob(_) => {
-                            let (env_ref, module_exports) = self
-                                .exec_module_for_items(module_id, exec_state, ExecutionKind::Isolated, source_range)
-                                .await?;
+                            let (env_ref, module_exports) =
+                                self.exec_module_for_items(module_id, exec_state, source_range).await?;
                             for name in module_exports.iter() {
                                 let item = exec_state
                                     .stack()
@@ -319,19 +316,20 @@ impl ExecutorContext {
                                 value: TypeDef::RustRepr(t, props),
                                 meta: vec![metadata],
                             };
+                            let name_in_mem = format!("{}{}", memory::TYPE_PREFIX, ty.name.name);
                             exec_state
                                 .mut_stack()
-                                .add(
-                                    format!("{}{}", memory::TYPE_PREFIX, ty.name.name),
-                                    value,
-                                    metadata.source_range,
-                                )
+                                .add(name_in_mem.clone(), value, metadata.source_range)
                                 .map_err(|_| {
                                     KclError::Semantic(KclErrorDetails {
                                         message: format!("Redefinition of type {}.", ty.name.name),
                                         source_ranges: vec![metadata.source_range],
                                     })
                                 })?;
+
+                            if let ItemVisibility::Export = ty.visibility {
+                                exec_state.mod_local.module_exports.push(name_in_mem);
+                            }
                         }
                         // Do nothing for primitive types, they get special treatment and their declarations are just for documentation.
                         annotations::Impl::Primitive => {}
@@ -348,19 +346,20 @@ impl ExecutorContext {
                                     ),
                                     meta: vec![metadata],
                                 };
+                                let name_in_mem = format!("{}{}", memory::TYPE_PREFIX, ty.name.name);
                                 exec_state
                                     .mut_stack()
-                                    .add(
-                                        format!("{}{}", memory::TYPE_PREFIX, ty.name.name),
-                                        value,
-                                        metadata.source_range,
-                                    )
+                                    .add(name_in_mem.clone(), value, metadata.source_range)
                                     .map_err(|_| {
                                         KclError::Semantic(KclErrorDetails {
                                             message: format!("Redefinition of type {}.", ty.name.name),
                                             source_ranges: vec![metadata.source_range],
                                         })
                                     })?;
+
+                                if let ItemVisibility::Export = ty.visibility {
+                                    exec_state.mod_local.module_exports.push(name_in_mem);
+                                }
                             }
                             None => {
                                 return Err(KclError::Semantic(KclErrorDetails {
@@ -421,7 +420,7 @@ impl ExecutorContext {
         Ok(last_expr)
     }
 
-    pub(super) async fn open_module(
+    pub async fn open_module(
         &self,
         path: &ImportPath,
         attrs: &[Node<Annotation>],
@@ -429,6 +428,7 @@ impl ExecutorContext {
         source_range: SourceRange,
     ) -> Result<ModuleId, KclError> {
         let resolved_path = ModulePath::from_import_path(path, &self.settings.project_directory);
+
         match path {
             ImportPath::Kcl { .. } => {
                 exec_state.global.mod_loader.cycle_check(&resolved_path, source_range)?;
@@ -485,7 +485,6 @@ impl ExecutorContext {
         &self,
         module_id: ModuleId,
         exec_state: &mut ExecState,
-        exec_kind: ExecutionKind,
         source_range: SourceRange,
     ) -> Result<(EnvironmentRef, Vec<String>), KclError> {
         let path = exec_state.global.module_infos[&module_id].path.clone();
@@ -494,19 +493,19 @@ impl ExecutorContext {
 
         let result = match &mut repr {
             ModuleRepr::Root => Err(exec_state.circular_import_error(&path, source_range)),
-            ModuleRepr::Kcl(_, Some((env_ref, items))) => Ok((*env_ref, items.clone())),
+            ModuleRepr::Kcl(_, Some((_, env_ref, items))) => Ok((*env_ref, items.clone())),
             ModuleRepr::Kcl(program, cache) => self
-                .exec_module_from_ast(program, module_id, &path, exec_state, exec_kind, source_range)
+                .exec_module_from_ast(program, module_id, &path, exec_state, source_range, false)
                 .await
-                .map(|(_, er, items)| {
-                    *cache = Some((er, items.clone()));
+                .map(|(val, er, items)| {
+                    *cache = Some((val, er, items.clone()));
                     (er, items)
                 }),
             ModuleRepr::Foreign(geom) => Err(KclError::Semantic(KclErrorDetails {
                 message: "Cannot import items from foreign modules".to_owned(),
                 source_ranges: vec![geom.source_range],
             })),
-            ModuleRepr::Dummy => unreachable!(),
+            ModuleRepr::Dummy => unreachable!("Looking up {}, but it is still being interpreted", path),
         };
 
         exec_state.global.module_infos[&module_id].restore_repr(repr);
@@ -518,7 +517,6 @@ impl ExecutorContext {
         module_id: ModuleId,
         module_name: &BoxNode<Name>,
         exec_state: &mut ExecState,
-        exec_kind: ExecutionKind,
         source_range: SourceRange,
     ) -> Result<Option<KclValue>, KclError> {
         exec_state.global.operations.push(Operation::GroupBegin {
@@ -535,13 +533,14 @@ impl ExecutorContext {
 
         let result = match &mut repr {
             ModuleRepr::Root => Err(exec_state.circular_import_error(&path, source_range)),
+            ModuleRepr::Kcl(_, Some((val, _, _))) => Ok(val.clone()),
             ModuleRepr::Kcl(program, cached_items) => {
                 let result = self
-                    .exec_module_from_ast(program, module_id, &path, exec_state, exec_kind, source_range)
+                    .exec_module_from_ast(program, module_id, &path, exec_state, source_range, false)
                     .await;
                 match result {
                     Ok((val, env, items)) => {
-                        *cached_items = Some((env, items));
+                        *cached_items = Some((val.clone(), env, items));
                         Ok(val)
                     }
                     Err(e) => Err(e),
@@ -560,18 +559,18 @@ impl ExecutorContext {
         result
     }
 
-    async fn exec_module_from_ast(
+    pub async fn exec_module_from_ast(
         &self,
         program: &Node<Program>,
         module_id: ModuleId,
         path: &ModulePath,
         exec_state: &mut ExecState,
-        exec_kind: ExecutionKind,
         source_range: SourceRange,
+        preserve_mem: bool,
     ) -> Result<(Option<KclValue>, EnvironmentRef, Vec<String>), KclError> {
         exec_state.global.mod_loader.enter_module(path);
         let result = self
-            .exec_module_body(program, exec_state, exec_kind, false, module_id, path)
+            .exec_module_body(program, exec_state, preserve_mem, module_id, path)
             .await;
         exec_state.global.mod_loader.leave_module(path);
 
@@ -580,10 +579,10 @@ impl ExecutorContext {
                 // It was an import cycle.  Keep the original message.
                 err.override_source_ranges(vec![source_range])
             } else {
+                // TODO would be great to have line/column for the underlying error here
                 KclError::Semantic(KclErrorDetails {
                     message: format!(
-                        "Error loading imported file. Open it to view more details. {}: {}",
-                        path,
+                        "Error loading imported file ({path}). Open it to view more details.\n  {}",
                         err.message()
                     ),
                     source_ranges: vec![source_range],
@@ -608,7 +607,7 @@ impl ExecutorContext {
             Expr::Name(name) => {
                 let value = name.get_result(exec_state, self).await?.clone();
                 if let KclValue::Module { value: module_id, meta } = value {
-                    self.exec_module_for_result(module_id, name, exec_state, ExecutionKind::Normal, metadata.source_range)
+                    self.exec_module_for_result(module_id, name, exec_state,  metadata.source_range)
                         .await?
                         .unwrap_or_else(|| {
                             exec_state.warn(CompilationError::err(
@@ -808,7 +807,7 @@ impl Node<Name> {
             };
 
             mem_spec = Some(
-                ctx.exec_module_for_items(*module_id, exec_state, ExecutionKind::Normal, p.as_source_range())
+                ctx.exec_module_for_items(*module_id, exec_state, p.as_source_range())
                     .await?,
             );
         }
@@ -862,7 +861,10 @@ impl Node<MemberExpression> {
                     source_ranges: vec![self.clone().into()],
                 }))
             }
-            (KclValue::MixedArray { value: arr, meta: _ }, Property::UInt(index)) => {
+            (
+                KclValue::MixedArray { value: arr, .. } | KclValue::HomArray { value: arr, .. },
+                Property::UInt(index),
+            ) => {
                 let value_of_arr = arr.get(index);
                 if let Some(value) = value_of_arr {
                     Ok(value.to_owned())
@@ -873,7 +875,7 @@ impl Node<MemberExpression> {
                     }))
                 }
             }
-            (KclValue::MixedArray { .. }, p) => {
+            (KclValue::MixedArray { .. } | KclValue::HomArray { .. }, p) => {
                 let t = p.type_name();
                 let article = article_for(t);
                 Err(KclError::Semantic(KclErrorDetails {
@@ -1040,7 +1042,7 @@ impl Node<BinaryExpression> {
             BinaryOperator::Pow => KclValue::Number {
                 value: left.n.powf(right.n),
                 meta,
-                ty: NumericType::Unknown,
+                ty: exec_state.current_default_units(),
             },
             BinaryOperator::Neq => {
                 let (l, r, ty) = NumericType::combine_eq(left, right);
@@ -1079,7 +1081,7 @@ impl Node<BinaryExpression> {
     }
 
     fn warn_on_unknown(&self, ty: &NumericType, verb: &str, exec_state: &mut ExecState) {
-        if *CHECK_NUMERIC_TYPES && ty == &NumericType::Unknown {
+        if ty == &NumericType::Unknown {
             // TODO suggest how to fix this
             exec_state.warn(CompilationError::err(
                 self.as_source_range(),
@@ -1320,7 +1322,7 @@ impl Node<CallExpressionKw> {
                     ));
                 }
 
-                let op = if func.feature_tree_operation() && !ctx.is_isolated_execution().await {
+                let op = if func.feature_tree_operation() {
                     let op_labeled_args = args
                         .kw_args
                         .labeled
@@ -1406,7 +1408,7 @@ impl Node<CallExpressionKw> {
                         e.add_source_ranges(vec![callsite])
                     })?;
 
-                if matches!(fn_src, FunctionSource::User { .. }) && !ctx.is_isolated_execution().await {
+                if matches!(fn_src, FunctionSource::User { .. }) {
                     // Track return operation.
                     exec_state.global.operations.push(Operation::GroupEnd);
                 }
@@ -1458,7 +1460,7 @@ impl Node<CallExpression> {
                     ));
                 }
 
-                let op = if func.feature_tree_operation() && !ctx.is_isolated_execution().await {
+                let op = if func.feature_tree_operation() {
                     let op_labeled_args = func
                         .args(false)
                         .iter()
@@ -1516,19 +1518,17 @@ impl Node<CallExpression> {
                 // exec_state.
                 let func = fn_name.get_result(exec_state, ctx).await?.clone();
 
-                if !ctx.is_isolated_execution().await {
-                    // Track call operation.
-                    exec_state.global.operations.push(Operation::GroupBegin {
-                        group: Group::FunctionCall {
-                            name: Some(fn_name.to_string()),
-                            function_source_range: func.function_def_source_range().unwrap_or_default(),
-                            unlabeled_arg: None,
-                            // TODO: Add the arguments for legacy positional parameters.
-                            labeled_args: Default::default(),
-                        },
-                        source_range: callsite,
-                    });
-                }
+                // Track call operation.
+                exec_state.global.operations.push(Operation::GroupBegin {
+                    group: Group::FunctionCall {
+                        name: Some(fn_name.to_string()),
+                        function_source_range: func.function_def_source_range().unwrap_or_default(),
+                        unlabeled_arg: None,
+                        // TODO: Add the arguments for legacy positional parameters.
+                        labeled_args: Default::default(),
+                    },
+                    source_range: callsite,
+                });
 
                 let Some(fn_src) = func.as_fn() else {
                     return Err(KclError::Semantic(KclErrorDetails {
@@ -1557,10 +1557,8 @@ impl Node<CallExpression> {
                     })
                 })?;
 
-                if !ctx.is_isolated_execution().await {
-                    // Track return operation.
-                    exec_state.global.operations.push(Operation::GroupEnd);
-                }
+                // Track return operation.
+                exec_state.global.operations.push(Operation::GroupEnd);
 
                 Ok(result)
             }
@@ -1992,11 +1990,39 @@ fn assign_args_to_params(
     for (index, param) in function_expression.params.iter().enumerate() {
         if let Some(arg) = args.get(index) {
             // Argument was provided.
-            exec_state.mut_stack().add(
-                param.identifier.name.clone(),
-                arg.value.clone(),
-                (&param.identifier).into(),
-            )?;
+
+            if let Some(ty) = &param.type_ {
+                let value = arg
+                        .value
+                        .coerce(
+                            &RuntimeType::from_parsed(ty.inner.clone(), exec_state, arg.source_range).unwrap(),
+                            exec_state,
+                        )
+                        .map_err(|e| {
+                            let mut message = format!(
+                                "Argument requires a value with type `{}`, but found {}",
+                                ty.inner,
+                                arg.value.human_friendly_type(),
+                            );
+                            if let Some(ty) = e.explicit_coercion {
+                                // TODO if we have access to the AST for the argument we could choose which example to suggest.
+                                message = format!("{message}\n\nYou may need to add information about the type of the argument, for example:\n  using a numeric suffix: `42{ty}`\n  or using type ascription: `foo(): number({ty})`");
+                            }
+                            KclError::Semantic(KclErrorDetails {
+                                message,
+                                source_ranges: vec![arg.source_range],
+                            })
+                        })?;
+                exec_state
+                    .mut_stack()
+                    .add(param.identifier.name.clone(), value, (&param.identifier).into())?;
+            } else {
+                exec_state.mut_stack().add(
+                    param.identifier.name.clone(),
+                    arg.value.clone(),
+                    (&param.identifier).into(),
+                )?;
+            }
         } else {
             // Argument was not provided.
             if let Some(ref default_val) = param.default_value {
@@ -2164,6 +2190,34 @@ fn assign_args_to_params_kw(
     Ok(())
 }
 
+fn coerce_result_type(
+    result: Result<Option<KclValue>, KclError>,
+    function_expression: NodeRef<'_, FunctionExpression>,
+    exec_state: &mut ExecState,
+) -> Result<Option<KclValue>, KclError> {
+    if let Ok(Some(val)) = result {
+        if let Some(ret_ty) = &function_expression.return_type {
+            let ty = RuntimeType::from_parsed(ret_ty.inner.clone(), exec_state, ret_ty.as_source_range())
+                .map_err(|e| KclError::Semantic(e.into()))?;
+            let val = val.coerce(&ty, exec_state).map_err(|_| {
+                KclError::Semantic(KclErrorDetails {
+                    message: format!(
+                        "This function requires its result to be of type `{}`, but found {}",
+                        ty.human_friendly_type(),
+                        val.human_friendly_type(),
+                    ),
+                    source_ranges: ret_ty.as_source_ranges(),
+                })
+            })?;
+            Ok(Some(val))
+        } else {
+            Ok(Some(val))
+        }
+    } else {
+        result
+    }
+}
+
 async fn call_user_defined_function(
     args: Vec<Arg>,
     memory: EnvironmentRef,
@@ -2184,13 +2238,16 @@ async fn call_user_defined_function(
     let result = ctx
         .exec_block(&function_expression.body, exec_state, BodyType::Block)
         .await;
-    let result = result.map(|_| {
+    let mut result = result.map(|_| {
         exec_state
             .stack()
             .get(memory::RETURN_NAME, function_expression.as_source_range())
             .ok()
             .cloned()
     });
+
+    result = coerce_result_type(result, function_expression, exec_state);
+
     // Restore the previous memory.
     exec_state.mut_stack().pop_env();
 
@@ -2218,13 +2275,16 @@ async fn call_user_defined_function_kw(
     let result = ctx
         .exec_block(&function_expression.body, exec_state, BodyType::Block)
         .await;
-    let result = result.map(|_| {
+    let mut result = result.map(|_| {
         exec_state
             .stack()
             .get(memory::RETURN_NAME, function_expression.as_source_range())
             .ok()
             .cloned()
     });
+
+    result = coerce_result_type(result, function_expression, exec_state);
+
     // Restore the previous memory.
     exec_state.mut_stack().pop_env();
 
@@ -2313,7 +2373,7 @@ impl FunctionSource {
                     }
                 }
 
-                let op = if props.include_in_feature_tree && !ctx.is_isolated_execution().await {
+                let op = if props.include_in_feature_tree {
                     let op_labeled_args = args
                         .kw_args
                         .labeled
@@ -2357,28 +2417,26 @@ impl FunctionSource {
                 Ok(Some(result))
             }
             FunctionSource::User { ast, memory, .. } => {
-                if !ctx.is_isolated_execution().await {
-                    // Track call operation.
-                    let op_labeled_args = args
-                        .kw_args
-                        .labeled
-                        .iter()
-                        .map(|(k, arg)| (k.clone(), OpArg::new(OpKclValue::from(&arg.value), arg.source_range)))
-                        .collect();
-                    exec_state.global.operations.push(Operation::GroupBegin {
-                        group: Group::FunctionCall {
-                            name: fn_name.clone(),
-                            function_source_range: ast.as_source_range(),
-                            unlabeled_arg: args
-                                .kw_args
-                                .unlabeled
-                                .as_ref()
-                                .map(|arg| OpArg::new(OpKclValue::from(&arg.value), arg.source_range)),
-                            labeled_args: op_labeled_args,
-                        },
-                        source_range: callsite,
-                    });
-                }
+                // Track call operation.
+                let op_labeled_args = args
+                    .kw_args
+                    .labeled
+                    .iter()
+                    .map(|(k, arg)| (k.clone(), OpArg::new(OpKclValue::from(&arg.value), arg.source_range)))
+                    .collect();
+                exec_state.global.operations.push(Operation::GroupBegin {
+                    group: Group::FunctionCall {
+                        name: fn_name.clone(),
+                        function_source_range: ast.as_source_range(),
+                        unlabeled_arg: args
+                            .kw_args
+                            .unlabeled
+                            .as_ref()
+                            .map(|arg| OpArg::new(OpKclValue::from(&arg.value), arg.source_range)),
+                        labeled_args: op_labeled_args,
+                    },
+                    source_range: callsite,
+                });
 
                 call_user_defined_function_kw(fn_name.as_deref(), args.kw_args, *memory, ast, exec_state, ctx).await
             }
@@ -2391,10 +2449,13 @@ impl FunctionSource {
 mod test {
     use std::sync::Arc;
 
+    use tokio::io::AsyncWriteExt;
+
     use super::*;
     use crate::{
         execution::{memory::Stack, parse_execute, ContextType},
         parsing::ast::types::{DefaultParamVal, Identifier, Parameter},
+        ExecutorSettings,
     };
 
     #[tokio::test(flavor = "multi_thread")]
@@ -2504,7 +2565,7 @@ mod test {
             // Run each test.
             let func_expr = &Node::no_src(FunctionExpression {
                 params,
-                body: crate::parsing::ast::types::Program::empty(),
+                body: Program::empty(),
                 return_type: None,
                 digest: None,
             });
@@ -2608,6 +2669,102 @@ a = foo()
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn load_all_modules() {
+        // program a.kcl
+        let programa_kcl = r#"
+export a = 1
+"#;
+        // program b.kcl
+        let programb_kcl = r#"
+import a from 'a.kcl'
+
+export b = a + 1
+"#;
+        // program c.kcl
+        let programc_kcl = r#"
+import a from 'a.kcl'
+
+export c = a + 2
+"#;
+
+        // program main.kcl
+        let main_kcl = r#"
+import b from 'b.kcl'
+import c from 'c.kcl'
+
+d = b + c
+"#;
+
+        let main = crate::parsing::parse_str(main_kcl, ModuleId::default())
+            .parse_errs_as_err()
+            .unwrap();
+
+        let tmpdir = tempdir::TempDir::new("zma_kcl_load_all_modules").unwrap();
+
+        tokio::fs::File::create(tmpdir.path().join("main.kcl"))
+            .await
+            .unwrap()
+            .write_all(main_kcl.as_bytes())
+            .await
+            .unwrap();
+
+        tokio::fs::File::create(tmpdir.path().join("a.kcl"))
+            .await
+            .unwrap()
+            .write_all(programa_kcl.as_bytes())
+            .await
+            .unwrap();
+
+        tokio::fs::File::create(tmpdir.path().join("b.kcl"))
+            .await
+            .unwrap()
+            .write_all(programb_kcl.as_bytes())
+            .await
+            .unwrap();
+
+        tokio::fs::File::create(tmpdir.path().join("c.kcl"))
+            .await
+            .unwrap()
+            .write_all(programc_kcl.as_bytes())
+            .await
+            .unwrap();
+
+        let exec_ctxt = ExecutorContext {
+            engine: Arc::new(Box::new(
+                crate::engine::conn_mock::EngineConnection::new()
+                    .await
+                    .map_err(|err| {
+                        KclError::Internal(crate::errors::KclErrorDetails {
+                            message: format!("Failed to create mock engine connection: {}", err),
+                            source_ranges: vec![SourceRange::default()],
+                        })
+                    })
+                    .unwrap(),
+            )),
+            fs: Arc::new(crate::fs::FileManager::new()),
+            settings: ExecutorSettings {
+                project_directory: Some(tmpdir.path().into()),
+                ..Default::default()
+            },
+            stdlib: Arc::new(crate::std::StdLib::new()),
+            context_type: ContextType::Mock,
+        };
+        let mut exec_state = ExecState::new(&exec_ctxt);
+
+        exec_ctxt
+            .run_concurrent(
+                &crate::Program {
+                    ast: main.clone(),
+                    original_file_contents: "".to_owned(),
+                },
+                &mut exec_state,
+                false,
+            )
+            .await
+            .unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn user_coercion() {
         let program = r#"fn foo(x: Axis2d) {
   return 0
@@ -2623,6 +2780,27 @@ foo(x = { direction = [0, 0], origin = [0, 0]})
 }
 
 foo(x = { direction = [0, 0], origin = [0, 0]})
+"#;
+
+        parse_execute(program).await.unwrap_err();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn coerce_return() {
+        let program = r#"fn foo(): number(mm) {
+  return 42
+}
+
+a = foo()
+"#;
+
+        parse_execute(program).await.unwrap();
+
+        let program = r#"fn foo(): number(mm) {
+  return { bar: 42 }
+}
+
+a = foo()
 "#;
 
         parse_execute(program).await.unwrap_err();

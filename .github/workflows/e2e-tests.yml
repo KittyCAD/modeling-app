@@ -226,8 +226,8 @@ jobs:
         with:
           shell: bash
           command: npm run test:snapshots
-          timeout_minutes: 30
-          max_attempts: 3
+          timeout_minutes: 5
+          max_attempts: 5
         env:
           token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
           snapshottoken: ${{ secrets.KITTYCAD_API_TOKEN }}

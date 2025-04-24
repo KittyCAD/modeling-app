@@ -1,4 +1,5 @@
 use std::{
+    collections::HashMap,
     panic::{catch_unwind, AssertUnwindSafe},
     path::{Path, PathBuf},
 };
@@ -251,6 +252,38 @@ fn assert_common_snapshots(
     artifact_commands: Vec<ArtifactCommand>,
     artifact_graph: ArtifactGraph,
 ) {
+    let artifact_commands = {
+        // Due to our newfound concurrency, we're going to mess with the
+        // artifact_commands a bit -- we're going to maintain the order,
+        // but only for a given module ID. This means the artifact_commands
+        // is no longer meaningful, but it is deterministic and will hopefully
+        // catch meaningful changes in behavior.
+
+        let mut artifact_commands_map = artifact_commands
+            .into_iter()
+            .map(|v| (v.range.module_id().as_usize(), v))
+            .fold(
+                HashMap::<usize, Vec<ArtifactCommand>>::new(),
+                |mut map, (module_id, el)| {
+                    let mut v = map.remove(&module_id).unwrap_or_default();
+                    v.push(el);
+                    map.insert(module_id, v);
+                    map
+                },
+            );
+
+        let mut artifact_commands_keys = artifact_commands_map.keys().cloned().collect::<Vec<_>>();
+        artifact_commands_keys.sort();
+
+        let artifact_commands: Vec<ArtifactCommand> = artifact_commands_keys
+            .iter()
+            .flat_map(|idx| artifact_commands_map.remove(idx).unwrap())
+            .collect();
+
+        assert_eq!(0, artifact_commands_map.len());
+        artifact_commands
+    };
+
     let result1 = catch_unwind(AssertUnwindSafe(|| {
         assert_snapshot(test, "Operations executed", || {
             insta::assert_json_snapshot!("ops", operations, {
@@ -2482,6 +2515,7 @@ mod intersect_cubes {
         super::execute(TEST_NAME, true).await
     }
 }
+
 mod pattern_into_union {
     const TEST_NAME: &str = "pattern_into_union";
 
@@ -2505,6 +2539,69 @@ mod pattern_into_union {
 }
 mod subtract_doesnt_need_brackets {
     const TEST_NAME: &str = "subtract_doesnt_need_brackets";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+
+mod tangent_to_3_point_arc {
+    const TEST_NAME: &str = "tangent_to_3_point_arc";
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod import_async {
+    const TEST_NAME: &str = "import_async";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod loop_tag {
+    const TEST_NAME: &str = "loop_tag";
 
     /// Test parsing KCL.
     #[test]

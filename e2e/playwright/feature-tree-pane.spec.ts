@@ -1,5 +1,5 @@
-import * as fsp from 'fs/promises'
 import { join } from 'path'
+import * as fsp from 'fs/promises'
 
 import { expect, test } from '@e2e/playwright/zoo-test'
 
@@ -429,6 +429,18 @@ profile003 = startProfileAt([0, -4.93], sketch001)
       await editor.expectEditor.toContain('plane001 =')
       await editor.expectEditor.not.toContain('sketch001 =')
       await editor.expectEditor.not.toContain('profile002 = ')
+    })
+
+    await test.step(`Delete the remaining plane via feature tree`, async () => {
+      const operationButton = await toolbar.getFeatureTreeOperation(
+        'Offset Plane',
+        0
+      )
+      await operationButton.click({ button: 'left' })
+      await page.keyboard.press('Delete')
+
+      // Verify the plane code is gone, and https://github.com/KittyCAD/modeling-app/issues/5988 is fixed.
+      await editor.expectEditor.not.toContain('plane001 =')
     })
   })
 })

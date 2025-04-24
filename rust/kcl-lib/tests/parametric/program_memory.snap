@@ -221,9 +221,6 @@ description: Variables in memory after executing parametric.kcl
             "units": {
               "type": "Mm"
             }
-          },
-          "units": {
-            "type": "Mm"
           }
         },
         "start": {
@@ -255,7 +252,8 @@ description: Variables in memory after executing parametric.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "distance": {

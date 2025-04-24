@@ -1,6 +1,6 @@
+import path, { join } from 'path'
 import { KCL_DEFAULT_LENGTH } from '@src/lib/constants'
 import * as fsp from 'fs/promises'
-import path, { join } from 'path'
 
 import {
   executorInputPath,

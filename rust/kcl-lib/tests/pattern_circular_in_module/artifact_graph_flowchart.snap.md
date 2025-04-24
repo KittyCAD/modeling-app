@@ -1,15 +1,23 @@
 ```mermaid
 flowchart LR
   subgraph path2 [Path]
-    2["Path<br>[63, 90, 5]"]
-    3["Segment<br>[98, 116, 5]"]
-    4["Segment<br>[124, 143, 5]"]
-    5["Segment<br>[151, 170, 5]"]
-    6["Segment<br>[178, 185, 5]"]
+    2["Path<br>[63, 90, 6]"]
+    3["Segment<br>[98, 116, 6]"]
+    4["Segment<br>[124, 143, 6]"]
+    5["Segment<br>[151, 170, 6]"]
+    6["Segment<br>[178, 185, 6]"]
     7[Solid2d]
   end
-  1["Plane<br>[38, 55, 5]"]
-  8["Sweep Extrusion<br>[342, 376, 5]"]
+  subgraph path27 [Path]
+    27["Path<br>[63, 90, 6]"]
+    28["Segment<br>[98, 116, 6]"]
+    29["Segment<br>[124, 143, 6]"]
+    30["Segment<br>[151, 170, 6]"]
+    31["Segment<br>[178, 185, 6]"]
+    32[Solid2d]
+  end
+  1["Plane<br>[38, 55, 6]"]
+  8["Sweep Extrusion<br>[342, 376, 6]"]
   9[Wall]
   10[Wall]
   11[Wall]
@@ -24,9 +32,28 @@ flowchart LR
   20["SweepEdge Adjacent"]
   21["SweepEdge Opposite"]
   22["SweepEdge Adjacent"]
-  23["Sweep Extrusion<br>[342, 376, 5]"]
-  24["Sweep Extrusion<br>[342, 376, 5]"]
-  25["Sweep Extrusion<br>[342, 376, 5]"]
+  23["Sweep Extrusion<br>[342, 376, 6]"]
+  24["Sweep Extrusion<br>[342, 376, 6]"]
+  25["Sweep Extrusion<br>[342, 376, 6]"]
+  26["Plane<br>[38, 55, 6]"]
+  33["Sweep Extrusion<br>[342, 376, 6]"]
+  34[Wall]
+  35[Wall]
+  36[Wall]
+  37[Wall]
+  38["Cap Start"]
+  39["Cap End"]
+  40["SweepEdge Opposite"]
+  41["SweepEdge Adjacent"]
+  42["SweepEdge Opposite"]
+  43["SweepEdge Adjacent"]
+  44["SweepEdge Opposite"]
+  45["SweepEdge Adjacent"]
+  46["SweepEdge Opposite"]
+  47["SweepEdge Adjacent"]
+  48["Sweep Extrusion<br>[342, 376, 6]"]
+  49["Sweep Extrusion<br>[342, 376, 6]"]
+  50["Sweep Extrusion<br>[342, 376, 6]"]
   1 --- 2
   2 --- 3
   2 --- 4
@@ -60,4 +87,37 @@ flowchart LR
   8 --- 20
   8 --- 21
   8 --- 22
+  26 --- 27
+  27 --- 28
+  27 --- 29
+  27 --- 30
+  27 --- 31
+  27 ---- 33
+  27 --- 32
+  28 --- 34
+  28 --- 40
+  28 --- 41
+  29 --- 35
+  29 --- 42
+  29 --- 43
+  30 --- 36
+  30 --- 44
+  30 --- 45
+  31 --- 37
+  31 --- 46
+  31 --- 47
+  33 --- 34
+  33 --- 35
+  33 --- 36
+  33 --- 37
+  33 --- 38
+  33 --- 39
+  33 --- 40
+  33 --- 41
+  33 --- 42
+  33 --- 43
+  33 --- 44
+  33 --- 45
+  33 --- 46
+  33 --- 47
 ```

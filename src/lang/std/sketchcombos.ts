@@ -7,9 +7,11 @@ import {
   ARG_END_ABSOLUTE,
   ARG_END_ABSOLUTE_X,
   ARG_END_ABSOLUTE_Y,
+  ARG_INTERSECT_TAG,
   ARG_LENGTH,
   ARG_LENGTH_X,
   ARG_LENGTH_Y,
+  ARG_OFFSET,
   ARG_TAG,
   DETERMINING_ARGS,
 } from '@src/lang/constants'
@@ -36,6 +38,8 @@ import {
   createFirstArg,
   fnNameToTooltip,
   getAngledLine,
+  getAngledLineThatIntersects,
+  getArc,
   getArgForEnd,
   getCircle,
   getConstraintInfo,
@@ -345,20 +349,16 @@ function intersectCallWrapper({
   tag?: Expr
   valueUsedInTransform?: number
 }): CreatedSketchExprResult {
-  const firstArg: any = {
-    angle: angleVal,
-    offset: offsetVal,
-    intersectTag,
-  }
-  const args: Expr[] = [
-    createObjectExpression(firstArg),
-    createPipeSubstitution(),
+  const args: LabeledArg[] = [
+    createLabeledArg(ARG_ANGLE, angleVal),
+    createLabeledArg(ARG_OFFSET, offsetVal),
+    createLabeledArg(ARG_INTERSECT_TAG, intersectTag),
   ]
   if (tag) {
-    args.push(tag)
+    args.push(createLabeledArg(ARG_TAG, tag))
   }
   return {
-    callExp: createCallExpression(fnName, args),
+    callExp: createCallExpressionStdLibKw(fnName, null, args),
     valueUsedInTransform,
   }
 }
@@ -1408,11 +1408,8 @@ export function getRemoveConstraintsTransform(
   }
 
   if (
-    (sketchFnExp.type === 'CallExpressionKw' &&
-      sketchFnExp.callee.name.name === 'circleThreePoint') ||
-    (sketchFnExp.type === 'CallExpression' &&
-      (sketchFnExp.callee.name.name === 'arcTo' ||
-        sketchFnExp.callee.name.name === 'arc'))
+    sketchFnExp.type === 'CallExpressionKw' &&
+    sketchFnExp.callee.name.name === 'circleThreePoint'
   ) {
     return false
   }
@@ -1538,20 +1535,22 @@ export function removeSingleConstraint({
       }
       if (inputToReplace.type === 'arrayItem') {
         const values = inputs.map((arg) => {
+          const argExpr = arg.overrideExpr ?? arg.expr
           if (
             !(
               (arg.type === 'arrayItem' || arg.type === 'arrayOrObjItem') &&
               arg.index === inputToReplace.index
             )
           )
-            return arg.expr
-          const literal = rawArgs.find(
+            return argExpr
+          const rawArg = rawArgs.find(
             (rawValue) =>
               (rawValue.type === 'arrayItem' ||
                 rawValue.type === 'arrayOrObjItem') &&
               rawValue.index === inputToReplace.index
-          )?.expr
-          return (arg.index === inputToReplace.index && literal) || arg.expr
+          )
+          const literal = rawArg?.overrideExpr ?? rawArg?.expr
+          return (arg.index === inputToReplace.index && literal) || argExpr
         })
         if (callExp.node.type === 'CallExpression') {
           return createStdlibCallExpression(
@@ -1589,6 +1588,7 @@ export function removeSingleConstraint({
         const objInput: Parameters<typeof createObjectExpression>[0] = {}
         const kwArgInput: ReturnType<typeof createLabeledArg>[] = []
         inputs.forEach((currentArg) => {
+          const currentArgExpr = currentArg.overrideExpr ?? currentArg.expr
           if (
             // should be one of these, return early to make TS happy.
             currentArg.type !== 'objectProperty' &&
@@ -1619,8 +1619,11 @@ export function removeSingleConstraint({
             if (!arrayInput[currentArg.key]) {
               arrayInput[currentArg.key] = []
             }
-            arrayInput[inputToReplace.key][inputToReplace.index] =
+            const rawLiteralArrayInObjectExpr =
+              rawLiteralArrayInObject.overrideExpr ??
               rawLiteralArrayInObject.expr
+            arrayInput[inputToReplace.key][inputToReplace.index] =
+              rawLiteralArrayInObjectExpr
             let existingKwgForKey = kwArgInput.find(
               (kwArg) => kwArg.label.name === currentArg.key
             )
@@ -1633,7 +1636,7 @@ export function removeSingleConstraint({
             }
             if (existingKwgForKey.arg.type === 'ArrayExpression') {
               existingKwgForKey.arg.elements[inputToReplace.index] =
-                rawLiteralArrayInObject.expr
+                rawLiteralArrayInObjectExpr
             }
           } else if (
             inputToReplace.type === 'objectProperty' &&
@@ -1642,10 +1645,11 @@ export function removeSingleConstraint({
             rawLiteralObjProp?.key === inputToReplace.key &&
             currentArg.key === inputToReplace.key
           ) {
-            objInput[inputToReplace.key] = rawLiteralObjProp.expr
+            objInput[inputToReplace.key] =
+              rawLiteralObjProp.overrideExpr ?? rawLiteralObjProp.expr
           } else if (currentArg.type === 'arrayInObject') {
             if (!arrayInput[currentArg.key]) arrayInput[currentArg.key] = []
-            arrayInput[currentArg.key][currentArg.index] = currentArg.expr
+            arrayInput[currentArg.key][currentArg.index] = currentArgExpr
             let existingKwgForKey = kwArgInput.find(
               (kwArg) => kwArg.label.name === currentArg.key
             )
@@ -1657,10 +1661,10 @@ export function removeSingleConstraint({
               kwArgInput.push(existingKwgForKey)
             }
             if (existingKwgForKey.arg.type === 'ArrayExpression') {
-              existingKwgForKey.arg.elements[currentArg.index] = currentArg.expr
+              existingKwgForKey.arg.elements[currentArg.index] = currentArgExpr
             }
           } else if (currentArg.type === 'objectProperty') {
-            objInput[currentArg.key] = currentArg.expr
+            objInput[currentArg.key] = currentArgExpr
           }
         })
         const createObjParam: Parameters<typeof createObjectExpression>[0] = {}
@@ -1694,7 +1698,7 @@ export function removeSingleConstraint({
 
       return createCallWrapper(
         callExp.node.callee.name.name as any,
-        rawArgs[0].expr,
+        rawArgs[0].overrideExpr ?? rawArgs[0].expr,
         tag
       )
     },
@@ -2334,6 +2338,12 @@ export function getConstraintLevelFromSourceRange(
             name === 'angledLineToY'
           ) {
             return getAngledLine(nodeMeta.node)
+          }
+          if (name === 'angledLineThatIntersects') {
+            return getAngledLineThatIntersects(nodeMeta.node)
+          }
+          if (name === 'arc') {
+            return getArc(nodeMeta.node)
           }
           const arg = findKwArgAny(DETERMINING_ARGS, nodeMeta.node)
           if (arg === undefined) {

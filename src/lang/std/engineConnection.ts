@@ -1,15 +1,20 @@
 import type { Models } from '@kittycad/lib'
 import { VITE_KC_API_WS_MODELING_URL, VITE_KC_DEV_TOKEN } from '@src/env'
+import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { BSON } from 'bson'
 
 import type { MachineManager } from '@src/components/MachineManagerProvider'
 import type { useModelingContext } from '@src/hooks/useModelingContext'
 import type { KclManager } from '@src/lang/KclSingleton'
+import type CodeManager from '@src/lang/codeManager'
 import type { EngineCommand, ResponseMap } from '@src/lang/std/artifactGraph'
+import type { CommandLog } from '@src/lang/std/commandLog'
+import { CommandLogType } from '@src/lang/std/commandLog'
 import type { SourceRange } from '@src/lang/wasm'
 import { defaultSourceRange } from '@src/lang/wasm'
 import { EXECUTE_AST_INTERRUPT_ERROR_MESSAGE } from '@src/lib/constants'
 import { markOnce } from '@src/lib/performance'
+import type RustContext from '@src/lib/rustContext'
 import type { SettingsViaQueryString } from '@src/lib/settings/settingsTypes'
 import {
   Themes,
@@ -27,8 +32,6 @@ function isHighlightSetEntity_type(
 ): data is Models['HighlightSetEntity_type'] {
   return data.entity_id && data.sequence
 }
-
-type OkWebSocketResponseData = Models['OkWebSocketResponseData_type']
 
 interface NewTrackArgs {
   conn: EngineConnection
@@ -64,6 +67,7 @@ export enum DisconnectingType {
 export enum ConnectionError {
   Unset = 0,
   LongLoadingTime,
+  VeryLongLoadingTime,
 
   ICENegotiate,
   DataChannelError,
@@ -75,6 +79,7 @@ export enum ConnectionError {
   MissingAuthToken,
   BadAuthToken,
   TooManyConnections,
+  Outage,
 
   // An unknown error is the most severe because it has not been classified
   // or encountered before.
@@ -85,6 +90,8 @@ export const CONNECTION_ERROR_TEXT: Record<ConnectionError, string> = {
   [ConnectionError.Unset]: '',
   [ConnectionError.LongLoadingTime]:
     'Loading is taking longer than expected...',
+  [ConnectionError.VeryLongLoadingTime]:
+    'Loading seems stuck. Do you have a firewall turned on?',
   [ConnectionError.ICENegotiate]: 'ICE negotiation failed.',
   [ConnectionError.DataChannelError]: 'The data channel signaled an error.',
   [ConnectionError.WebSocketError]: 'The websocket signaled an error.',
@@ -94,7 +101,10 @@ export const CONNECTION_ERROR_TEXT: Record<ConnectionError, string> = {
     'Your authorization token is missing; please login again.',
   [ConnectionError.BadAuthToken]:
     'Your authorization token is invalid; please login again.',
-  [ConnectionError.TooManyConnections]: 'There are too many connections.',
+  [ConnectionError.TooManyConnections]:
+    'There are too many open engine connections associated with your account.',
+  [ConnectionError.Outage]:
+    'We seem to be experiencing an outage. Please visit [status.zoo.dev](https://status.zoo.dev) for updates.',
   [ConnectionError.Unknown]:
     'An unexpected error occurred. Please report this to us.',
 }
@@ -658,6 +668,22 @@ class EngineConnection extends EventTarget {
                   detail: { conn: this, mediaStream: this.mediaStream! },
                 })
               )
+
+              setTimeout(() => {
+                // Everything is now connected.
+                this.state = {
+                  type: EngineConnectionStateType.ConnectionEstablished,
+                }
+
+                this.engineCommandManager.inSequence = 1
+
+                this.dispatchEvent(
+                  new CustomEvent(EngineConnectionEvents.Opened, {
+                    detail: this,
+                  })
+                )
+                markOnce('code/endInitialEngineConnect')
+              }, 2000)
               break
             case 'connecting':
               break
@@ -785,18 +811,6 @@ class EngineConnection extends EventTarget {
                 type: ConnectingType.DataChannelEstablished,
               },
             }
-
-            // Everything is now connected.
-            this.state = {
-              type: EngineConnectionStateType.ConnectionEstablished,
-            }
-
-            this.engineCommandManager.inSequence = 1
-
-            this.dispatchEvent(
-              new CustomEvent(EngineConnectionEvents.Opened, { detail: this })
-            )
-            markOnce('code/endInitialEngineConnect')
           }
           this.unreliableDataChannel?.addEventListener(
             'open',
@@ -989,6 +1003,20 @@ class EngineConnection extends EventTarget {
                   type: DisconnectingType.Error,
                   value: {
                     error: ConnectionError.BadAuthToken,
+                    context: firstError.message,
+                  },
+                },
+              }
+              this.disconnectAll()
+            }
+
+            if (firstError.error_code === 'internal_api') {
+              this.state = {
+                type: EngineConnectionStateType.Disconnecting,
+                value: {
+                  type: DisconnectingType.Error,
+                  value: {
+                    error: ConnectionError.Outage,
                     context: firstError.message,
                   },
                 },
@@ -1269,35 +1297,6 @@ export interface Subscription<T extends ModelTypes> {
   ) => void
 }
 
-export enum CommandLogType {
-  SendModeling = 'send-modeling',
-  SendScene = 'send-scene',
-  ReceiveReliable = 'receive-reliable',
-  ExecutionDone = 'execution-done',
-  ExportDone = 'export-done',
-  SetDefaultSystemProperties = 'set_default_system_properties',
-}
-
-export type CommandLog =
-  | {
-      type: CommandLogType.SendModeling
-      data: EngineCommand
-    }
-  | {
-      type: CommandLogType.SendScene
-      data: EngineCommand
-    }
-  | {
-      type: CommandLogType.ReceiveReliable
-      data: OkWebSocketResponseData
-      id: string
-      cmd_type?: string
-    }
-  | {
-      type: CommandLogType.ExecutionDone
-      data: null
-    }
-
 export enum EngineCommandManagerEvents {
   // engineConnection is available but scene setup may not have run
   EngineAvailable = 'engine-available',
@@ -1398,6 +1397,7 @@ export class EngineCommandManager extends EventTarget {
 
   private onEngineConnectionOpened = () => {}
   private onEngineConnectionClosed = () => {}
+  private onVideoTrackMute = () => {}
   private onDarkThemeMediaQueryChange = (e: MediaQueryListEvent) => {
     this.setTheme(e.matches ? Themes.Dark : Themes.Light).catch(reportRejection)
   }
@@ -1408,6 +1408,8 @@ export class EngineCommandManager extends EventTarget {
   modelingSend: ReturnType<typeof useModelingContext>['send'] =
     (() => {}) as any
   kclManager: null | KclManager = null
+  codeManager?: CodeManager
+  rustContext?: RustContext
 
   // The current "manufacturing machine" aka 3D printer, CNC, etc.
   public machineManager: MachineManager | null = null
@@ -1480,6 +1482,11 @@ export class EngineCommandManager extends EventTarget {
 
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
     this.onEngineConnectionOpened = async () => {
+      await this.rustContext?.clearSceneAndBustCache(
+        { settings: await jsAppSettings() },
+        this.codeManager?.currentFilePath || undefined
+      )
+
       // Set the stream's camera projection type
       // We don't send a command to the engine if in perspective mode because
       // for now it's the engine's default.
@@ -1610,6 +1617,12 @@ export class EngineCommandManager extends EventTarget {
           return
         }
 
+        // In either case we want to send the response back over the wire to
+        // the rust side.
+        this.rustContext?.sendResponse(message).catch((err) => {
+          console.error('Error sending response to rust', err)
+        })
+
         const pending = this.pendingCommands[message.request_id || '']
 
         if (pending && !message.success) {
@@ -1695,15 +1708,17 @@ export class EngineCommandManager extends EventTarget {
         delete this.pendingCommands[message.request_id || '']
       }) as EventListener)
 
+      this.onVideoTrackMute = () => {
+        console.error('video track mute: check webrtc internals -> inbound rtp')
+      }
+
       this.onEngineConnectionNewTrack = ({
         detail: { mediaStream },
       }: CustomEvent<NewTrackArgs>) => {
-        mediaStream.getVideoTracks()[0].addEventListener('mute', () => {
-          console.error(
-            'video track mute: check webrtc internals -> inbound rtp'
-          )
-        })
-
+        // Engine side had an oopsie (client sent trickle_ice, engine no happy)
+        mediaStream
+          .getVideoTracks()[0]
+          .addEventListener('mute', this.onVideoTrackMute)
         setMediaStream(mediaStream)
       }
       this.engineConnection?.addEventListener(
@@ -1921,6 +1936,46 @@ export class EngineCommandManager extends EventTarget {
         /*noop*/
         return e
       })
+  }
+  /**
+   * A wrapper around the sendCommand where all inputs are JSON strings
+   *
+   * This one does not wait for a response.
+   */
+  fireModelingCommandFromWasm(
+    id: string,
+    rangeStr: string,
+    commandStr: string,
+    idToRangeStr: string
+  ): void | Error {
+    if (this.engineConnection === undefined)
+      return new Error('engineConnection is undefined')
+    if (
+      !this.engineConnection?.isReady() &&
+      !this.engineConnection.isUsingConnectionLite
+    )
+      return new Error('engineConnection is not ready')
+    if (id === undefined) return new Error('id is undefined')
+    if (rangeStr === undefined) return new Error('rangeStr is undefined')
+    if (commandStr === undefined) return new Error('commandStr is undefined')
+    const range: SourceRange = JSON.parse(rangeStr)
+    const command: EngineCommand = JSON.parse(commandStr)
+    const idToRangeMap: { [key: string]: SourceRange } =
+      JSON.parse(idToRangeStr)
+
+    // Current executeAst is stale, going to interrupt, a new executeAst will trigger
+    // Used in conjunction with rejectAllModelingCommands
+    if (this?.kclManager?.executeIsStale) {
+      return new Error(EXECUTE_AST_INTERRUPT_ERROR_MESSAGE)
+    }
+
+    // We purposely don't wait for a response here
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    this.sendCommand(id, {
+      command,
+      range,
+      idToRangeMap,
+    })
   }
   /**
    * A wrapper around the sendCommand where all inputs are JSON strings

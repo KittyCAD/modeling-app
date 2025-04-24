@@ -581,9 +581,6 @@ description: Variables in memory after executing i_shape.kcl
           "units": {
             "type": "Mm"
           }
-        },
-        "units": {
-          "type": "Mm"
         }
       },
       "start": {
@@ -1433,9 +1430,6 @@ description: Variables in memory after executing i_shape.kcl
             "units": {
               "type": "Mm"
             }
-          },
-          "units": {
-            "type": "Mm"
           }
         },
         "start": {
@@ -1467,7 +1461,8 @@ description: Variables in memory after executing i_shape.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "hand_thickness": {
@@ -1717,9 +1712,6 @@ description: Variables in memory after executing i_shape.kcl
           "units": {
             "type": "Mm"
           }
-        },
-        "units": {
-          "type": "Mm"
         }
       },
       "start": {

@@ -7,11 +7,83 @@ description: Operations executed pipe-flange-assembly.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
+      "name": "toRadians",
+      "functionSourceRange": [
+        11603,
+        11652,
+        1
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "cos",
+      "functionSourceRange": [
+        0,
+        0,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "toRadians",
+      "functionSourceRange": [
+        11603,
+        11652,
+        1
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "cos",
+      "functionSourceRange": [
+        0,
+        0,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
       "name": "flange",
       "functionSourceRange": [
         509,
         1743,
-        7
+        8
       ],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -305,7 +377,7 @@ description: Operations executed pipe-flange-assembly.kcl
       "functionSourceRange": [
         509,
         1743,
-        7
+        8
       ],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -596,7 +668,7 @@ description: Operations executed pipe-flange-assembly.kcl
     "group": {
       "type": "ModuleInstance",
       "name": "gasket",
-      "moduleId": 6
+      "moduleId": 7
     },
     "sourceRange": []
   },
@@ -713,7 +785,7 @@ description: Operations executed pipe-flange-assembly.kcl
       "functionSourceRange": [
         331,
         757,
-        8
+        9
       ],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -1100,7 +1172,7 @@ description: Operations executed pipe-flange-assembly.kcl
       "functionSourceRange": [
         358,
         1507,
-        9
+        10
       ],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -1473,7 +1545,7 @@ description: Operations executed pipe-flange-assembly.kcl
       "functionSourceRange": [
         344,
         1123,
-        10
+        11
       ],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -1742,7 +1814,7 @@ description: Operations executed pipe-flange-assembly.kcl
       "functionSourceRange": [
         256,
         675,
-        11
+        12
       ],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -1862,7 +1934,7 @@ description: Operations executed pipe-flange-assembly.kcl
       "functionSourceRange": [
         256,
         675,
-        11
+        12
       ],
       "unlabeledArg": null,
       "labeledArgs": {}

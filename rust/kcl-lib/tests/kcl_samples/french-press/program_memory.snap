@@ -117,7 +117,7 @@ description: Variables in memory after executing french-press.kcl
           "origin": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0,
+            "z": 25.4,
             "units": {
               "type": "Mm"
             }
@@ -145,9 +145,6 @@ description: Variables in memory after executing french-press.kcl
             "units": {
               "type": "Mm"
             }
-          },
-          "units": {
-            "type": "Inches"
           }
         },
         "start": {
@@ -179,7 +176,8 @@ description: Variables in memory after executing french-press.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Inches"
-      }
+      },
+      "sectional": false
     }
   },
   "extrude002": {
@@ -381,7 +379,7 @@ description: Variables in memory after executing french-press.kcl
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
-                      "z": 1.0,
+                      "z": 25.4,
                       "units": {
                         "type": "Mm"
                       }
@@ -409,9 +407,6 @@ description: Variables in memory after executing french-press.kcl
                       "units": {
                         "type": "Mm"
                       }
-                    },
-                    "units": {
-                      "type": "Inches"
                     }
                   },
                   "start": {
@@ -443,7 +438,8 @@ description: Variables in memory after executing french-press.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Inches"
@@ -478,7 +474,8 @@ description: Variables in memory after executing french-press.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -677,7 +674,7 @@ description: Variables in memory after executing french-press.kcl
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
-                      "z": 1.0,
+                      "z": 25.4,
                       "units": {
                         "type": "Mm"
                       }
@@ -705,9 +702,6 @@ description: Variables in memory after executing french-press.kcl
                       "units": {
                         "type": "Mm"
                       }
-                    },
-                    "units": {
-                      "type": "Inches"
                     }
                   },
                   "start": {
@@ -739,7 +733,8 @@ description: Variables in memory after executing french-press.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Inches"
@@ -774,7 +769,8 @@ description: Variables in memory after executing french-press.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -973,7 +969,7 @@ description: Variables in memory after executing french-press.kcl
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
-                      "z": 1.0,
+                      "z": 25.4,
                       "units": {
                         "type": "Mm"
                       }
@@ -1001,9 +997,6 @@ description: Variables in memory after executing french-press.kcl
                       "units": {
                         "type": "Mm"
                       }
-                    },
-                    "units": {
-                      "type": "Inches"
                     }
                   },
                   "start": {
@@ -1035,7 +1028,8 @@ description: Variables in memory after executing french-press.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Inches"
@@ -1070,7 +1064,8 @@ description: Variables in memory after executing french-press.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       }
     ]
@@ -1128,7 +1123,7 @@ description: Variables in memory after executing french-press.kcl
           "origin": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.12,
+            "z": 28.448,
             "units": {
               "type": "Mm"
             }
@@ -1156,9 +1151,6 @@ description: Variables in memory after executing french-press.kcl
             "units": {
               "type": "Mm"
             }
-          },
-          "units": {
-            "type": "Inches"
           }
         },
         "start": {
@@ -1190,7 +1182,8 @@ description: Variables in memory after executing french-press.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Inches"
-      }
+      },
+      "sectional": false
     }
   },
   "extrude004": {
@@ -1321,7 +1314,7 @@ description: Variables in memory after executing french-press.kcl
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
-                      "z": 1.12,
+                      "z": 28.448,
                       "units": {
                         "type": "Mm"
                       }
@@ -1349,9 +1342,6 @@ description: Variables in memory after executing french-press.kcl
                       "units": {
                         "type": "Mm"
                       }
-                    },
-                    "units": {
-                      "type": "Inches"
                     }
                   },
                   "start": {
@@ -1383,7 +1373,8 @@ description: Variables in memory after executing french-press.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Inches"
@@ -1418,7 +1409,8 @@ description: Variables in memory after executing french-press.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -1546,7 +1538,7 @@ description: Variables in memory after executing french-press.kcl
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
-                      "z": 1.12,
+                      "z": 28.448,
                       "units": {
                         "type": "Mm"
                       }
@@ -1574,9 +1566,6 @@ description: Variables in memory after executing french-press.kcl
                       "units": {
                         "type": "Mm"
                       }
-                    },
-                    "units": {
-                      "type": "Inches"
                     }
                   },
                   "start": {
@@ -1608,7 +1597,8 @@ description: Variables in memory after executing french-press.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Inches"
@@ -1643,7 +1633,8 @@ description: Variables in memory after executing french-press.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -1771,7 +1762,7 @@ description: Variables in memory after executing french-press.kcl
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
-                      "z": 1.12,
+                      "z": 28.448,
                       "units": {
                         "type": "Mm"
                       }
@@ -1799,9 +1790,6 @@ description: Variables in memory after executing french-press.kcl
                       "units": {
                         "type": "Mm"
                       }
-                    },
-                    "units": {
-                      "type": "Inches"
                     }
                   },
                   "start": {
@@ -1833,7 +1821,8 @@ description: Variables in memory after executing french-press.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Inches"
@@ -1868,7 +1857,8 @@ description: Variables in memory after executing french-press.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -1996,7 +1986,7 @@ description: Variables in memory after executing french-press.kcl
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
-                      "z": 1.12,
+                      "z": 28.448,
                       "units": {
                         "type": "Mm"
                       }
@@ -2024,9 +2014,6 @@ description: Variables in memory after executing french-press.kcl
                       "units": {
                         "type": "Mm"
                       }
-                    },
-                    "units": {
-                      "type": "Inches"
                     }
                   },
                   "start": {
@@ -2058,7 +2045,8 @@ description: Variables in memory after executing french-press.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Inches"
@@ -2093,7 +2081,8 @@ description: Variables in memory after executing french-press.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -2221,7 +2210,7 @@ description: Variables in memory after executing french-press.kcl
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
-                      "z": 1.12,
+                      "z": 28.448,
                       "units": {
                         "type": "Mm"
                       }
@@ -2249,9 +2238,6 @@ description: Variables in memory after executing french-press.kcl
                       "units": {
                         "type": "Mm"
                       }
-                    },
-                    "units": {
-                      "type": "Inches"
                     }
                   },
                   "start": {
@@ -2283,7 +2269,8 @@ description: Variables in memory after executing french-press.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Inches"
@@ -2318,7 +2305,8 @@ description: Variables in memory after executing french-press.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -2446,7 +2434,7 @@ description: Variables in memory after executing french-press.kcl
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
-                      "z": 1.12,
+                      "z": 28.448,
                       "units": {
                         "type": "Mm"
                       }
@@ -2474,9 +2462,6 @@ description: Variables in memory after executing french-press.kcl
                       "units": {
                         "type": "Mm"
                       }
-                    },
-                    "units": {
-                      "type": "Inches"
                     }
                   },
                   "start": {
@@ -2508,7 +2493,8 @@ description: Variables in memory after executing french-press.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Inches"
@@ -2543,7 +2529,8 @@ description: Variables in memory after executing french-press.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -2671,7 +2658,7 @@ description: Variables in memory after executing french-press.kcl
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
-                      "z": 1.12,
+                      "z": 28.448,
                       "units": {
                         "type": "Mm"
                       }
@@ -2699,9 +2686,6 @@ description: Variables in memory after executing french-press.kcl
                       "units": {
                         "type": "Mm"
                       }
-                    },
-                    "units": {
-                      "type": "Inches"
                     }
                   },
                   "start": {
@@ -2733,7 +2717,8 @@ description: Variables in memory after executing french-press.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Inches"
@@ -2768,7 +2753,8 @@ description: Variables in memory after executing french-press.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -2896,7 +2882,7 @@ description: Variables in memory after executing french-press.kcl
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
-                      "z": 1.12,
+                      "z": 28.448,
                       "units": {
                         "type": "Mm"
                       }
@@ -2924,9 +2910,6 @@ description: Variables in memory after executing french-press.kcl
                       "units": {
                         "type": "Mm"
                       }
-                    },
-                    "units": {
-                      "type": "Inches"
                     }
                   },
                   "start": {
@@ -2958,7 +2941,8 @@ description: Variables in memory after executing french-press.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Inches"
@@ -2993,7 +2977,8 @@ description: Variables in memory after executing french-press.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       }
     ]
@@ -3126,7 +3111,7 @@ description: Variables in memory after executing french-press.kcl
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
-                      "z": 1.12,
+                      "z": 28.448,
                       "units": {
                         "type": "Mm"
                       }
@@ -3154,9 +3139,6 @@ description: Variables in memory after executing french-press.kcl
                       "units": {
                         "type": "Mm"
                       }
-                    },
-                    "units": {
-                      "type": "Inches"
                     }
                   },
                   "start": {
@@ -3188,7 +3170,8 @@ description: Variables in memory after executing french-press.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Inches"
@@ -3223,7 +3206,8 @@ description: Variables in memory after executing french-press.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -3351,7 +3335,7 @@ description: Variables in memory after executing french-press.kcl
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
-                      "z": 1.12,
+                      "z": 28.448,
                       "units": {
                         "type": "Mm"
                       }
@@ -3379,9 +3363,6 @@ description: Variables in memory after executing french-press.kcl
                       "units": {
                         "type": "Mm"
                       }
-                    },
-                    "units": {
-                      "type": "Inches"
                     }
                   },
                   "start": {
@@ -3413,7 +3394,8 @@ description: Variables in memory after executing french-press.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Inches"
@@ -3448,7 +3430,8 @@ description: Variables in memory after executing french-press.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -3576,7 +3559,7 @@ description: Variables in memory after executing french-press.kcl
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
-                      "z": 1.12,
+                      "z": 28.448,
                       "units": {
                         "type": "Mm"
                       }
@@ -3604,9 +3587,6 @@ description: Variables in memory after executing french-press.kcl
                       "units": {
                         "type": "Mm"
                       }
-                    },
-                    "units": {
-                      "type": "Inches"
                     }
                   },
                   "start": {
@@ -3638,7 +3618,8 @@ description: Variables in memory after executing french-press.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Inches"
@@ -3673,7 +3654,8 @@ description: Variables in memory after executing french-press.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -3801,7 +3783,7 @@ description: Variables in memory after executing french-press.kcl
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
-                      "z": 1.12,
+                      "z": 28.448,
                       "units": {
                         "type": "Mm"
                       }
@@ -3829,9 +3811,6 @@ description: Variables in memory after executing french-press.kcl
                       "units": {
                         "type": "Mm"
                       }
-                    },
-                    "units": {
-                      "type": "Inches"
                     }
                   },
                   "start": {
@@ -3863,7 +3842,8 @@ description: Variables in memory after executing french-press.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Inches"
@@ -3898,7 +3878,8 @@ description: Variables in memory after executing french-press.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       }
     ]
@@ -3984,9 +3965,6 @@ description: Variables in memory after executing french-press.kcl
             "units": {
               "type": "Mm"
             }
-          },
-          "units": {
-            "type": "Inches"
           }
         },
         "start": {
@@ -4018,7 +3996,8 @@ description: Variables in memory after executing french-press.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Inches"
-      }
+      },
+      "sectional": false
     }
   },
   "extrude007": {
@@ -4402,7 +4381,7 @@ description: Variables in memory after executing french-press.kcl
           "value": "Custom",
           "origin": {
             "x": 0.0,
-            "y": -0.325,
+            "y": -8.254999999999999,
             "z": 0.0,
             "units": {
               "type": "Mm"
@@ -4431,9 +4410,6 @@ description: Variables in memory after executing french-press.kcl
             "units": {
               "type": "Mm"
             }
-          },
-          "units": {
-            "type": "Inches"
           }
         },
         "start": {
@@ -4465,7 +4441,8 @@ description: Variables in memory after executing french-press.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Inches"
-      }
+      },
+      "sectional": false
     }
   },
   "handleThickness": {
@@ -4890,9 +4867,6 @@ description: Variables in memory after executing french-press.kcl
             "units": {
               "type": "Mm"
             }
-          },
-          "units": {
-            "type": "Inches"
           }
         },
         "start": {
@@ -4938,7 +4912,8 @@ description: Variables in memory after executing french-press.kcl
       "endCapId": null,
       "units": {
         "type": "Inches"
-      }
+      },
+      "sectional": false
     }
   },
   "sketch002": {
@@ -4983,9 +4958,9 @@ description: Variables in memory after executing french-press.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1220,
-                "end": 1226,
-                "start": 1220,
+                "commentStart": 1187,
+                "end": 1193,
+                "start": 1187,
                 "type": "TagDeclarator",
                 "value": "edge2"
               },
@@ -5003,9 +4978,9 @@ description: Variables in memory after executing french-press.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1374,
-                "end": 1380,
-                "start": 1374,
+                "commentStart": 1308,
+                "end": 1314,
+                "start": 1308,
                 "type": "TagDeclarator",
                 "value": "edge3"
               },
@@ -5023,9 +4998,9 @@ description: Variables in memory after executing french-press.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1506,
-                "end": 1514,
-                "start": 1506,
+                "commentStart": 1407,
+                "end": 1415,
+                "start": 1407,
                 "type": "TagDeclarator",
                 "value": "edgeLen"
               },
@@ -5043,9 +5018,9 @@ description: Variables in memory after executing french-press.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1592,
-                "end": 1598,
-                "start": 1592,
+                "commentStart": 1493,
+                "end": 1499,
+                "start": 1493,
                 "type": "TagDeclarator",
                 "value": "edge4"
               },
@@ -5063,9 +5038,9 @@ description: Variables in memory after executing french-press.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1756,
-                "end": 1762,
-                "start": 1756,
+                "commentStart": 1624,
+                "end": 1630,
+                "start": 1624,
                 "type": "TagDeclarator",
                 "value": "edge5"
               },
@@ -5083,9 +5058,9 @@ description: Variables in memory after executing french-press.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1922,
-                "end": 1928,
-                "start": 1922,
+                "commentStart": 1757,
+                "end": 1763,
+                "start": 1757,
                 "type": "TagDeclarator",
                 "value": "edge6"
               },
@@ -5189,9 +5164,9 @@ description: Variables in memory after executing french-press.kcl
                   0.3732
                 ],
                 "tag": {
-                  "commentStart": 1220,
-                  "end": 1226,
-                  "start": 1220,
+                  "commentStart": 1187,
+                  "end": 1193,
+                  "start": 1187,
                   "type": "TagDeclarator",
                   "value": "edge2"
                 },
@@ -5239,9 +5214,9 @@ description: Variables in memory after executing french-press.kcl
                   -0.966
                 ],
                 "tag": {
-                  "commentStart": 1374,
-                  "end": 1380,
-                  "start": 1374,
+                  "commentStart": 1308,
+                  "end": 1314,
+                  "start": 1308,
                   "type": "TagDeclarator",
                   "value": "edge3"
                 },
@@ -5289,9 +5264,9 @@ description: Variables in memory after executing french-press.kcl
                   -0.133
                 ],
                 "tag": {
-                  "commentStart": 1506,
-                  "end": 1514,
-                  "start": 1506,
+                  "commentStart": 1407,
+                  "end": 1415,
+                  "start": 1407,
                   "type": "TagDeclarator",
                   "value": "edgeLen"
                 },
@@ -5333,9 +5308,9 @@ description: Variables in memory after executing french-press.kcl
                   -0.033
                 ],
                 "tag": {
-                  "commentStart": 1592,
-                  "end": 1598,
-                  "start": 1592,
+                  "commentStart": 1493,
+                  "end": 1499,
+                  "start": 1493,
                   "type": "TagDeclarator",
                   "value": "edge4"
                 },
@@ -5383,9 +5358,9 @@ description: Variables in memory after executing french-press.kcl
                   -0.1134
                 ],
                 "tag": {
-                  "commentStart": 1756,
-                  "end": 1762,
-                  "start": 1756,
+                  "commentStart": 1624,
+                  "end": 1630,
+                  "start": 1624,
                   "type": "TagDeclarator",
                   "value": "edge5"
                 },
@@ -5433,9 +5408,9 @@ description: Variables in memory after executing french-press.kcl
                   -0.1789
                 ],
                 "tag": {
-                  "commentStart": 1922,
-                  "end": 1928,
-                  "start": 1922,
+                  "commentStart": 1757,
+                  "end": 1763,
+                  "start": 1757,
                   "type": "TagDeclarator",
                   "value": "edge6"
                 },
@@ -5548,9 +5523,6 @@ description: Variables in memory after executing french-press.kcl
                 "units": {
                   "type": "Inches"
                 }
-              },
-              "units": {
-                "type": "Inches"
               }
             },
             "start": {
@@ -5612,7 +5584,8 @@ description: Variables in memory after executing french-press.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -5654,9 +5627,9 @@ description: Variables in memory after executing french-press.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1220,
-                "end": 1226,
-                "start": 1220,
+                "commentStart": 1187,
+                "end": 1193,
+                "start": 1187,
                 "type": "TagDeclarator",
                 "value": "edge2"
               },
@@ -5674,9 +5647,9 @@ description: Variables in memory after executing french-press.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1374,
-                "end": 1380,
-                "start": 1374,
+                "commentStart": 1308,
+                "end": 1314,
+                "start": 1308,
                 "type": "TagDeclarator",
                 "value": "edge3"
               },
@@ -5694,9 +5667,9 @@ description: Variables in memory after executing french-press.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1506,
-                "end": 1514,
-                "start": 1506,
+                "commentStart": 1407,
+                "end": 1415,
+                "start": 1407,
                 "type": "TagDeclarator",
                 "value": "edgeLen"
               },
@@ -5714,9 +5687,9 @@ description: Variables in memory after executing french-press.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1592,
-                "end": 1598,
-                "start": 1592,
+                "commentStart": 1493,
+                "end": 1499,
+                "start": 1493,
                 "type": "TagDeclarator",
                 "value": "edge4"
               },
@@ -5734,9 +5707,9 @@ description: Variables in memory after executing french-press.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1756,
-                "end": 1762,
-                "start": 1756,
+                "commentStart": 1624,
+                "end": 1630,
+                "start": 1624,
                 "type": "TagDeclarator",
                 "value": "edge5"
               },
@@ -5754,9 +5727,9 @@ description: Variables in memory after executing french-press.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1922,
-                "end": 1928,
-                "start": 1922,
+                "commentStart": 1757,
+                "end": 1763,
+                "start": 1757,
                 "type": "TagDeclarator",
                 "value": "edge6"
               },
@@ -5860,9 +5833,9 @@ description: Variables in memory after executing french-press.kcl
                   0.3732
                 ],
                 "tag": {
-                  "commentStart": 1220,
-                  "end": 1226,
-                  "start": 1220,
+                  "commentStart": 1187,
+                  "end": 1193,
+                  "start": 1187,
                   "type": "TagDeclarator",
                   "value": "edge2"
                 },
@@ -5910,9 +5883,9 @@ description: Variables in memory after executing french-press.kcl
                   -0.966
                 ],
                 "tag": {
-                  "commentStart": 1374,
-                  "end": 1380,
-                  "start": 1374,
+                  "commentStart": 1308,
+                  "end": 1314,
+                  "start": 1308,
                   "type": "TagDeclarator",
                   "value": "edge3"
                 },
@@ -5960,9 +5933,9 @@ description: Variables in memory after executing french-press.kcl
                   -0.133
                 ],
                 "tag": {
-                  "commentStart": 1506,
-                  "end": 1514,
-                  "start": 1506,
+                  "commentStart": 1407,
+                  "end": 1415,
+                  "start": 1407,
                   "type": "TagDeclarator",
                   "value": "edgeLen"
                 },
@@ -6004,9 +5977,9 @@ description: Variables in memory after executing french-press.kcl
                   -0.033
                 ],
                 "tag": {
-                  "commentStart": 1592,
-                  "end": 1598,
-                  "start": 1592,
+                  "commentStart": 1493,
+                  "end": 1499,
+                  "start": 1493,
                   "type": "TagDeclarator",
                   "value": "edge4"
                 },
@@ -6054,9 +6027,9 @@ description: Variables in memory after executing french-press.kcl
                   -0.1134
                 ],
                 "tag": {
-                  "commentStart": 1756,
-                  "end": 1762,
-                  "start": 1756,
+                  "commentStart": 1624,
+                  "end": 1630,
+                  "start": 1624,
                   "type": "TagDeclarator",
                   "value": "edge5"
                 },
@@ -6104,9 +6077,9 @@ description: Variables in memory after executing french-press.kcl
                   -0.1789
                 ],
                 "tag": {
-                  "commentStart": 1922,
-                  "end": 1928,
-                  "start": 1922,
+                  "commentStart": 1757,
+                  "end": 1763,
+                  "start": 1757,
                   "type": "TagDeclarator",
                   "value": "edge6"
                 },
@@ -6219,9 +6192,6 @@ description: Variables in memory after executing french-press.kcl
                 "units": {
                   "type": "Inches"
                 }
-              },
-              "units": {
-                "type": "Inches"
               }
             },
             "start": {
@@ -6283,7 +6253,8 @@ description: Variables in memory after executing french-press.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -6325,9 +6296,9 @@ description: Variables in memory after executing french-press.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1220,
-                "end": 1226,
-                "start": 1220,
+                "commentStart": 1187,
+                "end": 1193,
+                "start": 1187,
                 "type": "TagDeclarator",
                 "value": "edge2"
               },
@@ -6345,9 +6316,9 @@ description: Variables in memory after executing french-press.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1374,
-                "end": 1380,
-                "start": 1374,
+                "commentStart": 1308,
+                "end": 1314,
+                "start": 1308,
                 "type": "TagDeclarator",
                 "value": "edge3"
               },
@@ -6365,9 +6336,9 @@ description: Variables in memory after executing french-press.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1506,
-                "end": 1514,
-                "start": 1506,
+                "commentStart": 1407,
+                "end": 1415,
+                "start": 1407,
                 "type": "TagDeclarator",
                 "value": "edgeLen"
               },
@@ -6385,9 +6356,9 @@ description: Variables in memory after executing french-press.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1592,
-                "end": 1598,
-                "start": 1592,
+                "commentStart": 1493,
+                "end": 1499,
+                "start": 1493,
                 "type": "TagDeclarator",
                 "value": "edge4"
               },
@@ -6405,9 +6376,9 @@ description: Variables in memory after executing french-press.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1756,
-                "end": 1762,
-                "start": 1756,
+                "commentStart": 1624,
+                "end": 1630,
+                "start": 1624,
                 "type": "TagDeclarator",
                 "value": "edge5"
               },
@@ -6425,9 +6396,9 @@ description: Variables in memory after executing french-press.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1922,
-                "end": 1928,
-                "start": 1922,
+                "commentStart": 1757,
+                "end": 1763,
+                "start": 1757,
                 "type": "TagDeclarator",
                 "value": "edge6"
               },
@@ -6531,9 +6502,9 @@ description: Variables in memory after executing french-press.kcl
                   0.3732
                 ],
                 "tag": {
-                  "commentStart": 1220,
-                  "end": 1226,
-                  "start": 1220,
+                  "commentStart": 1187,
+                  "end": 1193,
+                  "start": 1187,
                   "type": "TagDeclarator",
                   "value": "edge2"
                 },
@@ -6581,9 +6552,9 @@ description: Variables in memory after executing french-press.kcl
                   -0.966
                 ],
                 "tag": {
-                  "commentStart": 1374,
-                  "end": 1380,
-                  "start": 1374,
+                  "commentStart": 1308,
+                  "end": 1314,
+                  "start": 1308,
                   "type": "TagDeclarator",
                   "value": "edge3"
                 },
@@ -6631,9 +6602,9 @@ description: Variables in memory after executing french-press.kcl
                   -0.133
                 ],
                 "tag": {
-                  "commentStart": 1506,
-                  "end": 1514,
-                  "start": 1506,
+                  "commentStart": 1407,
+                  "end": 1415,
+                  "start": 1407,
                   "type": "TagDeclarator",
                   "value": "edgeLen"
                 },
@@ -6675,9 +6646,9 @@ description: Variables in memory after executing french-press.kcl
                   -0.033
                 ],
                 "tag": {
-                  "commentStart": 1592,
-                  "end": 1598,
-                  "start": 1592,
+                  "commentStart": 1493,
+                  "end": 1499,
+                  "start": 1493,
                   "type": "TagDeclarator",
                   "value": "edge4"
                 },
@@ -6725,9 +6696,9 @@ description: Variables in memory after executing french-press.kcl
                   -0.1134
                 ],
                 "tag": {
-                  "commentStart": 1756,
-                  "end": 1762,
-                  "start": 1756,
+                  "commentStart": 1624,
+                  "end": 1630,
+                  "start": 1624,
                   "type": "TagDeclarator",
                   "value": "edge5"
                 },
@@ -6775,9 +6746,9 @@ description: Variables in memory after executing french-press.kcl
                   -0.1789
                 ],
                 "tag": {
-                  "commentStart": 1922,
-                  "end": 1928,
-                  "start": 1922,
+                  "commentStart": 1757,
+                  "end": 1763,
+                  "start": 1757,
                   "type": "TagDeclarator",
                   "value": "edge6"
                 },
@@ -6890,9 +6861,6 @@ description: Variables in memory after executing french-press.kcl
                 "units": {
                   "type": "Inches"
                 }
-              },
-              "units": {
-                "type": "Inches"
               }
             },
             "start": {
@@ -6954,7 +6922,8 @@ description: Variables in memory after executing french-press.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -6996,9 +6965,9 @@ description: Variables in memory after executing french-press.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1220,
-                "end": 1226,
-                "start": 1220,
+                "commentStart": 1187,
+                "end": 1193,
+                "start": 1187,
                 "type": "TagDeclarator",
                 "value": "edge2"
               },
@@ -7016,9 +6985,9 @@ description: Variables in memory after executing french-press.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1374,
-                "end": 1380,
-                "start": 1374,
+                "commentStart": 1308,
+                "end": 1314,
+                "start": 1308,
                 "type": "TagDeclarator",
                 "value": "edge3"
               },
@@ -7036,9 +7005,9 @@ description: Variables in memory after executing french-press.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1506,
-                "end": 1514,
-                "start": 1506,
+                "commentStart": 1407,
+                "end": 1415,
+                "start": 1407,
                 "type": "TagDeclarator",
                 "value": "edgeLen"
               },
@@ -7056,9 +7025,9 @@ description: Variables in memory after executing french-press.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1592,
-                "end": 1598,
-                "start": 1592,
+                "commentStart": 1493,
+                "end": 1499,
+                "start": 1493,
                 "type": "TagDeclarator",
                 "value": "edge4"
               },
@@ -7076,9 +7045,9 @@ description: Variables in memory after executing french-press.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1756,
-                "end": 1762,
-                "start": 1756,
+                "commentStart": 1624,
+                "end": 1630,
+                "start": 1624,
                 "type": "TagDeclarator",
                 "value": "edge5"
               },
@@ -7096,9 +7065,9 @@ description: Variables in memory after executing french-press.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1922,
-                "end": 1928,
-                "start": 1922,
+                "commentStart": 1757,
+                "end": 1763,
+                "start": 1757,
                 "type": "TagDeclarator",
                 "value": "edge6"
               },
@@ -7202,9 +7171,9 @@ description: Variables in memory after executing french-press.kcl
                   0.3732
                 ],
                 "tag": {
-                  "commentStart": 1220,
-                  "end": 1226,
-                  "start": 1220,
+                  "commentStart": 1187,
+                  "end": 1193,
+                  "start": 1187,
                   "type": "TagDeclarator",
                   "value": "edge2"
                 },
@@ -7252,9 +7221,9 @@ description: Variables in memory after executing french-press.kcl
                   -0.966
                 ],
                 "tag": {
-                  "commentStart": 1374,
-                  "end": 1380,
-                  "start": 1374,
+                  "commentStart": 1308,
+                  "end": 1314,
+                  "start": 1308,
                   "type": "TagDeclarator",
                   "value": "edge3"
                 },
@@ -7302,9 +7271,9 @@ description: Variables in memory after executing french-press.kcl
                   -0.133
                 ],
                 "tag": {
-                  "commentStart": 1506,
-                  "end": 1514,
-                  "start": 1506,
+                  "commentStart": 1407,
+                  "end": 1415,
+                  "start": 1407,
                   "type": "TagDeclarator",
                   "value": "edgeLen"
                 },
@@ -7346,9 +7315,9 @@ description: Variables in memory after executing french-press.kcl
                   -0.033
                 ],
                 "tag": {
-                  "commentStart": 1592,
-                  "end": 1598,
-                  "start": 1592,
+                  "commentStart": 1493,
+                  "end": 1499,
+                  "start": 1493,
                   "type": "TagDeclarator",
                   "value": "edge4"
                 },
@@ -7396,9 +7365,9 @@ description: Variables in memory after executing french-press.kcl
                   -0.1134
                 ],
                 "tag": {
-                  "commentStart": 1756,
-                  "end": 1762,
-                  "start": 1756,
+                  "commentStart": 1624,
+                  "end": 1630,
+                  "start": 1624,
                   "type": "TagDeclarator",
                   "value": "edge5"
                 },
@@ -7446,9 +7415,9 @@ description: Variables in memory after executing french-press.kcl
                   -0.1789
                 ],
                 "tag": {
-                  "commentStart": 1922,
-                  "end": 1928,
-                  "start": 1922,
+                  "commentStart": 1757,
+                  "end": 1763,
+                  "start": 1757,
                   "type": "TagDeclarator",
                   "value": "edge6"
                 },
@@ -7561,9 +7530,6 @@ description: Variables in memory after executing french-press.kcl
                 "units": {
                   "type": "Inches"
                 }
-              },
-              "units": {
-                "type": "Inches"
               }
             },
             "start": {
@@ -7625,7 +7591,8 @@ description: Variables in memory after executing french-press.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       }
     ]
@@ -7670,7 +7637,7 @@ description: Variables in memory after executing french-press.kcl
         "origin": {
           "x": 0.0,
           "y": 0.0,
-          "z": 1.0,
+          "z": 25.4,
           "units": {
             "type": "Mm"
           }
@@ -7698,9 +7665,6 @@ description: Variables in memory after executing french-press.kcl
           "units": {
             "type": "Mm"
           }
-        },
-        "units": {
-          "type": "Inches"
         }
       },
       "start": {
@@ -7900,7 +7864,7 @@ description: Variables in memory after executing french-press.kcl
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
+                    "z": 25.4,
                     "units": {
                       "type": "Mm"
                     }
@@ -7928,9 +7892,6 @@ description: Variables in memory after executing french-press.kcl
                     "units": {
                       "type": "Mm"
                     }
-                  },
-                  "units": {
-                    "type": "Inches"
                   }
                 },
                 "start": {
@@ -7962,7 +7923,8 @@ description: Variables in memory after executing french-press.kcl
               "endCapId": "[uuid]",
               "units": {
                 "type": "Inches"
-              }
+              },
+              "sectional": false
             },
             "units": {
               "type": "Inches"
@@ -8162,7 +8124,7 @@ description: Variables in memory after executing french-press.kcl
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
+                    "z": 25.4,
                     "units": {
                       "type": "Mm"
                     }
@@ -8190,9 +8152,6 @@ description: Variables in memory after executing french-press.kcl
                     "units": {
                       "type": "Mm"
                     }
-                  },
-                  "units": {
-                    "type": "Inches"
                   }
                 },
                 "start": {
@@ -8224,7 +8183,8 @@ description: Variables in memory after executing french-press.kcl
               "endCapId": "[uuid]",
               "units": {
                 "type": "Inches"
-              }
+              },
+              "sectional": false
             },
             "units": {
               "type": "Inches"
@@ -8424,7 +8384,7 @@ description: Variables in memory after executing french-press.kcl
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
+                    "z": 25.4,
                     "units": {
                       "type": "Mm"
                     }
@@ -8452,9 +8412,6 @@ description: Variables in memory after executing french-press.kcl
                     "units": {
                       "type": "Mm"
                     }
-                  },
-                  "units": {
-                    "type": "Inches"
                   }
                 },
                 "start": {
@@ -8486,7 +8443,8 @@ description: Variables in memory after executing french-press.kcl
               "endCapId": "[uuid]",
               "units": {
                 "type": "Inches"
-              }
+              },
+              "sectional": false
             },
             "units": {
               "type": "Inches"
@@ -8538,9 +8496,9 @@ description: Variables in memory after executing french-press.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3142,
-            "end": 3147,
-            "start": 3142,
+            "commentStart": 2911,
+            "end": 2916,
+            "start": 2911,
             "type": "TagDeclarator",
             "value": "seg1"
           },
@@ -8608,9 +8566,9 @@ description: Variables in memory after executing french-press.kcl
               1.11
             ],
             "tag": {
-              "commentStart": 3142,
-              "end": 3147,
-              "start": 3142,
+              "commentStart": 2911,
+              "end": 2916,
+              "start": 2911,
               "type": "TagDeclarator",
               "value": "seg1"
             },
@@ -8755,9 +8713,6 @@ description: Variables in memory after executing french-press.kcl
             "units": {
               "type": "Mm"
             }
-          },
-          "units": {
-            "type": "Inches"
           }
         },
         "start": {
@@ -8795,7 +8750,8 @@ description: Variables in memory after executing french-press.kcl
       "endCapId": null,
       "units": {
         "type": "Inches"
-      }
+      },
+      "sectional": false
     }
   },
   "sketch006": {
@@ -9053,9 +9009,6 @@ description: Variables in memory after executing french-press.kcl
             "units": {
               "type": "Mm"
             }
-          },
-          "units": {
-            "type": "Inches"
           }
         },
         "start": {
@@ -9087,7 +9040,8 @@ description: Variables in memory after executing french-press.kcl
       "endCapId": null,
       "units": {
         "type": "Inches"
-      }
+      },
+      "sectional": false
     }
   },
   "sketch007": {
@@ -9130,7 +9084,7 @@ description: Variables in memory after executing french-press.kcl
         "origin": {
           "x": 0.0,
           "y": 0.0,
-          "z": 1.12,
+          "z": 28.448,
           "units": {
             "type": "Mm"
           }
@@ -9158,9 +9112,6 @@ description: Variables in memory after executing french-press.kcl
           "units": {
             "type": "Mm"
           }
-        },
-        "units": {
-          "type": "Inches"
         }
       },
       "start": {
@@ -9303,7 +9254,7 @@ description: Variables in memory after executing french-press.kcl
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.12,
+                    "z": 28.448,
                     "units": {
                       "type": "Mm"
                     }
@@ -9331,9 +9282,6 @@ description: Variables in memory after executing french-press.kcl
                     "units": {
                       "type": "Mm"
                     }
-                  },
-                  "units": {
-                    "type": "Inches"
                   }
                 },
                 "start": {
@@ -9365,7 +9313,8 @@ description: Variables in memory after executing french-press.kcl
               "endCapId": "[uuid]",
               "units": {
                 "type": "Inches"
-              }
+              },
+              "sectional": false
             },
             "units": {
               "type": "Inches"
@@ -9508,7 +9457,7 @@ description: Variables in memory after executing french-press.kcl
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.12,
+                    "z": 28.448,
                     "units": {
                       "type": "Mm"
                     }
@@ -9536,9 +9485,6 @@ description: Variables in memory after executing french-press.kcl
                     "units": {
                       "type": "Mm"
                     }
-                  },
-                  "units": {
-                    "type": "Inches"
                   }
                 },
                 "start": {
@@ -9570,7 +9516,8 @@ description: Variables in memory after executing french-press.kcl
               "endCapId": "[uuid]",
               "units": {
                 "type": "Inches"
-              }
+              },
+              "sectional": false
             },
             "units": {
               "type": "Inches"
@@ -9713,7 +9660,7 @@ description: Variables in memory after executing french-press.kcl
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.12,
+                    "z": 28.448,
                     "units": {
                       "type": "Mm"
                     }
@@ -9741,9 +9688,6 @@ description: Variables in memory after executing french-press.kcl
                     "units": {
                       "type": "Mm"
                     }
-                  },
-                  "units": {
-                    "type": "Inches"
                   }
                 },
                 "start": {
@@ -9775,7 +9719,8 @@ description: Variables in memory after executing french-press.kcl
               "endCapId": "[uuid]",
               "units": {
                 "type": "Inches"
-              }
+              },
+              "sectional": false
             },
             "units": {
               "type": "Inches"
@@ -9918,7 +9863,7 @@ description: Variables in memory after executing french-press.kcl
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.12,
+                    "z": 28.448,
                     "units": {
                       "type": "Mm"
                     }
@@ -9946,9 +9891,6 @@ description: Variables in memory after executing french-press.kcl
                     "units": {
                       "type": "Mm"
                     }
-                  },
-                  "units": {
-                    "type": "Inches"
                   }
                 },
                 "start": {
@@ -9980,7 +9922,8 @@ description: Variables in memory after executing french-press.kcl
               "endCapId": "[uuid]",
               "units": {
                 "type": "Inches"
-              }
+              },
+              "sectional": false
             },
             "units": {
               "type": "Inches"
@@ -10123,7 +10066,7 @@ description: Variables in memory after executing french-press.kcl
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.12,
+                    "z": 28.448,
                     "units": {
                       "type": "Mm"
                     }
@@ -10151,9 +10094,6 @@ description: Variables in memory after executing french-press.kcl
                     "units": {
                       "type": "Mm"
                     }
-                  },
-                  "units": {
-                    "type": "Inches"
                   }
                 },
                 "start": {
@@ -10185,7 +10125,8 @@ description: Variables in memory after executing french-press.kcl
               "endCapId": "[uuid]",
               "units": {
                 "type": "Inches"
-              }
+              },
+              "sectional": false
             },
             "units": {
               "type": "Inches"
@@ -10328,7 +10269,7 @@ description: Variables in memory after executing french-press.kcl
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.12,
+                    "z": 28.448,
                     "units": {
                       "type": "Mm"
                     }
@@ -10356,9 +10297,6 @@ description: Variables in memory after executing french-press.kcl
                     "units": {
                       "type": "Mm"
                     }
-                  },
-                  "units": {
-                    "type": "Inches"
                   }
                 },
                 "start": {
@@ -10390,7 +10328,8 @@ description: Variables in memory after executing french-press.kcl
               "endCapId": "[uuid]",
               "units": {
                 "type": "Inches"
-              }
+              },
+              "sectional": false
             },
             "units": {
               "type": "Inches"
@@ -10533,7 +10472,7 @@ description: Variables in memory after executing french-press.kcl
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.12,
+                    "z": 28.448,
                     "units": {
                       "type": "Mm"
                     }
@@ -10561,9 +10500,6 @@ description: Variables in memory after executing french-press.kcl
                     "units": {
                       "type": "Mm"
                     }
-                  },
-                  "units": {
-                    "type": "Inches"
                   }
                 },
                 "start": {
@@ -10595,7 +10531,8 @@ description: Variables in memory after executing french-press.kcl
               "endCapId": "[uuid]",
               "units": {
                 "type": "Inches"
-              }
+              },
+              "sectional": false
             },
             "units": {
               "type": "Inches"
@@ -10738,7 +10675,7 @@ description: Variables in memory after executing french-press.kcl
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.12,
+                    "z": 28.448,
                     "units": {
                       "type": "Mm"
                     }
@@ -10766,9 +10703,6 @@ description: Variables in memory after executing french-press.kcl
                     "units": {
                       "type": "Mm"
                     }
-                  },
-                  "units": {
-                    "type": "Inches"
                   }
                 },
                 "start": {
@@ -10800,7 +10734,8 @@ description: Variables in memory after executing french-press.kcl
               "endCapId": "[uuid]",
               "units": {
                 "type": "Inches"
-              }
+              },
+              "sectional": false
             },
             "units": {
               "type": "Inches"
@@ -10948,7 +10883,7 @@ description: Variables in memory after executing french-press.kcl
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.12,
+                    "z": 28.448,
                     "units": {
                       "type": "Mm"
                     }
@@ -10976,9 +10911,6 @@ description: Variables in memory after executing french-press.kcl
                     "units": {
                       "type": "Mm"
                     }
-                  },
-                  "units": {
-                    "type": "Inches"
                   }
                 },
                 "start": {
@@ -11010,7 +10942,8 @@ description: Variables in memory after executing french-press.kcl
               "endCapId": "[uuid]",
               "units": {
                 "type": "Inches"
-              }
+              },
+              "sectional": false
             },
             "units": {
               "type": "Inches"
@@ -11153,7 +11086,7 @@ description: Variables in memory after executing french-press.kcl
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.12,
+                    "z": 28.448,
                     "units": {
                       "type": "Mm"
                     }
@@ -11181,9 +11114,6 @@ description: Variables in memory after executing french-press.kcl
                     "units": {
                       "type": "Mm"
                     }
-                  },
-                  "units": {
-                    "type": "Inches"
                   }
                 },
                 "start": {
@@ -11215,7 +11145,8 @@ description: Variables in memory after executing french-press.kcl
               "endCapId": "[uuid]",
               "units": {
                 "type": "Inches"
-              }
+              },
+              "sectional": false
             },
             "units": {
               "type": "Inches"
@@ -11358,7 +11289,7 @@ description: Variables in memory after executing french-press.kcl
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.12,
+                    "z": 28.448,
                     "units": {
                       "type": "Mm"
                     }
@@ -11386,9 +11317,6 @@ description: Variables in memory after executing french-press.kcl
                     "units": {
                       "type": "Mm"
                     }
-                  },
-                  "units": {
-                    "type": "Inches"
                   }
                 },
                 "start": {
@@ -11420,7 +11348,8 @@ description: Variables in memory after executing french-press.kcl
               "endCapId": "[uuid]",
               "units": {
                 "type": "Inches"
-              }
+              },
+              "sectional": false
             },
             "units": {
               "type": "Inches"
@@ -11563,7 +11492,7 @@ description: Variables in memory after executing french-press.kcl
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.12,
+                    "z": 28.448,
                     "units": {
                       "type": "Mm"
                     }
@@ -11591,9 +11520,6 @@ description: Variables in memory after executing french-press.kcl
                     "units": {
                       "type": "Mm"
                     }
-                  },
-                  "units": {
-                    "type": "Inches"
                   }
                 },
                 "start": {
@@ -11625,7 +11551,8 @@ description: Variables in memory after executing french-press.kcl
               "endCapId": "[uuid]",
               "units": {
                 "type": "Inches"
-              }
+              },
+              "sectional": false
             },
             "units": {
               "type": "Inches"
@@ -11726,9 +11653,6 @@ description: Variables in memory after executing french-press.kcl
           "units": {
             "type": "Mm"
           }
-        },
-        "units": {
-          "type": "Inches"
         }
       },
       "start": {
@@ -12006,9 +11930,6 @@ description: Variables in memory after executing french-press.kcl
             "units": {
               "type": "Mm"
             }
-          },
-          "units": {
-            "type": "Inches"
           }
         },
         "start": {
@@ -12040,7 +11961,8 @@ description: Variables in memory after executing french-press.kcl
       "endCapId": null,
       "units": {
         "type": "Inches"
-      }
+      },
+      "sectional": false
     }
   },
   "sketch012": {
@@ -12334,7 +12256,7 @@ description: Variables in memory after executing french-press.kcl
         "value": "Custom",
         "origin": {
           "x": 0.0,
-          "y": -0.325,
+          "y": -8.254999999999999,
           "z": 0.0,
           "units": {
             "type": "Mm"
@@ -12363,9 +12285,6 @@ description: Variables in memory after executing french-press.kcl
           "units": {
             "type": "Mm"
           }
-        },
-        "units": {
-          "type": "Inches"
         }
       },
       "start": {

@@ -4,6 +4,7 @@ import type {
   ARG_END_ABSOLUTE,
   ARG_END_ABSOLUTE_X,
   ARG_END_ABSOLUTE_Y,
+  ARG_INTERIOR_ABSOLUTE,
   ARG_LENGTH,
   ARG_LENGTH_X,
   ARG_LENGTH_Y,
@@ -44,6 +45,7 @@ interface StraightSegmentInput {
   type: 'straight-segment'
   from: [number, number]
   to: [number, number]
+  snap?: boolean
 }
 
 /** Inputs for arcs, excluding tangentialArc for reasons explain in the
@@ -92,6 +94,12 @@ export interface addCall extends ModifyAstBase {
   ) => CreatedSketchExprResult | Error
   referencedSegment?: Path
   spliceBetween?: boolean
+  snaps?: {
+    previousArcTag?: string
+    negativeTangentDirection: boolean
+    xAxis?: boolean
+    yAxis?: boolean
+  }
 }
 
 interface updateArgs extends ModifyAstBase {
@@ -109,7 +117,7 @@ export type InputArgKeys =
   | 'p2'
   | 'p3'
   | 'end'
-  | 'interior'
+  | typeof ARG_INTERIOR_ABSOLUTE
   | typeof ARG_END_ABSOLUTE
   | typeof ARG_END_ABSOLUTE_X
   | typeof ARG_END_ABSOLUTE_Y
@@ -121,18 +129,21 @@ export interface SingleValueInput<T> {
   type: 'singleValue'
   argType: LineInputsType
   expr: T
+  overrideExpr?: Node<Expr>
 }
 export interface ArrayItemInput<T> {
   type: 'arrayItem'
   index: 0 | 1
   argType: LineInputsType
   expr: T
+  overrideExpr?: Node<Expr>
 }
 export interface ObjectPropertyInput<T> {
   type: 'objectProperty'
   key: InputArgKeys
   argType: LineInputsType
   expr: T
+  overrideExpr?: Node<Expr>
 }
 
 interface ArrayOrObjItemInput<T> {
@@ -141,6 +152,7 @@ interface ArrayOrObjItemInput<T> {
   index: 0 | 1
   argType: LineInputsType
   expr: T
+  overrideExpr?: Node<Expr>
 }
 
 interface ArrayInObject<T> {
@@ -149,6 +161,7 @@ interface ArrayInObject<T> {
   argType: LineInputsType
   index: 0 | 1
   expr: T
+  overrideExpr?: Node<Expr>
 }
 
 interface LabeledArg<T> {
@@ -156,6 +169,7 @@ interface LabeledArg<T> {
   key: InputArgKeys
   argType: LineInputsType
   expr: T
+  overrideExpr?: Node<Expr>
 }
 
 type _InputArg<T> =

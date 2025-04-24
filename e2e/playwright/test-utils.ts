@@ -1,3 +1,4 @@
+import path from 'path'
 import * as TOML from '@iarna/toml'
 import type { Models } from '@kittycad/lib'
 import type { BrowserContext, Locator, Page, TestInfo } from '@playwright/test'
@@ -9,7 +10,6 @@ import { reportRejection } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
 import { isArray } from '@src/lib/utils'
 import fsp from 'fs/promises'
-import path from 'path'
 import pixelMatch from 'pixelmatch'
 import type { Protocol } from 'playwright-core/types/protocol'
 import { PNG } from 'pngjs'
@@ -28,6 +28,16 @@ import { test } from '@e2e/playwright/zoo-test'
 const toNormalizedCode = (text: string) => {
   return text.replace(/\s+/g, '')
 }
+
+export const headerMasks = (page: Page) => [
+  page.locator('#app-header'),
+  page.locator('#sidebar-top-ribbon'),
+  page.locator('#sidebar-bottom-ribbon'),
+]
+
+export const networkingMasks = (page: Page) => [
+  page.getByTestId('network-toggle'),
+]
 
 export type TestColor = [number, number, number]
 export const TEST_COLORS: { [key: string]: TestColor } = {
@@ -74,12 +84,6 @@ async function waitForPageLoadWithRetry(page: Page) {
   await expect(async () => {
     await page.goto('/')
     const errorMessage = 'App failed to load - 🔃 Retrying ...'
-    await expect(
-      page.getByTestId('model-state-indicator-playing'),
-      errorMessage
-    ).toBeAttached({
-      timeout: 20_000,
-    })
 
     await expect(
       page.getByRole('button', { name: 'sketch Start Sketch' }),
@@ -92,11 +96,6 @@ async function waitForPageLoadWithRetry(page: Page) {
 
 // lee: This needs to be replaced by scene.settled() eventually.
 async function waitForPageLoad(page: Page) {
-  // wait for all spinners to be gone
-  await expect(page.getByTestId('model-state-indicator-playing')).toBeVisible({
-    timeout: 20_000,
-  })
-
   await expect(page.getByRole('button', { name: 'Start Sketch' })).toBeEnabled({
     timeout: 20_000,
   })

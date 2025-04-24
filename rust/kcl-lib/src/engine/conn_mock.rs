@@ -12,11 +12,11 @@ use kcmc::{
         WebSocketResponse,
     },
 };
-use kittycad_modeling_cmds::{self as kcmc};
+use kittycad_modeling_cmds::{self as kcmc, websocket::ModelingCmdReq, ImportFiles, ModelingCmd};
 use tokio::sync::RwLock;
 use uuid::Uuid;
 
-use super::{EngineStats, ExecutionKind};
+use super::EngineStats;
 use crate::{
     errors::KclError,
     exec::DefaultPlanes,
@@ -29,7 +29,8 @@ pub struct EngineConnection {
     batch: Arc<RwLock<Vec<(WebSocketRequest, SourceRange)>>>,
     batch_end: Arc<RwLock<IndexMap<uuid::Uuid, (WebSocketRequest, SourceRange)>>>,
     artifact_commands: Arc<RwLock<Vec<ArtifactCommand>>>,
-    execution_kind: Arc<RwLock<ExecutionKind>>,
+    ids_of_async_commands: Arc<RwLock<IndexMap<Uuid, SourceRange>>>,
+    responses: Arc<RwLock<IndexMap<Uuid, WebSocketResponse>>>,
     /// The default planes for the scene.
     default_planes: Arc<RwLock<Option<DefaultPlanes>>>,
     stats: EngineStats,
@@ -41,7 +42,8 @@ impl EngineConnection {
             batch: Arc::new(RwLock::new(Vec::new())),
             batch_end: Arc::new(RwLock::new(IndexMap::new())),
             artifact_commands: Arc::new(RwLock::new(Vec::new())),
-            execution_kind: Default::default(),
+            ids_of_async_commands: Arc::new(RwLock::new(IndexMap::new())),
+            responses: Arc::new(RwLock::new(IndexMap::new())),
             default_planes: Default::default(),
             stats: Default::default(),
         })
@@ -59,7 +61,7 @@ impl crate::engine::EngineManager for EngineConnection {
     }
 
     fn responses(&self) -> Arc<RwLock<IndexMap<Uuid, WebSocketResponse>>> {
-        Arc::new(RwLock::new(IndexMap::new()))
+        self.responses.clone()
     }
 
     fn stats(&self) -> &EngineStats {
@@ -70,16 +72,8 @@ impl crate::engine::EngineManager for EngineConnection {
         self.artifact_commands.clone()
     }
 
-    async fn execution_kind(&self) -> ExecutionKind {
-        let guard = self.execution_kind.read().await;
-        *guard
-    }
-
-    async fn replace_execution_kind(&self, execution_kind: ExecutionKind) -> ExecutionKind {
-        let mut guard = self.execution_kind.write().await;
-        let original = *guard;
-        *guard = execution_kind;
-        original
+    fn ids_of_async_commands(&self) -> Arc<RwLock<IndexMap<Uuid, SourceRange>>> {
+        self.ids_of_async_commands.clone()
     }
 
     fn get_default_planes(&self) -> Arc<RwLock<Option<DefaultPlanes>>> {
@@ -91,6 +85,25 @@ impl crate::engine::EngineManager for EngineConnection {
         _id_generator: &mut IdGenerator,
         _source_range: SourceRange,
     ) -> Result<(), KclError> {
+        Ok(())
+    }
+
+    async fn inner_fire_modeling_cmd(
+        &self,
+        id: uuid::Uuid,
+        source_range: SourceRange,
+        cmd: WebSocketRequest,
+        id_to_source_range: HashMap<Uuid, SourceRange>,
+    ) -> Result<(), KclError> {
+        // Pop off the id we care about.
+        self.ids_of_async_commands.write().await.swap_remove(&id);
+
+        // Add the response to our responses.
+        let response = self
+            .inner_send_modeling_cmd(id, source_range, cmd, id_to_source_range)
+            .await?;
+        self.responses().write().await.insert(id, response);
+
         Ok(())
     }
 
@@ -123,6 +136,20 @@ impl crate::engine::EngineManager for EngineConnection {
                     success: true,
                 }))
             }
+            WebSocketRequest::ModelingCmdReq(ModelingCmdReq {
+                cmd: ModelingCmd::ImportFiles(ImportFiles { .. }),
+                cmd_id,
+            }) => Ok(WebSocketResponse::Success(SuccessWebSocketResponse {
+                request_id: Some(id),
+                resp: OkWebSocketResponseData::Modeling {
+                    modeling_response: OkModelingCmdResponse::ImportFiles(
+                        kittycad_modeling_cmds::output::ImportFiles {
+                            object_id: cmd_id.into(),
+                        },
+                    ),
+                },
+                success: true,
+            })),
             WebSocketRequest::ModelingCmdReq(_) => Ok(WebSocketResponse::Success(SuccessWebSocketResponse {
                 request_id: Some(id),
                 resp: OkWebSocketResponseData::Modeling {

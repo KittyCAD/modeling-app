@@ -1,6 +1,6 @@
-import type { Page } from '@playwright/test'
 import fs from 'fs'
 import { join } from 'path'
+import type { Page } from '@playwright/test'
 
 import {
   createProject,

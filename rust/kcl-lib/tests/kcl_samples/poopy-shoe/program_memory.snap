@@ -1010,9 +1010,6 @@ description: Variables in memory after executing poopy-shoe.kcl
             "units": {
               "type": "Mm"
             }
-          },
-          "units": {
-            "type": "Inches"
           }
         },
         "start": {
@@ -1047,10 +1044,11 @@ description: Variables in memory after executing poopy-shoe.kcl
       },
       "height": 0.0,
       "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "endCapId": null,
       "units": {
         "type": "Inches"
-      }
+      },
+      "sectional": false
     }
   },
   "seg01": {
@@ -1369,9 +1367,6 @@ description: Variables in memory after executing poopy-shoe.kcl
           "units": {
             "type": "Mm"
           }
-        },
-        "units": {
-          "type": "Inches"
         }
       },
       "start": {
@@ -1804,9 +1799,6 @@ description: Variables in memory after executing poopy-shoe.kcl
             "units": {
               "type": "Mm"
             }
-          },
-          "units": {
-            "type": "Inches"
           }
         },
         "start": {
@@ -1844,7 +1836,8 @@ description: Variables in memory after executing poopy-shoe.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Inches"
-      }
+      },
+      "sectional": false
     }
   },
   "sketch003": {
@@ -1979,9 +1972,6 @@ description: Variables in memory after executing poopy-shoe.kcl
             "units": {
               "type": "Inches"
             }
-          },
-          "units": {
-            "type": "Inches"
           }
         },
         "start": {
@@ -2013,7 +2003,8 @@ description: Variables in memory after executing poopy-shoe.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Inches"
-      }
+      },
+      "sectional": false
     }
   },
   "sketch004": {
@@ -2789,9 +2780,6 @@ description: Variables in memory after executing poopy-shoe.kcl
                   "units": {
                     "type": "Mm"
                   }
-                },
-                "units": {
-                  "type": "Inches"
                 }
               },
               "start": {
@@ -2829,7 +2817,8 @@ description: Variables in memory after executing poopy-shoe.kcl
             "endCapId": "[uuid]",
             "units": {
               "type": "Inches"
-            }
+            },
+            "sectional": false
           },
           "units": {
             "type": "Inches"
@@ -2870,7 +2859,8 @@ description: Variables in memory after executing poopy-shoe.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Inches"
-      }
+      },
+      "sectional": false
     }
   },
   "sketch005": {
@@ -3100,9 +3090,6 @@ description: Variables in memory after executing poopy-shoe.kcl
             "units": {
               "type": "Inches"
             }
-          },
-          "units": {
-            "type": "Inches"
           }
         },
         "start": {
@@ -3140,7 +3127,8 @@ description: Variables in memory after executing poopy-shoe.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Inches"
-      }
+      },
+      "sectional": false
     }
   },
   "sketch006": {
@@ -3514,9 +3502,6 @@ description: Variables in memory after executing poopy-shoe.kcl
                   "units": {
                     "type": "Inches"
                   }
-                },
-                "units": {
-                  "type": "Inches"
                 }
               },
               "start": {
@@ -3554,7 +3539,8 @@ description: Variables in memory after executing poopy-shoe.kcl
             "endCapId": "[uuid]",
             "units": {
               "type": "Inches"
-            }
+            },
+            "sectional": false
           },
           "units": {
             "type": "Inches"
@@ -3589,7 +3575,8 @@ description: Variables in memory after executing poopy-shoe.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Inches"
-      }
+      },
+      "sectional": false
     }
   },
   "sketch007": {
@@ -4509,9 +4496,6 @@ description: Variables in memory after executing poopy-shoe.kcl
                         "units": {
                           "type": "Mm"
                         }
-                      },
-                      "units": {
-                        "type": "Inches"
                       }
                     },
                     "start": {
@@ -4549,7 +4533,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                   "endCapId": "[uuid]",
                   "units": {
                     "type": "Inches"
-                  }
+                  },
+                  "sectional": false
                 },
                 "units": {
                   "type": "Inches"
@@ -4590,7 +4575,8 @@ description: Variables in memory after executing poopy-shoe.kcl
             "endCapId": "[uuid]",
             "units": {
               "type": "Inches"
-            }
+            },
+            "sectional": false
           },
           "units": {
             "type": "Inches"
@@ -4625,7 +4611,8 @@ description: Variables in memory after executing poopy-shoe.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Inches"
-      }
+      },
+      "sectional": false
     }
   },
   "sketch008": {
@@ -4781,9 +4768,6 @@ description: Variables in memory after executing poopy-shoe.kcl
             "units": {
               "type": "Inches"
             }
-          },
-          "units": {
-            "type": "Inches"
           }
         },
         "start": {
@@ -4815,7 +4799,8 @@ description: Variables in memory after executing poopy-shoe.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Inches"
-      }
+      },
+      "sectional": false
     }
   },
   "wallThickness": {

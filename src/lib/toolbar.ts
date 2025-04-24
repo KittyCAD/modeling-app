@@ -3,6 +3,7 @@ import type { EventFrom, StateFrom } from 'xstate'
 
 import type { CustomIconName } from '@src/components/CustomIcon'
 import { createLiteral } from '@src/lang/create'
+import { isDesktop } from '@src/lib/isDesktop'
 import { commandBarActor } from '@src/machines/commandBarMachine'
 import type { modelingMachine } from '@src/machines/modelingMachine'
 import {
@@ -338,6 +339,66 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
       },
       'break',
       {
+        id: 'modules',
+        array: [
+          {
+            id: 'insert',
+            onClick: () =>
+              commandBarActor.send({
+                type: 'Find and select command',
+                data: { name: 'Insert', groupId: 'code' },
+              }),
+            hotkey: 'I',
+            icon: 'import',
+            status: DEV || IS_NIGHTLY_OR_DEBUG ? 'available' : 'kcl-only',
+            disabled: () => !isDesktop(),
+            title: 'Insert',
+            description: 'Insert from a file in the current project directory',
+            links: [
+              {
+                label: 'API docs',
+                url: 'https://zoo.dev/docs/kcl/import',
+              },
+            ],
+          },
+          {
+            id: 'translate',
+            onClick: () =>
+              commandBarActor.send({
+                type: 'Find and select command',
+                data: { name: 'Translate', groupId: 'modeling' },
+              }),
+            status: DEV || IS_NIGHTLY_OR_DEBUG ? 'available' : 'kcl-only',
+            title: 'Translate',
+            description: 'Apply a translation to a solid or sketch.',
+            links: [
+              {
+                label: 'API docs',
+                url: 'https://zoo.dev/docs/kcl/translate',
+              },
+            ],
+          },
+          {
+            id: 'rotate',
+            onClick: () =>
+              commandBarActor.send({
+                type: 'Find and select command',
+                data: { name: 'Rotate', groupId: 'modeling' },
+              }),
+            status: DEV || IS_NIGHTLY_OR_DEBUG ? 'available' : 'kcl-only',
+            title: 'Rotate',
+            description: 'Apply a rotation to a solid or sketch.',
+            links: [
+              {
+                label: 'API docs',
+                url: 'https://zoo.dev/docs/kcl/rotate',
+              },
+            ],
+          },
+        ],
+      },
+      'break',
+      {
         id: 'ai',
         array: [
           {
@@ -513,16 +574,6 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           },
         ],
       },
-      {
-        id: 'spline',
-        onClick: () => console.error('Spline not yet implemented'),
-        icon: 'spline',
-        status: 'unavailable',
-        title: 'Spline',
-        showTitle: false,
-        description: 'Draw a spline curve through a series of points',
-        links: [],
-      },
       'break',
       {
         id: 'circles',
@@ -632,32 +683,32 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         id: 'polygon',
         onClick: () => console.error('Polygon not yet implemented'),
         icon: 'polygon',
-        status: 'unavailable',
+        status: 'kcl-only',
         title: 'Polygon',
         showTitle: false,
         description: 'Draw a polygon with a specified number of sides',
-        links: [],
-      },
-      {
-        id: 'text',
-        onClick: () => console.error('Text not yet implemented'),
-        icon: 'text',
-        status: 'unavailable',
-        title: 'Text',
-        showTitle: false,
-        description: 'Add text to your sketch as geometry.',
-        links: [],
+        links: [
+          {
+            label: 'KCL docs',
+            url: 'https://zoo.dev/docs/kcl/polygon',
+          },
+        ],
       },
       'break',
       {
         id: 'mirror',
         onClick: () => console.error('Mirror not yet implemented'),
         icon: 'mirror',
-        status: 'unavailable',
+        status: 'kcl-only',
         title: 'Mirror',
         showTitle: false,
         description: 'Mirror sketch entities about a line or axis',
-        links: [],
+        links: [
+          {
+            label: 'KCL docs',
+            url: 'https://zoo.dev/docs/kcl/std-sketch-mirror2d',
+          },
+        ],
       },
       {
         id: 'constraints',

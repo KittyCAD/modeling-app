@@ -217,9 +217,6 @@ description: Variables in memory after executing fillet-and-shell.kcl
             "units": {
               "type": "Mm"
             }
-          },
-          "units": {
-            "type": "Mm"
           }
         },
         "start": {
@@ -343,7 +340,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
       ],
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "caseHeight": {
@@ -618,9 +616,6 @@ description: Variables in memory after executing fillet-and-shell.kcl
           "units": {
             "type": "Mm"
           }
-        },
-        "units": {
-          "type": "Mm"
         }
       },
       "start": {

@@ -8,7 +8,7 @@ description: Operations executed import_whole.kcl
     "group": {
       "type": "ModuleInstance",
       "name": "foo",
-      "moduleId": 5
+      "moduleId": 6
     },
     "sourceRange": []
   },
@@ -61,49 +61,5 @@ description: Operations executed import_whole.kcl
   },
   {
     "type": "GroupEnd"
-  },
-  {
-    "labeledArgs": {
-      "faces": {
-        "value": {
-          "type": "Array",
-          "value": [
-            {
-              "type": "String",
-              "value": "end"
-            }
-          ]
-        },
-        "sourceRange": []
-      },
-      "thickness": {
-        "value": {
-          "type": "Number",
-          "value": 42.0,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
-        },
-        "sourceRange": []
-      }
-    },
-    "name": "shell",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Solid",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": []
-    }
   }
 ]
