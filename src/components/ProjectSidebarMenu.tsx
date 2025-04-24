@@ -23,8 +23,8 @@ import {
   kclManager,
 } from '@src/lib/singletons'
 import { type IndexLoaderData } from '@src/lib/types'
-import { useToken } from '@src/machines/appMachine'
-import { commandBarActor } from '@src/machines/commandBarMachine'
+import { useToken } from '@src/lib/singletons'
+import { commandBarActor } from '@src/lib/singletons'
 
 const ProjectSidebarMenu = ({
   project,

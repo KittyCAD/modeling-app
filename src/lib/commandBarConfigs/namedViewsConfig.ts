@@ -12,7 +12,7 @@ import type { Command, CommandArgumentOption } from '@src/lib/commandTypes'
 import { engineCommandManager } from '@src/lib/singletons'
 import { err, reportRejection } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
-import { getSettings, settingsActor } from '@src/machines/appMachine'
+import { getSettings, settingsActor } from '@src/lib/singletons'
 
 function isWorldCoordinateSystemType(
   x: string
