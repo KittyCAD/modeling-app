@@ -5,7 +5,7 @@ import type { components } from '@src/lib/machine-api'
 import { engineCommandManager } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
 import { toSync } from '@src/lib/utils'
-import { commandBarActor } from '@src/machines/commandBarMachine'
+import { commandBarActor } from '@src/lib/singletons'
 
 export type MachinesListing = Array<
   components['schemas']['MachineInfoResponse']

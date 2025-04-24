@@ -559,6 +559,8 @@ clonedCube = clone(cube)
 
         assert_eq!(cube.tags.len(), 0);
         assert_eq!(cloned_cube.tags.len(), 0);
+
+        ctx.close().await;
     }
 
     // Ensure the clone function returns a solid with different ids for all the internal paths and
@@ -615,6 +617,8 @@ clonedCube = clone(cube)
 
         assert_eq!(cube.edge_cuts.len(), 0);
         assert_eq!(cloned_cube.edge_cuts.len(), 0);
+
+        ctx.close().await;
     }
 
     // Ensure the clone function returns a sketch with different ids for all the internal paths and
@@ -668,6 +672,8 @@ clonedCube = clone(cube)
             assert_eq!(tag_info.surface, None);
             assert_eq!(cloned_tag_info.surface, None);
         }
+
+        ctx.close().await;
     }
 
     // Ensure the clone function returns a solid with different ids for all the internal paths and
@@ -734,6 +740,8 @@ clonedCube = clone(cube)
 
         assert_eq!(cube.edge_cuts.len(), 0);
         assert_eq!(cloned_cube.edge_cuts.len(), 0);
+
+        ctx.close().await;
     }
 
     // Ensure we can get all paths even on a sketch where we closed it and it was already closed.
@@ -807,6 +815,8 @@ clonedCube = clone(cube)
             assert_ne!(edge_cut.edge_id(), cloned_edge_cut.edge_id());
             assert_eq!(edge_cut.tag(), cloned_edge_cut.tag());
         }
+
+        ctx.close().await;
     }
 
     // Ensure the clone function returns a solid with different ids for all the internal paths and
@@ -905,5 +915,7 @@ clonedCube = clone(cube)
             assert_ne!(edge_cut.edge_id(), cloned_edge_cut.edge_id());
             assert_eq!(edge_cut.tag(), cloned_edge_cut.tag());
         }
+
+        ctx.close().await;
     }
 }

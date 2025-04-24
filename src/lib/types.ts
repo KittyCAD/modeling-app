@@ -1,4 +1,15 @@
 import type { FileEntry, Project } from '@src/lib/project'
+import type CodeManager from '@src/lang/codeManager'
+import type { EngineCommandManager } from '@src/lang/std/engineConnection'
+import type { KclManager } from '@src/lang/KclSingleton'
+import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
+import type { engineStreamMachine } from '@src/machines/engineStreamMachine'
+import type { authMachine } from '@src/machines/authMachine'
+import type { settingsMachine } from '@src/machines/settingsMachine'
+import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
+import type { ActorRefFrom } from 'xstate'
+import type { commandBarMachine } from '@src/machines/commandBarMachine'
 
 export type IndexLoaderData = {
   code: string | null
@@ -111,3 +122,16 @@ export type AsyncFn<F extends (...args: any[]) => any> = WithReturnType<
   F,
   Promise<unknown>
 >
+
+export type AppMachineContext = {
+  codeManager: CodeManager
+  kclManager: KclManager
+  engineCommandManager: EngineCommandManager
+  sceneInfra: SceneInfra
+  sceneEntitiesManager: SceneEntities
+  authActor?: ActorRefFrom<typeof authMachine>
+  settingsActor?: ActorRefFrom<typeof settingsMachine>
+  systemIOActor?: ActorRefFrom<typeof systemIOMachine>
+  engineStreamActor?: ActorRefFrom<typeof engineStreamMachine>
+  commandBarActor?: ActorRefFrom<typeof commandBarMachine>
+}

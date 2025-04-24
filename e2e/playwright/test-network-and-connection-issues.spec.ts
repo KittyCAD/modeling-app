@@ -8,7 +8,9 @@ import {
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
-test.describe('Test network and connection issues', () => {
+test.describe('Test network and connection issues', {
+  tag: ['@macOS'],
+}, () => {
   test(
     'simulate network down and network little widget',
     { tag: '@skipLocalEngine' },
