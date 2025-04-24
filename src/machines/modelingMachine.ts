@@ -3181,7 +3181,10 @@ export const modelingMachine = setup({
 
         // This runs only for empty artifactgraphs
         'Artifact graph populated': {
-          actions: ['reset camera position'],
+          actions: ['reset camera position', 'show default planes'],
+        },
+        'Artifact graph emptied': {
+          actions: ['hide default planes'],
         },
         'Artifact graph initialized': {
           actions: [
