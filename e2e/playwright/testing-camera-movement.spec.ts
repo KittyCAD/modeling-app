@@ -1,7 +1,7 @@
 import type { EngineCommand } from '@src/lang/std/artifactGraph'
 import { uuidv4 } from '@src/lib/utils'
 
-import { getUtils, orRunWhenFullSuiteEnabled } from '@e2e/playwright/test-utils'
+import { getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
 test.describe('Testing Camera Movement', { tag: ['@skipWin'] }, () => {
@@ -190,7 +190,6 @@ test.describe('Testing Camera Movement', { tag: ['@skipWin'] }, () => {
     page,
     homePage,
   }) => {
-    test.fixme(orRunWhenFullSuiteEnabled())
     // start new sketch pan and zoom before exiting, when exiting the sketch should stay in the same place
     // than zoom and pan outside of sketch mode and enter again and it should not change from where it is
     // than again for sketching

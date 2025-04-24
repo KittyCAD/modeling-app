@@ -5,7 +5,6 @@ import * as fsp from 'fs/promises'
 import {
   TEST_COLORS,
   getUtils,
-  orRunWhenFullSuiteEnabled,
   pollEditorLinesSelectedLength,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
@@ -1018,7 +1017,6 @@ part002 = startSketchOn(XZ)
     scene,
     cmdBar,
   }) => {
-    test.fixme(orRunWhenFullSuiteEnabled())
     test.setTimeout(70_000)
     await page.addInitScript(async () => {
       localStorage.setItem(

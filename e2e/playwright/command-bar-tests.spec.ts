@@ -2,11 +2,7 @@ import path, { join } from 'path'
 import { KCL_DEFAULT_LENGTH } from '@src/lib/constants'
 import * as fsp from 'fs/promises'
 
-import {
-  executorInputPath,
-  getUtils,
-  orRunWhenFullSuiteEnabled,
-} from '@e2e/playwright/test-utils'
+import { executorInputPath, getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
 test.describe('Command bar tests', { tag: ['@skipWin'] }, () => {
@@ -53,7 +49,6 @@ test.describe('Command bar tests', { tag: ['@skipWin'] }, () => {
 
   // TODO: fix this test after the electron migration
   test('Fillet from command bar', async ({ page, homePage }) => {
-    test.fixme(orRunWhenFullSuiteEnabled())
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
