@@ -659,13 +659,6 @@ impl Args {
         Ok((sketches, sketch))
     }
 
-    pub(crate) fn get_data<'a, T>(&'a self) -> Result<T, KclError>
-    where
-        T: FromArgs<'a>,
-    {
-        FromArgs::from_args(self, 0)
-    }
-
     pub(crate) fn get_data_and_sketch_surface(&self) -> Result<([TyF64; 2], SketchSurface, Option<TagNode>), KclError> {
         FromArgs::from_args(self, 0)
     }

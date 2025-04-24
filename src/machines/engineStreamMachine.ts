@@ -1,7 +1,7 @@
-import { engineCommandManager, sceneInfra } from '@src/lib/singletons'
 import type { MutableRefObject } from 'react'
 import type { ActorRefFrom } from 'xstate'
 import { assign, fromPromise, setup } from 'xstate'
+import type { AppMachineContext } from '@src/lib/types'
 
 export enum EngineStreamState {
   Off = 'off',
@@ -79,9 +79,13 @@ export const engineStreamMachine = setup({
   actors: {
     [EngineStreamTransition.Play]: fromPromise(
       async ({
-        input: { context, params },
+        input: { context, params, rootContext },
       }: {
-        input: { context: EngineStreamContext; params: { zoomToFit: boolean } }
+        input: {
+          context: EngineStreamContext
+          params: { zoomToFit: boolean }
+          rootContext: AppMachineContext
+        }
       }) => {
         const canvas = context.canvasRef.current
         if (!canvas) return false
@@ -98,7 +102,7 @@ export const engineStreamMachine = setup({
           return
         }
 
-        await sceneInfra.camControls.restoreRemoteCameraStateAndTriggerSync()
+        await rootContext.sceneInfra.camControls.restoreRemoteCameraStateAndTriggerSync()
 
         video.style.display = 'block'
         canvas.style.display = 'none'
@@ -108,9 +112,9 @@ export const engineStreamMachine = setup({
     ),
     [EngineStreamTransition.Pause]: fromPromise(
       async ({
-        input: { context },
+        input: { context, rootContext },
       }: {
-        input: { context: EngineStreamContext }
+        input: { context: EngineStreamContext; rootContext: AppMachineContext }
       }) => {
         const video = context.videoRef.current
         if (!video) return
@@ -123,7 +127,7 @@ export const engineStreamMachine = setup({
         await holdOntoVideoFrameInCanvas(video, canvas)
         video.style.display = 'none'
 
-        await sceneInfra.camControls.saveRemoteCameraState()
+        await rootContext.sceneInfra.camControls.saveRemoteCameraState()
 
         // Make sure we're on the next frame for no flickering between canvas
         // and the video elements.
@@ -138,16 +142,20 @@ export const engineStreamMachine = setup({
               context.mediaStream = null
               video.srcObject = null
 
-              engineCommandManager.tearDown({ idleMode: true })
+              rootContext.engineCommandManager.tearDown({ idleMode: true })
             })()
         )
       }
     ),
     [EngineStreamTransition.StartOrReconfigureEngine]: fromPromise(
       async ({
-        input: { context, event },
+        input: { context, event, rootContext },
       }: {
-        input: { context: EngineStreamContext; event: any }
+        input: {
+          context: EngineStreamContext
+          event: any
+          rootContext: AppMachineContext
+        }
       }) => {
         if (!context.authToken) return
 
@@ -172,10 +180,10 @@ export const engineStreamMachine = setup({
           ...event.settings,
         }
 
-        engineCommandManager.settings = settingsNext
+        rootContext.engineCommandManager.settings = settingsNext
 
         window.requestAnimationFrame(() => {
-          engineCommandManager.start({
+          rootContext.engineCommandManager.start({
             setMediaStream: event.onMediaStream,
             setIsStreamReady: (isStreamReady: boolean) => {
               event.setAppState({ isStreamReady })
@@ -225,7 +233,12 @@ export const engineStreamMachine = setup({
       reenter: true,
       invoke: {
         src: EngineStreamTransition.StartOrReconfigureEngine,
-        input: (args) => args,
+        input: (args) => ({
+          context: args.context,
+          rootContext: args.self.system.get('root').getSnapshot().context,
+          params: { zoomToFit: args.context.zoomToFit },
+          event: args.event,
+        }),
       },
       on: {
         // Transition requested by engineConnection
@@ -246,6 +259,7 @@ export const engineStreamMachine = setup({
         src: EngineStreamTransition.Play,
         input: (args) => ({
           context: args.context,
+          rootContext: args.self.system.get('root').getSnapshot().context,
           params: { zoomToFit: args.context.zoomToFit },
         }),
       },
@@ -261,7 +275,11 @@ export const engineStreamMachine = setup({
     [EngineStreamState.Reconfiguring]: {
       invoke: {
         src: EngineStreamTransition.StartOrReconfigureEngine,
-        input: (args) => args,
+        input: (args) => ({
+          context: args.context,
+          rootContext: args.self.system.get('root').getSnapshot().context,
+          event: args.event,
+        }),
         onDone: {
           target: EngineStreamState.Playing,
         },
@@ -270,7 +288,10 @@ export const engineStreamMachine = setup({
     [EngineStreamState.Paused]: {
       invoke: {
         src: EngineStreamTransition.Pause,
-        input: (args) => args,
+        input: (args) => ({
+          context: args.context,
+          rootContext: args.self.system.get('root').getSnapshot().context,
+        }),
       },
       on: {
         [EngineStreamTransition.StartOrReconfigureEngine]: {
@@ -282,7 +303,11 @@ export const engineStreamMachine = setup({
       reenter: true,
       invoke: {
         src: EngineStreamTransition.StartOrReconfigureEngine,
-        input: (args) => args,
+        input: (args) => ({
+          context: args.context,
+          rootContext: args.self.system.get('root').getSnapshot().context,
+          event: args.event,
+        }),
       },
       on: {
         // The stream can be paused as it's resuming.

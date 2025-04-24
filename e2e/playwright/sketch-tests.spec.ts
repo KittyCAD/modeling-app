@@ -1564,7 +1564,7 @@ profile003 = startProfileAt([206.63, -56.73], sketch001)
 
       const codeFromTangentialArc = `  |> tangentialArc(endAbsolute = [39.49, 88.22])`
       await test.step('check that tangential tool does not snap to other profile starts', async () => {
-        await toolbar.tangentialArcBtn.click()
+        await toolbar.selectTangentialArc()
         await page.waitForTimeout(1000)
         await endOfLowerSegMove()
         await page.waitForTimeout(1000)
@@ -1777,7 +1777,7 @@ profile003 = startProfileAt([206.63, -56.73], sketch001)
 
       await endLineStartTanArc()
       await editor.expectEditor.toContain(`|> line(end = [9.02, -0.55])`)
-      await toolbar.tangentialArcBtn.click()
+      await toolbar.selectTangentialArc()
       await page.waitForTimeout(300)
       await page.mouse.click(745, 359)
       await page.waitForTimeout(300)
@@ -2970,7 +2970,7 @@ test.describe('Redirecting to home page and back to the original file should cle
     await click00r(200, -200)
 
     // Draw arc
-    await toolbar.tangentialArcBtn.click()
+    await toolbar.selectTangentialArc()
     await click00r(0, 0)
     await click00r(100, 100)
 

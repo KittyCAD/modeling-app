@@ -28,6 +28,10 @@ pub enum RuntimeType {
 }
 
 impl RuntimeType {
+    pub fn edge() -> Self {
+        RuntimeType::Primitive(PrimitiveType::Edge)
+    }
+
     pub fn sketch() -> Self {
         RuntimeType::Primitive(PrimitiveType::Sketch)
     }
@@ -2114,5 +2118,74 @@ d = cos(30)
         assert_value_and_type("b", &result, 3.0, NumericType::default());
         assert_value_and_type("c", &result, 1.0, NumericType::count());
         assert_value_and_type("d", &result, 0.0, NumericType::count());
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn coerce_nested_array() {
+        let mut exec_state = ExecState::new(&crate::ExecutorContext::new_mock().await);
+
+        let mixed1 = KclValue::MixedArray {
+            value: vec![
+                KclValue::Number {
+                    value: 0.0,
+                    ty: NumericType::count(),
+                    meta: Vec::new(),
+                },
+                KclValue::Number {
+                    value: 1.0,
+                    ty: NumericType::count(),
+                    meta: Vec::new(),
+                },
+                KclValue::HomArray {
+                    value: vec![
+                        KclValue::Number {
+                            value: 2.0,
+                            ty: NumericType::count(),
+                            meta: Vec::new(),
+                        },
+                        KclValue::Number {
+                            value: 3.0,
+                            ty: NumericType::count(),
+                            meta: Vec::new(),
+                        },
+                    ],
+                    ty: RuntimeType::Primitive(PrimitiveType::Number(NumericType::count())),
+                },
+            ],
+            meta: Vec::new(),
+        };
+
+        // Principal types
+        let tym1 = RuntimeType::Array(
+            Box::new(RuntimeType::Primitive(PrimitiveType::Number(NumericType::count()))),
+            ArrayLen::NonEmpty,
+        );
+
+        let result = KclValue::HomArray {
+            value: vec![
+                KclValue::Number {
+                    value: 0.0,
+                    ty: NumericType::count(),
+                    meta: Vec::new(),
+                },
+                KclValue::Number {
+                    value: 1.0,
+                    ty: NumericType::count(),
+                    meta: Vec::new(),
+                },
+                KclValue::Number {
+                    value: 2.0,
+                    ty: NumericType::count(),
+                    meta: Vec::new(),
+                },
+                KclValue::Number {
+                    value: 3.0,
+                    ty: NumericType::count(),
+                    meta: Vec::new(),
+                },
+            ],
+            ty: RuntimeType::Primitive(PrimitiveType::Number(NumericType::count())),
+        };
+        assert_coerce_results(&mixed1, &tym1, &result, &mut exec_state);
     }
 }

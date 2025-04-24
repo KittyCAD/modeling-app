@@ -8,10 +8,7 @@ import type {
   CommandArgument,
   CommandArgumentOption,
 } from '@src/lib/commandTypes'
-import {
-  commandBarActor,
-  useCommandBarState,
-} from '@src/machines/commandBarMachine'
+import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
 
 const contextSelector = (snapshot: StateFrom<AnyStateMachine> | undefined) =>
   snapshot?.context
