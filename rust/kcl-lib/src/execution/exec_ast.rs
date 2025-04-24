@@ -459,6 +459,7 @@ impl ExecutorContext {
                 exec_state.add_path_to_source_id(resolved_path.clone(), id);
                 let format = super::import::format_from_annotations(attrs, path, source_range)?;
                 let geom = super::import::import_foreign(path, format, exec_state, self, source_range).await?;
+                println!("Imported foreign module: {}", path.display());
                 exec_state.add_module(id, resolved_path, ModuleRepr::Foreign(geom, None));
                 Ok(id)
             }
