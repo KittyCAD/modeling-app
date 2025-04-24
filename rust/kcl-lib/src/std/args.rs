@@ -1038,6 +1038,17 @@ impl<'a> FromKclValue<'a> for crate::execution::Geometry {
     }
 }
 
+impl<'a> FromKclValue<'a> for crate::execution::GeometryWithImportedGeometry {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        match arg {
+            KclValue::Sketch { value } => Some(Self::Sketch(*value.to_owned())),
+            KclValue::Solid { value } => Some(Self::Solid(*value.to_owned())),
+            KclValue::ImportedGeometry(value) => Some(Self::ImportedGeometry(value.clone())),
+            _ => None,
+        }
+    }
+}
+
 impl<'a> FromKclValue<'a> for FaceTag {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let case1 = || match arg.as_str() {

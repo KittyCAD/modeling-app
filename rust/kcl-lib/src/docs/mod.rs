@@ -130,6 +130,7 @@ impl StdLibFnArg {
         if (self.type_ == "Sketch"
             || self.type_ == "[Sketch]"
             || self.type_ == "Geometry"
+            || self.type_ == "GeometryWithImportedGeometry"
             || self.type_ == "Solid"
             || self.type_ == "[Solid]"
             || self.type_ == "SketchSurface"

@@ -17,7 +17,7 @@ use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
         types::{NumericType, PrimitiveType, RuntimeType},
-        ExecState, Geometry, KclValue, Sketch, Solid,
+        ExecState, GeometryWithImportedGeometry, KclValue, Sketch, Solid,
     },
     parsing::ast::types::TagNode,
     std::{extrude::NamedCapTags, Args},
@@ -252,27 +252,37 @@ pub async fn clone(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     keywords = true,
     unlabeled_first = true,
     args = {
-        geometry = { docs = "The sketch or solid to be cloned" },
+        geometry = { docs = "The sketch, solid, or imported geometry to be cloned" },
     }
 }]
-async fn inner_clone(geometry: Geometry, exec_state: &mut ExecState, args: Args) -> Result<Geometry, KclError> {
+async fn inner_clone(
+    geometry: GeometryWithImportedGeometry,
+    exec_state: &mut ExecState,
+    args: Args,
+) -> Result<GeometryWithImportedGeometry, KclError> {
     let new_id = exec_state.next_uuid();
-    let old_id = geometry.id();
+    let mut geometry = geometry.clone();
+    let old_id = geometry.id(&args.ctx).await?;
 
     let mut new_geometry = match &geometry {
-        Geometry::Sketch(sketch) => {
+        GeometryWithImportedGeometry::ImportedGeometry(imported) => {
+            let mut new_imported = imported.clone();
+            new_imported.id = new_id;
+            GeometryWithImportedGeometry::ImportedGeometry(new_imported)
+        }
+        GeometryWithImportedGeometry::Sketch(sketch) => {
             let mut new_sketch = sketch.clone();
             new_sketch.id = new_id;
             new_sketch.original_id = new_id;
             new_sketch.artifact_id = new_id.into();
-            Geometry::Sketch(new_sketch)
+            GeometryWithImportedGeometry::Sketch(new_sketch)
         }
-        Geometry::Solid(solid) => {
+        GeometryWithImportedGeometry::Solid(solid) => {
             let mut new_solid = solid.clone();
             new_solid.id = new_id;
             new_solid.sketch.original_id = new_id;
             new_solid.artifact_id = new_id.into();
-            Geometry::Solid(new_solid)
+            GeometryWithImportedGeometry::Solid(new_solid)
         }
     };
 
@@ -296,20 +306,21 @@ async fn inner_clone(geometry: Geometry, exec_state: &mut ExecState, args: Args)
 }
 /// Fix the tags and references of the cloned geometry.
 async fn fix_tags_and_references(
-    new_geometry: &mut Geometry,
+    new_geometry: &mut GeometryWithImportedGeometry,
     old_geometry_id: uuid::Uuid,
     exec_state: &mut ExecState,
     args: &Args,
 ) -> Result<()> {
-    let new_geometry_id = new_geometry.id();
+    let new_geometry_id = new_geometry.id(&args.ctx).await?;
     let entity_id_map = get_old_new_child_map(new_geometry_id, old_geometry_id, exec_state, args).await?;
 
     // Fix the path references in the new geometry.
     match new_geometry {
-        Geometry::Sketch(sketch) => {
+        GeometryWithImportedGeometry::ImportedGeometry(_) => {}
+        GeometryWithImportedGeometry::Sketch(sketch) => {
             fix_sketch_tags_and_references(sketch, &entity_id_map, exec_state).await?;
         }
-        Geometry::Solid(solid) => {
+        GeometryWithImportedGeometry::Solid(solid) => {
             // Make the sketch id the new geometry id.
             solid.sketch.id = new_geometry_id;
             solid.sketch.original_id = new_geometry_id;

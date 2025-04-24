@@ -47,6 +47,29 @@ impl Geometry {
     }
 }
 
+/// A geometry including an imported geometry.
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(tag = "type")]
+pub enum GeometryWithImportedGeometry {
+    Sketch(Sketch),
+    Solid(Solid),
+    ImportedGeometry(ImportedGeometry),
+}
+
+impl GeometryWithImportedGeometry {
+    pub async fn id(&mut self, ctx: &ExecutorContext) -> Result<uuid::Uuid, KclError> {
+        match self {
+            GeometryWithImportedGeometry::Sketch(s) => Ok(s.id),
+            GeometryWithImportedGeometry::Solid(e) => Ok(e.id),
+            GeometryWithImportedGeometry::ImportedGeometry(i) => {
+                let id = i.id(ctx).await?;
+                Ok(id)
+            }
+        }
+    }
+}
+
 /// A set of geometry.
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
