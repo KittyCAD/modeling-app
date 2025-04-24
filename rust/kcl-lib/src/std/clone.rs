@@ -181,6 +181,29 @@ pub async fn clone(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// ```
 ///
 /// ```no_run
+/// // Create a spring by sweeping around a helix path from a cloned sketch.
+///
+/// // Create a helix around the Z axis.
+/// helixPath = helix(
+///     angleStart = 0,
+///     ccw = true,
+///     revolutions = 4,
+///     length = 10,
+///     radius = 5,
+///     axis = Z,
+///  )
+///
+///
+/// springSketch = startSketchOn(YZ)
+///     |> circle( center = [0, 0], radius = 1)
+///
+/// // Create a spring by sweeping around the helix path.
+/// sweepedSpring = clone(springSketch)
+///     |> translate(x=100)
+///     |> sweep(path = helixPath)
+/// ```
+///
+/// ```no_run
 /// // Sketch on the end of a revolved face by tagging the end face.
 /// // This shows the cloned geometry will have the same tags as the original geometry.
 ///
