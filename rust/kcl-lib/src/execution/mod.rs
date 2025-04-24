@@ -752,26 +752,31 @@ impl ExecutorContext {
         let mut universe = std::collections::HashMap::new();
 
         let default_planes = self.engine.get_default_planes().read().await.clone();
-        crate::walk::import_universe(self, &program.ast, &mut universe, exec_state)
-            .await
-            .map_err(|err| {
-                let module_id_to_module_path: IndexMap<ModuleId, ModulePath> = exec_state
-                    .global
-                    .path_to_source_id
-                    .iter()
-                    .map(|(k, v)| ((*v), k.clone()))
-                    .collect();
+        crate::walk::import_universe(
+            self,
+            &ModuleRepr::Kcl(program.ast.clone(), None),
+            &mut universe,
+            exec_state,
+        )
+        .await
+        .map_err(|err| {
+            let module_id_to_module_path: IndexMap<ModuleId, ModulePath> = exec_state
+                .global
+                .path_to_source_id
+                .iter()
+                .map(|(k, v)| ((*v), k.clone()))
+                .collect();
 
-                KclErrorWithOutputs::new(
-                    err,
-                    exec_state.global.operations.clone(),
-                    exec_state.global.artifact_commands.clone(),
-                    exec_state.global.artifact_graph.clone(),
-                    module_id_to_module_path,
-                    exec_state.global.id_to_source.clone(),
-                    default_planes.clone(),
-                )
-            })?;
+            KclErrorWithOutputs::new(
+                err,
+                exec_state.global.operations.clone(),
+                exec_state.global.artifact_commands.clone(),
+                exec_state.global.artifact_graph.clone(),
+                module_id_to_module_path,
+                exec_state.global.id_to_source.clone(),
+                default_planes.clone(),
+            )
+        })?;
 
         for modules in crate::walk::import_graph(&universe, self)
             .map_err(|err| {
@@ -799,16 +804,12 @@ impl ExecutorContext {
 
             #[allow(clippy::type_complexity)]
             let (results_tx, mut results_rx): (
-                tokio::sync::mpsc::Sender<(
-                    ModuleId,
-                    ModulePath,
-                    Result<(Option<KclValue>, EnvironmentRef, Vec<String>), KclError>,
-                )>,
+                tokio::sync::mpsc::Sender<(ModuleId, ModulePath, Result<ModuleRepr, KclError>)>,
                 tokio::sync::mpsc::Receiver<_>,
             ) = tokio::sync::mpsc::channel(1);
 
             for module in modules {
-                let Some((import_stmt, module_id, module_path, program)) = universe.get(&module) else {
+                let Some((import_stmt, module_id, module_path, repr)) = universe.get(&module) else {
                     return Err(KclErrorWithOutputs::no_outputs(KclError::Internal(KclErrorDetails {
                         message: format!("Module {module} not found in universe"),
                         source_ranges: Default::default(),
@@ -816,11 +817,42 @@ impl ExecutorContext {
                 };
                 let module_id = *module_id;
                 let module_path = module_path.clone();
-                let program = program.clone();
+                let repr = repr.clone();
                 let exec_state = exec_state.clone();
                 let exec_ctxt = self.clone();
                 let results_tx = results_tx.clone();
                 let source_range = SourceRange::from(import_stmt);
+
+                println!("Executing module {module_path} with id {module_id}: {:?}", import_stmt);
+
+                let exec_module = async |exec_ctxt: &ExecutorContext,
+                                         repr: &ModuleRepr,
+                                         module_id: ModuleId,
+                                         module_path: &ModulePath,
+                                         exec_state: &mut ExecState,
+                                         source_range: SourceRange|
+                       -> Result<ModuleRepr, KclError> {
+                    match repr {
+                        ModuleRepr::Kcl(program, _) => {
+                            let result = exec_ctxt
+                                .exec_module_from_ast(program, module_id, module_path, exec_state, source_range, false)
+                                .await;
+
+                            result.map(|val| ModuleRepr::Kcl(program.clone(), Some(val)))
+                        }
+                        ModuleRepr::Foreign(geom, _) => {
+                            let result = crate::execution::import::send_to_engine(geom.clone(), exec_ctxt)
+                                .await
+                                .map(|geom| Some(KclValue::ImportedGeometry(geom)));
+
+                            result.map(|val| ModuleRepr::Foreign(geom.clone(), val))
+                        }
+                        ModuleRepr::Dummy | ModuleRepr::Root => Err(KclError::Internal(KclErrorDetails {
+                            message: format!("Module {module_path} not found in universe"),
+                            source_ranges: vec![source_range],
+                        })),
+                    }
+                };
 
                 #[cfg(target_arch = "wasm32")]
                 {
@@ -829,16 +861,15 @@ impl ExecutorContext {
                         let mut exec_state = exec_state;
                         let exec_ctxt = exec_ctxt;
 
-                        let result = exec_ctxt
-                            .exec_module_from_ast(
-                                &program,
-                                module_id,
-                                &module_path,
-                                &mut exec_state,
-                                source_range,
-                                false,
-                            )
-                            .await;
+                        let result = exec_module(
+                            &exec_ctxt,
+                            &repr,
+                            module_id,
+                            &module_path,
+                            &mut exec_state,
+                            source_range,
+                        )
+                        .await;
 
                         results_tx
                             .send((module_id, module_path, result))
@@ -852,16 +883,15 @@ impl ExecutorContext {
                         let mut exec_state = exec_state;
                         let exec_ctxt = exec_ctxt;
 
-                        let result = exec_ctxt
-                            .exec_module_from_ast(
-                                &program,
-                                module_id,
-                                &module_path,
-                                &mut exec_state,
-                                source_range,
-                                false,
-                            )
-                            .await;
+                        let result = exec_module(
+                            &exec_ctxt,
+                            &repr,
+                            module_id,
+                            &module_path,
+                            &mut exec_state,
+                            source_range,
+                        )
+                        .await;
 
                         results_tx
                             .send((module_id, module_path, result))
@@ -875,13 +905,10 @@ impl ExecutorContext {
 
             while let Some((module_id, _, result)) = results_rx.recv().await {
                 match result {
-                    Ok((val, session_data, variables)) => {
+                    Ok(new_repr) => {
                         let mut repr = exec_state.global.module_infos[&module_id].take_repr();
 
-                        let ModuleRepr::Kcl(_, cache) = &mut repr else {
-                            continue;
-                        };
-                        *cache = Some((val, session_data, variables));
+                        repr = new_repr;
 
                         exec_state.global.module_infos[&module_id].restore_repr(repr);
                     }
