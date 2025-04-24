@@ -1,9 +1,6 @@
 use kcl_derive_docs::stdlib;
 
-use super::{
-    args::{Arg, FromArgs},
-    Args,
-};
+use super::{args::Arg, Args};
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
@@ -239,15 +236,20 @@ async fn call_reduce_closure(
 ///
 /// ```no_run
 /// arr = [1, 2, 3]
-/// new_arr = push(arr, 4)
+/// new_arr = push(arr, item = 4)
 /// assert(new_arr[3], isEqualTo = 4, tolerance = 0.1, error = "4 was added to the end of the array")
 /// ```
 #[stdlib {
     name = "push",
+    keywords = true,
+    unlabeled_first = true,
+    args = {
+        array = { docs = "The array which you're adding a new item to." },
+        item = { docs = "The new item to add to the array" },
+    }
 }]
-async fn inner_push(mut array: Vec<KclValue>, elem: KclValue, args: &Args) -> Result<KclValue, KclError> {
-    // Unwrap the KclValues to JValues for manipulation
-    array.push(elem);
+async fn inner_push(mut array: Vec<KclValue>, item: KclValue, args: &Args) -> Result<KclValue, KclError> {
+    array.push(item);
     Ok(KclValue::MixedArray {
         value: array,
         meta: vec![args.source_range.into()],
@@ -256,7 +258,9 @@ async fn inner_push(mut array: Vec<KclValue>, elem: KclValue, args: &Args) -> Re
 
 pub async fn push(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     // Extract the array and the element from the arguments
-    let (val, elem): (KclValue, KclValue) = FromArgs::from_args(&args, 0)?;
+    // let (val, elem): (KclValue, KclValue) = FromArgs::from_args(&args, 0)?;
+    let val: KclValue = args.get_unlabeled_kw_arg("array")?;
+    let item = args.get_kw_arg("item")?;
 
     let meta = vec![args.source_range];
     let KclValue::MixedArray { value: array, meta: _ } = val else {
@@ -266,7 +270,7 @@ pub async fn push(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
             message: format!("You can't push to a value of type {actual_type}, only an array"),
         }));
     };
-    inner_push(array, elem, &args).await
+    inner_push(array, item, &args).await
 }
 
 /// Remove the last element from an array.
@@ -285,7 +289,7 @@ pub async fn push(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     keywords = true,
     unlabeled_first = true,
     args = {
-        array = { docs = "The array to pop from.  Must not be empty."},
+        array = { docs = "The array to pop from. Must not be empty."},
     }
 }]
 async fn inner_pop(array: Vec<KclValue>, args: &Args) -> Result<KclValue, KclError> {
