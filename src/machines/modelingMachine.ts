@@ -3181,10 +3181,7 @@ export const modelingMachine = setup({
 
         // This runs only for empty artifactgraphs
         'Artifact graph populated': {
-          actions: [
-            'reset client scene mouse handlers',
-            'reset camera position',
-          ],
+          actions: ['reset camera position'],
         },
         'Artifact graph initialized': {
           actions: [
@@ -3196,7 +3193,7 @@ export const modelingMachine = setup({
         },
       },
 
-      entry: ['reset client scene mouse handlers', 'reset camera position'],
+      entry: 'reset client scene mouse handlers',
     },
 
     Sketch: {
