@@ -127,7 +127,6 @@ pub(crate) fn import_dependencies(repr: &ModuleRepr, ctx: &ExecutorContext) -> R
     let ret = Arc::new(Mutex::new(vec![]));
     fn walk(ret: Arc<Mutex<ImportDependencies>>, node: Node<'_>, ctx: &ExecutorContext) -> Result<(), KclError> {
         if let Node::ImportStatement(is) = node {
-            println!("Import statement: {:?}", is);
             // We only care about Kcl and Foreign imports for now.
             let resolved_path = ModulePath::from_import_path(&is.path, &ctx.settings.project_directory);
             match &is.path {
@@ -144,7 +143,6 @@ pub(crate) fn import_dependencies(repr: &ModuleRepr, ctx: &ExecutorContext) -> R
                         .push((filename.to_string(), is.clone(), resolved_path));
                 }
                 ImportPath::Foreign { path } => {
-                    println!("Foreign import: {}", path);
                     ret.lock()
                         .map_err(|err| {
                             KclError::Internal(KclErrorDetails {

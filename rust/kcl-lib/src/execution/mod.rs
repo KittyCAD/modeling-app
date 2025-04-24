@@ -823,8 +823,6 @@ impl ExecutorContext {
                 let results_tx = results_tx.clone();
                 let source_range = SourceRange::from(import_stmt);
 
-                println!("Executing module {module_path} with id {module_id}: {:?}", import_stmt);
-
                 let exec_module = async |exec_ctxt: &ExecutorContext,
                                          repr: &ModuleRepr,
                                          module_id: ModuleId,

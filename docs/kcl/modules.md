@@ -119,88 +119,41 @@ stages—reading, initializing (background render start), and invocation (blocki
 
 #### Foreign Import Execution Stages
 
-1. **Import (Read) Stage**  
-   ```norun
+1. **Import (Read/Initialization) Stage**  
+   ```
    import "tests/inputs/cube.step" as cube
    ```  
    - Reads the file from disk and makes its API available.  
-   - **Does _not_** start Engine rendering or block your script.
-
-2. **Initialization (Background Render) Stage**  
-   ```norun
-   import "tests/inputs/cube.step" as cube
-
-   myCube = cube    // <- This line starts background rendering
-   ```  
-   - Invoking the imported symbol (assignment or plain call) triggers Engine rendering _in the background_.  
+   - Starts engine rendering or block your script.
    - This kick‑starts the render pipeline but doesn’t block—you can continue other work while the Engine processes the model.
 
-3. **Invocation (Blocking) Stage**  
-   ```norun
+2. **Invocation (Blocking) Stage**  
+   ```
    import "tests/inputs/cube.step" as cube
 
-   myCube = cube
-
-   myCube
+   cube
     |> translate(z=10) // <- This line blocks
    ```  
    - Any method call (e.g., `translate`, `scale`, `rotate`) waits for the background render to finish before applying transformations.  
    - This is the only point where your script will block.
 
-> **Nuance:**  Foreign imports differ from pure KCL modules—calling the same import symbol multiple times (e.g., `screw` twice) starts background rendering twice.
-
 #### Best Practices
 
 ##### 1. Defer Blocking Calls
 Initialize early but delay all transformations until after your heavy computation:
-```norun
-import "tests/inputs/cube.step" as cube     // 1) Read
-
-myCube = cube                               // 2) Background render starts
+```kcl
+import "tests/inputs/cube.step" as cube     // 1) Read / Background render
+starts
 
 
 // --- perform other operations and calculations or setup here ---
 
 
-myCube
-  |> translate(z=10)                        // 3) Blocks only here
-```
-
-##### 2. Encapsulate Imports in Modules
-Keep `main.kcl` free of reads and initialization; wrap them:
-
-```norun
-// imports.kcl
-import "tests/inputs/cube.step" as cube    // Read only
-
-
-export myCube = cube                      // Kick off rendering
-```
-
-```norun
-// main.kcl
-import myCube from "imports.kcl"  // Import the initialized object 
-
-
-// ... computations ...
-
-
-myCube
-  |> translate(z=10)              // Blocking call at the end
-```
-
-##### 3. Avoid Immediate Method Calls
-
-```norun
-import "tests/inputs/cube.step" as cube
-
 cube
-  |> translate(z=10)              // Blocks immediately, negating parallelism
+  |> translate(z=10)                        // 2) Blocks only here
 ```
-
-Both calling methods right on `cube` immediately or leaving an implicit import without assignment introduce blocking.
 
 #### Future Improvements
 
-Upcoming releases will auto‑analyze dependencies and only block when truly necessary. Until then, explicit deferral and modular wrapping give you the best performance.
+Upcoming releases will auto‑analyze dependencies and only block when truly necessary. Until then, explicit deferral will give you the best performance.
 
