@@ -1387,7 +1387,10 @@ export async function deleteFromSelection(
     )
     if (importIndexToDelete >= 0) {
       astClone.body.splice(importIndexToDelete, 1)
+    } else {
+      return new Error("Couldn't find import to delete")
     }
+
     return astClone
   }
 
