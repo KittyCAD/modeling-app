@@ -554,7 +554,7 @@ profile001 = startProfile(sketch002, at = [-12.34, 12.34])
   await u.updateCamPosition([1049, 239, 686])
   await u.closeDebugPanel()
 
-  await page.getByText('startProfile(at = [-12').click()
+  await page.getByText('startProfile(sketch002, at = [-12').click()
   await expect(page.getByRole('button', { name: 'Edit Sketch' })).toBeVisible()
   await page.getByRole('button', { name: 'Edit Sketch' }).click()
   await page.waitForTimeout(500)
