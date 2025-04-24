@@ -180,7 +180,8 @@ description: Variables in memory after executing washer.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Inches"
-      }
+      },
+      "sectional": false
     }
   },
   "washerSketch": {

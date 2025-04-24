@@ -508,7 +508,8 @@ description: Variables in memory after executing router-template-slate.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "extrude002": {
@@ -1202,7 +1203,8 @@ description: Variables in memory after executing router-template-slate.kcl
             "endCapId": "[uuid]",
             "units": {
               "type": "Mm"
-            }
+            },
+            "sectional": false
           },
           "units": {
             "type": "Mm"
@@ -1251,7 +1253,8 @@ description: Variables in memory after executing router-template-slate.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "extrude003": {
@@ -1921,7 +1924,8 @@ description: Variables in memory after executing router-template-slate.kcl
             "endCapId": "[uuid]",
             "units": {
               "type": "Mm"
-            }
+            },
+            "sectional": false
           },
           "units": {
             "type": "Mm"
@@ -1962,7 +1966,8 @@ description: Variables in memory after executing router-template-slate.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "length001": {
@@ -3095,7 +3100,8 @@ description: Variables in memory after executing router-template-slate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         },
         "units": {
           "type": "Mm"
@@ -3767,7 +3773,8 @@ description: Variables in memory after executing router-template-slate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         },
         "units": {
           "type": "Mm"

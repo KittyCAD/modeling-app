@@ -315,7 +315,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -547,7 +548,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -779,7 +781,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -1011,7 +1014,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -1243,7 +1247,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -1475,7 +1480,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -1707,7 +1713,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -1939,7 +1946,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -2171,7 +2179,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -2403,7 +2412,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -2635,7 +2645,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -2867,7 +2878,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -3099,7 +3111,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -3331,7 +3344,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -3563,7 +3577,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -3795,7 +3810,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -4027,7 +4043,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -4259,7 +4276,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -4491,7 +4509,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -4723,7 +4742,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -4955,7 +4975,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -5187,7 +5208,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -5419,7 +5441,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -5651,7 +5674,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       }
     ]
@@ -5983,7 +6007,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
           ],
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -6310,7 +6335,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
           ],
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -6637,7 +6663,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
           ],
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -6964,7 +6991,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
           ],
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -7291,7 +7319,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
           ],
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -7618,7 +7647,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
           ],
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       }
     ]
@@ -7881,7 +7911,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -8113,7 +8144,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -8345,7 +8377,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -8577,7 +8610,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -8809,7 +8843,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -9041,7 +9076,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -9273,7 +9309,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -9505,7 +9542,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -9737,7 +9775,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -9969,7 +10008,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -10201,7 +10241,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -10433,7 +10474,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -10665,7 +10707,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -10897,7 +10940,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -11129,7 +11173,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -11361,7 +11406,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -11593,7 +11639,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -11825,7 +11872,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -12057,7 +12105,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -12289,7 +12338,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -12521,7 +12571,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -12753,7 +12804,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -12985,7 +13037,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -13217,7 +13270,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       }
     ]
@@ -13572,7 +13626,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
       ],
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "cornerRadius": {
@@ -13820,7 +13875,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -14052,7 +14108,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -14284,7 +14341,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -14516,7 +14574,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       }
     ]
@@ -15028,7 +15087,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 ],
                 "units": {
                   "type": "Mm"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Mm"
@@ -15063,7 +15123,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -15462,7 +15523,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 ],
                 "units": {
                   "type": "Mm"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Mm"
@@ -15497,7 +15559,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -15896,7 +15959,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 ],
                 "units": {
                   "type": "Mm"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Mm"
@@ -15931,7 +15995,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -16330,7 +16395,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 ],
                 "units": {
                   "type": "Mm"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Mm"
@@ -16365,7 +16431,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       }
     ]
@@ -16654,7 +16721,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -16886,7 +16954,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -17118,7 +17187,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -17350,7 +17420,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       }
     ]
@@ -17679,7 +17750,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
       ],
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "singleCorner": {
@@ -17911,7 +17983,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "singleSide": {
@@ -18143,7 +18216,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "thirdStep": {

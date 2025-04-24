@@ -3313,7 +3313,8 @@ description: Variables in memory after executing loop_tag.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "finalSketch": {

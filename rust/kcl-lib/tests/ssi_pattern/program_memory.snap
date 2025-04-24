@@ -255,7 +255,8 @@ description: Variables in memory after executing ssi_pattern.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "seg01": {
@@ -791,7 +792,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Mm"
@@ -826,7 +828,8 @@ description: Variables in memory after executing ssi_pattern.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -1153,7 +1156,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Mm"
@@ -1188,7 +1192,8 @@ description: Variables in memory after executing ssi_pattern.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -1515,7 +1520,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Mm"
@@ -1550,7 +1556,8 @@ description: Variables in memory after executing ssi_pattern.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -1877,7 +1884,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Mm"
@@ -1912,7 +1920,8 @@ description: Variables in memory after executing ssi_pattern.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -2239,7 +2248,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Mm"
@@ -2274,7 +2284,8 @@ description: Variables in memory after executing ssi_pattern.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -2601,7 +2612,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Mm"
@@ -2636,7 +2648,8 @@ description: Variables in memory after executing ssi_pattern.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -2963,7 +2976,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Mm"
@@ -2998,7 +3012,8 @@ description: Variables in memory after executing ssi_pattern.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -3325,7 +3340,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Mm"
@@ -3360,7 +3376,8 @@ description: Variables in memory after executing ssi_pattern.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -3687,7 +3704,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Mm"
@@ -3722,7 +3740,8 @@ description: Variables in memory after executing ssi_pattern.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -4049,7 +4068,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Mm"
@@ -4084,7 +4104,8 @@ description: Variables in memory after executing ssi_pattern.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -4411,7 +4432,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Mm"
@@ -4446,7 +4468,8 @@ description: Variables in memory after executing ssi_pattern.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -4773,7 +4796,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Mm"
@@ -4808,7 +4832,8 @@ description: Variables in memory after executing ssi_pattern.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -5135,7 +5160,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Mm"
@@ -5170,7 +5196,8 @@ description: Variables in memory after executing ssi_pattern.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -5497,7 +5524,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Mm"
@@ -5532,7 +5560,8 @@ description: Variables in memory after executing ssi_pattern.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -5859,7 +5888,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Mm"
@@ -5894,7 +5924,8 @@ description: Variables in memory after executing ssi_pattern.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -6221,7 +6252,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Mm"
@@ -6256,7 +6288,8 @@ description: Variables in memory after executing ssi_pattern.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -6583,7 +6616,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Mm"
@@ -6618,7 +6652,8 @@ description: Variables in memory after executing ssi_pattern.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -6945,7 +6980,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Mm"
@@ -6980,7 +7016,8 @@ description: Variables in memory after executing ssi_pattern.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -7307,7 +7344,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Mm"
@@ -7342,7 +7380,8 @@ description: Variables in memory after executing ssi_pattern.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -7669,7 +7708,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Mm"
@@ -7704,7 +7744,8 @@ description: Variables in memory after executing ssi_pattern.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -8031,7 +8072,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Mm"
@@ -8066,7 +8108,8 @@ description: Variables in memory after executing ssi_pattern.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -8393,7 +8436,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Mm"
@@ -8428,7 +8472,8 @@ description: Variables in memory after executing ssi_pattern.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -8755,7 +8800,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Mm"
@@ -8790,7 +8836,8 @@ description: Variables in memory after executing ssi_pattern.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -9117,7 +9164,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Mm"
@@ -9152,7 +9200,8 @@ description: Variables in memory after executing ssi_pattern.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -9479,7 +9528,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Mm"
@@ -9514,7 +9564,8 @@ description: Variables in memory after executing ssi_pattern.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -9841,7 +9892,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Mm"
@@ -9876,7 +9928,8 @@ description: Variables in memory after executing ssi_pattern.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -10203,7 +10256,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Mm"
@@ -10238,7 +10292,8 @@ description: Variables in memory after executing ssi_pattern.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -10565,7 +10620,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Mm"
@@ -10600,7 +10656,8 @@ description: Variables in memory after executing ssi_pattern.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -10927,7 +10984,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Mm"
@@ -10962,7 +11020,8 @@ description: Variables in memory after executing ssi_pattern.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -11289,7 +11348,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Mm"
@@ -11324,7 +11384,8 @@ description: Variables in memory after executing ssi_pattern.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       }
     ]

@@ -212,7 +212,8 @@ description: Variables in memory after executing pipe_as_arg.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "width": {

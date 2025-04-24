@@ -170,7 +170,8 @@ description: Variables in memory after executing makeup-mirror.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "armPartB": {
@@ -285,7 +286,8 @@ description: Variables in memory after executing makeup-mirror.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "armRadius": {
@@ -442,7 +444,8 @@ description: Variables in memory after executing makeup-mirror.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "hingePartA2": {
@@ -557,7 +560,8 @@ description: Variables in memory after executing makeup-mirror.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "hingePartA3": {
@@ -672,7 +676,8 @@ description: Variables in memory after executing makeup-mirror.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "hingePartB2": {
@@ -787,7 +792,8 @@ description: Variables in memory after executing makeup-mirror.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "hingePartB3": {
@@ -902,7 +908,8 @@ description: Variables in memory after executing makeup-mirror.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "hingePartC2": {
@@ -1017,7 +1024,8 @@ description: Variables in memory after executing makeup-mirror.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "hingePartC3": {
@@ -1132,7 +1140,8 @@ description: Variables in memory after executing makeup-mirror.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "hingeRadius": {
@@ -1260,7 +1269,8 @@ description: Variables in memory after executing makeup-mirror.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "mirrorFn": {

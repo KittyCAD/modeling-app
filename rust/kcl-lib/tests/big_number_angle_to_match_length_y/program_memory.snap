@@ -179,7 +179,8 @@ description: Variables in memory after executing big_number_angle_to_match_lengt
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "seg01": {
