@@ -13,7 +13,7 @@ import { codeManager, kclManager } from '@src/lib/singletons'
 import { Themes, getSystemTheme } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
 import type { IndexLoaderData } from '@src/lib/types'
-import { useSettings } from '@src/machines/appMachine'
+import { useSettings } from '@src/lib/singletons'
 import { onboardingPaths } from '@src/routes/Onboarding/paths'
 
 import { OnboardingButtons, useDemoCode } from '@src/routes/Onboarding/utils'

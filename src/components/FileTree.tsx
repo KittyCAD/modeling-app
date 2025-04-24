@@ -29,7 +29,7 @@ import { reportRejection } from '@src/lib/trap'
 import type { IndexLoaderData } from '@src/lib/types'
 
 import { ToastInsert } from '@src/components/ToastInsert'
-import { commandBarActor } from '@src/machines/commandBarMachine'
+import { commandBarActor } from '@src/lib/singletons'
 import toast from 'react-hot-toast'
 import styles from './FileTree.module.css'
 

@@ -4,7 +4,7 @@ import ProjectSidebarMenu from '@src/components/ProjectSidebarMenu'
 import UserSidebarMenu from '@src/components/UserSidebarMenu'
 import { isDesktop } from '@src/lib/isDesktop'
 import { type IndexLoaderData } from '@src/lib/types'
-import { useUser } from '@src/machines/appMachine'
+import { useUser } from '@src/lib/singletons'
 
 import styles from './AppHeader.module.css'
 
