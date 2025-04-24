@@ -12,10 +12,7 @@ import {
 import { engineCommandManager, kclManager } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
 import { toSync } from '@src/lib/utils'
-import {
-  commandBarActor,
-  useCommandBarState,
-} from '@src/machines/commandBarMachine'
+import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
 import type { modelingMachine } from '@src/machines/modelingMachine'
 
 const semanticEntityNames: {
