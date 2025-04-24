@@ -129,10 +129,13 @@ impl StdLibFnArg {
         };
         if (self.type_ == "Sketch"
             || self.type_ == "[Sketch]"
+            || self.type_ == "Geometry"
+            || self.type_ == "GeometryWithImportedGeometry"
             || self.type_ == "Solid"
             || self.type_ == "[Solid]"
             || self.type_ == "SketchSurface"
             || self.type_ == "SketchOrSurface"
+            || self.type_ == "SolidOrImportedGeometry"
             || self.type_ == "SolidOrSketchOrImportedGeometry")
             && (self.required || self.include_in_snippet)
         {
@@ -501,6 +504,8 @@ pub trait StdLibFn: std::fmt::Debug + Send + Sync {
     fn to_autocomplete_snippet(&self) -> Result<String> {
         if self.name() == "loft" {
             return Ok("loft([${0:sketch000}, ${1:sketch001}])".to_string());
+        } else if self.name() == "clone" {
+            return Ok("clone(${0:part001})".to_string());
         } else if self.name() == "union" {
             return Ok("union([${0:extrude001}, ${1:extrude002}])".to_string());
         } else if self.name() == "subtract" {
@@ -963,11 +968,7 @@ mod tests {
         let snippet = arc_fn.to_autocomplete_snippet().unwrap();
         assert_eq!(
             snippet,
-            r#"arc({
-	angleStart = ${0:3.14},
-	angleEnd = ${1:3.14},
-	radius = ${2:3.14},
-}, ${3:%})"#
+            r#"arc(${0:%}, angleStart = ${1:3.14}, angleEnd = ${2:3.14}, radius = ${3:3.14})"#
         );
     }
 
@@ -1090,6 +1091,14 @@ mod tests {
             snippet,
             r#"rotate(${0:%}, roll = ${1:3.14}, pitch = ${2:3.14}, yaw = ${3:3.14})"#
         );
+    }
+
+    #[test]
+    #[allow(clippy::literal_string_with_formatting_args)]
+    fn get_autocomplete_snippet_clone() {
+        let clone_fn: Box<dyn StdLibFn> = Box::new(crate::std::clone::Clone);
+        let snippet = clone_fn.to_autocomplete_snippet().unwrap();
+        assert_eq!(snippet, r#"clone(${0:part001})"#);
     }
 
     // We want to test the snippets we compile at lsp start.

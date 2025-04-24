@@ -1033,9 +1033,6 @@ description: Variables in memory after executing gear.kcl
             "units": {
               "type": "Mm"
             }
-          },
-          "units": {
-            "type": "Inches"
           }
         },
         "start": {
@@ -1067,7 +1064,8 @@ description: Variables in memory after executing gear.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Inches"
-      }
+      },
+      "sectional": false
     }
   },
   "cmo": {
@@ -2129,9 +2127,6 @@ description: Variables in memory after executing gear.kcl
                   "units": {
                     "type": "Mm"
                   }
-                },
-                "units": {
-                  "type": "Inches"
                 }
               },
               "start": {
@@ -2163,7 +2158,8 @@ description: Variables in memory after executing gear.kcl
             "endCapId": "[uuid]",
             "units": {
               "type": "Inches"
-            }
+            },
+            "sectional": false
           },
           "units": {
             "type": "Inches"
@@ -2198,7 +2194,8 @@ description: Variables in memory after executing gear.kcl
       "endCapId": null,
       "units": {
         "type": "Inches"
-      }
+      },
+      "sectional": false
     }
   },
   "keywayDepth": {
@@ -3658,9 +3655,6 @@ description: Variables in memory after executing gear.kcl
           "units": {
             "type": "Mm"
           }
-        },
-        "units": {
-          "type": "Inches"
         }
       },
       "start": {
@@ -7630,9 +7624,6 @@ description: Variables in memory after executing gear.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Inches"
               }
             },
             "start": {
@@ -7664,7 +7655,8 @@ description: Variables in memory after executing gear.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -11597,9 +11589,6 @@ description: Variables in memory after executing gear.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Inches"
               }
             },
             "start": {
@@ -11631,7 +11620,8 @@ description: Variables in memory after executing gear.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -15564,9 +15554,6 @@ description: Variables in memory after executing gear.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Inches"
               }
             },
             "start": {
@@ -15598,7 +15585,8 @@ description: Variables in memory after executing gear.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -19531,9 +19519,6 @@ description: Variables in memory after executing gear.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Inches"
               }
             },
             "start": {
@@ -19565,7 +19550,8 @@ description: Variables in memory after executing gear.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -23498,9 +23484,6 @@ description: Variables in memory after executing gear.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Inches"
               }
             },
             "start": {
@@ -23532,7 +23515,8 @@ description: Variables in memory after executing gear.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -27465,9 +27449,6 @@ description: Variables in memory after executing gear.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Inches"
               }
             },
             "start": {
@@ -27499,7 +27480,8 @@ description: Variables in memory after executing gear.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -31432,9 +31414,6 @@ description: Variables in memory after executing gear.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Inches"
               }
             },
             "start": {
@@ -31466,7 +31445,8 @@ description: Variables in memory after executing gear.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -35399,9 +35379,6 @@ description: Variables in memory after executing gear.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Inches"
               }
             },
             "start": {
@@ -35433,7 +35410,8 @@ description: Variables in memory after executing gear.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -39366,9 +39344,6 @@ description: Variables in memory after executing gear.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Inches"
               }
             },
             "start": {
@@ -39400,7 +39375,8 @@ description: Variables in memory after executing gear.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -43333,9 +43309,6 @@ description: Variables in memory after executing gear.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Inches"
               }
             },
             "start": {
@@ -43367,7 +43340,8 @@ description: Variables in memory after executing gear.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -47300,9 +47274,6 @@ description: Variables in memory after executing gear.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Inches"
               }
             },
             "start": {
@@ -47334,7 +47305,8 @@ description: Variables in memory after executing gear.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -51267,9 +51239,6 @@ description: Variables in memory after executing gear.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Inches"
               }
             },
             "start": {
@@ -51301,7 +51270,8 @@ description: Variables in memory after executing gear.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -55234,9 +55204,6 @@ description: Variables in memory after executing gear.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Inches"
               }
             },
             "start": {
@@ -55268,7 +55235,8 @@ description: Variables in memory after executing gear.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -59201,9 +59169,6 @@ description: Variables in memory after executing gear.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Inches"
               }
             },
             "start": {
@@ -59235,7 +59200,8 @@ description: Variables in memory after executing gear.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -63168,9 +63134,6 @@ description: Variables in memory after executing gear.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Inches"
               }
             },
             "start": {
@@ -63202,7 +63165,8 @@ description: Variables in memory after executing gear.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -67135,9 +67099,6 @@ description: Variables in memory after executing gear.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Inches"
               }
             },
             "start": {
@@ -67169,7 +67130,8 @@ description: Variables in memory after executing gear.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -71102,9 +71064,6 @@ description: Variables in memory after executing gear.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Inches"
               }
             },
             "start": {
@@ -71136,7 +71095,8 @@ description: Variables in memory after executing gear.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -75069,9 +75029,6 @@ description: Variables in memory after executing gear.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Inches"
               }
             },
             "start": {
@@ -75103,7 +75060,8 @@ description: Variables in memory after executing gear.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -79036,9 +78994,6 @@ description: Variables in memory after executing gear.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Inches"
               }
             },
             "start": {
@@ -79070,7 +79025,8 @@ description: Variables in memory after executing gear.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -83003,9 +82959,6 @@ description: Variables in memory after executing gear.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Inches"
               }
             },
             "start": {
@@ -83037,7 +82990,8 @@ description: Variables in memory after executing gear.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -86970,9 +86924,6 @@ description: Variables in memory after executing gear.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Inches"
               }
             },
             "start": {
@@ -87004,7 +86955,8 @@ description: Variables in memory after executing gear.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       }
     ]

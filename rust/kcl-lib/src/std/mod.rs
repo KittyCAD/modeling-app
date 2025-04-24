@@ -6,6 +6,7 @@ pub mod array;
 pub mod assert;
 pub mod axis_or_reference;
 pub mod chamfer;
+pub mod clone;
 pub mod convert;
 pub mod csg;
 pub mod edge;
@@ -84,10 +85,10 @@ lazy_static! {
         Box::new(crate::std::sketch::ProfileStart),
         Box::new(crate::std::sketch::Close),
         Box::new(crate::std::sketch::Arc),
-        Box::new(crate::std::sketch::ArcTo),
         Box::new(crate::std::sketch::TangentialArc),
         Box::new(crate::std::sketch::BezierCurve),
         Box::new(crate::std::sketch::Hole),
+        Box::new(crate::std::clone::Clone),
         Box::new(crate::std::patterns::PatternLinear2D),
         Box::new(crate::std::patterns::PatternLinear3D),
         Box::new(crate::std::patterns::PatternCircular2D),
@@ -129,8 +130,6 @@ lazy_static! {
         Box::new(crate::std::math::Log2),
         Box::new(crate::std::math::Log10),
         Box::new(crate::std::math::Ln),
-        Box::new(crate::std::math::ToDegrees),
-        Box::new(crate::std::math::ToRadians),
         Box::new(crate::std::units::FromMm),
         Box::new(crate::std::units::FromInches),
         Box::new(crate::std::units::FromFt),
@@ -138,11 +137,7 @@ lazy_static! {
         Box::new(crate::std::units::FromCm),
         Box::new(crate::std::units::FromYd),
         Box::new(crate::std::assert::Assert),
-        Box::new(crate::std::assert::AssertEqual),
-        Box::new(crate::std::assert::AssertLessThan),
-        Box::new(crate::std::assert::AssertGreaterThan),
-        Box::new(crate::std::assert::AssertLessThanOrEq),
-        Box::new(crate::std::assert::AssertGreaterThanOrEq),
+        Box::new(crate::std::assert::AssertIs),
         Box::new(crate::std::transform::Scale),
         Box::new(crate::std::transform::Translate),
         Box::new(crate::std::transform::Rotate),
@@ -218,14 +213,14 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
 
 pub(crate) fn std_ty(path: &str, fn_name: &str) -> (PrimitiveType, StdFnProps) {
     match (path, fn_name) {
-        ("prelude", "Sketch") => (PrimitiveType::Sketch, StdFnProps::default("std::Sketch")),
-        ("prelude", "Solid") => (PrimitiveType::Solid, StdFnProps::default("std::Solid")),
-        ("prelude", "Plane") => (PrimitiveType::Plane, StdFnProps::default("std::Plane")),
-        ("prelude", "Face") => (PrimitiveType::Face, StdFnProps::default("std::Face")),
-        ("prelude", "Helix") => (PrimitiveType::Helix, StdFnProps::default("std::Helix")),
-        ("prelude", "Edge") => (PrimitiveType::Edge, StdFnProps::default("std::Edge")),
-        ("prelude", "Axis2d") => (PrimitiveType::Axis2d, StdFnProps::default("std::Axis2d")),
-        ("prelude", "Axis3d") => (PrimitiveType::Axis3d, StdFnProps::default("std::Axis3d")),
+        ("types", "Sketch") => (PrimitiveType::Sketch, StdFnProps::default("std::types::Sketch")),
+        ("types", "Solid") => (PrimitiveType::Solid, StdFnProps::default("std::types::Solid")),
+        ("types", "Plane") => (PrimitiveType::Plane, StdFnProps::default("std::types::Plane")),
+        ("types", "Face") => (PrimitiveType::Face, StdFnProps::default("std::types::Face")),
+        ("types", "Helix") => (PrimitiveType::Helix, StdFnProps::default("std::types::Helix")),
+        ("types", "Edge") => (PrimitiveType::Edge, StdFnProps::default("std::types::Edge")),
+        ("types", "Axis2d") => (PrimitiveType::Axis2d, StdFnProps::default("std::types::Axis2d")),
+        ("types", "Axis3d") => (PrimitiveType::Axis3d, StdFnProps::default("std::types::Axis3d")),
         _ => unreachable!(),
     }
 }

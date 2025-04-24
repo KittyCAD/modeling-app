@@ -1122,32 +1122,36 @@ fn artifacts_to_update(
 
             let mut new_solid_ids = vec![id];
 
+            // Make sure we don't ever create a duplicate ID since merge_ids
+            // can't handle it.
+            let not_cmd_id = move |solid_id: &ArtifactId| *solid_id != id;
+
             match response {
                 OkModelingCmdResponse::BooleanIntersection(intersection) => intersection
                     .extra_solid_ids
                     .iter()
                     .copied()
                     .map(ArtifactId::new)
+                    .filter(not_cmd_id)
                     .for_each(|id| new_solid_ids.push(id)),
                 OkModelingCmdResponse::BooleanSubtract(subtract) => subtract
                     .extra_solid_ids
                     .iter()
                     .copied()
                     .map(ArtifactId::new)
+                    .filter(not_cmd_id)
                     .for_each(|id| new_solid_ids.push(id)),
                 OkModelingCmdResponse::BooleanUnion(union) => union
                     .extra_solid_ids
                     .iter()
                     .copied()
                     .map(ArtifactId::new)
+                    .filter(not_cmd_id)
                     .for_each(|id| new_solid_ids.push(id)),
                 _ => {}
             }
             let return_arr = new_solid_ids
                 .into_iter()
-                // Extra solid IDs may include the command's ID.  Make sure we
-                // don't create a duplicate.
-                .filter(|solid_id| *solid_id != id)
                 .map(|solid_id| {
                     Artifact::CompositeSolid(CompositeSolid {
                         id: solid_id,

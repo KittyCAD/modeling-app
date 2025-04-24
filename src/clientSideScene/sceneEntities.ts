@@ -894,7 +894,6 @@ export class SceneEntities {
   ) => {
     if (trap(modifiedAst)) return Promise.reject(modifiedAst)
     const nextAst = await this.kclManager.updateAst(modifiedAst, false)
-    this.tearDownSketch({ removeAxis: false })
     this.sceneInfra.resetMouseListeners()
     await this.setupSketch({
       sketchEntryNodePath,
@@ -968,7 +967,6 @@ export class SceneEntities {
 
     const draftExpressionsIndices = { start: index, end: index }
 
-    if (shouldTearDown) this.tearDownSketch({ removeAxis: false })
     this.sceneInfra.resetMouseListeners()
 
     const { truncatedAst } = await this.setupSketch({
@@ -1015,13 +1013,18 @@ export class SceneEntities {
         // Snapping logic for the profile start handle
         if (intersectsProfileStart) {
           const originCoords = createArrayExpression([
-            createCallExpressionStdLib('profileStartX', [
+            createCallExpressionStdLibKw(
+              'profileStartX',
               createPipeSubstitution(),
-            ]),
-            createCallExpressionStdLib('profileStartY', [
+              []
+            ),
+            createCallExpressionStdLibKw(
+              'profileStartY',
               createPipeSubstitution(),
-            ]),
+              []
+            ),
           ])
+
           modifiedAst = addCallExpressionsToPipe({
             node: this.kclManager.ast,
             variables: this.kclManager.variables,
@@ -1838,7 +1841,6 @@ export class SceneEntities {
     const index = sg.paths.length // because we've added a new segment that's not in the memory yet
     const draftExpressionsIndices = { start: index, end: index }
 
-    this.tearDownSketch({ removeAxis: false })
     this.sceneInfra.resetMouseListeners()
 
     const { truncatedAst } = await this.setupSketch({
@@ -2069,7 +2071,6 @@ export class SceneEntities {
     // Get the insertion index from the modified path
     const insertIndex = Number(mod.pathToNode[1][0])
 
-    this.tearDownSketch({ removeAxis: false })
     this.sceneInfra.resetMouseListeners()
 
     const { truncatedAst } = await this.setupSketch({
@@ -2217,13 +2218,18 @@ export class SceneEntities {
           modded = moddedResult.modifiedAst
           if (intersectsProfileStart) {
             const originCoords = createArrayExpression([
-              createCallExpressionStdLib('profileStartX', [
+              createCallExpressionStdLibKw(
+                'profileStartX',
                 createPipeSubstitution(),
-              ]),
-              createCallExpressionStdLib('profileStartY', [
+                []
+              ),
+              createCallExpressionStdLibKw(
+                'profileStartY',
                 createPipeSubstitution(),
-              ]),
+                []
+              ),
             ])
+
             const arcToCallExp = getNodeFromPath<CallExpression>(
               modded,
               mod.pathToNode,
@@ -2491,7 +2497,6 @@ export class SceneEntities {
     this.sceneInfra.setCallbacks({
       onDragEnd: async () => {
         if (addingNewSegmentStatus !== 'nothing') {
-          this.tearDownSketch({ removeAxis: false })
           // eslint-disable-next-line @typescript-eslint/no-floating-promises
           this.setupSketch({
             sketchEntryNodePath,
@@ -2566,7 +2571,6 @@ export class SceneEntities {
               mod.modifiedAst
             )
             if (err(didReParse)) return
-            this.tearDownSketch({ removeAxis: false })
             // eslint-disable-next-line @typescript-eslint/no-floating-promises
             this.setupSketch({
               sketchEntryNodePath: pathToNode,
@@ -2678,8 +2682,8 @@ export class SceneEntities {
         if (prev && ARC_SEGMENT_TYPES.includes(prev.userData.type)) {
           const snapDirection = findTangentDirection(prev)
           if (snapDirection) {
-            const SNAP_TOLERANCE_PIXELS = 12 * window.devicePixelRatio
-            const SNAP_MIN_DISTANCE_PIXELS = 5 * window.devicePixelRatio
+            const SNAP_TOLERANCE_PIXELS = 8 * window.devicePixelRatio
+            const SNAP_MIN_DISTANCE_PIXELS = 10 * window.devicePixelRatio
             const orthoFactor = orthoScale(this.sceneInfra.camControls.camera)
 
             // See if snapDirection intersects with any of the axes

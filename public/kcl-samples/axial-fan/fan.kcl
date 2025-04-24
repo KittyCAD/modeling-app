@@ -1,0 +1,88 @@
+// Fan
+// Spinning axial fan that moves airflow
+
+// Set units
+@settings(defaultLengthUnit = mm)
+
+// Import parameters
+import * from "parameters.kcl"
+
+// Model the center of the fan
+fanCenter = startSketchOn(XZ)
+  |> startProfileAt([-0.0001, fanHeight], %)
+  |> xLine(endAbsolute = -15 + 1.5)
+  |> tangentialArc(radius = 1.5, angle = 90)
+  |> yLine(endAbsolute = 4.5)
+  |> xLine(endAbsolute = -13)
+  |> yLine(endAbsolute = profileStartY(%) - 5)
+  |> tangentialArc(radius = 1, angle = -90)
+  |> xLine(endAbsolute = -1)
+  |> yLine(length = 2)
+  |> xLine(length = -0.15)
+  |> line(endAbsolute = [
+       profileStartX(%) - 1,
+       profileStartY(%) - 1.4
+     ])
+  |> xLine(endAbsolute = profileStartX(%))
+  |> yLine(endAbsolute = profileStartY(%))
+  |> close()
+  |> revolve(axis = {
+       direction = [0.0, 1.0],
+       origin = [0.0, 0.0]
+     })
+  |> appearance(color = "#f3e2d8")
+
+// Create a function for a lofted fan blade cross section that rotates about the center hub of the fan
+fn fanBlade(offsetHeight, startAngle) {
+  fanBlade = startSketchOn(offsetPlane(XY, offset = offsetHeight))
+    |> startProfileAt([
+         15 * cos(toRadians(startAngle)),
+         15 * sin(toRadians(startAngle))
+       ], %)
+    |> arc(angleStart = startAngle, angleEnd = startAngle + 14, radius = 15)
+    |> arc(
+         endAbsolute = [
+           fanSize * 22 / 50 * cos(toRadians(startAngle - 20)),
+           fanSize * 22 / 50 * sin(toRadians(startAngle - 20))
+         ],
+         interiorAbsolute = [
+           fanSize * 11 / 50 * cos(toRadians(startAngle + 3)),
+           fanSize * 11 / 50 * sin(toRadians(startAngle + 3))
+         ],
+       )
+    |> arc(
+         endAbsolute = [
+           fanSize * 22 / 50 * cos(toRadians(startAngle - 24)),
+           fanSize * 22 / 50 * sin(toRadians(startAngle - 24))
+         ],
+         interiorAbsolute = [
+           fanSize * 22 / 50 * cos(toRadians(startAngle - 22)),
+           fanSize * 22 / 50 * sin(toRadians(startAngle - 22))
+         ],
+       )
+    |> arc(
+         endAbsolute = [profileStartX(%), profileStartY(%)],
+         interiorAbsolute = [
+           fanSize * 11 / 50 * cos(toRadians(startAngle - 5)),
+           fanSize * 11 / 50 * sin(toRadians(startAngle - 5))
+         ],
+       )
+    |> close()
+  return fanBlade
+}
+
+// Loft the fan blade cross sections into a single blade, then pattern them about the fan center
+loft([
+       fanBlade(4.5, 50),
+       fanBlade((fanHeight - 2 - 4) / 2, 30),
+       fanBlade(fanHeight - 2, 0)
+     ])
+  |> appearance(color = "#f3e2d8")
+  |> patternCircular3d(
+       %,
+       instances = 9,
+       axis = [0, 0, 1],
+       center = [0, 0, 0],
+       arcDegrees = 360,
+       rotateDuplicates = true,
+     )

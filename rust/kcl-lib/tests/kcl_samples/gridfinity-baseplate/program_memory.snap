@@ -252,9 +252,6 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -286,7 +283,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -468,9 +466,6 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -502,7 +497,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -684,9 +680,6 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -718,7 +711,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -900,9 +894,6 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -934,7 +925,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -1116,9 +1108,6 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -1150,7 +1139,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -1332,9 +1322,6 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -1366,7 +1353,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -1548,9 +1536,6 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -1582,7 +1567,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -1764,9 +1750,6 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -1798,7 +1781,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -1980,9 +1964,6 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -2014,7 +1995,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -2196,9 +2178,6 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -2230,7 +2209,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -2412,9 +2392,6 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -2446,7 +2423,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -2628,9 +2606,6 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -2662,7 +2637,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -2844,9 +2820,6 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -2878,7 +2851,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -3060,9 +3034,6 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -3094,7 +3065,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -3276,9 +3248,6 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -3310,7 +3279,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -3492,9 +3462,6 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -3526,7 +3493,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -3708,9 +3676,6 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -3742,7 +3707,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -3924,9 +3890,6 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -3958,7 +3921,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -4140,9 +4104,6 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -4174,7 +4135,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -4356,9 +4318,6 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -4390,7 +4349,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -4572,9 +4532,6 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -4606,7 +4563,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -4788,9 +4746,6 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -4822,7 +4777,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -5004,9 +4960,6 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -5038,7 +4991,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -5220,9 +5174,6 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -5254,7 +5205,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       }
     ]
@@ -5441,9 +5393,6 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -5475,7 +5424,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -5657,9 +5607,6 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -5691,7 +5638,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -5873,9 +5821,6 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -5907,7 +5852,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -6089,9 +6035,6 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -6123,7 +6066,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -6305,9 +6249,6 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -6339,7 +6280,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -6521,9 +6463,6 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -6555,7 +6494,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -6737,9 +6677,6 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -6771,7 +6708,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -6953,9 +6891,6 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -6987,7 +6922,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -7169,9 +7105,6 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -7203,7 +7136,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -7385,9 +7319,6 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -7419,7 +7350,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -7601,9 +7533,6 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -7635,7 +7564,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -7817,9 +7747,6 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -7851,7 +7778,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -8033,9 +7961,6 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -8067,7 +7992,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -8249,9 +8175,6 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -8283,7 +8206,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -8465,9 +8389,6 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -8499,7 +8420,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -8681,9 +8603,6 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -8715,7 +8634,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -8897,9 +8817,6 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -8931,7 +8848,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -9113,9 +9031,6 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -9147,7 +9062,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -9329,9 +9245,6 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -9363,7 +9276,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -9545,9 +9459,6 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -9579,7 +9490,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -9761,9 +9673,6 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -9795,7 +9704,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -9977,9 +9887,6 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -10011,7 +9918,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -10193,9 +10101,6 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -10227,7 +10132,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -10409,9 +10315,6 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -10443,7 +10346,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       }
     ]
@@ -10656,9 +10560,6 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -10690,7 +10591,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -10872,9 +10774,6 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -10906,7 +10805,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -11088,9 +10988,6 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -11122,7 +11019,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -11304,9 +11202,6 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -11338,7 +11233,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       }
     ]
@@ -11593,9 +11489,6 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -11627,7 +11520,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -11809,9 +11703,6 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -11843,7 +11734,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -12025,9 +11917,6 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -12059,7 +11948,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -12241,9 +12131,6 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -12275,7 +12162,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       }
     ]
@@ -12459,9 +12347,6 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "units": {
               "type": "Mm"
             }
-          },
-          "units": {
-            "type": "Mm"
           }
         },
         "start": {
@@ -12493,7 +12378,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "singleSide": {
@@ -12675,9 +12561,6 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "units": {
               "type": "Mm"
             }
-          },
-          "units": {
-            "type": "Mm"
           }
         },
         "start": {
@@ -12709,7 +12592,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "thirdStep": {

@@ -130,9 +130,6 @@ description: Variables in memory after executing neg_xz_plane.kcl
             "units": {
               "type": "Mm"
             }
-          },
-          "units": {
-            "type": "Mm"
           }
         },
         "start": {
@@ -164,7 +161,8 @@ description: Variables in memory after executing neg_xz_plane.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   }
 }

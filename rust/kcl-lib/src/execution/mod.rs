@@ -95,8 +95,7 @@ pub struct DefaultPlanes {
 pub struct TagIdentifier {
     pub value: String,
     // Multi-version representation of info about the tag. Kept ordered. The usize is the epoch at which the info
-    // was written. Note that there might be multiple versions of tag info from the same epoch, the version with
-    // the higher index will be the most recent.
+    // was written.
     #[serde(skip)]
     pub info: Vec<(usize, TagEngineInfo)>,
     #[serde(skip)]
@@ -123,10 +122,16 @@ impl TagIdentifier {
     /// Add info from a different instance of this tag.
     pub fn merge_info(&mut self, other: &TagIdentifier) {
         assert_eq!(&self.value, &other.value);
-        'new_info: for (oe, ot) in &other.info {
-            for (e, _) in &self.info {
-                if e > oe {
-                    continue 'new_info;
+        for (oe, ot) in &other.info {
+            if let Some((e, t)) = self.info.last_mut() {
+                // If there is newer info, then skip this iteration.
+                if *e > *oe {
+                    continue;
+                }
+                // If we're in the same epoch, then overwrite.
+                if e == oe {
+                    *t = ot.clone();
+                    continue;
                 }
             }
             self.info.push((*oe, ot.clone()));
@@ -947,7 +952,7 @@ impl ExecutorContext {
                 exec_state.global.artifact_graph.clone(),
                 module_id_to_module_path,
                 exec_state.global.id_to_source.clone(),
-                default_planes,
+                default_planes.clone(),
             )
         })?;
 
@@ -957,6 +962,7 @@ impl ExecutorContext {
             cache::write_old_memory((mem, exec_state.global.module_infos.clone())).await;
         }
         let session_data = self.engine.get_session_data().await;
+
         Ok((env_ref, session_data))
     }
 
@@ -983,6 +989,9 @@ impl ExecutorContext {
                 &ModulePath::Main,
             )
             .await;
+
+        // Ensure all the async commands completed.
+        self.engine.ensure_async_commands_completed().await?;
 
         // If we errored out and early-returned, there might be commands which haven't been executed
         // and should be dropped.
@@ -1581,7 +1590,7 @@ const answer = returnX()"#;
         assert_eq!(
             err,
             KclError::UndefinedValue(KclErrorDetails {
-                message: "memory item key `x` is not defined".to_owned(),
+                message: "`x` is not defined".to_owned(),
                 source_ranges: vec![
                     SourceRange::new(64, 65, ModuleId::default()),
                     SourceRange::new(97, 106, ModuleId::default())
@@ -1665,7 +1674,7 @@ let shape = layer() |> patternTransform(instances = 10, transform = transform)
         assert_eq!(
             err,
             KclError::UndefinedValue(KclErrorDetails {
-                message: "memory item key `x` is not defined".to_owned(),
+                message: "`x` is not defined".to_owned(),
                 source_ranges: vec![SourceRange::new(80, 81, ModuleId::default())],
             }),
         );
@@ -1812,32 +1821,20 @@ const bracket = startSketchOn(XY)
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn test_bad_arg_count_std() {
-        let ast = "startSketchOn(XY)
-  |> startProfileAt([0, 0], %)
-  |> profileStartX()";
-        assert!(parse_execute(ast)
-            .await
-            .unwrap_err()
-            .message()
-            .contains("Expected a sketch argument"));
-    }
-
-    #[tokio::test(flavor = "multi_thread")]
     async fn test_unary_operator_not_succeeds() {
         let ast = r#"
-fn returnTrue = () => { return !false }
-const t = true
-const f = false
-let notTrue = !t
-let notFalse = !f
-let c = !!true
-let d = !returnTrue()
+fn returnTrue() { return !false }
+t = true
+f = false
+notTrue = !t
+notFalse = !f
+c = !!true
+d = !returnTrue()
 
-assert(!false, "expected to pass")
+assertIs(!false, error = "expected to pass")
 
 fn check = (x) => {
-  assert(!x, "expected argument to be false")
+  assertIs(!x, error = "expected argument to be false")
   return true
 }
 check(false)

@@ -33,14 +33,6 @@ description: Artifact commands dodecahedron.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "set_scene_units",
-      "unit": "in"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
       "type": "make_plane",
       "origin": {
         "x": 0.0,
@@ -92,8 +84,8 @@ description: Artifact commands dodecahedron.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": -1000.0,
-        "y": -1000.0,
+        "x": 385.48436886124574,
+        "y": 0.0,
         "z": 0.0
       }
     }
@@ -114,8 +106,8 @@ description: Artifact commands dodecahedron.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 1000.0,
-          "y": -1000.0,
+          "x": 119.1212,
+          "y": 366.6174,
           "z": 0.0
         },
         "relative": false
@@ -131,8 +123,8 @@ description: Artifact commands dodecahedron.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 1000.0,
-          "y": 1000.0,
+          "x": -311.8634,
+          "y": 226.582,
           "z": 0.0
         },
         "relative": false
@@ -148,8 +140,42 @@ description: Artifact commands dodecahedron.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -1000.0,
-          "y": 1000.0,
+          "x": -311.8634,
+          "y": -226.582,
+          "z": 0.0
+        },
+        "relative": false
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "line",
+        "end": {
+          "x": 119.1212,
+          "y": -366.6174,
+          "z": 0.0
+        },
+        "relative": false
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "line",
+        "end": {
+          "x": 385.4844,
+          "y": 0.0,
           "z": 0.0
         },
         "relative": false
@@ -349,9 +375,9 @@ description: Artifact commands dodecahedron.kcl
     "command": {
       "type": "make_plane",
       "origin": {
-        "x": 0.0,
+        "x": -451.33296034182746,
         "y": 0.0,
-        "z": 0.0
+        "z": 278.9391097343577
       },
       "x_axis": {
         "x": 1.0,
@@ -398,8 +424,8 @@ description: Artifact commands dodecahedron.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": -1000.1,
-        "y": -1000.1,
+        "x": 385.48436886124574,
+        "y": 0.0,
         "z": 0.0
       }
     }
@@ -420,8 +446,8 @@ description: Artifact commands dodecahedron.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 1000.1,
-          "y": -1000.1,
+          "x": 119.1212,
+          "y": 366.6174,
           "z": 0.0
         },
         "relative": false
@@ -437,8 +463,8 @@ description: Artifact commands dodecahedron.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 1000.1,
-          "y": 1000.1,
+          "x": -311.8634,
+          "y": 226.582,
           "z": 0.0
         },
         "relative": false
@@ -454,8 +480,42 @@ description: Artifact commands dodecahedron.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -1000.1,
-          "y": 1000.1,
+          "x": -311.8634,
+          "y": -226.582,
+          "z": 0.0
+        },
+        "relative": false
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "line",
+        "end": {
+          "x": 119.1212,
+          "y": -366.6174,
+          "z": 0.0
+        },
+        "relative": false
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "line",
+        "end": {
+          "x": 385.4844,
+          "y": 0.0,
           "z": 0.0
         },
         "relative": false
@@ -492,7 +552,7 @@ description: Artifact commands dodecahedron.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 2000.1,
+      "distance": 127.0,
       "faces": null,
       "opposite": "None"
     }
@@ -798,7 +858,7 @@ description: Artifact commands dodecahedron.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 2000.2,
+      "distance": 127.0,
       "faces": null,
       "opposite": "None"
     }
@@ -1400,41 +1460,123 @@ description: Artifact commands dodecahedron.kcl
       "planar_normal": {
         "x": 0.0,
         "y": 0.0,
-        "z": 1.0
-      }
+        "z": 504.6055899052715
+      },
+      "num_repetitions": 1,
+      "arc_degrees": 360.0,
+      "rotate_duplicates": true
     }
   },
   {
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "extrude",
-      "target": "[uuid]",
-      "distance": 2000.4,
-      "faces": null,
-      "opposite": "None"
+      "type": "entity_circular_pattern",
+      "entity_id": "[uuid]",
+      "axis": {
+        "x": 0.0,
+        "y": 1.0,
+        "z": 0.0
+      },
+      "center": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 504.6055899052715
+      },
+      "num_repetitions": 1,
+      "arc_degrees": 360.0,
+      "rotate_duplicates": true
     }
   },
   {
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "sketch_mode_disable"
+      "type": "entity_circular_pattern",
+      "entity_id": "[uuid]",
+      "axis": {
+        "x": 0.0,
+        "y": 1.0,
+        "z": 0.0
+      },
+      "center": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 504.6055899052715
+      },
+      "num_repetitions": 1,
+      "arc_degrees": 360.0,
+      "rotate_duplicates": true
     }
   },
   {
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "object_bring_to_front",
-      "object_id": "[uuid]"
+      "type": "entity_circular_pattern",
+      "entity_id": "[uuid]",
+      "axis": {
+        "x": 0.0,
+        "y": 1.0,
+        "z": 0.0
+      },
+      "center": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 504.6055899052715
+      },
+      "num_repetitions": 1,
+      "arc_degrees": 360.0,
+      "rotate_duplicates": true
     }
   },
   {
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "solid3d_get_extrusion_face_info",
+      "type": "entity_circular_pattern",
+      "entity_id": "[uuid]",
+      "axis": {
+        "x": 0.0,
+        "y": 1.0,
+        "z": 0.0
+      },
+      "center": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 504.6055899052715
+      },
+      "num_repetitions": 1,
+      "arc_degrees": 360.0,
+      "rotate_duplicates": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "entity_circular_pattern",
+      "entity_id": "[uuid]",
+      "axis": {
+        "x": 0.0,
+        "y": 1.0,
+        "z": 0.0
+      },
+      "center": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 504.6055899052715
+      },
+      "num_repetitions": 1,
+      "arc_degrees": 360.0,
+      "rotate_duplicates": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "object_visible",
       "object_id": "[uuid]",
       "edge_id": "[uuid]"
     }
@@ -3839,30 +3981,6 @@ description: Artifact commands dodecahedron.kcl
         "[uuid]"
       ],
       "tolerance": 0.0000001
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "set_scene_units",
-      "unit": "mm"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "set_scene_units",
-      "unit": "mm"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "set_scene_units",
-      "unit": "mm"
     }
   }
 ]

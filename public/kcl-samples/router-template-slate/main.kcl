@@ -22,11 +22,7 @@ length002 = depth + minClampingDistance
 sketch001 = startSketchOn(XZ)
   |> startProfileAt([0, depth - templateGap], %)
   |> xLine(length = length001, tag = $seg01)
-  |> arc({
-       angleEnd = 0,
-       angleStart = 90,
-       radius = radius - templateGap
-     }, %)
+  |> arc(angleStart = 90, angleEnd = 0, radius = radius - templateGap)
   |> yLine(endAbsolute = -templateGap * 2 - (templateDiameter / 2), tag = $seg05)
   |> xLine(endAbsolute = slateWidthHalf + templateThickness, tag = $seg04)
   |> yLine(length = -length002, tag = $seg03)
@@ -36,11 +32,7 @@ sketch001 = startSketchOn(XZ)
   |> yLine(length = segLen(seg03))
   |> xLine(length = segLen(seg04))
   |> yLine(length = segLen(seg05))
-  |> arc({
-       angleEnd = 90,
-       angleStart = 180,
-       radius = radius - templateGap
-     }, %)
+  |> arc(angleStart = 180, angleEnd = 90, radius = radius - templateGap)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 

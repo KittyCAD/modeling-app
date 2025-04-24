@@ -20,13 +20,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
     "type": "Number",
     "value": 32.6313,
     "ty": {
-      "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "type": "Known",
+      "type": "Length",
+      "type": "Mm"
     }
   },
   "extrude001": {
@@ -54,9 +50,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 741,
-            "end": 747,
-            "start": 741,
+            "commentStart": 743,
+            "end": 749,
+            "start": 743,
             "type": "TagDeclarator",
             "value": "seg09"
           },
@@ -67,9 +63,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 800,
-            "end": 806,
-            "start": 800,
+            "commentStart": 809,
+            "end": 815,
+            "start": 809,
             "type": "TagDeclarator",
             "value": "seg03"
           },
@@ -80,9 +76,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 853,
-            "end": 859,
-            "start": 853,
+            "commentStart": 862,
+            "end": 868,
+            "start": 862,
             "type": "TagDeclarator",
             "value": "seg07"
           },
@@ -93,9 +89,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 954,
-            "end": 960,
-            "start": 954,
+            "commentStart": 964,
+            "end": 970,
+            "start": 964,
             "type": "TagDeclarator",
             "value": "seg02"
           },
@@ -106,9 +102,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1031,
-            "end": 1037,
-            "start": 1031,
+            "commentStart": 1041,
+            "end": 1047,
+            "start": 1041,
             "type": "TagDeclarator",
             "value": "seg06"
           },
@@ -119,9 +115,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1088,
-            "end": 1094,
-            "start": 1088,
+            "commentStart": 1098,
+            "end": 1104,
+            "start": 1098,
             "type": "TagDeclarator",
             "value": "seg08"
           },
@@ -132,9 +128,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1147,
-            "end": 1153,
-            "start": 1147,
+            "commentStart": 1157,
+            "end": 1163,
+            "start": 1157,
             "type": "TagDeclarator",
             "value": "seg05"
           },
@@ -145,9 +141,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1222,
-            "end": 1228,
-            "start": 1222,
+            "commentStart": 1232,
+            "end": 1238,
+            "start": 1232,
             "type": "TagDeclarator",
             "value": "seg10"
           },
@@ -158,9 +154,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1264,
-            "end": 1270,
-            "start": 1264,
+            "commentStart": 1274,
+            "end": 1280,
+            "start": 1274,
             "type": "TagDeclarator",
             "value": "seg04"
           },
@@ -275,9 +271,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             ],
             "radius": 11.88125,
             "tag": {
-              "commentStart": 741,
-              "end": 747,
-              "start": 741,
+              "commentStart": 743,
+              "end": 749,
+              "start": 743,
               "type": "TagDeclarator",
               "value": "seg09"
             },
@@ -300,9 +296,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               20.0
             ],
             "tag": {
-              "commentStart": 800,
-              "end": 806,
-              "start": 800,
+              "commentStart": 809,
+              "end": 815,
+              "start": 809,
               "type": "TagDeclarator",
               "value": "seg03"
             },
@@ -325,9 +321,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               -10.0
             ],
             "tag": {
-              "commentStart": 853,
-              "end": 859,
-              "start": 853,
+              "commentStart": 862,
+              "end": 868,
+              "start": 862,
               "type": "TagDeclarator",
               "value": "seg07"
             },
@@ -350,9 +346,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               -10.0
             ],
             "tag": {
-              "commentStart": 954,
-              "end": 960,
-              "start": 954,
+              "commentStart": 964,
+              "end": 970,
+              "start": 964,
               "type": "TagDeclarator",
               "value": "seg02"
             },
@@ -375,9 +371,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               10.9406
             ],
             "tag": {
-              "commentStart": 1031,
-              "end": 1037,
-              "start": 1031,
+              "commentStart": 1041,
+              "end": 1047,
+              "start": 1041,
               "type": "TagDeclarator",
               "value": "seg06"
             },
@@ -400,9 +396,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               10.9406
             ],
             "tag": {
-              "commentStart": 1088,
-              "end": 1094,
-              "start": 1088,
+              "commentStart": 1098,
+              "end": 1104,
+              "start": 1098,
               "type": "TagDeclarator",
               "value": "seg08"
             },
@@ -425,9 +421,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               30.9406
             ],
             "tag": {
-              "commentStart": 1147,
-              "end": 1153,
-              "start": 1147,
+              "commentStart": 1157,
+              "end": 1163,
+              "start": 1157,
               "type": "TagDeclarator",
               "value": "seg05"
             },
@@ -450,9 +446,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               30.9406
             ],
             "tag": {
-              "commentStart": 1222,
-              "end": 1228,
-              "start": 1222,
+              "commentStart": 1232,
+              "end": 1238,
+              "start": 1232,
               "type": "TagDeclarator",
               "value": "seg10"
             },
@@ -475,9 +471,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               41.8813
             ],
             "tag": {
-              "commentStart": 1264,
-              "end": 1270,
-              "start": 1264,
+              "commentStart": 1274,
+              "end": 1280,
+              "start": 1274,
               "type": "TagDeclarator",
               "value": "seg04"
             },
@@ -742,9 +738,6 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "units": {
               "type": "Mm"
             }
-          },
-          "units": {
-            "type": "Mm"
           }
         },
         "start": {
@@ -818,7 +811,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "extrude002": {
@@ -833,9 +827,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2001,
-            "end": 2022,
-            "start": 2001,
+            "commentStart": 1978,
+            "end": 1999,
+            "start": 1978,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA002"
           },
@@ -846,9 +840,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2117,
-            "end": 2138,
-            "start": 2117,
+            "commentStart": 2094,
+            "end": 2115,
+            "start": 2094,
             "type": "TagDeclarator",
             "value": "rectangleSegmentB002"
           },
@@ -859,9 +853,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2240,
-            "end": 2261,
-            "start": 2240,
+            "commentStart": 2217,
+            "end": 2238,
+            "start": 2217,
             "type": "TagDeclarator",
             "value": "rectangleSegmentC002"
           },
@@ -889,9 +883,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 2001,
-              "end": 2022,
-              "start": 2001,
+              "commentStart": 1978,
+              "end": 1999,
+              "start": 1978,
               "type": "TagDeclarator",
               "value": "rectangleSegmentA002"
             },
@@ -914,9 +908,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 2117,
-              "end": 2138,
-              "start": 2117,
+              "commentStart": 2094,
+              "end": 2115,
+              "start": 2094,
               "type": "TagDeclarator",
               "value": "rectangleSegmentB002"
             },
@@ -939,9 +933,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               -10.0
             ],
             "tag": {
-              "commentStart": 2240,
-              "end": 2261,
-              "start": 2240,
+              "commentStart": 2217,
+              "end": 2238,
+              "start": 2217,
               "type": "TagDeclarator",
               "value": "rectangleSegmentC002"
             },
@@ -1045,9 +1039,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 741,
-                  "end": 747,
-                  "start": 741,
+                  "commentStart": 743,
+                  "end": 749,
+                  "start": 743,
                   "type": "TagDeclarator",
                   "value": "seg09"
                 },
@@ -1058,9 +1052,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 800,
-                  "end": 806,
-                  "start": 800,
+                  "commentStart": 809,
+                  "end": 815,
+                  "start": 809,
                   "type": "TagDeclarator",
                   "value": "seg03"
                 },
@@ -1071,9 +1065,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 853,
-                  "end": 859,
-                  "start": 853,
+                  "commentStart": 862,
+                  "end": 868,
+                  "start": 862,
                   "type": "TagDeclarator",
                   "value": "seg07"
                 },
@@ -1084,9 +1078,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 954,
-                  "end": 960,
-                  "start": 954,
+                  "commentStart": 964,
+                  "end": 970,
+                  "start": 964,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -1097,9 +1091,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 1031,
-                  "end": 1037,
-                  "start": 1031,
+                  "commentStart": 1041,
+                  "end": 1047,
+                  "start": 1041,
                   "type": "TagDeclarator",
                   "value": "seg06"
                 },
@@ -1110,9 +1104,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 1088,
-                  "end": 1094,
-                  "start": 1088,
+                  "commentStart": 1098,
+                  "end": 1104,
+                  "start": 1098,
                   "type": "TagDeclarator",
                   "value": "seg08"
                 },
@@ -1123,9 +1117,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 1147,
-                  "end": 1153,
-                  "start": 1147,
+                  "commentStart": 1157,
+                  "end": 1163,
+                  "start": 1157,
                   "type": "TagDeclarator",
                   "value": "seg05"
                 },
@@ -1136,9 +1130,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 1222,
-                  "end": 1228,
-                  "start": 1222,
+                  "commentStart": 1232,
+                  "end": 1238,
+                  "start": 1232,
                   "type": "TagDeclarator",
                   "value": "seg10"
                 },
@@ -1149,9 +1143,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 1264,
-                  "end": 1270,
-                  "start": 1264,
+                  "commentStart": 1274,
+                  "end": 1280,
+                  "start": 1274,
                   "type": "TagDeclarator",
                   "value": "seg04"
                 },
@@ -1266,9 +1260,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   ],
                   "radius": 11.88125,
                   "tag": {
-                    "commentStart": 741,
-                    "end": 747,
-                    "start": 741,
+                    "commentStart": 743,
+                    "end": 749,
+                    "start": 743,
                     "type": "TagDeclarator",
                     "value": "seg09"
                   },
@@ -1291,9 +1285,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     20.0
                   ],
                   "tag": {
-                    "commentStart": 800,
-                    "end": 806,
-                    "start": 800,
+                    "commentStart": 809,
+                    "end": 815,
+                    "start": 809,
                     "type": "TagDeclarator",
                     "value": "seg03"
                   },
@@ -1316,9 +1310,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     -10.0
                   ],
                   "tag": {
-                    "commentStart": 853,
-                    "end": 859,
-                    "start": 853,
+                    "commentStart": 862,
+                    "end": 868,
+                    "start": 862,
                     "type": "TagDeclarator",
                     "value": "seg07"
                   },
@@ -1341,9 +1335,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     -10.0
                   ],
                   "tag": {
-                    "commentStart": 954,
-                    "end": 960,
-                    "start": 954,
+                    "commentStart": 964,
+                    "end": 970,
+                    "start": 964,
                     "type": "TagDeclarator",
                     "value": "seg02"
                   },
@@ -1366,9 +1360,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     10.9406
                   ],
                   "tag": {
-                    "commentStart": 1031,
-                    "end": 1037,
-                    "start": 1031,
+                    "commentStart": 1041,
+                    "end": 1047,
+                    "start": 1041,
                     "type": "TagDeclarator",
                     "value": "seg06"
                   },
@@ -1391,9 +1385,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     10.9406
                   ],
                   "tag": {
-                    "commentStart": 1088,
-                    "end": 1094,
-                    "start": 1088,
+                    "commentStart": 1098,
+                    "end": 1104,
+                    "start": 1098,
                     "type": "TagDeclarator",
                     "value": "seg08"
                   },
@@ -1416,9 +1410,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     30.9406
                   ],
                   "tag": {
-                    "commentStart": 1147,
-                    "end": 1153,
-                    "start": 1147,
+                    "commentStart": 1157,
+                    "end": 1163,
+                    "start": 1157,
                     "type": "TagDeclarator",
                     "value": "seg05"
                   },
@@ -1441,9 +1435,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     30.9406
                   ],
                   "tag": {
-                    "commentStart": 1222,
-                    "end": 1228,
-                    "start": 1222,
+                    "commentStart": 1232,
+                    "end": 1238,
+                    "start": 1232,
                     "type": "TagDeclarator",
                     "value": "seg10"
                   },
@@ -1466,9 +1460,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     41.8813
                   ],
                   "tag": {
-                    "commentStart": 1264,
-                    "end": 1270,
-                    "start": 1264,
+                    "commentStart": 1274,
+                    "end": 1280,
+                    "start": 1274,
                     "type": "TagDeclarator",
                     "value": "seg04"
                   },
@@ -1733,9 +1727,6 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "units": {
                     "type": "Mm"
                   }
-                },
-                "units": {
-                  "type": "Mm"
                 }
               },
               "start": {
@@ -1809,7 +1800,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "endCapId": "[uuid]",
             "units": {
               "type": "Mm"
-            }
+            },
+            "sectional": false
           },
           "units": {
             "type": "Mm"
@@ -1858,7 +1850,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "extrude003": {
@@ -1873,9 +1866,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2605,
-            "end": 2626,
-            "start": 2605,
+            "commentStart": 2582,
+            "end": 2603,
+            "start": 2582,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA001"
           },
@@ -1886,9 +1879,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2721,
-            "end": 2742,
-            "start": 2721,
+            "commentStart": 2698,
+            "end": 2719,
+            "start": 2698,
             "type": "TagDeclarator",
             "value": "rectangleSegmentB001"
           },
@@ -1899,9 +1892,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2844,
-            "end": 2865,
-            "start": 2844,
+            "commentStart": 2821,
+            "end": 2842,
+            "start": 2821,
             "type": "TagDeclarator",
             "value": "rectangleSegmentC001"
           },
@@ -1929,9 +1922,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 2605,
-              "end": 2626,
-              "start": 2605,
+              "commentStart": 2582,
+              "end": 2603,
+              "start": 2582,
               "type": "TagDeclarator",
               "value": "rectangleSegmentA001"
             },
@@ -1954,9 +1947,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 2721,
-              "end": 2742,
-              "start": 2721,
+              "commentStart": 2698,
+              "end": 2719,
+              "start": 2698,
               "type": "TagDeclarator",
               "value": "rectangleSegmentB001"
             },
@@ -1979,9 +1972,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               -10.0
             ],
             "tag": {
-              "commentStart": 2844,
-              "end": 2865,
-              "start": 2844,
+              "commentStart": 2821,
+              "end": 2842,
+              "start": 2821,
               "type": "TagDeclarator",
               "value": "rectangleSegmentC001"
             },
@@ -2085,9 +2078,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 741,
-                  "end": 747,
-                  "start": 741,
+                  "commentStart": 743,
+                  "end": 749,
+                  "start": 743,
                   "type": "TagDeclarator",
                   "value": "seg09"
                 },
@@ -2098,9 +2091,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 800,
-                  "end": 806,
-                  "start": 800,
+                  "commentStart": 809,
+                  "end": 815,
+                  "start": 809,
                   "type": "TagDeclarator",
                   "value": "seg03"
                 },
@@ -2111,9 +2104,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 853,
-                  "end": 859,
-                  "start": 853,
+                  "commentStart": 862,
+                  "end": 868,
+                  "start": 862,
                   "type": "TagDeclarator",
                   "value": "seg07"
                 },
@@ -2124,9 +2117,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 954,
-                  "end": 960,
-                  "start": 954,
+                  "commentStart": 964,
+                  "end": 970,
+                  "start": 964,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -2137,9 +2130,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 1031,
-                  "end": 1037,
-                  "start": 1031,
+                  "commentStart": 1041,
+                  "end": 1047,
+                  "start": 1041,
                   "type": "TagDeclarator",
                   "value": "seg06"
                 },
@@ -2150,9 +2143,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 1088,
-                  "end": 1094,
-                  "start": 1088,
+                  "commentStart": 1098,
+                  "end": 1104,
+                  "start": 1098,
                   "type": "TagDeclarator",
                   "value": "seg08"
                 },
@@ -2163,9 +2156,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 1147,
-                  "end": 1153,
-                  "start": 1147,
+                  "commentStart": 1157,
+                  "end": 1163,
+                  "start": 1157,
                   "type": "TagDeclarator",
                   "value": "seg05"
                 },
@@ -2176,9 +2169,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 1222,
-                  "end": 1228,
-                  "start": 1222,
+                  "commentStart": 1232,
+                  "end": 1238,
+                  "start": 1232,
                   "type": "TagDeclarator",
                   "value": "seg10"
                 },
@@ -2189,9 +2182,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 1264,
-                  "end": 1270,
-                  "start": 1264,
+                  "commentStart": 1274,
+                  "end": 1280,
+                  "start": 1274,
                   "type": "TagDeclarator",
                   "value": "seg04"
                 },
@@ -2306,9 +2299,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   ],
                   "radius": 11.88125,
                   "tag": {
-                    "commentStart": 741,
-                    "end": 747,
-                    "start": 741,
+                    "commentStart": 743,
+                    "end": 749,
+                    "start": 743,
                     "type": "TagDeclarator",
                     "value": "seg09"
                   },
@@ -2331,9 +2324,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     20.0
                   ],
                   "tag": {
-                    "commentStart": 800,
-                    "end": 806,
-                    "start": 800,
+                    "commentStart": 809,
+                    "end": 815,
+                    "start": 809,
                     "type": "TagDeclarator",
                     "value": "seg03"
                   },
@@ -2356,9 +2349,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     -10.0
                   ],
                   "tag": {
-                    "commentStart": 853,
-                    "end": 859,
-                    "start": 853,
+                    "commentStart": 862,
+                    "end": 868,
+                    "start": 862,
                     "type": "TagDeclarator",
                     "value": "seg07"
                   },
@@ -2381,9 +2374,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     -10.0
                   ],
                   "tag": {
-                    "commentStart": 954,
-                    "end": 960,
-                    "start": 954,
+                    "commentStart": 964,
+                    "end": 970,
+                    "start": 964,
                     "type": "TagDeclarator",
                     "value": "seg02"
                   },
@@ -2406,9 +2399,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     10.9406
                   ],
                   "tag": {
-                    "commentStart": 1031,
-                    "end": 1037,
-                    "start": 1031,
+                    "commentStart": 1041,
+                    "end": 1047,
+                    "start": 1041,
                     "type": "TagDeclarator",
                     "value": "seg06"
                   },
@@ -2431,9 +2424,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     10.9406
                   ],
                   "tag": {
-                    "commentStart": 1088,
-                    "end": 1094,
-                    "start": 1088,
+                    "commentStart": 1098,
+                    "end": 1104,
+                    "start": 1098,
                     "type": "TagDeclarator",
                     "value": "seg08"
                   },
@@ -2456,9 +2449,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     30.9406
                   ],
                   "tag": {
-                    "commentStart": 1147,
-                    "end": 1153,
-                    "start": 1147,
+                    "commentStart": 1157,
+                    "end": 1163,
+                    "start": 1157,
                     "type": "TagDeclarator",
                     "value": "seg05"
                   },
@@ -2481,9 +2474,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     30.9406
                   ],
                   "tag": {
-                    "commentStart": 1222,
-                    "end": 1228,
-                    "start": 1222,
+                    "commentStart": 1232,
+                    "end": 1238,
+                    "start": 1232,
                     "type": "TagDeclarator",
                     "value": "seg10"
                   },
@@ -2506,9 +2499,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     41.8813
                   ],
                   "tag": {
-                    "commentStart": 1264,
-                    "end": 1270,
-                    "start": 1264,
+                    "commentStart": 1274,
+                    "end": 1280,
+                    "start": 1274,
                     "type": "TagDeclarator",
                     "value": "seg04"
                   },
@@ -2773,9 +2766,6 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "units": {
                     "type": "Mm"
                   }
-                },
-                "units": {
-                  "type": "Mm"
                 }
               },
               "start": {
@@ -2849,7 +2839,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "endCapId": "[uuid]",
             "units": {
               "type": "Mm"
-            }
+            },
+            "sectional": false
           },
           "units": {
             "type": "Mm"
@@ -2898,7 +2889,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "extrude004": {
@@ -2913,9 +2905,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3214,
-            "end": 3235,
-            "start": 3214,
+            "commentStart": 3191,
+            "end": 3212,
+            "start": 3191,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA003"
           },
@@ -2926,9 +2918,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3330,
-            "end": 3351,
-            "start": 3330,
+            "commentStart": 3307,
+            "end": 3328,
+            "start": 3307,
             "type": "TagDeclarator",
             "value": "rectangleSegmentB003"
           },
@@ -2939,9 +2931,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3453,
-            "end": 3474,
-            "start": 3453,
+            "commentStart": 3430,
+            "end": 3451,
+            "start": 3430,
             "type": "TagDeclarator",
             "value": "rectangleSegmentC003"
           },
@@ -2969,9 +2961,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 3214,
-              "end": 3235,
-              "start": 3214,
+              "commentStart": 3191,
+              "end": 3212,
+              "start": 3191,
               "type": "TagDeclarator",
               "value": "rectangleSegmentA003"
             },
@@ -2994,9 +2986,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 3330,
-              "end": 3351,
-              "start": 3330,
+              "commentStart": 3307,
+              "end": 3328,
+              "start": 3307,
               "type": "TagDeclarator",
               "value": "rectangleSegmentB003"
             },
@@ -3019,9 +3011,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               -10.0
             ],
             "tag": {
-              "commentStart": 3453,
-              "end": 3474,
-              "start": 3453,
+              "commentStart": 3430,
+              "end": 3451,
+              "start": 3430,
               "type": "TagDeclarator",
               "value": "rectangleSegmentC003"
             },
@@ -3112,9 +3104,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 2001,
-                  "end": 2022,
-                  "start": 2001,
+                  "commentStart": 1978,
+                  "end": 1999,
+                  "start": 1978,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentA002"
                 },
@@ -3125,9 +3117,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 2117,
-                  "end": 2138,
-                  "start": 2117,
+                  "commentStart": 2094,
+                  "end": 2115,
+                  "start": 2094,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentB002"
                 },
@@ -3138,9 +3130,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 2240,
-                  "end": 2261,
-                  "start": 2240,
+                  "commentStart": 2217,
+                  "end": 2238,
+                  "start": 2217,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentC002"
                 },
@@ -3168,9 +3160,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 2001,
-                    "end": 2022,
-                    "start": 2001,
+                    "commentStart": 1978,
+                    "end": 1999,
+                    "start": 1978,
                     "type": "TagDeclarator",
                     "value": "rectangleSegmentA002"
                   },
@@ -3193,9 +3185,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 2117,
-                    "end": 2138,
-                    "start": 2117,
+                    "commentStart": 2094,
+                    "end": 2115,
+                    "start": 2094,
                     "type": "TagDeclarator",
                     "value": "rectangleSegmentB002"
                   },
@@ -3218,9 +3210,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     -10.0
                   ],
                   "tag": {
-                    "commentStart": 2240,
-                    "end": 2261,
-                    "start": 2240,
+                    "commentStart": 2217,
+                    "end": 2238,
+                    "start": 2217,
                     "type": "TagDeclarator",
                     "value": "rectangleSegmentC002"
                   },
@@ -3324,9 +3316,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       "id": "[uuid]",
                       "sourceRange": [],
                       "tag": {
-                        "commentStart": 741,
-                        "end": 747,
-                        "start": 741,
+                        "commentStart": 743,
+                        "end": 749,
+                        "start": 743,
                         "type": "TagDeclarator",
                         "value": "seg09"
                       },
@@ -3337,9 +3329,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       "id": "[uuid]",
                       "sourceRange": [],
                       "tag": {
-                        "commentStart": 800,
-                        "end": 806,
-                        "start": 800,
+                        "commentStart": 809,
+                        "end": 815,
+                        "start": 809,
                         "type": "TagDeclarator",
                         "value": "seg03"
                       },
@@ -3350,9 +3342,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       "id": "[uuid]",
                       "sourceRange": [],
                       "tag": {
-                        "commentStart": 853,
-                        "end": 859,
-                        "start": 853,
+                        "commentStart": 862,
+                        "end": 868,
+                        "start": 862,
                         "type": "TagDeclarator",
                         "value": "seg07"
                       },
@@ -3363,9 +3355,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       "id": "[uuid]",
                       "sourceRange": [],
                       "tag": {
-                        "commentStart": 954,
-                        "end": 960,
-                        "start": 954,
+                        "commentStart": 964,
+                        "end": 970,
+                        "start": 964,
                         "type": "TagDeclarator",
                         "value": "seg02"
                       },
@@ -3376,9 +3368,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       "id": "[uuid]",
                       "sourceRange": [],
                       "tag": {
-                        "commentStart": 1031,
-                        "end": 1037,
-                        "start": 1031,
+                        "commentStart": 1041,
+                        "end": 1047,
+                        "start": 1041,
                         "type": "TagDeclarator",
                         "value": "seg06"
                       },
@@ -3389,9 +3381,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       "id": "[uuid]",
                       "sourceRange": [],
                       "tag": {
-                        "commentStart": 1088,
-                        "end": 1094,
-                        "start": 1088,
+                        "commentStart": 1098,
+                        "end": 1104,
+                        "start": 1098,
                         "type": "TagDeclarator",
                         "value": "seg08"
                       },
@@ -3402,9 +3394,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       "id": "[uuid]",
                       "sourceRange": [],
                       "tag": {
-                        "commentStart": 1147,
-                        "end": 1153,
-                        "start": 1147,
+                        "commentStart": 1157,
+                        "end": 1163,
+                        "start": 1157,
                         "type": "TagDeclarator",
                         "value": "seg05"
                       },
@@ -3415,9 +3407,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       "id": "[uuid]",
                       "sourceRange": [],
                       "tag": {
-                        "commentStart": 1222,
-                        "end": 1228,
-                        "start": 1222,
+                        "commentStart": 1232,
+                        "end": 1238,
+                        "start": 1232,
                         "type": "TagDeclarator",
                         "value": "seg10"
                       },
@@ -3428,9 +3420,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       "id": "[uuid]",
                       "sourceRange": [],
                       "tag": {
-                        "commentStart": 1264,
-                        "end": 1270,
-                        "start": 1264,
+                        "commentStart": 1274,
+                        "end": 1280,
+                        "start": 1274,
                         "type": "TagDeclarator",
                         "value": "seg04"
                       },
@@ -3545,9 +3537,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         ],
                         "radius": 11.88125,
                         "tag": {
-                          "commentStart": 741,
-                          "end": 747,
-                          "start": 741,
+                          "commentStart": 743,
+                          "end": 749,
+                          "start": 743,
                           "type": "TagDeclarator",
                           "value": "seg09"
                         },
@@ -3570,9 +3562,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                           20.0
                         ],
                         "tag": {
-                          "commentStart": 800,
-                          "end": 806,
-                          "start": 800,
+                          "commentStart": 809,
+                          "end": 815,
+                          "start": 809,
                           "type": "TagDeclarator",
                           "value": "seg03"
                         },
@@ -3595,9 +3587,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                           -10.0
                         ],
                         "tag": {
-                          "commentStart": 853,
-                          "end": 859,
-                          "start": 853,
+                          "commentStart": 862,
+                          "end": 868,
+                          "start": 862,
                           "type": "TagDeclarator",
                           "value": "seg07"
                         },
@@ -3620,9 +3612,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                           -10.0
                         ],
                         "tag": {
-                          "commentStart": 954,
-                          "end": 960,
-                          "start": 954,
+                          "commentStart": 964,
+                          "end": 970,
+                          "start": 964,
                           "type": "TagDeclarator",
                           "value": "seg02"
                         },
@@ -3645,9 +3637,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                           10.9406
                         ],
                         "tag": {
-                          "commentStart": 1031,
-                          "end": 1037,
-                          "start": 1031,
+                          "commentStart": 1041,
+                          "end": 1047,
+                          "start": 1041,
                           "type": "TagDeclarator",
                           "value": "seg06"
                         },
@@ -3670,9 +3662,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                           10.9406
                         ],
                         "tag": {
-                          "commentStart": 1088,
-                          "end": 1094,
-                          "start": 1088,
+                          "commentStart": 1098,
+                          "end": 1104,
+                          "start": 1098,
                           "type": "TagDeclarator",
                           "value": "seg08"
                         },
@@ -3695,9 +3687,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                           30.9406
                         ],
                         "tag": {
-                          "commentStart": 1147,
-                          "end": 1153,
-                          "start": 1147,
+                          "commentStart": 1157,
+                          "end": 1163,
+                          "start": 1157,
                           "type": "TagDeclarator",
                           "value": "seg05"
                         },
@@ -3720,9 +3712,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                           30.9406
                         ],
                         "tag": {
-                          "commentStart": 1222,
-                          "end": 1228,
-                          "start": 1222,
+                          "commentStart": 1232,
+                          "end": 1238,
+                          "start": 1232,
                           "type": "TagDeclarator",
                           "value": "seg10"
                         },
@@ -3745,9 +3737,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                           41.8813
                         ],
                         "tag": {
-                          "commentStart": 1264,
-                          "end": 1270,
-                          "start": 1264,
+                          "commentStart": 1274,
+                          "end": 1280,
+                          "start": 1274,
                           "type": "TagDeclarator",
                           "value": "seg04"
                         },
@@ -4012,9 +4004,6 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         "units": {
                           "type": "Mm"
                         }
-                      },
-                      "units": {
-                        "type": "Mm"
                       }
                     },
                     "start": {
@@ -4088,7 +4077,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "endCapId": "[uuid]",
                   "units": {
                     "type": "Mm"
-                  }
+                  },
+                  "sectional": false
                 },
                 "units": {
                   "type": "Mm"
@@ -4137,7 +4127,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "endCapId": "[uuid]",
             "units": {
               "type": "Mm"
-            }
+            },
+            "sectional": false
           },
           "units": {
             "type": "Mm"
@@ -4186,7 +4177,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "minClampingDistance": {
@@ -4370,9 +4362,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           ],
           "radius": 11.88125,
           "tag": {
-            "commentStart": 741,
-            "end": 747,
-            "start": 741,
+            "commentStart": 743,
+            "end": 749,
+            "start": 743,
             "type": "TagDeclarator",
             "value": "seg09"
           },
@@ -4395,9 +4387,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             20.0
           ],
           "tag": {
-            "commentStart": 800,
-            "end": 806,
-            "start": 800,
+            "commentStart": 809,
+            "end": 815,
+            "start": 809,
             "type": "TagDeclarator",
             "value": "seg03"
           },
@@ -4420,9 +4412,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             -10.0
           ],
           "tag": {
-            "commentStart": 853,
-            "end": 859,
-            "start": 853,
+            "commentStart": 862,
+            "end": 868,
+            "start": 862,
             "type": "TagDeclarator",
             "value": "seg07"
           },
@@ -4445,9 +4437,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             -10.0
           ],
           "tag": {
-            "commentStart": 954,
-            "end": 960,
-            "start": 954,
+            "commentStart": 964,
+            "end": 970,
+            "start": 964,
             "type": "TagDeclarator",
             "value": "seg02"
           },
@@ -4470,9 +4462,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             10.9406
           ],
           "tag": {
-            "commentStart": 1031,
-            "end": 1037,
-            "start": 1031,
+            "commentStart": 1041,
+            "end": 1047,
+            "start": 1041,
             "type": "TagDeclarator",
             "value": "seg06"
           },
@@ -4495,9 +4487,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             10.9406
           ],
           "tag": {
-            "commentStart": 1088,
-            "end": 1094,
-            "start": 1088,
+            "commentStart": 1098,
+            "end": 1104,
+            "start": 1098,
             "type": "TagDeclarator",
             "value": "seg08"
           },
@@ -4520,9 +4512,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             30.9406
           ],
           "tag": {
-            "commentStart": 1147,
-            "end": 1153,
-            "start": 1147,
+            "commentStart": 1157,
+            "end": 1163,
+            "start": 1157,
             "type": "TagDeclarator",
             "value": "seg05"
           },
@@ -4545,9 +4537,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             30.9406
           ],
           "tag": {
-            "commentStart": 1222,
-            "end": 1228,
-            "start": 1222,
+            "commentStart": 1232,
+            "end": 1238,
+            "start": 1232,
             "type": "TagDeclarator",
             "value": "seg10"
           },
@@ -4570,9 +4562,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             41.8813
           ],
           "tag": {
-            "commentStart": 1264,
-            "end": 1270,
-            "start": 1264,
+            "commentStart": 1274,
+            "end": 1280,
+            "start": 1274,
             "type": "TagDeclarator",
             "value": "seg04"
           },
@@ -4837,9 +4829,6 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "units": {
             "type": "Mm"
           }
-        },
-        "units": {
-          "type": "Mm"
         }
       },
       "start": {
@@ -4925,9 +4914,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 2001,
-            "end": 2022,
-            "start": 2001,
+            "commentStart": 1978,
+            "end": 1999,
+            "start": 1978,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA002"
           },
@@ -4950,9 +4939,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 2117,
-            "end": 2138,
-            "start": 2117,
+            "commentStart": 2094,
+            "end": 2115,
+            "start": 2094,
             "type": "TagDeclarator",
             "value": "rectangleSegmentB002"
           },
@@ -4975,9 +4964,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             -10.0
           ],
           "tag": {
-            "commentStart": 2240,
-            "end": 2261,
-            "start": 2240,
+            "commentStart": 2217,
+            "end": 2238,
+            "start": 2217,
             "type": "TagDeclarator",
             "value": "rectangleSegmentC002"
           },
@@ -5081,9 +5070,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 741,
-                "end": 747,
-                "start": 741,
+                "commentStart": 743,
+                "end": 749,
+                "start": 743,
                 "type": "TagDeclarator",
                 "value": "seg09"
               },
@@ -5094,9 +5083,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 800,
-                "end": 806,
-                "start": 800,
+                "commentStart": 809,
+                "end": 815,
+                "start": 809,
                 "type": "TagDeclarator",
                 "value": "seg03"
               },
@@ -5107,9 +5096,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 853,
-                "end": 859,
-                "start": 853,
+                "commentStart": 862,
+                "end": 868,
+                "start": 862,
                 "type": "TagDeclarator",
                 "value": "seg07"
               },
@@ -5120,9 +5109,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 954,
-                "end": 960,
-                "start": 954,
+                "commentStart": 964,
+                "end": 970,
+                "start": 964,
                 "type": "TagDeclarator",
                 "value": "seg02"
               },
@@ -5133,9 +5122,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1031,
-                "end": 1037,
-                "start": 1031,
+                "commentStart": 1041,
+                "end": 1047,
+                "start": 1041,
                 "type": "TagDeclarator",
                 "value": "seg06"
               },
@@ -5146,9 +5135,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1088,
-                "end": 1094,
-                "start": 1088,
+                "commentStart": 1098,
+                "end": 1104,
+                "start": 1098,
                 "type": "TagDeclarator",
                 "value": "seg08"
               },
@@ -5159,9 +5148,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1147,
-                "end": 1153,
-                "start": 1147,
+                "commentStart": 1157,
+                "end": 1163,
+                "start": 1157,
                 "type": "TagDeclarator",
                 "value": "seg05"
               },
@@ -5172,9 +5161,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1222,
-                "end": 1228,
-                "start": 1222,
+                "commentStart": 1232,
+                "end": 1238,
+                "start": 1232,
                 "type": "TagDeclarator",
                 "value": "seg10"
               },
@@ -5185,9 +5174,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1264,
-                "end": 1270,
-                "start": 1264,
+                "commentStart": 1274,
+                "end": 1280,
+                "start": 1274,
                 "type": "TagDeclarator",
                 "value": "seg04"
               },
@@ -5302,9 +5291,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 ],
                 "radius": 11.88125,
                 "tag": {
-                  "commentStart": 741,
-                  "end": 747,
-                  "start": 741,
+                  "commentStart": 743,
+                  "end": 749,
+                  "start": 743,
                   "type": "TagDeclarator",
                   "value": "seg09"
                 },
@@ -5327,9 +5316,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   20.0
                 ],
                 "tag": {
-                  "commentStart": 800,
-                  "end": 806,
-                  "start": 800,
+                  "commentStart": 809,
+                  "end": 815,
+                  "start": 809,
                   "type": "TagDeclarator",
                   "value": "seg03"
                 },
@@ -5352,9 +5341,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   -10.0
                 ],
                 "tag": {
-                  "commentStart": 853,
-                  "end": 859,
-                  "start": 853,
+                  "commentStart": 862,
+                  "end": 868,
+                  "start": 862,
                   "type": "TagDeclarator",
                   "value": "seg07"
                 },
@@ -5377,9 +5366,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   -10.0
                 ],
                 "tag": {
-                  "commentStart": 954,
-                  "end": 960,
-                  "start": 954,
+                  "commentStart": 964,
+                  "end": 970,
+                  "start": 964,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -5402,9 +5391,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   10.9406
                 ],
                 "tag": {
-                  "commentStart": 1031,
-                  "end": 1037,
-                  "start": 1031,
+                  "commentStart": 1041,
+                  "end": 1047,
+                  "start": 1041,
                   "type": "TagDeclarator",
                   "value": "seg06"
                 },
@@ -5427,9 +5416,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   10.9406
                 ],
                 "tag": {
-                  "commentStart": 1088,
-                  "end": 1094,
-                  "start": 1088,
+                  "commentStart": 1098,
+                  "end": 1104,
+                  "start": 1098,
                   "type": "TagDeclarator",
                   "value": "seg08"
                 },
@@ -5452,9 +5441,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   30.9406
                 ],
                 "tag": {
-                  "commentStart": 1147,
-                  "end": 1153,
-                  "start": 1147,
+                  "commentStart": 1157,
+                  "end": 1163,
+                  "start": 1157,
                   "type": "TagDeclarator",
                   "value": "seg05"
                 },
@@ -5477,9 +5466,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   30.9406
                 ],
                 "tag": {
-                  "commentStart": 1222,
-                  "end": 1228,
-                  "start": 1222,
+                  "commentStart": 1232,
+                  "end": 1238,
+                  "start": 1232,
                   "type": "TagDeclarator",
                   "value": "seg10"
                 },
@@ -5502,9 +5491,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   41.8813
                 ],
                 "tag": {
-                  "commentStart": 1264,
-                  "end": 1270,
-                  "start": 1264,
+                  "commentStart": 1274,
+                  "end": 1280,
+                  "start": 1274,
                   "type": "TagDeclarator",
                   "value": "seg04"
                 },
@@ -5769,9 +5758,6 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -5845,7 +5831,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         },
         "units": {
           "type": "Mm"
@@ -5906,9 +5893,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 2605,
-            "end": 2626,
-            "start": 2605,
+            "commentStart": 2582,
+            "end": 2603,
+            "start": 2582,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA001"
           },
@@ -5931,9 +5918,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 2721,
-            "end": 2742,
-            "start": 2721,
+            "commentStart": 2698,
+            "end": 2719,
+            "start": 2698,
             "type": "TagDeclarator",
             "value": "rectangleSegmentB001"
           },
@@ -5956,9 +5943,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             -10.0
           ],
           "tag": {
-            "commentStart": 2844,
-            "end": 2865,
-            "start": 2844,
+            "commentStart": 2821,
+            "end": 2842,
+            "start": 2821,
             "type": "TagDeclarator",
             "value": "rectangleSegmentC001"
           },
@@ -6062,9 +6049,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 741,
-                "end": 747,
-                "start": 741,
+                "commentStart": 743,
+                "end": 749,
+                "start": 743,
                 "type": "TagDeclarator",
                 "value": "seg09"
               },
@@ -6075,9 +6062,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 800,
-                "end": 806,
-                "start": 800,
+                "commentStart": 809,
+                "end": 815,
+                "start": 809,
                 "type": "TagDeclarator",
                 "value": "seg03"
               },
@@ -6088,9 +6075,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 853,
-                "end": 859,
-                "start": 853,
+                "commentStart": 862,
+                "end": 868,
+                "start": 862,
                 "type": "TagDeclarator",
                 "value": "seg07"
               },
@@ -6101,9 +6088,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 954,
-                "end": 960,
-                "start": 954,
+                "commentStart": 964,
+                "end": 970,
+                "start": 964,
                 "type": "TagDeclarator",
                 "value": "seg02"
               },
@@ -6114,9 +6101,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1031,
-                "end": 1037,
-                "start": 1031,
+                "commentStart": 1041,
+                "end": 1047,
+                "start": 1041,
                 "type": "TagDeclarator",
                 "value": "seg06"
               },
@@ -6127,9 +6114,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1088,
-                "end": 1094,
-                "start": 1088,
+                "commentStart": 1098,
+                "end": 1104,
+                "start": 1098,
                 "type": "TagDeclarator",
                 "value": "seg08"
               },
@@ -6140,9 +6127,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1147,
-                "end": 1153,
-                "start": 1147,
+                "commentStart": 1157,
+                "end": 1163,
+                "start": 1157,
                 "type": "TagDeclarator",
                 "value": "seg05"
               },
@@ -6153,9 +6140,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1222,
-                "end": 1228,
-                "start": 1222,
+                "commentStart": 1232,
+                "end": 1238,
+                "start": 1232,
                 "type": "TagDeclarator",
                 "value": "seg10"
               },
@@ -6166,9 +6153,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1264,
-                "end": 1270,
-                "start": 1264,
+                "commentStart": 1274,
+                "end": 1280,
+                "start": 1274,
                 "type": "TagDeclarator",
                 "value": "seg04"
               },
@@ -6283,9 +6270,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 ],
                 "radius": 11.88125,
                 "tag": {
-                  "commentStart": 741,
-                  "end": 747,
-                  "start": 741,
+                  "commentStart": 743,
+                  "end": 749,
+                  "start": 743,
                   "type": "TagDeclarator",
                   "value": "seg09"
                 },
@@ -6308,9 +6295,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   20.0
                 ],
                 "tag": {
-                  "commentStart": 800,
-                  "end": 806,
-                  "start": 800,
+                  "commentStart": 809,
+                  "end": 815,
+                  "start": 809,
                   "type": "TagDeclarator",
                   "value": "seg03"
                 },
@@ -6333,9 +6320,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   -10.0
                 ],
                 "tag": {
-                  "commentStart": 853,
-                  "end": 859,
-                  "start": 853,
+                  "commentStart": 862,
+                  "end": 868,
+                  "start": 862,
                   "type": "TagDeclarator",
                   "value": "seg07"
                 },
@@ -6358,9 +6345,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   -10.0
                 ],
                 "tag": {
-                  "commentStart": 954,
-                  "end": 960,
-                  "start": 954,
+                  "commentStart": 964,
+                  "end": 970,
+                  "start": 964,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -6383,9 +6370,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   10.9406
                 ],
                 "tag": {
-                  "commentStart": 1031,
-                  "end": 1037,
-                  "start": 1031,
+                  "commentStart": 1041,
+                  "end": 1047,
+                  "start": 1041,
                   "type": "TagDeclarator",
                   "value": "seg06"
                 },
@@ -6408,9 +6395,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   10.9406
                 ],
                 "tag": {
-                  "commentStart": 1088,
-                  "end": 1094,
-                  "start": 1088,
+                  "commentStart": 1098,
+                  "end": 1104,
+                  "start": 1098,
                   "type": "TagDeclarator",
                   "value": "seg08"
                 },
@@ -6433,9 +6420,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   30.9406
                 ],
                 "tag": {
-                  "commentStart": 1147,
-                  "end": 1153,
-                  "start": 1147,
+                  "commentStart": 1157,
+                  "end": 1163,
+                  "start": 1157,
                   "type": "TagDeclarator",
                   "value": "seg05"
                 },
@@ -6458,9 +6445,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   30.9406
                 ],
                 "tag": {
-                  "commentStart": 1222,
-                  "end": 1228,
-                  "start": 1222,
+                  "commentStart": 1232,
+                  "end": 1238,
+                  "start": 1232,
                   "type": "TagDeclarator",
                   "value": "seg10"
                 },
@@ -6483,9 +6470,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   41.8813
                 ],
                 "tag": {
-                  "commentStart": 1264,
-                  "end": 1270,
-                  "start": 1264,
+                  "commentStart": 1274,
+                  "end": 1280,
+                  "start": 1274,
                   "type": "TagDeclarator",
                   "value": "seg04"
                 },
@@ -6750,9 +6737,6 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -6826,7 +6810,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         },
         "units": {
           "type": "Mm"
@@ -6887,9 +6872,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 3214,
-            "end": 3235,
-            "start": 3214,
+            "commentStart": 3191,
+            "end": 3212,
+            "start": 3191,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA003"
           },
@@ -6912,9 +6897,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 3330,
-            "end": 3351,
-            "start": 3330,
+            "commentStart": 3307,
+            "end": 3328,
+            "start": 3307,
             "type": "TagDeclarator",
             "value": "rectangleSegmentB003"
           },
@@ -6937,9 +6922,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             -10.0
           ],
           "tag": {
-            "commentStart": 3453,
-            "end": 3474,
-            "start": 3453,
+            "commentStart": 3430,
+            "end": 3451,
+            "start": 3430,
             "type": "TagDeclarator",
             "value": "rectangleSegmentC003"
           },
@@ -7030,9 +7015,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2001,
-                "end": 2022,
-                "start": 2001,
+                "commentStart": 1978,
+                "end": 1999,
+                "start": 1978,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentA002"
               },
@@ -7043,9 +7028,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2117,
-                "end": 2138,
-                "start": 2117,
+                "commentStart": 2094,
+                "end": 2115,
+                "start": 2094,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentB002"
               },
@@ -7056,9 +7041,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2240,
-                "end": 2261,
-                "start": 2240,
+                "commentStart": 2217,
+                "end": 2238,
+                "start": 2217,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentC002"
               },
@@ -7086,9 +7071,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   0.0
                 ],
                 "tag": {
-                  "commentStart": 2001,
-                  "end": 2022,
-                  "start": 2001,
+                  "commentStart": 1978,
+                  "end": 1999,
+                  "start": 1978,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentA002"
                 },
@@ -7111,9 +7096,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   0.0
                 ],
                 "tag": {
-                  "commentStart": 2117,
-                  "end": 2138,
-                  "start": 2117,
+                  "commentStart": 2094,
+                  "end": 2115,
+                  "start": 2094,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentB002"
                 },
@@ -7136,9 +7121,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   -10.0
                 ],
                 "tag": {
-                  "commentStart": 2240,
-                  "end": 2261,
-                  "start": 2240,
+                  "commentStart": 2217,
+                  "end": 2238,
+                  "start": 2217,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentC002"
                 },
@@ -7242,9 +7227,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 741,
-                      "end": 747,
-                      "start": 741,
+                      "commentStart": 743,
+                      "end": 749,
+                      "start": 743,
                       "type": "TagDeclarator",
                       "value": "seg09"
                     },
@@ -7255,9 +7240,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 800,
-                      "end": 806,
-                      "start": 800,
+                      "commentStart": 809,
+                      "end": 815,
+                      "start": 809,
                       "type": "TagDeclarator",
                       "value": "seg03"
                     },
@@ -7268,9 +7253,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 853,
-                      "end": 859,
-                      "start": 853,
+                      "commentStart": 862,
+                      "end": 868,
+                      "start": 862,
                       "type": "TagDeclarator",
                       "value": "seg07"
                     },
@@ -7281,9 +7266,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 954,
-                      "end": 960,
-                      "start": 954,
+                      "commentStart": 964,
+                      "end": 970,
+                      "start": 964,
                       "type": "TagDeclarator",
                       "value": "seg02"
                     },
@@ -7294,9 +7279,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 1031,
-                      "end": 1037,
-                      "start": 1031,
+                      "commentStart": 1041,
+                      "end": 1047,
+                      "start": 1041,
                       "type": "TagDeclarator",
                       "value": "seg06"
                     },
@@ -7307,9 +7292,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 1088,
-                      "end": 1094,
-                      "start": 1088,
+                      "commentStart": 1098,
+                      "end": 1104,
+                      "start": 1098,
                       "type": "TagDeclarator",
                       "value": "seg08"
                     },
@@ -7320,9 +7305,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 1147,
-                      "end": 1153,
-                      "start": 1147,
+                      "commentStart": 1157,
+                      "end": 1163,
+                      "start": 1157,
                       "type": "TagDeclarator",
                       "value": "seg05"
                     },
@@ -7333,9 +7318,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 1222,
-                      "end": 1228,
-                      "start": 1222,
+                      "commentStart": 1232,
+                      "end": 1238,
+                      "start": 1232,
                       "type": "TagDeclarator",
                       "value": "seg10"
                     },
@@ -7346,9 +7331,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 1264,
-                      "end": 1270,
-                      "start": 1264,
+                      "commentStart": 1274,
+                      "end": 1280,
+                      "start": 1274,
                       "type": "TagDeclarator",
                       "value": "seg04"
                     },
@@ -7463,9 +7448,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       ],
                       "radius": 11.88125,
                       "tag": {
-                        "commentStart": 741,
-                        "end": 747,
-                        "start": 741,
+                        "commentStart": 743,
+                        "end": 749,
+                        "start": 743,
                         "type": "TagDeclarator",
                         "value": "seg09"
                       },
@@ -7488,9 +7473,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         20.0
                       ],
                       "tag": {
-                        "commentStart": 800,
-                        "end": 806,
-                        "start": 800,
+                        "commentStart": 809,
+                        "end": 815,
+                        "start": 809,
                         "type": "TagDeclarator",
                         "value": "seg03"
                       },
@@ -7513,9 +7498,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         -10.0
                       ],
                       "tag": {
-                        "commentStart": 853,
-                        "end": 859,
-                        "start": 853,
+                        "commentStart": 862,
+                        "end": 868,
+                        "start": 862,
                         "type": "TagDeclarator",
                         "value": "seg07"
                       },
@@ -7538,9 +7523,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         -10.0
                       ],
                       "tag": {
-                        "commentStart": 954,
-                        "end": 960,
-                        "start": 954,
+                        "commentStart": 964,
+                        "end": 970,
+                        "start": 964,
                         "type": "TagDeclarator",
                         "value": "seg02"
                       },
@@ -7563,9 +7548,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         10.9406
                       ],
                       "tag": {
-                        "commentStart": 1031,
-                        "end": 1037,
-                        "start": 1031,
+                        "commentStart": 1041,
+                        "end": 1047,
+                        "start": 1041,
                         "type": "TagDeclarator",
                         "value": "seg06"
                       },
@@ -7588,9 +7573,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         10.9406
                       ],
                       "tag": {
-                        "commentStart": 1088,
-                        "end": 1094,
-                        "start": 1088,
+                        "commentStart": 1098,
+                        "end": 1104,
+                        "start": 1098,
                         "type": "TagDeclarator",
                         "value": "seg08"
                       },
@@ -7613,9 +7598,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         30.9406
                       ],
                       "tag": {
-                        "commentStart": 1147,
-                        "end": 1153,
-                        "start": 1147,
+                        "commentStart": 1157,
+                        "end": 1163,
+                        "start": 1157,
                         "type": "TagDeclarator",
                         "value": "seg05"
                       },
@@ -7638,9 +7623,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         30.9406
                       ],
                       "tag": {
-                        "commentStart": 1222,
-                        "end": 1228,
-                        "start": 1222,
+                        "commentStart": 1232,
+                        "end": 1238,
+                        "start": 1232,
                         "type": "TagDeclarator",
                         "value": "seg10"
                       },
@@ -7663,9 +7648,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         41.8813
                       ],
                       "tag": {
-                        "commentStart": 1264,
-                        "end": 1270,
-                        "start": 1264,
+                        "commentStart": 1274,
+                        "end": 1280,
+                        "start": 1274,
                         "type": "TagDeclarator",
                         "value": "seg04"
                       },
@@ -7930,9 +7915,6 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       "units": {
                         "type": "Mm"
                       }
-                    },
-                    "units": {
-                      "type": "Mm"
                     }
                   },
                   "start": {
@@ -8006,7 +7988,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Mm"
@@ -8055,7 +8038,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         },
         "units": {
           "type": "Mm"
@@ -8117,26 +8101,18 @@ description: Variables in memory after executing router-template-cross-bar.kcl
     "type": "Number",
     "value": 17.4625,
     "ty": {
-      "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "type": "Known",
+      "type": "Length",
+      "type": "Mm"
     }
   },
   "templateGap": {
     "type": "Number",
     "value": 1.8812,
     "ty": {
-      "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "type": "Known",
+      "type": "Length",
+      "type": "Mm"
     }
   },
   "templateThickness": {

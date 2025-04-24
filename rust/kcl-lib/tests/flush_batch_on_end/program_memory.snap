@@ -100,9 +100,6 @@ description: Variables in memory after executing flush_batch_on_end.kcl
           "units": {
             "type": "Mm"
           }
-        },
-        "units": {
-          "type": "Inches"
         }
       },
       "start": {
@@ -236,9 +233,6 @@ description: Variables in memory after executing flush_batch_on_end.kcl
           "units": {
             "type": "Mm"
           }
-        },
-        "units": {
-          "type": "Inches"
         }
       },
       "start": {
@@ -365,9 +359,6 @@ description: Variables in memory after executing flush_batch_on_end.kcl
             "units": {
               "type": "Mm"
             }
-          },
-          "units": {
-            "type": "Inches"
           }
         },
         "start": {
@@ -405,7 +396,8 @@ description: Variables in memory after executing flush_batch_on_end.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Inches"
-      }
+      },
+      "sectional": false
     }
   },
   "pipeProfile": {
@@ -482,9 +474,6 @@ description: Variables in memory after executing flush_batch_on_end.kcl
           "units": {
             "type": "Mm"
           }
-        },
-        "units": {
-          "type": "Inches"
         }
       },
       "start": {
@@ -555,9 +544,6 @@ description: Variables in memory after executing flush_batch_on_end.kcl
         "units": {
           "type": "Mm"
         }
-      },
-      "units": {
-        "type": "Inches"
       }
     }
   }

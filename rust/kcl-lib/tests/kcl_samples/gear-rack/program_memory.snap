@@ -161,9 +161,6 @@ description: Variables in memory after executing gear-rack.kcl
             "units": {
               "type": "Mm"
             }
-          },
-          "units": {
-            "type": "Mm"
           }
         },
         "start": {
@@ -195,7 +192,8 @@ description: Variables in memory after executing gear-rack.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "endCapTooth2": {
@@ -356,9 +354,6 @@ description: Variables in memory after executing gear-rack.kcl
             "units": {
               "type": "Mm"
             }
-          },
-          "units": {
-            "type": "Mm"
           }
         },
         "start": {
@@ -390,7 +385,8 @@ description: Variables in memory after executing gear-rack.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "height": {
@@ -598,9 +594,6 @@ description: Variables in memory after executing gear-rack.kcl
             "units": {
               "type": "Mm"
             }
-          },
-          "units": {
-            "type": "Mm"
           }
         },
         "start": {
@@ -632,7 +625,8 @@ description: Variables in memory after executing gear-rack.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "teeth": {
@@ -915,9 +909,6 @@ description: Variables in memory after executing gear-rack.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -949,7 +940,8 @@ description: Variables in memory after executing gear-rack.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -1229,9 +1221,6 @@ description: Variables in memory after executing gear-rack.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -1263,7 +1252,8 @@ description: Variables in memory after executing gear-rack.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -1543,9 +1533,6 @@ description: Variables in memory after executing gear-rack.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -1577,7 +1564,8 @@ description: Variables in memory after executing gear-rack.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -1857,9 +1845,6 @@ description: Variables in memory after executing gear-rack.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -1891,7 +1876,8 @@ description: Variables in memory after executing gear-rack.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -2171,9 +2157,6 @@ description: Variables in memory after executing gear-rack.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -2205,7 +2188,8 @@ description: Variables in memory after executing gear-rack.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -2485,9 +2469,6 @@ description: Variables in memory after executing gear-rack.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -2519,7 +2500,8 @@ description: Variables in memory after executing gear-rack.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -2799,9 +2781,6 @@ description: Variables in memory after executing gear-rack.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -2833,7 +2812,8 @@ description: Variables in memory after executing gear-rack.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -3113,9 +3093,6 @@ description: Variables in memory after executing gear-rack.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -3147,7 +3124,8 @@ description: Variables in memory after executing gear-rack.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -3427,9 +3405,6 @@ description: Variables in memory after executing gear-rack.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -3461,7 +3436,8 @@ description: Variables in memory after executing gear-rack.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -3741,9 +3717,6 @@ description: Variables in memory after executing gear-rack.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -3775,7 +3748,8 @@ description: Variables in memory after executing gear-rack.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -4055,9 +4029,6 @@ description: Variables in memory after executing gear-rack.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -4089,7 +4060,8 @@ description: Variables in memory after executing gear-rack.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -4369,9 +4341,6 @@ description: Variables in memory after executing gear-rack.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -4403,7 +4372,8 @@ description: Variables in memory after executing gear-rack.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -4683,9 +4653,6 @@ description: Variables in memory after executing gear-rack.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -4717,7 +4684,8 @@ description: Variables in memory after executing gear-rack.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -4997,9 +4965,6 @@ description: Variables in memory after executing gear-rack.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -5031,7 +4996,8 @@ description: Variables in memory after executing gear-rack.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -5311,9 +5277,6 @@ description: Variables in memory after executing gear-rack.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -5345,7 +5308,8 @@ description: Variables in memory after executing gear-rack.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -5625,9 +5589,6 @@ description: Variables in memory after executing gear-rack.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -5659,7 +5620,8 @@ description: Variables in memory after executing gear-rack.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -5939,9 +5901,6 @@ description: Variables in memory after executing gear-rack.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -5973,7 +5932,8 @@ description: Variables in memory after executing gear-rack.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -6253,9 +6213,6 @@ description: Variables in memory after executing gear-rack.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -6287,7 +6244,8 @@ description: Variables in memory after executing gear-rack.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -6567,9 +6525,6 @@ description: Variables in memory after executing gear-rack.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -6601,7 +6556,8 @@ description: Variables in memory after executing gear-rack.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -6881,9 +6837,6 @@ description: Variables in memory after executing gear-rack.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -6915,7 +6868,8 @@ description: Variables in memory after executing gear-rack.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -7195,9 +7149,6 @@ description: Variables in memory after executing gear-rack.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -7229,7 +7180,8 @@ description: Variables in memory after executing gear-rack.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -7509,9 +7461,6 @@ description: Variables in memory after executing gear-rack.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -7543,7 +7492,8 @@ description: Variables in memory after executing gear-rack.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -7823,9 +7773,6 @@ description: Variables in memory after executing gear-rack.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -7857,7 +7804,8 @@ description: Variables in memory after executing gear-rack.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -8137,9 +8085,6 @@ description: Variables in memory after executing gear-rack.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -8171,7 +8116,8 @@ description: Variables in memory after executing gear-rack.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -8451,9 +8397,6 @@ description: Variables in memory after executing gear-rack.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -8485,7 +8428,8 @@ description: Variables in memory after executing gear-rack.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -8765,9 +8709,6 @@ description: Variables in memory after executing gear-rack.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -8799,7 +8740,8 @@ description: Variables in memory after executing gear-rack.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -9079,9 +9021,6 @@ description: Variables in memory after executing gear-rack.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -9113,7 +9052,8 @@ description: Variables in memory after executing gear-rack.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -9393,9 +9333,6 @@ description: Variables in memory after executing gear-rack.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -9427,7 +9364,8 @@ description: Variables in memory after executing gear-rack.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -9707,9 +9645,6 @@ description: Variables in memory after executing gear-rack.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -9741,7 +9676,8 @@ description: Variables in memory after executing gear-rack.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -10021,9 +9957,6 @@ description: Variables in memory after executing gear-rack.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -10055,7 +9988,8 @@ description: Variables in memory after executing gear-rack.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -10335,9 +10269,6 @@ description: Variables in memory after executing gear-rack.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -10369,7 +10300,8 @@ description: Variables in memory after executing gear-rack.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -10649,9 +10581,6 @@ description: Variables in memory after executing gear-rack.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -10683,7 +10612,8 @@ description: Variables in memory after executing gear-rack.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -10963,9 +10893,6 @@ description: Variables in memory after executing gear-rack.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -10997,7 +10924,8 @@ description: Variables in memory after executing gear-rack.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -11277,9 +11205,6 @@ description: Variables in memory after executing gear-rack.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -11311,7 +11236,8 @@ description: Variables in memory after executing gear-rack.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -11591,9 +11517,6 @@ description: Variables in memory after executing gear-rack.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -11625,7 +11548,8 @@ description: Variables in memory after executing gear-rack.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -11905,9 +11829,6 @@ description: Variables in memory after executing gear-rack.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -11939,7 +11860,8 @@ description: Variables in memory after executing gear-rack.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -12219,9 +12141,6 @@ description: Variables in memory after executing gear-rack.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -12253,7 +12172,8 @@ description: Variables in memory after executing gear-rack.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -12533,9 +12453,6 @@ description: Variables in memory after executing gear-rack.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -12567,7 +12484,8 @@ description: Variables in memory after executing gear-rack.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -12847,9 +12765,6 @@ description: Variables in memory after executing gear-rack.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -12881,7 +12796,8 @@ description: Variables in memory after executing gear-rack.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -13161,9 +13077,6 @@ description: Variables in memory after executing gear-rack.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -13195,7 +13108,8 @@ description: Variables in memory after executing gear-rack.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -13475,9 +13389,6 @@ description: Variables in memory after executing gear-rack.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -13509,7 +13420,8 @@ description: Variables in memory after executing gear-rack.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -13789,9 +13701,6 @@ description: Variables in memory after executing gear-rack.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -13823,7 +13732,8 @@ description: Variables in memory after executing gear-rack.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -14103,9 +14013,6 @@ description: Variables in memory after executing gear-rack.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -14137,7 +14044,8 @@ description: Variables in memory after executing gear-rack.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -14417,9 +14325,6 @@ description: Variables in memory after executing gear-rack.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -14451,7 +14356,8 @@ description: Variables in memory after executing gear-rack.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -14731,9 +14637,6 @@ description: Variables in memory after executing gear-rack.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -14765,7 +14668,8 @@ description: Variables in memory after executing gear-rack.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -15045,9 +14949,6 @@ description: Variables in memory after executing gear-rack.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -15079,7 +14980,8 @@ description: Variables in memory after executing gear-rack.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -15359,9 +15261,6 @@ description: Variables in memory after executing gear-rack.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -15393,7 +15292,8 @@ description: Variables in memory after executing gear-rack.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -15673,9 +15573,6 @@ description: Variables in memory after executing gear-rack.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -15707,7 +15604,8 @@ description: Variables in memory after executing gear-rack.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -15987,9 +15885,6 @@ description: Variables in memory after executing gear-rack.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -16021,7 +15916,8 @@ description: Variables in memory after executing gear-rack.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -16301,9 +16197,6 @@ description: Variables in memory after executing gear-rack.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -16335,7 +16228,8 @@ description: Variables in memory after executing gear-rack.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -16615,9 +16509,6 @@ description: Variables in memory after executing gear-rack.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -16649,7 +16540,8 @@ description: Variables in memory after executing gear-rack.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -16929,9 +16821,6 @@ description: Variables in memory after executing gear-rack.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -16963,7 +16852,8 @@ description: Variables in memory after executing gear-rack.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -17243,9 +17133,6 @@ description: Variables in memory after executing gear-rack.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -17277,7 +17164,8 @@ description: Variables in memory after executing gear-rack.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -17557,9 +17445,6 @@ description: Variables in memory after executing gear-rack.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -17591,7 +17476,8 @@ description: Variables in memory after executing gear-rack.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -17871,9 +17757,6 @@ description: Variables in memory after executing gear-rack.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -17905,7 +17788,8 @@ description: Variables in memory after executing gear-rack.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -18185,9 +18069,6 @@ description: Variables in memory after executing gear-rack.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -18219,7 +18100,8 @@ description: Variables in memory after executing gear-rack.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -18499,9 +18381,6 @@ description: Variables in memory after executing gear-rack.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -18533,7 +18412,8 @@ description: Variables in memory after executing gear-rack.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -18813,9 +18693,6 @@ description: Variables in memory after executing gear-rack.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -18847,7 +18724,8 @@ description: Variables in memory after executing gear-rack.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -19127,9 +19005,6 @@ description: Variables in memory after executing gear-rack.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -19161,7 +19036,8 @@ description: Variables in memory after executing gear-rack.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -19441,9 +19317,6 @@ description: Variables in memory after executing gear-rack.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -19475,7 +19348,8 @@ description: Variables in memory after executing gear-rack.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -19755,9 +19629,6 @@ description: Variables in memory after executing gear-rack.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -19789,7 +19660,8 @@ description: Variables in memory after executing gear-rack.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -20069,9 +19941,6 @@ description: Variables in memory after executing gear-rack.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -20103,7 +19972,8 @@ description: Variables in memory after executing gear-rack.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -20383,9 +20253,6 @@ description: Variables in memory after executing gear-rack.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -20417,7 +20284,8 @@ description: Variables in memory after executing gear-rack.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       }
     ]

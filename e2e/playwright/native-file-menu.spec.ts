@@ -21,8 +21,9 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
                 if (!app || !app.applicationMenu) {
                   return false
                 }
-                const newProject =
-                  app.applicationMenu.getMenuItemById('File.New project')
+                const newProject = app.applicationMenu.getMenuItemById(
+                  'File.Create project'
+                )
                 if (!newProject) return false
                 newProject.click()
                 return true
@@ -408,11 +409,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
           )
           .toBe(true)
       })
-      test('Home.Help.Refresh and report a bug', async ({
-        tronApp,
-        cmdBar,
-        page,
-      }) => {
+      test('Home.Help.Report a bug', async ({ tronApp, cmdBar, page }) => {
         if (!tronApp) fail()
         // Run electron snippet to find the Menu!
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
@@ -423,9 +420,8 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
                 if (!app || !app.applicationMenu) {
                   return false
                 }
-                const menu = app.applicationMenu.getMenuItemById(
-                  'Help.Refresh and report a bug'
-                )
+                const menu =
+                  app.applicationMenu.getMenuItemById('Help.Report a bug')
                 if (!menu) return false
                 menu.click()
                 return true
@@ -484,8 +480,9 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         await page.waitForTimeout(100) // wait for createModelingPageMenu() to run
         await tronApp.electron.evaluate(async ({ app }) => {
           if (!app || !app.applicationMenu) fail()
-          const newProject =
-            app.applicationMenu.getMenuItemById('File.New project')
+          const newProject = app.applicationMenu.getMenuItemById(
+            'File.Create project'
+          )
           if (!newProject) fail()
           newProject.click()
         })
@@ -608,7 +605,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         const expected = 'Export'
         expect(actual).toBe(expected)
       })
-      test('Modeling.File.Share current part (via Zoo link)', async ({
+      test('Modeling.File.Share part via Zoo link', async ({
         tronApp,
         cmdBar,
         page,
@@ -629,10 +626,10 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
             throw new Error('app or app.applicationMenu is missing')
           }
           const openProject = app.applicationMenu.getMenuItemById(
-            'File.Share current part (via Zoo link)'
+            'File.Share part via Zoo link'
           )
           if (!openProject) {
-            throw new Error('File.Share current part (via Zoo link)')
+            throw new Error('File.Share part via Zoo link')
           }
           openProject.click()
         })
@@ -2289,7 +2286,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
           if (!menu) fail()
         })
       })
-      test('Modeling.Help.Refresh and report a bug', async ({
+      test('Modeling.Help.Report a bug', async ({
         tronApp,
         cmdBar,
         page,
@@ -2313,9 +2310,8 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
             async () =>
               await tronApp.electron.evaluate(async ({ app }) => {
                 if (!app || !app.applicationMenu) return false
-                const menu = app.applicationMenu.getMenuItemById(
-                  'Help.Refresh and report a bug'
-                )
+                const menu =
+                  app.applicationMenu.getMenuItemById('Help.Report a bug')
                 if (!menu) return false
                 menu.click()
                 return true

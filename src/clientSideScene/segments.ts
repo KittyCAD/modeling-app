@@ -221,7 +221,7 @@ class StraightSegment implements SegmentUtils {
       const snapLine = createLine({
         from: [0, 0],
         to: [0, 0],
-        color: 0xcccccc,
+        color: 0x555555,
       })
       snapLine.name = STRAIGHT_SEGMENT_SNAP_LINE
       segmentGroup.add(snapLine)
@@ -294,6 +294,8 @@ class StraightSegment implements SegmentUtils {
     if (snapLine) {
       snapLine.visible = !!input.snap
       if (snapLine.visible) {
+        // Without this three.js incorrectly culls the line in some cases when zoomed in too much
+        snapLine.frustumCulled = false
         const snapLineFrom = to
         const snapLineTo = new Vector3(to[0], to[1], 0).addScaledVector(
           dir,
@@ -1549,10 +1551,10 @@ class ThreePointArcSegment implements SegmentUtils {
       overlayDetails.forEach((payload, index) => {
         if (payload?.type === 'set-one') {
           overlays[payload.pathToNodeString] = payload.seg
-          // Add filterValue: 'interior' for p2 and 'end' for p3
+          // Add filterValue: 'interiorAbsolute' for p2 and 'end' for p3
           segmentOverlays.push({
             ...payload.seg[0],
-            filterValue: index === 0 ? 'interior' : 'end',
+            filterValue: index === 0 ? 'interiorAbsolute' : 'end',
           })
         }
       })

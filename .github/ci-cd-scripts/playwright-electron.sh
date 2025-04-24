@@ -26,8 +26,8 @@ max_retries=1
 # Retry failed tests, doing our own retries because using inbuilt Playwright retries causes connection issues
 while [[ $retry -le $max_retries ]]; do
     if [[ -f "test-results/.last-run.json" ]]; then
-        failed_tests=$(jq '.failedTests | length' test-results/.last-run.json)
-        if [[ $failed_tests -gt 0 ]]; then
+        status=$(jq -r '.status' test-results/.last-run.json)
+        if [[ "$status" == "failed" ]]; then
             echo "retried=true" >>$GITHUB_OUTPUT
             echo "run playwright with last failed tests and retry $retry"
             if [[ "$3" == *ubuntu* ]]; then
@@ -56,10 +56,11 @@ done
 echo "retried=false" >>$GITHUB_OUTPUT
 
 if [[ -f "test-results/.last-run.json" ]]; then
-    failed_tests=$(jq '.failedTests | length' test-results/.last-run.json)
-    if [[ $failed_tests -gt 0 ]]; then
-        # If it still fails after 3 retries, then fail the job
+    status=$(jq -r '.status' test-results/.last-run.json)
+    if [[ "$status" == "failed" ]]; then
+        # If it still fails after retries, then fail the job
         exit 1
     fi
 fi
+
 exit 0

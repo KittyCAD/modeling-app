@@ -1,0 +1,108 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing import_async.kcl
+---
+// Set units
+@settings(defaultLengthUnit = mm)
+
+@(lengthUnit = m)
+import "../../e2e/executor/inputs/2-5-long-m8-chc-screw.stl" as screw
+
+myScrew = screw
+
+surface001 = startSketchOn(XY)
+
+// Define parameters
+nTeeth = 21
+module = 0.5
+pitchDiameter = module * nTeeth
+pressureAngle = 20
+addendum = module
+deddendum = 1.25 * module
+baseDiameter = pitchDiameter * cos(toRadians(pressureAngle))
+tipDiameter = pitchDiameter + 2 * module
+gearHeight = 3
+
+// Interpolate points along the involute curve
+cmo = 101
+rs = map([0..cmo], fn(i) {
+  return baseDiameter / 2 + i / cmo * (tipDiameter - baseDiameter) / 2
+})
+
+// Calculate operating pressure angle
+angles = map(rs, fn(r) {
+  return toDegrees(  acos(baseDiameter / 2 / r))
+})
+
+// Calculate the involute function
+invas = map(angles, fn(a) {
+  return tan(toRadians(a)) - toRadians(a)
+})
+
+// Map the involute curve
+xs = map([0..cmo], fn(i) {
+  return rs[i] * cos(invas[i]: number(rad))
+})
+
+ys = map([0..cmo], fn(i) {
+  return rs[i] * sin(invas[i]: number(rad))
+})
+
+// Extrude the gear body
+body = startSketchOn(XY)
+  |> circle(center = [0, 0], radius = baseDiameter / 2)
+  |> extrude(length = gearHeight)
+
+toothAngle = 360 / nTeeth / 1.5
+
+// Plot the involute curve
+fn leftInvolute(i, sg) {
+  j = 100 - i // iterate backwards
+  return line(sg, endAbsolute = [xs[j], ys[j]])
+}
+
+fn rightInvolute(i, sg) {
+  x = rs[i] * cos(toRadians(-toothAngle + toDegrees(atan(ys[i] / xs[i]))))
+  y = -rs[i] * sin(toRadians(-toothAngle + toDegrees(atan(ys[i] / xs[i]))))
+  return line(sg, endAbsolute = [x, y])
+}
+
+// Draw gear teeth
+start = startSketchOn(XY)
+  |> startProfileAt([xs[101], ys[101]], %)
+teeth = reduce([0..100], start, leftInvolute)
+  |> arc(angleStart = 0, angleEnd = toothAngle, radius = baseDiameter / 2)
+  |> reduce([1..101], %, rightInvolute)
+  |> close()
+  |> extrude(length = gearHeight)
+  |> patternCircular3d(
+       axis = [0, 0, 1],
+       center = [0, 0, 0],
+       instances = nTeeth,
+       arcDegrees = 360,
+       rotateDuplicates = true,
+     )
+
+// Define the constants of the keyway and the bore hole
+keywayWidth = 0.250
+keywayDepth = keywayWidth / 2
+holeDiam = 2
+holeRadius = 1
+startAngle = asin(keywayWidth / 2 / holeRadius)
+
+// Sketch the keyway and center hole and extrude
+keyWay = startSketchOn(body, face = END)
+  |> startProfileAt([
+       holeRadius * cos(startAngle),
+       holeRadius * sin(startAngle)
+     ], %)
+  |> xLine(length = keywayDepth)
+  |> yLine(length = -keywayWidth)
+  |> xLine(length = -keywayDepth)
+  |> arc(angleStart = -1 * toDegrees(startAngle) + 360, angleEnd = 180, radius = holeRadius)
+  |> arc(angleStart = 180, angleEnd = toDegrees(startAngle), radius = holeRadius)
+  |> close()
+  |> extrude(length = -gearHeight)
+
+myScrew
+  |> translate(y = 10)

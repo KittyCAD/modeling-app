@@ -73,7 +73,7 @@ rectangleExtrude = extrude(rectangleSketch, length = 10)
 ```js
 bottom = startSketchOn(XY)
   |> startProfileAt([0, 0], %)
-  |> arcTo({ end = [10, 10], interior = [5, 1] }, %, $arc1)
+  |> arc(endAbsolute = [10, 10], interiorAbsolute = [5, 1], tag = $arc1)
   |> angledLine(angle = tangentToEnd(arc1), length = 20)
   |> close()
 ```

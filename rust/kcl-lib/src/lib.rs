@@ -109,7 +109,7 @@ pub mod exec {
 pub mod wasm_engine {
     pub use crate::{
         coredump::wasm::{CoreDumpManager, CoreDumper},
-        engine::conn_wasm::{EngineCommandManager, EngineConnection},
+        engine::conn_wasm::{EngineCommandManager, EngineConnection, ResponseContext},
         fs::wasm::{FileManager, FileSystemManager},
     };
 }

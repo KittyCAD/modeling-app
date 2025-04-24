@@ -237,9 +237,6 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
             "units": {
               "type": "Mm"
             }
-          },
-          "units": {
-            "type": "Mm"
           }
         },
         "start": {
@@ -361,7 +358,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
       ],
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "extrude002": {
@@ -797,9 +795,6 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                   "units": {
                     "type": "Mm"
                   }
-                },
-                "units": {
-                  "type": "Mm"
                 }
               },
               "start": {
@@ -921,7 +916,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
             ],
             "units": {
               "type": "Mm"
-            }
+            },
+            "sectional": false
           },
           "units": {
             "type": "Mm"
@@ -970,7 +966,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "rectangleSegmentA001": {
@@ -1184,9 +1181,6 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
           "units": {
             "type": "Mm"
           }
-        },
-        "units": {
-          "type": "Mm"
         }
       },
       "start": {
@@ -1617,9 +1611,6 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -1741,7 +1732,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
           ],
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         },
         "units": {
           "type": "Mm"
@@ -2167,9 +2159,6 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -2291,7 +2280,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
           ],
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         },
         "units": {
           "type": "Mm"

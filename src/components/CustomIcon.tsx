@@ -311,6 +311,22 @@ const CustomIconMap = {
       />
     </svg>
   ),
+  command: (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M4.70711 6L8.20711 9.5L8.56066 9.85355L8.20711 10.2071L4.70711 13.7071L4 13L7.14645 9.85355L4 6.70711L4.70711 6ZM15.3536 11.3536H9.35356V12.3536H15.3536V11.3536Z"
+        fill="currentColor"
+      />
+    </svg>
+  ),
   dimension: (
     <svg
       viewBox="0 0 20 20"
@@ -628,8 +644,8 @@ const CustomIconMap = {
       xmlns="http://www.w3.org/2000/svg"
     >
       <path
-        fill-rule="evenodd"
-        clip-rule="evenodd"
+        fillRule="evenodd"
+        clipRule="evenodd"
         d="M4 3H4.5H11H11.2071L11.3536 3.14645L15.8536 7.64646L16 7.7929V8.00001V11.3773C15.6992 11.1362 15.3628 10.9376 15 10.7908V8.50001H11H10.5V8.00001V4H5V16H9.79076C9.93763 16.3628 10.1362 16.6992 10.3773 17H4.5H4V16.5V3.5V3ZM11.5 4.70711L14.2929 7.50001H11.5V4.70711ZM13.8123 17.3904L16.3123 15.3904L15.6877 14.6096L14 15.9597V12H13V15.9597L11.3123 14.6096L10.6877 15.3904L13.1877 17.3904L13.5 17.6403L13.8123 17.3904Z"
         fill="currentColor"
       />

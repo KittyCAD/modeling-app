@@ -14,11 +14,7 @@ fn cycloidalGear(gearPitch, gearHeight, holeDiameter, helixAngle) {
            gearPitch * 1.55 * cos(toRadians(helixAngleP)) + gearPitch * sin(toRadians(-helixAngleP)),
            gearPitch * 1.55 * sin(toRadians(helixAngleP)) + gearPitch * cos(toRadians(-helixAngleP))
          ], %)
-      |> arc({
-           angleStart = 90 + helixAngleP,
-           angleEnd = -90 + helixAngleP,
-           radius = gearPitch
-         }, %)
+      |> arc(angleStart = 90 + helixAngleP, angleEnd = -90 + helixAngleP, radius = gearPitch)
       |> tangentialArc(radius = gearPitch * 1.67, angle = 60)
       |> tangentialArc(radius = gearPitch, angle = -180)
       |> tangentialArc(radius = gearPitch * 1.67, angle = 60)

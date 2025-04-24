@@ -283,9 +283,6 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
             "units": {
               "type": "Mm"
             }
-          },
-          "units": {
-            "type": "Mm"
           }
         },
         "start": {
@@ -317,7 +314,8 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "distance": {

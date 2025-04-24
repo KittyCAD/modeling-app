@@ -766,9 +766,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "units": {
               "type": "Mm"
             }
-          },
-          "units": {
-            "type": "Inches"
           }
         },
         "start": {
@@ -904,7 +901,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
       ],
       "units": {
         "type": "Inches"
-      }
+      },
+      "sectional": false
     }
   },
   "centeredHole": {
@@ -1729,9 +1727,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   "units": {
                     "type": "Mm"
                   }
-                },
-                "units": {
-                  "type": "Inches"
                 }
               },
               "start": {
@@ -1867,7 +1862,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             ],
             "units": {
               "type": "Inches"
-            }
+            },
+            "sectional": false
           },
           "units": {
             "type": "Inches"
@@ -1902,7 +1898,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
       "endCapId": null,
       "units": {
         "type": "Inches"
-      }
+      },
+      "sectional": false
     }
   },
   "componentBoltDiameter": {
@@ -2834,9 +2831,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       "units": {
                         "type": "Mm"
                       }
-                    },
-                    "units": {
-                      "type": "Inches"
                     }
                   },
                   "start": {
@@ -2972,7 +2966,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 ],
                 "units": {
                   "type": "Inches"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Inches"
@@ -3007,7 +3002,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -3832,9 +3828,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       "units": {
                         "type": "Mm"
                       }
-                    },
-                    "units": {
-                      "type": "Inches"
                     }
                   },
                   "start": {
@@ -3970,7 +3963,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 ],
                 "units": {
                   "type": "Inches"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Inches"
@@ -4005,7 +3999,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       }
     ]
@@ -4887,9 +4882,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       "units": {
                         "type": "Mm"
                       }
-                    },
-                    "units": {
-                      "type": "Inches"
                     }
                   },
                   "start": {
@@ -5025,7 +5017,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 ],
                 "units": {
                   "type": "Inches"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Inches"
@@ -5060,7 +5053,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -5885,9 +5879,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       "units": {
                         "type": "Mm"
                       }
-                    },
-                    "units": {
-                      "type": "Inches"
                     }
                   },
                   "start": {
@@ -6023,7 +6014,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 ],
                 "units": {
                   "type": "Inches"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Inches"
@@ -6058,7 +6050,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       }
     ]
@@ -6936,9 +6929,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       "units": {
                         "type": "Mm"
                       }
-                    },
-                    "units": {
-                      "type": "Inches"
                     }
                   },
                   "start": {
@@ -7074,7 +7064,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 ],
                 "units": {
                   "type": "Inches"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Inches"
@@ -7109,7 +7100,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -7934,9 +7926,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       "units": {
                         "type": "Mm"
                       }
-                    },
-                    "units": {
-                      "type": "Inches"
                     }
                   },
                   "start": {
@@ -8072,7 +8061,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 ],
                 "units": {
                   "type": "Inches"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Inches"
@@ -8107,7 +8097,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -8932,9 +8923,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       "units": {
                         "type": "Mm"
                       }
-                    },
-                    "units": {
-                      "type": "Inches"
                     }
                   },
                   "start": {
@@ -9070,7 +9058,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 ],
                 "units": {
                   "type": "Inches"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Inches"
@@ -9105,7 +9094,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -9930,9 +9920,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       "units": {
                         "type": "Mm"
                       }
-                    },
-                    "units": {
-                      "type": "Inches"
                     }
                   },
                   "start": {
@@ -10068,7 +10055,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 ],
                 "units": {
                   "type": "Inches"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Inches"
@@ -10103,7 +10091,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       }
     ]

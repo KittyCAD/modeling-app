@@ -6,7 +6,7 @@ use kcl_derive_docs::stdlib;
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
-        types::{self, NumericType, RuntimeType},
+        types::{NumericType, RuntimeType, UnitAngle, UnitType},
         ExecState, KclValue,
     },
     std::args::{Args, TyF64},
@@ -20,11 +20,10 @@ pub async fn rem(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
     let d: TyF64 = args.get_kw_arg_typed("divisor", &RuntimeType::num_any(), exec_state)?;
 
     let (n, d, ty) = NumericType::combine_div(n, d);
-    if *types::CHECK_NUMERIC_TYPES && ty == NumericType::Unknown {
-        // TODO suggest how to fix this
+    if ty == NumericType::Unknown {
         exec_state.warn(CompilationError::err(
             args.source_range,
-            "Remainder of numbers which have unknown or incompatible units.",
+            "Calling `rem` on numbers which have unknown or incompatible units.\n\nYou may need to add information about the type of the argument, for example:\n  using a numeric suffix: `42{ty}`\n  or using type ascription: `foo(): number({ty})`"
         ));
     }
     let remainder = inner_rem(n, d);
@@ -36,12 +35,12 @@ pub async fn rem(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
 /// If `num` is negative, the result will be too.
 ///
 /// ```no_run
-/// assertEqual(rem( 7,  divisor =  4),  3, 0.01, "remainder is 3" )
-/// assertEqual(rem(-7,  divisor =  4), -3, 0.01, "remainder is -3")
-/// assertEqual(rem( 7,  divisor = -4),  3, 0.01, "remainder is 3" )
-/// assertEqual(rem( 6,    divisor = 2.5), 1,   0.01, "remainder is 1" )
-/// assertEqual(rem( 6.5,  divisor = 2.5), 1.5, 0.01, "remainder is 1.5" )
-/// assertEqual(rem( 6.5,  divisor = 2),   0.5, 0.01, "remainder is 0.5" )
+/// assert(rem( 7,    divisor =   4), isEqualTo =   3, error = "remainder is 3")
+/// assert(rem(-7,    divisor =   4), isEqualTo =  -3, error = "remainder is -3")
+/// assert(rem( 7,    divisor =  -4), isEqualTo =   3, error = "remainder is 3")
+/// assert(rem( 6,    divisor = 2.5), isEqualTo =   1, error = "remainder is 1")
+/// assert(rem( 6.5,  divisor = 2.5), isEqualTo = 1.5, error = "remainder is 1.5")
+/// assert(rem( 6.5,  divisor =   2), isEqualTo = 0.5, error = "remainder is 0.5")
 /// ```
 #[stdlib {
     name = "rem",
@@ -59,20 +58,63 @@ fn inner_rem(num: f64, divisor: f64) -> f64 {
 
 /// Compute the cosine of a number (in radians).
 pub async fn cos(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let num: TyF64 = args.get_unlabeled_kw_arg_typed("input", &RuntimeType::radians(), exec_state)?;
-    Ok(args.make_user_val_from_f64_with_type(TyF64::count(num.n.cos())))
+    let num: TyF64 = args.get_unlabeled_kw_arg_typed("input", &RuntimeType::angle(), exec_state)?;
+    let num = match num.ty {
+        NumericType::Default {
+            angle: UnitAngle::Degrees,
+            ..
+        } => {
+            exec_state.warn(CompilationError::err(
+                args.source_range,
+                "`cos` requires its input in radians, but the input is assumed to be in degrees. You can use a numeric suffix (e.g., `0rad`) or type ascription (e.g., `(1/2): number(rad)`) to show the number is in radians, or `toRadians` to convert from degrees to radians",
+            ));
+            num.n
+        }
+        NumericType::Known(UnitType::Angle(UnitAngle::Degrees)) => num.n.to_radians(),
+        _ => num.n,
+    };
+
+    Ok(args.make_user_val_from_f64_with_type(TyF64::count(num.cos())))
 }
 
 /// Compute the sine of a number (in radians).
 pub async fn sin(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let num: TyF64 = args.get_unlabeled_kw_arg_typed("input", &RuntimeType::radians(), exec_state)?;
-    Ok(args.make_user_val_from_f64_with_type(TyF64::count(num.n.sin())))
+    let num: TyF64 = args.get_unlabeled_kw_arg_typed("input", &RuntimeType::angle(), exec_state)?;
+    let num = match num.ty {
+        NumericType::Default {
+            angle: UnitAngle::Degrees,
+            ..
+        } => {
+            exec_state.warn(CompilationError::err(
+                args.source_range,
+                "`sin` requires its input in radians, but the input is assumed to be in degrees. You can use a numeric suffix (e.g., `0rad`) or type ascription (e.g., `(1/2): number(rad)`) to show the number is in radians, or `toRadians` to convert from degrees to radians",
+            ));
+            num.n
+        }
+        NumericType::Known(UnitType::Angle(UnitAngle::Degrees)) => num.n.to_radians(),
+        _ => num.n,
+    };
+    Ok(args.make_user_val_from_f64_with_type(TyF64::count(num.sin())))
 }
 
 /// Compute the tangent of a number (in radians).
 pub async fn tan(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let num: TyF64 = args.get_unlabeled_kw_arg_typed("input", &RuntimeType::radians(), exec_state)?;
-    Ok(args.make_user_val_from_f64_with_type(TyF64::count(num.n.tan())))
+    let num: TyF64 = args.get_unlabeled_kw_arg_typed("input", &RuntimeType::angle(), exec_state)?;
+    let num = match num.ty {
+        NumericType::Default {
+            angle: UnitAngle::Degrees,
+            ..
+        } => {
+            exec_state.warn(CompilationError::err(
+                args.source_range,
+                "`tan` requires its input in radians, but the input is assumed to be in degrees. You can use a numeric suffix (e.g., `0rad`) or type ascription (e.g., `(1/2): number(rad)`) to show the number is in radians, or `toRadians` to convert from degrees to radians",
+            ));
+            num.n
+        }
+        NumericType::Known(UnitType::Angle(UnitAngle::Degrees)) => num.n.to_radians(),
+        _ => num.n,
+    };
+    Ok(args.make_user_val_from_f64_with_type(TyF64::count(num.tan())))
 }
 
 /// Return the value of `pi`. Archimedes’ constant (π).
@@ -258,11 +300,10 @@ fn inner_ceil(num: f64) -> Result<f64, KclError> {
 pub async fn min(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let nums = args.get_number_array_with_types()?;
     let (nums, ty) = NumericType::combine_eq_array(&nums);
-    if *types::CHECK_NUMERIC_TYPES && ty == NumericType::Unknown {
-        // TODO suggest how to fix this
+    if ty == NumericType::Unknown {
         exec_state.warn(CompilationError::err(
             args.source_range,
-            "Calling `min` on numbers which have unknown or incompatible units.",
+            "Calling `min` on numbers which have unknown or incompatible units.\n\nYou may need to add information about the type of the argument, for example:\n  using a numeric suffix: `42{ty}`\n  or using type ascription: `foo(): number({ty})`",
         ));
     }
     let result = inner_min(nums);
@@ -303,11 +344,10 @@ fn inner_min(args: Vec<f64>) -> f64 {
 pub async fn max(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let nums = args.get_number_array_with_types()?;
     let (nums, ty) = NumericType::combine_eq_array(&nums);
-    if *types::CHECK_NUMERIC_TYPES && ty == NumericType::Unknown {
-        // TODO suggest how to fix this
+    if ty == NumericType::Unknown {
         exec_state.warn(CompilationError::err(
             args.source_range,
-            "Calling `max` on numbers which have unknown or incompatible units.",
+            "Calling `max` on numbers which have unknown or incompatible units.\n\nYou may need to add information about the type of the argument, for example:\n  using a numeric suffix: `42{ty}`\n  or using type ascription: `foo(): number({ty})`",
         ));
     }
     let result = inner_max(nums);
@@ -389,8 +429,20 @@ fn inner_pow(num: f64, pow: f64) -> Result<f64, KclError> {
 }
 
 /// Compute the arccosine of a number (in radians).
-pub async fn acos(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+pub async fn acos(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let num = args.get_number_with_type()?;
+    if matches!(
+        num.ty,
+        NumericType::Default {
+            angle: UnitAngle::Degrees,
+            ..
+        }
+    ) {
+        exec_state.warn(CompilationError::err(
+            args.source_range,
+            "`acos` requires its input in radians, but the input is assumed to be in degrees. You can use a numeric suffix (e.g., `0rad`) or type ascription (e.g., `(1/2): number(rad)`) to show the number is in radians, or `toRadians` to convert from degrees to radians",
+        ));
+    }
     let result = inner_acos(num.n)?;
 
     Ok(args.make_user_val_from_f64_with_type(TyF64::new(result, NumericType::radians())))
@@ -420,8 +472,20 @@ fn inner_acos(num: f64) -> Result<f64, KclError> {
 }
 
 /// Compute the arcsine of a number (in radians).
-pub async fn asin(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+pub async fn asin(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let num = args.get_number_with_type()?;
+    if matches!(
+        num.ty,
+        NumericType::Default {
+            angle: UnitAngle::Degrees,
+            ..
+        }
+    ) {
+        exec_state.warn(CompilationError::err(
+            args.source_range,
+            "`asin` requires its input in radians, but the input is assumed to be in degrees. You can use a numeric suffix (e.g., `0rad`) or type ascription (e.g., `(1/2): number(rad)`) to show the number is in radians, or `toRadians` to convert from degrees to radians",
+        ));
+    }
     let result = inner_asin(num.n)?;
 
     Ok(args.make_user_val_from_f64_with_type(TyF64::new(result, NumericType::radians())))
@@ -450,8 +514,20 @@ fn inner_asin(num: f64) -> Result<f64, KclError> {
 }
 
 /// Compute the arctangent of a number (in radians).
-pub async fn atan(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+pub async fn atan(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let num = args.get_number_with_type()?;
+    if matches!(
+        num.ty,
+        NumericType::Default {
+            angle: UnitAngle::Degrees,
+            ..
+        }
+    ) {
+        exec_state.warn(CompilationError::err(
+            args.source_range,
+            "`atan` requires its input in radians, but the input is assumed to be in degrees. You can use a numeric suffix (e.g., `0rad`) or type ascription (e.g., `(1/2): number(rad)`) to show the number is in radians, or `toRadians` to convert from degrees to radians",
+        ));
+    }
     let result = inner_atan(num.n)?;
 
     Ok(args.make_user_val_from_f64_with_type(TyF64::new(result, NumericType::radians())))
@@ -483,7 +559,7 @@ fn inner_atan(num: f64) -> Result<f64, KclError> {
 pub async fn atan2(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let y = args.get_kw_arg_typed("y", &RuntimeType::length(), exec_state)?;
     let x = args.get_kw_arg_typed("x", &RuntimeType::length(), exec_state)?;
-    let (y, x, _) = NumericType::combine_eq(y, x);
+    let (y, x, _) = NumericType::combine_eq_coerce(y, x);
     let result = inner_atan2(y, x)?;
 
     Ok(args.make_user_val_from_f64_with_type(TyF64::new(result, NumericType::radians())))
@@ -712,66 +788,6 @@ pub async fn tau(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 }]
 fn inner_tau() -> Result<f64, KclError> {
     Ok(std::f64::consts::TAU)
-}
-
-/// Converts a number from degrees to radians.
-pub async fn to_radians(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let num = args.get_number_with_type()?;
-    let result = inner_to_radians(num.n)?;
-
-    Ok(args.make_user_val_from_f64_with_type(TyF64::new(result, NumericType::radians())))
-}
-
-/// Converts a number from degrees to radians.
-///
-/// ```no_run
-/// exampleSketch = startSketchOn("XZ")
-///   |> startProfileAt([0, 0], %)
-///   |> angledLine(
-///     angle = 50,
-///     length = 70 * cos(toRadians(45)),
-///   )
-///   |> yLine(endAbsolute = 0)
-///   |> close()
-///
-/// example = extrude(exampleSketch, length = 5)
-/// ```
-#[stdlib {
-    name = "toRadians",
-    tags = ["math"],
-}]
-fn inner_to_radians(num: f64) -> Result<f64, KclError> {
-    Ok(num.to_radians())
-}
-
-/// Converts a number from radians to degrees.
-pub async fn to_degrees(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let num = args.get_number_with_type()?;
-    let result = inner_to_degrees(num.n)?;
-
-    Ok(args.make_user_val_from_f64_with_type(TyF64::new(result, NumericType::degrees())))
-}
-
-/// Converts a number from radians to degrees.
-///
-/// ```no_run
-/// exampleSketch = startSketchOn("XZ")
-///   |> startProfileAt([0, 0], %)
-///   |> angledLine(
-///     angle = 50,
-///     length = 70 * cos(toDegrees(pi()/4)),
-///   )
-///   |> yLine(endAbsolute = 0)
-///   |> close()
-///
-/// example = extrude(exampleSketch, length = 5)
-/// ```
-#[stdlib {
-    name = "toDegrees",
-    tags = ["math"],
-}]
-fn inner_to_degrees(num: f64) -> Result<f64, KclError> {
-    Ok(num.to_degrees())
 }
 
 #[cfg(test)]
