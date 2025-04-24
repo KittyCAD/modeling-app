@@ -433,7 +433,6 @@ async fn fix_sketch_tags_and_references(
     for path in new_sketch.paths.clone() {
         // Check if this path has a tag.
         if let Some(tag) = path.get_tag() {
-            println!("Fixing tag: {:?}", tag);
             new_sketch.add_tag(&tag, &path, exec_state);
         }
     }
