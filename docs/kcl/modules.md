@@ -58,6 +58,34 @@ Imported symbols can be renamed for convenience or to avoid name collisions.
 import increment as inc, decrement as dec from "util.kcl"
 ```
 
+## Whole module import
+
+You can also import the whole module. This is useful if you want to use the
+result of a module as a variable, like a part. 
+
+```norun
+import "tests/inputs/cube.kcl" as cube
+cube
+  |> translate(x=10)
+```
+
+This imports the whole module and makes it available as `cube`. You can then
+use it like any other object. The `cube` variable is now a reference to the
+result of the module. This means that if you change the module, the `cube`
+variable will change as well.
+
+One important aspect of this is that the module must return a single object. If
+it returns multiple objects, you will get an error. This is because the
+imported module is expected to return a single object that can be used as a
+variable.
+
+You cannot call `export` on the part that you want to use as a variable. This is
+because the module is expected to return a single object that can be used as a
+variable. If you want to use multiple objects from a module, you can use 
+`import thing, thing2 from "module.kcl"` to import them.
+
+
+
 ## Multiple instances of the same import
 
 Whether you are importing a file from another CAD system or a KCL file, that
