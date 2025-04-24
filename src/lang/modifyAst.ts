@@ -1258,7 +1258,6 @@ export async function deleteFromSelection(
   getFaceDetails: (id: string) => Promise<Models['FaceIsPlanar_type']> = () =>
     ({}) as any
 ): Promise<Node<Program> | Error> {
-  console.log('selection', selection)
   const astClone = structuredClone(ast)
   let deletionArtifact = selection.artifact
 
@@ -1343,6 +1342,7 @@ export async function deleteFromSelection(
     'VariableDeclarator'
   )
   if (err(varDec)) return varDec
+
   // Module import and expression case, need to find and delete both
   if (
     varDec.node.type !== 'VariableDeclarator' &&
@@ -1388,6 +1388,7 @@ export async function deleteFromSelection(
     astClone.body.splice(importIndexToDelete, 1)
     return astClone
   }
+
   if (
     ((selection?.artifact?.type === 'wall' ||
       selection?.artifact?.type === 'cap') &&
@@ -1452,15 +1453,6 @@ export async function deleteFromSelection(
         )
         if (err(callExp)) return callExp
         extrudeNameToDelete = callExp.node.callee.name.name
-      } else if (varDec.node.type === 'Name') {
-        const statement = getNodeFromPath<ExpressionStatement>(
-          astClone,
-          pathToNode,
-          'ExpressionStatement'
-        )
-        if (err(statement)) {
-          return statement
-        }
       } else {
         return new Error('Could not find extrude variable or call')
       }
