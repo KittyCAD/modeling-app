@@ -1336,18 +1336,18 @@ export async function deleteFromSelection(
   }
 
   // Below is all AST-based deletion logic
-  const varDec = getNodeFromPath<VariableDeclarator>(
-    ast,
-    selection?.codeRef?.pathToNode,
-    'VariableDeclarator'
-  )
+  const varDec = getNodeFromPath<
+    VariableDeclarator | Name | CallExpression | CallExpressionKw
+  >(ast, selection?.codeRef?.pathToNode, [
+    'VariableDeclarator',
+    'Name',
+    'CallExpression',
+    'CallExpressionKw',
+  ])
   if (err(varDec)) return varDec
 
   // Module import and expression case, need to find and delete both
-  if (
-    varDec.node.type !== 'VariableDeclarator' &&
-    varDec.node.type === 'Name'
-  ) {
+  if (varDec.node.type === 'Name') {
     const pathToNode = selection.codeRef.pathToNode
     const statement = getNodeFromPath<ExpressionStatement>(
       astClone,
@@ -1397,6 +1397,7 @@ export async function deleteFromSelection(
   if (
     ((selection?.artifact?.type === 'wall' ||
       selection?.artifact?.type === 'cap') &&
+      varDec.node.type === 'VariableDeclarator' &&
       varDec.node.init.type === 'PipeExpression') ||
     selection.artifact?.type === 'sweep' ||
     selection.artifact?.type === 'plane' ||
@@ -1406,6 +1407,7 @@ export async function deleteFromSelection(
     let extrudeNameToDelete = ''
     let pathToNode: PathToNode | null = null
     if (
+      varDec.node.type === 'VariableDeclarator' &&
       selection.artifact &&
       selection.artifact.type !== 'sweep' &&
       selection.artifact.type !== 'plane' &&
@@ -1645,7 +1647,10 @@ export async function deleteFromSelection(
     return astClone
   } else if (selection.artifact?.type === 'edgeCut') {
     return deleteEdgeTreatment(astClone, selection)
-  } else if (varDec.node.init.type === 'PipeExpression') {
+  } else if (
+    varDec.node.type === 'VariableDeclarator' &&
+    varDec.node.init.type === 'PipeExpression'
+  ) {
     const pipeBody = varDec.node.init.body
     const doNotDeleteProfileIfItHasBeenExtruded = !(
       selection?.artifact?.type === 'segment' && selection?.artifact?.surfaceId
@@ -1664,6 +1669,7 @@ export async function deleteFromSelection(
     }
   } else if (
     // single expression profiles
+    varDec.node.type === 'VariableDeclarator' &&
     (varDec.node.init.type === 'CallExpressionKw' ||
       varDec.node.init.type === 'CallExpression') &&
     ['circleThreePoint', 'circle'].includes(varDec.node.init.callee.name.name)
