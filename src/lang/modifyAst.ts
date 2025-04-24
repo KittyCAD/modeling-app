@@ -1385,7 +1385,9 @@ export async function deleteFromSelection(
         n.selector.alias?.type === 'Identifier' &&
         n.selector.alias.name === importAliasToDelete
     )
-    astClone.body.splice(importIndexToDelete, 1)
+    if (importIndexToDelete >= 0) {
+      astClone.body.splice(importIndexToDelete, 1)
+    }
     return astClone
   }
 
