@@ -18,7 +18,7 @@ import { expect, test } from '@e2e/playwright/zoo-test'
 
 test(
   'projects reload if a new one is created, deleted, or renamed externally',
-  { tag: '@electron' },
+  { tag: ['@electron', '@macOS'] },
   async ({ context, page }, testInfo) => {
     let externalCreatedProjectName = 'external-created-project'
 
