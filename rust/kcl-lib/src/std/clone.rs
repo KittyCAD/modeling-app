@@ -234,7 +234,7 @@ async fn inner_clone(geometry: Geometry, exec_state: &mut ExecState, args: Args)
         Geometry::Solid(solid) => {
             let mut new_solid = solid.clone();
             new_solid.id = new_id;
-            new_solid.original_id = new_id;
+            new_solid.sketch.original_id = new_id;
             new_solid.artifact_id = new_id.into();
             Geometry::Solid(new_solid)
         }
