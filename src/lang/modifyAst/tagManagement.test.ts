@@ -1,9 +1,11 @@
-import { assertParse, recast, initPromise, ArtifactGraph } from '../wasm'
-import { err } from 'lib/trap'
-import { Selection } from 'lib/selections'
-import { engineCommandManager, kclManager } from 'lib/singletons'
-import { VITE_KC_DEV_TOKEN } from 'env'
-import { modifyAstWithTagsForSelection } from './tagManagement'
+import type { ArtifactGraph } from '@src/lang/wasm'
+import { assertParse, recast } from '@src/lang/wasm'
+import { initPromise } from '@src/lang/wasmUtils'
+import { err } from '@src/lib/trap'
+import type { Selection } from '@src/lib/selections'
+import { engineCommandManager, kclManager } from '@src/lib/singletons'
+import { VITE_KC_DEV_TOKEN } from '@src/env'
+import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
 
 beforeAll(async () => {
   await initPromise
@@ -30,7 +32,7 @@ afterAll(() => {
 const executeCode = async (code: string) => {
   const ast = assertParse(code)
   await kclManager.executeAst({ ast })
-  const artifactGraph = engineCommandManager.artifactGraph
+  const artifactGraph = kclManager.artifactGraph
   await new Promise((resolve) => setTimeout(resolve, 100))
   return { ast, artifactGraph }
 }

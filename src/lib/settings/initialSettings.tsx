@@ -7,11 +7,7 @@ import type { OnboardingStatus } from '@rust/kcl-lib/bindings/OnboardingStatus'
 
 import { CustomIcon } from '@src/components/CustomIcon'
 import Tooltip from '@src/components/Tooltip'
-import type {
-  CameraSystem,
-  cameraMouseDragGuards,
-  cameraSystems,
-} from '@src/lib/cameraControls'
+import type { CameraSystem } from '@src/lib/cameraControls'
 import { cameraMouseDragGuards, cameraSystems } from '@src/lib/cameraControls'
 import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
