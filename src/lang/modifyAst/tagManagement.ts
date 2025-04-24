@@ -478,7 +478,11 @@ function modifyAstWithTagForCapFace(
   if (err(sweepArtifact)) return sweepArtifact
 
   // Currently only supporting extrusion
-  if (sweepArtifact.subType !== 'extrusion' && sweepArtifact.subType !== 'revolve' && sweepArtifact.subType !== 'revolveAboutEdge') {
+  if (
+    sweepArtifact.subType !== 'extrusion' &&
+    sweepArtifact.subType !== 'revolve' &&
+    sweepArtifact.subType !== 'revolveAboutEdge'
+  ) {
     return new Error('Only extrusion and revolve caps are currently supported')
   }
 
