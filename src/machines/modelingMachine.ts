@@ -1316,6 +1316,29 @@ export const modelingMachine = setup({
         },
       }
     }),
+    'Init default plane visibility': assign(({ context }) => {
+      // Opening a project:
+      // - project is empty: show planes
+      // - not empty: don't show planes
+      const isEmpty = kclManager.artifactGraph.size === 0
+      const initialValue: PlaneVisibilityMap = {
+        xy: isEmpty,
+        xz: isEmpty,
+        yz: isEmpty,
+      }
+
+      for (const planeKey of Object.keys(
+        initialValue
+      ) as (keyof PlaneVisibilityMap)[]) {
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        kclManager.setPlaneVisibilityByKey(planeKey, initialValue[planeKey])
+      }
+
+      return {
+        defaultPlaneVisibility: { ...initialValue },
+        savedDefaultPlaneVisibility: { ...initialValue },
+      }
+    }),
     'Restore default plane visibility': assign(({ context }) => {
       for (const planeKey of Object.keys(
         context.savedDefaultPlaneVisibility
@@ -3161,7 +3184,9 @@ export const modelingMachine = setup({
         },
         'Artifact graph initialized': {
           actions: [
-            'Restore default plane visibility', // This only works when artifact graph is initialized, not on "entry"
+            // This only works when artifact graph is initialized (actually when rustContext.defaultPlanes is set),
+            // it cannot be invoked on "entry" immediately
+            'Init default plane visibility',
           ],
         },
       },
