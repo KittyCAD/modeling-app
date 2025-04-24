@@ -499,7 +499,6 @@ test.describe('Point-and-click assemblies tests', () => {
 
         // Expect only the import statement to be there
         await toolbar.openPane('code')
-        await toolbar.openPane('code')
         await editor.expectEditor.not.toContain(`import "cube.step" as cube`)
         await toolbar.closePane('code')
         await editor.expectEditor.toContain(
