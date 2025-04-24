@@ -615,22 +615,6 @@ impl Args {
         Ok(numbers)
     }
 
-    pub(crate) fn get_hypotenuse_leg(&self) -> Result<(f64, f64, NumericType), KclError> {
-        let numbers = self.get_number_array_with_types()?;
-
-        if numbers.len() != 2 {
-            return Err(KclError::Type(KclErrorDetails {
-                message: format!("Expected a number array of length 2, found `{:?}`", numbers),
-                source_ranges: vec![self.source_range],
-            }));
-        }
-
-        let mut numbers = numbers.into_iter();
-        let a = numbers.next().unwrap();
-        let b = numbers.next().unwrap();
-        Ok(NumericType::combine_eq_coerce(a, b))
-    }
-
     pub(crate) fn get_sketches(&self, exec_state: &mut ExecState) -> Result<(Vec<Sketch>, Sketch), KclError> {
         let Some(arg0) = self.args.first() else {
             return Err(KclError::Semantic(KclErrorDetails {
@@ -679,10 +663,6 @@ impl Args {
     where
         T: FromArgs<'a>,
     {
-        FromArgs::from_args(self, 0)
-    }
-
-    pub(crate) fn get_tag_to_number_sketch(&self) -> Result<(TagIdentifier, TyF64, Sketch), KclError> {
         FromArgs::from_args(self, 0)
     }
 
@@ -1024,6 +1004,27 @@ impl<'a> FromKclValue<'a> for kittycad_modeling_cmds::coord::Direction {
     }
 }
 
+impl<'a> FromKclValue<'a> for crate::execution::Geometry {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        match arg {
+            KclValue::Sketch { value } => Some(Self::Sketch(*value.to_owned())),
+            KclValue::Solid { value } => Some(Self::Solid(*value.to_owned())),
+            _ => None,
+        }
+    }
+}
+
+impl<'a> FromKclValue<'a> for crate::execution::GeometryWithImportedGeometry {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        match arg {
+            KclValue::Sketch { value } => Some(Self::Sketch(*value.to_owned())),
+            KclValue::Solid { value } => Some(Self::Solid(*value.to_owned())),
+            KclValue::ImportedGeometry(value) => Some(Self::ImportedGeometry(Box::new(value.clone()))),
+            _ => None,
+        }
+    }
+}
+
 impl<'a> FromKclValue<'a> for FaceTag {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let case1 = || match arg.as_str() {
@@ -1083,7 +1084,6 @@ impl<'a> FromKclValue<'a> for super::sketch::PlaneData {
                 origin: value.origin,
                 x_axis: value.x_axis,
                 y_axis: value.y_axis,
-                z_axis: value.z_axis,
             });
         }
         // Case 1: predefined plane
@@ -1104,13 +1104,7 @@ impl<'a> FromKclValue<'a> for super::sketch::PlaneData {
         let origin = plane.get("origin").and_then(FromKclValue::from_kcl_val)?;
         let x_axis = plane.get("xAxis").and_then(FromKclValue::from_kcl_val)?;
         let y_axis = plane.get("yAxis").and_then(FromKclValue::from_kcl_val)?;
-        let z_axis = plane.get("zAxis").and_then(FromKclValue::from_kcl_val)?;
-        Some(Self::Plane {
-            origin,
-            x_axis,
-            y_axis,
-            z_axis,
-        })
+        Some(Self::Plane { origin, x_axis, y_axis })
     }
 }
 

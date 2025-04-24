@@ -43,5 +43,5 @@ async fn main() {
     .await
     .unwrap();
     let mut exec_state = ExecState::new(&ctx);
-    ctx.run(&program, &mut exec_state).await.unwrap();
+    ctx.run(&program, &mut exec_state).await.map_err(|e| e.error).unwrap();
 }

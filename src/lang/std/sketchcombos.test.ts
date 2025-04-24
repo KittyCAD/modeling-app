@@ -269,15 +269,11 @@ myAng2 = 134
 part001 = startSketchOn(XY)
   |> startProfile(at = [0, 0])
   |> line(end = [1, 3.82]) // ln-should-get-tag
-  |> line(endAbsolute = [myVar, 1]) // ln-lineTo-xAbsolute should use angleToMatchLengthX helper
-  |> line(endAbsolute = [1, myVar]) // ln-lineTo-yAbsolute should use angleToMatchLengthY helper
   |> line(endAbsolute = [2, 4]) // ln-lineTo-free should become angledLine
   |> angledLine(angle = 45, endAbsoluteX = 2.5) // ln-angledLineToX-free should become angledLine
   |> angledLine(angle = myAng, endAbsoluteX = 3) // ln-angledLineToX-angle should become angledLine
-  |> angledLine(angle = 45, endAbsoluteX = myVar2) // ln-angledLineToX-xAbsolute should use angleToMatchLengthX to get angle
   |> angledLine(angle = 135, endAbsoluteY = 5) // ln-angledLineToY-free should become angledLine
   |> angledLine(angle = myAng2, endAbsoluteY = 4) // ln-angledLineToY-angle should become angledLine
-  |> angledLine(angle = 45, endAbsoluteY = myVar3) // ln-angledLineToY-yAbsolute should use angleToMatchLengthY to get angle
   |> line(end = [myVar, 1]) // ln-should use legLen for y
   |> line(end = [myVar, -1]) // ln-legLen but negative
   |> line(end = [-0.62, -1.54]) // ln-should become angledLine
@@ -305,22 +301,18 @@ myAng2 = 134
 part001 = startSketchOn(XY)
   |> startProfile(at = [0, 0])
   |> line(end = [1, 3.82], tag = $seg01) // ln-should-get-tag
-  |> angledLine(angle = -angleToMatchLengthX(seg01, myVar, %), endAbsoluteX = myVar) // ln-lineTo-xAbsolute should use angleToMatchLengthX helper
-  |> angledLine(angle = -angleToMatchLengthY(seg01, myVar, %), endAbsoluteY = myVar) // ln-lineTo-yAbsolute should use angleToMatchLengthY helper
-  |> angledLine(angle = 45, length = segLen(seg01)) // ln-lineTo-free should become angledLine
+  |> angledLine(angle = 10, length = segLen(seg01)) // ln-lineTo-free should become angledLine
   |> angledLine(angle = 45, length = segLen(seg01)) // ln-angledLineToX-free should become angledLine
   |> angledLine(angle = myAng, length = segLen(seg01)) // ln-angledLineToX-angle should become angledLine
-  |> angledLine(angle = angleToMatchLengthX(seg01, myVar2, %), endAbsoluteX = myVar2) // ln-angledLineToX-xAbsolute should use angleToMatchLengthX to get angle
-  |> angledLine(angle = -45, length = segLen(seg01)) // ln-angledLineToY-free should become angledLine
+  |> angledLine(angle = 135, length = segLen(seg01)) // ln-angledLineToY-free should become angledLine
   |> angledLine(angle = myAng2, length = segLen(seg01)) // ln-angledLineToY-angle should become angledLine
-  |> angledLine(angle = angleToMatchLengthY(seg01, myVar3, %), endAbsoluteY = myVar3) // ln-angledLineToY-yAbsolute should use angleToMatchLengthY to get angle
   |> line(end = [
        min(segLen(seg01), myVar),
-       legLen(segLen(seg01), myVar)
+       legLen(hypotenuse = segLen(seg01), leg = myVar)
      ]) // ln-should use legLen for y
   |> line(end = [
        min(segLen(seg01), myVar),
-       -legLen(segLen(seg01), myVar)
+       -legLen(hypotenuse = segLen(seg01), leg = myVar)
      ]) // ln-legLen but negative
   |> angledLine(angle = -112, length = segLen(seg01)) // ln-should become angledLine
   |> angledLine(angle = myVar, length = segLen(seg01)) // ln-use segLen for second arg
@@ -329,11 +321,11 @@ part001 = startSketchOn(XY)
   |> angledLine(angle = legAngX(segLen(seg01), myVar), lengthX = min(segLen(seg01), myVar)) // ln-should use legAngX to calculate angle
   |> angledLine(angle = 180 + legAngX(segLen(seg01), myVar), lengthX = min(segLen(seg01), myVar)) // ln-same as above but should have + 180 to match original quadrant
   |> line(end = [
-       legLen(segLen(seg01), myVar),
+       legLen(hypotenuse = segLen(seg01), leg = myVar),
        min(segLen(seg01), myVar)
      ]) // ln-legLen again but yRelative
   |> line(end = [
-       -legLen(segLen(seg01), myVar),
+       -legLen(hypotenuse = segLen(seg01), leg = myVar),
        min(segLen(seg01), myVar)
      ]) // ln-negative legLen yRelative
   |> angledLine(angle = 58, length = segLen(seg01)) // ln-angledLineOfYLength-free should become angledLine

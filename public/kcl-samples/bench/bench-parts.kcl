@@ -126,7 +126,7 @@ fn armRestProfile(plane, offset) {
 
 export fn armRest(plane, offset) {
   path = armRestPath(  offsetPlane(plane, offset = offset))
-  profile = armRestProfile(  offsetPlane(-XZ, offset = 20), offset)
+  profile = armRestProfile(  offsetPlane(-XZ, offset = 20), -offset)
   sweep(profile, path = path)
   return 0
 }

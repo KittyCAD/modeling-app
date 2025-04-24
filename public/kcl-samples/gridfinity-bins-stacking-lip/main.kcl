@@ -202,19 +202,17 @@ plane000 = {
     height + binHeight * countBinHeight
   ],
   xAxis = [0.0, 1.0, 0.0],
-  yAxis = [0.0, 0.0, 1.0],
-  zAxis = [1.0, 0.0, 0.0]
+  yAxis = [0.0, 0.0, 1.0]
 }
 
 plane001 = {
   origin = [
     0.0,
-    cornerRadius,
+    countBinLength * (binLength + 2 * binTol) - cornerRadius,
     height + binHeight * countBinHeight
   ],
   xAxis = [1.0, 0.0, 0.0],
-  yAxis = [0.0, 0.0, 1.0],
-  zAxis = [0.0, 1.0, 0.0]
+  yAxis = [0.0, 0.0, 1.0]
 }
 
 plane002 = {
@@ -224,8 +222,7 @@ plane002 = {
     height + binHeight * countBinHeight
   ],
   xAxis = [0.0, 1.0, 0.0],
-  yAxis = [0.0, 0.0, 1.0],
-  zAxis = [1.0, 0.0, 0.0]
+  yAxis = [0.0, 0.0, 1.0]
 }
 
 // Extrude a single side of the lip of the bin

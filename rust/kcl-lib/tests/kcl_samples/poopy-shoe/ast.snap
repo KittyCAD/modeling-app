@@ -3101,111 +3101,6 @@ description: Result of parsing poopy-shoe.kcl
                   "type": "ObjectExpression",
                   "type": "ObjectExpression"
                 }
-              },
-              {
-                "commentStart": 0,
-                "end": 0,
-                "key": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "name": "zAxis",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "start": 0,
-                "type": "ObjectProperty",
-                "value": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "properties": [
-                    {
-                      "commentStart": 0,
-                      "end": 0,
-                      "key": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "name": "x",
-                        "start": 0,
-                        "type": "Identifier"
-                      },
-                      "start": 0,
-                      "type": "ObjectProperty",
-                      "value": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "raw": "0",
-                        "start": 0,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 0.0,
-                          "suffix": "None"
-                        }
-                      }
-                    },
-                    {
-                      "commentStart": 0,
-                      "end": 0,
-                      "key": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "name": "y",
-                        "start": 0,
-                        "type": "Identifier"
-                      },
-                      "start": 0,
-                      "type": "ObjectProperty",
-                      "value": {
-                        "argument": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "raw": "1",
-                          "start": 0,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": {
-                            "value": 1.0,
-                            "suffix": "None"
-                          }
-                        },
-                        "commentStart": 0,
-                        "end": 0,
-                        "operator": "-",
-                        "start": 0,
-                        "type": "UnaryExpression",
-                        "type": "UnaryExpression"
-                      }
-                    },
-                    {
-                      "commentStart": 0,
-                      "end": 0,
-                      "key": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "name": "z",
-                        "start": 0,
-                        "type": "Identifier"
-                      },
-                      "start": 0,
-                      "type": "ObjectProperty",
-                      "value": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "raw": "0",
-                        "start": 0,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 0.0,
-                          "suffix": "None"
-                        }
-                      }
-                    }
-                  ],
-                  "start": 0,
-                  "type": "ObjectExpression",
-                  "type": "ObjectExpression"
-                }
               }
             ],
             "start": 0,
@@ -5017,24 +4912,16 @@ description: Result of parsing poopy-shoe.kcl
                       "start": 0,
                       "type": "ObjectProperty",
                       "value": {
-                        "argument": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "raw": "1",
-                          "start": 0,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": {
-                            "value": 1.0,
-                            "suffix": "None"
-                          }
-                        },
                         "commentStart": 0,
                         "end": 0,
-                        "operator": "-",
+                        "raw": "1",
                         "start": 0,
-                        "type": "UnaryExpression",
-                        "type": "UnaryExpression"
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 1.0,
+                          "suffix": "None"
+                        }
                       }
                     },
                     {
@@ -5155,103 +5042,6 @@ description: Result of parsing poopy-shoe.kcl
                         "type": "Literal",
                         "value": {
                           "value": 1.0,
-                          "suffix": "None"
-                        }
-                      }
-                    }
-                  ],
-                  "start": 0,
-                  "type": "ObjectExpression",
-                  "type": "ObjectExpression"
-                }
-              },
-              {
-                "commentStart": 0,
-                "end": 0,
-                "key": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "name": "zAxis",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "start": 0,
-                "type": "ObjectProperty",
-                "value": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "properties": [
-                    {
-                      "commentStart": 0,
-                      "end": 0,
-                      "key": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "name": "x",
-                        "start": 0,
-                        "type": "Identifier"
-                      },
-                      "start": 0,
-                      "type": "ObjectProperty",
-                      "value": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "raw": "1",
-                        "start": 0,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 1.0,
-                          "suffix": "None"
-                        }
-                      }
-                    },
-                    {
-                      "commentStart": 0,
-                      "end": 0,
-                      "key": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "name": "y",
-                        "start": 0,
-                        "type": "Identifier"
-                      },
-                      "start": 0,
-                      "type": "ObjectProperty",
-                      "value": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "raw": "0",
-                        "start": 0,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 0.0,
-                          "suffix": "None"
-                        }
-                      }
-                    },
-                    {
-                      "commentStart": 0,
-                      "end": 0,
-                      "key": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "name": "z",
-                        "start": 0,
-                        "type": "Identifier"
-                      },
-                      "start": 0,
-                      "type": "ObjectProperty",
-                      "value": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "raw": "0",
-                        "start": 0,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 0.0,
                           "suffix": "None"
                         }
                       }
@@ -5461,20 +5251,28 @@ description: Result of parsing poopy-shoe.kcl
                       "type": "Identifier"
                     },
                     "arg": {
-                      "abs_path": false,
-                      "commentStart": 0,
-                      "end": 0,
-                      "name": {
+                      "argument": {
+                        "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
-                        "name": "wallsWidth",
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "name": "wallsWidth",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 0,
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
-                      "path": [],
+                      "commentStart": 0,
+                      "end": 0,
+                      "operator": "-",
                       "start": 0,
-                      "type": "Name",
-                      "type": "Name"
+                      "type": "UnaryExpression",
+                      "type": "UnaryExpression"
                     }
                   }
                 ],
@@ -5518,81 +5316,109 @@ description: Result of parsing poopy-shoe.kcl
                           "commentStart": 0,
                           "end": 0,
                           "left": {
+                            "argument": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "raw": "1",
+                              "start": 0,
+                              "type": "Literal",
+                              "type": "Literal",
+                              "value": {
+                                "value": 1.0,
+                                "suffix": "None"
+                              }
+                            },
+                            "commentStart": 0,
+                            "end": 0,
+                            "operator": "-",
+                            "start": 0,
+                            "type": "UnaryExpression",
+                            "type": "UnaryExpression"
+                          },
+                          "operator": "*",
+                          "right": {
                             "commentStart": 0,
                             "end": 0,
                             "left": {
                               "commentStart": 0,
                               "end": 0,
                               "left": {
-                                "abs_path": false,
                                 "commentStart": 0,
                                 "end": 0,
-                                "name": {
+                                "left": {
+                                  "abs_path": false,
                                   "commentStart": 0,
                                   "end": 0,
-                                  "name": "frontLength",
+                                  "name": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "name": "frontLength",
+                                    "start": 0,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
                                   "start": 0,
-                                  "type": "Identifier"
+                                  "type": "Name",
+                                  "type": "Name"
                                 },
-                                "path": [],
+                                "operator": "-",
+                                "right": {
+                                  "abs_path": false,
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "name": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "name": "wallsWidth",
+                                    "start": 0,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
+                                  "start": 0,
+                                  "type": "Name",
+                                  "type": "Name"
+                                },
                                 "start": 0,
-                                "type": "Name",
-                                "type": "Name"
+                                "type": "BinaryExpression",
+                                "type": "BinaryExpression"
                               },
-                              "operator": "-",
+                              "operator": "/",
                               "right": {
-                                "abs_path": false,
                                 "commentStart": 0,
                                 "end": 0,
-                                "name": {
-                                  "commentStart": 0,
-                                  "end": 0,
-                                  "name": "wallsWidth",
-                                  "start": 0,
-                                  "type": "Identifier"
-                                },
-                                "path": [],
+                                "raw": "2",
                                 "start": 0,
-                                "type": "Name",
-                                "type": "Name"
+                                "type": "Literal",
+                                "type": "Literal",
+                                "value": {
+                                  "value": 2.0,
+                                  "suffix": "None"
+                                }
                               },
                               "start": 0,
                               "type": "BinaryExpression",
                               "type": "BinaryExpression"
                             },
-                            "operator": "/",
+                            "operator": "+",
                             "right": {
+                              "abs_path": false,
                               "commentStart": 0,
                               "end": 0,
-                              "raw": "2",
+                              "name": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "name": "wallsWidth",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 0,
-                              "type": "Literal",
-                              "type": "Literal",
-                              "value": {
-                                "value": 2.0,
-                                "suffix": "None"
-                              }
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "start": 0,
                             "type": "BinaryExpression",
                             "type": "BinaryExpression"
-                          },
-                          "operator": "+",
-                          "right": {
-                            "abs_path": false,
-                            "commentStart": 0,
-                            "end": 0,
-                            "name": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "name": "wallsWidth",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "path": [],
-                            "start": 0,
-                            "type": "Name",
-                            "type": "Name"
                           },
                           "start": 0,
                           "type": "BinaryExpression",
@@ -5727,20 +5553,28 @@ description: Result of parsing poopy-shoe.kcl
                       "commentStart": 0,
                       "elements": [
                         {
-                          "abs_path": false,
-                          "commentStart": 0,
-                          "end": 0,
-                          "name": {
+                          "argument": {
+                            "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
-                            "name": "frontLength",
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "name": "frontLength",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
-                          "path": [],
+                          "commentStart": 0,
+                          "end": 0,
+                          "operator": "-",
                           "start": 0,
-                          "type": "Name",
-                          "type": "Name"
+                          "type": "UnaryExpression",
+                          "type": "UnaryExpression"
                         },
                         {
                           "abs_path": false,
@@ -7222,103 +7056,6 @@ description: Result of parsing poopy-shoe.kcl
                         "type": "Literal",
                         "value": {
                           "value": 0.0,
-                          "suffix": "None"
-                        }
-                      }
-                    }
-                  ],
-                  "start": 0,
-                  "type": "ObjectExpression",
-                  "type": "ObjectExpression"
-                }
-              },
-              {
-                "commentStart": 0,
-                "end": 0,
-                "key": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "name": "zAxis",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "start": 0,
-                "type": "ObjectProperty",
-                "value": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "properties": [
-                    {
-                      "commentStart": 0,
-                      "end": 0,
-                      "key": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "name": "x",
-                        "start": 0,
-                        "type": "Identifier"
-                      },
-                      "start": 0,
-                      "type": "ObjectProperty",
-                      "value": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "raw": "0",
-                        "start": 0,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 0.0,
-                          "suffix": "None"
-                        }
-                      }
-                    },
-                    {
-                      "commentStart": 0,
-                      "end": 0,
-                      "key": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "name": "y",
-                        "start": 0,
-                        "type": "Identifier"
-                      },
-                      "start": 0,
-                      "type": "ObjectProperty",
-                      "value": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "raw": "0",
-                        "start": 0,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 0.0,
-                          "suffix": "None"
-                        }
-                      }
-                    },
-                    {
-                      "commentStart": 0,
-                      "end": 0,
-                      "key": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "name": "z",
-                        "start": 0,
-                        "type": "Identifier"
-                      },
-                      "start": 0,
-                      "type": "ObjectProperty",
-                      "value": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "raw": "1",
-                        "start": 0,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 1.0,
                           "suffix": "None"
                         }
                       }

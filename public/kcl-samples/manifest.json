@@ -66,8 +66,8 @@
     "file": "main.kcl",
     "pathFromProjectDirectoryToFirstFile": "dodecahedron/main.kcl",
     "multipleFiles": false,
-    "title": "Hollow Dodecahedron",
-    "description": "A regular dodecahedron or pentagonal dodecahedron is a dodecahedron composed of regular pentagonal faces, three meeting at each vertex. This example shows constructing the individual faces of the dodecahedron and extruding inwards."
+    "title": "Dodecahedron",
+    "description": "A regular dodecahedron or pentagonal dodecahedron is a dodecahedron composed of regular pentagonal faces, three meeting at each vertex. This example shows constructing the a dodecahedron with a series of intersects."
   },
   {
     "file": "main.kcl",

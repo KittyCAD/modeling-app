@@ -20,13 +20,20 @@ description: Result of parsing crazy_multi_profile.kcl
           "init": {
             "arguments": [
               {
+                "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
-                "raw": "'XZ'",
+                "name": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "name": "XZ",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 0,
-                "type": "Literal",
-                "type": "Literal",
-                "value": "XZ"
+                "type": "Name",
+                "type": "Name"
               }
             ],
             "callee": {
@@ -2611,13 +2618,28 @@ description: Result of parsing crazy_multi_profile.kcl
           "init": {
             "arguments": [
               {
+                "argument": {
+                  "abs_path": false,
+                  "commentStart": 0,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "name": "XZ",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name",
+                  "type": "Name"
+                },
                 "commentStart": 0,
                 "end": 0,
-                "raw": "'-XZ'",
+                "operator": "-",
                 "start": 0,
-                "type": "Literal",
-                "type": "Literal",
-                "value": "-XZ"
+                "type": "UnaryExpression",
+                "type": "UnaryExpression"
               }
             ],
             "callee": {
