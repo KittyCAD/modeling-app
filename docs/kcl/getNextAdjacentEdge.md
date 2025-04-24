@@ -9,7 +9,7 @@ Get the next adjacent edge to the edge given.
 
 
 ```js
-getNextAdjacentEdge(tag: TagIdentifier): Uuid
+getNextAdjacentEdge(edge: TagIdentifier): Uuid
 ```
 
 
@@ -17,7 +17,7 @@ getNextAdjacentEdge(tag: TagIdentifier): Uuid
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| [`tag`](/docs/kcl/types/tag) | [`TagIdentifier`](/docs/kcl/types#tag-identifier) |  | Yes |
+| `edge` | [`TagIdentifier`](/docs/kcl/types#tag-identifier) | The tag of the edge you want to find the next adjacent edge of. | Yes |
 
 ### Returns
 

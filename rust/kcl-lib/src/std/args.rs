@@ -659,13 +659,6 @@ impl Args {
         Ok((sketches, sketch))
     }
 
-    pub(crate) fn get_data<'a, T>(&'a self) -> Result<T, KclError>
-    where
-        T: FromArgs<'a>,
-    {
-        FromArgs::from_args(self, 0)
-    }
-
     pub(crate) async fn get_adjacent_face_to_tag(
         &self,
         exec_state: &mut ExecState,
