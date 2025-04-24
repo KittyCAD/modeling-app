@@ -1815,7 +1815,7 @@ test(
         'basic_fillet_cube_next_adjacent.kcl',
         'basic_fillet_cube_previous_adjacent.kcl',
         'basic_fillet_cube_start.kcl',
-        'boolean-code-test.kcl',
+        'broken-code-test.kcl',
         'circular_pattern3d_a_pattern.kcl',
         'close_arc.kcl',
         'computed_var.kcl',
