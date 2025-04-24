@@ -70,7 +70,7 @@ import "tests/inputs/cube.obj"
 ```
 
 ```
-import "tests/inputs/cube-2.sldprt" as cube
+import "tests/inputs/cube.sldprt" as cube
 
 // Use `cube` just like a KCL object.
 ```
