@@ -21,10 +21,7 @@ import {
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
-import type { EventFrom } from 'xstate'
-
 import { ActionButton } from '@src/components/ActionButton'
-import type { useFileContext } from '@src/hooks/useFileContext'
 import { base64Decode } from '@src/lang/wasm'
 import { isDesktop } from '@src/lib/isDesktop'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
@@ -34,7 +31,6 @@ import { sendTelemetry } from '@src/lib/textToCadTelemetry'
 import type { Themes } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
 import { commandBarActor } from '@src/lib/singletons'
-import type { fileMachine } from '@src/machines/fileMachine'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { useProjectDirectoryPath } from '@src/machines/systemIO/hooks'
 
@@ -86,13 +82,13 @@ export function ToastTextToCadError({
   prompt,
   method,
   projectName,
-  newProjectName
+  newProjectName,
 }: {
   toastId: string
   message: string
   prompt: string
-  method: string,
-  projectName: string,
+  method: string
+  projectName: string
   newProjectName: string
 }) {
   return (
@@ -132,7 +128,7 @@ export function ToastTextToCadError({
                   prompt,
                   method,
                   projectName,
-                  newProjectName
+                  newProjectName,
                 },
               },
             })
@@ -150,9 +146,7 @@ export function ToastTextToCadSuccess({
   toastId,
   data,
   navigate,
-  context,
   token,
-  fileMachineSend,
   settings,
   projectName,
   fileName,
@@ -161,19 +155,14 @@ export function ToastTextToCadSuccess({
   toastId: string
   data: TextToCad_type & { fileName: string }
   navigate: (to: string) => void
-  context?: ReturnType<typeof useFileContext>['context']
   token?: string
-  fileMachineSend?: (
-    event: EventFrom<typeof fileMachine>,
-    data?: unknown
-  ) => void
   settings?: {
     theme: Themes
     highlightEdges: boolean
   }
-  projectName?: string
-  fileName?: string
-  isProjectNew?: boolean
+  projectName: string
+  fileName: string
+  isProjectNew: boolean
 }) {
   const wrapperRef = useRef<HTMLDivElement | null>(null)
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
@@ -383,17 +372,6 @@ export function ToastTextToCadSuccess({
                       },
                     })
                   }
-                } else if (fileMachineSend && context) {
-                  // Workflow within the modeling page
-                  const path = `${context.project.path}${window.electron.sep}${data.fileName}`
-                  fileMachineSend({
-                    type: 'Delete file',
-                    data: {
-                      name: data.fileName,
-                      path,
-                      children: null,
-                    },
-                  })
                 }
               }
 
@@ -412,10 +390,9 @@ export function ToastTextToCadSuccess({
               onClick={() => {
                 // eslint-disable-next-line @typescript-eslint/no-floating-promises
                 sendTelemetry(modelId, 'accepted', token)
-                const path = context
-                  ? `${context.project.path}${window.electron.sep}${data.fileName}`
-                  : `${projectDirectoryPath}${window.electron.path.sep}${projectName}${window.electron.sep}${fileName}`
+                const path = `${projectDirectoryPath}${window.electron.path.sep}${projectName}${window.electron.sep}${fileName}`
                 navigate(`${PATHS.FILE}/${encodeURIComponent(path)}`)
+
                 toast.dismiss(toastId)
               }}
             >

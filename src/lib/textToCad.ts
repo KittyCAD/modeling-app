@@ -2,7 +2,6 @@ import type { Models } from '@kittycad/lib'
 import { VITE_KC_API_BASE_URL } from '@src/env'
 import toast from 'react-hot-toast'
 import type { NavigateFunction } from 'react-router-dom'
-import type { ContextFrom, EventFrom } from 'xstate'
 import {
   ToastTextToCadError,
   ToastTextToCadSuccess,
@@ -16,7 +15,6 @@ import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import type { Themes } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
 import { toSync } from '@src/lib/utils'
-import type { fileMachine } from '@src/machines/fileMachine'
 
 export async function submitTextToCadPrompt(
   prompt: string,
@@ -74,9 +72,9 @@ interface TextToKclPropsApplicationLevel {
   token?: string
   projectName: string
   isProjectNew: boolean
-  settings?:{
+  settings?: {
     theme: Themes
-      highlightEdges: boolean
+    highlightEdges: boolean
   }
 }
 
@@ -97,7 +95,7 @@ export async function submitAndAwaitTextToKclSystemIO({
           prompt: trimmedPrompt,
           method: isProjectNew ? 'newProject' : 'existingProject',
           projectName: isProjectNew ? '' : projectName,
-          newProjectName : isProjectNew ? projectName : ''
+          newProjectName: isProjectNew ? projectName : '',
         }),
       {
         id: toastId,

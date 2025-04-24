@@ -77,5 +77,5 @@ export function createApplicationCommands({
     },
   }
 
-  return isDesktop() ? [textToCADCommand]: []
+  return isDesktop() ? [textToCADCommand] : []
 }

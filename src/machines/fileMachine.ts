@@ -62,6 +62,7 @@ type FileMachineEvents =
     }
   | { type: 'assign'; data: { [key: string]: any } }
   | { type: 'Refresh' }
+  | { type: 'Refresh with new project'; data: { project: Project } }
 
 export const fileMachine = setup({
   types: {} as {
@@ -93,6 +94,10 @@ export const fileMachine = setup({
           (path) => path !== event.output.oldPath
         )
       },
+    }),
+    setProject: assign(({ event }) => {
+      if (event.type !== 'Refresh with new project') return {}
+      return { project: event.data.project }
     }),
     navigateToFile: () => {},
     renameToastSuccess: () => {},
@@ -181,6 +186,10 @@ export const fileMachine = setup({
     },
 
     Refresh: '.Reading files',
+    'Refresh with new project': {
+      actions: ['setProject'],
+      target: '.Reading files',
+    },
   },
   states: {
     'Has no files': {
