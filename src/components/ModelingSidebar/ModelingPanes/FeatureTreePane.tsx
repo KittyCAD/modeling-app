@@ -222,10 +222,7 @@ const VisibilityToggle = (props: VisibilityToggleProps) => {
   }, [props.onVisibilityChange])
 
   return (
-    <button
-      onClick={handleToggleVisible}
-      className="p-0 m-0"
-    >
+    <button onClick={handleToggleVisible} className="p-0 m-0">
       <CustomIcon
         name={visible ? 'eyeOpen' : 'eyeCrossedOut'}
         className="w-5 h-5"
