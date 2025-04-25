@@ -6,7 +6,6 @@ import {
   TEST_COLORS,
   commonPoints,
   getUtils,
-  orRunWhenFullSuiteEnabled,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
@@ -155,9 +154,8 @@ async function doBasicSketch(
   |> xLine(length = -segLen(seg01))`)
 }
 
-test.describe('Basic sketch', { tag: ['@skipWin'] }, () => {
+test.describe('Basic sketch', () => {
   test('code pane open at start', async ({ page, homePage }) => {
-    test.fixme(orRunWhenFullSuiteEnabled())
     await doBasicSketch(page, homePage, ['code'])
   })
 

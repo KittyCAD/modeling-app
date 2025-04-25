@@ -75,11 +75,6 @@ export function runningOnWindows() {
   return process.platform === 'win32'
 }
 
-export function orRunWhenFullSuiteEnabled() {
-  const branch = process.env.GITHUB_REF?.replace('refs/heads/', '')
-  return branch !== 'all-e2e'
-}
-
 async function waitForPageLoadWithRetry(page: Page) {
   await expect(async () => {
     await page.goto('/')
@@ -1028,6 +1023,10 @@ export function executorInputPath(fileName: string): string {
 
 export function testsInputPath(fileName: string): string {
   return path.join('rust', 'kcl-lib', 'tests', 'inputs', fileName)
+}
+
+export function kclSamplesPath(fileName: string): string {
+  return path.join('public', 'kcl-samples', fileName)
 }
 
 export async function doAndWaitForImageDiff(

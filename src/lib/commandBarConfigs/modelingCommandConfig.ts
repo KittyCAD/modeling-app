@@ -739,7 +739,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   Fillet: {
     description: 'Fillet edge',
     icon: 'fillet3d',
-    status: 'development',
     needsReview: true,
     args: {
       nodeToEdit: {
@@ -769,7 +768,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   Chamfer: {
     description: 'Chamfer edge',
     icon: 'chamfer3d',
-    status: 'development',
     needsReview: true,
     args: {
       nodeToEdit: {

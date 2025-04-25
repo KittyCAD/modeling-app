@@ -2,14 +2,10 @@ import type { Coords2d } from '@src/lang/std/sketch'
 import { KCL_DEFAULT_LENGTH } from '@src/lib/constants'
 import { uuidv4 } from '@src/lib/utils'
 
-import {
-  commonPoints,
-  getUtils,
-  orRunWhenFullSuiteEnabled,
-} from '@e2e/playwright/test-utils'
+import { commonPoints, getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
-test.describe('Testing selections', { tag: ['@skipWin'] }, () => {
+test.describe('Testing selections', () => {
   test.setTimeout(90_000)
   test('Selections work on fresh and edited sketch', async ({
     page,
@@ -445,7 +441,6 @@ profile003 = startProfileAt([40.16, -120.48], sketch006)
     cmdBar,
     editor,
   }) => {
-    test.fixme(orRunWhenFullSuiteEnabled())
     test.setTimeout(90_000)
     const u = await getUtils(page)
     await page.addInitScript(async () => {
