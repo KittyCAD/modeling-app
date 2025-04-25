@@ -2,11 +2,7 @@ import fs from 'fs'
 import { join } from 'path'
 import type { Page } from '@playwright/test'
 
-import {
-  createProject,
-  getUtils,
-  orRunWhenFullSuiteEnabled,
-} from '@e2e/playwright/test-utils'
+import { createProject, getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
 test.describe('Text-to-CAD tests', () => {
@@ -440,7 +436,6 @@ test.describe('Text-to-CAD tests', () => {
     page,
     homePage,
   }) => {
-    test.fixme(orRunWhenFullSuiteEnabled())
     // Let this test run longer since we've seen it timeout.
     test.setTimeout(180_000)
 
@@ -628,7 +623,6 @@ test(
   'Text-to-CAD functionality',
   { tag: '@electron' },
   async ({ context, page }, testInfo) => {
-    test.fixme(orRunWhenFullSuiteEnabled())
     const projectName = 'project-000'
     const prompt = 'lego 2x4'
     const textToCadFileName = 'lego-2x4.kcl'
