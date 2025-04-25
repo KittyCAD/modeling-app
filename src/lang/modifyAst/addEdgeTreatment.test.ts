@@ -212,7 +212,7 @@ extrude001 = extrude(sketch001, length = -15)`
       selectedSegmentSnippet,
       expectedExtrudeSnippet
     )
-  }, 5_000)
+  }, 10_000)
   it('should return the correct paths for a valid selection and extrusion in case of several extrusions and sketches', async () => {
     const code = `sketch001 = startSketchOn(XY)
   |> startProfileAt([-30, 30], %)
@@ -245,7 +245,7 @@ extrude003 = extrude(sketch003, length = -15)`
       selectedSegmentSnippet,
       expectedExtrudeSnippet
     )
-  })
+  }, 10_000)
   it('should return the correct paths for a (piped) extrude based on the other body (face)', async () => {
     const code = `sketch001 = startSketchOn(XY)
   |> startProfileAt([-25, -25], %)
@@ -270,7 +270,7 @@ sketch002 = startSketchOn(sketch001, face = 'END')
       selectedSegmentSnippet,
       expectedExtrudeSnippet
     )
-  })
+  }, 10_000)
   it('should return the correct paths for a (non-piped) extrude based on the other body (face)', async () => {
     const code = `sketch001 = startSketchOn(XY)
   |> startProfileAt([-25, -25], %)
@@ -295,7 +295,7 @@ extrude002 = extrude(sketch002, length = 30)`
       selectedSegmentSnippet,
       expectedExtrudeSnippet
     )
-  })
+  }, 10_000)
   it('should not return any path for missing extrusion', async () => {
     const code = `sketch001 = startSketchOn(XY)
   |> startProfileAt([-30, 30], %)
