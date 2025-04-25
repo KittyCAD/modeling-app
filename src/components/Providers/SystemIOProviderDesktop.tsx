@@ -115,6 +115,7 @@ export function SystemIOMachineLogicListenerDesktop() {
         navigate,
         token,
         isProjectNew,
+        settings: { highlightEdges: settings.modeling.highlightEdges.current },
       }).catch(reportRejection)
     }, [requestedTextToCadGeneration])
   }

@@ -12,7 +12,6 @@ import { getNextFileName } from '@src/lib/desktopFS'
 import { isDesktop } from '@src/lib/isDesktop'
 import { kclManager, systemIOActor } from '@src/lib/singletons'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
-import type { Themes } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
 import { toSync } from '@src/lib/utils'
 
@@ -73,7 +72,6 @@ interface TextToKclPropsApplicationLevel {
   projectName: string
   isProjectNew: boolean
   settings?: {
-    theme: Themes
     highlightEdges: boolean
   }
 }
@@ -84,6 +82,7 @@ export async function submitAndAwaitTextToKclSystemIO({
   projectName,
   navigate,
   isProjectNew,
+  settings,
 }: TextToKclPropsApplicationLevel) {
   const toastId = toast.loading('Submitting to Text-to-CAD API...')
   const showFailureToast = (message: string) => {
@@ -125,8 +124,6 @@ export async function submitAndAwaitTextToKclSystemIO({
     return
   }
 
-  console.log('queued')
-  console.log(textToCadQueued)
   toast.loading('Generating parametric model...', {
     id: toastId,
   })
@@ -246,6 +243,7 @@ export async function submitAndAwaitTextToKclSystemIO({
         fileName: newFileName,
         navigate,
         isProjectNew,
+        settings,
       }),
     {
       id: toastId,

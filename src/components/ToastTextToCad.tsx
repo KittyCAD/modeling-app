@@ -28,7 +28,6 @@ import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { PATHS } from '@src/lib/paths'
 import { codeManager, kclManager, systemIOActor } from '@src/lib/singletons'
 import { sendTelemetry } from '@src/lib/textToCadTelemetry'
-import type { Themes } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
 import { commandBarActor } from '@src/lib/singletons'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
@@ -157,7 +156,6 @@ export function ToastTextToCadSuccess({
   navigate: (to: string) => void
   token?: string
   settings?: {
-    theme: Themes
     highlightEdges: boolean
   }
   projectName: string
