@@ -41,7 +41,7 @@ class MyAPIReporter implements Reporter {
       annotations: test.annotations.map((a) => a.type), // e.g. 'fail' or 'fixme'
       id: test.id, // computed file/test/project ID used for reruns
       retry: result.retry,
-      tags: test.tags, // e.g. '@snapshot' or '@skipWin'
+      tags: test.tags, // e.g. '@snapshot' or '@skipLocalEngine'
       // Extra environment variables
       CI_COMMIT_SHA: process.env.CI_COMMIT_SHA || null,
       CI_PR_NUMBER: process.env.CI_PR_NUMBER || null,
