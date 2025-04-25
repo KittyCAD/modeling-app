@@ -21,7 +21,7 @@ height = firstStep + secondStep + thirdStep
 // Define a function which builds the profile of the baseplate bin
 fn face(plane) {
   faceSketch = startSketchOn(plane)
-    |> startProfileAt([0, 0], %)
+    |> startProfile(at = [0, 0])
     |> yLine(length = height)
     |> angledLine(angle = -45, lengthY = thirdStep)
     |> yLine(length = -secondStep)

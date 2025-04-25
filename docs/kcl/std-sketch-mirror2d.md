@@ -35,7 +35,7 @@ mirror2d(
 ```js
 // Mirror an un-closed sketch across the Y axis.
 sketch001 = startSketchOn(XZ)
-    |> startProfileAt([0, 10], %)
+    |> startProfile(at = [0, 10])
     |> line(end = [15, 0])
     |> line(end = [-7, -3])
     |> line(end = [9, -1])
@@ -54,7 +54,7 @@ example = extrude(sketch001, length = 10)
 ```js
 // Mirror a un-closed sketch across the Y axis.
 sketch001 = startSketchOn(XZ)
-    |> startProfileAt([0, 8.5], %)
+    |> startProfile(at = [0, 8.5])
     |> line(end = [20, -8.5])
     |> line(end = [-20, -8.5])
     |> mirror2d(axis = Y)
@@ -67,11 +67,11 @@ example = extrude(sketch001, length = 10)
 ```js
 // Mirror a un-closed sketch across an edge.
 helper001 = startSketchOn(XZ)
- |> startProfileAt([0, 0], %)
+ |> startProfile(at = [0, 0])
  |> line(end = [0, 10], tag = $edge001)
 
 sketch001 = startSketchOn(XZ)
-    |> startProfileAt([0, 8.5], %)
+    |> startProfile(at = [0, 8.5])
     |> line(end = [20, -8.5])
     |> line(end = [-20, -8.5])
     |> mirror2d(axis = edge001)
@@ -84,7 +84,7 @@ sketch001 = startSketchOn(XZ)
 ```js
 // Mirror an un-closed sketch across a custom axis.
 sketch001 = startSketchOn(XZ)
-    |> startProfileAt([0, 8.5], %)
+    |> startProfile(at = [0, 8.5])
     |> line(end = [20, -8.5])
     |> line(end = [-20, -8.5])
     |> mirror2d(
@@ -101,7 +101,7 @@ example = extrude(sketch001, length = 10)
 ```js
 // Sketch on the face of a mirrored sketch, that has been extruded.
 sketch0011 = startSketchOn(XY)
-     |> startProfileAt([6.77, 0], %)
+     |> startProfile(at = [6.77, 0])
      |> yLine(length = 1.27)
      |> tangentialArc(endAbsolute = [5.96, 2.37])
      |> tangentialArc(endAbsolute = [-6.2, 2.44])

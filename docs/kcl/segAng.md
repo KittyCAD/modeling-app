@@ -28,7 +28,7 @@ segAng(tag: TagIdentifier): number
 
 ```js
 exampleSketch = startSketchOn(XZ)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> line(end = [10, 0])
   |> line(end = [5, 10], tag = $seg01)
   |> line(end = [-10, 0])

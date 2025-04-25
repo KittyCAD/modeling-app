@@ -22,7 +22,7 @@ tealPlane = offsetPlane(YZ, offset = -halfSize)
 // Sketch a rectangle centered at the origin of the profile
 fn sketchRectangle(profile, color) {
   return profile
-    |> startProfileAt([-halfSize, halfSize], %)
+    |> startProfile(at = [-halfSize, halfSize])
     |> angledLine(angle = 0, length = size, tag = $rectangleSegmentA001)
     |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = size, tag = $rectangleSegmentB001)
     |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $rectangleSegmentC001)

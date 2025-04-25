@@ -10,7 +10,7 @@ import zLogo, oLogo, oLogo2 from "zoo-logo.kcl"
 
 // Sketch the profile of the screen
 screenSketch = startSketchOn(XZ)
-  |> startProfileAt([-screenWidth / 2, screenYPosition], %)
+  |> startProfile(at = [-screenWidth / 2, screenYPosition])
   |> xLine(length = screenWidth)
   |> yLine(length = -screenHeight)
   |> xLine(length = -screenWidth)
@@ -27,7 +27,7 @@ fn transformY(i) {
 
 // Sketch the square hole grid pattern
 squareHolePatternSketch = startSketchOn(XZ)
-  |> startProfileAt([-screenWidth / 2 + .100, 0], %)
+  |> startProfile(at = [-screenWidth / 2 + .100, 0])
   |> line(end = [squareHoleSideLength / 2, 0])
   |> line(end = [0, -squareHoleSideLength / 2])
   |> line(end = [-squareHoleSideLength / 2, 0])
@@ -37,10 +37,10 @@ squareHolePatternSketch = startSketchOn(XZ)
 
 // Sketch the outer profile of the case and extrude with holes using the previously made profiles
 case = startSketchOn(XZ)
-  |> startProfileAt([
+  |> startProfile(at = [
        -width / 2 + offset + caseTolerance,
        height / 2 - (chamferLength + (offset + caseTolerance) / 2 * cos(toRadians(45)))
-     ], %)
+     ])
   |> angledLine(angle = 45, endAbsoluteY = height / 2 - (offset + caseTolerance))
   |> line(endAbsolute = [
        width / 2 - (chamferLength + (offset + caseTolerance) / 2 * cos(toRadians(45))),

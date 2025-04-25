@@ -28,7 +28,7 @@ getOppositeEdge(edge: TagIdentifier): Uuid
 
 ```js
 exampleSketch = startSketchOn(XZ)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> line(end = [10, 0])
   |> angledLine(angle = 60, length = 10)
   |> angledLine(angle = 120, length = 10)

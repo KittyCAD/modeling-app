@@ -81,7 +81,7 @@ pub async fn appearance(exec_state: &mut ExecState, args: Args) -> Result<KclVal
 /// ```no_run
 /// // Add color to an extruded solid.
 /// exampleSketch = startSketchOn(XZ)
-///   |> startProfileAt([0, 0], %)
+///   |> startProfile(at = [0, 0])
 ///   |> line(endAbsolute = [10, 0])
 ///   |> line(endAbsolute = [0, 10])
 ///   |> line(endAbsolute = [-10, 0])
@@ -108,7 +108,7 @@ pub async fn appearance(exec_state: &mut ExecState, args: Args) -> Result<KclVal
 /// // Add color to different solids.
 /// fn cube(center) {
 ///    return startSketchOn(XY)
-///    |> startProfileAt([center[0] - 10, center[1] - 10], %)
+///    |> startProfile(at = [center[0] - 10, center[1] - 10])
 ///    |> line(endAbsolute = [center[0] + 10, center[1] - 10])
 ///     |> line(endAbsolute = [center[0] + 10, center[1] + 10])
 ///     |> line(endAbsolute = [center[0] - 10, center[1] + 10])
@@ -128,7 +128,7 @@ pub async fn appearance(exec_state: &mut ExecState, args: Args) -> Result<KclVal
 /// // You can set the appearance before or after you shell it will yield the same result.
 /// // This example shows setting the appearance _after_ the shell.
 /// firstSketch = startSketchOn(XY)
-///     |> startProfileAt([-12, 12], %)
+///     |> startProfile(at = [-12, 12])
 ///     |> line(end = [24, 0])
 ///     |> line(end = [0, -24])
 ///     |> line(end = [-24, 0])
@@ -151,7 +151,7 @@ pub async fn appearance(exec_state: &mut ExecState, args: Args) -> Result<KclVal
 /// // You can set the appearance before or after you shell it will yield the same result.
 /// // This example shows setting the appearance _before_ the shell.
 /// firstSketch = startSketchOn(XY)
-///     |> startProfileAt([-12, 12], %)
+///     |> startProfile(at = [-12, 12])
 ///     |> line(end = [24, 0])
 ///     |> line(end = [0, -24])
 ///     |> line(end = [-24, 0])
@@ -174,7 +174,7 @@ pub async fn appearance(exec_state: &mut ExecState, args: Args) -> Result<KclVal
 /// // Setting the appearance of a 3D pattern can be done _before_ or _after_ the pattern.
 /// // This example shows _before_ the pattern.
 /// exampleSketch = startSketchOn(XZ)
-///   |> startProfileAt([0, 0], %)
+///   |> startProfile(at = [0, 0])
 ///   |> line(end = [0, 2])
 ///   |> line(end = [3, 1])
 ///   |> line(end = [0, -4])
@@ -197,7 +197,7 @@ pub async fn appearance(exec_state: &mut ExecState, args: Args) -> Result<KclVal
 /// // Setting the appearance of a 3D pattern can be done _before_ or _after_ the pattern.
 /// // This example shows _after_ the pattern.
 /// exampleSketch = startSketchOn(XZ)
-///   |> startProfileAt([0, 0], %)
+///   |> startProfile(at = [0, 0])
 ///   |> line(end = [0, 2])
 ///   |> line(end = [3, 1])
 ///   |> line(end = [0, -4])
@@ -219,7 +219,7 @@ pub async fn appearance(exec_state: &mut ExecState, args: Args) -> Result<KclVal
 /// ```no_run
 /// // Color the result of a 2D pattern that was extruded.
 /// exampleSketch = startSketchOn(XZ)
-///   |> startProfileAt([.5, 25], %)
+///   |> startProfile(at = [.5, 25])
 ///   |> line(end = [0, 5])
 ///   |> line(end = [-1, 0])
 ///   |> line(end = [0, -5])
@@ -244,7 +244,7 @@ pub async fn appearance(exec_state: &mut ExecState, args: Args) -> Result<KclVal
 ///
 /// // Create a path for the sweep.
 /// sweepPath = startSketchOn(XZ)
-///     |> startProfileAt([0.05, 0.05], %)
+///     |> startProfile(at = [0.05, 0.05])
 ///     |> line(end = [0, 7])
 ///     |> tangentialArc(angle = 90, radius = 5)
 ///     |> line(end = [-3, 0])

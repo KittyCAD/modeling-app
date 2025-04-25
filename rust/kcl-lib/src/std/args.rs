@@ -659,10 +659,6 @@ impl Args {
         Ok((sketches, sketch))
     }
 
-    pub(crate) fn get_data_and_sketch_surface(&self) -> Result<([TyF64; 2], SketchSurface, Option<TagNode>), KclError> {
-        FromArgs::from_args(self, 0)
-    }
-
     pub(crate) async fn get_adjacent_face_to_tag(
         &self,
         exec_state: &mut ExecState,

@@ -1,6 +1,7 @@
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import {
   ARG_ANGLE,
+  ARG_AT,
   ARG_END_ABSOLUTE,
   ARG_LENGTH,
   ARG_TAG,
@@ -21,7 +22,6 @@ import { mutateKwArgOnly } from '@src/lang/modifyAst'
 import {
   findKwArg,
   isArrayExpression,
-  isCallExpression,
   isCallExpressionKw,
 } from '@src/lang/util'
 import type { CallExpressionKw, Expr, PipeExpression } from '@src/lang/wasm'
@@ -43,10 +43,10 @@ function angledLine(
 }
 
 /**
- * It does not create the startSketchOn and it does not create the startProfileAt.
+ * It does not create the startSketchOn and it does not create the startProfile.
  * Returns AST expressions for this KCL code:
  * const yo = startSketchOn(XY)
- *  |> startProfileAt([0, 0], %)
+ *  |> startProfile(at = [0, 0])
  *  |> angledLine(angle = 0, length = 0, tag = $a)
  *  |> angledLine(angle = segAng(a) - 90, length = 0, tag = $b)
  *  |> angledLine(angle = segAng(a), length = -segLen(a), tag = $c)
@@ -149,17 +149,20 @@ export function updateCenterRectangleSketch(
 
   {
     let callExpression = pipeExpression.body[0]
-    if (!isCallExpression(callExpression)) {
+    if (!isCallExpressionKw(callExpression)) {
       return new Error(`Expected call expression, got ${callExpression.type}`)
     }
-    const arrayExpression = callExpression.arguments[0]
+    const arrayExpression = findKwArg(ARG_AT, callExpression)
     if (!isArrayExpression(arrayExpression)) {
-      return new Error(`Expected array expression, got ${arrayExpression.type}`)
+      return new Error(
+        `Expected array expression, got ${arrayExpression?.type}`
+      )
     }
-    callExpression.arguments[0] = createArrayExpression([
+    const at = createArrayExpression([
       createLiteral(roundOff(startX)),
       createLiteral(roundOff(startY)),
     ])
+    mutateKwArgOnly(ARG_AT, callExpression, at)
   }
 
   const twoX = deltaX * 2

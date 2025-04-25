@@ -27,7 +27,7 @@ assert(wbumps, isGreaterThan = 1, error = "wbumps must be greater than 1")
 
 // Make the base
 base = startSketchOn(XY)
-  |> startProfileAt([-totalWidth / 2, -totalLength / 2], %)
+  |> startProfile(at = [-totalWidth / 2, -totalLength / 2])
   |> line(end = [totalWidth, 0])
   |> line(end = [0, totalLength])
   |> line(end = [-totalWidth, 0])
@@ -36,10 +36,10 @@ base = startSketchOn(XY)
 
 // Sketch and extrude a rectangular shape to create the shell underneath the lego. Will replace with shell function when able to call a face created from shell.
 shellExtrude = startSketchOn(base, face = START)
-  |> startProfileAt([
+  |> startProfile(at = [
        -(totalWidth / 2 - t),
        -(totalLength / 2 - t)
-     ], %)
+     ])
   |> line(end = [totalWidth - (2 * t), 0])
   |> line(end = [0, totalLength - (2 * t)])
   |> line(end = [-(totalWidth - (2 * t)), 0])

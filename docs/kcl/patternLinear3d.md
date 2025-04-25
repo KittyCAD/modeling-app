@@ -38,7 +38,7 @@ patternLinear3d(
 
 ```js
 exampleSketch = startSketchOn(XZ)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> line(end = [0, 2])
   |> line(end = [3, 1])
   |> line(end = [0, -4])
@@ -54,7 +54,7 @@ example = extrude(exampleSketch, length = 1)
 // Pattern a whole sketch on face.
 size = 100
 case = startSketchOn(XY)
-  |> startProfileAt([-size, -size], %)
+  |> startProfile(at = [-size, -size])
   |> line(end = [2 * size, 0])
   |> line(end = [0, 2 * size])
   |> tangentialArc(endAbsolute = [-size, size])
@@ -85,7 +85,7 @@ patternLinear3d(
 // Pattern an object on a face.
 size = 100
 case = startSketchOn(XY)
-  |> startProfileAt([-size, -size], %)
+  |> startProfile(at = [-size, -size])
   |> line(end = [2 * size, 0])
   |> line(end = [0, 2 * size])
   |> tangentialArc(endAbsolute = [-size, size])

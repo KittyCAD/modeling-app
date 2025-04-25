@@ -29,7 +29,7 @@ test.describe('Regression tests', () => {
         'persistCode',
         `sketch2 = startSketchOn("XY")
   sketch001 = startSketchOn("XY")
-    |> startProfileAt([-0, -0], %)
+    |> startProfile(at = [-0, -0])
     |> line(end = [0, 0])
     |> line(end = [-4.84, -5.29])
     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
@@ -66,7 +66,7 @@ test.describe('Regression tests', () => {
       localStorage.setItem(
         'persistCode',
         `sketch001 = startSketchOn(XY)
-  |> startProfileAt([82.33, 238.21], %)
+  |> startProfile(at = [82.33, 238.21])
   |> angledLine(angle = 0, length = 288.63, tag = $rectangleSegmentA001)
   |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 197.97, tag = $rectangleSegmentB001)
   |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $rectangleSegmentC001)
@@ -128,7 +128,7 @@ extrude001 = extrude(sketch001, length = 50)
       localStorage.setItem(
         'persistCode',
         `sketch001 = startSketchOn(-XZ)
-  |> startProfileAt([-6.95, 4.98], %)
+  |> startProfile(at = [-6.95, 4.98])
   |> line(end = [25.1, 0.41])
   |> line(end = [0.73, -14.93])
   |> line(end = [-23.44, 0.52])`
@@ -189,7 +189,7 @@ extrude001 = extrude(sketch001, length = 50)
       localStorage.setItem(
         'persistCode',
         `part = startSketchOn(XY)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> line(end = [0, 1])
   |> line(end = [1, 0])
   |> line(end = [0, -1])
@@ -250,7 +250,7 @@ extrude001 = extrude(sketch001, length = 50)
       localStorage.setItem(
         'persistCode',
         `exampleSketch = startSketchOn("XZ")
-      |> startProfileAt([0, 0], %)
+      |> startProfile(at = [0, 0])
       |> angledLine(angle = 50, length = 45 )
       |> yLine(endAbsolute = 0)
       |> close()
@@ -307,7 +307,7 @@ extrude001 = extrude(sketch001, length = 50)
     await expect(
       page.locator('.cm-content')
     ).toContainText(`exampleSketch = startSketchOn("XZ")
-      |> startProfileAt([0, 0], %)
+      |> startProfile(at = [0, 0])
       |> angledLine(angle = 50, length = 45 )
       |> yLine(endAbsolute = 0)
       |> close()
@@ -327,7 +327,7 @@ extrude001 = extrude(sketch001, length = 50)
             'persistCode',
             `@settings(defaultLengthUnit = mm)
 sketch002 = startSketchOn(XY)
-profile002 = startProfileAt([72.24, -52.05], sketch002)
+profile002 = startProfile(sketch002, at = [72.24, -52.05])
   |> angledLine(angle = 0, length = 181.26, tag = $rectangleSegmentA001)
   |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 21.54)
   |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))

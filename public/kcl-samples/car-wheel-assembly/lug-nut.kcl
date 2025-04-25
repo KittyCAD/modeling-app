@@ -20,7 +20,7 @@ customPlane = {
 
 fn lug(plane, length, diameter) {
   lugSketch = startSketchOn(customPlane)
-    |> startProfileAt([0 + diameter / 2, 0], %)
+    |> startProfile(at = [0 + diameter / 2, 0])
     |> angledLine(angle = 70, lengthY = lugHeadLength)
     |> xLine(endAbsolute = lugDiameter / 2)
     |> yLine(endAbsolute = lugLength)

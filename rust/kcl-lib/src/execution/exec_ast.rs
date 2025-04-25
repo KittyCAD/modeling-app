@@ -2719,7 +2719,7 @@ d = b + c
             .parse_errs_as_err()
             .unwrap();
 
-        let tmpdir = tempdir::TempDir::new("zma_kcl_load_all_modules").unwrap();
+        let tmpdir = tempfile::TempDir::with_prefix("zma_kcl_load_all_modules").unwrap();
 
         tokio::fs::File::create(tmpdir.path().join("main.kcl"))
             .await

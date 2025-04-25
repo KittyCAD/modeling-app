@@ -22,7 +22,7 @@ test.describe('Code pane and errors', () => {
         `@settings(defaultLengthUnit = in)
 // Extruded Triangle
 sketch001 = startSketchOn(XZ)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> line(end = [10, 0])
   |> line(end = [-5, 10])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])

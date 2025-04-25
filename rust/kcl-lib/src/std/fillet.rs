@@ -88,7 +88,7 @@ pub async fn fillet(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// filletRadius = 2
 ///
 /// mountingPlateSketch = startSketchOn("XY")
-///   |> startProfileAt([-width/2, -length/2], %)
+///   |> startProfile(at = [-width/2, -length/2])
 ///   |> line(endAbsolute = [width/2, -length/2], tag = $edge1)
 ///   |> line(endAbsolute = [width/2, length/2], tag = $edge2)
 ///   |> line(endAbsolute = [-width/2, length/2], tag = $edge3)
@@ -113,7 +113,7 @@ pub async fn fillet(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// filletRadius = 1
 ///
 /// mountingPlateSketch = startSketchOn("XY")
-///   |> startProfileAt([-width/2, -length/2], %)
+///   |> startProfile(at = [-width/2, -length/2])
 ///   |> line(endAbsolute = [width/2, -length/2], tag = $edge1)
 ///   |> line(endAbsolute = [width/2, length/2], tag = $edge2)
 ///   |> line(endAbsolute = [-width/2, length/2], tag = $edge3)

@@ -10,7 +10,7 @@ dihedral = 116.565
 // Create a face template function that makes a large thin cube
 fn createFaceTemplate(dither) {
   baseSketch = startSketchOn(XY)
-    |> startProfileAt([-1000 - dither, -1000 - dither], %)
+    |> startProfile(at = [-1000 - dither, -1000 - dither])
     |> line(endAbsolute = [1000 + dither, -1000 - dither])
     |> line(endAbsolute = [1000 + dither, 1000 + dither])
     |> line(endAbsolute = [-1000 - dither, 1000 + dither])

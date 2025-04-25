@@ -1,4 +1,4 @@
-startProfileAt([0, 0], startSketchOn("XY"))
+startProfile(startSketchOn("XY"), at = [0, 0])
   |> xLine(length = 10, tag = $line000)
   |> yLine(length = 10, tag = $line001)
   |> xLine(endAbsolute = profileStartX(%), tag = $line002)

@@ -16,7 +16,7 @@ std::math::E: number = 2.71828182845904523536028747135266250_
 
 ```js
 exampleSketch = startSketchOn(XZ)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> angledLine(
     angle = 30,
     length = 2 * E ^ 2,
