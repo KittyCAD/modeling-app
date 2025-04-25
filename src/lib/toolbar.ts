@@ -406,7 +406,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
               }),
             status: DEV || IS_NIGHTLY_OR_DEBUG ? 'available' : 'kcl-only',
             title: 'Clone',
-            icon: 'patternLinear3d', // TODO: add a clone icon
+            icon: 'clone',
             description: 'Clone a solid or sketch.',
             links: [
               {

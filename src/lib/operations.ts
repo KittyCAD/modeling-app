@@ -1127,7 +1127,7 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
   },
   clone: {
     label: 'Clone',
-    icon: 'patternLinear3d', // TODO: add a clone icon
+    icon: 'clone',
     supportsAppearance: true,
     supportsTransform: true,
   },

@@ -1123,7 +1123,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   },
   Clone: {
     description: 'Clone a solid or sketch.',
-    icon: 'questionMark', // TODO: likely not the best icon
+    icon: 'clone',
     needsReview: true,
     hide: DEV || IS_NIGHTLY_OR_DEBUG ? undefined : 'both',
     args: {
