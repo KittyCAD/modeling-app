@@ -28,7 +28,7 @@ import { expect, test } from '@e2e/playwright/zoo-test'
 test.describe(
   'Testing settings',
   {
-    tag: ['@macOS'],
+    tag: ['@macos', '@windows'],
   },
   () => {
     test('Stored settings are validated and fall back to defaults', async ({
@@ -279,7 +279,7 @@ test.describe(
 
     test(
       `Project settings override user settings on desktop`,
-      { tag: ['@electron', '@skipWin'] },
+      { tag: ['@electron'] },
       async ({ context, page }, testInfo) => {
         const projectName = 'bracket'
         const { dir: projectDirName } = await context.folderSetupFn(

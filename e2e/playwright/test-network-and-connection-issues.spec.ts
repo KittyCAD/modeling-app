@@ -7,7 +7,7 @@ import { expect, test } from '@e2e/playwright/zoo-test'
 test.describe(
   'Test network and connection issues',
   {
-    tag: ['@macOS'],
+    tag: ['@macos', '@windows'],
   },
   () => {
     test(

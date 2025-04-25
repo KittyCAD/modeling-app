@@ -6,7 +6,7 @@ import type { EditorFixture } from '@e2e/playwright/fixtures/editorFixture'
 import { deg, getUtils, wiggleMove } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
-test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
+test.describe('Testing segment overlays', () => {
   test('Hover over a segment should show its overlay, hovering over the input overlays should show its popover, clicking the input overlay should constrain/unconstrain it:\nfor the following segments', () => {
     // TODO: fix this test on mac after the electron migration
 
