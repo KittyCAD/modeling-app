@@ -47,7 +47,7 @@ import { codeManagerHistoryCompartment } from '@src/lang/codeManager'
 import { codeManager, editorManager, kclManager } from '@src/lib/singletons'
 import { Themes, getSystemTheme } from '@src/lib/theme'
 import { onMouseDragMakeANewNumber, onMouseDragRegex } from '@src/lib/utils'
-import { useSettings } from '@src/machines/appMachine'
+import { useSettings } from '@src/lib/singletons'
 import {
   editorIsMountedSelector,
   kclEditorActor,

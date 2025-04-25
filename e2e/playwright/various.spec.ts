@@ -178,6 +178,7 @@ test('Keyboard shortcuts can be viewed through the help menu', async ({
 test('First escape in tool pops you out of tool, second exits sketch mode', async ({
   page,
   homePage,
+  toolbar,
 }) => {
   // Wait for the app to be ready for use
   const u = await getUtils(page)
@@ -187,15 +188,6 @@ test('First escape in tool pops you out of tool, second exits sketch mode', asyn
   await u.openDebugPanel()
   await u.expectCmdLog('[data-message-type="execution-done"]')
   await u.closeDebugPanel()
-
-  const lineButton = page.getByRole('button', {
-    name: 'line Line',
-    exact: true,
-  })
-  const arcButton = page.getByRole('button', {
-    name: 'arc Tangential Arc',
-    exact: true,
-  })
 
   // Test these hotkeys perform actions when
   // focus is on the canvas
@@ -207,8 +199,8 @@ test('First escape in tool pops you out of tool, second exits sketch mode', asyn
   await page.mouse.move(800, 300)
   await page.mouse.click(800, 300)
   await page.waitForTimeout(1000)
-  await expect(lineButton).toBeVisible()
-  await expect(lineButton).toHaveAttribute('aria-pressed', 'true')
+  await expect(toolbar.lineBtn).toBeVisible()
+  await expect(toolbar.lineBtn).toHaveAttribute('aria-pressed', 'true')
 
   // Draw a line
   await page.mouse.move(700, 200, { steps: 5 })
@@ -224,10 +216,9 @@ test('First escape in tool pops you out of tool, second exits sketch mode', asyn
   await page.keyboard.press('Escape')
   // Make sure we didn't pop out of sketch mode.
   await expect(page.getByRole('button', { name: 'Exit Sketch' })).toBeVisible()
-  await expect(lineButton).not.toHaveAttribute('aria-pressed', 'true')
+  await expect(toolbar.lineBtn).not.toHaveAttribute('aria-pressed', 'true')
   // Equip arc tool
-  await page.keyboard.press('a')
-  await expect(arcButton).toHaveAttribute('aria-pressed', 'true')
+  await toolbar.selectTangentialArc()
 
   // click in the same position again to continue the profile
   await page.mouse.move(secondMousePosition.x, secondMousePosition.y, {
@@ -238,11 +229,14 @@ test('First escape in tool pops you out of tool, second exits sketch mode', asyn
   await page.mouse.move(1000, 100, { steps: 5 })
   await page.mouse.click(1000, 100)
   await page.keyboard.press('Escape')
-  await expect(arcButton).toHaveAttribute('aria-pressed', 'false')
+  await expect(toolbar.tangentialArcBtn).toHaveAttribute(
+    'aria-pressed',
+    'false'
+  )
   await expect
     .poll(async () => {
       await page.keyboard.press('l')
-      return lineButton.getAttribute('aria-pressed')
+      return toolbar.lineBtn.getAttribute('aria-pressed')
     })
     .toBe('true')
 
@@ -251,8 +245,11 @@ test('First escape in tool pops you out of tool, second exits sketch mode', asyn
 
   // Unequip line tool
   await page.keyboard.press('Escape')
-  await expect(lineButton).toHaveAttribute('aria-pressed', 'false')
-  await expect(arcButton).toHaveAttribute('aria-pressed', 'false')
+  await expect(toolbar.lineBtn).toHaveAttribute('aria-pressed', 'false')
+  await expect(toolbar.tangentialArcBtn).toHaveAttribute(
+    'aria-pressed',
+    'false'
+  )
   // Make sure we didn't pop out of sketch mode.
   await expect(page.getByRole('button', { name: 'Exit Sketch' })).toBeVisible()
   // Exit sketch

@@ -9,7 +9,7 @@ import {
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
-test.describe('Testing selections', { tag: ['@skipWin'] }, () => {
+test.describe('Testing selections', () => {
   test.setTimeout(90_000)
   test('Selections work on fresh and edited sketch', async ({
     page,
@@ -39,12 +39,12 @@ test.describe('Testing selections', { tag: ['@skipWin'] }, () => {
       })
     const emptySpaceHover = () =>
       test.step('Hover over empty space', async () => {
-        await page.mouse.move(700, 143, { steps: 5 })
+        await page.mouse.move(1000, 143, { steps: 5 })
         await expect(page.locator('.hover-highlight')).not.toBeVisible()
       })
     const emptySpaceClick = () =>
       test.step(`Click in empty space`, async () => {
-        await page.mouse.click(700, 143)
+        await page.mouse.click(1000, 143)
         await expect(page.locator('.cm-line').last()).toHaveClass(
           /cm-activeLine/
         )

@@ -9,7 +9,7 @@ import { useConvertToVariable } from '@src/hooks/useToolbarGuards'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { kclManager } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
-import { commandBarActor } from '@src/machines/commandBarMachine'
+import { commandBarActor } from '@src/lib/singletons'
 
 import styles from './KclEditorMenu.module.css'
 
