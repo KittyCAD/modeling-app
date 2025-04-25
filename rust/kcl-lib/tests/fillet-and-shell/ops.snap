@@ -127,8 +127,8 @@ description: Operations executed fillet-and-shell.kcl
       "type": "FunctionCall",
       "name": "m25Screw",
       "functionSourceRange": [
-        1310,
-        1548,
+        1289,
+        1527,
         0
       ],
       "unlabeledArg": null,
@@ -217,8 +217,8 @@ description: Operations executed fillet-and-shell.kcl
       "type": "FunctionCall",
       "name": "m25Screw",
       "functionSourceRange": [
-        1310,
-        1548,
+        1289,
+        1527,
         0
       ],
       "unlabeledArg": null,
@@ -307,8 +307,8 @@ description: Operations executed fillet-and-shell.kcl
       "type": "FunctionCall",
       "name": "m25Screw",
       "functionSourceRange": [
-        1310,
-        1548,
+        1289,
+        1527,
         0
       ],
       "unlabeledArg": null,
@@ -397,8 +397,8 @@ description: Operations executed fillet-and-shell.kcl
       "type": "FunctionCall",
       "name": "m25Screw",
       "functionSourceRange": [
-        1310,
-        1548,
+        1289,
+        1527,
         0
       ],
       "unlabeledArg": null,

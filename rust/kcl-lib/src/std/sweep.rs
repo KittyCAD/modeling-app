@@ -63,7 +63,7 @@ pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///
 /// // Create a path for the sweep.
 /// sweepPath = startSketchOn(XZ)
-///     |> startProfileAt([0.05, 0.05], %)
+///     |> startProfile(at = [0.05, 0.05])
 ///     |> line(end = [0, 7])
 ///     |> tangentialArc(angle = 90, radius = 5)
 ///     |> line(end = [-3, 0])
@@ -110,7 +110,7 @@ pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// // Sweep two sketches along the same path.
 ///
 /// sketch001 = startSketchOn(XY)
-/// rectangleSketch = startProfileAt([-200, 23.86], sketch001)
+/// rectangleSketch = startProfile(sketch001, at = [-200, 23.86])
 ///     |> angledLine(angle = 0, length = 73.47, tag = $rectangleSegmentA001)
 ///     |> angledLine(
 ///         angle = segAng(rectangleSegmentA001) - 90,
@@ -126,7 +126,7 @@ pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// circleSketch = circle(sketch001, center = [200, -30.29], radius = 32.63)
 ///
 /// sketch002 = startSketchOn(YZ)
-/// sweepPath = startProfileAt([0, 0], sketch002)
+/// sweepPath = startProfile(sketch002, at = [0, 0])
 ///     |> yLine(length = 231.81)
 ///     |> tangentialArc(radius = 80, angle = -90)
 ///     |> xLine(length = 384.93)
@@ -140,7 +140,7 @@ pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// circleSketch = circle(sketch001, center = [200, -30.29], radius = 32.63)
 ///
 /// sketch002 = startSketchOn('YZ')
-/// sweepPath = startProfileAt([0, 0], sketch002)
+/// sweepPath = startProfile(sketch002, at = [0, 0])
 ///     |> yLine(length = 231.81)
 ///     |> tangentialArc(radius = 80, angle = -90)
 ///     |> xLine(length = 384.93)

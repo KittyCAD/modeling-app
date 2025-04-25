@@ -19,7 +19,6 @@ import { err, reportRejection, trap } from '@src/lib/trap'
 import type { IndexLoaderData } from '@src/lib/types'
 import { uuidv4 } from '@src/lib/utils'
 import { engineStreamActor, useSettings } from '@src/lib/singletons'
-import { useCommandBarState } from '@src/lib/singletons'
 import {
   EngineStreamState,
   EngineStreamTransition,
@@ -57,8 +56,6 @@ export const EngineStream = (props: {
 
   const { state: modelingMachineState, send: modelingMachineActorSend } =
     useModelingContext()
-
-  const commandBarState = useCommandBarState()
 
   const streamIdleMode = settings.app.streamIdleMode.current
 
@@ -332,15 +329,7 @@ export const EngineStream = (props: {
     if (!engineStreamState.context.videoRef.current) return
     // If we're in sketch mode, don't send a engine-side select event
     if (modelingMachineState.matches('Sketch')) return
-    // Only respect default plane selection if we're on a selection command argument
-    if (
-      modelingMachineState.matches({ idle: 'showPlanes' }) &&
-      !(
-        commandBarState.matches('Gathering arguments') &&
-        commandBarState.context.currentArgument?.inputType === 'selection'
-      )
-    )
-      return
+
     // If we're mousing up from a camera drag, don't send a select event
     if (sceneInfra.camControls.wasDragging === true) return
 
@@ -361,7 +350,6 @@ export const EngineStream = (props: {
       !isNetworkOkay ||
       !engineStreamState.context.videoRef.current ||
       modelingMachineState.matches('Sketch') ||
-      modelingMachineState.matches({ idle: 'showPlanes' }) ||
       sceneInfra.camControls.wasDragging === true ||
       !btnName(e.nativeEvent).left
     ) {
@@ -430,7 +418,7 @@ export const EngineStream = (props: {
       {![EngineStreamState.Playing, EngineStreamState.Paused].some(
         (s) => s === engineStreamState.value
       ) && (
-        <Loading dataTestId="loading-engine" className="fixed inset-0">
+        <Loading dataTestId="loading-engine" className="fixed inset-0 h-screen">
           Connecting to engine
         </Loading>
       )}

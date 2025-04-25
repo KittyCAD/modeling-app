@@ -12,7 +12,7 @@ diameter = 0.3125
 // Define a function for the hex nut
 fn hexNut(start, thk, innerDia) {
   hexNutSketch = startSketchOn(-XZ)
-    |> startProfileAt([start[0] + innerDia, start[1]], %)
+    |> startProfile(at = [start[0] + innerDia, start[1]])
     |> angledLine(angle = 240, length = innerDia)
     |> angledLine(angle = 180, length = innerDia)
     |> angledLine(angle = 120, length = innerDia)

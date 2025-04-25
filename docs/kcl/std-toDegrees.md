@@ -28,7 +28,7 @@ toDegrees(@num: number(deg)): number(deg)
 
 ```js
 exampleSketch = startSketchOn(XZ)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> angledLine(
     angle = 50,
     length = 70 * cos(toDegrees((PI/4): number(rad))),

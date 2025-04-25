@@ -9,7 +9,7 @@ fn transform(i) {
   ]
 }
 startSketchOn(XY)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> polygon(
        radius = 10,
        numSides = 4,

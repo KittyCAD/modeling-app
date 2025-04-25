@@ -8,10 +8,10 @@
 fn rail8020(originStart, railHeight, railLength) {
   // Sketch side 1 of profile
   sketch001 = startSketchOn(-XZ)
-    |> startProfileAt([
+    |> startProfile(at = [
          originStart[0],
          0.1 * railHeight + originStart[1]
-       ], %)
+       ])
     |> arc(angleStart = 180, angleEnd = 270, radius = 0.1 * railHeight)
     |> arc(angleStart = 180, angleEnd = 0, radius = 0.072 / 4 * railHeight)
     |> xLine(length = 0.1 * railHeight)

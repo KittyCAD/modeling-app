@@ -9,10 +9,10 @@ import caliperTolerance, caliperPadLength, caliperThickness, caliperOuterEdgeRad
 
 // Sketch the brake caliper profile
 brakeCaliperSketch = startSketchOn(XY)
-  |> startProfileAt([
+  |> startProfile(at = [
        rotorDiameter / 2 + caliperTolerance,
        0
-     ], %)
+     ])
   |> line(end = [
        0,
        rotorTotalThickness + caliperTolerance - caliperInnerEdgeRadius

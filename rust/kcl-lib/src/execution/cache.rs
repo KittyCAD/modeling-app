@@ -249,7 +249,7 @@ mod tests {
     async fn test_get_changed_program_same_code() {
         let new = r#"// Remove the end face for the extrusion.
 firstSketch = startSketchOn('XY')
-  |> startProfileAt([-12, 12], %)
+  |> startProfile(at = [-12, 12])
   |> line(end = [24, 0])
   |> line(end = [0, -24])
   |> line(end = [-24, 0])
@@ -280,7 +280,7 @@ shell(firstSketch, faces = [END], thickness = 0.25)"#;
     async fn test_get_changed_program_same_code_changed_whitespace() {
         let old = r#" // Remove the end face for the extrusion.
 firstSketch = startSketchOn('XY')
-  |> startProfileAt([-12, 12], %)
+  |> startProfile(at = [-12, 12])
   |> line(end = [24, 0])
   |> line(end = [0, -24])
   |> line(end = [-24, 0])
@@ -292,7 +292,7 @@ shell(firstSketch, faces = [END], thickness = 0.25) "#;
 
         let new = r#"// Remove the end face for the extrusion.
 firstSketch = startSketchOn('XY')
-  |> startProfileAt([-12, 12], %)
+  |> startProfile(at = [-12, 12])
   |> line(end = [24, 0])
   |> line(end = [0, -24])
   |> line(end = [-24, 0])
@@ -325,7 +325,7 @@ shell(firstSketch, faces = [END], thickness = 0.25)"#;
     async fn test_get_changed_program_same_code_changed_code_comment_start_of_program() {
         let old = r#" // Removed the end face for the extrusion.
 firstSketch = startSketchOn('XY')
-  |> startProfileAt([-12, 12], %)
+  |> startProfile(at = [-12, 12])
   |> line(end = [24, 0])
   |> line(end = [0, -24])
   |> line(end = [-24, 0])
@@ -337,7 +337,7 @@ shell(firstSketch, faces = [END], thickness = 0.25) "#;
 
         let new = r#"// Remove the end face for the extrusion.
 firstSketch = startSketchOn('XY')
-  |> startProfileAt([-12, 12], %)
+  |> startProfile(at = [-12, 12])
   |> line(end = [24, 0])
   |> line(end = [0, -24])
   |> line(end = [-24, 0])
@@ -372,7 +372,7 @@ shell(firstSketch, faces = [END], thickness = 0.25)"#;
 @bar
 // Removed the end face for the extrusion.
 firstSketch = startSketchOn('XY')
-  |> startProfileAt([-12, 12], %)
+  |> startProfile(at = [-12, 12])
   |> line(end = [24, 0])
   |> line(end = [0, -24])
   |> line(end = [-24, 0]) // my thing
@@ -386,7 +386,7 @@ shell(firstSketch, faces = [END], thickness = 0.25) "#;
 @baz
 // Remove the end face for the extrusion.
 firstSketch = startSketchOn('XY')
-  |> startProfileAt([-12, 12], %)
+  |> startProfile(at = [-12, 12])
   |> line(end = [24, 0])
   |> line(end = [0, -24])
   |> line(end = [-24, 0])
@@ -420,7 +420,7 @@ shell(firstSketch, faces = [END], thickness = 0.25)"#;
     async fn test_get_changed_program_same_code_but_different_grid_setting() {
         let new = r#"// Remove the end face for the extrusion.
 firstSketch = startSketchOn('XY')
-  |> startProfileAt([-12, 12], %)
+  |> startProfile(at = [-12, 12])
   |> line(end = [24, 0])
   |> line(end = [0, -24])
   |> line(end = [-24, 0])
@@ -457,7 +457,7 @@ shell(firstSketch, faces = [END], thickness = 0.25)"#;
     async fn test_get_changed_program_same_code_but_different_edge_visiblity_setting() {
         let new = r#"// Remove the end face for the extrusion.
 firstSketch = startSketchOn('XY')
-  |> startProfileAt([-12, 12], %)
+  |> startProfile(at = [-12, 12])
   |> line(end = [24, 0])
   |> line(end = [0, -24])
   |> line(end = [-24, 0])
@@ -608,7 +608,7 @@ startSketchOn('XY')
 importedCube
 
 sketch001 = startSketchOn(XZ)
-profile001 = startProfileAt([-134.53, -56.17], sketch001)
+profile001 = startProfile(sketch001, at = [-134.53, -56.17])
   |> angledLine(angle = 0, length = 79.05, tag = $rectangleSegmentA001)
   |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 76.28)
   |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $seg01)
@@ -622,7 +622,7 @@ sketch002 = startSketchOn(extrude001, face = seg01)
         let other_file = (
             std::path::PathBuf::from("toBeImported.kcl"),
             r#"sketch001 = startSketchOn(XZ)
-profile001 = startProfileAt([281.54, 305.81], sketch001)
+profile001 = startProfile(sketch001, at = [281.54, 305.81])
   |> angledLine(angle = 0, length = 123.43, tag = $rectangleSegmentA001)
   |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 85.99)
   |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))

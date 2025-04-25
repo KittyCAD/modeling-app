@@ -32,7 +32,7 @@ close(
 
 ```js
 startSketchOn(XZ)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> line(end = [10, 10])
   |> line(end = [10, 0])
   |> close()
@@ -43,7 +43,7 @@ startSketchOn(XZ)
 
 ```js
 exampleSketch = startSketchOn(-XZ)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> line(end = [10, 0])
   |> line(end = [0, 10])
   |> close()

@@ -118,7 +118,7 @@ test.describe(
         const startXPx = 600
         await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
         await expect(page.locator('.cm-content')).toHaveText(
-          `sketch001 = startSketchOn(XZ)profile001 = startProfileAt(${commonPoints.startAt}, sketch001)`
+          `sketch001 = startSketchOn(XZ)profile001 = startProfile(sketch001, at = ${commonPoints.startAt})`
         )
         await page.waitForTimeout(100)
 
@@ -127,7 +127,7 @@ test.describe(
 
         await expect(
           page.locator('.cm-content')
-        ).toHaveText(`sketch001 = startSketchOn(XZ)profile001 = startProfileAt(${commonPoints.startAt}, sketch001)
+        ).toHaveText(`sketch001 = startSketchOn(XZ)profile001 = startProfile(sketch001, at = ${commonPoints.startAt})
       |> xLine(length = ${commonPoints.num1})`)
 
         // Expect the network to be up
@@ -176,7 +176,7 @@ test.describe(
 
         // select a line
         await page
-          .getByText(`startProfileAt(${commonPoints.startAt}, sketch001)`)
+          .getByText(`startProfile(sketch001, at = ${commonPoints.startAt})`)
           .click()
 
         // enter sketch again
@@ -220,7 +220,7 @@ test.describe(
         await expect
           .poll(u.normalisedEditorCode)
           .toBe(`sketch001 = startSketchOn(XZ)
-profile001 = startProfileAt([12.34, -12.34], sketch001)
+profile001 = startProfile(sketch001, at = [12.34, -12.34])
   |> xLine(length = 12.34)
   |> line(end = [-12.34, 12.34])
 
@@ -231,7 +231,7 @@ profile001 = startProfileAt([12.34, -12.34], sketch001)
         await expect
           .poll(u.normalisedEditorCode)
           .toBe(`sketch001 = startSketchOn(XZ)
-profile001 = startProfileAt([12.34, -12.34], sketch001)
+profile001 = startProfile(sketch001, at = [12.34, -12.34])
   |> xLine(length = 12.34)
   |> line(end = [-12.34, 12.34])
   |> xLine(length = -12.34)

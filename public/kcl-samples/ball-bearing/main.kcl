@@ -26,7 +26,7 @@ insideWall = extrude(insideWallSketch, length = overallThickness)
 
 // Create the sketch of one of the balls
 ballsSketch = startSketchOn(XY)
-  |> startProfileAt([shaftDia / 2 + wallThickness, 0.001], %)
+  |> startProfile(at = [shaftDia / 2 + wallThickness, 0.001])
   |> arc(angleStart = 180, angleEnd = 0, radius = sphereDia / 2)
   |> close()
 
@@ -42,10 +42,10 @@ balls = revolve(ballsSketch, axis = X)
 
 // Create the sketch for the chain around the balls
 chainSketch = startSketchOn(XY)
-  |> startProfileAt([
+  |> startProfile(at = [
        shaftDia / 2 + wallThickness + sphereDia / 2 - (chainWidth / 2),
        0.125 * sin(toRadians(60))
-     ], %)
+     ])
   |> arc(angleStart = 120, angleEnd = 60, radius = sphereDia / 2)
   |> line(end = [0, chainThickness])
   |> line(end = [-chainWidth, 0])

@@ -102,7 +102,7 @@ layout: manual
   * [`segStartY`](kcl/segStartY)
   * [`shell`](kcl/shell)
   * [`sqrt`](kcl/sqrt)
-  * [`startProfileAt`](kcl/startProfileAt)
+  * [`startProfile`](kcl/startProfile)
   * [`startSketchOn`](kcl/startSketchOn)
   * [`subtract`](kcl/subtract)
   * [`subtract2d`](kcl/subtract2d)

@@ -40,7 +40,7 @@ async fn kcl_test_fillet_duplicate_tags() {
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_execute_engine_error_return() {
     let code = r#"part001 = startSketchOn(XY)
-  |> startProfileAt([5.5229, 5.25217], %)
+  |> startProfile(at = [5.5229, 5.25217])
   |> line(end = [10.50433, -1.19122])
   |> line(end = [8.01362, -5.48731])
   |> line(end = [-1.02877, -6.76825])
@@ -155,7 +155,7 @@ async fn kcl_test_negative_args() {
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_basic_tangential_arc_with_point() {
     let code = r#"boxSketch = startSketchOn(XY)
-    |> startProfileAt([0, 0], %)
+    |> startProfile(at = [0, 0])
     |> line(end = [0, 10])
     |> tangentialArc(end = [-5, 5])
     |> line(end = [5, -15])
@@ -169,7 +169,7 @@ async fn kcl_test_basic_tangential_arc_with_point() {
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_basic_tangential_arc_to() {
     let code = r#"boxSketch = startSketchOn(XY)
-    |> startProfileAt([0, 0], %)
+    |> startProfile(at = [0, 0])
     |> line(end = [0, 10])
     |> tangentialArc(endAbsolute = [-5, 15])
     |> line(end = [5, -15])
@@ -188,7 +188,7 @@ length = 12
 
 fn box = (sk1, sk2, scale, plane) => {
   boxsketch = startSketchOn(plane)
-    |> startProfileAt([sk1, sk2], %)
+    |> startProfile(at = [sk1, sk2])
     |> line(end = [0, scale])
     |> line(end = [scale, 0])
     |> line(end = [0, -scale])
@@ -220,7 +220,7 @@ shelfMountL = 9
 wallMountL = 8
 
 bracket = startSketchOn(XY)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> line(end = [0, wallMountL])
   |> tangentialArc(radius = filletR, angle = 90 )
   |> line(end = [-shelfMountL, 0])
@@ -235,7 +235,7 @@ bracket = startSketchOn(XY)
   |> extrude(length = width)
 
 part001 = startSketchOn(XY)
-  |> startProfileAt([-15.53, -10.28], %)
+  |> startProfile(at = [-15.53, -10.28])
   |> line(end = [10.49, -2.08])
   |> line(end = [10.42, 8.47])
   |> line(end = [-19.16, 5.1])
@@ -243,19 +243,19 @@ part001 = startSketchOn(XY)
   |> extrude(length = 4)
 
 part002 = startSketchOn('-XZ')
-  |> startProfileAt([-9.35, 19.18], %)
+  |> startProfile(at = [-9.35, 19.18])
   |> line(end = [32.14, -2.47])
   |> line(end = [8.39, -3.73])
   |> close()
 
 part003 = startSketchOn('-XZ')
-  |> startProfileAt([13.82, 16.51], %)
+  |> startProfile(at = [13.82, 16.51])
   |> line(end = [-6.24, -30.82])
   |> line(end = [8.39, -3.73])
   |> close()
 
 part004 = startSketchOn(YZ)
-  |> startProfileAt([19.04, 20.22], %)
+  |> startProfile(at = [19.04, 20.22])
   |> line(end = [9.44, -30.16])
   |> line(end = [8.39, -3.73])
   |> close()
@@ -268,7 +268,7 @@ part004 = startSketchOn(YZ)
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_holes() {
     let code = r#"square = startSketchOn(XY)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> line(end = [0, 10])
   |> line(end = [10, 0])
   |> line(end = [0, -10])
@@ -287,7 +287,7 @@ async fn optional_params() {
     let code = r#"
     fn other_circle = (pos, radius, tag?) => {
       sg = startSketchOn(XY)
-        |> startProfileAt(pos, %)
+        |> startProfile(at = pos)
         |> arc(angleEnd = 360, angleStart = 0, radius = radius)
         |> close()
         |> extrude(length = 2)
@@ -309,7 +309,7 @@ async fn kcl_test_rounded_with_holes() {
 
 fn roundedRectangle = (pos, w, l, cornerRadius) => {
   rr = startSketchOn(XY)
-    |> startProfileAt([pos[0] - w/2, 0], %)
+    |> startProfile(at = [pos[0] - w/2, 0])
     |> line(endAbsolute = [pos[0] - w/2, pos[1] - l/2 + cornerRadius])
     |> tarc([pos[0] - w/2 + cornerRadius, pos[1] - l/2], %, $arc0)
     |> line(endAbsolute = [pos[0] + w/2 - cornerRadius, pos[1] - l/2])
@@ -374,7 +374,7 @@ async fn kcl_test_patterns_linear_basic() {
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_patterns_linear_basic_3d() {
     let code = r#"part = startSketchOn(XY)
-    |> startProfileAt([0, 0], %)
+    |> startProfile(at = [0, 0])
     |> line(end = [0,1])
     |> line(end = [1, 0])
     |> line(end = [0, -1])
@@ -418,7 +418,7 @@ async fn kcl_test_patterns_linear_basic_holes() {
     |> patternLinear2d(axis = [1,1], instances = 13, distance = 3)
 
 rectangle = startSketchOn(XY)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> line(end = [0, 50])
   |> line(end = [50, 0])
   |> line(end = [0, -50])
@@ -447,7 +447,7 @@ async fn kcl_test_patterns_circular_basic_2d() {
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_patterns_circular_basic_3d() {
     let code = r#"part = startSketchOn(XY)
-    |> startProfileAt([0, 0], %)
+    |> startProfile(at = [0, 0])
     |> line(end = [0,1])
     |> line(end = [1, 0])
     |> line(end = [0, -1])
@@ -463,7 +463,7 @@ async fn kcl_test_patterns_circular_basic_3d() {
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_patterns_circular_3d_tilted_axis() {
     let code = r#"part = startSketchOn(XY)
-    |> startProfileAt([0, 0], %)
+    |> startProfile(at = [0, 0])
     |> line(end = [0,1])
     |> line(end = [1, 0])
     |> line(end = [0, -1])
@@ -571,7 +571,7 @@ model = cube"#;
 async fn kcl_test_cube_mm() {
     let code = r#"fn cube = (pos, scale) => {
   sg = startSketchOn(XY)
-    |> startProfileAt(pos, %)
+    |> startProfile(at = pos)
     |> line(end = [0, scale])
     |> line(end = [scale, 0])
     |> line(end = [0, -scale])
@@ -593,7 +593,7 @@ async fn kcl_test_cube_cm() {
     let code = r#"@settings(defaultLengthUnit = cm)
 fn cube = (pos, scale) => {
   sg = startSketchOn(XY)
-    |> startProfileAt(pos, %)
+    |> startProfile(at = pos)
     |> line(end = [0, scale])
     |> line(end = [scale, 0])
     |> line(end = [0, -scale])
@@ -615,7 +615,7 @@ async fn kcl_test_cube_m() {
     let code = r#"@settings(defaultLengthUnit = m)
 fn cube = (pos, scale) => {
   sg = startSketchOn(XY)
-    |> startProfileAt(pos, %)
+    |> startProfile(at = pos)
     |> line(end = [0, scale])
     |> line(end = [scale, 0])
     |> line(end = [0, -scale])
@@ -637,7 +637,7 @@ async fn kcl_test_cube_in() {
     let code = r#"@settings(defaultLengthUnit = in)
 fn cube = (pos, scale) => {
   sg = startSketchOn(XY)
-    |> startProfileAt(pos, %)
+    |> startProfile(at = pos)
     |> line(end = [0, scale])
     |> line(end = [scale, 0])
     |> line(end = [0, -scale])
@@ -659,7 +659,7 @@ async fn kcl_test_cube_ft() {
     let code = r#"@settings(defaultLengthUnit = ft)
 fn cube = (pos, scale) => {
   sg = startSketchOn(XY)
-    |> startProfileAt(pos, %)
+    |> startProfile(at = pos)
     |> line(end = [0, scale])
     |> line(end = [scale, 0])
     |> line(end = [0, -scale])
@@ -681,7 +681,7 @@ async fn kcl_test_cube_yd() {
     let code = r#"@settings(defaultLengthUnit = yd)
 fn cube = (pos, scale) => {
   sg = startSketchOn(XY)
-    |> startProfileAt(pos, %)
+    |> startProfile(at = pos)
     |> line(end = [0, scale])
     |> line(end = [scale, 0])
     |> line(end = [0, -scale])
@@ -702,7 +702,7 @@ myCube = cube([0,0], 10)
 async fn kcl_test_error_sketch_on_arc_face() {
     let code = r#"fn cube = (pos, scale) => {
   sg = startSketchOn(XY)
-  |> startProfileAt(pos, %)
+  |> startProfile(at = pos)
   |> tangentialArc(end = [0, scale], tag = $here)
   |> line(end = [scale, 0])
   |> line(end = [0, -scale])
@@ -714,7 +714,7 @@ part001 = cube([0, 0], 20)
   |> extrude(length = 20)
 
 part002 = startSketchOn(part001, face = part001.sketch.tags.here)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> line(end = [5, 0])
   |> line(end = [5, 5])
   |> line(end = [0, 5])
@@ -738,7 +738,7 @@ part002 = startSketchOn(part001, face = part001.sketch.tags.here)
 async fn kcl_test_sketch_on_face_of_face() {
     let code = r#"fn cube = (pos, scale) => {
   sg = startSketchOn(XY)
-    |> startProfileAt(pos, %)
+    |> startProfile(at = pos)
     |> line(end = [0, scale])
     |> line(end = [scale, 0])
     |> line(end = [0, -scale])
@@ -750,7 +750,7 @@ part001 = cube([0,0], 20)
     |> extrude(length = 20)
 
 part002 = startSketchOn(part001, face = END)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> line(end = [0, 10])
   |> line(end = [10, 0])
   |> line(end = [0, -10])
@@ -758,7 +758,7 @@ part002 = startSketchOn(part001, face = END)
   |> extrude(length = 5)
 
 part003 = startSketchOn(part002, face = END)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> line(end = [0, 5])
   |> line(end = [5, 0])
   |> line(end = [0, -5])
@@ -773,7 +773,7 @@ part003 = startSketchOn(part002, face = END)
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_stdlib_kcl_error_right_code_path() {
     let code = r#"square = startSketchOn(XY)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> line(end = [0, 10])
   |> line(end = [10, 0])
   |> line(end = [0, -10])
@@ -798,7 +798,7 @@ async fn kcl_test_stdlib_kcl_error_right_code_path() {
 async fn kcl_test_sketch_on_face_circle() {
     let code = r#"fn cube = (pos, scale) => {
   sg = startSketchOn(XY)
-    |> startProfileAt(pos, %)
+    |> startProfile(at = pos)
     |> line(end = [0, scale])
     |> line(end = [scale, 0])
     |> line(end = [0, -scale])
@@ -826,7 +826,7 @@ async fn kcl_test_stdlib_kcl_error_circle() {
 // Create a function that defines the body width and length of the mounting plate. Tag the corners so they can be passed through the fillet function.
 fn rectShape = (pos, w, l) => {
   rr = startSketchOn(XY)
-  |> startProfileAt([pos[0] - (w / 2), pos[1] - (l / 2)], %)
+  |> startProfile(at = [pos[0] - (w / 2), pos[1] - (l / 2)])
   |> line(endAbsolute = [pos[0] + w / 2, pos[1] - (l / 2)], tag = $edge1)
   |> line(endAbsolute = [pos[0] + w / 2, pos[1] + l / 2], tag = $edge2)
   |> line(endAbsolute = [pos[0] - (w / 2), pos[1] + l / 2], tag = $edge3)
@@ -870,7 +870,7 @@ part = rectShape([0, 0], 20, 20)
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_simple_revolve() {
     let code = r#"part001 = startSketchOn(XY)
-     |> startProfileAt([4, 12], %)
+     |> startProfile(at = [4, 12])
      |> line(end = [2, 0])
      |> line(end = [0, -6])
      |> line(end = [4, -6])
@@ -890,7 +890,7 @@ async fn kcl_test_simple_revolve() {
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_simple_revolve_uppercase() {
     let code = r#"part001 = startSketchOn(XY)
-     |> startProfileAt([4, 12], %)
+     |> startProfile(at = [4, 12])
      |> line(end = [2, 0])
      |> line(end = [0, -6])
      |> line(end = [4, -6])
@@ -910,7 +910,7 @@ async fn kcl_test_simple_revolve_uppercase() {
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_simple_revolve_negative() {
     let code = r#"part001 = startSketchOn(XY)
-     |> startProfileAt([4, 12], %)
+     |> startProfile(at = [4, 12])
      |> line(end = [2, 0])
      |> line(end = [0, -6])
      |> line(end = [4, -6])
@@ -930,7 +930,7 @@ async fn kcl_test_simple_revolve_negative() {
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_revolve_bad_angle_low() {
     let code = r#"part001 = startSketchOn(XY)
-     |> startProfileAt([4, 12], %)
+     |> startProfile(at = [4, 12])
      |> line(end = [2, 0])
      |> line(end = [0, -6])
      |> line(end = [4, -6])
@@ -956,7 +956,7 @@ async fn kcl_test_revolve_bad_angle_low() {
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_revolve_bad_angle_high() {
     let code = r#"part001 = startSketchOn(XY)
-     |> startProfileAt([4, 12], %)
+     |> startProfile(at = [4, 12])
      |> line(end = [2, 0])
      |> line(end = [0, -6])
      |> line(end = [4, -6])
@@ -982,7 +982,7 @@ async fn kcl_test_revolve_bad_angle_high() {
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_simple_revolve_custom_angle() {
     let code = r#"part001 = startSketchOn(XY)
-     |> startProfileAt([4, 12], %)
+     |> startProfile(at = [4, 12])
      |> line(end = [2, 0])
      |> line(end = [0, -6])
      |> line(end = [4, -6])
@@ -1002,7 +1002,7 @@ async fn kcl_test_simple_revolve_custom_angle() {
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_simple_revolve_custom_axis() {
     let code = r#"part001 = startSketchOn(XY)
-     |> startProfileAt([4, 12], %)
+     |> startProfile(at = [4, 12])
      |> line(end = [2, 0])
      |> line(end = [0, -6])
      |> line(end = [4, -6])
@@ -1022,7 +1022,7 @@ async fn kcl_test_simple_revolve_custom_axis() {
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_revolve_on_edge() {
     let code = r#"box = startSketchOn(XY)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> line(end = [0, 10])
   |> line(end = [10, 0])
   |> line(end = [0, -10], tag = $revolveAxis)
@@ -1030,7 +1030,7 @@ async fn kcl_test_revolve_on_edge() {
   |> extrude(length = 10)
 
 sketch001 = startSketchOn(box, face = END)
-  |> startProfileAt([5, 10], %)
+  |> startProfile(at = [5, 10])
   |> line(end = [0, -10])
   |> line(end = [2, 0])
   |> line(end = [0, 10])
@@ -1046,7 +1046,7 @@ sketch001 = startSketchOn(box, face = END)
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_revolve_on_edge_get_edge() {
     let code = r#"box = startSketchOn(XY)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> line(end = [0, 10])
   |> line(end = [10, 0])
   |> line(end = [0, -10], tag = $revolveAxis)
@@ -1054,7 +1054,7 @@ async fn kcl_test_revolve_on_edge_get_edge() {
   |> extrude(length = 10)
 
 sketch001 = startSketchOn(box, face = revolveAxis)
-  |> startProfileAt([5, 10], %)
+  |> startProfile(at = [5, 10])
   |> line(end = [0, -10])
   |> line(end = [2, 0])
   |> line(end = [0, 10])
@@ -1076,7 +1076,7 @@ sketch001 = startSketchOn(box, face = revolveAxis)
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_revolve_on_face_circle_edge() {
     let code = r#"box = startSketchOn(XY)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> line(end = [0, 20])
   |> line(end = [20, 0])
   |> line(end = [0, -20], tag = $revolveAxis) 
@@ -1098,7 +1098,7 @@ sketch001 = startSketchOn(box, face = "END")
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_revolve_on_face_circle() {
     let code = r#"box = startSketchOn(XY)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> line(end = [0, 20])
   |> line(end = [20, 0], tag = $revolveAxis)
   |> line(end = [0, -20]) 
@@ -1120,7 +1120,7 @@ sketch001 = startSketchOn(box, face = "END")
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_revolve_on_face() {
     let code = r#"box = startSketchOn(XY)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> line(end = [0, 10])
   |> line(end = [10, 0])
   |> line(end = [0, -10])
@@ -1128,7 +1128,7 @@ async fn kcl_test_revolve_on_face() {
   |> extrude(length = 10)
 
 sketch001 = startSketchOn(box, face = END)
-  |> startProfileAt([5, 10], %)
+  |> startProfile(at = [5, 10])
   |> line(end = [0, -10])
   |> line(end = [2, 0])
   |> line(end = [0, 10])
@@ -1160,7 +1160,7 @@ async fn kcl_test_basic_revolve_circle() {
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_simple_revolve_sketch_on_edge() {
     let code = r#"part001 = startSketchOn(XY)
-     |> startProfileAt([4, 12], %)
+     |> startProfile(at = [4, 12])
      |> line(end = [2, 0])
      |> line(end = [0, -6])
      |> line(end = [4, -6])
@@ -1172,7 +1172,7 @@ async fn kcl_test_simple_revolve_sketch_on_edge() {
      |> revolve(axis = Y, angle = 180)
 
 part002 = startSketchOn(part001, face = END)
-    |> startProfileAt([4.5, -5], %)
+    |> startProfile(at = [4.5, -5])
     |> line(end = [0, 5])
     |> line(end = [5, 0])
     |> line(end = [0, -5])
@@ -1188,7 +1188,7 @@ part002 = startSketchOn(part001, face = END)
 async fn kcl_test_plumbus_fillets() {
     let code = r#"fn make_circle = (ext, face, pos, radius) => {
   sg = startSketchOn(ext, face = face)
-  |> startProfileAt([pos[0] + radius, pos[1]], %)
+  |> startProfile(at = [pos[0] + radius, pos[1]])
   |> arc(
        angleEnd = 360,
        angleStart = 0,
@@ -1202,7 +1202,7 @@ async fn kcl_test_plumbus_fillets() {
 
 fn pentagon = (len) => {
   sg = startSketchOn(XY)
-  |> startProfileAt([-len / 2, -len / 2], %)
+  |> startProfile(at = [-len / 2, -len / 2])
   |> angledLine(angle = 0, length = len, tag = $a)
   |> angledLine(
        angle = segAng(a) + 180 - 108,
@@ -1310,7 +1310,7 @@ filletR = 0.25
 
 // Sketch the bracket and extrude with fillets
 bracket = startSketchOn(XY)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> line(end = [0, wallMountL], tag = $outerEdge)
   |> line(end = [-shelfMountL, 0])
   |> line(end = [0, -thickness])
@@ -1335,7 +1335,7 @@ bracket = startSketchOn(XY)
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_error_empty_start_sketch_on_string() {
     let code = r#"part001 = startSketchOn('-XZ')
-  |> startProfileAt([75.75, 184.25], %)
+  |> startProfile(at = [75.75, 184.25])
   |> line(end = [190.03, -118.13])
   |> line(end = [-33.38, -202.86])
   |> line(end = [-315.86, -64.2])
@@ -1366,7 +1366,7 @@ dia = 4
 
 fn squareHole = (l, w) => {
   squareHoleSketch = startSketchOn(XY)
-  |> startProfileAt([-width / 2, -length / 2], %)
+  |> startProfile(at = [-width / 2, -length / 2])
   |> line(endAbsolute = [width / 2, -length / 2])
   |> line(endAbsolute = [width / 2, length / 2])
   |> line(endAbsolute = [-width / 2, length / 2])
@@ -1392,7 +1392,7 @@ async fn kcl_test_array_of_sketches() {
     let code = r#"plane001 = startSketchOn(XZ)
 
 profile001 = plane001
-  |> startProfileAt([40.82, 240.82], %)
+  |> startProfile(at = [40.82, 240.82])
   |> line(end = [235.72, -8.16])
   |> line(end = [13.27, -253.07])
   |> line(end = [-247.97, -19.39])
@@ -1400,7 +1400,7 @@ profile001 = plane001
   |> close()
 
 profile002 = plane001
-  |> startProfileAt([47.17, -71.91], %)
+  |> startProfile(at = [47.17, -71.91])
   |> line(end = [247.96, -4.03])
   |> line(end = [-17.26, -116.79])
   |> line(end = [-235.87, 12.66])
@@ -1421,7 +1421,7 @@ async fn kcl_test_circular_pattern3d_array_of_extrudes() {
     let code = r#"plane001 = startSketchOn(XZ)
 
 sketch001 = plane001
-  |> startProfileAt([40.82, 240.82], %)
+  |> startProfile(at = [40.82, 240.82])
   |> line(end = [235.72, -8.16])
   |> line(end = [13.27, -253.07])
   |> line(end = [-247.97, -19.39])
@@ -1430,7 +1430,7 @@ sketch001 = plane001
   |> extrude(length = 10)
 
 sketch002 = plane001
-  |> startProfileAt([47.17, -71.91], %)
+  |> startProfile(at = [47.17, -71.91])
   |> line(end = [247.96, -4.03])
   |> line(end = [-17.26, -116.79])
   |> line(end = [-235.87, 12.66])
@@ -1472,7 +1472,7 @@ cornerFilletRad = 0.5
 holeDia = 0.5
 
 sketch001 = startSketchOn(XZ)
-  |> startProfileAt([-foot1Length, 0], %)
+  |> startProfile(at = [-foot1Length, 0])
   |> line(end = [0, thickness], tag = $cornerFillet1)
   |> line(end = [foot1Length, 0])
   |> line(end = [0, height], tag = $fillet1)
@@ -1520,7 +1520,7 @@ cornerChamferRad = 0.5
 holeDia = 0.5
 
 sketch001 = startSketchOn(XZ)
-  |> startProfileAt([-foot1Length, 0], %)
+  |> startProfile(at = [-foot1Length, 0])
   |> line(end = [0, thickness], tag = $cornerChamfer1)
   |> line(end = [foot1Length, 0])
   |> line(end = [0, height], tag = $chamfer1)
@@ -1552,7 +1552,7 @@ baseExtrusion = extrude(sketch001, length = width)
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_shell_with_tag() {
     let code = r#"sketch001 = startSketchOn(XZ)
-  |> startProfileAt([61.74, 206.13], %)
+  |> startProfile(at = [61.74, 206.13])
   |> xLine(length = 305.11, tag = $seg01)
   |> yLine(length = -291.85)
   |> xLine(length = -segLen(seg01))
@@ -1573,7 +1573,7 @@ async fn kcl_test_shell_with_tag() {
 async fn kcl_test_linear_pattern3d_filleted_sketch() {
     let code = r#"fn cube = (pos, scale) => {
   sg = startSketchOn(XY)
-    |> startProfileAt(pos, %)
+    |> startProfile(at = pos)
     |> line(end = [0, scale])
     |> line(end = [scale, 0])
     |> line(end = [0, -scale])
@@ -1604,7 +1604,7 @@ pattn1 = patternLinear3d(
 async fn kcl_test_circular_pattern3d_filleted_sketch() {
     let code = r#"fn cube = (pos, scale) => {
   sg = startSketchOn(XY)
-    |> startProfileAt(pos, %)
+    |> startProfile(at = pos)
     |> line(end = [0, scale])
     |> line(end = [scale, 0])
     |> line(end = [0, -scale])
@@ -1631,7 +1631,7 @@ pattn2 = patternCircular3d(part001, axis = [0,0, 1], center = [-20, -20, -20], i
 async fn kcl_test_circular_pattern3d_chamfered_sketch() {
     let code = r#"fn cube = (pos, scale) => {
   sg = startSketchOn(XY)
-    |> startProfileAt(pos, %)
+    |> startProfile(at = pos)
     |> line(end = [0, scale])
     |> line(end = [scale, 0])
     |> line(end = [0, -scale])
@@ -1657,7 +1657,7 @@ pattn2 = patternCircular3d(part001, axis = [0,0, 1], center = [-20, -20, -20], i
 async fn kcl_test_tag_chamfer_with_more_than_one_edge_should_fail() {
     let code = r#"fn cube = (pos, scale) => {
   sg = startSketchOn(XY)
-    |> startProfileAt(pos, %)
+    |> startProfile(at = pos)
     |> line(end = [0, scale])
     |> line(end = [scale, 0])
     |> line(end = [0, -scale])
@@ -1691,7 +1691,7 @@ part001 = cube([0,0], 20)
 async fn kcl_test_duplicate_tags_should_error() {
     let code = r#"fn triangle = (len) => {
   return startSketchOn(XY)
-  |> startProfileAt([-len / 2, -len / 2], %)
+  |> startProfile(at = [-len / 2, -len / 2])
   |> angledLine(angle = 0, length = len , tag = $a)
   |> angledLine(
        angle = segAng(a) + 120,
@@ -1766,7 +1766,7 @@ async fn kcl_test_extrude_custom_plane() {
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_arc_error_same_start_end() {
     let code = r#"startSketchOn(XY)
-  |> startProfileAt([10, 0], %)
+  |> startProfile(at = [10, 0])
   |> arc(
        angleStart = 180,
        angleEnd = 180,
@@ -1790,7 +1790,7 @@ async fn kcl_test_arc_error_same_start_end() {
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_angled_line_to_x_90() {
     let code = r#"exampleSketch = startSketchOn(XZ)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> angledLine(angle = 90, endAbsoluteX = 10)
   |> line(end = [0, 10])
   |> line(end = [-10, 0])
@@ -1810,7 +1810,7 @@ example = extrude(exampleSketch, length = 10)
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_angled_line_to_x_270() {
     let code = r#"exampleSketch = startSketchOn(XZ)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> angledLine(angle = 270, endAbsoluteX = 10)
   |> line(end = [0, 10])
   |> line(end = [-10, 0])
@@ -1830,7 +1830,7 @@ example = extrude(exampleSketch, length = 10)
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_angled_line_to_y_0() {
     let code = r#"exampleSketch = startSketchOn(XZ)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> angledLine(angle = 0, endAbsoluteY = 20)
   |> line(end = [-20, 0])
   |> angledLine(angle = 70, endAbsoluteY = 10)
@@ -1850,7 +1850,7 @@ example = extrude(exampleSketch, length = 10)
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_angled_line_to_y_180() {
     let code = r#"exampleSketch = startSketchOn(XZ)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> angledLine(angle = 180, endAbsoluteY = 20)
   |> line(end = [-20, 0])
   |> angledLine(angle = 70, endAbsoluteY = 10)
@@ -1870,7 +1870,7 @@ example = extrude(exampleSketch, length = 10)
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_angled_line_of_x_length_90() {
     let code = r#"sketch001 = startSketchOn(XZ)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> angledLine(angle = 90, lengthX = 90, tag = $edge1)
   |> angledLine(angle = -15, lengthX = -15, tag = $edge2)
   |> line(end = [0, -5])
@@ -1890,7 +1890,7 @@ extrusion = extrude(sketch001, length = 10)
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_angled_line_of_x_length_270() {
     let code = r#"sketch001 = startSketchOn(XZ)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> angledLine(angle = 90, lengthX = 90, tag = $edge1)
   |> angledLine(angle = -15, lengthX = -15, tag = $edge2)
   |> line(end = [0, -5])
@@ -1910,7 +1910,7 @@ extrusion = extrude(sketch001, length = 10)
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_angled_line_of_y_length_0() {
     let code = r#"exampleSketch = startSketchOn(XZ)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> line(end = [10, 0])
   |> angledLine(angle = 0, lengthY = 10)
   |> line(end = [0, 10])
@@ -1932,7 +1932,7 @@ example = extrude(exampleSketch, length = 10)
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_angled_line_of_y_length_180() {
     let code = r#"exampleSketch = startSketchOn(XZ)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> line(end = [10, 0])
   |> angledLine(angle = 180, lengthY = 10)
   |> line(end = [0, 10])
@@ -1954,7 +1954,7 @@ example = extrude(exampleSketch, length = 10)
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_angled_line_of_y_length_negative_180() {
     let code = r#"exampleSketch = startSketchOn(XZ)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> line(end = [10, 0])
   |> angledLine(angle = -180, lengthY = 10)
   |> line(end = [0, 10])
@@ -2014,7 +2014,7 @@ someFunction('INVALID')
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_error_no_auth_websocket() {
     let code = r#"const sketch001 = startSketchOn(XZ)
-  |> startProfileAt([61.74, 206.13], %)
+  |> startProfile(at = [61.74, 206.13])
   |> xLine(length = 305.11, tag = $seg01)
   |> yLine(length = -291.85)
   |> xLine(length = -segLen(seg01))
@@ -2049,7 +2049,7 @@ length = 1 + 1 / 2
 
 // create a sketch on the XY plane
 sketch000 = startSketchOn(XY)
-    |> startProfileAt([0, 0], %)
+    |> startProfile(at = [0, 0])
     |> line(end = [0, innerDiameter / 2])
 "#;
 

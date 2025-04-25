@@ -8,7 +8,7 @@ export dividerThickness = 4
 
 fn dividerSketch(plane) {
   sketch000 = startSketchOn(plane)
-    |> startProfileAt([-16.82, 21.2], %)
+    |> startProfile(at = [-16.82, 21.2])
     |> line(end = [-0.13, -1.27])
     |> tangentialArc(endAbsolute = [-15.94, profileStartY(%) - 7.73])
     |> tangentialArc(endAbsolute = [-16.6, profileStartY(%) - 15.52])
@@ -45,7 +45,7 @@ export fn divider(plane) {
 
 fn connectorSketch(plane, start) {
   sketch001 = startSketchOn(plane)
-    |> startProfileAt(start, %)
+    |> startProfile(at = start)
     |> polygon(
          radius = 1.2,
          numSides = 6,
@@ -65,7 +65,7 @@ export fn connector(plane, length) {
 
 fn seatSlatSketch(plane) {
   sketch003 = startSketchOn(plane)
-    |> startProfileAt([-7, 19], %)
+    |> startProfile(at = [-7, 19])
     |> line(end = [-10, 0.5])
     |> line(end = [0.2, 2.5])
     |> line(end = [1.5, 1.5])
@@ -85,7 +85,7 @@ export fn seatSlats(plane, length) {
 
 fn backSlatsSketch(plane) {
   sketch004 = startSketchOn(plane)
-    |> startProfileAt([22, 38.5], %)
+    |> startProfile(at = [22, 38.5])
     |> angledLine(angle = 173, length = 2)
     |> line(end = [-1.74, 2.03])
     |> angledLine(angle = 82, length = 6.6)
@@ -105,7 +105,7 @@ export fn backSlats(plane, length) {
 
 fn armRestPath(plane) {
   sketch005 = startSketchOn(plane)
-    |> startProfileAt([20, 33], %)
+    |> startProfile(at = [20, 33])
     |> xLine(length = -20)
     |> arc(angleStart = 90, angleEnd = 180, radius = 10)
   return sketch005
@@ -113,7 +113,7 @@ fn armRestPath(plane) {
 
 fn armRestProfile(plane, offset) {
   sketch006 = startSketchOn(plane)
-    |> startProfileAt([offset, 32.4], %)
+    |> startProfile(at = [offset, 32.4])
     |> xLine(length = 1.3)
     |> line(end = [0.3, 0.6])
     |> line(end = [-0.3, 0.6])
