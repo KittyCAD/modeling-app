@@ -571,8 +571,8 @@ export const modelingMachine = setup({
     'Has exportable geometry': () => false,
     'has valid selection for deletion': () => false,
     'is-error-free': () => false,
-    'planes not initialized yet': ({ context }) => {
-      return !context.planesInitialized
+    'no kcl errors': () => {
+      return !kclManager.hasErrors()
     },
     'is editing existing sketch': ({ context: { sketchDetails } }) =>
       isEditingExistingSketch({ sketchDetails }),
@@ -1326,31 +1326,6 @@ export const modelingMachine = setup({
         savedDefaultPlaneVisibility: {
           ...context.defaultPlaneVisibility,
         },
-      }
-    }),
-    'Init default plane visibility': assign(({ context }) => {
-      // Opening a project:
-      // - project is empty and there are no errors: show planes
-      // - not empty, or there are errors: don't show planes
-      const showPlanes =
-        kclManager.artifactGraph.size === 0 && !kclManager.hasErrors()
-      const initialValue: PlaneVisibilityMap = {
-        xy: showPlanes,
-        xz: showPlanes,
-        yz: showPlanes,
-      }
-
-      for (const planeKey of Object.keys(
-        initialValue
-      ) as (keyof PlaneVisibilityMap)[]) {
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        kclManager.setPlaneVisibilityByKey(planeKey, initialValue[planeKey])
-      }
-
-      return {
-        defaultPlaneVisibility: { ...initialValue },
-        savedDefaultPlaneVisibility: { ...initialValue },
-        planesInitialized: true,
       }
     }),
     'Restore default plane visibility': assign(({ context }) => {
@@ -2975,21 +2950,6 @@ export const modelingMachine = setup({
         })
       }
     ),
-    'clean-up-sketch-mode': fromPromise(
-      async ({
-        input,
-      }: {
-        input: {
-          savedDefaultPlaneVisibility: ModelingMachineContext['savedDefaultPlaneVisibility']
-        }
-      }) => {
-        // We can synchronize sketch clean up actions here as most of them are async and some of them are affected by
-        // each other.
-        // This is not implemented yet, the actions are still in:
-        // "Cleaning up sketch mode"/entry and
-        // Sketch mode / exit
-      }
-    ),
     'reeval-node-paths': fromPromise(
       async ({
         input: { sketchDetails },
@@ -3188,29 +3148,38 @@ export const modelingMachine = setup({
         'Boolean Subtract': 'Boolean subtracting',
         'Boolean Union': 'Boolean uniting',
         'Boolean Intersect': 'Boolean intersecting',
-
-        // This runs only for empty artifact graphs
-        'Artifact graph populated': {
-          actions: [
-            'reset camera position',
-            'show default planes if no errors',
-          ],
-        },
-        // This runs only for non-empty artifact graphs
-        'Artifact graph emptied': {
-          actions: ['hide default planes'],
-        },
-        'Artifact graph initialized': {
-          actions: [
-            // This only works when artifact graph is initialized (actually when rustContext.defaultPlanes is set),
-            // it cannot be invoked on "entry" immediately
-            'Init default plane visibility',
-          ],
-          guard: 'planes not initialized yet',
-        },
       },
 
       entry: 'reset client scene mouse handlers',
+
+      states: {
+        hidePlanes: {
+          on: {
+            'Artifact graph populated': {
+              target: 'showPlanes',
+              guard: 'no kcl errors',
+            },
+          },
+
+          entry: 'hide default planes',
+        },
+
+        showPlanes: {
+          on: {
+            'Artifact graph emptied': 'hidePlanes',
+          },
+
+          entry: [
+            'show default planes',
+            'reset camera position',
+            'set selection filter to curves only',
+          ],
+          description: `We want to disable selections and hover highlights here, because users can't do anything with that information until they actually add something to the scene. The planes are just for orientation here.`,
+          exit: 'set selection filter to defaults',
+        },
+      },
+
+      initial: 'hidePlanes',
     },
 
     Sketch: {
@@ -3330,7 +3299,7 @@ export const modelingMachine = setup({
                   },
                 ],
                 onError: {
-                  target: '#Modeling.Cleaning up sketch mode',
+                  target: '#Modeling.idle',
                   reenter: true,
                 },
               },
@@ -3578,7 +3547,7 @@ export const modelingMachine = setup({
             id: 'AST-undo-startSketchOn',
             input: ({ context: { sketchDetails } }) => ({ sketchDetails }),
             onDone: {
-              target: '#Modeling.Cleaning up sketch mode',
+              target: '#Modeling.idle',
               actions: 'enter modeling mode',
               reenter: true,
             },
@@ -3734,7 +3703,7 @@ export const modelingMachine = setup({
               actions: 'update sketchDetails',
             },
             onError: {
-              target: '#Modeling.Cleaning up sketch mode',
+              target: '#Modeling.idle',
               actions: 'toastError',
               reenter: true,
             },
@@ -4322,7 +4291,6 @@ export const modelingMachine = setup({
 
     'Sketch no face': {
       entry: [
-        'Save default plane visibility',
         'disable copilot',
         'show default planes',
         'set selection filter to faces only',
@@ -4376,10 +4344,7 @@ export const modelingMachine = setup({
           ],
         },
 
-        onError: {
-          target: 'Cleaning up sketch mode',
-          reenter: true,
-        },
+        onError: 'idle',
       },
     },
 
@@ -4678,41 +4643,19 @@ export const modelingMachine = setup({
         onError: 'idle',
       },
     },
-
-    'Cleaning up sketch mode': {
-      invoke: {
-        src: 'clean-up-sketch-mode',
-        id: 'clean-up-sketch-mode',
-        input: ({ event, context }) => {
-          return {
-            savedDefaultPlaneVisibility: context.savedDefaultPlaneVisibility,
-          }
-        },
-        onDone: 'idle',
-        onError: 'idle',
-      },
-
-      // Moved here from the Cancel event's action list:
-      // TODO what if we're existing extrude equipped, should these actions still be fired?
-      // maybe cancel needs to have a guard for if else logic?
-      entry: ['reset sketch metadata', 'enable copilot', 'enter modeling mode'],
-      // For now, not using saved default states, artifact graph emptied will trigger "hide default planes"
-      // exit: ['Restore default plane visibility'],
-    },
   },
 
   initial: 'idle',
 
   on: {
     Cancel: {
-      target: '.Cleaning up sketch mode',
+      target: '.idle',
       // TODO what if we're existing extrude equipped, should these actions still be fired?
       // maybe cancel needs to have a guard for if else logic?
       actions: [
-        // Moved to Cleaning up sketch mode's entry actions:
-        // 'reset sketch metadata',
-        // 'enable copilot',
-        // 'enter modeling mode',
+        'reset sketch metadata',
+        'enable copilot',
+        'enter modeling mode',
       ],
     },
 
