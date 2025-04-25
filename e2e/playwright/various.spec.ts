@@ -19,9 +19,7 @@ test('Units menu', async ({ page, homePage }) => {
   await millimetersButton.click()
 
   // Look out for the toast message
-  const toastMessage = page.getByText(
-    `Set default unit to "mm" for this project`
-  )
+  const toastMessage = page.getByText('Updated per-file units to mm')
   await expect(toastMessage).toBeVisible()
 
   // Verify that the popover has closed
