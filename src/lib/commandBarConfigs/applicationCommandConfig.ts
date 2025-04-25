@@ -93,6 +93,12 @@ export function createApplicationCommands({
     groupId: 'application',
     onSubmit(data) {
       if (data) {
+        /** TODO: Make a new machine for models. This is only a temporary location
+         * to move it to the global application level. To reduce its footprint
+         * and complexity the implementation lives here with systemIOMachine. Not
+         * inside the systemIOMachine. We can have a fancy model machine that loads
+         * KCL samples
+         */
         const folders = systemIOActor.getSnapshot().context.folders
         const isProjectNew = !!data.newProjectName
         const requestedProjectName = data.newProjectName || data.projectName
