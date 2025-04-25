@@ -224,19 +224,11 @@ const VisibilityToggle = (props: VisibilityToggleProps) => {
   return (
     <button
       onClick={handleToggleVisible}
-      className={`p-0 m-0 ${
-        visible
-          ? 'invisible group-hover/item:visible group-focus-within/item:visible'
-          : ''
-      }`}
+      className="p-0 m-0"
     >
       <CustomIcon
         name={visible ? 'eyeOpen' : 'eyeCrossedOut'}
-        className={`w-5 h-5 ${
-          visible
-            ? 'hidden group-hover/item:block group-focus-within/item:block'
-            : 'text-chalkboard-50'
-        }`}
+        className="w-5 h-5"
       />
     </button>
   )
