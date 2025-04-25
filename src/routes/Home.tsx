@@ -38,6 +38,7 @@ import {
   SystemIOMachineStates,
 } from '@src/machines/systemIO/utils'
 import type { WebContentSendPayload } from '@src/menu/channels'
+import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 
 type ReadWriteProjectState = {
   value: boolean
@@ -167,7 +168,7 @@ const Home = () => {
   const { searchResults, query, setQuery } = useProjectSearch(projects)
   const sort = searchParams.get('sort_by') ?? 'modified:desc'
   const sidebarButtonClasses =
-    'group flex items-center p-2 gap-2 leading-tight border-transparent active:border-primary hover:bg-transparent'
+    'flex items-center p-2 gap-2 leading-tight border-transparent dark:border-transparent dark:enabled:border-transparent enabled:hover:border-primary/50 dark:enabled:hover:border-primary/50 active:border-primary dark:bg-transparent hover:bg-transparent'
 
   return (
     <div className="relative flex flex-col h-screen overflow-hidden" ref={ref}>
@@ -199,7 +200,6 @@ const Home = () => {
                 iconStart={{
                   icon: 'plus',
                   bgClassName: '!bg-transparent rounded-sm',
-                  iconClassName: 'transition-transform group-active:rotate-90',
                 }}
                 data-testid="home-new-file"
               >
@@ -227,7 +227,6 @@ const Home = () => {
                 iconStart={{
                   icon: 'sparkles',
                   bgClassName: '!bg-transparent rounded-sm',
-                  iconClassName: 'transition-transform group-active:rotate-90',
                 }}
                 data-testid="home-text-to-cad"
               >
@@ -235,7 +234,40 @@ const Home = () => {
               </ActionButton>
             </li>
           </ul>
-          <div className="flex flex-col" />
+          <ul className="flex flex-col">
+            <li className="contents">
+              <ActionButton
+                Element="externalLink"
+                to="https://zoo.dev/docs"
+                onClick={openExternalBrowserIfDesktop(
+                  'https://zoo.dev/account'
+                )}
+                className={sidebarButtonClasses}
+                iconStart={{
+                  icon: 'person',
+                  bgClassName: '!bg-transparent rounded-sm',
+                }}
+                data-testid="home-account"
+              >
+                View your account
+              </ActionButton>
+            </li>
+            <li className="contents">
+              <ActionButton
+                Element="externalLink"
+                to="https://zoo.dev/blog"
+                onClick={openExternalBrowserIfDesktop('https://zoo.dev/blog')}
+                className={sidebarButtonClasses}
+                iconStart={{
+                  icon: 'sketch',
+                  bgClassName: '!bg-transparent rounded-sm',
+                }}
+                data-testid="home-blog"
+              >
+                Read the Zoo blog
+              </ActionButton>
+            </li>
+          </ul>
         </aside>
         <ProjectGrid
           searchResults={searchResults}
