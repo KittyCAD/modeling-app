@@ -278,7 +278,7 @@ impl ExecutorContext {
 
                     let annotations = &variable_declaration.outer_attrs;
 
-                    let memory_item = self
+                    let value = self
                         .execute_expr(
                             &variable_declaration.declaration.init,
                             exec_state,
@@ -289,13 +289,13 @@ impl ExecutorContext {
                         .await?;
                     exec_state
                         .mut_stack()
-                        .add(var_name.clone(), memory_item, source_range)?;
+                        .add(var_name.clone(), value.clone(), source_range)?;
 
                     // Track exports.
                     if let ItemVisibility::Export = variable_declaration.visibility {
                         exec_state.mod_local.module_exports.push(var_name);
                     }
-                    last_expr = None;
+                    last_expr = Some(value);
                 }
                 BodyItem::TypeDeclaration(ty) => {
                     let metadata = Metadata::from(&**ty);
