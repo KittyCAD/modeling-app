@@ -8,7 +8,7 @@ import basePlateRadius, basePlateThickness, baseChamfer, baseHeight from "global
 
 // Base Plate
 sketch001 = startSketchOn(XY)
-  |> startProfileAt([-basePlateRadius, -basePlateRadius], %)
+  |> startProfile(at = [-basePlateRadius, -basePlateRadius])
   |> angledLine(angle = 0, length = 2 * basePlateRadius, tag = $rectangleSegmentA001)
   |> angledLine(angle = segAng(rectangleSegmentA001) + 90, length = 2 * basePlateRadius, tag = $rectangleSegmentB001)
   |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $rectangleSegmentC001)

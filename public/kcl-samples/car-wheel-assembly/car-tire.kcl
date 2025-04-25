@@ -9,7 +9,7 @@ import tireInnerDiameter, tireOuterDiameter, tireDepth, bendRadius, tireTreadWid
 
 // Create the sketch of the tire
 tireSketch = startSketchOn(XY)
-  |> startProfileAt([tireInnerDiameter / 2, tireDepth / 2], %)
+  |> startProfile(at = [tireInnerDiameter / 2, tireDepth / 2])
   |> line(
        endAbsolute = [
          tireOuterDiameter / 2 - bendRadius,

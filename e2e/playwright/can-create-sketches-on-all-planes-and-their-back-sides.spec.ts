@@ -46,7 +46,7 @@ test.describe('Can create sketches on all planes and their back sides', () => {
       },
     }
 
-    const code = `@settings(defaultLengthUnit = in)sketch001 = startSketchOn(${plane})profile001 = startProfileAt([0.91, -1.22], sketch001)`
+    const code = `@settings(defaultLengthUnit = in)sketch001 = startSketchOn(${plane})profile001 = startProfile(sketch001, at = [0.91, -1.22])`
 
     await u.openDebugPanel()
 

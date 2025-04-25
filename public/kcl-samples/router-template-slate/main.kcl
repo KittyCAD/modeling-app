@@ -20,7 +20,7 @@ length002 = depth + minClampingDistance
 
 // Create the first sketch
 sketch001 = startSketchOn(XZ)
-  |> startProfileAt([0, depth - templateGap], %)
+  |> startProfile(at = [0, depth - templateGap])
   |> xLine(length = length001, tag = $seg01)
   |> arc(angleStart = 90, angleEnd = 0, radius = radius - templateGap)
   |> yLine(endAbsolute = -templateGap * 2 - (templateDiameter / 2), tag = $seg05)
@@ -41,10 +41,10 @@ extrude001 = extrude(sketch001, length = 5)
 
 // Create the second sketch
 sketch002 = startSketchOn(extrude001, face = START)
-  |> startProfileAt([
+  |> startProfile(at = [
        -slateWidthHalf,
        -templateGap * 2 - (templateDiameter / 2)
-     ], %)
+     ])
   |> xLine(length = -7, tag = $rectangleSegmentA001)
   |> angledLine(angle = segAng(rectangleSegmentA001) + 90, length = minClampingDistance, tag = $rectangleSegmentB001)
   |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $rectangleSegmentC001)
@@ -56,10 +56,10 @@ extrude002 = extrude(sketch002, length = 7.5)
 
 // Create the third sketch
 sketch003 = startSketchOn(extrude001, face = START)
-  |> startProfileAt([
+  |> startProfile(at = [
        slateWidthHalf,
        -templateGap * 2 - (templateDiameter / 2)
-     ], %)
+     ])
   |> xLine(length = 7, tag = $rectangleSegmentA002)
   |> angledLine(angle = segAng(rectangleSegmentA002) - 90, length = minClampingDistance)
   |> angledLine(angle = segAng(rectangleSegmentA002), length = -segLen(rectangleSegmentA002))

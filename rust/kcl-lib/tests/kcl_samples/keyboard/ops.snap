@@ -193,8 +193,8 @@ description: Operations executed keyboard.kcl
       "type": "FunctionCall",
       "name": "toRadians",
       "functionSourceRange": [
-        11497,
-        11546,
+        11503,
+        11552,
         1
       ],
       "unlabeledArg": null,
@@ -230,7 +230,7 @@ description: Operations executed keyboard.kcl
       "name": "keyFn",
       "functionSourceRange": [
         1887,
-        2974,
+        2977,
         0
       ],
       "unlabeledArg": null,
@@ -562,7 +562,7 @@ description: Operations executed keyboard.kcl
       "name": "keyFn",
       "functionSourceRange": [
         1887,
-        2974,
+        2977,
         0
       ],
       "unlabeledArg": null,
@@ -894,7 +894,7 @@ description: Operations executed keyboard.kcl
       "name": "keyFn",
       "functionSourceRange": [
         1887,
-        2974,
+        2977,
         0
       ],
       "unlabeledArg": null,
@@ -1226,7 +1226,7 @@ description: Operations executed keyboard.kcl
       "name": "keyFn",
       "functionSourceRange": [
         1887,
-        2974,
+        2977,
         0
       ],
       "unlabeledArg": null,
@@ -1558,7 +1558,7 @@ description: Operations executed keyboard.kcl
       "name": "keyFn",
       "functionSourceRange": [
         1887,
-        2974,
+        2977,
         0
       ],
       "unlabeledArg": null,
@@ -1890,7 +1890,7 @@ description: Operations executed keyboard.kcl
       "name": "keyFn",
       "functionSourceRange": [
         1887,
-        2974,
+        2977,
         0
       ],
       "unlabeledArg": null,
@@ -2222,7 +2222,7 @@ description: Operations executed keyboard.kcl
       "name": "keyFn",
       "functionSourceRange": [
         1887,
-        2974,
+        2977,
         0
       ],
       "unlabeledArg": null,
@@ -2554,7 +2554,7 @@ description: Operations executed keyboard.kcl
       "name": "keyFn",
       "functionSourceRange": [
         1887,
-        2974,
+        2977,
         0
       ],
       "unlabeledArg": null,
@@ -2886,7 +2886,7 @@ description: Operations executed keyboard.kcl
       "name": "keyFn",
       "functionSourceRange": [
         1887,
-        2974,
+        2977,
         0
       ],
       "unlabeledArg": null,
@@ -3218,7 +3218,7 @@ description: Operations executed keyboard.kcl
       "name": "keyFn",
       "functionSourceRange": [
         1887,
-        2974,
+        2977,
         0
       ],
       "unlabeledArg": null,
@@ -3550,7 +3550,7 @@ description: Operations executed keyboard.kcl
       "name": "keyFn",
       "functionSourceRange": [
         1887,
-        2974,
+        2977,
         0
       ],
       "unlabeledArg": null,
@@ -3882,7 +3882,7 @@ description: Operations executed keyboard.kcl
       "name": "keyFn",
       "functionSourceRange": [
         1887,
-        2974,
+        2977,
         0
       ],
       "unlabeledArg": null,
@@ -4214,7 +4214,7 @@ description: Operations executed keyboard.kcl
       "name": "keyFn",
       "functionSourceRange": [
         1887,
-        2974,
+        2977,
         0
       ],
       "unlabeledArg": null,
@@ -4546,7 +4546,7 @@ description: Operations executed keyboard.kcl
       "name": "keyFn",
       "functionSourceRange": [
         1887,
-        2974,
+        2977,
         0
       ],
       "unlabeledArg": null,
@@ -4878,7 +4878,7 @@ description: Operations executed keyboard.kcl
       "name": "keyFn",
       "functionSourceRange": [
         1887,
-        2974,
+        2977,
         0
       ],
       "unlabeledArg": null,
@@ -5210,7 +5210,7 @@ description: Operations executed keyboard.kcl
       "name": "keyFn",
       "functionSourceRange": [
         1887,
-        2974,
+        2977,
         0
       ],
       "unlabeledArg": null,
@@ -5542,7 +5542,7 @@ description: Operations executed keyboard.kcl
       "name": "keyFn",
       "functionSourceRange": [
         1887,
-        2974,
+        2977,
         0
       ],
       "unlabeledArg": null,
@@ -5874,7 +5874,7 @@ description: Operations executed keyboard.kcl
       "name": "keyFn",
       "functionSourceRange": [
         1887,
-        2974,
+        2977,
         0
       ],
       "unlabeledArg": null,
@@ -6206,7 +6206,7 @@ description: Operations executed keyboard.kcl
       "name": "keyFn",
       "functionSourceRange": [
         1887,
-        2974,
+        2977,
         0
       ],
       "unlabeledArg": null,
@@ -6538,7 +6538,7 @@ description: Operations executed keyboard.kcl
       "name": "keyFn",
       "functionSourceRange": [
         1887,
-        2974,
+        2977,
         0
       ],
       "unlabeledArg": null,
@@ -6870,7 +6870,7 @@ description: Operations executed keyboard.kcl
       "name": "keyFn",
       "functionSourceRange": [
         1887,
-        2974,
+        2977,
         0
       ],
       "unlabeledArg": null,
@@ -7201,8 +7201,8 @@ description: Operations executed keyboard.kcl
       "type": "FunctionCall",
       "name": "toRadians",
       "functionSourceRange": [
-        11497,
-        11546,
+        11503,
+        11552,
         1
       ],
       "unlabeledArg": null,
@@ -7237,8 +7237,8 @@ description: Operations executed keyboard.kcl
       "type": "FunctionCall",
       "name": "z",
       "functionSourceRange": [
-        4852,
-        5831,
+        4855,
+        5834,
         0
       ],
       "unlabeledArg": null,
@@ -7474,8 +7474,8 @@ description: Operations executed keyboard.kcl
       "type": "FunctionCall",
       "name": "o",
       "functionSourceRange": [
-        5878,
-        6823,
+        5881,
+        6826,
         0
       ],
       "unlabeledArg": null,
@@ -7930,8 +7930,8 @@ description: Operations executed keyboard.kcl
       "type": "FunctionCall",
       "name": "o",
       "functionSourceRange": [
-        5878,
-        6823,
+        5881,
+        6826,
         0
       ],
       "unlabeledArg": null,

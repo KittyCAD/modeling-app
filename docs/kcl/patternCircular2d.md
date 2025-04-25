@@ -40,7 +40,7 @@ patternCircular2d(
 
 ```js
 exampleSketch = startSketchOn(XZ)
-  |> startProfileAt([.5, 25], %)
+  |> startProfile(at = [.5, 25])
   |> line(end = [0, 5])
   |> line(end = [-1, 0])
   |> line(end = [0, -5])

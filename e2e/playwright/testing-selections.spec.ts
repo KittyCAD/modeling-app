@@ -68,7 +68,7 @@ test.describe('Testing selections', () => {
     await u.closeDebugPanel()
     await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
     await expect(page.locator('.cm-content')).toHaveText(
-      `@settings(defaultLengthUnit = in)sketch001 = startSketchOn(XZ)profile001 = startProfileAt(${commonPoints.startAt}, sketch001)`
+      `@settings(defaultLengthUnit = in)sketch001 = startSketchOn(XZ)profile001 = startProfile(sketch001, at = ${commonPoints.startAt})`
     )
 
     await page.waitForTimeout(100)
@@ -76,25 +76,25 @@ test.describe('Testing selections', () => {
 
     await expect(
       page.locator('.cm-content')
-    ).toHaveText(`@settings(defaultLengthUnit = in)sketch001 = startSketchOn(XZ)profile001 = startProfileAt(${commonPoints.startAt}, sketch001)
+    ).toHaveText(`@settings(defaultLengthUnit = in)sketch001 = startSketchOn(XZ)profile001 = startProfile(sketch001, at = ${commonPoints.startAt})
     |> xLine(length = ${commonPoints.num1})`)
 
     await page.waitForTimeout(100)
     await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 20)
     await expect(
       page.locator('.cm-content')
-    ).toHaveText(`@settings(defaultLengthUnit = in)sketch001 = startSketchOn(XZ)profile001 = startProfileAt(${
+    ).toHaveText(`@settings(defaultLengthUnit = in)sketch001 = startSketchOn(XZ)profile001 = startProfile(sketch001, at = ${
       commonPoints.startAt
-    }, sketch001)
+    })
     |> xLine(length = ${commonPoints.num1})
     |> yLine(length = ${commonPoints.num1 + 0.01})`)
     await page.waitForTimeout(100)
     await page.mouse.click(startXPx, 500 - PUR * 20)
     await expect(
       page.locator('.cm-content')
-    ).toHaveText(`@settings(defaultLengthUnit = in)sketch001 = startSketchOn(XZ)profile001 = startProfileAt(${
+    ).toHaveText(`@settings(defaultLengthUnit = in)sketch001 = startSketchOn(XZ)profile001 = startProfile(sketch001, at = ${
       commonPoints.startAt
-    }, sketch001)
+    })
     |> xLine(length = ${commonPoints.num1})
     |> yLine(length = ${commonPoints.num1 + 0.01})
     |> xLine(length = ${commonPoints.num2 * -1})`)
@@ -265,34 +265,34 @@ test.describe('Testing selections', () => {
         'persistCode',
         `@settings(defaultLengthUnit = in)
 sketch001 = startSketchOn(XZ)
-  |> startProfileAt([-79.26, 95.04], %)
+  |> startProfile(at = [-79.26, 95.04])
   |> line(end = [112.54, 127.64], tag = $seg02)
   |> line(end = [170.36, -121.61], tag = $seg01)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 extrude001 = extrude(sketch001, length = 50)
 sketch005 = startSketchOn(extrude001, face = 'END')
-  |> startProfileAt([23.24, 136.52], %)
+  |> startProfile(at = [23.24, 136.52])
   |> line(end = [-8.44, 36.61])
   |> line(end = [49.4, 2.05])
   |> line(end = [29.69, -46.95])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 sketch003 = startSketchOn(extrude001, face = seg01)
-  |> startProfileAt([21.23, 17.81], %)
+  |> startProfile(at = [21.23, 17.81])
   |> line(end = [51.97, 21.32])
   |> line(end = [4.07, -22.75])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 sketch002 = startSketchOn(extrude001, face = seg02)
-  |> startProfileAt([-100.54, 16.99], %)
+  |> startProfile(at = [-100.54, 16.99])
   |> line(end = [0, 20.03])
   |> line(end = [62.61, 0], tag = $seg03)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 extrude002 = extrude(sketch002, length = 50)
 sketch004 = startSketchOn(extrude002, face = seg03)
-  |> startProfileAt([57.07, 134.77], %)
+  |> startProfile(at = [57.07, 134.77])
   |> line(end = [-4.72, 22.84])
   |> line(end = [28.8, 6.71])
   |> line(end = [9.19, -25.33])
@@ -304,7 +304,7 @@ pipeSmallDia = 10
 pipeLargeDia = 20
 thickness = 0.5
 part009 = startSketchOn(XY)
-  |> startProfileAt([pipeLargeDia - (thickness / 2), 38], %)
+  |> startProfile(at = [pipeLargeDia - (thickness / 2), 38])
   |> line(end = [thickness, 0])
   |> line(end = [0, -1])
   |> angledLine(angle = 60, endAbsoluteX = pipeSmallDia + thickness)
@@ -324,13 +324,13 @@ profile001 = circle(
   center = [42.91, -70.42],
   radius = 17.96
 )
-profile002 = startProfileAt([86.92, -63.81], sketch006)
+profile002 = startProfile(sketch006, at = [86.92, -63.81])
   |> angledLine(angle = 0, length = 63.81, tag = $rectangleSegmentA001)
   |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 17.05)
   |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-profile003 = startProfileAt([40.16, -120.48], sketch006)
+profile003 = startProfile(sketch006, at = [40.16, -120.48])
   |> line(end = [26.95, 24.21])
   |> line(end = [20.91, -28.61])
   |> line(end = [32.46, 18.71])
@@ -412,7 +412,7 @@ profile003 = startProfileAt([40.16, -120.48], sketch006)
     await page.mouse.click(solid2d.x, solid2d.y)
     await page.waitForTimeout(100)
     await expect(page.locator('.cm-activeLine')).toHaveText(
-      '|> startProfileAt([23.24, 136.52], %)'
+      '|> startProfile(at = [23.24, 136.52])'
     )
     await u.clearCommandLogs()
     await page.keyboard.press('Delete')
@@ -424,7 +424,7 @@ profile003 = startProfileAt([40.16, -120.48], sketch006)
     await page.mouse.click(individualProfile.x, individualProfile.y)
     await page.waitForTimeout(100)
     const codeToBeDeletedSnippet =
-      'profile003 = startProfileAt([40.16, -120.48], sketch006)'
+      'profile003 = startProfile(sketch006, at = [40.16, -120.48])'
     await expect(page.locator('.cm-activeLine')).toHaveText(
       '  |> line(end = [20.91, -28.61])'
     )
@@ -447,7 +447,7 @@ profile003 = startProfileAt([40.16, -120.48], sketch006)
       localStorage.setItem(
         'persistCode',
         `part001 = startSketchOn(XY)
-yo = startProfileAt([4.83, 12.56], part001)
+yo = startProfile(part001, at = [4.83, 12.56])
   |> line(end = [15.1, 2.48])
   |> line(end = [3.15, -9.85], tag = $seg01)
   |> line(end = [-15.17, -4.1])
@@ -457,13 +457,13 @@ yo = startProfileAt([4.83, 12.56], part001)
 yoo = extrude(yo, length = 4)
 sketch002 = startSketchOn(yoo, face = seg02)
 sketch001 = startSketchOn(yoo, face = 'END')
-profile002 = startProfileAt([-11.08, 2.39], sketch002)
+profile002 = startProfile(sketch002, at = [-11.08, 2.39])
   |> line(end = [4.89, 0.9])
   |> line(end = [-0.61, -2.41])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 extrude001 = extrude(profile002, length = 15)
-profile001 = startProfileAt([7.49, 9.96], sketch001)
+profile001 = startProfile(sketch001, at = [7.49, 9.96])
   |> angledLine(angle = 0, length = 5.05, tag = $rectangleSegmentA001)
   |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 4.81)
   |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
@@ -511,7 +511,7 @@ profile001 = startProfileAt([7.49, 9.96], sketch001)
         'persistCode',
         `@settings(defaultLengthUnit = in)
 part001 = startSketchOn(XZ)
-  |> startProfileAt([20, 0], %)
+  |> startProfile(at = [20, 0])
   |> line(end = [7.13, 4 + 0])
   |> angledLine(angle = 3 + 0, length = 3.14 + 0 )
   |> line(endAbsolute = [20.14 + 0, -0.14 + 0])
@@ -648,8 +648,8 @@ part001 = startSketchOn(XZ)
     await checkCodeAtHoverPosition(
       'extrusionTopCap',
       extrusionTopCap,
-      'startProfileAt([20,0],%)',
-      'startProfileAt([20, 0], %)'
+      'startProfile(at=[20,0])',
+      'startProfile(at = [20, 0])'
     )
     await checkCodeAtHoverPosition(
       'flatExtrusionFace',
@@ -727,7 +727,7 @@ part001 = startSketchOn(XZ)
     await u.removeCurrentCode()
     await u.codeLocator.fill(`@settings(defaultLengthUnit = in)
     sketch001 = startSketchOn(XZ)
-    |> startProfileAt([75.8, 317.2], %) // [$startCapTag, $EndCapTag]
+    |> startProfile(at = [75.8, 317.2]) // [$startCapTag, $EndCapTag]
     |> angledLine(angle = 0, length = 268.43, tag = $rectangleSegmentA001)
     |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 217.26, tag = $seg01)
     |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $yo)
@@ -839,7 +839,7 @@ part001 = startSketchOn(XZ)
       localStorage.setItem(
         'persistCode',
         `sketch001 = startSketchOn(XZ)
-    |> startProfileAt([3.29, 7.86], %)
+    |> startProfile(at = [3.29, 7.86])
     |> line(end = [2.48, 2.44])
     |> line(end = [2.66, 1.17])
     |> line(end = [3.75, 0.46])
@@ -882,7 +882,7 @@ part001 = startSketchOn(XZ)
 
     const codeToAdd = `${await u.codeLocator.allInnerTexts()}
   sketch002 = startSketchOn(extrude001, face = $seg01)
-    |> startProfileAt([-12.94, 6.6], %)
+    |> startProfile(at = [-12.94, 6.6])
     |> line(end = [2.45, -0.2])
     |> line(end = [-2, -1.25])
     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
@@ -938,7 +938,7 @@ part001 = startSketchOn(XZ)
           `@settings(defaultLengthUnit = in)
   yo = 79
   part001 = startSketchOn(XZ)
-    |> startProfileAt([-7.54, -26.74], %)
+    |> startProfile(at = [-7.54, -26.74])
     |> ${cases[0].expectedCode}
     |> line(end = [-3.19, -138.43])
     |> ${cases[1].expectedCode}
@@ -994,7 +994,7 @@ part001 = startSketchOn(XZ)
         'persistCode',
         `@settings(defaultLengthUnit = in)
   sketch001 = startSketchOn(XZ)
-    |> startProfileAt([-79.26, 95.04], %)
+    |> startProfile(at = [-79.26, 95.04])
     |> line(end = [112.54, 127.64])
     |> line(end = [170.36, -121.61], tag = $seg01)
     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
@@ -1033,7 +1033,7 @@ part001 = startSketchOn(XZ)
     const extrudeText = `line(end = [170.36, -121.61], tag = $seg01)`
 
     const cap = { x: 594, y: 283 }
-    const capText = `startProfileAt([-79.26, 95.04], %)`
+    const capText = `startProfile(at = [-79.26, 95.04])`
 
     const nothing = { x: 946, y: 229 }
 
@@ -1094,10 +1094,10 @@ part001 = startSketchOn(XZ)
   }) => {
     const u = await getUtils(page)
     const selectionsSnippets = {
-      extrudeAndEditBlocked: '|> startProfileAt([10.81, 32.99], %)',
-      extrudeAndEditBlockedInFunction: '|> startProfileAt(pos, %)',
-      extrudeAndEditAllowed: '|> startProfileAt([15.72, 4.7], %)',
-      editOnly: '|> startProfileAt([15.79, -14.6], %)',
+      extrudeAndEditBlocked: '|> startProfile(at = [10.81, 32.99])',
+      extrudeAndEditBlockedInFunction: '|> startProfile(at = pos)',
+      extrudeAndEditAllowed: '|> startProfile(at = [15.72, 4.7])',
+      editOnly: '|> startProfile(at = [15.79, -14.6])',
     }
     await page.addInitScript(
       async ({

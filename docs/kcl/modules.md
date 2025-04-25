@@ -73,7 +73,7 @@ There are two common patterns for re‑using geometry:
 ```kcl
 fn cube(center) {
   return startSketchOn(XY)
-    |> startProfileAt([center[0] - 10, center[1] - 10], %)
+    |> startProfile(at = [center[0] - 10, center[1] - 10])
     |> line(endAbsolute = [center[0] + 10, center[1] - 10])
     |> line(endAbsolute = [center[0] + 10, center[1] + 10])
     |> line(endAbsolute = [center[0] - 10, center[1] + 10])

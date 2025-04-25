@@ -101,7 +101,7 @@ const thickness = 0.5
 
 // Create the sketch to be revolved around the y-axis. Use the small diameter, large diameter, length, and thickness to define the sketch.
 const Part001 = startSketchOn('XY')
-  |> startProfileAt([pipeLargeDia - (thickness / 2), 38], %)
+  |> startProfile(at = [pipeLargeDia - (thickness / 2), 38])
   |> line([thickness, 0], %)
   |> line([0, -1], %)
   |> angledLine(angle = 60, endAbsoluteX = pipeSmallDia + thickness)
@@ -131,7 +131,7 @@ const thickness = 0.5
 
 // Create the sketch to be revolved around the y-axis. Use the small diameter, large diameter, length, and thickness to define the sketch.
 const part001 = startSketchOn('XY')
-  |> startProfileAt([pipeLargeDia - (thickness / 2), 38], %)
+  |> startProfile(at = [pipeLargeDia - (thickness / 2), 38])
   |> line([thickness, 0], %)
   |> line([0, -1], %)
   |> angledLine(angle = 60, endAbsoluteX = pipeSmallDia + thickness)

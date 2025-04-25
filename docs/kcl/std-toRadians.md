@@ -28,7 +28,7 @@ toRadians(@num: number(rad)): number(rad)
 
 ```js
 exampleSketch = startSketchOn(XZ)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> angledLine(
     angle = 50,
     length = 70 * cos(toRadians(45)),
