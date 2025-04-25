@@ -863,7 +863,7 @@ test.describe('Mocked Text-to-CAD API tests', { tag: ['@skipWin'] }, () => {
       await page.keyboard.type(prompt)
       await page.keyboard.press('Enter')
 
-      await page.waitForTimeout(5000)
+      await expect(page.getByRole('button', { name: 'Reject' })).toBeVisible()
       await expect(page.getByText('2 file')).toBeVisible()
 
       await page.getByRole('button', { name: 'Reject' }).click()
@@ -876,6 +876,7 @@ test.describe('Mocked Text-to-CAD API tests', { tag: ['@skipWin'] }, () => {
     'Home Page -> Text To CAD -> Existing Project -> Stay in home page -> Accept -> should navigate to file',
     { tag: '@electron' },
     async ({ context, page }, testInfo) => {
+      const u = await getUtils(page)
       const projectName = 'my-project-name'
       const prompt = '2x2x2 cube'
       await mockPageTextToCAD(page)
@@ -914,6 +915,11 @@ test.describe('Mocked Text-to-CAD API tests', { tag: ['@skipWin'] }, () => {
       await expect(page.getByTestId('app-header-file-name')).toContainText(
         '2x2x2-cube.kcl'
       )
+
+      await u.openFilePanel()
+      await expect(
+        page.getByTestId('file-tree-item').getByText('2x2x2-cube.kcl')
+      ).toBeVisible()
     }
   )
 
@@ -947,8 +953,14 @@ test.describe('Mocked Text-to-CAD API tests', { tag: ['@skipWin'] }, () => {
       // Go into the project that was created from Text to CAD
       await page.getByText(projectName).click()
 
-      // Just to make sure we route, don't actually need the stream or anything...
-      await page.waitForTimeout(3000)
+      await expect(page.getByTestId('app-header-project-name')).toBeVisible()
+      await expect(page.getByTestId('app-header-project-name')).toContainText(
+        projectName
+      )
+      await expect(page.getByTestId('app-header-file-name')).toBeVisible()
+      await expect(page.getByTestId('app-header-file-name')).toContainText(
+        '2x2x2-cube.kcl'
+      )
 
       await page.getByRole('button', { name: 'Reject' }).click()
 

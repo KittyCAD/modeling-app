@@ -7,12 +7,14 @@ import {
   useRequestedFileName,
   useRequestedProjectName,
   useRequestedTextToCadGeneration,
+  useFolders,
 } from '@src/machines/systemIO/hooks'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { useNavigate } from 'react-router-dom'
 import { useEffect } from 'react'
 import { submitAndAwaitTextToKclSystemIO } from '@src/lib/textToCad'
 import { reportRejection } from '@src/lib/trap'
+import { getUniqueProjectName } from '@src/lib/desktopFS'
 
 export function SystemIOMachineLogicListenerDesktop() {
   const requestedProjectName = useRequestedProjectName()
@@ -23,6 +25,7 @@ export function SystemIOMachineLogicListenerDesktop() {
   const settings = useSettings()
   const requestedTextToCadGeneration = useRequestedTextToCadGeneration()
   const token = useToken()
+  const folders = useFolders()
 
   const useGlobalProjectNavigation = () => {
     useEffect(() => {
@@ -109,9 +112,10 @@ export function SystemIOMachineLogicListenerDesktop() {
         requestedTextToCadGeneration.requestedProjectName
       const isProjectNew = requestedTextToCadGeneration.isProjectNew
       if (!requestedPromptTrimmed || !requestedProjectName) return
+      const uniqueName = getUniqueProjectName(requestedProjectName, folders)
       submitAndAwaitTextToKclSystemIO({
         trimmedPrompt: requestedPromptTrimmed,
-        projectName: requestedProjectName,
+        projectName: uniqueName,
         navigate,
         token,
         isProjectNew,
