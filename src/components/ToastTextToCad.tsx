@@ -1,10 +1,10 @@
 import type {
   TextToCadIteration_type,
   TextToCad_type,
-} from "@kittycad/lib/dist/types/src/models";
-import { useCallback, useEffect, useRef, useState } from "react";
-import toast from "react-hot-toast";
-import type { Mesh } from "three";
+} from '@kittycad/lib/dist/types/src/models'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import toast from 'react-hot-toast'
+import type { Mesh } from 'three'
 import {
   Box3,
   Color,
@@ -17,26 +17,26 @@ import {
   Scene,
   Vector3,
   WebGLRenderer,
-} from "three";
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
-import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader";
-import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
-import { ActionButton } from "@src/components/ActionButton";
-import { base64Decode } from "@src/lang/wasm";
-import { isDesktop } from "@src/lib/isDesktop";
-import { openExternalBrowserIfDesktop } from "@src/lib/openWindow";
-import { PATHS } from "@src/lib/paths";
-import { codeManager, kclManager, systemIOActor } from "@src/lib/singletons";
-import { sendTelemetry } from "@src/lib/textToCadTelemetry";
-import { reportRejection } from "@src/lib/trap";
-import { commandBarActor } from "@src/lib/singletons";
-import { SystemIOMachineEvents } from "@src/machines/systemIO/utils";
-import { useProjectDirectoryPath } from "@src/machines/systemIO/hooks";
+} from 'three'
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
+import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader'
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
+import { ActionButton } from '@src/components/ActionButton'
+import { base64Decode } from '@src/lang/wasm'
+import { isDesktop } from '@src/lib/isDesktop'
+import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
+import { PATHS } from '@src/lib/paths'
+import { codeManager, kclManager, systemIOActor } from '@src/lib/singletons'
+import { sendTelemetry } from '@src/lib/textToCadTelemetry'
+import { reportRejection } from '@src/lib/trap'
+import { commandBarActor } from '@src/lib/singletons'
+import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
+import { useProjectDirectoryPath } from '@src/machines/systemIO/hooks'
 
-const CANVAS_SIZE = 128;
-const PROMPT_TRUNCATE_LENGTH = 128;
-const FRUSTUM_SIZE = 0.5;
-const OUTPUT_KEY = "source.glb";
+const CANVAS_SIZE = 128
+const PROMPT_TRUNCATE_LENGTH = 128
+const FRUSTUM_SIZE = 0.5
+const OUTPUT_KEY = 'source.glb'
 
 function TextToCadImprovementMessage({
   label,
@@ -53,26 +53,26 @@ function TextToCadImprovementMessage({
         Sometimes even a small tweak to your prompt will make it better on the
         next run. Try our prompt-to-edit feature to iterate on your result with
         AI. We look at all the failures to make the model better and see our
-        weaknesses. Over time the model will get better. See our{" "}
+        weaknesses. Over time the model will get better. See our{' '}
         <a
           href="https://discord.gg/JQEpHR7Nt2"
           onClick={openExternalBrowserIfDesktop(
-            "https://discord.gg/JQEpHR7Nt2",
+            'https://discord.gg/JQEpHR7Nt2'
           )}
         >
           Discord
-        </a>{" "}
-        or{" "}
+        </a>{' '}
+        or{' '}
         <a
           href="https://community.zoo.dev/"
-          onClick={openExternalBrowserIfDesktop("https://community.zoo.dev/")}
+          onClick={openExternalBrowserIfDesktop('https://community.zoo.dev/')}
         >
           Discourse
-        </a>{" "}
+        </a>{' '}
         or some prompting tips from the community or our team.
       </p>
     </details>
-  );
+  )
 }
 
 export function ToastTextToCadError({
@@ -83,12 +83,12 @@ export function ToastTextToCadError({
   projectName,
   newProjectName,
 }: {
-  toastId: string;
-  message: string;
-  prompt: string;
-  method: string;
-  projectName: string;
-  newProjectName: string;
+  toastId: string
+  message: string
+  prompt: string
+  method: string
+  projectName: string
+  newProjectName: string
 }) {
   return (
     <div className="flex flex-col justify-between gap-6">
@@ -102,11 +102,11 @@ export function ToastTextToCadError({
         <ActionButton
           Element="button"
           iconStart={{
-            icon: "close",
+            icon: 'close',
           }}
           name="Dismiss"
           onClick={() => {
-            toast.dismiss(toastId);
+            toast.dismiss(toastId)
           }}
         >
           Dismiss
@@ -114,15 +114,15 @@ export function ToastTextToCadError({
         <ActionButton
           Element="button"
           iconStart={{
-            icon: "refresh",
+            icon: 'refresh',
           }}
           name="Edit prompt"
           onClick={() => {
             commandBarActor.send({
-              type: "Find and select command",
+              type: 'Find and select command',
               data: {
-                groupId: "application",
-                name: "Text-to-CAD",
+                groupId: 'application',
+                name: 'Text-to-CAD',
                 argDefaultValues: {
                   prompt,
                   method,
@@ -130,15 +130,15 @@ export function ToastTextToCadError({
                   newProjectName,
                 },
               },
-            });
-            toast.dismiss(toastId);
+            })
+            toast.dismiss(toastId)
           }}
         >
           Edit prompt
         </ActionButton>
       </div>
     </div>
-  );
+  )
 }
 
 export function ToastTextToCadSuccess({
@@ -151,24 +151,24 @@ export function ToastTextToCadSuccess({
   fileName,
   isProjectNew,
 }: {
-  toastId: string;
-  data: TextToCad_type & { fileName: string };
-  navigate: (to: string) => void;
-  token?: string;
+  toastId: string
+  data: TextToCad_type & { fileName: string }
+  navigate: (to: string) => void
+  token?: string
   settings?: {
-    highlightEdges: boolean;
-  };
-  projectName: string;
-  fileName: string;
-  isProjectNew: boolean;
+    highlightEdges: boolean
+  }
+  projectName: string
+  fileName: string
+  isProjectNew: boolean
 }) {
-  const wrapperRef = useRef<HTMLDivElement | null>(null);
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const animationRequestRef = useRef<number>();
-  const [hasCopied, setHasCopied] = useState(false);
-  const [showCopiedUi, setShowCopiedUi] = useState(false);
-  const modelId = data.id;
-  const projectDirectoryPath = useProjectDirectoryPath();
+  const wrapperRef = useRef<HTMLDivElement | null>(null)
+  const canvasRef = useRef<HTMLCanvasElement | null>(null)
+  const animationRequestRef = useRef<number>()
+  const [hasCopied, setHasCopied] = useState(false)
+  const [showCopiedUi, setShowCopiedUi] = useState(false)
+  const modelId = data.id
+  const projectDirectoryPath = useProjectDirectoryPath()
 
   const animate = useCallback(
     ({
@@ -178,149 +178,149 @@ export function ToastTextToCadSuccess({
       controls,
       isFirstRender = false,
     }: {
-      renderer: WebGLRenderer;
-      scene: Scene;
-      camera: OrthographicCamera;
-      controls: OrbitControls;
-      isFirstRender?: boolean;
+      renderer: WebGLRenderer
+      scene: Scene
+      camera: OrthographicCamera
+      controls: OrbitControls
+      isFirstRender?: boolean
     }) => {
       if (
         !wrapperRef.current ||
         !(isFirstRender || animationRequestRef.current)
       )
-        return;
+        return
       animationRequestRef.current = requestAnimationFrame(() =>
-        animate({ renderer, scene, camera, controls }),
-      );
+        animate({ renderer, scene, camera, controls })
+      )
       // required if controls.enableDamping or controls.autoRotate are set to true
-      controls.update();
-      renderer.render(scene, camera);
+      controls.update()
+      renderer.render(scene, camera)
     },
-    [],
-  );
+    []
+  )
 
   useEffect(() => {
-    if (!canvasRef.current) return;
+    if (!canvasRef.current) return
 
-    const canvas = canvasRef.current;
+    const canvas = canvasRef.current
     const renderer = new WebGLRenderer({
       canvas,
       antialias: true,
       alpha: true,
-    });
-    renderer.setSize(CANVAS_SIZE, CANVAS_SIZE);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    })
+    renderer.setSize(CANVAS_SIZE, CANVAS_SIZE)
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 
-    const scene = new Scene();
-    const ambientLight = new DirectionalLight(new Color("white"), 8.0);
-    scene.add(ambientLight);
-    const camera = createCamera();
-    const controls = new OrbitControls(camera, renderer.domElement);
-    controls.enableDamping = true;
-    const loader = new GLTFLoader();
-    const dracoLoader = new DRACOLoader();
-    dracoLoader.setDecoderPath("/examples/jsm/libs/draco/");
-    loader.setDRACOLoader(dracoLoader);
-    scene.add(camera);
+    const scene = new Scene()
+    const ambientLight = new DirectionalLight(new Color('white'), 8.0)
+    scene.add(ambientLight)
+    const camera = createCamera()
+    const controls = new OrbitControls(camera, renderer.domElement)
+    controls.enableDamping = true
+    const loader = new GLTFLoader()
+    const dracoLoader = new DRACOLoader()
+    dracoLoader.setDecoderPath('/examples/jsm/libs/draco/')
+    loader.setDRACOLoader(dracoLoader)
+    scene.add(camera)
 
     // Get the base64 encoded GLB file
-    const buffer = base64Decode(data.outputs[OUTPUT_KEY]);
+    const buffer = base64Decode(data.outputs[OUTPUT_KEY])
 
     if (buffer instanceof Error) {
-      toast.error("Error loading GLB file: " + buffer.message);
-      console.error("decoding buffer from base64 failed", buffer);
-      return;
+      toast.error('Error loading GLB file: ' + buffer.message)
+      console.error('decoding buffer from base64 failed', buffer)
+      return
     }
 
     loader.parse(
       buffer,
-      "",
+      '',
       // called when the resource is loaded
       function (gltf) {
-        scene.add(gltf.scene);
+        scene.add(gltf.scene)
 
         // Style the objects in the scene
         traverseSceneToStyleObjects({
           scene,
           ...settings,
-        });
+        })
 
         // Then we'll calculate the max distance of the bounding box
         // and set that as the camera's position
-        const size = new Vector3();
-        const boundingBox = new Box3();
-        boundingBox.setFromObject(gltf.scene);
-        boundingBox.getSize(size);
-        const maxDistance = Math.max(size.x, size.y, size.z);
+        const size = new Vector3()
+        const boundingBox = new Box3()
+        boundingBox.setFromObject(gltf.scene)
+        boundingBox.getSize(size)
+        const maxDistance = Math.max(size.x, size.y, size.z)
 
-        camera.position.set(maxDistance * 2, maxDistance * 2, maxDistance * 2);
-        camera.lookAt(0, 0, 0);
-        camera.left = -maxDistance;
-        camera.right = maxDistance;
-        camera.top = maxDistance;
-        camera.bottom = -maxDistance;
-        camera.near = 0;
-        camera.far = maxDistance * 10;
+        camera.position.set(maxDistance * 2, maxDistance * 2, maxDistance * 2)
+        camera.lookAt(0, 0, 0)
+        camera.left = -maxDistance
+        camera.right = maxDistance
+        camera.top = maxDistance
+        camera.bottom = -maxDistance
+        camera.near = 0
+        camera.far = maxDistance * 10
 
         // Create and attach the lights,
         // since their position depends on the bounding box
-        const cameraLight1 = new DirectionalLight(new Color("white"), 1);
-        cameraLight1.position.set(maxDistance * -5, -maxDistance, maxDistance);
-        camera.add(cameraLight1);
+        const cameraLight1 = new DirectionalLight(new Color('white'), 1)
+        cameraLight1.position.set(maxDistance * -5, -maxDistance, maxDistance)
+        camera.add(cameraLight1)
 
-        const cameraLight2 = new DirectionalLight(new Color("white"), 1.4);
-        cameraLight2.position.set(0, 0, 2 * maxDistance);
-        camera.add(cameraLight2);
+        const cameraLight2 = new DirectionalLight(new Color('white'), 1.4)
+        cameraLight2.position.set(0, 0, 2 * maxDistance)
+        camera.add(cameraLight2)
 
-        const sceneLight = new DirectionalLight(new Color("white"), 1);
+        const sceneLight = new DirectionalLight(new Color('white'), 1)
         sceneLight.position.set(
           -2 * maxDistance,
           -2 * maxDistance,
-          2 * maxDistance,
-        );
-        scene.add(sceneLight);
+          2 * maxDistance
+        )
+        scene.add(sceneLight)
 
-        camera.updateProjectionMatrix();
-        controls.update();
+        camera.updateProjectionMatrix()
+        controls.update()
         // render the scene once...
-        renderer.render(scene, camera);
+        renderer.render(scene, camera)
       },
       // called when loading has errors
       function (error) {
-        toast.error("Error loading GLB file: " + error.message);
-        console.error("Error loading GLB file", error);
-        return;
-      },
-    );
+        toast.error('Error loading GLB file: ' + error.message)
+        console.error('Error loading GLB file', error)
+        return
+      }
+    )
 
     // ...and set a mouseover listener on the canvas to enable the orbit controls
-    canvasRef.current.addEventListener("mouseover", () => {
+    canvasRef.current.addEventListener('mouseover', () => {
       renderer.setAnimationLoop(() =>
-        animate({ renderer, scene, camera, controls, isFirstRender: true }),
-      );
-    });
-    canvasRef.current.addEventListener("mouseout", () => {
-      renderer.setAnimationLoop(null);
+        animate({ renderer, scene, camera, controls, isFirstRender: true })
+      )
+    })
+    canvasRef.current.addEventListener('mouseout', () => {
+      renderer.setAnimationLoop(null)
       if (animationRequestRef.current) {
-        cancelAnimationFrame(animationRequestRef.current);
-        animationRequestRef.current = undefined;
+        cancelAnimationFrame(animationRequestRef.current)
+        animationRequestRef.current = undefined
       }
-    });
+    })
 
     return () => {
-      renderer.dispose();
+      renderer.dispose()
       if (animationRequestRef.current) {
-        cancelAnimationFrame(animationRequestRef.current);
-        animationRequestRef.current = undefined;
+        cancelAnimationFrame(animationRequestRef.current)
+        animationRequestRef.current = undefined
       }
-    };
-  }, []);
+    }
+  }, [])
 
   return (
     <div className="flex gap-4 min-w-80" ref={wrapperRef}>
       <div
         className="flex-none overflow-hidden"
-        style={{ width: CANVAS_SIZE + "px", height: CANVAS_SIZE + "px" }}
+        style={{ width: CANVAS_SIZE + 'px', height: CANVAS_SIZE + 'px' }}
       >
         <canvas ref={canvasRef} width={CANVAS_SIZE} height={CANVAS_SIZE} />
       </div>
@@ -330,7 +330,7 @@ export function ToastTextToCadSuccess({
           <p className="text-sm text-chalkboard-70 dark:text-chalkboard-30">
             Prompt: "
             {data.prompt.length > PROMPT_TRUNCATE_LENGTH
-              ? data.prompt.slice(0, PROMPT_TRUNCATE_LENGTH) + "..."
+              ? data.prompt.slice(0, PROMPT_TRUNCATE_LENGTH) + '...'
               : data.prompt}
             "
           </p>
@@ -343,15 +343,13 @@ export function ToastTextToCadSuccess({
           <ActionButton
             Element="button"
             iconStart={{
-              icon: "close",
+              icon: 'close',
             }}
-            data-negative-button={hasCopied ? "close" : "reject"}
-            name={hasCopied ? "Close" : "Reject"}
+            data-negative-button={hasCopied ? 'close' : 'reject'}
+            name={hasCopied ? 'Close' : 'Reject'}
             onClick={() => {
               if (!hasCopied) {
-                sendTelemetry(modelId, "rejected", token).catch(
-                  reportRejection,
-                );
+                sendTelemetry(modelId, 'rejected', token).catch(reportRejection)
               }
               if (isDesktop()) {
                 // Delete the file from the project
@@ -365,7 +363,7 @@ export function ToastTextToCadSuccess({
                       data: {
                         requestedProjectName: projectName,
                       },
-                    });
+                    })
                   } else {
                     // Only delete the file if the project was preexisting
                     systemIOActor.send({
@@ -374,30 +372,30 @@ export function ToastTextToCadSuccess({
                         requestedProjectName: projectName,
                         requestedFileName: fileName,
                       },
-                    });
+                    })
                   }
                 }
               }
 
-              toast.dismiss(toastId);
+              toast.dismiss(toastId)
             }}
           >
-            {hasCopied ? "Close" : "Reject"}
+            {hasCopied ? 'Close' : 'Reject'}
           </ActionButton>
           {isDesktop() ? (
             <ActionButton
               Element="button"
               iconStart={{
-                icon: "checkmark",
+                icon: 'checkmark',
               }}
               name="Accept"
               onClick={() => {
                 // eslint-disable-next-line @typescript-eslint/no-floating-promises
-                sendTelemetry(modelId, "accepted", token);
-                const path = `${projectDirectoryPath}${window.electron.path.sep}${projectName}${window.electron.sep}${fileName}`;
-                navigate(`${PATHS.FILE}/${encodeURIComponent(path)}`);
+                sendTelemetry(modelId, 'accepted', token)
+                const path = `${projectDirectoryPath}${window.electron.path.sep}${projectName}${window.electron.sep}${fileName}`
+                navigate(`${PATHS.FILE}/${encodeURIComponent(path)}`)
 
-                toast.dismiss(toastId);
+                toast.dismiss(toastId)
               }}
             >
               Accept
@@ -406,30 +404,30 @@ export function ToastTextToCadSuccess({
             <ActionButton
               Element="button"
               iconStart={{
-                icon: showCopiedUi ? "clipboardCheckmark" : "clipboardPlus",
+                icon: showCopiedUi ? 'clipboardCheckmark' : 'clipboardPlus',
               }}
               name="Copy to clipboard"
               onClick={() => {
                 // eslint-disable-next-line @typescript-eslint/no-floating-promises
-                sendTelemetry(modelId, "accepted", token);
+                sendTelemetry(modelId, 'accepted', token)
                 // eslint-disable-next-line @typescript-eslint/no-floating-promises
-                navigator.clipboard.writeText(data.code || "// no code found");
-                setShowCopiedUi(true);
-                setHasCopied(true);
+                navigator.clipboard.writeText(data.code || '// no code found')
+                setShowCopiedUi(true)
+                setHasCopied(true)
 
                 // Reset the button text after 5 seconds
                 setTimeout(() => {
-                  setShowCopiedUi(false);
-                }, 5000);
+                  setShowCopiedUi(false)
+                }, 5000)
               }}
             >
-              {showCopiedUi ? "Copied" : "Copy to clipboard"}
+              {showCopiedUi ? 'Copied' : 'Copy to clipboard'}
             </ActionButton>
           )}
         </div>
       </div>
     </div>
-  );
+  )
 }
 
 const createCamera = (): OrthographicCamera => {
@@ -439,29 +437,29 @@ const createCamera = (): OrthographicCamera => {
     FRUSTUM_SIZE,
     -FRUSTUM_SIZE,
     0.5,
-    3,
-  );
-};
+    3
+  )
+}
 
 function traverseSceneToStyleObjects({
   scene,
   color = 0x29ffa4,
   highlightEdges = false,
 }: {
-  scene: Scene;
-  color?: number;
-  highlightEdges?: boolean;
+  scene: Scene
+  color?: number
+  highlightEdges?: boolean
 }) {
   scene.traverse((child) => {
-    if ("isMesh" in child && child.isMesh) {
+    if ('isMesh' in child && child.isMesh) {
       // Replace the material with our flat color one
-      (child as Mesh).material = new MeshBasicMaterial({
+      ;(child as Mesh).material = new MeshBasicMaterial({
         color,
-      });
+      })
 
       // Add edges to the mesh if the option is enabled
-      if (!highlightEdges) return;
-      const edges = new EdgesGeometry((child as Mesh).geometry, 30);
+      if (!highlightEdges) return
+      const edges = new EdgesGeometry((child as Mesh).geometry, 30)
       const lines = new LineSegments(
         edges,
         new LineBasicMaterial({
@@ -470,11 +468,11 @@ function traverseSceneToStyleObjects({
           // in light and dark themes,
           // but we can change that if needed, it is wired up
           color: 0x1f2020,
-        }),
-      );
-      scene.add(lines);
+        })
+      )
+      scene.add(lines)
     }
-  });
+  })
 }
 
 export function ToastPromptToEditCadSuccess({
@@ -483,12 +481,12 @@ export function ToastPromptToEditCadSuccess({
   data,
   oldCode,
 }: {
-  toastId: string;
-  oldCode: string;
-  data: TextToCadIteration_type;
-  token?: string;
+  toastId: string
+  oldCode: string
+  data: TextToCadIteration_type
+  token?: string
 }) {
-  const modelId = data.id;
+  const modelId = data.id
 
   return (
     <div className="flex gap-4 min-w-80">
@@ -498,7 +496,7 @@ export function ToastPromptToEditCadSuccess({
           <p className="text-sm text-chalkboard-70 dark:text-chalkboard-30">
             Prompt: "
             {data?.prompt && data?.prompt?.length > PROMPT_TRUNCATE_LENGTH
-              ? data.prompt.slice(0, PROMPT_TRUNCATE_LENGTH) + "..."
+              ? data.prompt.slice(0, PROMPT_TRUNCATE_LENGTH) + '...'
               : data.prompt}
             "
           </p>
@@ -512,29 +510,29 @@ export function ToastPromptToEditCadSuccess({
           <ActionButton
             Element="button"
             iconStart={{
-              icon: "close",
+              icon: 'close',
             }}
-            data-negative-button={"reject"}
-            name={"Reject"}
+            data-negative-button={'reject'}
+            name={'Reject'}
             onClick={() => {
-              sendTelemetry(modelId, "rejected", token).catch(reportRejection);
-              codeManager.updateCodeEditor(oldCode);
-              kclManager.executeCode().catch(reportRejection);
-              toast.dismiss(toastId);
+              sendTelemetry(modelId, 'rejected', token).catch(reportRejection)
+              codeManager.updateCodeEditor(oldCode)
+              kclManager.executeCode().catch(reportRejection)
+              toast.dismiss(toastId)
             }}
           >
-            {"Reject"}
+            {'Reject'}
           </ActionButton>
 
           <ActionButton
             Element="button"
             iconStart={{
-              icon: "checkmark",
+              icon: 'checkmark',
             }}
             name="Accept"
             onClick={() => {
-              sendTelemetry(modelId, "accepted", token).catch(reportRejection);
-              toast.dismiss(toastId);
+              sendTelemetry(modelId, 'accepted', token).catch(reportRejection)
+              toast.dismiss(toastId)
 
               // Write new content to disk since they have accepted.
               codeManager
@@ -543,9 +541,9 @@ export function ToastPromptToEditCadSuccess({
                   // no-op
                 })
                 .catch((e) => {
-                  console.error("Failed to save prompt-to-edit to disk");
-                  console.error(e);
-                });
+                  console.error('Failed to save prompt-to-edit to disk')
+                  console.error(e)
+                })
             }}
           >
             Accept
@@ -553,5 +551,5 @@ export function ToastPromptToEditCadSuccess({
         </div>
       </div>
     </div>
-  );
+  )
 }
