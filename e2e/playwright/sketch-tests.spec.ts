@@ -1496,7 +1496,7 @@ profile002 = startProfile(sketch001, at = [117.2, 56.08])
 
     await test.step('equip line tool and verify corner rectangle code is removed', async () => {
       await toolbar.lineBtn.click()
-      await editor.expectEditor.not.toContain('profile004 = startProfileAt(')
+      await editor.expectEditor.not.toContain('profile004 = startProfile(')
     })
 
     const [centerRectPoint1] = scene.makeMouseHelpers(700, 300)
@@ -1505,12 +1505,12 @@ profile002 = startProfile(sketch001, at = [117.2, 56.08])
       await toolbar.selectCenterRectangle()
       await page.waitForTimeout(100)
       await centerRectPoint1()
-      await editor.expectEditor.toContain('profile004 = startProfileAt(')
+      await editor.expectEditor.toContain('profile004 = startProfile(')
     })
 
     await test.step('equip line tool and verify center rectangle code is removed', async () => {
       await toolbar.lineBtn.click()
-      await editor.expectEditor.not.toContain('profile004 = startProfileAt(')
+      await editor.expectEditor.not.toContain('profile004 = startProfile(')
     })
 
     await test.step('continue profile002 with the three point arc tool, and then switch back to the line tool to verify it only removes the last expression in the pipe', async () => {
