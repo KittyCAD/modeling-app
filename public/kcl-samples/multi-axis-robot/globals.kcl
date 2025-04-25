@@ -4,10 +4,10 @@
 @settings(defaultLengthUnit = in)
 
 // Axis Angles
-export axisJ4 = 25
-export axisJ3 = 60
-export axisJ2 = 110
-export axisJ1 = 80
+export axisJ4 = 25deg
+export axisJ3 = 60deg
+export axisJ2 = 110deg
+export axisJ1 = 80deg
 
 // Robot Arm Base
 export basePlateRadius = 5
@@ -30,29 +30,26 @@ export axisJ3CArmThickness = 2.5
 export plane001 = {
   origin = [0.0, 0.0, baseHeight - 1.5 + 0.1],
   xAxis = [1.0, 0.0, 0.0],
-  yAxis = [0.0, 1.0, 0.0],
-  zAxis = [0.0, 0.0, 1.0]
+  yAxis = [0.0, 1.0, 0.0]
 }
 
 export plane002 = {
   origin = [0.0, 0.0, 0.0],
   xAxis = [
-    sin(toRadians(axisJ1)),
-    cos(toRadians(axisJ1)),
+    sin(axisJ1): number(in),
+    cos(axisJ1): number(in),
     0.0
   ],
-  yAxis = [0.0, 0.0, 1.0],
-  zAxis = [1.0, 0.0, 0.0]
+  yAxis = [0.0, 0.0, 1.0]
 }
 
 // Define Plane to Move J2 Axis Robot Arm
 export plane003 = {
   origin = [-0.1, 0.0, 0.0],
   xAxis = [
-    sin(toRadians(axisJ1)),
-    cos(toRadians(axisJ1)),
+    sin(axisJ1): number(in),
+    cos(axisJ1): number(in),
     0.0
   ],
-  yAxis = [0.0, 0.0, 1.0],
-  zAxis = [1.0, 0.0, 0.0]
+  yAxis = [0.0, 0.0, 1.0]
 }

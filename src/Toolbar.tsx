@@ -26,7 +26,7 @@ import type {
 } from '@src/lib/toolbar'
 import { isToolbarItemResolvedDropdown, toolbarConfig } from '@src/lib/toolbar'
 import { isArray } from '@src/lib/utils'
-import { commandBarActor } from '@src/machines/commandBarMachine'
+import { commandBarActor } from '@src/lib/singletons'
 
 export function Toolbar({
   className = '',

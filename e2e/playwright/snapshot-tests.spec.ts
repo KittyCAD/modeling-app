@@ -47,7 +47,7 @@ test.setTimeout(60_000)
 // up with another PR if we want this back.
 test(
   'exports of each format should work',
-  { tag: ['@snapshot', '@skipWin', '@skipMacos'] },
+  { tag: ['@snapshot'] },
   async ({ page, context, scene, cmdBar, tronApp }) => {
     if (!tronApp) {
       fail()
@@ -464,9 +464,7 @@ test(
   |> xLine(length = 184.3)`
     await expect(page.locator('.cm-content')).toHaveText(code)
 
-    await page
-      .getByRole('button', { name: 'arc Tangential Arc', exact: true })
-      .click()
+    await toolbar.selectTangentialArc()
 
     // click on the end of the profile to continue it
     await page.waitForTimeout(500)
@@ -621,7 +619,7 @@ test.describe(
   'Client side scene scale should match engine scale',
   { tag: '@snapshot' },
   () => {
-    test('Inch scale', async ({ page, cmdBar, scene }) => {
+    test('Inch scale', async ({ page, cmdBar, scene, toolbar }) => {
       const u = await getUtils(page)
       await page.setViewportSize({ width: 1200, height: 500 })
       const PUR = 400 / 37.5 //pixeltoUnitRatio
@@ -655,9 +653,7 @@ test.describe(
   |> xLine(length = 184.3)`
       await expect(u.codeLocator).toHaveText(code)
 
-      await page
-        .getByRole('button', { name: 'arc Tangential Arc', exact: true })
-        .click()
+      await toolbar.selectTangentialArc()
       await page.waitForTimeout(100)
 
       // click to continue profile
@@ -671,9 +667,8 @@ test.describe(
       await expect(u.codeLocator).toHaveText(code)
 
       // click tangential arc tool again to unequip it
-      await page
-        .getByRole('button', { name: 'arc Tangential Arc', exact: true })
-        .click()
+      // it will be available directly in the toolbar since it was last equipped
+      await toolbar.tangentialArcBtn.click()
       await page.waitForTimeout(100)
 
       // screen shot should show the sketch
@@ -696,7 +691,13 @@ test.describe(
       })
     })
 
-    test('Millimeter scale', async ({ page, context, cmdBar, scene }) => {
+    test('Millimeter scale', async ({
+      page,
+      context,
+      cmdBar,
+      scene,
+      toolbar,
+    }) => {
       await context.addInitScript(
         async ({ settingsKey, settings }) => {
           localStorage.setItem(settingsKey, settings)
@@ -749,9 +750,7 @@ test.describe(
   |> xLine(length = 184.3)`
       await expect(u.codeLocator).toHaveText(code)
 
-      await page
-        .getByRole('button', { name: 'arc Tangential Arc', exact: true })
-        .click()
+      await toolbar.selectTangentialArc()
       await page.waitForTimeout(100)
 
       // click to continue profile
@@ -764,9 +763,7 @@ test.describe(
   |> tangentialArc(endAbsolute = [551.2, -62.01])`
       await expect(u.codeLocator).toHaveText(code)
 
-      await page
-        .getByRole('button', { name: 'arc Tangential Arc', exact: true })
-        .click()
+      await toolbar.tangentialArcBtn.click()
       await page.waitForTimeout(100)
 
       // screen shot should show the sketch

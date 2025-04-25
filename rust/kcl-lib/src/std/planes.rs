@@ -1,6 +1,5 @@
 //! Standard library plane helpers.
 
-use kcl_derive_docs::stdlib;
 use kcmc::{each_cmd as mcmd, length_unit::LengthUnit, shared::Color, ModelingCmd};
 use kittycad_modeling_cmds as kcmc;
 
@@ -19,98 +18,6 @@ pub async fn offset_plane(exec_state: &mut ExecState, args: Args) -> Result<KclV
     Ok(KclValue::Plane { value: Box::new(plane) })
 }
 
-/// Offset a plane by a distance along its normal.
-///
-/// For example, if you offset the 'XZ' plane by 10, the new plane will be parallel to the 'XZ'
-/// plane and 10 units away from it.
-///
-/// ```no_run
-/// // Loft a square and a circle on the `XY` plane using offset.
-/// squareSketch = startSketchOn('XY')
-///     |> startProfileAt([-100, 200], %)
-///     |> line(end = [200, 0])
-///     |> line(end = [0, -200])
-///     |> line(end = [-200, 0])
-///     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-///     |> close()
-///
-/// circleSketch = startSketchOn(offsetPlane('XY', offset = 150))
-///     |> circle( center = [0, 100], radius = 50 )
-///
-/// loft([squareSketch, circleSketch])
-/// ```
-///
-/// ```no_run
-/// // Loft a square and a circle on the `XZ` plane using offset.
-/// squareSketch = startSketchOn('XZ')
-///     |> startProfileAt([-100, 200], %)
-///     |> line(end = [200, 0])
-///     |> line(end = [0, -200])
-///     |> line(end = [-200, 0])
-///     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-///     |> close()
-///
-/// circleSketch = startSketchOn(offsetPlane('XZ', offset = 150))
-///     |> circle( center = [0, 100], radius = 50 )
-///
-/// loft([squareSketch, circleSketch])
-/// ```
-///
-/// ```no_run
-/// // Loft a square and a circle on the `YZ` plane using offset.
-/// squareSketch = startSketchOn('YZ')
-///     |> startProfileAt([-100, 200], %)
-///     |> line(end = [200, 0])
-///     |> line(end = [0, -200])
-///     |> line(end = [-200, 0])
-///     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-///     |> close()
-///
-/// circleSketch = startSketchOn(offsetPlane('YZ', offset = 150))
-///     |> circle( center = [0, 100], radius = 50 )
-///
-/// loft([squareSketch, circleSketch])
-/// ```
-///
-/// ```no_run
-/// // Loft a square and a circle on the `-XZ` plane using offset.
-/// squareSketch = startSketchOn('-XZ')
-///     |> startProfileAt([-100, 200], %)
-///     |> line(end = [200, 0])
-///     |> line(end = [0, -200])
-///     |> line(end = [-200, 0])
-///     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-///     |> close()
-///
-/// circleSketch = startSketchOn(offsetPlane('-XZ', offset = -150))
-///     |> circle( center = [0, 100], radius = 50 )
-///
-/// loft([squareSketch, circleSketch])
-/// ```
-/// ```no_run
-/// // A circle on the XY plane
-/// startSketchOn("XY")
-///   |> startProfileAt([0, 0], %)
-///   |> circle( radius = 10, center = [0, 0] )
-///   
-/// // Triangle on the plane 4 units above
-/// startSketchOn(offsetPlane("XY", offset = 4))
-///   |> startProfileAt([0, 0], %)
-///   |> line(end = [10, 0])
-///   |> line(end = [0, 10])
-///   |> close()
-/// ```
-
-#[stdlib {
-    name = "offsetPlane",
-    feature_tree_operation = true,
-    keywords = true,
-    unlabeled_first = true,
-    args = {
-        plane = { docs = "The plane (e.g. XY) which this new plane is created from." },
-        offset = { docs = "Distance from the standard plane this new plane will be created at." },
-    }
-}]
 async fn inner_offset_plane(
     plane: PlaneData,
     offset: TyF64,
@@ -122,7 +29,8 @@ async fn inner_offset_plane(
     // standard planes themselves.
     plane.value = PlaneType::Custom;
 
-    plane.origin += plane.z_axis * offset.to_length_units(plane.origin.units);
+    let normal = plane.x_axis.cross(&plane.y_axis);
+    plane.origin += normal * offset.to_length_units(plane.origin.units);
     make_offset_plane_in_engine(&plane, exec_state, args).await?;
 
     Ok(plane)

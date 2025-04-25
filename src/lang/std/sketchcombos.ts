@@ -453,7 +453,10 @@ const getMinAndSegLenVals = (
   const segLenVal = createSegLen(referenceSegName)
   return [
     createCallExpression('min', [segLenVal, varVal]),
-    createCallExpression('legLen', [segLenVal, varVal]),
+    createCallExpressionStdLibKw('legLen', null, [
+      createLabeledArg('hypotenuse', segLenVal),
+      createLabeledArg('leg', varVal),
+    ]),
   ]
 }
 
@@ -484,11 +487,6 @@ const getLegAng = (ang: number, legAngleVal: BinaryPart) => {
     legAngleVal,
   ])
   return truncatedTo90 === 0 ? legAngleVal : binExp
-}
-
-const getAngleLengthSign = (ang: number, legAngleVal: BinaryPart) => {
-  const normalisedAngle = ((ang % 180) + 180) % 180 // between 0 and 180
-  return normalisedAngle > 90 ? createUnaryExpression(legAngleVal) : legAngleVal
 }
 
 function getClosesAngleDirection(
@@ -895,26 +893,6 @@ const transformMap: TransformMap = {
       },
     },
     xAbsolute: {
-      equalLength: {
-        tooltip: 'angledLineToX',
-        createNode: ({ referenceSegName, inputs, tag, rawArgs: args }) => {
-          const angleToMatchLengthXCall = createCallExpression(
-            'angleToMatchLengthX',
-            [
-              createLocalName(referenceSegName),
-              inputs[0].expr,
-              createPipeSubstitution(),
-            ]
-          )
-          const val = asNum(args[0].expr.value)
-          if (err(val)) return val
-          return createCallWrapper(
-            'angledLineToX',
-            [getAngleLengthSign(val, angleToMatchLengthXCall), inputs[0].expr],
-            tag
-          )
-        },
-      },
       horizontal: {
         tooltip: 'xLineTo',
         createNode: ({ inputs, tag }) =>
@@ -926,26 +904,6 @@ const transformMap: TransformMap = {
       },
     },
     yAbsolute: {
-      equalLength: {
-        tooltip: 'angledLineToY',
-        createNode: ({ referenceSegName, inputs, tag, rawArgs: args }) => {
-          const angleToMatchLengthYCall = createCallExpression(
-            'angleToMatchLengthY',
-            [
-              createLocalName(referenceSegName),
-              inputs[1].expr,
-              createPipeSubstitution(),
-            ]
-          )
-          const val = asNum(args[0].expr.value)
-          if (err(val)) return val
-          return createCallWrapper(
-            'angledLineToY',
-            [getAngleLengthSign(val, angleToMatchLengthYCall), inputs[1].expr],
-            tag
-          )
-        },
-      },
       vertical: {
         tooltip: 'yLineTo',
         createNode: ({ inputs, tag }) =>
@@ -1192,26 +1150,6 @@ const transformMap: TransformMap = {
       },
     },
     xAbsolute: {
-      equalLength: {
-        tooltip: 'angledLineToX',
-        createNode: ({ referenceSegName, inputs, tag, rawArgs: args }) => {
-          const angleToMatchLengthXCall = createCallExpression(
-            'angleToMatchLengthX',
-            [
-              createLocalName(referenceSegName),
-              inputs[1].expr,
-              createPipeSubstitution(),
-            ]
-          )
-          const val = asNum(args[0].expr.value)
-          if (err(val)) return val
-          return createCallWrapper(
-            'angledLineToX',
-            [getAngleLengthSign(val, angleToMatchLengthXCall), inputs[1].expr],
-            tag
-          )
-        },
-      },
       horizontal: {
         tooltip: 'xLineTo',
         createNode: ({ inputs, tag }) =>
@@ -1242,26 +1180,6 @@ const transformMap: TransformMap = {
       },
     },
     yAbsolute: {
-      equalLength: {
-        tooltip: 'angledLineToY',
-        createNode: ({ referenceSegName, inputs, tag, rawArgs: args }) => {
-          const angleToMatchLengthXCall = createCallExpression(
-            'angleToMatchLengthY',
-            [
-              createLocalName(referenceSegName),
-              inputs[1].expr,
-              createPipeSubstitution(),
-            ]
-          )
-          const val = asNum(args[0].expr.value)
-          if (err(val)) return val
-          return createCallWrapper(
-            'angledLineToY',
-            [getAngleLengthSign(val, angleToMatchLengthXCall), inputs[1].expr],
-            tag
-          )
-        },
-      },
       vertical: {
         tooltip: 'yLineTo',
         createNode: ({ inputs, tag }) =>

@@ -283,6 +283,10 @@ ipcMain.handle('shell.openExternal', (event, data) => {
   return shell.openExternal(data)
 })
 
+ipcMain.handle('openInNewWindow', (event, data) => {
+  return createWindow(data)
+})
+
 ipcMain.handle(
   'take.screenshot',
   async (event, data: { width: number; height: number }) => {

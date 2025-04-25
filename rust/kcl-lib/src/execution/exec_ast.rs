@@ -459,7 +459,7 @@ impl ExecutorContext {
                 exec_state.add_path_to_source_id(resolved_path.clone(), id);
                 let format = super::import::format_from_annotations(attrs, path, source_range)?;
                 let geom = super::import::import_foreign(path, format, exec_state, self, source_range).await?;
-                exec_state.add_module(id, resolved_path, ModuleRepr::Foreign(geom));
+                exec_state.add_module(id, resolved_path, ModuleRepr::Foreign(geom, None));
                 Ok(id)
             }
             ImportPath::Std { .. } => {
@@ -501,7 +501,7 @@ impl ExecutorContext {
                     *cache = Some((val, er, items.clone()));
                     (er, items)
                 }),
-            ModuleRepr::Foreign(geom) => Err(KclError::Semantic(KclErrorDetails {
+            ModuleRepr::Foreign(geom, _) => Err(KclError::Semantic(KclErrorDetails {
                 message: "Cannot import items from foreign modules".to_owned(),
                 source_ranges: vec![geom.source_range],
             })),
@@ -546,9 +546,20 @@ impl ExecutorContext {
                     Err(e) => Err(e),
                 }
             }
-            ModuleRepr::Foreign(geom) => super::import::send_to_engine(geom.clone(), self)
-                .await
-                .map(|geom| Some(KclValue::ImportedGeometry(geom))),
+            ModuleRepr::Foreign(_, Some(imported)) => Ok(Some(imported.clone())),
+            ModuleRepr::Foreign(geom, cached) => {
+                let result = super::import::send_to_engine(geom.clone(), self)
+                    .await
+                    .map(|geom| Some(KclValue::ImportedGeometry(geom)));
+
+                match result {
+                    Ok(val) => {
+                        *cached = val.clone();
+                        Ok(val)
+                    }
+                    Err(e) => Err(e),
+                }
+            }
             ModuleRepr::Dummy => unreachable!(),
         };
 
@@ -1142,9 +1153,15 @@ impl Node<UnaryExpression> {
             }
             KclValue::Plane { value } => {
                 let mut plane = value.clone();
-                plane.z_axis.x *= -1.0;
-                plane.z_axis.y *= -1.0;
-                plane.z_axis.z *= -1.0;
+                if plane.x_axis.x != 0.0 {
+                    plane.x_axis.x *= -1.0;
+                }
+                if plane.x_axis.y != 0.0 {
+                    plane.x_axis.y *= -1.0;
+                }
+                if plane.x_axis.z != 0.0 {
+                    plane.x_axis.z *= -1.0;
+                }
 
                 plane.value = PlaneType::Uninit;
                 plane.id = exec_state.next_uuid();
@@ -2637,7 +2654,6 @@ p = {
   origin = { x = 0, y = 0, z = 0 },
   xAxis = { x = 1, y = 0, z = 0 },
   yAxis = { x = 0, y = 1, z = 0 },
-  zAxis = { x = 0, y = 0, z = 1 }
 }: Plane
 p2 = -p
 "#;
@@ -2649,7 +2665,11 @@ p2 = -p
             .get_from("p2", result.mem_env, SourceRange::default(), 0)
             .unwrap()
         {
-            KclValue::Plane { value } => assert_eq!(value.z_axis.z, -1.0),
+            KclValue::Plane { value } => {
+                assert_eq!(value.x_axis.x, -1.0);
+                assert_eq!(value.x_axis.y, 0.0);
+                assert_eq!(value.x_axis.z, 0.0);
+            }
             _ => unreachable!(),
         }
     }
