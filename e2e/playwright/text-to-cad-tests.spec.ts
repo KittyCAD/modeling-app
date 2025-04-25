@@ -697,6 +697,23 @@ test(
   }
 )
 
+/**
+ * Below there are twelve (12) tests for testing the navigation and file creation
+ * logic around text to cad. The Text to CAD command is now globally available
+ * within the application and is the same command for all parts of the application.
+ * There are many new user scenarios to test because we can navigate to any project
+ * you can accept and reject the creation and everything needs to be updated properly.
+ *
+ *
+ * Gotcha: The API requests for text to CAD are mocked! The return values are
+ * from real API requests which are copied and pasted below
+ *
+ * Gotcha: The exports OBJ etc... are not in the output they are massive.
+ *
+ * Gotcha: Yes, the 3D render preview will be broken because the exported models
+ * are not included. These tests do not care about this.
+ *
+ */
 test.describe('Mocked Text-to-CAD API tests', { tag: ['@skipWin'] }, () => {
   async function mockPageTextToCAD(page: Page) {
     await page.route(
