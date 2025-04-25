@@ -62,7 +62,7 @@ springSketch = startSketchOn(YZ)
 ```js
 // Create a helix around an edge.
 helper001 = startSketchOn(XZ)
- |> startProfileAt([0, 0], %)
+ |> startProfile(at = [0, 0])
  |> line(end = [0, 10], tag = $edge001)
 
 helixPath = helix(

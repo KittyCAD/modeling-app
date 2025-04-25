@@ -61,7 +61,7 @@ fn rightInvolute(i, sg) {
 
 // Draw gear teeth
 start = startSketchOn(XY)
-  |> startProfileAt([xs[101], ys[101]], %)
+  |> startProfile(at = [xs[101], ys[101]])
 teeth = reduce([0..100], start, leftInvolute)
   |> arc(angleStart = 0, angleEnd = toothAngle, radius = baseDiameter / 2)
   |> reduce([1..101], %, rightInvolute)
@@ -84,10 +84,10 @@ startAngle = asin(keywayWidth / 2 / holeRadius)
 
 // Sketch the keyway and center hole and extrude
 keyWay = startSketchOn(body, face = END)
-  |> startProfileAt([
+  |> startProfile(at = [
        holeRadius * cos(startAngle),
        holeRadius * sin(startAngle)
-     ], %)
+     ])
   |> xLine(length = keywayDepth)
   |> yLine(length = -keywayWidth)
   |> xLine(length = -keywayDepth)

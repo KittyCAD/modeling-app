@@ -35,7 +35,7 @@ shell(
 ```js
 // Remove the end face for the extrusion.
 firstSketch = startSketchOn(XY)
-  |> startProfileAt([-12, 12], %)
+  |> startProfile(at = [-12, 12])
   |> line(end = [24, 0])
   |> line(end = [0, -24])
   |> line(end = [-24, 0])
@@ -51,7 +51,7 @@ shell(firstSketch, faces = [END], thickness = 0.25)
 ```js
 // Remove the start face for the extrusion.
 firstSketch = startSketchOn(-XZ)
-  |> startProfileAt([-12, 12], %)
+  |> startProfile(at = [-12, 12])
   |> line(end = [24, 0])
   |> line(end = [0, -24])
   |> line(end = [-24, 0])
@@ -67,7 +67,7 @@ shell(firstSketch, faces = [START], thickness = 0.25)
 ```js
 // Remove a tagged face and the end face for the extrusion.
 firstSketch = startSketchOn(XY)
-  |> startProfileAt([-12, 12], %)
+  |> startProfile(at = [-12, 12])
   |> line(end = [24, 0])
   |> line(end = [0, -24])
   |> line(end = [-24, 0], tag = $myTag)
@@ -83,7 +83,7 @@ shell(firstSketch, faces = [myTag], thickness = 0.25)
 ```js
 // Remove multiple faces at once.
 firstSketch = startSketchOn(XY)
-  |> startProfileAt([-12, 12], %)
+  |> startProfile(at = [-12, 12])
   |> line(end = [24, 0])
   |> line(end = [0, -24])
   |> line(end = [-24, 0], tag = $myTag)
@@ -100,7 +100,7 @@ shell(firstSketch, faces = [myTag, END], thickness = 0.25)
 // Shell a sketch on face.
 size = 100
 case = startSketchOn(-XZ)
-  |> startProfileAt([-size, -size], %)
+  |> startProfile(at = [-size, -size])
   |> line(end = [2 * size, 0])
   |> line(end = [0, 2 * size])
   |> tangentialArc(endAbsolute = [-size, size])
@@ -125,7 +125,7 @@ shell(case, faces = [START], thickness = 5)
 // Shell a sketch on face object on the end face.
 size = 100
 case = startSketchOn(XY)
-  |> startProfileAt([-size, -size], %)
+  |> startProfile(at = [-size, -size])
   |> line(end = [2 * size, 0])
   |> line(end = [0, 2 * size])
   |> tangentialArc(endAbsolute = [-size, size])
@@ -153,7 +153,7 @@ shell(thing1, faces = [END], thickness = 5)
 
 size = 100
 case = startSketchOn(XY)
-  |> startProfileAt([-size, -size], %)
+  |> startProfile(at = [-size, -size])
   |> line(end = [2 * size, 0])
   |> line(end = [0, 2 * size])
   |> tangentialArc(endAbsolute = [-size, size])

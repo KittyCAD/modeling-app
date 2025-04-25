@@ -54,7 +54,7 @@ pub async fn clone(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// ```no_run
 /// // Clone a basic sketch and move it and extrude it.
 /// exampleSketch = startSketchOn(XY)
-///   |> startProfileAt([0, 0], %)
+///   |> startProfile(at = [0, 0])
 ///   |> line(end = [10, 0])
 ///   |> line(end = [0, 10])
 ///   |> line(end = [-10, 0])
@@ -78,7 +78,7 @@ pub async fn clone(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// // Clone a basic solid and move it.
 ///
 /// exampleSketch = startSketchOn(XY)
-///   |> startProfileAt([0, 0], %)
+///   |> startProfile(at = [0, 0])
 ///   |> line(end = [10, 0])
 ///   |> line(end = [0, 10])
 ///   |> line(end = [-10, 0])
@@ -95,7 +95,7 @@ pub async fn clone(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// // Translate and rotate a cloned sketch to create a loft.
 ///
 /// sketch001 = startSketchOn(XY)
-///         |> startProfileAt([-10, 10], %)
+///         |> startProfile(at = [-10, 10])
 ///         |> xLine(length = 20)
 ///         |> yLine(length = -20)
 ///         |> xLine(length = -20)
@@ -112,7 +112,7 @@ pub async fn clone(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// // Translate a cloned solid. Fillet only the clone.
 ///
 /// sketch001 = startSketchOn(XY)
-///         |> startProfileAt([-10, 10], %)
+///         |> startProfile(at = [-10, 10])
 ///         |> xLine(length = 20)
 ///         |> yLine(length = -20)
 ///         |> xLine(length = -20, tag = $filletTag)
@@ -132,7 +132,7 @@ pub async fn clone(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// // You can reuse the tags from the original geometry with the cloned geometry.
 ///
 /// sketch001 = startSketchOn(XY)
-///   |> startProfileAt([0, 0], %)
+///   |> startProfile(at = [0, 0])
 ///   |> line(end = [10, 0])
 ///   |> line(end = [0, 10], tag = $sketchingFace)
 ///   |> line(end = [-10, 0])
@@ -143,7 +143,7 @@ pub async fn clone(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///     |> extrude(length = 5)
 ///
 /// startSketchOn(sketch002, face = sketchingFace)
-///   |> startProfileAt([1, 1], %)
+///   |> startProfile(at = [1, 1])
 ///   |> line(end = [8, 0])
 ///   |> line(end = [0, 8])
 ///   |> line(end = [-8, 0])
@@ -160,7 +160,7 @@ pub async fn clone(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// filletRadius = 2
 ///
 /// mountingPlateSketch = startSketchOn(XY)
-///   |> startProfileAt([-width/2, -length/2], %)
+///   |> startProfile(at = [-width/2, -length/2])
 ///   |> line(endAbsolute = [width/2, -length/2], tag = $edge1)
 ///   |> line(endAbsolute = [width/2, length/2], tag = $edge2)
 ///   |> line(endAbsolute = [-width/2, length/2], tag = $edge3)
@@ -222,7 +222,7 @@ pub async fn clone(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// // This shows the cloned geometry will have the same tags as the original geometry.
 ///
 /// exampleSketch = startSketchOn(XY)
-///   |> startProfileAt([4, 12], %)
+///   |> startProfile(at = [4, 12])
 ///   |> line(end = [2, 0])
 ///   |> line(end = [0, -6])
 ///   |> line(end = [4, -6])
@@ -239,7 +239,7 @@ pub async fn clone(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///
 /// // Sketch on the cloned face.
 /// // exampleSketch002 = startSketchOn(example002, face = end01)
-/// //  |> startProfileAt([4.5, -5], %)
+/// //  |> startProfile(at = [4.5, -5])
 /// //  |> line(end = [0, 5])
 /// //  |> line(end = [5, 0])
 /// //  |> line(end = [0, -5])
@@ -520,7 +520,7 @@ mod tests {
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_clone_sketch() {
         let code = r#"cube = startSketchOn(XY)
-    |> startProfileAt([0,0], %)
+    |> startProfile(at = [0,0])
     |> line(end = [0, 10])
     |> line(end = [10, 0])
     |> line(end = [0, -10])
@@ -568,7 +568,7 @@ clonedCube = clone(cube)
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_clone_solid() {
         let code = r#"cube = startSketchOn(XY)
-    |> startProfileAt([0,0], %)
+    |> startProfile(at = [0,0])
     |> line(end = [0, 10])
     |> line(end = [10, 0])
     |> line(end = [0, -10])
@@ -627,7 +627,7 @@ clonedCube = clone(cube)
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_clone_sketch_with_tags() {
         let code = r#"cube = startSketchOn(XY)
-    |> startProfileAt([0,0], %) // tag this one
+    |> startProfile(at = [0,0]) // tag this one
     |> line(end = [0, 10], tag = $tag02)
     |> line(end = [10, 0], tag = $tag03)
     |> line(end = [0, -10], tag = $tag04)
@@ -682,7 +682,7 @@ clonedCube = clone(cube)
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_clone_solid_with_tags() {
         let code = r#"cube = startSketchOn(XY)
-    |> startProfileAt([0,0], %) // tag this one
+    |> startProfile(at = [0,0]) // tag this one
     |> line(end = [0, 10], tag = $tag02)
     |> line(end = [10, 0], tag = $tag03)
     |> line(end = [0, -10], tag = $tag04)
@@ -751,7 +751,7 @@ clonedCube = clone(cube)
         let code = r#"// Clone a basic solid and move it.
 
 exampleSketch = startSketchOn(XY)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> line(end = [10, 0])
   |> line(end = [0, 10])
   |> line(end = [-10, 0])
@@ -826,7 +826,7 @@ clonedCube = clone(cube)
     #[ignore = "this test is not working yet, need to fix the edge cut ids"]
     async fn kcl_test_clone_solid_with_edge_cuts() {
         let code = r#"cube = startSketchOn(XY)
-    |> startProfileAt([0,0], %) // tag this one
+    |> startProfile(at = [0,0]) // tag this one
     |> line(end = [0, 10], tag = $tag02)
     |> line(end = [10, 0], tag = $tag03)
     |> line(end = [0, -10], tag = $tag04)

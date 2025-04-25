@@ -7,7 +7,7 @@ export const Auth = ({ children }: React.PropsWithChildren) => {
   const isLoggingIn = authState.matches('checkIfLoggedIn')
 
   return isLoggingIn ? (
-    <Loading>
+    <Loading className="h-screen">
       <span data-testid="initial-load">Loading Design Studio...</span>
     </Loading>
   ) : (

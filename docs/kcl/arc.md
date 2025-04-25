@@ -44,7 +44,7 @@ arc(
 
 ```js
 exampleSketch = startSketchOn(XZ)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> line(end = [10, 0])
   |> arc(angleStart = 0, angleEnd = 280, radius = 16)
   |> close()
@@ -55,7 +55,7 @@ example = extrude(exampleSketch, length = 10)
 
 ```js
 exampleSketch = startSketchOn(XZ)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> arc(endAbsolute = [10, 0], interiorAbsolute = [5, 5])
   |> close()
 example = extrude(exampleSketch, length = 10)

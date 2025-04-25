@@ -1450,7 +1450,7 @@ test(
     )
 
     await page.locator('.cm-content').fill(`sketch001 = startSketchOn('XZ')
-  |> startProfileAt([-87.4, 282.92], %)
+  |> startProfile(at = [-87.4, 282.92])
   |> line(end = [324.07, 27.199], tag = $seg01)
   |> line(end = [118.328, -291.754])
   |> line(end = [-180.04, -202.08])

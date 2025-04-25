@@ -9,8 +9,8 @@ description: Operations executed scale_after_fillet.kcl
       "type": "FunctionCall",
       "name": "toRadians",
       "functionSourceRange": [
-        11497,
-        11546,
+        11503,
+        11552,
         1
       ],
       "unlabeledArg": null,
@@ -46,7 +46,7 @@ description: Operations executed scale_after_fillet.kcl
       "name": "bolt",
       "functionSourceRange": [
         264,
-        1565,
+        1538,
         0
       ],
       "unlabeledArg": null,
