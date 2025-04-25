@@ -16,7 +16,7 @@ const plane94894440791888 = {
 
 // create a sketch with UID 94894440902176
 const sketch94894440902176 = startSketchOn('-XZ')
-  |> startProfileAt([-0.005, -0.005], %)
+  |> startProfile(at = [-0.005, -0.005])
   |> line(end = [0.01, 0.0], tag = $line94894439494384)
   |> line(end = [0.0, 0.01], tag = $line94894439429616)
   |> line(end = [-0.01, 0.0], tag = $line94894439638160)
@@ -24,10 +24,7 @@ const sketch94894440902176 = startSketchOn('-XZ')
 
 // create a sketch with UID 94894439448464
 const sketch94894439448464 = startSketchOn(plane94894440791888)
-  |> startProfileAt([
-       0.00074557205559017,
-       0.00306415853984399
-     ], %)
+  |> startProfile(at = [0.00074557205559017, 0.00306415853984399])
   |> line(end = [0.004999999999999999, 0.0], tag = $line94894440230336)
   |> line(end = [0.0, -0.005], tag = $line94894439497168)
   |> line(end = [-0.004999999999999999, 0.0], tag = $line94894439496768)

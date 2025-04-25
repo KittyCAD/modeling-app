@@ -108,7 +108,7 @@ describe('testing changeSketchArguments', () => {
   test('changeSketchArguments', async () => {
     // Enable rotations #152
     const genCode = (line: string) => `mySketch001 = startSketchOn(XY)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> ${line}
   |> line(endAbsolute = [0.46, -5.82])
 // |> rx(45, %)
@@ -146,7 +146,7 @@ describe('testing addNewSketchLn', () => {
     // Enable rotations #152
     const code = `
 mySketch001 = startSketchOn(XY)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   // |> rx(45, %)
   |> line(endAbsolute = [-1.59, -1.54])
   |> line(endAbsolute = [0.46, -5.82])`
@@ -175,7 +175,7 @@ mySketch001 = startSketchOn(XY)
 
     // Enable rotations #152
     let expectedCode = `mySketch001 = startSketchOn(XY)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   // |> rx(45, %)
   |> line(endAbsolute = [-1.59, -1.54])
   |> line(endAbsolute = [0.46, -5.82])
@@ -198,7 +198,7 @@ mySketch001 = startSketchOn(XY)
     if (err(modifiedAst2)) return modifiedAst2
 
     expectedCode = `mySketch001 = startSketchOn(XY)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   // |> rx(45, %)
   |> line(endAbsolute = [-1.59, -1.54])
   |> line(endAbsolute = [0.46, -5.82])
@@ -213,7 +213,7 @@ describe('testing addTagForSketchOnFace', () => {
     const originalLine = 'line(endAbsolute = [-1.59, -1.54])'
     // Enable rotations #152
     const genCode = (line: string) => `mySketch001 = startSketchOn(XY)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   // |> rx(45, %)
   |> ${line}
   |> line(endAbsolute = [0.46, -5.82])
@@ -273,7 +273,7 @@ describe('testing addTagForSketchOnFace', () => {
   chamferTestCases.forEach(({ originalChamfer, expectedChamfer, desc }) => {
     it(`can break up chamfers in order to add tags - ${desc}`, async () => {
       const genCode = (insertCode: string) => `sketch001 = startSketchOn(XZ)
-  |> startProfileAt([75.8, 317.2], %) // [$startCapTag, $EndCapTag]
+  |> startProfile(at = [75.8, 317.2]) // [$startCapTag, $EndCapTag]
   |> angledLine(angle = 0, length = 268.43, tag = $rectangleSegmentA001)
   |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 217.26, tag = $seg01)
   |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
@@ -318,7 +318,7 @@ ${insertCode}
 describe('testing getConstraintInfo', () => {
   describe('object notation', () => {
     const code = `const part001 = startSketchOn(-XZ)
-  |> startProfileAt([0,0], %)
+  |> startProfile(at = [0,0])
   |> line(end = [3, 4])
   |> angledLine(angle = 3.14, length = 3.14)
   |> line(endAbsolute = [6.14, 3.14])
@@ -684,7 +684,7 @@ describe('testing getConstraintInfo', () => {
   })
   describe('array notation', () => {
     const code = `const part001 = startSketchOn(-XZ)
-    |> startProfileAt([0, 0], %)
+    |> startProfile(at = [0, 0])
     |> line(end = [3, 4])
     |> angledLine(angle = 3.14, length = 3.14)
     |> line(endAbsolute = [6.14, 3.14])
@@ -845,7 +845,7 @@ describe('testing getConstraintInfo', () => {
   })
   describe('constrained', () => {
     const code = `const part001 = startSketchOn(-XZ)
-    |> startProfileAt([0, 0], %)
+    |> startProfile(at = [0, 0])
     |> line(end = [3 + 0, 4 + 0])
     |> angledLine(angle = 3.14 + 0, length = 3.14 + 0 )
     |> line(endAbsolute = [6.14 + 0, 3.14 + 0])

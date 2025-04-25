@@ -27,7 +27,7 @@ floorPlane = startSketchOn(XY)
 legHeight = blockHeight - profileThickness
 legCount = blockCount + 1
 
-legBody = startProfileAt([0, 0], floorPlane)
+legBody = startProfile(floorPlane, at = [0, 0])
   |> yLine(length = profileThickness)
   |> xLine(length = profileThickness)
   |> yLine(length = -profileThickness)
@@ -42,7 +42,7 @@ lowerBeltHeightAboveTheFloor = 150
 lowerBeltLengthX = blockWidth - profileThickness
 
 lowerBeltPlane = startSketchOn(offsetPlane(XY, offset = lowerBeltHeightAboveTheFloor))
-lowerBeltBodyX = startProfileAt([profileThickness, 0], lowerBeltPlane)
+lowerBeltBodyX = startProfile(lowerBeltPlane, at = [profileThickness, 0])
   |> yLine(length = profileThickness)
   |> xLine(length = lowerBeltLengthX)
   |> yLine(length = -profileThickness)
@@ -53,7 +53,7 @@ lowerBeltBodyX = startProfileAt([profileThickness, 0], lowerBeltPlane)
   |> extrude(length = profileThickness)
 
 lowerBeltLengthY = blockDepth - profileThickness
-lowerBeltBodyY = startProfileAt([0, profileThickness], lowerBeltPlane)
+lowerBeltBodyY = startProfile(lowerBeltPlane, at = [0, profileThickness])
   |> yLine(length = lowerBeltLengthY)
   |> xLine(length = profileThickness)
   |> yLine(length = -lowerBeltLengthY)
@@ -67,7 +67,7 @@ pillarHeightAboveTheFloor = lowerBeltHeightAboveTheFloor + profileThickness
 pillarPlane = startSketchOn(offsetPlane(XY, offset = pillarHeightAboveTheFloor))
 pillarTotalHeight = blockHeight - profileThickness - pillarHeightAboveTheFloor
 
-pillarBody = startProfileAt([blockSubdivisionWidth, 0], pillarPlane)
+pillarBody = startProfile(pillarPlane, at = [blockSubdivisionWidth, 0])
   |> yLine(length = profileThickness)
   |> xLine(length = profileThickness)
   |> yLine(length = -profileThickness)
@@ -80,7 +80,7 @@ pillarBody = startProfileAt([blockSubdivisionWidth, 0], pillarPlane)
 // upper belt
 upperBeltPlane = startSketchOn(offsetPlane(XY, offset = blockHeight))
 
-upperBeltBodyX = startProfileAt([0, 0], upperBeltPlane)
+upperBeltBodyX = startProfile(upperBeltPlane, at = [0, 0])
   |> yLine(length = profileThickness)
   |> xLine(length = tableWidth)
   |> yLine(length = -profileThickness)
@@ -90,7 +90,7 @@ upperBeltBodyX = startProfileAt([0, 0], upperBeltPlane)
   |> extrude(length = -profileThickness)
 
 upperBeltLengthY = blockDepth - profileThickness
-upperBeltBodyY = startProfileAt([0, profileThickness], upperBeltPlane)
+upperBeltBodyY = startProfile(upperBeltPlane, at = [0, profileThickness])
   |> yLine(length = upperBeltLengthY)
   |> xLine(length = profileThickness)
   |> yLine(length = -upperBeltLengthY)
@@ -101,7 +101,7 @@ upperBeltBodyY = startProfileAt([0, profileThickness], upperBeltPlane)
 
 // sink
 tableTopPlane = startSketchOn(offsetPlane(XY, offset = tableHeight))
-tableTopBody = startProfileAt([0, 0], tableTopPlane)
+tableTopBody = startProfile(tableTopPlane, at = [0, 0])
   |> yLine(length = tableDepth)
   |> xLine(length = tableWidth)
   |> yLine(length = -tableDepth)
@@ -118,7 +118,7 @@ sinkOffsetLeft = 350
 sinkSpacing = tableWidth - sinkWidth - (sinkOffsetLeft * 2)
 
 sinkPlaneOutside = startSketchOn(tableTopBody, face = START)
-sinkBodyOutside = startProfileAt([-sinkOffsetLeft, sinkOffsetFront], sinkPlaneOutside)
+sinkBodyOutside = startProfile(sinkPlaneOutside, at = [-sinkOffsetLeft, sinkOffsetFront])
   |> yLine(length = sinkLength)
   |> xLine(length = -sinkWidth)
   |> yLine(length = -sinkLength)
@@ -128,10 +128,13 @@ sinkBodyOutside = startProfileAt([-sinkOffsetLeft, sinkOffsetFront], sinkPlaneOu
   |> extrude(length = sinkDepth)
 
 sinkPlaneInside = startSketchOn(tableTopBody, face = END)
-sinkBodyInside = startProfileAt([
-       sinkOffsetLeft + metalThickness,
-       sinkOffsetFront + metalThickness
-     ], sinkPlaneInside)
+sinkBodyInside = startProfile(
+       sinkPlaneInside,
+       at = [
+         sinkOffsetLeft + metalThickness,
+         sinkOffsetFront + metalThickness
+       ],
+     )
   |> yLine(length = sinkLength - (metalThickness * 2))
   |> xLine(length = sinkWidth - (metalThickness * 2))
   |> yLine(length = -sinkLength + metalThickness * 2)
@@ -149,7 +152,7 @@ doorHeight = blockHeight - doorHeightAboveTheFloor - profileThickness - doorGap
 doorCount = blockCount * blockSubdivisionCount
 
 doorPlane = startSketchOn(offsetPlane(XY, offset = doorHeightAboveTheFloor))
-doorBody = startProfileAt([doorStart, 0], doorPlane)
+doorBody = startProfile(doorPlane, at = [doorStart, 0])
   |> yLine(length = profileThickness)
   |> xLine(length = doorWidth)
   |> yLine(length = -profileThickness)
@@ -162,7 +165,7 @@ doorBody = startProfileAt([doorStart, 0], doorPlane)
 panelWidth = blockDepth - profileThickness - (doorGap * 2)
 panelCount = doorCount + 1
 panelSpacing = tableWidth - profileThickness
-panelBody = startProfileAt([0, doorStart], doorPlane)
+panelBody = startProfile(doorPlane, at = [0, doorStart])
   |> yLine(length = panelWidth)
   |> xLine(length = profileThickness)
   |> yLine(length = -panelWidth)
@@ -182,7 +185,7 @@ handleLengthSegmentB = handleWidth - (handleFillet * 2)
 
 handlePlane = startSketchOn(offsetPlane(XY, offset = handleHeightAboveTheFloor))
 
-handleProfilePath = startProfileAt([0 + handleOffset, 0], handlePlane)
+handleProfilePath = startProfile(handlePlane, at = [0 + handleOffset, 0])
   |> yLine(length = -handleLengthSegmentA)
   |> tangentialArc(endAbsolute = [
        handleFillet + handleOffset,

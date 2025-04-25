@@ -5,7 +5,7 @@ let r = 1
 let angleStart = 110
 
 startSketchOn(XY)
-  |> startProfileAt([startX, startY], %)
+  |> startProfile(at = [startX, startY])
   |> angledLine(
     angle = angleStart,
     length = .000001,

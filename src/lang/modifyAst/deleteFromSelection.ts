@@ -206,6 +206,7 @@ export async function deleteFromSelection(
               extrudeNameToDelete = dec.id.name
             }
             if (
+              // TODO: This is wrong, loft is now a CallExpressionKw.
               dec.init.type === 'CallExpression' &&
               dec.init.callee.name.name === 'loft' &&
               dec.init.arguments?.[0].type === 'ArrayExpression' &&
@@ -224,11 +225,14 @@ export async function deleteFromSelection(
       pathToNode = selection.codeRef.pathToNode
       if (varDec.node.type === 'VariableDeclarator') {
         extrudeNameToDelete = varDec.node.id.name
-      } else if (varDec.node.type === 'CallExpression') {
-        const callExp = getNodeFromPath<CallExpression>(
+      } else if (
+        varDec.node.type === 'CallExpression' ||
+        varDec.node.type === 'CallExpressionKw'
+      ) {
+        const callExp = getNodeFromPath<CallExpression | CallExpressionKw>(
           astClone,
           pathToNode,
-          'CallExpression'
+          ['CallExpression', 'CallExpressionKw']
         )
         if (err(callExp)) return callExp
         extrudeNameToDelete = callExp.node.callee.name.name
@@ -429,7 +433,7 @@ export async function deleteFromSelection(
         pipeBody[0].type === 'CallExpressionKw') &&
       doNotDeleteProfileIfItHasBeenExtruded &&
       (pipeBody[0].callee.name.name === 'startSketchOn' ||
-        pipeBody[0].callee.name.name === 'startProfileAt')
+        pipeBody[0].callee.name.name === 'startProfile')
     ) {
       // remove varDec
       const varDecIndex = varDec.shallowPath[1][0] as number

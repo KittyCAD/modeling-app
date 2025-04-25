@@ -27,7 +27,7 @@ pub async fn segment_end(exec_state: &mut ExecState, args: Args) -> Result<KclVa
 /// ```no_run
 /// w = 15
 /// cube = startSketchOn('XY')
-///   |> startProfileAt([0, 0], %)
+///   |> startProfile(at = [0, 0])
 ///   |> line(end = [w, 0], tag = $line1)
 ///   |> line(end = [0, w], tag = $line2)
 ///   |> line(end = [-w, 0], tag = $line3)
@@ -37,7 +37,7 @@ pub async fn segment_end(exec_state: &mut ExecState, args: Args) -> Result<KclVa
 ///
 /// fn cylinder(radius, tag) {
 ///   return startSketchOn('XY')
-///   |> startProfileAt([0, 0], %)
+///   |> startProfile(at = [0, 0])
 ///   |> circle(radius = radius, center = segEnd(tag) )
 ///   |> extrude(length = radius)
 /// }
@@ -79,7 +79,7 @@ pub async fn segment_end_x(exec_state: &mut ExecState, args: Args) -> Result<Kcl
 ///
 /// ```no_run
 /// exampleSketch = startSketchOn('XZ')
-///   |> startProfileAt([0, 0], %)
+///   |> startProfile(at = [0, 0])
 ///   |> line(end = [20, 0], tag = $thing)
 ///   |> line(end = [0, 5])
 ///   |> line(end = [segEndX(thing), 0])
@@ -120,7 +120,7 @@ pub async fn segment_end_y(exec_state: &mut ExecState, args: Args) -> Result<Kcl
 ///
 /// ```no_run
 /// exampleSketch = startSketchOn('XZ')
-///   |> startProfileAt([0, 0], %)
+///   |> startProfile(at = [0, 0])
 ///   |> line(end = [20, 0])
 ///   |> line(end = [0, 3], tag = $thing)
 ///   |> line(end = [-10, 0])
@@ -163,7 +163,7 @@ pub async fn segment_start(exec_state: &mut ExecState, args: Args) -> Result<Kcl
 /// ```no_run
 /// w = 15
 /// cube = startSketchOn('XY')
-///   |> startProfileAt([0, 0], %)
+///   |> startProfile(at = [0, 0])
 ///   |> line(end = [w, 0], tag = $line1)
 ///   |> line(end = [0, w], tag = $line2)
 ///   |> line(end = [-w, 0], tag = $line3)
@@ -173,7 +173,7 @@ pub async fn segment_start(exec_state: &mut ExecState, args: Args) -> Result<Kcl
 ///
 /// fn cylinder(radius, tag) {
 ///   return startSketchOn('XY')
-///   |> startProfileAt([0, 0], %)
+///   |> startProfile(at = [0, 0])
 ///   |> circle( radius = radius, center = segStart(tag) )
 ///   |> extrude(length = radius)
 /// }
@@ -215,7 +215,7 @@ pub async fn segment_start_x(exec_state: &mut ExecState, args: Args) -> Result<K
 ///
 /// ```no_run
 /// exampleSketch = startSketchOn('XZ')
-///   |> startProfileAt([0, 0], %)
+///   |> startProfile(at = [0, 0])
 ///   |> line(end = [20, 0], tag = $thing)
 ///   |> line(end = [0, 5])
 ///   |> line(end = [20 - segStartX(thing), 0])
@@ -256,7 +256,7 @@ pub async fn segment_start_y(exec_state: &mut ExecState, args: Args) -> Result<K
 ///
 /// ```no_run
 /// exampleSketch = startSketchOn('XZ')
-///   |> startProfileAt([0, 0], %)
+///   |> startProfile(at = [0, 0])
 ///   |> line(end = [20, 0])
 ///   |> line(end = [0, 3], tag = $thing)
 ///   |> line(end = [-10, 0])
@@ -299,7 +299,7 @@ pub async fn last_segment_x(exec_state: &mut ExecState, args: Args) -> Result<Kc
 ///
 /// ```no_run
 /// exampleSketch = startSketchOn("XZ")
-///   |> startProfileAt([0, 0], %)
+///   |> startProfile(at = [0, 0])
 ///   |> line(end = [5, 0])
 ///   |> line(end = [20, 5])
 ///   |> line(end = [lastSegX(%), 0])
@@ -345,7 +345,7 @@ pub async fn last_segment_y(exec_state: &mut ExecState, args: Args) -> Result<Kc
 ///
 /// ```no_run
 /// exampleSketch = startSketchOn("XZ")
-///   |> startProfileAt([0, 0], %)
+///   |> startProfile(at = [0, 0])
 ///   |> line(end = [5, 0])
 ///   |> line(end = [20, 5])
 ///   |> line(end = [0, lastSegY(%)])
@@ -388,7 +388,7 @@ pub async fn segment_length(exec_state: &mut ExecState, args: Args) -> Result<Kc
 ///
 /// ```no_run
 /// exampleSketch = startSketchOn("XZ")
-///   |> startProfileAt([0, 0], %)
+///   |> startProfile(at = [0, 0])
 ///   |> angledLine(
 ///     angle = 60,
 ///     length = 10,
@@ -435,7 +435,7 @@ pub async fn segment_angle(exec_state: &mut ExecState, args: Args) -> Result<Kcl
 ///
 /// ```no_run
 /// exampleSketch = startSketchOn('XZ')
-///   |> startProfileAt([0, 0], %)
+///   |> startProfile(at = [0, 0])
 ///   |> line(end = [10, 0])
 ///   |> line(end = [5, 10], tag = $seg01)
 ///   |> line(end = [-10, 0])
@@ -481,7 +481,7 @@ pub async fn tangent_to_end(exec_state: &mut ExecState, args: Args) -> Result<Kc
 /// ```no_run
 /// // Horizontal pill.
 /// pillSketch = startSketchOn('XZ')
-///   |> startProfileAt([0, 0], %)
+///   |> startProfile(at = [0, 0])
 ///   |> line(end = [20, 0])
 ///   |> tangentialArc(end = [0, 10], tag = $arc1)
 ///   |> angledLine(
@@ -497,7 +497,7 @@ pub async fn tangent_to_end(exec_state: &mut ExecState, args: Args) -> Result<Kc
 /// ```no_run
 /// // Vertical pill.  Use absolute coordinate for arc.
 /// pillSketch = startSketchOn('XZ')
-///   |> startProfileAt([0, 0], %)
+///   |> startProfile(at = [0, 0])
 ///   |> line(end = [0, 20])
 ///   |> tangentialArc(endAbsolute = [10, 20], tag = $arc1)
 ///   |> angledLine(
@@ -512,7 +512,7 @@ pub async fn tangent_to_end(exec_state: &mut ExecState, args: Args) -> Result<Kc
 ///
 /// ```no_run
 /// rectangleSketch = startSketchOn('XZ')
-///   |> startProfileAt([0, 0], %)
+///   |> startProfile(at = [0, 0])
 ///   |> line(end = [10, 0], tag = $seg1)
 ///   |> angledLine(
 ///     angle = tangentToEnd(seg1),
@@ -527,7 +527,7 @@ pub async fn tangent_to_end(exec_state: &mut ExecState, args: Args) -> Result<Kc
 ///
 /// ```no_run
 /// bottom = startSketchOn("XY")
-///   |> startProfileAt([0, 0], %)
+///   |> startProfile(at = [0, 0])
 ///   |> arc(
 ///        endAbsolute = [10, 10],
 ///        interiorAbsolute = [5, 1],
@@ -542,7 +542,7 @@ pub async fn tangent_to_end(exec_state: &mut ExecState, args: Args) -> Result<Kc
 ///   |> circle( center= [0, 0], radius= 3 , tag= $circ)
 ///
 /// triangleSketch = startSketchOn("XY")
-///   |> startProfileAt([-5, 0], %)
+///   |> startProfile(at = [-5, 0])
 ///   |> angledLine(angle = tangentToEnd(circ), length = 10)
 ///   |> line(end = [-15, 0])
 ///   |> close()

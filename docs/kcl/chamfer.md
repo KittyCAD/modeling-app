@@ -42,7 +42,7 @@ thickness = 1
 chamferLength = 2
 
 mountingPlateSketch = startSketchOn(XY)
-  |> startProfileAt([-width / 2, -length / 2], %)
+  |> startProfile(at = [-width / 2, -length / 2])
   |> line(endAbsolute = [width / 2, -length / 2], tag = $edge1)
   |> line(endAbsolute = [width / 2, length / 2], tag = $edge2)
   |> line(endAbsolute = [-width / 2, length / 2], tag = $edge3)
@@ -66,7 +66,7 @@ mountingPlate = extrude(mountingPlateSketch, length = thickness)
 // Sketch on the face of a chamfer.
 fn cube(pos, scale) {
   sg = startSketchOn(XY)
-    |> startProfileAt(pos, %)
+    |> startProfile(at = pos)
     |> line(end = [0, scale])
     |> line(end = [scale, 0])
     |> line(end = [0, -scale])
@@ -81,7 +81,7 @@ part001 = cube([0, 0], 20)
   |> chamfer(length = 10, tags = [getOppositeEdge(line1)], tag = $chamfer1)
 
 sketch001 = startSketchOn(part001, face = chamfer1)
-  |> startProfileAt([10, 10], %)
+  |> startProfile(at = [10, 10])
   |> line(end = [2, 0])
   |> line(end = [0, 2])
   |> line(end = [-2, 0])

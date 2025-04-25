@@ -14,7 +14,7 @@ test.describe('Command bar tests', () => {
       localStorage.setItem(
         'persistCode',
         `sketch001 = startSketchOn(XY)
-  |> startProfileAt([-10, -10], %)
+  |> startProfile(at = [-10, -10])
   |> line(end = [20, 0])
   |> line(end = [0, 20])
   |> xLine(length = -20)
@@ -53,7 +53,7 @@ test.describe('Command bar tests', () => {
       localStorage.setItem(
         'persistCode',
         `sketch001 = startSketchOn(XY)
-    |> startProfileAt([-5, -5], %)
+    |> startProfile(at = [-5, -5])
     |> line(end = [0, 10])
     |> line(end = [10, 0])
     |> line(end = [0, -10])
@@ -236,7 +236,7 @@ test.describe('Command bar tests', () => {
         'persistCode',
         `distance = sqrt(20)
     sketch001 = startSketchOn(XZ)
-    |> startProfileAt([-6.95, 10.98], %)
+    |> startProfile(at = [-6.95, 10.98])
     |> line(end = [25.1, 0.41])
     |> line(end = [0.73, -20.93])
     |> line(end = [-23.44, 0.52])

@@ -42,7 +42,7 @@ pub async fn union(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///
 /// fn cube(center, size) {
 ///     return startSketchOn('XY')
-///         |> startProfileAt([center[0] - size, center[1] - size], %)
+///         |> startProfile(at = [center[0] - size, center[1] - size])
 ///         |> line(endAbsolute = [center[0] + size, center[1] - size])
 ///         |> line(endAbsolute = [center[0] + size, center[1] + size])
 ///         |> line(endAbsolute = [center[0] - size, center[1] + size])
@@ -64,7 +64,7 @@ pub async fn union(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///
 /// fn cube(center, size) {
 ///     return startSketchOn('XY')
-///         |> startProfileAt([center[0] - size, center[1] - size], %)
+///         |> startProfile(at = [center[0] - size, center[1] - size])
 ///         |> line(endAbsolute = [center[0] + size, center[1] - size])
 ///         |> line(endAbsolute = [center[0] + size, center[1] + size])
 ///         |> line(endAbsolute = [center[0] - size, center[1] + size])
@@ -87,7 +87,7 @@ pub async fn union(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///
 /// fn cube(center, size) {
 ///     return startSketchOn('XY')
-///         |> startProfileAt([center[0] - size, center[1] - size], %)
+///         |> startProfile(at = [center[0] - size, center[1] - size])
 ///         |> line(endAbsolute = [center[0] + size, center[1] - size])
 ///         |> line(endAbsolute = [center[0] + size, center[1] + size])
 ///         |> line(endAbsolute = [center[0] - size, center[1] + size])
@@ -192,7 +192,7 @@ pub async fn intersect(exec_state: &mut ExecState, args: Args) -> Result<KclValu
 ///
 /// fn cube(center, size) {
 ///     return startSketchOn('XY')
-///         |> startProfileAt([center[0] - size, center[1] - size], %)
+///         |> startProfile(at = [center[0] - size, center[1] - size])
 ///         |> line(endAbsolute = [center[0] + size, center[1] - size])
 ///         |> line(endAbsolute = [center[0] + size, center[1] + size])
 ///         |> line(endAbsolute = [center[0] - size, center[1] + size])
@@ -214,7 +214,7 @@ pub async fn intersect(exec_state: &mut ExecState, args: Args) -> Result<KclValu
 ///
 /// fn cube(center, size) {
 ///     return startSketchOn('XY')
-///         |> startProfileAt([center[0] - size, center[1] - size], %)
+///         |> startProfile(at = [center[0] - size, center[1] - size])
 ///         |> line(endAbsolute = [center[0] + size, center[1] - size])
 ///         |> line(endAbsolute = [center[0] + size, center[1] + size])
 ///         |> line(endAbsolute = [center[0] - size, center[1] + size])
@@ -325,7 +325,7 @@ pub async fn subtract(exec_state: &mut ExecState, args: Args) -> Result<KclValue
 ///
 /// fn cube(center, size) {
 ///     return startSketchOn('XY')
-///         |> startProfileAt([center[0] - size, center[1] - size], %)
+///         |> startProfile(at = [center[0] - size, center[1] - size])
 ///         |> line(endAbsolute = [center[0] + size, center[1] - size])
 ///         |> line(endAbsolute = [center[0] + size, center[1] + size])
 ///         |> line(endAbsolute = [center[0] - size, center[1] + size])
@@ -347,7 +347,7 @@ pub async fn subtract(exec_state: &mut ExecState, args: Args) -> Result<KclValue
 ///
 /// fn cube(center, size) {
 ///     return startSketchOn('XY')
-///         |> startProfileAt([center[0] - size, center[1] - size], %)
+///         |> startProfile(at = [center[0] - size, center[1] - size])
 ///         |> line(endAbsolute = [center[0] + size, center[1] - size])
 ///         |> line(endAbsolute = [center[0] + size, center[1] + size])
 ///         |> line(endAbsolute = [center[0] - size, center[1] + size])
