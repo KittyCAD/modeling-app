@@ -86,10 +86,11 @@ export const KclEditorMenu = ({ children }: PropsWithChildren) => {
           <Menu.Item>
             <button
               onClick={() => {
+                // TODO
                 commandBarActor.send({
                   type: 'Find and select command',
                   data: {
-                    groupId: 'code',
+                    groupId: 'application',
                     name: 'load-external-model',
                   },
                 })

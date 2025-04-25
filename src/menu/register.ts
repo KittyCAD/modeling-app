@@ -93,10 +93,11 @@ export function modelingMenuCallbackMostActions(
     } else if (data.menuLabel === 'File.Preferences.User default units') {
       navigate(filePath + PATHS.SETTINGS_USER + '#defaultUnit')
     } else if (data.menuLabel === 'File.Load external model') {
+      // TODO
       commandBarActor.send({
         type: 'Find and select command',
         data: {
-          groupId: 'code',
+          groupId: 'application',
           name: 'load-external-model',
         },
       })

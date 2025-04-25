@@ -6,6 +6,8 @@ import { isDesktop } from '@src/lib/isDesktop'
 import { kclSamplesManifestWithNoMultipleFiles } from '@src/lib/kclSamples'
 import { getUniqueProjectName } from '@src/lib/desktopFS'
 import { FILE_EXT } from '@src/lib/constants'
+import toast from 'react-hot-toast'
+import { reportRejection } from '@src/lib/trap'
 
 export function createApplicationCommands({
   systemIOActor,
@@ -98,37 +100,56 @@ export function createApplicationCommands({
           ? getUniqueProjectName(requestedProjectName, folders)
           : requestedProjectName
 
-        const pathParts = data.sample.split('/')
-        const projectPathPart = pathParts[0]
-        const primaryKclFile = pathParts[1]
-        const folderNameBecomesKCLFileName = projectPathPart + FILE_EXT
+        if (data.source === 'kcl-samples' && data.sample) {
+          const pathParts = data.sample.split('/')
+          const projectPathPart = pathParts[0]
+          const primaryKclFile = pathParts[1]
+          const folderNameBecomesKCLFileName = projectPathPart + FILE_EXT
 
-        const sampleCodeUrl =
-          (isDesktop() ? '.' : '') +
-          `/kcl-samples/${encodeURIComponent(
-            projectPathPart
-          )}/${encodeURIComponent(primaryKclFile)}`
+          const sampleCodeUrl =
+            (isDesktop() ? '.' : '') +
+            `/kcl-samples/${encodeURIComponent(
+              projectPathPart
+            )}/${encodeURIComponent(primaryKclFile)}`
 
-        fetch(sampleCodeUrl)
-          .then(async (codeResponse) => {
-            if (!codeResponse.ok) {
-              console.error(
-                'Failed to fetch sample code:',
-                codeResponse.statusText
-              )
-              return Promise.reject(new Error('Failed to fetch sample code'))
-            }
-            const code = await codeResponse.text()
+          fetch(sampleCodeUrl)
+            .then(async (codeResponse) => {
+              if (!codeResponse.ok) {
+                console.error(
+                  'Failed to fetch sample code:',
+                  codeResponse.statusText
+                )
+                return Promise.reject(new Error('Failed to fetch sample code'))
+              }
+              const code = await codeResponse.text()
+              systemIOActor.send({
+                type: SystemIOMachineEvents.importFileFromURL,
+                data: {
+                  requestedProjectName: uniqueNameIfNeeded,
+                  requestedFileName: folderNameBecomesKCLFileName,
+                  requestedCode: code,
+                },
+              })
+            })
+            .catch(reportError)
+        } else if (data.source === 'local' && data.path) {
+          const clonePath = data.path
+          const fileWithExtension = clonePath.split('/').pop()
+          const readFileContentsAndCreateNewFile = async () => {
+            const text = await window.electron.readFile(clonePath, 'utf8')
             systemIOActor.send({
               type: SystemIOMachineEvents.importFileFromURL,
               data: {
                 requestedProjectName: uniqueNameIfNeeded,
-                requestedFileName: folderNameBecomesKCLFileName,
-                requestedCode: code,
+                requestedFileName: fileWithExtension,
+                requestedCode: text,
               },
             })
-          })
-          .catch(reportError)
+          }
+          readFileContentsAndCreateNewFile().catch(reportRejection)
+        } else {
+          toast.error("The command couldn't be submitted, check the arguments.")
+        }
       }
     },
     args: {
