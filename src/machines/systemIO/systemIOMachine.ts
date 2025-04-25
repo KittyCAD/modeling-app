@@ -76,6 +76,22 @@ export const systemIOMachine = setup({
       | {
           type: SystemIOMachineEvents.setDefaultProjectFolderName
           data: { requestedDefaultProjectFolderName: string }
+        }
+      // TODO: Move this generateTextToCAD to another machine in the future and make a whole machine out of it.
+      | {
+          type: SystemIOMachineEvents.generateTextToCAD
+          data: {
+            requestedPrompt: string
+            requestedProjectName: string
+            isProjectNew: boolean
+          }
+        }
+      | {
+          type: SystemIOMachineEvents.deleteKCLFile
+          data: {
+            requestedProjectName: string
+            requestedFileName: string
+          }
         },
   },
   actions: {
@@ -141,6 +157,12 @@ export const systemIOMachine = setup({
       canReadWriteProjectDirectory: ({ event }) => {
         assertEvent(event, SystemIOMachineEvents.done_checkReadWrite)
         return event.output
+      },
+    }),
+    [SystemIOMachineActions.setRequestedTextToCadGeneration]: assign({
+      requestedTextToCadGeneration: ({ event }) => {
+        assertEvent(event, SystemIOMachineEvents.generateTextToCAD)
+        return event.data
       },
     }),
   },
@@ -213,6 +235,23 @@ export const systemIOMachine = setup({
         return { value: true, error: undefined }
       }
     ),
+    [SystemIOMachineActors.deleteKCLFile]: fromPromise(
+      async ({
+        input,
+      }: {
+        input: {
+          context: SystemIOContext
+          requestedProjectName: string
+          requestedFileName: string
+        }
+      }): Promise<{
+        message: string
+        fileName: string
+        projectName: string
+      }> => {
+        return { message: '', fileName: '', projectName: '' }
+      }
+    ),
   },
 }).createMachine({
   initial: SystemIOMachineStates.idle,
@@ -231,6 +270,11 @@ export const systemIOMachine = setup({
     },
     canReadWriteProjectDirectory: { value: true, error: undefined },
     clearURLParams: { value: false },
+    requestedTextToCadGeneration: {
+      requestedPrompt: '',
+      requestedProjectName: NO_PROJECT_DIRECTORY,
+      isProjectNew: true,
+    },
   }),
   states: {
     [SystemIOMachineStates.idle]: {
@@ -266,6 +310,12 @@ export const systemIOMachine = setup({
         },
         [SystemIOMachineEvents.importFileFromURL]: {
           target: SystemIOMachineStates.importFileFromURL,
+        },
+        [SystemIOMachineEvents.generateTextToCAD]: {
+          actions: [SystemIOMachineActions.setRequestedTextToCadGeneration],
+        },
+        [SystemIOMachineEvents.deleteKCLFile]: {
+          target: SystemIOMachineStates.deletingKCLFile,
         },
       },
     },
@@ -374,7 +424,7 @@ export const systemIOMachine = setup({
           }
         },
         onDone: {
-          target: SystemIOMachineStates.idle,
+          target: SystemIOMachineStates.readingFolders,
         },
         onError: {
           target: SystemIOMachineStates.idle,
@@ -429,6 +479,27 @@ export const systemIOMachine = setup({
             context,
             requestedProjectDirectoryPath:
               event.data.requestedProjectDirectoryPath,
+          }
+        },
+        onDone: {
+          target: SystemIOMachineStates.readingFolders,
+        },
+        onError: {
+          target: SystemIOMachineStates.readingFolders,
+          actions: [SystemIOMachineActions.toastError],
+        },
+      },
+    },
+    [SystemIOMachineStates.deletingKCLFile]: {
+      invoke: {
+        id: SystemIOMachineActors.deleteKCLFile,
+        src: SystemIOMachineActors.deleteKCLFile,
+        input: ({ context, event }) => {
+          assertEvent(event, SystemIOMachineEvents.deleteKCLFile)
+          return {
+            context,
+            requestedProjectName: event.data.requestedProjectName,
+            requestedFileName: event.data.requestedFileName,
           }
         },
         onDone: {
