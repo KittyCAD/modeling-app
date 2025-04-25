@@ -1,4 +1,4 @@
-import { getUtils, orRunWhenFullSuiteEnabled } from '@e2e/playwright/test-utils'
+import { getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
 test.describe('Test toggling perspective', () => {
@@ -7,7 +7,6 @@ test.describe('Test toggling perspective', () => {
     homePage,
     toolbar,
   }) => {
-    test.fixme(orRunWhenFullSuiteEnabled())
     const u = await getUtils(page)
 
     // Locators and constants
