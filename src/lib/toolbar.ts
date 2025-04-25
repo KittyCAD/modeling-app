@@ -350,7 +350,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
               }),
             hotkey: 'I',
             icon: 'import',
-            status: DEV || IS_NIGHTLY_OR_DEBUG ? 'available' : 'kcl-only',
+            status: 'available',
             disabled: () => !isDesktop(),
             title: 'Insert',
             description: 'Insert from a file in the current project directory',
@@ -368,7 +368,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
                 type: 'Find and select command',
                 data: { name: 'Translate', groupId: 'modeling' },
               }),
-            status: DEV || IS_NIGHTLY_OR_DEBUG ? 'available' : 'kcl-only',
+            status: 'available',
             title: 'Translate',
             description: 'Apply a translation to a solid or sketch.',
             links: [
@@ -385,7 +385,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
                 type: 'Find and select command',
                 data: { name: 'Rotate', groupId: 'modeling' },
               }),
-            status: DEV || IS_NIGHTLY_OR_DEBUG ? 'available' : 'kcl-only',
+            status: 'available',
             title: 'Rotate',
             description: 'Apply a rotation to a solid or sketch.',
             links: [
