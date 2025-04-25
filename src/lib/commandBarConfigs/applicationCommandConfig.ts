@@ -6,7 +6,9 @@ import { isDesktop } from '@src/lib/isDesktop'
 
 export function createApplicationCommands({
   systemIOActor,
-}: { systemIOActor: ActorRefFrom<typeof systemIOMachine> }) {
+}: {
+  systemIOActor: ActorRefFrom<typeof systemIOMachine>
+}) {
   const textToCADCommand: Command = {
     name: 'Text-to-CAD',
     description: 'Use the Zoo Text-to-CAD API to generate part starters.',
@@ -77,5 +79,5 @@ export function createApplicationCommands({
     },
   }
 
-  return isDesktop() ? [textToCADCommand] : []
+  return isDesktop() ? [textToCADCommand] : [textToCADCommand]
 }
