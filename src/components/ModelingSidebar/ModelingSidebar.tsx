@@ -91,7 +91,7 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
         commandBarActor.send({
           type: 'Find and select command',
           data: {
-            name: 'load-external-model',
+            name: 'add-kcl-file-to-project',
             groupId: 'application',
             argDefaultValues: {
               method: 'existingProject',

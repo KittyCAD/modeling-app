@@ -5,7 +5,7 @@ import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { isDesktop } from '@src/lib/isDesktop'
 import { kclSamplesManifestWithNoMultipleFiles } from '@src/lib/kclSamples'
 import { getUniqueProjectName } from '@src/lib/desktopFS'
-import { FILE_EXT } from '@src/lib/constants'
+import { FILE_EXT, FILE_EXT_3D_MODELS } from '@src/lib/constants'
 import toast from 'react-hot-toast'
 import { reportRejection } from '@src/lib/trap'
 
@@ -84,10 +84,11 @@ export function createApplicationCommands({
     },
   }
 
-  const loadExternalModelCommand: Command = {
-    name: 'load-external-model',
-    displayName: 'Load external model',
-    description: 'Loads a model from an external source into a project.',
+  const addKCLFileToProject: Command = {
+    name: 'add-kcl-file-to-project',
+    displayName: 'Add KCL file to project',
+    description:
+      'Copy an existing KCL Sample or specific file into your project.',
     needsReview: true,
     icon: 'importFile',
     groupId: 'application',
@@ -257,12 +258,108 @@ export function createApplicationCommands({
         valueSummary: (value) => window.electron.path.basename(value),
         required: (commandContext) =>
           ['local'].includes(commandContext.argumentsToSubmit.source as string),
+        filters: [{ name: `KCL Files (${FILE_EXT})`, extensions: ['kcl'] }],
+      },
+    },
+  }
+
+  const import3DModel: Command = {
+    name: 'import-3d-model',
+    displayName: 'Import 3D Model',
+    description: 'Copies an existing 3D file into your project.',
+    needsReview: true,
+    icon: 'importFile',
+    groupId: 'application',
+    onSubmit(data) {
+      if (data) {
+        const folders = systemIOActor.getSnapshot().context.folders
+        const isProjectNew = !!data.newProjectName
+        const requestedProjectName = data.newProjectName || data.projectName
+        const uniqueNameIfNeeded = isProjectNew
+          ? getUniqueProjectName(requestedProjectName, folders)
+          : requestedProjectName
+
+        if (data.path) {
+          const clonePath = data.path
+          const fileWithExtension = clonePath.split('/').pop()
+          const readFileContentsAndCreateNewFile = async () => {
+            const text = await window.electron.readFile(clonePath, 'utf8')
+            systemIOActor.send({
+              type: SystemIOMachineEvents.importFileFromURL,
+              data: {
+                requestedProjectName: uniqueNameIfNeeded,
+                requestedFileName: fileWithExtension,
+                requestedCode: text,
+              },
+            })
+          }
+          readFileContentsAndCreateNewFile().catch(reportRejection)
+        } else {
+          toast.error("The command couldn't be submitted, check the arguments.")
+        }
+      }
+    },
+    args: {
+      method: {
+        inputType: 'options',
+        required: true,
+        skip: true,
+        options: isDesktop()
+          ? [
+              { name: 'New project', value: 'newProject' },
+              { name: 'Existing project', value: 'existingProject' },
+            ]
+          : [{ name: 'Overwrite', value: 'existingProject' }],
+        valueSummary(value) {
+          return isDesktop()
+            ? value === 'newProject'
+              ? 'New project'
+              : 'Existing project'
+            : 'Overwrite'
+        },
+      },
+      projectName: {
+        inputType: 'options',
+        required: (commandsContext) =>
+          isDesktop() &&
+          commandsContext.argumentsToSubmit.method === 'existingProject',
+        skip: true,
+        options: (_, context) => {
+          const { folders } = systemIOActor.getSnapshot().context
+          const options: CommandArgumentOption<string>[] = []
+          folders.forEach((folder) => {
+            options.push({
+              name: folder.name,
+              value: folder.name,
+              isCurrent: false,
+            })
+          })
+          return options
+        },
+      },
+      newProjectName: {
+        inputType: 'text',
+        required: (commandsContext) =>
+          isDesktop() &&
+          commandsContext.argumentsToSubmit.method === 'newProject',
+        skip: true,
+      },
+      path: {
+        inputType: 'path',
+        required: true,
+        valueSummary: (value) => window.electron.path.basename(value),
+        filters: [
+          {
+            name: `3D Models (${FILE_EXT_3D_MODELS.map((ext) => '.' + ext).join(', ')})`,
+            extensions: FILE_EXT_3D_MODELS,
+          },
+        ],
       },
     },
   }
 
   // TODO: Web loadExternal Model Command
   return isDesktop()
-    ? [textToCADCommand, loadExternalModelCommand]
-    : [textToCADCommand, loadExternalModelCommand]
+    ? [textToCADCommand, addKCLFileToProject, import3DModel]
+    : [textToCADCommand, addKCLFileToProject]
 }
