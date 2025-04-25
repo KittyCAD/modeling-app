@@ -3,11 +3,7 @@ import { bracket } from '@e2e/playwright/fixtures/bracket'
 import fsp from 'fs/promises'
 
 import { TEST_CODE_LONG_WITH_ERROR_OUT_OF_VIEW } from '@e2e/playwright/storageStates'
-import {
-  executorInputPath,
-  getUtils,
-  orRunWhenFullSuiteEnabled,
-} from '@e2e/playwright/test-utils'
+import { executorInputPath, getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
 test.describe('Code pane and errors', () => {
@@ -57,7 +53,6 @@ extrude001 = extrude(sketch001, length = 5)`
     homePage,
     editor,
   }) => {
-    test.fixme(orRunWhenFullSuiteEnabled())
     const u = await getUtils(page)
 
     // Load the app with the working starter code
@@ -131,7 +126,6 @@ extrude001 = extrude(sketch001, length = 5)`
     homePage,
     context,
   }) => {
-    test.fixme(orRunWhenFullSuiteEnabled())
     // Load the app with the working starter code
     await context.addInitScript((code) => {
       localStorage.setItem('persistCode', code)

@@ -15,7 +15,6 @@ import {
   getUtils,
   headerMasks,
   networkingMasks,
-  orRunWhenFullSuiteEnabled,
   settingsToToml,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
@@ -1046,7 +1045,6 @@ test.describe('Grid visibility', { tag: '@snapshot' }, () => {
 })
 
 test('theme persists', async ({ page, context }) => {
-  test.fixme(orRunWhenFullSuiteEnabled())
   const u = await getUtils(page)
   await context.addInitScript(async () => {
     localStorage.setItem(

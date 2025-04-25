@@ -3,7 +3,6 @@ on:
   push:
     branches:
       - main
-      - all-e2e # this bypasses `fixme()` using `orRunWhenFullSuiteEnabled()`
   pull_request:
   schedule:
     - cron: 0 * * * *  # hourly
@@ -289,17 +288,6 @@ jobs:
           - windows-latest-8-cores
         shardIndex: [1, 2, 3, 4]
         shardTotal: [4]
-        # Disable macos and windows tests on hourly e2e tests since we only care
-        # about server side changes.
-        # Technique from https://github.com/joaomcteixeira/python-project-skeleton/pull/31/files
-        isScheduled:
-          - ${{ github.event_name == 'schedule' }}
-        exclude:
-          - os: namespace-profile-macos-8-cores
-            isScheduled: true
-          - os: windows-latest-8-cores
-            isScheduled: true
-        # TODO: add ref here for main and latest release tag
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4

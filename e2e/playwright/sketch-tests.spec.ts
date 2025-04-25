@@ -12,7 +12,6 @@ import {
   TEST_COLORS,
   getMovementUtils,
   getUtils,
-  orRunWhenFullSuiteEnabled,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
@@ -189,7 +188,6 @@ sketch001 = startProfile(sketch002, at = [12.34, -12.34])
     ).toBeVisible()
   })
   test('Can edit segments by dragging their handles', () => {
-    test.fixme(orRunWhenFullSuiteEnabled())
     const doEditSegmentsByDraggingHandle = async (
       page: Page,
       homePage: HomePageFixture,
@@ -1088,7 +1086,6 @@ profile001 = startProfile(sketch001, at = [${roundOff(scale * 69.6)}, ${roundOff
     page,
     homePage,
   }) => {
-    test.fixme(orRunWhenFullSuiteEnabled())
     /**
      * Tests the following things
      * 1) The the planes are there on load because the scene is empty
@@ -1399,7 +1396,6 @@ test.describe('multi-profile sketching', () => {
     homePage,
     cmdBar,
   }) => {
-    test.fixme(orRunWhenFullSuiteEnabled())
     // We seed the scene with a single offset plane
     await context.addInitScript(() => {
       localStorage.setItem(
@@ -2768,7 +2764,6 @@ loft([profile001, profile002])
     page,
     homePage,
   }) => {
-    test.fixme(orRunWhenFullSuiteEnabled())
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',

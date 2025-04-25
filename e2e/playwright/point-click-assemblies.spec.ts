@@ -358,6 +358,24 @@ test.describe('Point-and-click assemblies tests', () => {
         await scene.expectPixelColor(bgColor, midPoint, tolerance)
         await scene.expectPixelColor(partColor, moreToTheRightPoint, tolerance)
       })
+
+      await test.step('Delete the part using the feature tree', async () => {
+        await toolbar.openPane('feature-tree')
+        const op = await toolbar.getFeatureTreeOperation('bracket', 0)
+        await op.click({ button: 'right' })
+        await page.getByTestId('context-menu-delete').click()
+        await scene.settled(cmdBar)
+        await toolbar.closePane('feature-tree')
+
+        // Expect empty editor and scene
+        await toolbar.openPane('code')
+        await editor.expectEditor.not.toContain('import')
+        await editor.expectEditor.not.toContain('bracket')
+        await editor.expectEditor.not.toContain('|> translate')
+        await editor.expectEditor.not.toContain('|> rotate')
+        await toolbar.closePane('code')
+        await scene.expectPixelColorNotToBe(partColor, midPoint, tolerance)
+      })
     }
   )
 
@@ -470,6 +488,46 @@ test.describe('Point-and-click assemblies tests', () => {
         await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
         await toolbar.closePane('code')
         await scene.expectPixelColor(partColor, partPoint, tolerance)
+      })
+
+      await test.step('Delete first part using the feature tree', async () => {
+        await toolbar.openPane('feature-tree')
+        const op = await toolbar.getFeatureTreeOperation('cube', 0)
+        await op.click({ button: 'right' })
+        await page.getByTestId('context-menu-delete').click()
+        await scene.settled(cmdBar)
+        await toolbar.closePane('feature-tree')
+
+        // Expect only the import statement to be there
+        await toolbar.openPane('code')
+        await editor.expectEditor.not.toContain(`import "cube.step" as cube`)
+        await toolbar.closePane('code')
+        await editor.expectEditor.toContain(
+          `
+        import "${complexPlmFileName}" as cubeSw
+        cubeSw
+      `,
+          { shouldNormalise: true }
+        )
+        await toolbar.closePane('code')
+      })
+
+      await test.step('Delete second part using the feature tree', async () => {
+        await toolbar.openPane('feature-tree')
+        const op = await toolbar.getFeatureTreeOperation('cubeSw', 0)
+        await op.click({ button: 'right' })
+        await page.getByTestId('context-menu-delete').click()
+        await scene.settled(cmdBar)
+        await toolbar.closePane('feature-tree')
+
+        // Expect empty editor and scene
+        await toolbar.openPane('code')
+        await editor.expectEditor.not.toContain(
+          `import "${complexPlmFileName}" as cubeSw`
+        )
+        await editor.expectEditor.not.toContain('cubeSw')
+        await toolbar.closePane('code')
+        await scene.expectPixelColorNotToBe(partColor, midPoint, tolerance)
       })
     }
   )

@@ -1,11 +1,7 @@
 import type { EngineCommand } from '@src/lang/std/artifactGraph'
 import { uuidv4 } from '@src/lib/utils'
 
-import {
-  commonPoints,
-  getUtils,
-  orRunWhenFullSuiteEnabled,
-} from '@e2e/playwright/test-utils'
+import { commonPoints, getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
 test.describe(
@@ -18,7 +14,6 @@ test.describe(
       'simulate network down and network little widget',
       { tag: '@skipLocalEngine' },
       async ({ page, homePage }) => {
-        test.fixme(orRunWhenFullSuiteEnabled())
         const u = await getUtils(page)
         await page.setBodyDimensions({ width: 1200, height: 500 })
 
@@ -95,7 +90,6 @@ test.describe(
       'Engine disconnect & reconnect in sketch mode',
       { tag: '@skipLocalEngine' },
       async ({ page, homePage, toolbar, scene, cmdBar }) => {
-        test.fixme(orRunWhenFullSuiteEnabled())
         const networkToggle = page.getByTestId('network-toggle')
 
         const u = await getUtils(page)
