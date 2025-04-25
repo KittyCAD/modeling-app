@@ -8,7 +8,7 @@ radius = 80
 
 triangleLen = 500
 p = startSketchOn(XY)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> angledLine(angle = 60, length = triangleLen, tag = $a)
   |> angledLine(angle = 180, length = triangleLen, tag = $b)
   |> angledLine(angle = 300, length = triangleLen, tag = $c)
@@ -16,7 +16,7 @@ p = startSketchOn(XY)
 
 fn circl(x, face) {
   return startSketchOn(p, face = face)
-    |> startProfileAt([x + radius, triangleHeight / 2], %)
+    |> startProfile(at = [x + radius, triangleHeight / 2])
     |> arc(
          angleStart = 0,
          angleEnd = 360,

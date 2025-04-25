@@ -69,7 +69,7 @@ export END = 'end'
 /// ```
 /// // Create a helix around an edge.
 /// helper001 = startSketchOn(XZ)
-///  |> startProfileAt([0, 0], %)
+///  |> startProfile(at = [0, 0])
 ///  |> line(end = [0, 10], tag = $edge001)
 ///
 /// helixPath = helix(
@@ -157,7 +157,7 @@ export fn helix(
 ///
 /// ```
 /// part001 = startSketchOn(XY)
-///     |> startProfileAt([4, 12], %)
+///     |> startProfile(at = [4, 12])
 ///     |> line(end = [2, 0])
 ///     |> line(end = [0, -6])
 ///     |> line(end = [4, -6])
@@ -181,7 +181,7 @@ export fn helix(
 ///
 /// ```
 /// part001 = startSketchOn(XY)
-///     |> startProfileAt([4, 12], %)
+///     |> startProfile(at = [4, 12])
 ///     |> line(end = [2, 0])
 ///     |> line(end = [0, -6])
 ///     |> line(end = [4, -6])
@@ -195,7 +195,7 @@ export fn helix(
 ///
 /// ```
 /// part001 = startSketchOn(XY)
-///     |> startProfileAt([4, 12], %)
+///     |> startProfile(at = [4, 12])
 ///     |> line(end = [2, 0])
 ///     |> line(end = [0, -6])
 ///     |> line(end = [4, -6])
@@ -207,7 +207,7 @@ export fn helix(
 ///     |> revolve(axis = Y, angle = 180)
 ///
 /// part002 = startSketchOn(part001, face = END)
-///     |> startProfileAt([4.5, -5], %)
+///     |> startProfile(at = [4.5, -5])
 ///     |> line(end = [0, 5])
 ///     |> line(end = [5, 0])
 ///     |> line(end = [0, -5])
@@ -217,7 +217,7 @@ export fn helix(
 ///
 /// ```
 /// box = startSketchOn(XY)
-///     |> startProfileAt([0, 0], %)
+///     |> startProfile(at = [0, 0])
 ///     |> line(end = [0, 20])
 ///     |> line(end = [20, 0])
 ///     |> line(end = [0, -20])
@@ -234,7 +234,7 @@ export fn helix(
 ///
 /// ```
 /// box = startSketchOn(XY)
-///     |> startProfileAt([0, 0], %)
+///     |> startProfile(at = [0, 0])
 ///     |> line(end = [0, 20])
 ///     |> line(end = [20, 0])
 ///     |> line(end = [0, -20], tag = $revolveAxis)
@@ -251,7 +251,7 @@ export fn helix(
 ///
 /// ```
 /// box = startSketchOn(XY)
-///     |> startProfileAt([0, 0], %)
+///     |> startProfile(at = [0, 0])
 ///     |> line(end = [0, 20])
 ///     |> line(end = [20, 0])
 ///     |> line(end = [0, -20], tag = $revolveAxis)
@@ -269,7 +269,7 @@ export fn helix(
 ///
 /// ```
 /// sketch001 = startSketchOn(XY)
-///   |> startProfileAt([10, 0], %)
+///   |> startProfile(at = [10, 0])
 ///   |> line(end = [5, -5])
 ///   |> line(end = [5, 5])
 ///   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
@@ -288,14 +288,14 @@ export fn helix(
 /// // Revolve two sketches around the same axis.
 ///
 /// sketch001 = startSketchOn(XY)
-/// profile001 = startProfileAt([4, 8], sketch001)
+/// profile001 = startProfile(sketch001, at = [4, 8])
 ///     |> xLine(length = 3)
 ///     |> yLine(length = -3)
 ///     |> xLine(length = -3)
 ///     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
 ///     |> close()
 ///
-/// profile002 = startProfileAt([-5, 8], sketch001)
+/// profile002 = startProfile(sketch001, at = [-5, 8])
 ///     |> xLine(length = 3)
 ///     |> yLine(length = -3)
 ///     |> xLine(length = -3)
@@ -312,7 +312,7 @@ export fn helix(
 /// // Revolve around a path that has not been extruded.
 ///
 /// profile001 = startSketchOn(XY)
-///     |> startProfileAt([0, 0], %)
+///     |> startProfile(at = [0, 0])
 ///     |> line(end = [0, 20], tag = $revolveAxis)
 ///     |> line(end = [20, 0])
 ///     |> line(end = [0, -20])
@@ -327,7 +327,7 @@ export fn helix(
 /// // Revolve around a path that has not been extruded or closed.
 ///
 /// profile001 = startSketchOn(XY)
-///     |> startProfileAt([0, 0], %)
+///     |> startProfile(at = [0, 0])
 ///     |> line(end = [0, 20], tag = $revolveAxis)
 ///     |> line(end = [20, 0])
 ///
@@ -340,7 +340,7 @@ export fn helix(
 /// // Symmetrically revolve around a path.
 ///
 /// profile001 = startSketchOn(XY)
-///     |> startProfileAt([0, 0], %)
+///     |> startProfile(at = [0, 0])
 ///     |> line(end = [0, 20], tag = $revolveAxis)
 ///     |> line(end = [20, 0])
 ///
@@ -353,7 +353,7 @@ export fn helix(
 /// // Bidirectional revolve around a path.
 ///
 /// profile001 = startSketchOn(XY)
-///     |> startProfileAt([0, 0], %)
+///     |> startProfile(at = [0, 0])
 ///     |> line(end = [0, 20], tag = $revolveAxis)
 ///     |> line(end = [20, 0])
 ///
@@ -415,7 +415,7 @@ export fn toYards(@num: number(yd)): number(yd) {
 ///
 /// ```
 /// exampleSketch = startSketchOn(XZ)
-///   |> startProfileAt([0, 0], %)
+///   |> startProfile(at = [0, 0])
 ///   |> angledLine(
 ///     angle = 50,
 ///     length = 70 * cos(toRadians(45)),
@@ -433,7 +433,7 @@ export fn toRadians(@num: number(rad)): number(rad) {
 ///
 /// ```
 /// exampleSketch = startSketchOn(XZ)
-///   |> startProfileAt([0, 0], %)
+///   |> startProfile(at = [0, 0])
 ///   |> angledLine(
 ///     angle = 50,
 ///     length = 70 * cos(toDegrees((PI/4): number(rad))),
@@ -455,7 +455,7 @@ export fn toDegrees(@num: number(deg)): number(deg) {
 /// ```
 /// // Loft a square and a circle on the `XY` plane using offset.
 /// squareSketch = startSketchOn(XY)
-///     |> startProfileAt([-100, 200], %)
+///     |> startProfile(at = [-100, 200])
 ///     |> line(end = [200, 0])
 ///     |> line(end = [0, -200])
 ///     |> line(end = [-200, 0])
@@ -471,7 +471,7 @@ export fn toDegrees(@num: number(deg)): number(deg) {
 /// ```
 /// // Loft a square and a circle on the `XZ` plane using offset.
 /// squareSketch = startSketchOn(XZ)
-///     |> startProfileAt([-100, 200], %)
+///     |> startProfile(at = [-100, 200])
 ///     |> line(end = [200, 0])
 ///     |> line(end = [0, -200])
 ///     |> line(end = [-200, 0])
@@ -487,7 +487,7 @@ export fn toDegrees(@num: number(deg)): number(deg) {
 /// ```
 /// // Loft a square and a circle on the `YZ` plane using offset.
 /// squareSketch = startSketchOn(YZ)
-///     |> startProfileAt([-100, 200], %)
+///     |> startProfile(at = [-100, 200])
 ///     |> line(end = [200, 0])
 ///     |> line(end = [0, -200])
 ///     |> line(end = [-200, 0])
@@ -503,7 +503,7 @@ export fn toDegrees(@num: number(deg)): number(deg) {
 /// ```
 /// // Loft a square and a circle on the `-XZ` plane using offset.
 /// squareSketch = startSketchOn(-XZ)
-///     |> startProfileAt([-100, 200], %)
+///     |> startProfile(at = [-100, 200])
 ///     |> line(end = [200, 0])
 ///     |> line(end = [0, -200])
 ///     |> line(end = [-200, 0])
@@ -519,12 +519,12 @@ export fn toDegrees(@num: number(deg)): number(deg) {
 /// ```
 /// // A circle on the XY plane
 /// startSketchOn(XY)
-///   |> startProfileAt([0, 0], %)
+///   |> startProfile(at = [0, 0])
 ///   |> circle( radius = 10, center = [0, 0] )
 ///
 /// // Triangle on the plane 4 units above
 /// startSketchOn(offsetPlane(XY, offset = 4))
-///   |> startProfileAt([0, 0], %)
+///   |> startProfile(at = [0, 0])
 ///   |> line(end = [10, 0])
 ///   |> line(end = [0, 10])
 ///   |> close()

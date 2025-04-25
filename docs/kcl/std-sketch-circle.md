@@ -46,7 +46,7 @@ example = extrude(exampleSketch, length = 5)
 
 ```js
 exampleSketch = startSketchOn(XZ)
-  |> startProfileAt([-15, 0], %)
+  |> startProfile(at = [-15, 0])
   |> line(end = [30, 0])
   |> line(end = [0, 30])
   |> line(end = [-30, 0])

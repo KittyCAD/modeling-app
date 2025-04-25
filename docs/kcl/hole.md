@@ -32,7 +32,7 @@ hole(
 
 ```js
 exampleSketch = startSketchOn(XY)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> line(end = [0, 5])
   |> line(end = [5, 0])
   |> line(end = [0, -5])
@@ -48,7 +48,7 @@ example = extrude(exampleSketch, length = 1)
 ```js
 fn squareHoleSketch() {
   squareSketch = startSketchOn(-XZ)
-    |> startProfileAt([-1, -1], %)
+    |> startProfile(at = [-1, -1])
     |> line(end = [2, 0])
     |> line(end = [0, 2])
     |> line(end = [-2, 0])

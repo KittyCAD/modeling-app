@@ -134,7 +134,7 @@ fn involute_curve(radius: f64, angle: f64) -> (f64, f64) {
 /// a = 10
 /// b = 14
 /// startSketchOn(XZ)
-///   |> startProfileAt([0, 0], %)
+///   |> startProfile(at = [0, 0])
 ///   |> involuteCircular(startRadius = a, endRadius = b, angle = 60)
 ///   |> involuteCircular(startRadius = a, endRadius = b, angle = 60, reverse = true)
 /// ```
@@ -236,7 +236,7 @@ pub async fn line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 ///
 /// ```no_run
 /// triangle = startSketchOn(XZ)
-///   |> startProfileAt([0, 0], %)
+///   |> startProfile(at = [0, 0])
 ///   // The END argument means it ends at exactly [10, 0].
 ///   // This is an absolute measurement, it is NOT relative to
 ///   // the start of the sketch.
@@ -247,7 +247,7 @@ pub async fn line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 ///   |> extrude(length = 5)
 ///
 /// box = startSketchOn(XZ)
-///   |> startProfileAt([10, 10], %)
+///   |> startProfile(at = [10, 10])
 ///   // The 'to' argument means move the pen this much.
 ///   // So, [10, 0] is a relative distance away from the current point.
 ///   |> line(end = [10, 0])
@@ -406,7 +406,7 @@ pub async fn x_line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 ///
 /// ```no_run
 /// exampleSketch = startSketchOn(XZ)
-///   |> startProfileAt([0, 0], %)
+///   |> startProfile(at = [0, 0])
 ///   |> xLine(length = 15)
 ///   |> angledLine(
 ///     angle = 80,
@@ -475,7 +475,7 @@ pub async fn y_line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 ///
 /// ```no_run
 /// exampleSketch = startSketchOn(XZ)
-///   |> startProfileAt([0, 0], %)
+///   |> startProfile(at = [0, 0])
 ///   |> yLine(length = 15)
 ///   |> angledLine(
 ///     angle = 30,
@@ -556,7 +556,7 @@ pub async fn angled_line(exec_state: &mut ExecState, args: Args) -> Result<KclVa
 ///
 /// ```no_run
 /// exampleSketch = startSketchOn(XZ)
-///   |> startProfileAt([0, 0], %)
+///   |> startProfile(at = [0, 0])
 ///   |> yLine(endAbsolute = 15)
 ///   |> angledLine(
 ///     angle = 30,
@@ -854,7 +854,7 @@ pub async fn angled_line_that_intersects(exec_state: &mut ExecState, args: Args)
 ///
 /// ```no_run
 /// exampleSketch = startSketchOn(XZ)
-///   |> startProfileAt([0, 0], %)
+///   |> startProfile(at = [0, 0])
 ///   |> line(endAbsolute = [5, 10])
 ///   |> line(endAbsolute = [-10, 10], tag = $lineToIntersect)
 ///   |> line(endAbsolute = [0, 20])
@@ -1000,7 +1000,7 @@ pub async fn start_sketch_on(exec_state: &mut ExecState, args: Args) -> Result<K
 ///
 /// ```no_run
 /// exampleSketch = startSketchOn(XY)
-///   |> startProfileAt([0, 0], %)
+///   |> startProfile(at = [0, 0])
 ///   |> line(end = [10, 0])
 ///   |> line(end = [0, 10])
 ///   |> line(end = [-10, 0])
@@ -1009,7 +1009,7 @@ pub async fn start_sketch_on(exec_state: &mut ExecState, args: Args) -> Result<K
 /// example = extrude(exampleSketch, length = 5)
 ///
 /// exampleSketch002 = startSketchOn(example, face = END)
-///   |> startProfileAt([1, 1], %)
+///   |> startProfile(at = [1, 1])
 ///   |> line(end = [8, 0])
 ///   |> line(end = [0, 8])
 ///   |> line(end = [-8, 0])
@@ -1018,7 +1018,7 @@ pub async fn start_sketch_on(exec_state: &mut ExecState, args: Args) -> Result<K
 /// example002 = extrude(exampleSketch002, length = 5)
 ///
 /// exampleSketch003 = startSketchOn(example002, face = END)
-///   |> startProfileAt([2, 2], %)
+///   |> startProfile(at = [2, 2])
 ///   |> line(end = [6, 0])
 ///   |> line(end = [0, 6])
 ///   |> line(end = [-6, 0])
@@ -1031,7 +1031,7 @@ pub async fn start_sketch_on(exec_state: &mut ExecState, args: Args) -> Result<K
 /// // Sketch on the end of an extruded face by tagging the end face.
 ///
 /// exampleSketch = startSketchOn(XY)
-///   |> startProfileAt([0, 0], %)
+///   |> startProfile(at = [0, 0])
 ///   |> line(end = [10, 0])
 ///   |> line(end = [0, 10])
 ///   |> line(end = [-10, 0])
@@ -1040,7 +1040,7 @@ pub async fn start_sketch_on(exec_state: &mut ExecState, args: Args) -> Result<K
 /// example = extrude(exampleSketch, length = 5, tagEnd = $end01)
 ///
 /// exampleSketch002 = startSketchOn(example, face = end01)
-///   |> startProfileAt([1, 1], %)
+///   |> startProfile(at = [1, 1])
 ///   |> line(end = [8, 0])
 ///   |> line(end = [0, 8])
 ///   |> line(end = [-8, 0])
@@ -1049,7 +1049,7 @@ pub async fn start_sketch_on(exec_state: &mut ExecState, args: Args) -> Result<K
 /// example002 = extrude(exampleSketch002, length = 5, tagEnd = $end02)
 ///
 /// exampleSketch003 = startSketchOn(example002, face = end02)
-///   |> startProfileAt([2, 2], %)
+///   |> startProfile(at = [2, 2])
 ///   |> line(end = [6, 0])
 ///   |> line(end = [0, 6])
 ///   |> line(end = [-6, 0])
@@ -1060,7 +1060,7 @@ pub async fn start_sketch_on(exec_state: &mut ExecState, args: Args) -> Result<K
 ///
 /// ```no_run
 /// exampleSketch = startSketchOn(XY)
-///   |> startProfileAt([0, 0], %)
+///   |> startProfile(at = [0, 0])
 ///   |> line(end = [10, 0])
 ///   |> line(end = [0, 10], tag = $sketchingFace)
 ///   |> line(end = [-10, 0])
@@ -1069,7 +1069,7 @@ pub async fn start_sketch_on(exec_state: &mut ExecState, args: Args) -> Result<K
 /// example = extrude(exampleSketch, length = 10)
 ///
 /// exampleSketch002 = startSketchOn(example, face = sketchingFace)
-///   |> startProfileAt([1, 1], %)
+///   |> startProfile(at = [1, 1])
 ///   |> line(end = [8, 0])
 ///   |> line(end = [0, 8])
 ///   |> line(end = [-8, 0])
@@ -1078,7 +1078,7 @@ pub async fn start_sketch_on(exec_state: &mut ExecState, args: Args) -> Result<K
 /// example002 = extrude(exampleSketch002, length = 10)
 ///
 /// exampleSketch003 = startSketchOn(example002, face = sketchingFace002)
-///   |> startProfileAt([-8, 12], %)
+///   |> startProfile(at = [-8, 12])
 ///   |> line(end = [0, 6])
 ///   |> line(end = [6, 0])
 ///   |> line(end = [0, -6])
@@ -1089,7 +1089,7 @@ pub async fn start_sketch_on(exec_state: &mut ExecState, args: Args) -> Result<K
 ///
 /// ```no_run
 /// exampleSketch = startSketchOn(XY)
-///   |> startProfileAt([4, 12], %)
+///   |> startProfile(at = [4, 12])
 ///   |> line(end = [2, 0])
 ///   |> line(end = [0, -6])
 ///   |> line(end = [4, -6])
@@ -1102,7 +1102,7 @@ pub async fn start_sketch_on(exec_state: &mut ExecState, args: Args) -> Result<K
 /// example = revolve(exampleSketch, axis = Y, angle = 180)
 ///
 /// exampleSketch002 = startSketchOn(example, face = END)
-///   |> startProfileAt([4.5, -5], %)
+///   |> startProfile(at = [4.5, -5])
 ///   |> line(end = [0, 5])
 ///   |> line(end = [5, 0])
 ///   |> line(end = [0, -5])
@@ -1115,7 +1115,7 @@ pub async fn start_sketch_on(exec_state: &mut ExecState, args: Args) -> Result<K
 /// // Sketch on the end of a revolved face by tagging the end face.
 ///
 /// exampleSketch = startSketchOn(XY)
-///   |> startProfileAt([4, 12], %)
+///   |> startProfile(at = [4, 12])
 ///   |> line(end = [2, 0])
 ///   |> line(end = [0, -6])
 ///   |> line(end = [4, -6])
@@ -1128,7 +1128,7 @@ pub async fn start_sketch_on(exec_state: &mut ExecState, args: Args) -> Result<K
 /// example = revolve(exampleSketch, axis = Y, angle = 180, tagEnd = $end01)
 ///
 /// exampleSketch002 = startSketchOn(example, face = end01)
-///   |> startProfileAt([4.5, -5], %)
+///   |> startProfile(at = [4.5, -5])
 ///   |> line(end = [0, 5])
 ///   |> line(end = [5, 0])
 ///   |> line(end = [0, -5])
@@ -1144,7 +1144,7 @@ pub async fn start_sketch_on(exec_state: &mut ExecState, args: Args) -> Result<K
 ///     yAxis = { x = 0, y = 1, z = 0 },
 ///     zAxis = { x = 0, y = 0, z = 1 }
 ///   })
-///  |> startProfileAt([0, 0], %)
+///  |> startProfile(at = [0, 0])
 ///  |> line(end = [100.0, 0])
 ///  |> yLine(length = -100.0)
 ///  |> xLine(length = -100.0)
@@ -1260,10 +1260,13 @@ async fn make_sketch_plane_from_orientation(
 }
 
 /// Start a new profile at a given point.
-pub async fn start_profile_at(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (start, sketch_surface, tag) = args.get_data_and_sketch_surface()?;
+pub async fn start_profile(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    // let (start, sketch_surface, tag) = args.get_data_and_sketch_surface()?;
+    let sketch_surface = args.get_unlabeled_kw_arg("startProfileOn")?;
+    let start: [TyF64; 2] = args.get_kw_arg("at")?;
+    let tag = args.get_kw_arg_opt(NEW_TAG_KW)?;
 
-    let sketch = inner_start_profile_at(start, sketch_surface, tag, exec_state, args).await?;
+    let sketch = inner_start_profile(sketch_surface, start, tag, exec_state, args).await?;
     Ok(KclValue::Sketch {
         value: Box::new(sketch),
     })
@@ -1273,7 +1276,7 @@ pub async fn start_profile_at(exec_state: &mut ExecState, args: Args) -> Result<
 ///
 /// ```no_run
 /// exampleSketch = startSketchOn(XZ)
-///   |> startProfileAt([0, 0], %)
+///   |> startProfile(at = [0, 0])
 ///   |> line(end = [10, 0])
 ///   |> line(end = [0, 10])
 ///   |> line(end = [-10, 0])
@@ -1284,7 +1287,7 @@ pub async fn start_profile_at(exec_state: &mut ExecState, args: Args) -> Result<
 ///
 /// ```no_run
 /// exampleSketch = startSketchOn(-XZ)
-///   |> startProfileAt([10, 10], %)
+///   |> startProfile(at = [10, 10])
 ///   |> line(end = [10, 0])
 ///   |> line(end = [0, 10])
 ///   |> line(end = [-10, 0])
@@ -1295,7 +1298,7 @@ pub async fn start_profile_at(exec_state: &mut ExecState, args: Args) -> Result<
 ///
 /// ```no_run
 /// exampleSketch = startSketchOn(-XZ)
-///   |> startProfileAt([-10, 23], %)
+///   |> startProfile(at = [-10, 23])
 ///   |> line(end = [10, 0])
 ///   |> line(end = [0, 10])
 ///   |> line(end = [-10, 0])
@@ -1304,11 +1307,18 @@ pub async fn start_profile_at(exec_state: &mut ExecState, args: Args) -> Result<
 /// example = extrude(exampleSketch, length = 5)
 /// ```
 #[stdlib {
-    name = "startProfileAt",
+    name = "startProfile",
+    keywords = true,
+    unlabeled_first = true,
+    args = {
+        sketch_surface = { docs = "What to start the profile on" },
+        at = { docs = "Where to start the profile. An absolute point." },
+        tag = { docs = "Tag this first starting point" },
+    }
 }]
-pub(crate) async fn inner_start_profile_at(
-    to: [TyF64; 2],
+pub(crate) async fn inner_start_profile(
     sketch_surface: SketchSurface,
+    at: [TyF64; 2],
     tag: Option<TagNode>,
     exec_state: &mut ExecState,
     args: Args,
@@ -1364,7 +1374,7 @@ pub(crate) async fn inner_start_profile_at(
         ModelingCmdReq {
             cmd: ModelingCmd::from(mcmd::MovePathPen {
                 path: path_id.into(),
-                to: KPoint2d::from(point_to_mm(to.clone())).with_z(0.0).map(LengthUnit),
+                to: KPoint2d::from(point_to_mm(at.clone())).with_z(0.0).map(LengthUnit),
             }),
             cmd_id: move_pen_id.into(),
         },
@@ -1375,7 +1385,7 @@ pub(crate) async fn inner_start_profile_at(
     ])
     .await?;
 
-    let (to, ty) = untype_point(to);
+    let (to, ty) = untype_point(at);
     let current_path = BasePath {
         from: to,
         to,
@@ -1431,7 +1441,7 @@ pub async fn profile_start_x(exec_state: &mut ExecState, args: Args) -> Result<K
 ///
 /// ```no_run
 /// sketch001 = startSketchOn(XY)
-///  |> startProfileAt([5, 2], %)
+///  |> startProfile(at = [5, 2])
 ///  |> angledLine(angle = -26.6, length = 50)
 ///  |> angledLine(angle = 90, length = 50)
 ///  |> angledLine(angle = 30, endAbsoluteX = profileStartX(%))
@@ -1461,7 +1471,7 @@ pub async fn profile_start_y(exec_state: &mut ExecState, args: Args) -> Result<K
 ///
 /// ```no_run
 /// sketch001 = startSketchOn(XY)
-///  |> startProfileAt([5, 2], %)
+///  |> startProfile(at = [5, 2])
 ///  |> angledLine(angle = -60, length = 14 )
 ///  |> angledLine(angle = 30, endAbsoluteY =  profileStartY(%))
 /// ```
@@ -1490,7 +1500,7 @@ pub async fn profile_start(exec_state: &mut ExecState, args: Args) -> Result<Kcl
 ///
 /// ```no_run
 /// sketch001 = startSketchOn(XY)
-///  |> startProfileAt([5, 2], %)
+///  |> startProfile(at = [5, 2])
 ///  |> angledLine(angle = 120, length = 50 , tag = $seg01)
 ///  |> angledLine(angle = segAng(seg01) + 120, length = 50 )
 ///  |> line(end = profileStart(%))
@@ -1525,7 +1535,7 @@ pub async fn close(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///
 /// ```no_run
 /// startSketchOn(XZ)
-///    |> startProfileAt([0, 0], %)
+///    |> startProfile(at = [0, 0])
 ///    |> line(end = [10, 10])
 ///    |> line(end = [10, 0])
 ///    |> close()
@@ -1534,7 +1544,7 @@ pub async fn close(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///
 /// ```no_run
 /// exampleSketch = startSketchOn(-XZ)
-///   |> startProfileAt([0, 0], %)
+///   |> startProfile(at = [0, 0])
 ///   |> line(end = [10, 0])
 ///   |> line(end = [0, 10])
 ///   |> close()
@@ -1630,7 +1640,7 @@ pub async fn arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
 ///
 /// ```no_run
 /// exampleSketch = startSketchOn(XZ)
-///   |> startProfileAt([0, 0], %)
+///   |> startProfile(at = [0, 0])
 ///   |> line(end = [10, 0])
 ///   |> arc(
 ///        angleStart = 0,
@@ -1642,7 +1652,7 @@ pub async fn arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
 /// ```
 /// ```no_run
 /// exampleSketch = startSketchOn(XZ)
-///   |> startProfileAt([0, 0], %)
+///   |> startProfile(at = [0, 0])
 ///   |> arc(
 ///         endAbsolute = [10,0],
 ///         interiorAbsolute = [5,5]
@@ -1852,7 +1862,7 @@ pub async fn tangential_arc(exec_state: &mut ExecState, args: Args) -> Result<Kc
 ///
 /// ```no_run
 /// exampleSketch = startSketchOn(XZ)
-///   |> startProfileAt([0, 0], %)
+///   |> startProfile(at = [0, 0])
 ///   |> angledLine(
 ///     angle = 45,
 ///     length = 10,
@@ -1866,7 +1876,7 @@ pub async fn tangential_arc(exec_state: &mut ExecState, args: Args) -> Result<Kc
 ///
 /// ```no_run
 /// exampleSketch = startSketchOn(XZ)
-///   |> startProfileAt([0, 0], %)
+///   |> startProfile(at = [0, 0])
 ///   |> angledLine(
 ///     angle = 60,
 ///     length = 10,
@@ -1880,7 +1890,7 @@ pub async fn tangential_arc(exec_state: &mut ExecState, args: Args) -> Result<Kc
 ///
 /// ```no_run
 /// exampleSketch = startSketchOn(XZ)
-///   |> startProfileAt([0, 0], %)
+///   |> startProfile(at = [0, 0])
 ///   |> angledLine(
 ///     angle = 60,
 ///     length = 10,
@@ -2161,7 +2171,7 @@ pub async fn bezier_curve(exec_state: &mut ExecState, args: Args) -> Result<KclV
 ///
 /// ```no_run
 /// exampleSketch = startSketchOn(XZ)
-///   |> startProfileAt([0, 0], %)
+///   |> startProfile(at = [0, 0])
 ///   |> line(end = [0, 10])
 ///   |> bezierCurve(
 ///        control1 = [5, 0],
@@ -2256,7 +2266,7 @@ pub async fn hole(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 ///
 /// ```no_run
 /// exampleSketch = startSketchOn(XY)
-///   |> startProfileAt([0, 0], %)
+///   |> startProfile(at = [0, 0])
 ///   |> line(end = [0, 5])
 ///   |> line(end = [5, 0])
 ///   |> line(end = [0, -5])
@@ -2270,7 +2280,7 @@ pub async fn hole(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 /// ```no_run
 /// fn squareHoleSketch() {
 ///   squareSketch = startSketchOn(-XZ)
-///     |> startProfileAt([-1, -1], %)
+///     |> startProfile(at = [-1, -1])
 ///     |> line(end = [2, 0])
 ///     |> line(end = [0, 2])
 ///     |> line(end = [-2, 0])

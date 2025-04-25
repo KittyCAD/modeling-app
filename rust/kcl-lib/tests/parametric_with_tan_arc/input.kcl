@@ -9,7 +9,7 @@ shelfMountL = 9
 wallMountL = 8
 
 bracket = startSketchOn(XY)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> line(end = [0, wallMountL])
   |> tangentialArc(radius = filletR, angle = 90)
   |> line(end = [-shelfMountL, 0])

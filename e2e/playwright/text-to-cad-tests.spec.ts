@@ -15,7 +15,7 @@ test.describe('Text-to-CAD tests', () => {
       await u.waitForPageLoad()
     })
 
-    await sendPromptFromCommandBar(page, 'a 2x4 lego')
+    await sendPromptFromCommandBarTriggeredByButton(page, 'a 2x4 lego')
 
     // Find the toast.
     // Look out for the toast message
@@ -64,7 +64,7 @@ test.describe('Text-to-CAD tests', () => {
     await homePage.goToModelingScene()
     await u.waitForPageLoad()
 
-    await sendPromptFromCommandBar(page, 'a 2x6 lego')
+    await sendPromptFromCommandBarTriggeredByButton(page, 'a 2x6 lego')
 
     // Find the toast.
     // Look out for the toast message
@@ -82,7 +82,7 @@ test.describe('Text-to-CAD tests', () => {
     await expect(successToastMessage).toBeVisible({ timeout: 15000 })
 
     // Can send a new prompt from the command bar.
-    await sendPromptFromCommandBar(page, 'a 2x4 lego')
+    await sendPromptFromCommandBarTriggeredByButton(page, 'a 2x4 lego')
 
     // Find the toast.
     // Look out for the toast message
@@ -108,7 +108,7 @@ test.describe('Text-to-CAD tests', () => {
     await homePage.goToModelingScene()
     await u.waitForPageLoad()
 
-    await sendPromptFromCommandBar(page, 'a 2x4 lego')
+    await sendPromptFromCommandBarTriggeredByButton(page, 'a 2x4 lego')
 
     // Find the toast.
     // Look out for the toast message
@@ -149,29 +149,8 @@ test.describe('Text-to-CAD tests', () => {
     await homePage.goToModelingScene()
     await u.waitForPageLoad()
 
-    const commandBarButton = page.getByRole('button', { name: 'Commands' })
-    await expect(commandBarButton).toBeVisible()
-    // Click the command bar button
-    await commandBarButton.click()
-
-    // Wait for the command bar to appear
-    const cmdSearchBar = page.getByPlaceholder('Search commands')
-    await expect(cmdSearchBar).toBeVisible()
-
-    const textToCadCommand = page.getByRole('option', { name: 'Text-to-CAD' })
-    await expect(textToCadCommand.first()).toBeVisible()
-    // Click the Text-to-CAD command
-    await textToCadCommand.first().click()
-
-    // Enter the prompt.
-    const prompt = page.getByRole('textbox', { name: 'Prompt' })
-    await expect(prompt.first()).toBeVisible()
-
-    // Type the prompt.
     const randomPrompt = `aslkdfja;` + Date.now() + `FFFFEIWJF`
-    await page.keyboard.type(randomPrompt)
-    await page.waitForTimeout(1000)
-    await page.keyboard.press('Enter')
+    await sendPromptFromCommandBarTriggeredByButton(page, randomPrompt)
 
     // Find the toast.
     // Look out for the toast message
@@ -217,30 +196,8 @@ test.describe('Text-to-CAD tests', () => {
     await homePage.goToModelingScene()
     await u.waitForPageLoad()
 
-    const commandBarButton = page.getByRole('button', { name: 'Commands' })
-    await expect(commandBarButton).toBeVisible()
-    // Click the command bar button
-    await commandBarButton.click()
-
-    // Wait for the command bar to appear
-    const cmdSearchBar = page.getByPlaceholder('Search commands')
-    await expect(cmdSearchBar).toBeVisible()
-
-    const textToCadCommand = page.getByRole('option', { name: 'Text-to-CAD' })
-    await expect(textToCadCommand.first()).toBeVisible()
-    // Click the Text-to-CAD command
-    await textToCadCommand.first().click()
-
-    // Enter the prompt.
-    const prompt = page.getByRole('textbox', { name: 'Prompt' })
-    await expect(prompt.first()).toBeVisible()
-
     const badPrompt = 'akjsndladf lajbhflauweyfaaaljhr472iouafyvsssssss'
-
-    // Type the prompt.
-    await page.keyboard.type(badPrompt)
-    await page.waitForTimeout(1000)
-    await page.keyboard.press('Enter')
+    await sendPromptFromCommandBarTriggeredByButton(page, badPrompt)
 
     // Find the toast.
     // Look out for the toast message
@@ -307,30 +264,8 @@ test.describe('Text-to-CAD tests', () => {
     await homePage.goToModelingScene()
     await u.waitForPageLoad()
 
-    const commandBarButton = page.getByRole('button', { name: 'Commands' })
-    await expect(commandBarButton).toBeVisible()
-    // Click the command bar button
-    await commandBarButton.click()
-
-    // Wait for the command bar to appear
-    const cmdSearchBar = page.getByPlaceholder('Search commands')
-    await expect(cmdSearchBar).toBeVisible()
-
-    const textToCadCommand = page.getByRole('option', { name: 'Text-to-CAD' })
-    await expect(textToCadCommand.first()).toBeVisible()
-    // Click the Text-to-CAD command
-    await textToCadCommand.first().click()
-
-    // Enter the prompt.
-    const prompt = page.getByRole('textbox', { name: 'Prompt' })
-    await expect(prompt.first()).toBeVisible()
-
     const badPrompt = 'akjsndladflajbhflauweyf15;'
-
-    // Type the prompt.
-    await page.keyboard.type(badPrompt)
-    await page.waitForTimeout(1000)
-    await page.keyboard.press('Enter')
+    await sendPromptFromCommandBarTriggeredByButton(page, badPrompt)
 
     // Find the toast.
     // Look out for the toast message
@@ -357,7 +292,7 @@ test.describe('Text-to-CAD tests', () => {
     await expect(page.getByText(`Text-to-CAD failed`)).toBeVisible()
 
     // They should be able to try again from the command bar.
-    await sendPromptFromCommandBar(page, 'a 2x4 lego')
+    await sendPromptFromCommandBarTriggeredByButton(page, 'a 2x4 lego')
 
     // Find the toast.
     // Look out for the toast message
@@ -385,23 +320,7 @@ test.describe('Text-to-CAD tests', () => {
 
     const promptWithNewline = `a 2x4\nlego`
 
-    const commandBarButton = page.getByRole('button', { name: 'Commands' })
-    await expect(commandBarButton).toBeVisible()
-    // Click the command bar button
-    await commandBarButton.click()
-
-    // Wait for the command bar to appear
-    const cmdSearchBar = page.getByPlaceholder('Search commands')
-    await expect(cmdSearchBar).toBeVisible()
-
-    const textToCadCommand = page.getByRole('option', { name: 'Text-to-CAD' })
-    await expect(textToCadCommand.first()).toBeVisible()
-    // Click the Text-to-CAD command
-    await textToCadCommand.first().click()
-
-    // Enter the prompt.
-    const prompt = page.getByRole('textbox', { name: 'Prompt' })
-    await expect(prompt.first()).toBeVisible()
+    await page.getByTestId('text-to-cad').click()
 
     // Type the prompt.
     await page.keyboard.type('a 2x4')
@@ -446,11 +365,11 @@ test.describe('Text-to-CAD tests', () => {
     await homePage.goToModelingScene()
     await u.waitForPageLoad()
 
-    await sendPromptFromCommandBar(page, 'a 2x4 lego')
+    await sendPromptFromCommandBarTriggeredByButton(page, 'a 2x4 lego')
 
-    await sendPromptFromCommandBar(page, 'a 2x8 lego')
+    await sendPromptFromCommandBarTriggeredByButton(page, 'a 2x8 lego')
 
-    await sendPromptFromCommandBar(page, 'a 2x10 lego')
+    await sendPromptFromCommandBarTriggeredByButton(page, 'a 2x10 lego')
 
     // Find the toast.
     // Look out for the toast message
@@ -529,9 +448,12 @@ test.describe('Text-to-CAD tests', () => {
     await homePage.goToModelingScene()
     await u.waitForPageLoad()
 
-    await sendPromptFromCommandBar(page, 'a 2x4 lego')
+    await sendPromptFromCommandBarTriggeredByButton(page, 'a 2x4 lego')
 
-    await sendPromptFromCommandBar(page, 'alkjsdnlajshdbfjlhsbdf a;askjdnf')
+    await sendPromptFromCommandBarTriggeredByButton(
+      page,
+      'alkjsdnlajshdbfjlhsbdf a;askjdnf'
+    )
 
     // Find the toast.
     // Look out for the toast message
@@ -589,7 +511,8 @@ test.describe('Text-to-CAD tests', () => {
   })
 })
 
-async function sendPromptFromCommandBar(page: Page, promptStr: string) {
+// Added underscore if we need this for later.
+async function _sendPromptFromCommandBar(page: Page, promptStr: string) {
   await page.waitForTimeout(1000)
   await test.step(`Send prompt from command bar: ${promptStr}`, async () => {
     const commandBarButton = page.getByRole('button', { name: 'Commands' })
@@ -609,6 +532,25 @@ async function sendPromptFromCommandBar(page: Page, promptStr: string) {
     await textToCadCommand.first().scrollIntoViewIfNeeded()
     await textToCadCommand.first().click()
     await page.waitForTimeout(1000)
+
+    // Enter the prompt.
+    const prompt = page.getByRole('textbox', { name: 'Prompt' })
+    await expect(prompt.first()).toBeVisible()
+
+    // Type the prompt.
+    await page.keyboard.type(promptStr)
+    await page.waitForTimeout(200)
+    await page.keyboard.press('Enter')
+  })
+}
+
+async function sendPromptFromCommandBarTriggeredByButton(
+  page: Page,
+  promptStr: string
+) {
+  await page.waitForTimeout(1000)
+  await test.step(`Send prompt from command bar: ${promptStr}`, async () => {
+    await page.getByTestId('text-to-cad').click()
 
     // Enter the prompt.
     const prompt = page.getByRole('textbox', { name: 'Prompt' })
@@ -661,7 +603,7 @@ test(
     await openKclCodePanel()
 
     await test.step(`Test file creation`, async () => {
-      await sendPromptFromCommandBar(page, prompt)
+      await sendPromptFromCommandBarTriggeredByButton(page, prompt)
       // File is considered created if it shows up in the Project Files pane
       await expect(textToCadFileButton).toBeVisible({ timeout: 20_000 })
       expect(fileExists()).toBeTruthy()

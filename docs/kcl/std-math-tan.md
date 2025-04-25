@@ -28,7 +28,7 @@ tan(@num: number(Angle)): number(_)
 
 ```js
 exampleSketch = startSketchOn(XZ)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> angledLine(
     angle = 50,
     length = 50 * tan((1/2): number(rad)),

@@ -21,7 +21,7 @@ const filletR = 0.25
 
 // Sketch the bracket and extrude with fillets
 const bracket = startSketchOn(XY)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> line(end = [0, wallMountL], tag = 'outerEdge')
   |> line(end = [-shelfMountL, 0])
   |> line(end = [0, -thickness])
