@@ -6,7 +6,6 @@ import {
   TEST_COLORS,
   executorInputPath,
   getUtils,
-  orRunWhenFullSuiteEnabled,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
@@ -651,7 +650,6 @@ sketch_001 = startSketchOn(XY)
     page,
     homePage,
   }) => {
-    test.fixme(orRunWhenFullSuiteEnabled())
     const u = await getUtils(page)
     await page.addInitScript(async () => {
       localStorage.setItem(
@@ -1150,7 +1148,6 @@ sketch001 = startSketchOn(XZ)
     `Can import a local OBJ file`,
     { tag: '@electron' },
     async ({ page, context }, testInfo) => {
-      test.fixme(orRunWhenFullSuiteEnabled())
       await context.folderSetupFn(async (dir) => {
         const bracketDir = join(dir, 'cube')
         await fsp.mkdir(bracketDir, { recursive: true })

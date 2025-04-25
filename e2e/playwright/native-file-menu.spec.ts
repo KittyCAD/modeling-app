@@ -1,5 +1,5 @@
 import { throwTronAppMissing } from '@e2e/playwright/lib/electron-helpers'
-import { orRunWhenFullSuiteEnabled } from '@e2e/playwright/test-utils'
+
 import { expect, test } from '@e2e/playwright/zoo-test'
 
 /**
@@ -2313,8 +2313,6 @@ test.describe(
           scene,
           toolbar,
         }) => {
-          // TODO: this test has been dead dead on the idle stream branch
-          test.fixme(orRunWhenFullSuiteEnabled())
           if (!tronApp) {
             throwTronAppMissing()
             return
