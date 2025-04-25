@@ -1021,6 +1021,7 @@ export async function createProject({
 
 async function goToHomePageFromModeling (page) {
     await page.getByTestId('app-logo').click()
+    await expect(page.getByText('Your Projects')).toBeVisible()
 }
 
 export function executorInputPath(fileName: string): string {
