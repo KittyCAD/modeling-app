@@ -65,7 +65,8 @@ import increment as inc, decrement as dec from "util.kcl"
 There are two common patterns for re‑using geometry:
 
 1. **Wrap the construction in a function** – flexible and fully parametric.
-2. **Duplicate an existing object with `clone`** – lightning‑fast, but fixed.
+2. **Duplicate an existing object with `clone`** – lightning‑fast, but an exact
+   duplicate.
 
 ### Parametric function example
 
