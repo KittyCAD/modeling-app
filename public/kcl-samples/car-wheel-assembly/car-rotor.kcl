@@ -85,5 +85,5 @@ secondRotorSlottedSketch = startSketchOn(secondRotor, face = END)
        rotateDuplicates = true,
      )
 
-extrude(secondRotorSlottedSketch, length = -rotorSinglePlateThickness / 2)
+carRotor = extrude(secondRotorSlottedSketch, length = -rotorSinglePlateThickness / 2)
   |> appearance(color = "#dbcd70", roughness = 90, metalness = 90)
