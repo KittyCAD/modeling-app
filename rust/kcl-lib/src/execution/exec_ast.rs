@@ -295,7 +295,8 @@ impl ExecutorContext {
                     if let ItemVisibility::Export = variable_declaration.visibility {
                         exec_state.mod_local.module_exports.push(var_name);
                     }
-                    last_expr = Some(value);
+                    // Variable declaration can be the return value of a module.
+                    last_expr = matches!(body_type, BodyType::Root).then_some(value);
                 }
                 BodyItem::TypeDeclaration(ty) => {
                     let metadata = Metadata::from(&**ty);
