@@ -174,6 +174,13 @@ export class ToolbarFixture {
   openFile = async (fileName: string) => {
     await this.filePane.getByText(fileName).click()
   }
+  selectTangentialArc = async () => {
+    await this.page.getByRole('button', { name: 'caret down arcs:' }).click()
+    await expect(
+      this.page.getByTestId('dropdown-three-point-arc')
+    ).toBeVisible()
+    await this.page.getByTestId('dropdown-tangential-arc').click()
+  }
   selectCenterRectangle = async () => {
     await this.page
       .getByRole('button', { name: 'caret down rectangles:' })

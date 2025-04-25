@@ -2,14 +2,10 @@ import fs from "fs";
 import { join } from "path";
 import type { Page } from "@playwright/test";
 
-import {
-  createProject,
-  getUtils,
-  orRunWhenFullSuiteEnabled,
-} from "@e2e/playwright/test-utils";
+import { createProject, getUtils } from "@e2e/playwright/test-utils";
 import { expect, test } from "@e2e/playwright/zoo-test";
 
-test.describe("Text-to-CAD tests", { tag: ["@skipWin"] }, () => {
+test.describe("Text-to-CAD tests", () => {
   test("basic lego happy case", async ({ page, homePage }) => {
     const u = await getUtils(page);
 
@@ -436,93 +432,91 @@ test.describe("Text-to-CAD tests", { tag: ["@skipWin"] }, () => {
   });
 
   // This will be fine once greg makes prompt at top of file deterministic
-  test(
-    "can do many at once and get many prompts back, and interact with many",
-    { tag: ["@skipWin"] },
-    async ({ page, homePage }) => {
-      test.fixme(orRunWhenFullSuiteEnabled());
-      // Let this test run longer since we've seen it timeout.
-      test.setTimeout(180_000);
+  test("can do many at once and get many prompts back, and interact with many", async ({
+    page,
+    homePage,
+  }) => {
+    // Let this test run longer since we've seen it timeout.
+    test.setTimeout(180_000);
 
-      const u = await getUtils(page);
+    const u = await getUtils(page);
 
-      await page.setBodyDimensions({ width: 1000, height: 500 });
+    await page.setBodyDimensions({ width: 1000, height: 500 });
 
-      await homePage.goToModelingScene();
-      await u.waitForPageLoad();
+    await homePage.goToModelingScene();
+    await u.waitForPageLoad();
 
-      await sendPromptFromCommandBar(page, "a 2x4 lego");
+    await sendPromptFromCommandBar(page, "a 2x4 lego");
 
-      await sendPromptFromCommandBar(page, "a 2x8 lego");
+    await sendPromptFromCommandBar(page, "a 2x8 lego");
 
-      await sendPromptFromCommandBar(page, "a 2x10 lego");
+    await sendPromptFromCommandBar(page, "a 2x10 lego");
 
-      // Find the toast.
-      // Look out for the toast message
-      const submittingToastMessage = page.getByText(
-        `Submitting to Text-to-CAD API...`,
-      );
-      await expect(submittingToastMessage.first()).toBeVisible();
+    // Find the toast.
+    // Look out for the toast message
+    const submittingToastMessage = page.getByText(
+      `Submitting to Text-to-CAD API...`,
+    );
+    await expect(submittingToastMessage.first()).toBeVisible();
 
-      const generatingToastMessage = page.getByText(
-        `Generating parametric model...`,
-      );
-      await expect(generatingToastMessage.first()).toBeVisible({
-        timeout: 10_000,
-      });
+    const generatingToastMessage = page.getByText(
+      `Generating parametric model...`,
+    );
+    await expect(generatingToastMessage.first()).toBeVisible({
+      timeout: 10_000,
+    });
 
-      const successToastMessage = page.getByText(`Text-to-CAD successful`);
-      // We should have three success toasts.
-      await expect(successToastMessage).toHaveCount(3, { timeout: 25_000 });
+    const successToastMessage = page.getByText(`Text-to-CAD successful`);
+    // We should have three success toasts.
+    await expect(successToastMessage).toHaveCount(3, { timeout: 25_000 });
 
-      await expect(page.getByText(`a 2x4 lego`)).toBeVisible();
-      await expect(page.getByText(`a 2x8 lego`)).toBeVisible();
-      await expect(page.getByText(`a 2x10 lego`)).toBeVisible();
+    await expect(page.getByText(`a 2x4 lego`)).toBeVisible();
+    await expect(page.getByText(`a 2x8 lego`)).toBeVisible();
+    await expect(page.getByText(`a 2x10 lego`)).toBeVisible();
 
-      // Ensure if you reject one, the others stay.
-      const rejectButton = page.getByRole("button", { name: "Reject" });
-      await expect(rejectButton.first()).toBeVisible();
-      // Click the reject button on the first toast.
-      await rejectButton.first().click();
+    // Ensure if you reject one, the others stay.
+    const rejectButton = page.getByRole("button", { name: "Reject" });
+    await expect(rejectButton.first()).toBeVisible();
+    // Click the reject button on the first toast.
+    await rejectButton.first().click();
 
-      // The first toast should disappear, but not the others.
-      await expect(page.getByText(`a 2x10 lego`)).not.toBeVisible();
-      await expect(page.getByText(`a 2x8 lego`)).toBeVisible();
-      await expect(page.getByText(`a 2x4 lego`)).toBeVisible();
+    // The first toast should disappear, but not the others.
+    await expect(page.getByText(`a 2x10 lego`)).not.toBeVisible();
+    await expect(page.getByText(`a 2x8 lego`)).toBeVisible();
+    await expect(page.getByText(`a 2x4 lego`)).toBeVisible();
 
-      // Ensure you can copy the code for one of the models remaining.
-      const copyToClipboardButton = page.getByRole("button", {
-        name: "Accept",
-      });
-      await expect(copyToClipboardButton.first()).toBeVisible();
-      // Click the button.
-      await copyToClipboardButton.first().click();
+    // Ensure you can copy the code for one of the models remaining.
+    const copyToClipboardButton = page.getByRole("button", {
+      name: "Accept",
+    });
+    await expect(copyToClipboardButton.first()).toBeVisible();
+    // Click the button.
+    await copyToClipboardButton.first().click();
 
-      // Do NOT do AI tests like this: "Expect the code to be pasted."
-      // Reason: AI tests are NONDETERMINISTIC. Thus we need to be as most
-      // general as we can for the assertion.
-      // We can use Kolmogorov complexity as a measurement of the
-      // "probably most minimal version of this program" to have a lower
-      // bound to work with. It is completely by feel because there are
-      // no proofs that any program is its smallest self.
-      const code2x8 = await page.locator(".cm-content").innerText();
-      await expect(code2x8.length).toBeGreaterThan(249);
+    // Do NOT do AI tests like this: "Expect the code to be pasted."
+    // Reason: AI tests are NONDETERMINISTIC. Thus we need to be as most
+    // general as we can for the assertion.
+    // We can use Kolmogorov complexity as a measurement of the
+    // "probably most minimal version of this program" to have a lower
+    // bound to work with. It is completely by feel because there are
+    // no proofs that any program is its smallest self.
+    const code2x8 = await page.locator(".cm-content").innerText();
+    await expect(code2x8.length).toBeGreaterThan(249);
 
-      // Ensure the final toast remains.
-      await expect(page.getByText(`a 2x10 lego`)).not.toBeVisible();
-      await expect(page.getByText(`Prompt: "a 2x8 lego`)).not.toBeVisible();
-      await expect(page.getByText(`a 2x4 lego`)).toBeVisible();
+    // Ensure the final toast remains.
+    await expect(page.getByText(`a 2x10 lego`)).not.toBeVisible();
+    await expect(page.getByText(`Prompt: "a 2x8 lego`)).not.toBeVisible();
+    await expect(page.getByText(`a 2x4 lego`)).toBeVisible();
 
-      // Ensure you can copy the code for the final model.
-      await expect(copyToClipboardButton).toBeVisible();
-      // Click the button.
-      await copyToClipboardButton.click();
+    // Ensure you can copy the code for the final model.
+    await expect(copyToClipboardButton).toBeVisible();
+    // Click the button.
+    await copyToClipboardButton.click();
 
-      // Expect the code to be pasted.
-      const code2x4 = await page.locator(".cm-content").innerText();
-      await expect(code2x4.length).toBeGreaterThan(249);
-    },
-  );
+    // Expect the code to be pasted.
+    const code2x4 = await page.locator(".cm-content").innerText();
+    await expect(code2x4.length).toBeGreaterThan(249);
+  });
 
   test("can do many at once with errors, clicking dismiss error does not dismiss all", async ({
     page,
@@ -631,7 +625,6 @@ test(
   "Text-to-CAD functionality",
   { tag: "@electron" },
   async ({ context, page }, testInfo) => {
-    test.fixme(orRunWhenFullSuiteEnabled());
     const projectName = "project-000";
     const prompt = "lego 2x4";
     const textToCadFileName = "lego-2x4.kcl";

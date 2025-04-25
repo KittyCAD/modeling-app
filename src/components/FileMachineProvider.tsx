@@ -158,6 +158,14 @@ export const FileMachineProvider = ({
             navigate(`..${PATHS.FILE}/${encodeURIComponent(event.output.path)}`)
           }
         },
+        openFileInNewWindow: ({ event }) => {
+          if (event.type !== 'Open file in new window') {
+            return
+          }
+
+          commandBarActor.send({ type: 'Close' })
+          window.electron.openInNewWindow(event.data.name)
+        },
       },
       actors: {
         readFiles: fromPromise(async ({ input }) => {

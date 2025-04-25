@@ -459,7 +459,7 @@ impl ExecutorContext {
                 exec_state.add_path_to_source_id(resolved_path.clone(), id);
                 let format = super::import::format_from_annotations(attrs, path, source_range)?;
                 let geom = super::import::import_foreign(path, format, exec_state, self, source_range).await?;
-                exec_state.add_module(id, resolved_path, ModuleRepr::Foreign(geom));
+                exec_state.add_module(id, resolved_path, ModuleRepr::Foreign(geom, None));
                 Ok(id)
             }
             ImportPath::Std { .. } => {
@@ -501,7 +501,7 @@ impl ExecutorContext {
                     *cache = Some((val, er, items.clone()));
                     (er, items)
                 }),
-            ModuleRepr::Foreign(geom) => Err(KclError::Semantic(KclErrorDetails {
+            ModuleRepr::Foreign(geom, _) => Err(KclError::Semantic(KclErrorDetails {
                 message: "Cannot import items from foreign modules".to_owned(),
                 source_ranges: vec![geom.source_range],
             })),
@@ -546,9 +546,20 @@ impl ExecutorContext {
                     Err(e) => Err(e),
                 }
             }
-            ModuleRepr::Foreign(geom) => super::import::send_to_engine(geom.clone(), self)
-                .await
-                .map(|geom| Some(KclValue::ImportedGeometry(geom))),
+            ModuleRepr::Foreign(_, Some(imported)) => Ok(Some(imported.clone())),
+            ModuleRepr::Foreign(geom, cached) => {
+                let result = super::import::send_to_engine(geom.clone(), self)
+                    .await
+                    .map(|geom| Some(KclValue::ImportedGeometry(geom)));
+
+                match result {
+                    Ok(val) => {
+                        *cached = val.clone();
+                        Ok(val)
+                    }
+                    Err(e) => Err(e),
+                }
+            }
             ModuleRepr::Dummy => unreachable!(),
         };
 

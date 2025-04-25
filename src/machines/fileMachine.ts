@@ -10,6 +10,7 @@ type FileMachineContext = {
 
 type FileMachineEvents =
   | { type: 'Open file'; data: { name: string } }
+  | { type: 'Open file in new window'; data: { name: string } }
   | {
       type: 'Rename file'
       data: { oldName: string; newName: string; isDir: boolean }
@@ -100,6 +101,7 @@ export const fileMachine = setup({
       return { project: event.data.project }
     }),
     navigateToFile: () => {},
+    openFileInNewWindow: () => {},
     renameToastSuccess: () => {},
     createToastSuccess: () => {},
     toastSuccess: () => {},
@@ -220,6 +222,10 @@ export const fileMachine = setup({
 
         'Open file': {
           target: 'Opening file',
+        },
+
+        'Open file in new window': {
+          target: 'Opening file in new window',
         },
 
         'Set selected directory': {
@@ -407,6 +413,10 @@ export const fileMachine = setup({
 
     'Opening file': {
       entry: ['navigateToFile'],
+    },
+
+    'Opening file in new window': {
+      entry: ['openFileInNewWindow'],
     },
 
     'Creating file': {
