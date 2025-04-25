@@ -24,21 +24,9 @@ import type { IndexLoaderData } from '@src/lib/types'
 import type { CommandBarContext } from '@src/machines/commandBarMachine'
 import { IS_NIGHTLY_OR_DEBUG } from '@src/routes/utils'
 
-interface OnSubmitProps {
-  name: string
-  content?: string
-  targetPathToClone?: string
-  method: 'overwrite' | 'newFile'
-  source: 'kcl-samples' | 'local'
-}
-
 interface KclCommandConfig {
   // TODO: find a different approach that doesn't require
   // special props for a single command
-  specialPropsForLoadCommand: {
-    onSubmit: (p: OnSubmitProps) => Promise<void>
-    providedOptions: CommandArgumentOption<string>[]
-  }
   specialPropsForInsertCommand: {
     providedOptions: CommandArgumentOption<string>[]
   }
