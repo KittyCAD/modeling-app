@@ -94,9 +94,9 @@ myCube = cube([0, 0])
 ### `clone` example
 
 ```kcl
-sketch001 = startSketchOn(XY)
-  |> circle(center = [15, 0], radius = 5)
-  |> revolve(angle = 360, axis = Y)
+sketch001 = startSketchOn(-XZ)
+  |> circle(center = [0, 0], radius = 10)
+  |> extrude(length = 5) 
   |> appearance(color = "#ff0000", metalness = 90, roughness = 90)
 
 sketch002 = clone(sketch001)  // ✓ instant copy
@@ -126,7 +126,7 @@ Under the hood, the Design Studio runs **every module in parallel** where it can
 
 If you shoe‑horn everything into `main.kcl`, each statement runs sequentially:
 
-```kcl
+```norun
 import "big.step" as gizmo  // blocks main while reading
 
 gizmo |> translate(x=50)    // blocks again while waiting for render
@@ -134,7 +134,7 @@ gizmo |> translate(x=50)    // blocks again while waiting for render
 
 Split `gizmo` into its own file and the read/render can overlap whatever else `main.kcl` is doing.
 
-```kcl
+```norun
 // gizmo.kcl                   (worker A)
 import "big.step"
 
@@ -150,7 +150,7 @@ gizmo |> translate(x=50)      // only blocks here
 
 Defining a function inside a module is instantaneous – we just record the byte‑code. The heavy lifting happens when the function is **called**. So:
 
-```kcl
+```norun
 // util.kcl
 export fn makeBolt(size) { /* … expensive CAD … */ }
 ```
@@ -159,14 +159,14 @@ If `main.kcl` waits until the very end to call `makeBolt`, *none* of that work w
 
 **Better:** call it early or move the invocation into another module.
 
-```kcl
+```norun
 // bolt_instance.kcl
 import makeBolt from "util.kcl"
 bolt = makeBolt(5)  // executed in parallel
-export bolt
+bolt
 ```
 
-Now `main.kcl` can import `bolt_instance.kcl` and get the result that was rendered while it was busy doing other things.
+Now `main.kcl` can `import "bolt_instance.kcl" as bolt` and get the result that was rendered while it was busy doing other things.
 
 ---
 
