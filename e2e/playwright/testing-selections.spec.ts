@@ -9,7 +9,7 @@ import {
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
-test.describe('Testing selections', { tag: ['@skipWin'] }, () => {
+test.describe('Testing selections', () => {
   test.setTimeout(90_000)
   test('Selections work on fresh and edited sketch', async ({
     page,
