@@ -4,7 +4,7 @@ description: Result of unparsing sketch_in_object.kcl
 ---
 fn test() {
   return startSketchOn(XY)
-    |> startProfileAt([0, 0], %)
+    |> startProfile(at = [0, 0])
     |> line(end = [0, 1])
     |> line(end = [1, 0])
     |> line(end = [0, -1])
@@ -15,7 +15,7 @@ fn test2() {
   return {
     thing1 = {
       thing2 = startSketchOn(XY)
-        |> startProfileAt([0, 0], %)
+        |> startProfile(at = [0, 0])
         |> line(end = [0, 1])
         |> line(end = [1, 0])
         |> line(end = [0, -1])

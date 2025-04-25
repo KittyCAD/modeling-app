@@ -57,7 +57,7 @@ async function doBasicSketch(
   await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
   if (openPanes.includes('code')) {
     await expect(u.codeLocator).toContainText(
-      `sketch001 = startSketchOn(XZ)profile001 = startProfileAt(${commonPoints.startAt}, sketch001)`
+      `sketch001 = startSketchOn(XZ)profile001 = startProfile(sketch001, at = ${commonPoints.startAt})`
     )
   }
   await page.waitForTimeout(500)
@@ -67,7 +67,7 @@ async function doBasicSketch(
   if (openPanes.includes('code')) {
     await expect(
       u.codeLocator
-    ).toHaveText(`sketch001 = startSketchOn(XZ)profile001 = startProfileAt(${commonPoints.startAt}, sketch001)
+    ).toHaveText(`sketch001 = startSketchOn(XZ)profile001 = startProfile(sketch001, at = ${commonPoints.startAt})
   |> xLine(length = ${commonPoints.num1})`)
   }
   await page.waitForTimeout(500)
@@ -75,9 +75,9 @@ async function doBasicSketch(
   if (openPanes.includes('code')) {
     await expect(
       u.codeLocator
-    ).toHaveText(`sketch001 = startSketchOn(XZ)profile001 = startProfileAt(${
+    ).toHaveText(`sketch001 = startSketchOn(XZ)profile001 = startProfile(sketch001, at = ${
       commonPoints.startAt
-    }, sketch001)
+    })
   |> xLine(length = ${commonPoints.num1})
   |> yLine(length = ${commonPoints.num1 + 0.01})`)
   } else {
@@ -88,9 +88,9 @@ async function doBasicSketch(
   if (openPanes.includes('code')) {
     await expect(
       u.codeLocator
-    ).toHaveText(`@settings(defaultLengthUnit = in)sketch001 = startSketchOn(XZ)profile001 = startProfileAt(${
+    ).toHaveText(`@settings(defaultLengthUnit = in)sketch001 = startSketchOn(XZ)profile001 = startProfile(sketch001, ${
       commonPoints.startAt
-    }, sketch001)
+    })
   |> xLine(length = ${commonPoints.num1})
   |> yLine(length = ${commonPoints.num1 + 0.01})
   |> xLine(length = ${commonPoints.num2 * -1})`)
@@ -146,9 +146,9 @@ async function doBasicSketch(
   await u.openKclCodePanel()
   await expect(
     u.codeLocator
-  ).toHaveText(`@settings(defaultLengthUnit = in)sketch001 = startSketchOn(XZ)profile001 = startProfileAt(${
+  ).toHaveText(`@settings(defaultLengthUnit = in)sketch001 = startSketchOn(XZ)profile001 = startProfile(sketch001, at = ${
     commonPoints.startAt
-  }, sketch001)
+  })
   |> xLine(length = ${commonPoints.num1}, tag = $seg01)
   |> yLine(length = ${commonPoints.num1 + 0.01})
   |> xLine(length = -segLen(seg01))`)

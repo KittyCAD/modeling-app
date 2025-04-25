@@ -100,10 +100,9 @@ import {
 import type EditorManager from '@src/editor/manager'
 import type { KclManager } from '@src/lang/KclSingleton'
 import type CodeManager from '@src/lang/codeManager'
-import { ARG_END, ARG_END_ABSOLUTE } from '@src/lang/constants'
+import { ARG_END, ARG_AT, ARG_END_ABSOLUTE } from '@src/lang/constants'
 import {
   createArrayExpression,
-  createCallExpressionStdLib,
   createCallExpressionStdLibKw,
   createLabeledArg,
   createLiteral,
@@ -473,7 +472,7 @@ export class SceneEntities {
       scale,
       theme: this.sceneInfra._theme,
       // default is 12, this makes the draft point pop a bit more,
-      // especially when snapping to the startProfileAt handle as it's it was the exact same size
+      // especially when snapping to the startProfile handle as it's it was the exact same size
       size: 16,
     })
     draftPoint.layers.set(SKETCH_LAYER)
@@ -1212,13 +1211,19 @@ export class SceneEntities {
     const tag = findUniqueName(_ast, 'rectangleSegmentA')
     const newDeclaration = createVariableDeclaration(
       varName,
-      createCallExpressionStdLib('startProfileAt', [
-        createArrayExpression([
-          createLiteral(roundOff(rectangleOrigin[0])),
-          createLiteral(roundOff(rectangleOrigin[1])),
-        ]),
+      createCallExpressionStdLibKw(
+        'startProfile',
         createLocalName(varDec.node.id.name),
-      ])
+        [
+          createLabeledArg(
+            ARG_AT,
+            createArrayExpression([
+              createLiteral(roundOff(rectangleOrigin[0])),
+              createLiteral(roundOff(rectangleOrigin[1])),
+            ])
+          ),
+        ]
+      )
     )
 
     const insertIndex = getInsertIndex(sketchNodePaths, planeNodePath, 'end')
@@ -1413,15 +1418,22 @@ export class SceneEntities {
     // first create just the variable declaration, as that's
     // all we want the user to see in the editor
     const tag = findUniqueName(_ast, 'rectangleSegmentA')
+
     const newDeclaration = createVariableDeclaration(
       varName,
-      createCallExpressionStdLib('startProfileAt', [
-        createArrayExpression([
-          createLiteral(roundOff(rectangleOrigin[0])),
-          createLiteral(roundOff(rectangleOrigin[1])),
-        ]),
+      createCallExpressionStdLibKw(
+        'startProfile',
         createLocalName(varDec.node.id.name),
-      ])
+        [
+          createLabeledArg(
+            ARG_AT,
+            createArrayExpression([
+              createLiteral(roundOff(rectangleOrigin[0])),
+              createLiteral(roundOff(rectangleOrigin[1])),
+            ])
+          ),
+        ]
+      )
     )
     const insertIndex = getInsertIndex(sketchNodePaths, planeNodePath, 'end')
 

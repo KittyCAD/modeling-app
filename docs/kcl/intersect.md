@@ -36,7 +36,7 @@ intersect(
 
 fn cube(center, size) {
   return startSketchOn(XY)
-    |> startProfileAt([center[0] - size, center[1] - size], %)
+    |> startProfile(at = [center[0] - size, center[1] - size])
     |> line(endAbsolute = [center[0] + size, center[1] - size])
     |> line(endAbsolute = [center[0] + size, center[1] + size])
     |> line(endAbsolute = [center[0] - size, center[1] + size])
@@ -61,7 +61,7 @@ intersectedPart = intersect([part001, part002])
 
 fn cube(center, size) {
   return startSketchOn(XY)
-    |> startProfileAt([center[0] - size, center[1] - size], %)
+    |> startProfile(at = [center[0] - size, center[1] - size])
     |> line(endAbsolute = [center[0] + size, center[1] - size])
     |> line(endAbsolute = [center[0] + size, center[1] + size])
     |> line(endAbsolute = [center[0] - size, center[1] + size])

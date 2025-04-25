@@ -10,7 +10,7 @@ When you define a sketch to a variable like:
 
 ```js
 mySketch = startSketchOn(XY)
-    |> startProfileAt([-12, 12], %)
+    |> startProfile(at = [-12, 12])
     |> line(end = [24, 0])
     |> line(end = [0, -24])
     |> line(end = [-24, 0])
@@ -28,7 +28,7 @@ you can use a function.
 ```js
 fn createSketch() {
    return startSketchOn(XY)
-        |> startProfileAt([-12, 12], %)
+        |> startProfile(at = [-12, 12])
         |> line(end = [24, 0])
         |> line(end = [0, -24])
         |> line(end = [-24, 0])

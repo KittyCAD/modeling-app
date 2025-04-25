@@ -36,7 +36,7 @@ log(
 
 ```js
 exampleSketch = startSketchOn(XZ)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> line(end = [log(100, 5), 0])
   |> line(end = [5, 8])
   |> line(end = [-10, 0])

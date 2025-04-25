@@ -36,7 +36,7 @@ line(
 
 ```js
 triangle = startSketchOn(XZ)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   // The END argument means it ends at exactly [10, 0].
   // This is an absolute measurement, it is NOT relative to
   // the start of the sketch.
@@ -47,7 +47,7 @@ triangle = startSketchOn(XZ)
   |> extrude(length = 5)
 
 box = startSketchOn(XZ)
-  |> startProfileAt([10, 10], %)
+  |> startProfile(at = [10, 10])
   // The 'to' argument means move the pen this much.
   // So, [10, 0] is a relative distance away from the current point.
   |> line(end = [10, 0])

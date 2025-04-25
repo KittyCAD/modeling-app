@@ -9,7 +9,7 @@ import antennaLength, antennaBaseWidth, antennaBaseHeight, antennaTopWidth, ante
 
 // Create the antenna base sketch
 antennaBaseSketch = startSketchOn(XY)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> line(end = [antennaBaseWidth, 0])
   |> line(end = [0, -antennaBaseHeight])
   |> line(end = [-antennaBaseWidth, 0])
@@ -18,10 +18,10 @@ antennaBaseSketch = startSketchOn(XY)
 // Create the antenna top sketch
 loftPlane = offsetPlane(XY, offset = antennaLength)
 antennaTopSketch = startSketchOn(loftPlane)
-  |> startProfileAt([
+  |> startProfile(at = [
        (antennaBaseWidth - antennaTopWidth) / 2,
        (antennaBaseHeight - antennaTopHeight) / 2
-     ], %)
+     ])
   |> xLine(length = antennaTopWidth)
   |> yLine(length = -antennaTopHeight)
   |> xLine(length = -antennaTopWidth)

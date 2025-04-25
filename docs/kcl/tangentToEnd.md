@@ -29,7 +29,7 @@ tangentToEnd(tag: TagIdentifier): number
 ```js
 // Horizontal pill.
 pillSketch = startSketchOn(XZ)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> line(end = [20, 0])
   |> tangentialArc(end = [0, 10], tag = $arc1)
   |> angledLine(angle = tangentToEnd(arc1), length = 20)
@@ -44,7 +44,7 @@ pillExtrude = extrude(pillSketch, length = 10)
 ```js
 // Vertical pill.  Use absolute coordinate for arc.
 pillSketch = startSketchOn(XZ)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> line(end = [0, 20])
   |> tangentialArc(endAbsolute = [10, 20], tag = $arc1)
   |> angledLine(angle = tangentToEnd(arc1), length = 20)
@@ -58,7 +58,7 @@ pillExtrude = extrude(pillSketch, length = 10)
 
 ```js
 rectangleSketch = startSketchOn(XZ)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> line(end = [10, 0], tag = $seg1)
   |> angledLine(angle = tangentToEnd(seg1), length = 10)
   |> line(end = [0, 10])
@@ -72,7 +72,7 @@ rectangleExtrude = extrude(rectangleSketch, length = 10)
 
 ```js
 bottom = startSketchOn(XY)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> arc(endAbsolute = [10, 10], interiorAbsolute = [5, 1], tag = $arc1)
   |> angledLine(angle = tangentToEnd(arc1), length = 20)
   |> close()
@@ -85,7 +85,7 @@ circSketch = startSketchOn(XY)
   |> circle(center = [0, 0], radius = 3, tag = $circ)
 
 triangleSketch = startSketchOn(XY)
-  |> startProfileAt([-5, 0], %)
+  |> startProfile(at = [-5, 0])
   |> angledLine(angle = tangentToEnd(circ), length = 10)
   |> line(end = [-15, 0])
   |> close()

@@ -15,7 +15,7 @@ frontLength = 7
 
 // Create the curved portion that catches the printer poop
 sketch001 = startSketchOn(-YZ)
-  |> startProfileAt([wallsWidth / 2, 0], %)
+  |> startProfile(at = [wallsWidth / 2, 0])
   |> xLine(length = wallThickness / 2)
   |> angledLine(angle = 60, endAbsoluteX = wallsWidth, tag = $seg01)
   |> yLine(endAbsolute = height)
@@ -39,7 +39,7 @@ part001 = revolve(
 )
 
 sketch002 = startSketchOn(-YZ)
-  |> startProfileAt([wallsWidth / 2, 0], %)
+  |> startProfile(at = [wallsWidth / 2, 0])
   |> xLine(length = wallThickness / 2)
   |> angledLine(angle = 60, endAbsoluteX = wallsWidth, tag = $seg02)
   |> yLine(endAbsolute = height)
@@ -65,7 +65,7 @@ customPlane = {
   yAxis = { x = 0, y = 0, z = 1 }
 }
 sketch003 = startSketchOn(customPlane)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> tangentialArc(angle = 60, radius = height)
   |> angledLine(angle = 60, endAbsoluteY = 0)
   |> close()
@@ -73,7 +73,7 @@ sketch003 = startSketchOn(customPlane)
 
 // Create the right side wall of the tub
 sketch004 = startSketchOn(sketch002, face = END)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> yLine(endAbsolute = height)
   |> xLine(endAbsolute = wallThickness)
   |> yLine(endAbsolute = segEndY(seg01))
@@ -101,7 +101,7 @@ customPlane2 = {
   yAxis = { x = 0, y = 0, z = 1 }
 }
 sketch005 = startSketchOn(customPlane2)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> yLine(endAbsolute = height)
   |> xLine(endAbsolute = -wallsWidth)
   |> tangentialArc(endAbsolute = [
@@ -114,7 +114,7 @@ sketch005 = startSketchOn(customPlane2)
   |> extrude(length = wallThickness)
 
 sketch006 = startSketchOn(sketch005, face = seg03)
-  |> startProfileAt([0, -1 * (backLength - height)], %)
+  |> startProfile(at = [0, -1 * (backLength - height)])
   |> xLine(endAbsolute = -exitHeight)
   |> yLine(length = -wallsWidth)
   |> xLine(endAbsolute = 0)
@@ -122,7 +122,7 @@ sketch006 = startSketchOn(sketch005, face = seg03)
   |> extrude(length = wallThickness)
 
 sketch007 = startSketchOn(sketch004, face = END)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> xLine(endAbsolute = wallThickness)
   |> yLine(endAbsolute = height)
   |> xLine(endAbsolute = 0)
@@ -140,7 +140,7 @@ customPlane3 = {
 }
 
 sketch008 = startSketchOn(customPlane3)
-  |> startProfileAt([wallThickness, wallThickness], %)
+  |> startProfile(at = [wallThickness, wallThickness])
   |> xLine(endAbsolute = frontLength)
   |> yLine(length = wallsWidth - (2 * wallThickness))
   |> xLine(endAbsolute = wallThickness)

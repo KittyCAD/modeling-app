@@ -53,7 +53,7 @@ revolve(
 
 ```js
 part001 = startSketchOn(XY)
-    |> startProfileAt([4, 12], %)
+    |> startProfile(at = [4, 12])
     |> line(end = [2, 0])
     |> line(end = [0, -6])
     |> line(end = [4, -6])
@@ -81,7 +81,7 @@ sketch001 = startSketchOn(XY)
 
 ```js
 part001 = startSketchOn(XY)
-    |> startProfileAt([4, 12], %)
+    |> startProfile(at = [4, 12])
     |> line(end = [2, 0])
     |> line(end = [0, -6])
     |> line(end = [4, -6])
@@ -97,7 +97,7 @@ part001 = startSketchOn(XY)
 
 ```js
 part001 = startSketchOn(XY)
-    |> startProfileAt([4, 12], %)
+    |> startProfile(at = [4, 12])
     |> line(end = [2, 0])
     |> line(end = [0, -6])
     |> line(end = [4, -6])
@@ -109,7 +109,7 @@ part001 = startSketchOn(XY)
     |> revolve(axis = Y, angle = 180)
 
 part002 = startSketchOn(part001, face = END)
-    |> startProfileAt([4.5, -5], %)
+    |> startProfile(at = [4.5, -5])
     |> line(end = [0, 5])
     |> line(end = [5, 0])
     |> line(end = [0, -5])
@@ -121,7 +121,7 @@ part002 = startSketchOn(part001, face = END)
 
 ```js
 box = startSketchOn(XY)
-    |> startProfileAt([0, 0], %)
+    |> startProfile(at = [0, 0])
     |> line(end = [0, 20])
     |> line(end = [20, 0])
     |> line(end = [0, -20])
@@ -140,7 +140,7 @@ sketch001 = startSketchOn(box, face = END)
 
 ```js
 box = startSketchOn(XY)
-    |> startProfileAt([0, 0], %)
+    |> startProfile(at = [0, 0])
     |> line(end = [0, 20])
     |> line(end = [20, 0])
     |> line(end = [0, -20], tag = $revolveAxis)
@@ -159,7 +159,7 @@ sketch001 = startSketchOn(box, face = END)
 
 ```js
 box = startSketchOn(XY)
-    |> startProfileAt([0, 0], %)
+    |> startProfile(at = [0, 0])
     |> line(end = [0, 20])
     |> line(end = [20, 0])
     |> line(end = [0, -20], tag = $revolveAxis)
@@ -179,7 +179,7 @@ sketch001 = startSketchOn(box, face = END)
 
 ```js
 sketch001 = startSketchOn(XY)
-  |> startProfileAt([10, 0], %)
+  |> startProfile(at = [10, 0])
   |> line(end = [5, -5])
   |> line(end = [5, 5])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
@@ -200,14 +200,14 @@ part001 = revolve(
 // Revolve two sketches around the same axis.
 
 sketch001 = startSketchOn(XY)
-profile001 = startProfileAt([4, 8], sketch001)
+profile001 = startProfile(sketch001, at = [4, 8])
     |> xLine(length = 3)
     |> yLine(length = -3)
     |> xLine(length = -3)
     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
     |> close()
 
-profile002 = startProfileAt([-5, 8], sketch001)
+profile002 = startProfile(sketch001, at = [-5, 8])
     |> xLine(length = 3)
     |> yLine(length = -3)
     |> xLine(length = -3)
@@ -226,7 +226,7 @@ revolve(
 // Revolve around a path that has not been extruded.
 
 profile001 = startSketchOn(XY)
-    |> startProfileAt([0, 0], %)
+    |> startProfile(at = [0, 0])
     |> line(end = [0, 20], tag = $revolveAxis)
     |> line(end = [20, 0])
     |> line(end = [0, -20])
@@ -243,7 +243,7 @@ sketch001 = startSketchOn(XY)
 // Revolve around a path that has not been extruded or closed.
 
 profile001 = startSketchOn(XY)
-    |> startProfileAt([0, 0], %)
+    |> startProfile(at = [0, 0])
     |> line(end = [0, 20], tag = $revolveAxis)
     |> line(end = [20, 0])
 
@@ -258,7 +258,7 @@ sketch001 = startSketchOn(XY)
 // Symmetrically revolve around a path.
 
 profile001 = startSketchOn(XY)
-    |> startProfileAt([0, 0], %)
+    |> startProfile(at = [0, 0])
     |> line(end = [0, 20], tag = $revolveAxis)
     |> line(end = [20, 0])
 
@@ -273,7 +273,7 @@ sketch001 = startSketchOn(XY)
 // Bidirectional revolve around a path.
 
 profile001 = startSketchOn(XY)
-    |> startProfileAt([0, 0], %)
+    |> startProfile(at = [0, 0])
     |> line(end = [0, 20], tag = $revolveAxis)
     |> line(end = [20, 0])
 

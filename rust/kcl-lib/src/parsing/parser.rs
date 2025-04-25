@@ -3340,7 +3340,7 @@ comment */
 /* comment at start */
 
 mySk1 = startSketchOn(XY)
-  |> startProfileAt([0, 0], %)"#;
+  |> startProfile(at = [0, 0])"#;
         let tokens = crate::parsing::token::lex(test_program, ModuleId::default()).unwrap();
         let program = program.parse(tokens.as_slice()).unwrap();
         let mut starting_comments = program.inner.non_code_meta.start_nodes;

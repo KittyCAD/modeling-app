@@ -147,7 +147,7 @@ pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Res
 ///   p3 = [ l + x, -l + y]
 ///
 ///   return startSketchOn('XY')
-///   |> startProfileAt(p0, %)
+///   |> startProfile(at = p0)
 ///   |> line(endAbsolute = p1)
 ///   |> line(endAbsolute = p2)
 ///   |> line(endAbsolute = p3)
@@ -187,7 +187,7 @@ pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Res
 ///   p3 = [ l + x, -l + y]
 ///   
 ///   return startSketchOn('XY')
-///   |> startProfileAt(p0, %)
+///   |> startProfile(at = p0)
 ///   |> line(endAbsolute = p1)
 ///   |> line(endAbsolute = p2)
 ///   |> line(endAbsolute = p3)
@@ -244,7 +244,7 @@ pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Res
 ///   ]
 /// }
 /// startSketchOn('XY')
-///   |> startProfileAt([0, 0], %)
+///   |> startProfile(at = [0, 0])
 ///   |> polygon(
 ///        radius = 10,
 ///        numSides = 4,
@@ -812,7 +812,7 @@ pub async fn pattern_linear_3d(exec_state: &mut ExecState, args: Args) -> Result
 ///
 /// ```no_run
 /// exampleSketch = startSketchOn('XZ')
-///   |> startProfileAt([0, 0], %)
+///   |> startProfile(at = [0, 0])
 ///   |> line(end = [0, 2])
 ///   |> line(end = [3, 1])
 ///   |> line(end = [0, -4])
@@ -831,7 +831,7 @@ pub async fn pattern_linear_3d(exec_state: &mut ExecState, args: Args) -> Result
 /// // Pattern a whole sketch on face.
 /// let size = 100
 /// const case = startSketchOn('XY')
-///     |> startProfileAt([-size, -size], %)
+///     |> startProfile(at = [-size, -size])
 ///     |> line(end = [2 * size, 0])
 ///     |> line(end = [0, 2 * size])
 ///     |> tangentialArc(endAbsolute = [-size, size])
@@ -859,7 +859,7 @@ pub async fn pattern_linear_3d(exec_state: &mut ExecState, args: Args) -> Result
 /// // Pattern an object on a face.
 /// let size = 100
 /// const case = startSketchOn('XY')
-///     |> startProfileAt([-size, -size], %)
+///     |> startProfile(at = [-size, -size])
 ///     |> line(end = [2 * size, 0])
 ///     |> line(end = [0, 2 * size])
 ///     |> tangentialArc(endAbsolute = [-size, size])
@@ -1063,7 +1063,7 @@ pub async fn pattern_circular_2d(exec_state: &mut ExecState, args: Args) -> Resu
 ///
 /// ```no_run
 /// exampleSketch = startSketchOn('XZ')
-///   |> startProfileAt([.5, 25], %)
+///   |> startProfile(at = [.5, 25])
 ///   |> line(end = [0, 5])
 ///   |> line(end = [-1, 0])
 ///   |> line(end = [0, -5])

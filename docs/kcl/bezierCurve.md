@@ -38,7 +38,7 @@ bezierCurve(
 
 ```js
 exampleSketch = startSketchOn(XZ)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> line(end = [0, 10])
   |> bezierCurve(control1 = [5, 0], control2 = [5, 10], end = [10, 10])
   |> line(endAbsolute = [10, 0])
