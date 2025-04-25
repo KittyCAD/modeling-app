@@ -554,7 +554,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     },
   },
   'Boolean Subtract': {
-    hide: DEV || IS_NIGHTLY_OR_DEBUG ? undefined : 'both',
     description: 'Subtract one solid from another.',
     icon: 'booleanSubtract',
     needsReview: true,
@@ -581,7 +580,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     },
   },
   'Boolean Union': {
-    hide: DEV || IS_NIGHTLY_OR_DEBUG ? undefined : 'both',
     description: 'Union multiple solids into a single solid.',
     icon: 'booleanUnion',
     needsReview: true,
@@ -598,7 +596,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     },
   },
   'Boolean Intersect': {
-    hide: DEV || IS_NIGHTLY_OR_DEBUG ? undefined : 'both',
     description: 'Subtract one solid from another.',
     icon: 'booleanIntersect',
     needsReview: true,
