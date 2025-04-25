@@ -24,7 +24,7 @@ import { sortFilesAndDirectories } from '@src/lib/desktopFS'
 import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
 import { PATHS } from '@src/lib/paths'
 import type { FileEntry } from '@src/lib/project'
-import { codeManager, kclManager } from '@src/lib/singletons'
+import { codeManager, kclManager, rustContext } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
 import type { IndexLoaderData } from '@src/lib/types'
 
@@ -32,6 +32,7 @@ import { ToastInsert } from '@src/components/ToastInsert'
 import { commandBarActor } from '@src/lib/singletons'
 import toast from 'react-hot-toast'
 import styles from './FileTree.module.css'
+import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 
 function getIndentationCSS(level: number) {
   return `calc(1rem * ${level + 1})`
@@ -163,6 +164,7 @@ const FileTreeItem = ({
   onCreateFile,
   onCreateFolder,
   onCloneFileOrFolder,
+  onOpenInNewWindow,
   newTreeEntry,
   level = 0,
   treeSelection,
@@ -183,6 +185,7 @@ const FileTreeItem = ({
   onCreateFile: (name: string) => void
   onCreateFolder: (name: string) => void
   onCloneFileOrFolder: (path: string) => void
+  onOpenInNewWindow: (path: string) => void
   newTreeEntry: TreeEntry
   level?: number
   treeSelection: FileEntry | undefined
@@ -212,10 +215,25 @@ const FileTreeItem = ({
         return
       }
 
+      // TODO: make this not just name based but sub path instead
+      const isImportedInCurrentFile = kclManager.ast.body.some(
+        (n) =>
+          n.type === 'ImportStatement' &&
+          ((n.path.type === 'Kcl' &&
+            n.path.filename.includes(fileOrDir.name)) ||
+            (n.path.type === 'Foreign' && n.path.path.includes(fileOrDir.name)))
+      )
+
       if (isCurrentFile && eventType === 'change') {
         let code = await window.electron.readFile(path, { encoding: 'utf-8' })
         code = normalizeLineEndings(code)
         codeManager.updateCodeStateEditor(code)
+      } else if (isImportedInCurrentFile && eventType === 'change') {
+        await rustContext.clearSceneAndBustCache(
+          { settings: await jsAppSettings() },
+          codeManager?.currentFilePath || undefined
+        )
+        await kclManager.executeAst()
       }
       fileSend({ type: 'Refresh' })
     },
@@ -439,6 +457,7 @@ const FileTreeItem = ({
                         onCreateFile={onCreateFile}
                         onCreateFolder={onCreateFolder}
                         onCloneFileOrFolder={onCloneFileOrFolder}
+                        onOpenInNewWindow={onOpenInNewWindow}
                         newTreeEntry={newTreeEntry}
                         lastDirectoryClicked={lastDirectoryClicked}
                         onClickDirectory={onClickDirectory}
@@ -479,6 +498,7 @@ const FileTreeItem = ({
         onRename={addCurrentItemToRenaming}
         onDelete={() => setIsConfirmingDelete(true)}
         onClone={() => onCloneFileOrFolder(fileOrDir.path)}
+        onOpenInNewWindow={() => onOpenInNewWindow(fileOrDir.path)}
       />
     </div>
   )
@@ -489,6 +509,7 @@ interface FileTreeContextMenuProps {
   onRename: () => void
   onDelete: () => void
   onClone: () => void
+  onOpenInNewWindow: () => void
 }
 
 function FileTreeContextMenu({
@@ -496,6 +517,7 @@ function FileTreeContextMenu({
   onRename,
   onDelete,
   onClone,
+  onOpenInNewWindow,
 }: FileTreeContextMenuProps) {
   const platform = usePlatform()
   const metaKey = platform === 'macos' ? '⌘' : 'Ctrl'
@@ -524,6 +546,12 @@ function FileTreeContextMenu({
           hotkey=""
         >
           Clone
+        </ContextMenuItem>,
+        <ContextMenuItem
+          data-testid="context-menu-open-in-new-window"
+          onClick={onOpenInNewWindow}
+        >
+          Open in new window
         </ContextMenuItem>,
       ]}
     />
@@ -636,11 +664,21 @@ export const useFileTreeOperations = () => {
     })
   }
 
+  function openInNewWindow(args: { path: string }) {
+    send({
+      type: 'Open file in new window',
+      data: {
+        name: args.path,
+      },
+    })
+  }
+
   return {
     createFile,
     createFolder,
     cloneFileOrDir,
     newTreeEntry,
+    openInNewWindow,
   }
 }
 
@@ -648,8 +686,13 @@ export const FileTree = ({
   className = '',
   onNavigateToFile: closePanel,
 }: FileTreeProps) => {
-  const { createFile, createFolder, cloneFileOrDir, newTreeEntry } =
-    useFileTreeOperations()
+  const {
+    createFile,
+    createFolder,
+    cloneFileOrDir,
+    openInNewWindow,
+    newTreeEntry,
+  } = useFileTreeOperations()
 
   return (
     <div className={className}>
@@ -666,6 +709,7 @@ export const FileTree = ({
         onCreateFile={(name: string) => createFile({ dryRun: false, name })}
         onCreateFolder={(name: string) => createFolder({ dryRun: false, name })}
         onCloneFileOrFolder={(path: string) => cloneFileOrDir({ path })}
+        onOpenInNewWindow={(path: string) => openInNewWindow({ path })}
       />
     </div>
   )
@@ -676,11 +720,13 @@ export const FileTreeInner = ({
   onCreateFile,
   onCreateFolder,
   onCloneFileOrFolder,
+  onOpenInNewWindow,
   newTreeEntry,
 }: {
   onCreateFile: (name: string) => void
   onCreateFolder: (name: string) => void
   onCloneFileOrFolder: (path: string) => void
+  onOpenInNewWindow: (path: string) => void
   newTreeEntry: TreeEntry
   onNavigateToFile?: () => void
 }) => {
@@ -792,6 +838,7 @@ export const FileTreeInner = ({
                 onCreateFile={onCreateFile}
                 onCreateFolder={onCreateFolder}
                 onCloneFileOrFolder={onCloneFileOrFolder}
+                onOpenInNewWindow={onOpenInNewWindow}
                 newTreeEntry={newTreeEntry}
                 onClickDirectory={onClickDirectory}
                 onNavigateToFile={onNavigateToFile_}
