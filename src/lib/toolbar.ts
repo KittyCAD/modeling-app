@@ -11,7 +11,6 @@ import {
   isEditingExistingSketch,
   pipeHasCircle,
 } from '@src/machines/modelingMachine'
-import { IS_NIGHTLY_OR_DEBUG } from '@src/routes/utils'
 
 export type ToolbarModeName = 'modeling' | 'sketching'
 
@@ -237,7 +236,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
                 data: { name: 'Boolean Union', groupId: 'modeling' },
               }),
             icon: 'booleanUnion',
-            status: DEV || IS_NIGHTLY_OR_DEBUG ? 'available' : 'unavailable',
+            status: 'available',
             title: 'Union',
             hotkey: 'Shift + B U',
             description: 'Combine two or more solids into a single solid.',
@@ -256,7 +255,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
                 data: { name: 'Boolean Subtract', groupId: 'modeling' },
               }),
             icon: 'booleanSubtract',
-            status: DEV || IS_NIGHTLY_OR_DEBUG ? 'available' : 'unavailable',
+            status: 'available',
             title: 'Subtract',
             hotkey: 'Shift + B S',
             description: 'Subtract one solid from another.',
@@ -275,7 +274,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
                 data: { name: 'Boolean Intersect', groupId: 'modeling' },
               }),
             icon: 'booleanIntersect',
-            status: DEV || IS_NIGHTLY_OR_DEBUG ? 'available' : 'unavailable',
+            status: 'available',
             title: 'Intersect',
             hotkey: 'Shift + B I',
             description: 'Create a solid from the intersection of two solids.',
@@ -340,28 +339,28 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
       },
       'break',
       {
-        id: 'modules',
-        array: [
+        id: 'insert',
+        onClick: () =>
+          commandBarActor.send({
+            type: 'Find and select command',
+            data: { name: 'Insert', groupId: 'code' },
+          }),
+        hotkey: 'I',
+        icon: 'import',
+        status: 'available',
+        disabled: () => !isDesktop(),
+        title: 'Insert',
+        description: 'Insert from a file in the current project directory',
+        links: [
           {
-            id: 'insert',
-            onClick: () =>
-              commandBarActor.send({
-                type: 'Find and select command',
-                data: { name: 'Insert', groupId: 'code' },
-              }),
-            hotkey: 'I',
-            icon: 'import',
-            status: DEV || IS_NIGHTLY_OR_DEBUG ? 'available' : 'kcl-only',
-            disabled: () => !isDesktop(),
-            title: 'Insert',
-            description: 'Insert from a file in the current project directory',
-            links: [
-              {
-                label: 'API docs',
-                url: 'https://zoo.dev/docs/kcl/import',
-              },
-            ],
+            label: 'API docs',
+            url: 'https://zoo.dev/docs/kcl/import',
           },
+        ],
+      },
+      {
+        id: 'transform',
+        array: [
           {
             id: 'translate',
             onClick: () =>
@@ -369,7 +368,8 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
                 type: 'Find and select command',
                 data: { name: 'Translate', groupId: 'modeling' },
               }),
-            status: DEV || IS_NIGHTLY_OR_DEBUG ? 'available' : 'kcl-only',
+            icon: 'move',
+            status: 'available',
             title: 'Translate',
             description: 'Apply a translation to a solid or sketch.',
             links: [
@@ -386,13 +386,28 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
                 type: 'Find and select command',
                 data: { name: 'Rotate', groupId: 'modeling' },
               }),
-            status: DEV || IS_NIGHTLY_OR_DEBUG ? 'available' : 'kcl-only',
+            icon: 'rotate',
+            status: 'available',
             title: 'Rotate',
             description: 'Apply a rotation to a solid or sketch.',
             links: [
               {
                 label: 'API docs',
                 url: 'https://zoo.dev/docs/kcl/rotate',
+              },
+            ],
+          },
+          {
+            id: 'clone',
+            onClick: () => undefined,
+            status: 'kcl-only',
+            title: 'Clone',
+            icon: 'patternLinear3d', // TODO: add a clone icon
+            description: 'Clone a solid or sketch.',
+            links: [
+              {
+                label: 'API docs',
+                url: 'https://zoo.dev/docs/kcl/clone',
               },
             ],
           },
