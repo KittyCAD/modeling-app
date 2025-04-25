@@ -1,0 +1,13 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing tests/module_return_using_var/cube.kcl
+---
+// The last statement is a variable definition.
+myCube = startSketchOn(XY)
+  |> startProfileAt([0, 0], %)
+  |> xLine(length = 1)
+  |> yLine(length = 1)
+  |> xLine(length = -1)
+  |> yLine(length = -1)
+  |> close(%)
+  |> extrude(length = 1)
