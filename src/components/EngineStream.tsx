@@ -430,7 +430,7 @@ export const EngineStream = (props: {
       {![EngineStreamState.Playing, EngineStreamState.Paused].some(
         (s) => s === engineStreamState.value
       ) && (
-        <Loading dataTestId="loading-engine" className="fixed inset-0">
+        <Loading dataTestId="loading-engine" className="fixed inset-0 h-screen">
           Connecting to engine
         </Loading>
       )}
