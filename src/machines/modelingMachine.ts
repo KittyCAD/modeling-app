@@ -2879,7 +2879,7 @@ export const modelingMachine = setup({
         if (!input) return new Error('No input provided')
         const ast = kclManager.ast
         const modifiedAst = structuredClone(ast)
-        const { nodeToEdit, selection } = input
+        const { nodeToEdit, selection, variableName } = input
         let pathToNode = nodeToEdit
         if (!(pathToNode && typeof pathToNode[1][0] === 'number')) {
           // TODO: this was copied from translate, but we should probably
@@ -2934,8 +2934,9 @@ export const modelingMachine = setup({
         }
 
         const result = addClone({
-          geometryName,
           modifiedAst,
+          geometryName,
+          variableName,
         })
         if (err(result)) {
           return err(result)

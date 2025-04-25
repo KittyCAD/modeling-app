@@ -2,6 +2,7 @@ import type { Models } from '@kittycad/lib'
 
 import { angleLengthInfo } from '@src/components/Toolbar/angleLengthInfo'
 import { DEV } from '@src/env'
+import { findUniqueName } from '@src/lang/create'
 import { getNodeFromPath } from '@src/lang/queryAst'
 import { getVariableDeclaration } from '@src/lang/queryAst/getVariableDeclaration'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
@@ -23,6 +24,7 @@ import type {
   StateMachineCommandSetConfig,
 } from '@src/lib/commandTypes'
 import {
+  KCL_DEFAULT_CONSTANT_PREFIXES,
   KCL_DEFAULT_DEGREE,
   KCL_DEFAULT_LENGTH,
   KCL_DEFAULT_TRANSFORM,
@@ -184,6 +186,7 @@ export type ModelingCommandSchema = {
   Clone: {
     nodeToEdit?: PathToNode
     selection: Selections
+    variableName: string
   }
   'Boolean Subtract': {
     target: Selections
@@ -1144,6 +1147,24 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         selectionTypes: ['path'],
         selectionFilter: ['object'],
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+      },
+      variableName: {
+        inputType: 'string',
+        required: true,
+        defaultValue: () => {
+          return findUniqueName(
+            kclManager.ast,
+            KCL_DEFAULT_CONSTANT_PREFIXES.CLONE
+          )
+        },
+        validation: async ({ data }: { data: string }) => {
+          const variableExists = kclManager.variables[data]
+          if (variableExists) {
+            return 'This variable name is already in use.'
+          }
+
+          return true
+        },
       },
     },
   },

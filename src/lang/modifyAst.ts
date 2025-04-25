@@ -963,14 +963,12 @@ export function addHelix({
 export function addClone({
   modifiedAst,
   geometryName,
+  variableName,
 }: {
   modifiedAst: Node<Program>
   geometryName: string
+  variableName: string
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
-  const variableName = findUniqueName(
-    modifiedAst,
-    KCL_DEFAULT_CONSTANT_PREFIXES.CLONE
-  )
   const variable = createVariableDeclaration(
     variableName,
     createCallExpressionStdLibKw('clone', createLocalName(geometryName), [])
