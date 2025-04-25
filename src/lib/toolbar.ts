@@ -339,28 +339,28 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
       },
       'break',
       {
-        id: 'modules',
-        array: [
+        id: 'insert',
+        onClick: () =>
+          commandBarActor.send({
+            type: 'Find and select command',
+            data: { name: 'Insert', groupId: 'code' },
+          }),
+        hotkey: 'I',
+        icon: 'import',
+        status: 'available',
+        disabled: () => !isDesktop(),
+        title: 'Insert',
+        description: 'Insert from a file in the current project directory',
+        links: [
           {
-            id: 'insert',
-            onClick: () =>
-              commandBarActor.send({
-                type: 'Find and select command',
-                data: { name: 'Insert', groupId: 'code' },
-              }),
-            hotkey: 'I',
-            icon: 'import',
-            status: 'available',
-            disabled: () => !isDesktop(),
-            title: 'Insert',
-            description: 'Insert from a file in the current project directory',
-            links: [
-              {
-                label: 'API docs',
-                url: 'https://zoo.dev/docs/kcl/import',
-              },
-            ],
+            label: 'API docs',
+            url: 'https://zoo.dev/docs/kcl/import',
           },
+        ],
+      },
+      {
+        id: 'transform',
+        array: [
           {
             id: 'translate',
             onClick: () =>
@@ -368,6 +368,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
                 type: 'Find and select command',
                 data: { name: 'Translate', groupId: 'modeling' },
               }),
+            icon: 'move',
             status: 'available',
             title: 'Translate',
             description: 'Apply a translation to a solid or sketch.',
@@ -385,6 +386,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
                 type: 'Find and select command',
                 data: { name: 'Rotate', groupId: 'modeling' },
               }),
+            icon: 'move',
             status: 'available',
             title: 'Rotate',
             description: 'Apply a rotation to a solid or sketch.',
@@ -392,6 +394,19 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
               {
                 label: 'API docs',
                 url: 'https://zoo.dev/docs/kcl/rotate',
+              },
+            ],
+          },
+          {
+            id: 'clone',
+            onClick: () => undefined,
+            status: 'kcl-only',
+            title: 'Clone',
+            description: 'Clone a solid or sketch.',
+            links: [
+              {
+                label: 'API docs',
+                url: 'https://zoo.dev/docs/kcl/clone',
               },
             ],
           },
