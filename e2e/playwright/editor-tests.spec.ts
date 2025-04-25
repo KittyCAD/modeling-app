@@ -1041,7 +1041,7 @@ sketch001 = startSketchOn(XZ)
 
     const dragPX = 40
 
-    await page.getByText('startProfileAt(at = [4.61, -10.01])').click()
+    await page.getByText('startProfile(at = [4.61, -10.01])').click()
     await expect(
       page.getByRole('button', { name: 'Edit Sketch' })
     ).toBeVisible()
