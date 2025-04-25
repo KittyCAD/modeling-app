@@ -28,13 +28,9 @@ import { PATHS } from '@src/lib/paths'
 import { takeScreenshotOfVideoStreamCanvas } from '@src/lib/screenshot'
 import { sceneInfra } from '@src/lib/singletons'
 import { maybeWriteToDisk } from '@src/lib/telemetry'
-import type { IndexLoaderData } from '@src/lib/types'
-import {
-  engineStreamActor,
-  useSettings,
-  useToken,
-} from '@src/machines/appMachine'
-import { commandBarActor } from '@src/machines/commandBarMachine'
+import { type IndexLoaderData } from '@src/lib/types'
+import { engineStreamActor, useSettings, useToken } from '@src/lib/singletons'
+import { commandBarActor } from '@src/lib/singletons'
 import { EngineStreamTransition } from '@src/machines/engineStreamMachine'
 import { onboardingPaths } from '@src/routes/Onboarding/paths'
 import { CommandBarOpenButton } from '@src/components/CommandBarOpenButton'

@@ -1,5 +1,5 @@
 import type { FormEvent } from 'react'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import { toast } from 'react-hot-toast'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
@@ -15,7 +15,6 @@ import {
 } from '@src/components/ProjectSearchBar'
 import { useCreateFileLinkQuery } from '@src/hooks/useCreateFileLinkQueryWatcher'
 import { useMenuListener } from '@src/hooks/useMenu'
-import { useProjectsContext } from '@src/hooks/useProjectsContext'
 import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
 import { markOnce } from '@src/lib/performance'
@@ -27,21 +26,24 @@ import {
   getSortIcon,
 } from '@src/lib/sorting'
 import { reportRejection } from '@src/lib/trap'
-import { authActor, useSettings } from '@src/machines/appMachine'
-import { commandBarActor } from '@src/machines/commandBarMachine'
+import { authActor, systemIOActor, useSettings } from '@src/lib/singletons'
+import { commandBarActor } from '@src/lib/singletons'
+import {
+  useCanReadWriteProjectDirectory,
+  useFolders,
+  useState as useSystemIOState,
+} from '@src/machines/systemIO/hooks'
+import {
+  SystemIOMachineEvents,
+  SystemIOMachineStates,
+} from '@src/machines/systemIO/utils'
 import type { WebContentSendPayload } from '@src/menu/channels'
 
 // This route only opens in the desktop context for now,
 // as defined in Router.tsx, so we can use the desktop APIs and types.
 const Home = () => {
-  const { state, send } = useProjectsContext()
-  const [readWriteProjectDir, setReadWriteProjectDir] = useState<{
-    value: boolean
-    error: unknown
-  }>({
-    value: true,
-    error: undefined,
-  })
+  const state = useSystemIOState()
+  const readWriteProjectDir = useCanReadWriteProjectDirectory()
 
   // Only create the native file menus on desktop
   useEffect(() => {
@@ -156,39 +158,12 @@ const Home = () => {
     }
   )
   const ref = useRef<HTMLDivElement>(null)
-
-  const projects = state?.context.projects ?? []
+  const projects = useFolders()
   const [searchParams, setSearchParams] = useSearchParams()
   const { searchResults, query, setQuery } = useProjectSearch(projects)
   const sort = searchParams.get('sort_by') ?? 'modified:desc'
 
   const isSortByModified = sort?.includes('modified') || !sort || sort === null
-
-  // Update the default project name and directory in the home machine
-  // when the settings change
-  useEffect(() => {
-    send({
-      type: 'assign',
-      data: {
-        defaultProjectName: settings.projects.defaultProjectName.current,
-        defaultDirectory: settings.app.projectDirectory.current,
-      },
-    })
-
-    // Must be a truthy string, not '' or null or undefined
-    if (settings.app.projectDirectory.current) {
-      window.electron
-        .canReadWriteDirectory(settings.app.projectDirectory.current)
-        .then((res) => {
-          setReadWriteProjectDir(res)
-        })
-        .catch(reportRejection)
-    }
-  }, [
-    settings.app.projectDirectory.current,
-    settings.projects.defaultProjectName.current,
-    send,
-  ])
 
   async function handleRenameProject(
     e: FormEvent<HTMLFormElement>,
@@ -204,17 +179,20 @@ const Home = () => {
     }
 
     if (newProjectName !== project.name) {
-      send({
-        type: 'Rename project',
-        data: { oldName: project.name, newName: newProjectName as string },
+      systemIOActor.send({
+        type: SystemIOMachineEvents.renameProject,
+        data: {
+          requestedProjectName: String(newProjectName),
+          projectName: project.name,
+        },
       })
     }
   }
 
   async function handleDeleteProject(project: Project) {
-    send({
-      type: 'Delete project',
-      data: { name: project.name || '' },
+    systemIOActor.send({
+      type: SystemIOMachineEvents.deleteProject,
+      data: { requestedProjectName: project.name },
     })
   }
   /** Type narrowing function of unknown error to a string */
@@ -246,9 +224,6 @@ const Home = () => {
                     data: {
                       groupId: 'projects',
                       name: 'Create project',
-                      argDefaultValues: {
-                        name: settings.projects.defaultProjectName.current,
-                      },
                     },
                   })
                 }
@@ -345,7 +320,7 @@ const Home = () => {
           data-testid="home-section"
           className="flex-1 overflow-y-auto pr-2 pb-24"
         >
-          {state?.matches('Reading projects') ? (
+          {state?.matches(SystemIOMachineStates.readingFolders) ? (
             <Loading>Loading your Projects...</Loading>
           ) : (
             <>
