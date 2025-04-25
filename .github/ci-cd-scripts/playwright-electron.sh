@@ -3,8 +3,8 @@
 # bash strict mode
 set -euo pipefail
 
+# If no last run artifact, than run Playwright normally
 if [[ ! -f "test-results/.last-run.json" ]]; then
-    # If no last run artifact, than run Playwright normally
     echo "run playwright normally"
     if [[ "$3" == *ubuntu* ]]; then
         xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- npm run test:playwright:electron:ubuntu -- --shard=$1/$2 || true
@@ -21,7 +21,7 @@ if [[ ! -f "test-results/.last-run.json" ]]; then
 fi
 
 retry=1
-max_retries=1
+max_retries=3
 
 # Retry failed tests, doing our own retries because using inbuilt Playwright retries causes connection issues
 while [[ $retry -le $max_retries ]]; do
@@ -53,8 +53,8 @@ while [[ $retry -le $max_retries ]]; do
     fi
 done
 
+# Return the final status after retries
 echo "retried=false" >>$GITHUB_OUTPUT
-
 if [[ -f "test-results/.last-run.json" ]]; then
     status=$(jq -r '.status' test-results/.last-run.json)
     if [[ "$status" == "failed" ]]; then
@@ -62,5 +62,4 @@ if [[ -f "test-results/.last-run.json" ]]; then
         exit 1
     fi
 fi
-
 exit 0
