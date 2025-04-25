@@ -203,7 +203,11 @@ export function ToastTextToCadSuccess({
     if (!canvasRef.current) return
 
     const canvas = canvasRef.current
-    const renderer = new WebGLRenderer({ canvas, antialias: true, alpha: true })
+    const renderer = new WebGLRenderer({
+      canvas,
+      antialias: true,
+      alpha: true,
+    })
     renderer.setSize(CANVAS_SIZE, CANVAS_SIZE)
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 
@@ -361,7 +365,7 @@ export function ToastTextToCadSuccess({
                       },
                     })
                   } else {
-                    // Only delete the file if the project was prexisting
+                    // Only delete the file if the project was preexisting
                     systemIOActor.send({
                       type: SystemIOMachineEvents.deleteKCLFile,
                       data: {

@@ -543,7 +543,9 @@ test.describe('Text-to-CAD tests', () => {
     const generatingToastMessage = page.getByText(
       `Generating parametric model...`
     )
-    await expect(generatingToastMessage.first()).toBeVisible({ timeout: 10000 })
+    await expect(generatingToastMessage.first()).toBeVisible({
+      timeout: 10000,
+    })
 
     const successToastMessage = page.getByText(`Text-to-CAD successful`)
     // We should have three success toasts.
@@ -1025,7 +1027,7 @@ test.describe('Mocked Text-to-CAD API tests', { tag: ['@skipWin'] }, () => {
   )
 
   test(
-    'Home Page -> Text To CAD -> Exisiting Project -> Navigate to the project -> Reject -> should load main.kcl',
+    'Home Page -> Text To CAD -> Existing Project -> Navigate to the project -> Reject -> should load main.kcl',
     { tag: '@electron' },
     async ({ context, page }, testInfo) => {
       const u = await getUtils(page)
@@ -1080,7 +1082,7 @@ test.describe('Mocked Text-to-CAD API tests', { tag: ['@skipWin'] }, () => {
   )
 
   test(
-    'Home Page -> Text To CAD -> Exisiting Project -> Navigate to the project -> Accept -> should load 2x2x2-cube.kcl',
+    'Home Page -> Text To CAD -> Existing Project -> Navigate to the project -> Accept -> should load 2x2x2-cube.kcl',
     { tag: '@electron' },
     async ({ context, page }, testInfo) => {
       const u = await getUtils(page)
