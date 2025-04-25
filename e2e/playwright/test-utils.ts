@@ -240,6 +240,8 @@ async function waitForCmdReceive(page: Page, commandType: string) {
     .waitFor()
 }
 
+
+
 export const wiggleMove = async (
   page: any,
   x: number,
@@ -416,6 +418,7 @@ export async function getUtils(page: Page, test_?: typeof test) {
     closeFilePanel: () => closeFilePanel(page),
     openVariablesPane: () => openVariablesPane(page),
     openLogsPane: () => openLogsPane(page),
+    goToHomePageFromModeling: () => goToHomePageFromModeling(page),
     openAndClearDebugPanel: () => openAndClearDebugPanel(page),
     clearAndCloseDebugPanel: async () => {
       await clearCommandLogs(page)
@@ -1014,6 +1017,10 @@ export async function createProject({
       await page.getByTestId('app-logo').click()
     }
   })
+}
+
+async function goToHomePageFromModeling (page) {
+    await page.getByTestId('app-logo').click()
 }
 
 export function executorInputPath(fileName: string): string {

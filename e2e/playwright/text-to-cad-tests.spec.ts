@@ -834,6 +834,8 @@ test.describe('Mocked Text-to-CAD API tests', { tag: ['@skipWin'] }, () => {
       // Create and navigate to the project then come home
       await createProject({ name: projectName, page, returnHome: true })
 
+      await expect(page.getByText('Your Projects')).toBeVisible()
+
       await expect(page.getByText('1 file')).toBeVisible()
 
       // open commands
@@ -874,6 +876,8 @@ test.describe('Mocked Text-to-CAD API tests', { tag: ['@skipWin'] }, () => {
 
       // Create and navigate to the project then come home
       await createProject({ name: projectName, page, returnHome: true })
+
+      await expect(page.getByText('Your Projects')).toBeVisible()
 
       // open commands
       await page.getByTestId('command-bar-open-button').click()
@@ -1004,6 +1008,8 @@ test.describe('Mocked Text-to-CAD API tests', { tag: ['@skipWin'] }, () => {
       // Create and navigate to the project then come home
       await createProject({ name: projectName, page, returnHome: true })
 
+      await expect(page.getByText('Your Projects')).toBeVisible()
+
       // open commands
       await page.getByTestId('command-bar-open-button').click()
 
@@ -1057,6 +1063,8 @@ test.describe('Mocked Text-to-CAD API tests', { tag: ['@skipWin'] }, () => {
       // Create and navigate to the project then come home
       await createProject({ name: projectName, page, returnHome: true })
 
+      await expect(page.getByText('Your Projects')).toBeVisible()
+
       // open commands
       await page.getByTestId('command-bar-open-button').click()
 
@@ -1097,6 +1105,70 @@ test.describe('Mocked Text-to-CAD API tests', { tag: ['@skipWin'] }, () => {
       await expect(
         page.getByTestId('file-tree-item').getByText('2x2x2-cube.kcl')
       ).toBeVisible()
+    }
+  )
+
+  test(
+    'Home Page -> Text To CAD -> New Project -> Navigate to different project -> Reject -> should stay in project',
+    { tag: '@electron' },
+    async ({ context, page, homePage }, testInfo) => {
+      const u = await getUtils(page)
+      const projectName = 'my-project-name'
+      const unrelatedProjectName = 'unrelated-project'
+      const prompt = '2x2x2 cube'
+      await mockPageTextToCAD(page)
+
+      // Create and navigate to the project then come home
+      await createProject({ name: unrelatedProjectName, page, returnHome: true })
+
+      await expect(page.getByText('Your Projects')).toBeVisible()
+
+      // open commands
+      await page.getByTestId('command-bar-open-button').click()
+
+      // search Text To CAD
+      await page.keyboard.type('Text To CAD')
+      await page.keyboard.press('Enter')
+
+      // new project
+      await page.keyboard.type('New project')
+      await page.keyboard.press('Enter')
+
+      // write name
+      await page.keyboard.type(projectName)
+      await page.keyboard.press('Enter')
+
+      // prompt
+      await page.keyboard.type(prompt)
+      await page.keyboard.press('Enter')
+
+      await homePage.openProject(unrelatedProjectName)
+
+      await page.getByRole('button', { name: 'Reject' }).click()
+
+      // Check header is populated with the project and file name
+      await expect(page.getByTestId('app-header-project-name')).toBeVisible()
+      await expect(page.getByTestId('app-header-project-name')).toContainText(
+        unrelatedProjectName
+      )
+      await expect(page.getByTestId('app-header-file-name')).toBeVisible()
+      await expect(page.getByTestId('app-header-file-name')).toContainText(
+        'main.kcl'
+      )
+
+      // Check file is created
+      await u.openFilePanel()
+      // File should be deleted
+      await expect(
+        page.getByTestId('file-tree-item').getByText('2x2x2-cube.kcl')
+      ).not.toBeVisible()
+
+      await u.goToHomePageFromModeling()
+
+      // Project should be deleted
+      await expect(
+        page.getByTestId('home-section').getByText(projectName)
+      ).not.toBeVisible()
     }
   )
 })
