@@ -1,0 +1,9 @@
+// The last statement is a variable definition.
+myCube = startSketchOn(XY)
+  |> startProfileAt([0, 0], %)
+  |> xLine(length = 1)
+  |> yLine(length = 1)
+  |> xLine(length = -1)
+  |> yLine(length = -1)
+  |> close(%)
+  |> extrude(length = 1)
