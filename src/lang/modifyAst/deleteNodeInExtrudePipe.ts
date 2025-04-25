@@ -13,7 +13,6 @@ export function deleteNodeInExtrudePipe(
     return new Error("Couldn't find node to delete in ast")
   }
 
-  // const lookup = locateExtrudeDeclarator(ast, node)
   const lookup = locateExtrudeDeclarator(ast, node)
   if (err(lookup)) {
     return lookup

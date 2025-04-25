@@ -7,8 +7,6 @@ import {
   createProject,
   executorInputPath,
   getUtils,
-  orRunWhenFullSuiteEnabled,
-  runningOnWindows,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
@@ -17,9 +15,6 @@ test.describe('integrations tests', () => {
     'Creating a new file or switching file while in sketchMode should exit sketchMode',
     { tag: '@electron' },
     async ({ page, context, homePage, scene, editor, toolbar, cmdBar }) => {
-      if (runningOnWindows()) {
-        test.fixme(orRunWhenFullSuiteEnabled())
-      }
       await context.folderSetupFn(async (dir) => {
         const bracketDir = join(dir, 'test-sample')
         await fsp.mkdir(bracketDir, { recursive: true })
@@ -29,7 +24,7 @@ test.describe('integrations tests', () => {
         )
       })
 
-      const [clickObj] = await scene.makeMouseHelpers(726, 272)
+      const [clickObj] = scene.makeMouseHelpers(726, 272)
 
       await test.step('setup test', async () => {
         await homePage.expectState({
@@ -73,7 +68,7 @@ test.describe('integrations tests', () => {
       })
       await test.step('setup for next assertion', async () => {
         await toolbar.openFile('main.kcl')
-        await page.waitForTimeout(1000)
+        await page.waitForTimeout(2000)
         await clickObj()
         await page.waitForTimeout(1000)
         await scene.moveNoWhere()
@@ -283,7 +278,6 @@ test.describe('when using the file tree to', () => {
       tag: '@electron',
     },
     async ({ page }, testInfo) => {
-      test.fixme(orRunWhenFullSuiteEnabled())
       const {
         panesOpen,
         pasteCodeInEditor,

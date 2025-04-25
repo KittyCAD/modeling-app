@@ -21,7 +21,6 @@ import {
   executorInputPath,
   getUtils,
   networkingMasks,
-  orRunWhenFullSuiteEnabled,
   tomlToSettings,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
@@ -73,7 +72,6 @@ test.describe(
       page,
       homePage,
     }) => {
-      test.fixme(orRunWhenFullSuiteEnabled())
       const u = await getUtils(page)
       await test.step(`Setup`, async () => {
         await page.setBodyDimensions({ width: 1200, height: 500 })
@@ -283,7 +281,6 @@ test.describe(
       `Project settings override user settings on desktop`,
       { tag: ['@electron'] },
       async ({ context, page }, testInfo) => {
-        test.fixme(orRunWhenFullSuiteEnabled())
         const projectName = 'bracket'
         const { dir: projectDirName } = await context.folderSetupFn(
           async (dir) => {
@@ -432,7 +429,6 @@ test.describe(
         tag: '@electron',
       },
       async ({ context, page, tronApp }, testInfo) => {
-        test.fixme(orRunWhenFullSuiteEnabled())
         if (!tronApp) {
           fail()
         }
@@ -493,7 +489,6 @@ test.describe(
       'project settings reload on external change',
       { tag: '@electron' },
       async ({ context, page }, testInfo) => {
-        test.fixme(orRunWhenFullSuiteEnabled())
         const { dir: projectDirName } = await context.folderSetupFn(
           async () => {}
         )
@@ -1031,7 +1026,6 @@ fn cube`
       toolbar,
       cmdBar,
     }, testInfo) => {
-      test.fixme(orRunWhenFullSuiteEnabled())
       await context.folderSetupFn(async (dir) => {
         const projectDir = join(dir, 'project-000')
         await fsp.mkdir(projectDir, { recursive: true })

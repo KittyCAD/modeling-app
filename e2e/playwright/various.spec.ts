@@ -1,13 +1,7 @@
-import {
-  doExport,
-  getUtils,
-  makeTemplate,
-  orRunWhenFullSuiteEnabled,
-} from '@e2e/playwright/test-utils'
+import { doExport, getUtils, makeTemplate } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
 test('Units menu', async ({ page, homePage }) => {
-  test.fixme(orRunWhenFullSuiteEnabled())
   await page.setBodyDimensions({ width: 1200, height: 500 })
   await homePage.goToModelingScene()
 
@@ -25,9 +19,7 @@ test('Units menu', async ({ page, homePage }) => {
   await millimetersButton.click()
 
   // Look out for the toast message
-  const toastMessage = page.getByText(
-    `Set default unit to "mm" for this project`
-  )
+  const toastMessage = page.getByText('Updated per-file units to mm')
   await expect(toastMessage).toBeVisible()
 
   // Verify that the popover has closed
@@ -263,7 +255,6 @@ test('Basic default modeling and sketch hotkeys work', async ({
   page,
   homePage,
 }) => {
-  test.fixme(orRunWhenFullSuiteEnabled())
   const u = await getUtils(page)
 
   // This test can run long if it takes a little too long to load

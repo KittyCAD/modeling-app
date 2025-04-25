@@ -1,5 +1,4 @@
 import type { Models } from '@kittycad/lib'
-import { DEV } from '@src/env'
 
 import { angleLengthInfo } from '@src/components/Toolbar/angleLengthInfo'
 import { getNodeFromPath } from '@src/lang/queryAst'
@@ -32,7 +31,6 @@ import type { Selections } from '@src/lib/selections'
 import { codeManager, kclManager } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
 import type { SketchTool, modelingMachine } from '@src/machines/modelingMachine'
-import { IS_NIGHTLY_OR_DEBUG } from '@src/routes/utils'
 
 type OutputFormat = Models['OutputFormat3d_type']
 type OutputTypeKey = OutputFormat['type']
@@ -554,7 +552,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     },
   },
   'Boolean Subtract': {
-    hide: DEV || IS_NIGHTLY_OR_DEBUG ? undefined : 'both',
     description: 'Subtract one solid from another.',
     icon: 'booleanSubtract',
     needsReview: true,
@@ -581,7 +578,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     },
   },
   'Boolean Union': {
-    hide: DEV || IS_NIGHTLY_OR_DEBUG ? undefined : 'both',
     description: 'Union multiple solids into a single solid.',
     icon: 'booleanUnion',
     needsReview: true,
@@ -598,8 +594,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     },
   },
   'Boolean Intersect': {
-    hide: DEV || IS_NIGHTLY_OR_DEBUG ? undefined : 'both',
-    description: 'Subtract one solid from another.',
+    description: 'Create a solid from the intersection of two solids.',
     icon: 'booleanIntersect',
     needsReview: true,
     args: {
@@ -1042,9 +1037,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   },
   Translate: {
     description: 'Set translation on solid or sketch.',
-    icon: 'dimension', // TODO: likely not the best icon
+    icon: 'move',
     needsReview: true,
-    hide: DEV || IS_NIGHTLY_OR_DEBUG ? undefined : 'both',
     args: {
       nodeToEdit: {
         description:
@@ -1083,9 +1077,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   },
   Rotate: {
     description: 'Set rotation on solid or sketch.',
-    icon: 'angle', // TODO: likely not the best icon
+    icon: 'rotate',
     needsReview: true,
-    hide: DEV || IS_NIGHTLY_OR_DEBUG ? undefined : 'both',
     args: {
       nodeToEdit: {
         description:

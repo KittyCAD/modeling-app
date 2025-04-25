@@ -11,8 +11,6 @@ import {
   getPlaywrightDownloadDir,
   getUtils,
   isOutOfViewInScrollContainer,
-  orRunWhenFullSuiteEnabled,
-  runningOnWindows,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
@@ -313,9 +311,6 @@ test(
   'open a file in a project works and renders, open another file in the same project with errors, it should clear the scene',
   { tag: '@electron' },
   async ({ scene, cmdBar, context, page }, testInfo) => {
-    if (runningOnWindows()) {
-      test.fixme(orRunWhenFullSuiteEnabled())
-    }
     await context.folderSetupFn(async (dir) => {
       const bracketDir = path.join(dir, 'bracket')
       await fsp.mkdir(bracketDir, { recursive: true })
@@ -424,9 +419,6 @@ test.describe('Can export from electron app', () => {
       async ({ scene, cmdBar, context, page, tronApp }, testInfo) => {
         if (!tronApp) {
           fail()
-        }
-        if (runningOnWindows()) {
-          test.fixme(orRunWhenFullSuiteEnabled())
         }
 
         await context.folderSetupFn(async (dir) => {
@@ -1211,7 +1203,6 @@ test(
   'Deleting projects, can delete individual project, can still create projects after deleting all',
   { tag: '@electron' },
   async ({ context, page }, testInfo) => {
-    test.fixme(orRunWhenFullSuiteEnabled())
     const projectData = [
       ['router-template-slate', 'cylinder.kcl'],
       ['bracket', 'focusrite_scarlett_mounting_braket.kcl'],
@@ -1290,9 +1281,6 @@ test(
   'Can load a file with CRLF line endings',
   { tag: '@electron' },
   async ({ context, page, scene, cmdBar }, testInfo) => {
-    if (runningOnWindows()) {
-      test.fixme(orRunWhenFullSuiteEnabled())
-    }
     await context.folderSetupFn(async (dir) => {
       const routerTemplateDir = path.join(dir, 'router-template-slate')
       await fsp.mkdir(routerTemplateDir, { recursive: true })
@@ -1432,7 +1420,6 @@ test(
   'When the project folder is empty, user can create new project and open it.',
   { tag: '@electron' },
   async ({ page }, testInfo) => {
-    test.fixme(orRunWhenFullSuiteEnabled())
     const u = await getUtils(page)
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
@@ -1999,7 +1986,6 @@ test(
   'Original project name persist after onboarding',
   { tag: '@electron' },
   async ({ page, toolbar }, testInfo) => {
-    test.fixme(orRunWhenFullSuiteEnabled())
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
     const getAllProjects = () => page.getByTestId('project-link').all()
