@@ -21,6 +21,7 @@ import {
 import type {
   ArtifactGraph,
   CallExpression,
+  CallExpressionKw,
   ExpressionStatement,
   KclValue,
   PathToNode,
