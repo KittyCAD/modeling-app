@@ -47,7 +47,7 @@ test.setTimeout(60_000)
 // up with another PR if we want this back.
 test(
   'exports of each format should work',
-  { tag: ['@snapshot', '@skipWin', '@skipMacos'] },
+  { tag: ['@snapshot'] },
   async ({ page, context, scene, cmdBar, tronApp }) => {
     if (!tronApp) {
       fail()

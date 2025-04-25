@@ -124,7 +124,7 @@ pub enum ModuleRepr {
     Root,
     // AST, memory, exported names
     Kcl(Node<Program>, Option<(Option<KclValue>, EnvironmentRef, Vec<String>)>),
-    Foreign(PreImportedGeometry),
+    Foreign(PreImportedGeometry, Option<KclValue>),
     Dummy,
 }
 
