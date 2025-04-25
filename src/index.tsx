@@ -13,7 +13,7 @@ import { initializeWindowExceptionHandler } from '@src/lib/exceptions'
 import { isDesktop } from '@src/lib/isDesktop'
 import { markOnce } from '@src/lib/performance'
 import { reportRejection } from '@src/lib/trap'
-import { appActor } from '@src/machines/appMachine'
+import { appActor } from '@src/lib/singletons'
 import reportWebVitals from '@src/reportWebVitals'
 
 markOnce('code/willAuth')

@@ -11,10 +11,7 @@ import type {
 import type { Selections } from '@src/lib/selections'
 import { getSelectionTypeDisplayText } from '@src/lib/selections'
 import { roundOff } from '@src/lib/utils'
-import {
-  commandBarActor,
-  useCommandBarState,
-} from '@src/machines/commandBarMachine'
+import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
 
 function CommandBarHeader({ children }: React.PropsWithChildren<object>) {
   const commandBarState = useCommandBarState()

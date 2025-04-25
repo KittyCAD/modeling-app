@@ -4,7 +4,7 @@ import { uuidv4 } from '@src/lib/utils'
 import { getUtils, orRunWhenFullSuiteEnabled } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
-test.describe('Testing Camera Movement', { tag: ['@skipWin'] }, () => {
+test.describe('Testing Camera Movement', () => {
   test('Can move camera reliably', async ({
     page,
     context,

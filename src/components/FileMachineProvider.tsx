@@ -33,8 +33,8 @@ import { markOnce } from '@src/lib/performance'
 import { codeManager, kclManager } from '@src/lib/singletons'
 import { err, reportRejection } from '@src/lib/trap'
 import { type IndexLoaderData } from '@src/lib/types'
-import { useSettings, useToken } from '@src/machines/appMachine'
-import { commandBarActor } from '@src/machines/commandBarMachine'
+import { useSettings, useToken } from '@src/lib/singletons'
+import { commandBarActor } from '@src/lib/singletons'
 import { fileMachine } from '@src/machines/fileMachine'
 import { modelingMenuCallbackMostActions } from '@src/menu/register'
 
@@ -193,6 +193,14 @@ export const FileMachineProvider = ({
             // Don't navigate to newly created directories
             navigate(`..${PATHS.FILE}/${encodeURIComponent(event.output.path)}`)
           }
+        },
+        openFileInNewWindow: ({ event }) => {
+          if (event.type !== 'Open file in new window') {
+            return
+          }
+
+          commandBarActor.send({ type: 'Close' })
+          window.electron.openInNewWindow(event.data.name)
         },
       },
       actors: {

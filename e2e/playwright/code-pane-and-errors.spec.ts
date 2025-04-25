@@ -10,7 +10,7 @@ import {
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
-test.describe('Code pane and errors', { tag: ['@skipWin'] }, () => {
+test.describe('Code pane and errors', () => {
   test('Typing KCL errors induces a badge on the code pane button', async ({
     page,
     homePage,
