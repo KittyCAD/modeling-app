@@ -124,7 +124,7 @@ test.describe(
         const startXPx = 600
         await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
         await expect(page.locator('.cm-content')).toHaveText(
-          `sketch001 = startSketchOn(XZ)profile001 = startProfileAt(sketch001, at = ${commonPoints.startAt})`
+          `sketch001 = startSketchOn(XZ)profile001 = startProfile(sketch001, at = ${commonPoints.startAt})`
         )
         await page.waitForTimeout(100)
 

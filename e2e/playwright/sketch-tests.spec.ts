@@ -2202,7 +2202,7 @@ profile004 = circleThreePoint(sketch001, p1 = [13.44, -6.8], p2 = [13.39, -2.07]
       await page.waitForTimeout(100)
       await rectStart()
       await editor.expectEditor.toContain(
-        `profile005 = startProfileAt([15.68, -3.84], sketch001)`
+        `profile005 = startProfile(sketch001, at = [15.68, -3.84])`
       )
       await page.waitForTimeout(100)
       await rectEnd()
@@ -2462,7 +2462,7 @@ profile002 = startProfile(sketch002, at = [85.81, 52.55])
 
     const [startProfileAt] = scene.makeMouseHelpers(606, 184)
     const [nextPoint] = scene.makeMouseHelpers(763, 130)
-    await page.getByText('startProfileAt([85.81, 52.55], sketch002)').click()
+    await page.getByText('startProfile(sketch002, at = [85.81, 52.55])').click()
     await toolbar.editSketch(1)
     // timeout wait for engine animation is unavoidable
     await page.waitForTimeout(600)
@@ -2531,7 +2531,7 @@ extrude001 = extrude(thePart, length = 75)
     await test.step('can continue on to add a new profile to this sketch', async () => {
       await profilePoint1()
       await editor.expectEditor.toContain(
-        `profile001 = startProfileAt(sketch001, at = [19.69, -7.05])`
+        `profile001 = startProfile(sketch001, at = [19.69, -7.05])`
       )
       await profilePoint2()
       await editor.expectEditor.toContain(`|> line(end = [18.97, -18.06])`)
@@ -2754,7 +2754,7 @@ loft([profile001, profile002])
     await page.waitForTimeout(100)
     await rect1Crn1()
     await editor.expectEditor.toContain(
-      `profile003 = startProfileAt([50.72, -18.19], sketch001)`
+      `profile003 = startProfile(sketch001, at = [50.72, -18.19])`
     )
     await rect1Crn2()
     await editor.expectEditor.toContain(
@@ -3305,7 +3305,7 @@ profile003 = startProfile(sketch002, at = [-201.08, 254.17])
         // sometimes initial click doesn't register
         await objClick()
         await editor.expectActiveLinesToBe([
-          '|> startProfileAt([75.8, 317.2], %) // [$startCapTag, $EndCapTag]',
+          '|> startProfile(at = [75.8, 317.2]) // [$startCapTag, $EndCapTag]',
         ])
       }).toPass({ timeout: 15_000, intervals: [500] })
     })
