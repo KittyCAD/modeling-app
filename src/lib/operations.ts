@@ -1125,6 +1125,12 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     label: 'Union',
     icon: 'booleanUnion',
   },
+  clone: {
+    label: 'Clone',
+    icon: 'patternLinear3d', // TODO: add a clone icon
+    supportsAppearance: true,
+    supportsTransform: true,
+  },
 }
 
 /**
