@@ -1076,7 +1076,7 @@ mod test {
 
     #[for_each_std_mod]
     #[tokio::test(flavor = "multi_thread")]
-    async fn test_examples() {
+    async fn kcl_test_examples() {
         let std = walk_prelude();
         let mut errs = Vec::new();
         for d in std {
