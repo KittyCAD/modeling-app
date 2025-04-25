@@ -29,6 +29,7 @@ import { reportRejection } from '@src/lib/trap'
 import { refreshPage } from '@src/lib/utils'
 import { hotkeyDisplay } from '@src/lib/hotkeyWrapper'
 import usePlatform from '@src/hooks/usePlatform'
+import { settingsActor } from '@src/lib/singletons'
 
 interface ModelingSidebarProps {
   paneOpacity: '' | 'opacity-20' | 'opacity-40'
@@ -84,11 +85,21 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
       sidebarName: 'Load external model',
       icon: 'importFile',
       keybinding: 'Mod + Alt + L',
-      action: () =>
+      action: () => {
+        const currentProject =
+          settingsActor.getSnapshot().context.currentProject
         commandBarActor.send({
           type: 'Find and select command',
-          data: { name: 'load-external-model', groupId: 'code' },
-        }),
+          data: {
+            name: 'load-external-model',
+            groupId: 'application',
+            argDefaultValues: {
+              method: 'existingProject',
+              projectName: currentProject?.name,
+            },
+          },
+        })
+      },
     },
     {
       id: 'export',

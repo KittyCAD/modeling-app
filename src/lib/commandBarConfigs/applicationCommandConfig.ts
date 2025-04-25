@@ -3,6 +3,9 @@ import type { ActorRefFrom } from 'xstate'
 import type { Command, CommandArgumentOption } from '@src/lib/commandTypes'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { isDesktop } from '@src/lib/isDesktop'
+import { kclSamplesManifestWithNoMultipleFiles } from '@src/lib/kclSamples'
+import { getUniqueProjectName } from '@src/lib/desktopFS'
+import { FILE_EXT } from '@src/lib/constants'
 
 export function createApplicationCommands({
   systemIOActor,
@@ -79,5 +82,160 @@ export function createApplicationCommands({
     },
   }
 
-  return isDesktop() ? [textToCADCommand] : [textToCADCommand]
+  const loadExternalModelCommand: Command = {
+    name: 'load-external-model',
+    displayName: 'Load external model',
+    description: 'Loads a model from an external source into a project.',
+    needsReview: true,
+    icon: 'importFile',
+    groupId: 'application',
+    onSubmit(data) {
+      if (data) {
+        const folders = systemIOActor.getSnapshot().context.folders
+        const isProjectNew = !!data.newProjectName
+        const requestedProjectName = data.newProjectName || data.projectName
+        const uniqueNameIfNeeded = isProjectNew
+          ? getUniqueProjectName(requestedProjectName, folders)
+          : requestedProjectName
+
+        const pathParts = data.sample.split('/')
+        const projectPathPart = pathParts[0]
+        const primaryKclFile = pathParts[1]
+        const folderNameBecomesKCLFileName = projectPathPart + FILE_EXT
+
+        const sampleCodeUrl =
+          (isDesktop() ? '.' : '') +
+          `/kcl-samples/${encodeURIComponent(
+            projectPathPart
+          )}/${encodeURIComponent(primaryKclFile)}`
+
+        fetch(sampleCodeUrl)
+          .then(async (codeResponse) => {
+            if (!codeResponse.ok) {
+              console.error(
+                'Failed to fetch sample code:',
+                codeResponse.statusText
+              )
+              return Promise.reject(new Error('Failed to fetch sample code'))
+            }
+            const code = await codeResponse.text()
+            systemIOActor.send({
+              type: SystemIOMachineEvents.importFileFromURL,
+              data: {
+                requestedProjectName: uniqueNameIfNeeded,
+                requestedFileName: folderNameBecomesKCLFileName,
+                requestedCode: code,
+              },
+            })
+          })
+          .catch(reportError)
+      }
+    },
+    args: {
+      source: {
+        inputType: 'options',
+        required: true,
+        skip: false,
+        defaultValue: 'local',
+        hidden: !isDesktop(),
+        options() {
+          return [
+            {
+              value: 'kcl-samples',
+              name: 'KCL Samples',
+              isCurrent: true,
+            },
+            ...(isDesktop()
+              ? [
+                  {
+                    value: 'local',
+                    name: 'Local Drive',
+                    isCurrent: false,
+                  },
+                ]
+              : []),
+          ]
+        },
+      },
+      method: {
+        inputType: 'options',
+        required: true,
+        skip: true,
+        options: isDesktop()
+          ? [
+              { name: 'New project', value: 'newProject' },
+              { name: 'Existing project', value: 'existingProject' },
+            ]
+          : [{ name: 'Overwrite', value: 'existingProject' }],
+        valueSummary(value) {
+          return isDesktop()
+            ? value === 'newProject'
+              ? 'New project'
+              : 'Existing project'
+            : 'Overwrite'
+        },
+      },
+      projectName: {
+        inputType: 'options',
+        required: (commandsContext) =>
+          isDesktop() &&
+          commandsContext.argumentsToSubmit.method === 'existingProject',
+        skip: true,
+        options: (_, context) => {
+          const { folders } = systemIOActor.getSnapshot().context
+          const options: CommandArgumentOption<string>[] = []
+          folders.forEach((folder) => {
+            options.push({
+              name: folder.name,
+              value: folder.name,
+              isCurrent: false,
+            })
+          })
+          return options
+        },
+      },
+      newProjectName: {
+        inputType: 'text',
+        required: (commandsContext) =>
+          isDesktop() &&
+          commandsContext.argumentsToSubmit.method === 'newProject',
+        skip: true,
+      },
+      sample: {
+        inputType: 'options',
+        required: (commandContext) =>
+          !['local'].includes(
+            commandContext.argumentsToSubmit.source as string
+          ),
+        hidden: (commandContext) =>
+          ['local'].includes(commandContext.argumentsToSubmit.source as string),
+        valueSummary(value) {
+          const MAX_LENGTH = 12
+          if (typeof value === 'string') {
+            return value.length > MAX_LENGTH
+              ? value.substring(0, MAX_LENGTH) + '...'
+              : value
+          }
+          return value
+        },
+        options: kclSamplesManifestWithNoMultipleFiles.map((sample) => {
+          return {
+            value: sample.pathFromProjectDirectoryToFirstFile,
+            name: sample.title,
+          }
+        }),
+      },
+      path: {
+        inputType: 'path',
+        valueSummary: (value) => window.electron.path.basename(value),
+        required: (commandContext) =>
+          ['local'].includes(commandContext.argumentsToSubmit.source as string),
+      },
+    },
+  }
+
+  // TODO: Web loadExternal Model Command
+  return isDesktop()
+    ? [textToCADCommand, loadExternalModelCommand]
+    : [textToCADCommand, loadExternalModelCommand]
 }
