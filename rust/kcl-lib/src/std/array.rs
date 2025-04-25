@@ -258,7 +258,6 @@ async fn inner_push(mut array: Vec<KclValue>, item: KclValue, args: &Args) -> Re
 
 pub async fn push(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     // Extract the array and the element from the arguments
-    // let (val, elem): (KclValue, KclValue) = FromArgs::from_args(&args, 0)?;
     let val: KclValue = args.get_unlabeled_kw_arg("array")?;
     let item = args.get_kw_arg("item")?;
 
