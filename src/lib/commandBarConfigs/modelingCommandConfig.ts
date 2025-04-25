@@ -596,7 +596,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     },
   },
   'Boolean Intersect': {
-    description: 'Subtract one solid from another.',
+     description: 'Create a solid from the intersection of two solids.',
     icon: 'booleanIntersect',
     needsReview: true,
     args: {
