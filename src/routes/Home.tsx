@@ -321,7 +321,7 @@ const Home = () => {
           className="flex-1 overflow-y-auto pr-2 pb-24"
         >
           {state?.matches(SystemIOMachineStates.readingFolders) ? (
-            <Loading>Loading your Projects...</Loading>
+            <Loading className="h-screen">Loading your Projects...</Loading>
           ) : (
             <>
               {searchResults.length > 0 ? (
