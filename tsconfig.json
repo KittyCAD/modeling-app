@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "disableSizeLimit": true,
     "noErrorTruncation": true,
     "paths": {
       "@kittycad/codemirror-lsp-client": [
