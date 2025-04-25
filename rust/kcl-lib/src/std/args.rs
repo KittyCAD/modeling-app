@@ -883,11 +883,7 @@ impl<'a> FromKclValue<'a> for Vec<TagIdentifier> {
 
 impl<'a> FromKclValue<'a> for Vec<KclValue> {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        match arg {
-            KclValue::HomArray { value, .. } => Some(value.to_vec()),
-            KclValue::MixedArray { value, .. } => Some(value.to_vec()),
-            _ => None,
-        }
+        arg.as_array().map(|v| v.to_vec())
     }
 }
 
