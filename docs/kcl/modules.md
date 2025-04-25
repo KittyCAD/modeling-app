@@ -74,16 +74,43 @@ use it like any other object. The `cube` variable is now a reference to the
 result of the module. This means that if you change the module, the `cube`
 variable will change as well.
 
-One important aspect of this is that the module must return a single object. If
-it returns multiple objects, you will get an error. This is because the
-imported module is expected to return a single object that can be used as a
-variable.
+In `cube.kcl`, you cannot have multiple objects. It has to be a single part. If
+you have multiple objects, you will get an error. This is because the module is
+expected to return a single object that can be used as a variable. 
 
-You cannot call `export` on the part that you want to use as a variable. This is
-because the module is expected to return a single object that can be used as a
-variable. If you want to use multiple objects from a module, you can use 
-`import thing, thing2 from "module.kcl"` to import them.
+You also cannot assign that object to a variable. This is because the module is
+expected to return a single object that can be used as a variable. 
 
+So for example, this is not allowed:
+
+```norun
+... a bunch of code to create cube and cube2 ...
+
+myUnion = union([cube, cube2])
+```
+
+What you need to do instead is:
+
+```norun
+... a bunch of code to create cube and cube2 ...
+
+union([cube, cube2])
+```
+
+That way the last line will return the union of the two objects.
+
+Or what you could do instead is:
+
+```norun
+... a bunch of code to create cube and cube2 ...
+
+myUnion = union([cube, cube2])
+myUnion
+```
+
+This will return the union of the two objects, but it will not be assigned to a
+variable. This is because the module is expected to return a single object that
+can be used as a variable.
 
 
 ## Multiple instances of the same import
