@@ -17,7 +17,7 @@ pop(array: [KclValue]): KclValue
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `array` | [`[KclValue]`](/docs/kcl/types/KclValue) | The array to pop from.  Must not be empty. | Yes |
+| `array` | [`[KclValue]`](/docs/kcl/types/KclValue) | The array to pop from. Must not be empty. | Yes |
 
 ### Returns
 
