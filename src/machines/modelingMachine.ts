@@ -105,6 +105,7 @@ import type {
   Literal,
   Name,
   PathToNode,
+  PipeExpression,
   VariableDeclaration,
   VariableDeclarator,
 } from '@src/lang/wasm'
@@ -2880,8 +2881,9 @@ export const modelingMachine = setup({
         const modifiedAst = structuredClone(ast)
         const { nodeToEdit, selection } = input
         let pathToNode = nodeToEdit
-        console.log('pathToNode', structuredClone(pathToNode))
         if (!(pathToNode && typeof pathToNode[1][0] === 'number')) {
+          // TODO: this was copied from translate, but we should probably
+          // make a helper function for this, might not work for all cases
           if (selection?.graphSelections[0].artifact) {
             const children = findAllChildrenAndOrderByPlaceInCode(
               selection?.graphSelections[0].artifact,
@@ -2899,12 +2901,15 @@ export const modelingMachine = setup({
           }
         }
 
+        const returnEarly = true
         const geometryNode = getNodeFromPath<
-          VariableDeclaration | ExpressionStatement
-        >(modifiedAst, pathToNode, [
-          'VariableDeclaration',
-          'ExpressionStatement',
-        ])
+          VariableDeclaration | ExpressionStatement | PipeExpression
+        >(
+          modifiedAst,
+          pathToNode,
+          ['VariableDeclaration', 'ExpressionStatement', 'PipeExpression'],
+          returnEarly
+        )
         if (err(geometryNode)) {
           return new Error("Couldn't find corresponding path to node")
         }
@@ -2917,7 +2922,14 @@ export const modelingMachine = setup({
           geometryNode.node.expression.type === 'Name'
         ) {
           geometryName = geometryNode.node.expression.name.name
+        } else if (
+          geometryNode.node.type === 'ExpressionStatement' &&
+          geometryNode.node.expression.type === 'PipeExpression' &&
+          geometryNode.node.expression.body[0].type === 'Name'
+        ) {
+          geometryName = geometryNode.node.expression.body[0].name.name
         } else {
+          console.log('no cases yo')
           return new Error("Couldn't find corresponding geometry")
         }
 
