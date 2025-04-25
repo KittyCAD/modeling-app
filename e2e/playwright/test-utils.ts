@@ -75,11 +75,6 @@ export function runningOnWindows() {
   return process.platform === 'win32'
 }
 
-export function orRunWhenFullSuiteEnabled() {
-  const branch = process.env.GITHUB_REF?.replace('refs/heads/', '')
-  return branch !== 'all-e2e'
-}
-
 async function waitForPageLoadWithRetry(page: Page) {
   await expect(async () => {
     await page.goto('/')
