@@ -1125,7 +1125,11 @@ test.describe('Mocked Text-to-CAD API tests', { tag: ['@skipWin'] }, () => {
       await mockPageTextToCAD(page)
 
       // Create and navigate to the project then come home
-      await createProject({ name: unrelatedProjectName, page, returnHome: true })
+      await createProject({
+        name: unrelatedProjectName,
+        page,
+        returnHome: true,
+      })
 
       await expect(page.getByText('Your Projects')).toBeVisible()
 
@@ -1198,7 +1202,11 @@ test.describe('Mocked Text-to-CAD API tests', { tag: ['@skipWin'] }, () => {
       await mockPageTextToCAD(page)
 
       // Create and navigate to the project then come home
-      await createProject({ name: unrelatedProjectName, page, returnHome: true })
+      await createProject({
+        name: unrelatedProjectName,
+        page,
+        returnHome: true,
+      })
 
       await expect(page.getByText('Your Projects')).toBeVisible()
 
@@ -1267,7 +1275,11 @@ test.describe('Mocked Text-to-CAD API tests', { tag: ['@skipWin'] }, () => {
       await mockPageTextToCAD(page)
 
       // Create and navigate to the project then come home
-      await createProject({ name: unrelatedProjectName, page, returnHome: true })
+      await createProject({
+        name: unrelatedProjectName,
+        page,
+        returnHome: true,
+      })
       await expect(page.getByText('Your Projects')).toBeVisible()
 
       await createProject({ name: projectName, page, returnHome: true })
@@ -1338,7 +1350,11 @@ test.describe('Mocked Text-to-CAD API tests', { tag: ['@skipWin'] }, () => {
       await mockPageTextToCAD(page)
 
       // Create and navigate to the project then come home
-      await createProject({ name: unrelatedProjectName, page, returnHome: true })
+      await createProject({
+        name: unrelatedProjectName,
+        page,
+        returnHome: true,
+      })
       await expect(page.getByText('Your Projects')).toBeVisible()
 
       await createProject({ name: projectName, page, returnHome: true })

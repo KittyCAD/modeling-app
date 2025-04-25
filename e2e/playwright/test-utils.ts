@@ -240,8 +240,6 @@ async function waitForCmdReceive(page: Page, commandType: string) {
     .waitFor()
 }
 
-
-
 export const wiggleMove = async (
   page: any,
   x: number,
@@ -1019,9 +1017,9 @@ export async function createProject({
   })
 }
 
-async function goToHomePageFromModeling (page) {
-    await page.getByTestId('app-logo').click()
-    await expect(page.getByText('Your Projects')).toBeVisible()
+async function goToHomePageFromModeling(page: Page) {
+  await page.getByTestId('app-logo').click()
+  await expect(page.getByText('Your Projects')).toBeVisible()
 }
 
 export function executorInputPath(fileName: string): string {
