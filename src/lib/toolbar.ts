@@ -10,7 +10,6 @@ import {
   isEditingExistingSketch,
   pipeHasCircle,
 } from '@src/machines/modelingMachine'
-import { IS_NIGHTLY_OR_DEBUG } from '@src/routes/utils'
 
 export type ToolbarModeName = 'modeling' | 'sketching'
 
@@ -386,7 +385,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
                 type: 'Find and select command',
                 data: { name: 'Rotate', groupId: 'modeling' },
               }),
-            icon: 'move',
+            icon: 'rotate',
             status: 'available',
             title: 'Rotate',
             description: 'Apply a rotation to a solid or sketch.',
@@ -402,6 +401,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             onClick: () => undefined,
             status: 'kcl-only',
             title: 'Clone',
+            icon: 'patternLinear3d', // TODO: add a clone icon
             description: 'Clone a solid or sketch.',
             links: [
               {
