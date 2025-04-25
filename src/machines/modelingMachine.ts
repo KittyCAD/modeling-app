@@ -4696,7 +4696,8 @@ export const modelingMachine = setup({
       // TODO what if we're existing extrude equipped, should these actions still be fired?
       // maybe cancel needs to have a guard for if else logic?
       entry: ['reset sketch metadata', 'enable copilot', 'enter modeling mode'],
-      exit: ['Restore default plane visibility'],
+      // For now, not using saved default states, artifact graph emptied will trigger "hide default planes"
+      // exit: ['Restore default plane visibility'],
     },
   },
 
