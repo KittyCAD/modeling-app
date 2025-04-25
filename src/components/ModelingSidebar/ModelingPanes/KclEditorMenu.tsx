@@ -9,7 +9,7 @@ import { useConvertToVariable } from '@src/hooks/useToolbarGuards'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { kclManager } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
-import { commandBarActor } from '@src/lib/singletons'
+import { commandBarActor, settingsActor } from '@src/lib/singletons'
 
 import styles from './KclEditorMenu.module.css'
 
@@ -86,12 +86,17 @@ export const KclEditorMenu = ({ children }: PropsWithChildren) => {
           <Menu.Item>
             <button
               onClick={() => {
-                // TODO
+                const currentProject =
+                  settingsActor.getSnapshot().context.currentProject
                 commandBarActor.send({
                   type: 'Find and select command',
                   data: {
-                    groupId: 'application',
                     name: 'load-external-model',
+                    groupId: 'application',
+                    argDefaultValues: {
+                      method: 'existingProject',
+                      projectName: currentProject?.name,
+                    },
                   },
                 })
               }}

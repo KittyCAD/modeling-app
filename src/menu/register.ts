@@ -93,12 +93,16 @@ export function modelingMenuCallbackMostActions(
     } else if (data.menuLabel === 'File.Preferences.User default units') {
       navigate(filePath + PATHS.SETTINGS_USER + '#defaultUnit')
     } else if (data.menuLabel === 'File.Load external model') {
-      // TODO
+      const currentProject = settingsActor.getSnapshot().context.currentProject
       commandBarActor.send({
         type: 'Find and select command',
         data: {
-          groupId: 'application',
           name: 'load-external-model',
+          groupId: 'application',
+          argDefaultValues: {
+            method: 'existingProject',
+            projectName: currentProject?.name,
+          },
         },
       })
     } else if (data.menuLabel === 'File.Export current part') {
