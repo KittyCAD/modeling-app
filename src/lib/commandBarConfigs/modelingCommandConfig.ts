@@ -1048,7 +1048,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Set translation on solid or sketch.',
     icon: 'dimension', // TODO: likely not the best icon
     needsReview: true,
-    hide: DEV || IS_NIGHTLY_OR_DEBUG ? undefined : 'both',
     args: {
       nodeToEdit: {
         description:
@@ -1089,7 +1088,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Set rotation on solid or sketch.',
     icon: 'angle', // TODO: likely not the best icon
     needsReview: true,
-    hide: DEV || IS_NIGHTLY_OR_DEBUG ? undefined : 'both',
     args: {
       nodeToEdit: {
         description:
