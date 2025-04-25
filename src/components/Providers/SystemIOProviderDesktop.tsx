@@ -112,10 +112,12 @@ export function SystemIOMachineLogicListenerDesktop() {
         requestedTextToCadGeneration.requestedProjectName
       const isProjectNew = requestedTextToCadGeneration.isProjectNew
       if (!requestedPromptTrimmed || !requestedProjectName) return
-      const uniqueName = getUniqueProjectName(requestedProjectName, folders)
+      const uniqueNameIfNeeded = isProjectNew
+        ? getUniqueProjectName(requestedProjectName, folders)
+        : requestedProjectName
       submitAndAwaitTextToKclSystemIO({
         trimmedPrompt: requestedPromptTrimmed,
-        projectName: uniqueName,
+        projectName: uniqueNameIfNeeded,
         navigate,
         token,
         isProjectNew,
