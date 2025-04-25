@@ -10,7 +10,7 @@ import {
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
-test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
+test.describe('Testing constraints', () => {
   test('Can constrain line length', async ({ page, homePage }) => {
     await page.addInitScript(async () => {
       localStorage.setItem(
