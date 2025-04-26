@@ -10,7 +10,7 @@ description: Operations executed cycloidal-gear.kcl
       "name": "cycloidalGear",
       "functionSourceRange": [
         265,
-        1595,
+        1605,
         0
       ],
       "unlabeledArg": null,
@@ -25,7 +25,7 @@ description: Operations executed cycloidal-gear.kcl
       "name": "gearSketch",
       "functionSourceRange": [
         491,
-        1386,
+        1396,
         0
       ],
       "unlabeledArg": null,
@@ -224,16 +224,7 @@ description: Operations executed cycloidal-gear.kcl
   },
   {
     "labeledArgs": {
-      "holeSketch": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "sketch": {
+      "tool": {
         "value": {
           "type": "Sketch",
           "value": {
@@ -243,10 +234,18 @@ description: Operations executed cycloidal-gear.kcl
         "sourceRange": []
       }
     },
-    "name": "hole",
+    "name": "subtract2d",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
   },
   {
     "type": "GroupEnd"
@@ -258,7 +257,7 @@ description: Operations executed cycloidal-gear.kcl
       "name": "gearSketch",
       "functionSourceRange": [
         491,
-        1386,
+        1396,
         0
       ],
       "unlabeledArg": null,
@@ -457,16 +456,7 @@ description: Operations executed cycloidal-gear.kcl
   },
   {
     "labeledArgs": {
-      "holeSketch": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "sketch": {
+      "tool": {
         "value": {
           "type": "Sketch",
           "value": {
@@ -476,10 +466,18 @@ description: Operations executed cycloidal-gear.kcl
         "sourceRange": []
       }
     },
-    "name": "hole",
+    "name": "subtract2d",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
   },
   {
     "type": "GroupEnd"
@@ -491,7 +489,7 @@ description: Operations executed cycloidal-gear.kcl
       "name": "gearSketch",
       "functionSourceRange": [
         491,
-        1386,
+        1396,
         0
       ],
       "unlabeledArg": null,
@@ -690,16 +688,7 @@ description: Operations executed cycloidal-gear.kcl
   },
   {
     "labeledArgs": {
-      "holeSketch": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "sketch": {
+      "tool": {
         "value": {
           "type": "Sketch",
           "value": {
@@ -709,10 +698,18 @@ description: Operations executed cycloidal-gear.kcl
         "sourceRange": []
       }
     },
-    "name": "hole",
+    "name": "subtract2d",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
   },
   {
     "type": "GroupEnd"

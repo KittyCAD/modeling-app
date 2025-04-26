@@ -13,6 +13,7 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use super::utils::{point_to_len_unit, point_to_mm, untype_point, untyped_point_to_mm};
+use crate::execution::types::ArrayLen;
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
@@ -2253,10 +2254,20 @@ async fn inner_bezier_curve(
 }
 
 /// Use a sketch to cut a hole in another sketch.
-pub async fn hole(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (hole_sketch, sketch): (Vec<Sketch>, Sketch) = args.get_sketches(exec_state)?;
+pub async fn subtract_2d(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let sketch =
+        args.get_unlabeled_kw_arg_typed("sketch", &RuntimeType::Primitive(PrimitiveType::Sketch), exec_state)?;
 
-    let new_sketch = inner_hole(hole_sketch, sketch, exec_state, args).await?;
+    let tool: Vec<Sketch> = args.get_kw_arg_typed(
+        "tool",
+        &RuntimeType::Array(
+            Box::new(RuntimeType::Primitive(PrimitiveType::Sketch)),
+            ArrayLen::NonEmpty,
+        ),
+        exec_state,
+    )?;
+
+    let new_sketch = inner_subtract_2d(sketch, tool, exec_state, args).await?;
     Ok(KclValue::Sketch {
         value: Box::new(new_sketch),
     })
@@ -2271,8 +2282,8 @@ pub async fn hole(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 ///   |> line(end = [5, 0])
 ///   |> line(end = [0, -5])
 ///   |> close()
-///   |> hole(circle( center = [1, 1], radius = .25 ), %)
-///   |> hole(circle( center = [1, 4], radius = .25 ), %)
+///   |> subtract2d(tool =circle( center = [1, 1], radius = .25 ))
+///   |> subtract2d(tool =circle( center = [1, 4], radius = .25 ))
 ///
 /// example = extrude(exampleSketch, length = 1)
 /// ```
@@ -2290,20 +2301,26 @@ pub async fn hole(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 ///
 /// exampleSketch = startSketchOn(-XZ)
 ///     |> circle( center = [0, 0], radius = 3 )
-///     |> hole(squareHoleSketch(), %)
+///     |> subtract2d(tool = squareHoleSketch())
 /// example = extrude(exampleSketch, length = 1)
 /// ```
 #[stdlib {
-    name = "hole",
+    name = "subtract2d",
     feature_tree_operation = true,
+    keywords = true,
+    unlabeled_first = true,
+    args = {
+        sketch = { docs = "Which sketch should this path be added to?" },
+        tool  = { docs = "The shape(s) which should be cut out of the sketch." },
+    }
 }]
-async fn inner_hole(
-    hole_sketch: Vec<Sketch>,
+async fn inner_subtract_2d(
     sketch: Sketch,
+    tool: Vec<Sketch>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
-    for hole_sketch in hole_sketch {
+    for hole_sketch in tool {
         args.batch_modeling_cmd(
             exec_state.next_uuid(),
             ModelingCmd::from(mcmd::Solid2dAddHole {

@@ -262,7 +262,7 @@ pub async fn appearance(exec_state: &mut ExecState, args: Args) -> Result<KclVal
 ///         center = [0, 0],
 ///         radius = 2,
 ///         )              
-///     |> hole(pipeHole, %)
+///     |> subtract2d(tool = pipeHole)
 ///     |> sweep(path = sweepPath)
 ///     |> appearance(
 ///         color = "#ff0000",

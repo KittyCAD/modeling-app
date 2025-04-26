@@ -128,7 +128,7 @@ description: Operations executed fillet-and-shell.kcl
       "name": "m25Screw",
       "functionSourceRange": [
         1289,
-        1517,
+        1527,
         0
       ],
       "unlabeledArg": null,
@@ -153,16 +153,7 @@ description: Operations executed fillet-and-shell.kcl
   },
   {
     "labeledArgs": {
-      "holeSketch": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "sketch": {
+      "tool": {
         "value": {
           "type": "Sketch",
           "value": {
@@ -172,10 +163,18 @@ description: Operations executed fillet-and-shell.kcl
         "sourceRange": []
       }
     },
-    "name": "hole",
+    "name": "subtract2d",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
   },
   {
     "labeledArgs": {
@@ -219,7 +218,7 @@ description: Operations executed fillet-and-shell.kcl
       "name": "m25Screw",
       "functionSourceRange": [
         1289,
-        1517,
+        1527,
         0
       ],
       "unlabeledArg": null,
@@ -244,16 +243,7 @@ description: Operations executed fillet-and-shell.kcl
   },
   {
     "labeledArgs": {
-      "holeSketch": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "sketch": {
+      "tool": {
         "value": {
           "type": "Sketch",
           "value": {
@@ -263,10 +253,18 @@ description: Operations executed fillet-and-shell.kcl
         "sourceRange": []
       }
     },
-    "name": "hole",
+    "name": "subtract2d",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
   },
   {
     "labeledArgs": {
@@ -310,7 +308,7 @@ description: Operations executed fillet-and-shell.kcl
       "name": "m25Screw",
       "functionSourceRange": [
         1289,
-        1517,
+        1527,
         0
       ],
       "unlabeledArg": null,
@@ -335,16 +333,7 @@ description: Operations executed fillet-and-shell.kcl
   },
   {
     "labeledArgs": {
-      "holeSketch": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "sketch": {
+      "tool": {
         "value": {
           "type": "Sketch",
           "value": {
@@ -354,10 +343,18 @@ description: Operations executed fillet-and-shell.kcl
         "sourceRange": []
       }
     },
-    "name": "hole",
+    "name": "subtract2d",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
   },
   {
     "labeledArgs": {
@@ -401,7 +398,7 @@ description: Operations executed fillet-and-shell.kcl
       "name": "m25Screw",
       "functionSourceRange": [
         1289,
-        1517,
+        1527,
         0
       ],
       "unlabeledArg": null,
@@ -426,16 +423,7 @@ description: Operations executed fillet-and-shell.kcl
   },
   {
     "labeledArgs": {
-      "holeSketch": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "sketch": {
+      "tool": {
         "value": {
           "type": "Sketch",
           "value": {
@@ -445,10 +433,18 @@ description: Operations executed fillet-and-shell.kcl
         "sourceRange": []
       }
     },
-    "name": "hole",
+    "name": "subtract2d",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
   },
   {
     "labeledArgs": {

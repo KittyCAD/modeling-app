@@ -19,7 +19,7 @@ linkDiameter = sphereDia / 4
 // Sketch the inside bearing piece
 insideWallSketch = startSketchOn(offsetPlane(XY, offset = -overallThickness / 2))
   |> circle(center = [0, 0], radius = shaftDia / 2 + wallThickness)
-  |> hole(circle(center = [0, 0], radius = shaftDia / 2), %)
+  |> subtract2d(tool = circle(center = [0, 0], radius = shaftDia / 2))
 
 // Extrude the inside bearing piece
 insideWall = extrude(insideWallSketch, length = overallThickness)
@@ -84,6 +84,6 @@ linkRevolve = revolve(linkSketch, axis = Y, angle = 360 / nBalls)
 // Create the sketch for the outside walls
 outsideWallSketch = startSketchOn(offsetPlane(XY, offset = -overallThickness / 2))
   |> circle(center = [0, 0], radius = outsideDiameter / 2)
-  |> hole(circle(center = [0, 0], radius = shaftDia / 2 + wallThickness + sphereDia), %)
+  |> subtract2d(tool = circle(center = [0, 0], radius = shaftDia / 2 + wallThickness + sphereDia))
 
 outsideWall = extrude(outsideWallSketch, length = overallThickness)

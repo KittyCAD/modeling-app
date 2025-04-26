@@ -10,13 +10,13 @@ import lugCount, lugSpacing, offset, backSpacing, wheelWidth, wheelDiameter, spo
 // Create the wheel center
 lugBase = startSketchOn(XZ)
   |> circle(center = [0, 0], radius = (lugSpacing + 1.5) / 2)
-  |> hole(circle(center = [0, 0], radius = (lugSpacing - 1.5) / 2), %)
+  |> subtract2d(tool = circle(center = [0, 0], radius = (lugSpacing - 1.5) / 2))
   |> extrude(length = wheelWidth / 20)
 
 // Extend the wheel center and bore holes to accomidate the lug heads
 lugExtrusion = startSketchOn(lugBase, face = END)
   |> circle(center = [0, 0], radius = (lugSpacing + 1.5) / 2)
-  |> hole(circle(center = [0, 0], radius = (lugSpacing - 1.5) / 2), %)
+  |> subtract2d(tool = circle(center = [0, 0], radius = (lugSpacing - 1.5) / 2))
   |> extrude(length = wheelWidth / 10)
 
 // Create the circular pattern for the lugs

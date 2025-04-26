@@ -1014,7 +1014,7 @@ export async function createProject({
 
 async function goToHomePageFromModeling(page: Page) {
   await page.getByTestId('app-logo').click()
-  await expect(page.getByText('Your Projects')).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Projects' })).toBeVisible()
 }
 
 export function executorInputPath(fileName: string): string {

@@ -46,7 +46,7 @@ fn function001(originStart) {
   // Create a pillar with a fasterner hole at the center
   sketch002 = startSketchOn(plane001)
     |> circle(center = [originStart[0], originStart[1]], radius = holeDia + wallThickness)
-    |> hole(circle(center = [originStart[0], originStart[1]], radius = holeDia), %)
+    |> subtract2d(tool = circle(center = [originStart[0], originStart[1]], radius = holeDia))
   extrude002 = extrude(sketch002, length = height - wallThickness)
 
   return extrude002
@@ -78,34 +78,34 @@ sketch003 = startSketchOn(XY)
   |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $rectangleSegmentC002)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $rectangleSegmentD002)
   |> close()
-  |> hole(circle(
+  |> subtract2d(tool = circle(
        center = [
          width * 1.2 + wallThickness * 3 + holeDia,
          wallThickness * 3 + holeDia
        ],
        radius = holeDia,
-     ), %)
-  |> hole(circle(
+     ))
+  |> subtract2d(tool = circle(
        center = [
          width * 1.2 + wallThickness * 3 + holeDia,
          length - (wallThickness * 3 + holeDia)
        ],
        radius = holeDia,
-     ), %)
-  |> hole(circle(
+     ))
+  |> subtract2d(tool = circle(
        center = [
          width * 2.2 - (wallThickness * 3 + holeDia),
          wallThickness * 3 + holeDia
        ],
        radius = holeDia,
-     ), %)
-  |> hole(circle(
+     ))
+  |> subtract2d(tool = circle(
        center = [
          width * 2.2 - (wallThickness * 3 + holeDia),
          length - (wallThickness * 3 + holeDia)
        ],
        radius = holeDia,
-     ), %)
+     ))
 extrude003 = extrude(sketch003, length = wallThickness)
   |> fillet(
        radius = wallThickness * 4,
@@ -128,34 +128,34 @@ sketch004 = startSketchOn(extrude003, face = END)
   |> angledLine(angle = segAng(rectangleSegmentA003), length = -segLen(rectangleSegmentA003), tag = $rectangleSegmentC003)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $rectangleSegmentD003)
   |> close()
-  |> hole(circle(
+  |> subtract2d(tool = circle(
        center = [
          width * 1.2 + wallThickness * 3 + holeDia,
          wallThickness * 3 + holeDia
        ],
        radius = holeDia + wallThickness,
-     ), %)
-  |> hole(circle(
+     ))
+  |> subtract2d(tool = circle(
        center = [
          width * 1.2 + wallThickness * 3 + holeDia,
          length - (wallThickness * 3 + holeDia)
        ],
        radius = holeDia + wallThickness,
-     ), %)
-  |> hole(circle(
+     ))
+  |> subtract2d(tool = circle(
        center = [
          width * 2.2 - (wallThickness * 3 + holeDia),
          wallThickness * 3 + holeDia
        ],
        radius = holeDia + wallThickness,
-     ), %)
-  |> hole(circle(
+     ))
+  |> subtract2d(tool = circle(
        center = [
          width * 2.2 - (wallThickness * 3 + holeDia),
          length - (wallThickness * 3 + holeDia)
        ],
        radius = holeDia + wallThickness,
-     ), %)
+     ))
 extrude004 = extrude(sketch004, length = wallThickness)
   |> fillet(
        radius = wallThickness * 3,

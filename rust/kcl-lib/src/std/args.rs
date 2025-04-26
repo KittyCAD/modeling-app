@@ -615,50 +615,6 @@ impl Args {
         Ok(numbers)
     }
 
-    pub(crate) fn get_sketches(&self, exec_state: &mut ExecState) -> Result<(Vec<Sketch>, Sketch), KclError> {
-        let Some(arg0) = self.args.first() else {
-            return Err(KclError::Semantic(KclErrorDetails {
-                message: "Expected a sketch argument".to_owned(),
-                source_ranges: vec![self.source_range],
-            }));
-        };
-        let sarg = arg0.value.coerce(&RuntimeType::sketches(), exec_state).map_err(|_| {
-            KclError::Type(KclErrorDetails {
-                message: format!(
-                    "Expected an array of sketches, found {}",
-                    arg0.value.human_friendly_type()
-                ),
-                source_ranges: vec![self.source_range],
-            })
-        })?;
-        let sketches = match sarg {
-            KclValue::HomArray { value, .. } => value.iter().map(|v| v.as_sketch().unwrap().clone()).collect(),
-            _ => unreachable!(),
-        };
-
-        let Some(arg1) = self.args.get(1) else {
-            return Err(KclError::Semantic(KclErrorDetails {
-                message: "Expected a second sketch argument".to_owned(),
-                source_ranges: vec![self.source_range],
-            }));
-        };
-        let sarg = arg1
-            .value
-            .coerce(&RuntimeType::Primitive(PrimitiveType::Sketch), exec_state)
-            .map_err(|_| {
-                KclError::Type(KclErrorDetails {
-                    message: format!("Expected a sketch, found {}", arg1.value.human_friendly_type()),
-                    source_ranges: vec![self.source_range],
-                })
-            })?;
-        let sketch = match sarg {
-            KclValue::Sketch { value } => *value,
-            _ => unreachable!(),
-        };
-
-        Ok((sketches, sketch))
-    }
-
     pub(crate) async fn get_adjacent_face_to_tag(
         &self,
         exec_state: &mut ExecState,

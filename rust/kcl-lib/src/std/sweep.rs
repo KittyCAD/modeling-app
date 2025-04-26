@@ -82,7 +82,7 @@ pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///         center = [0, 0],
 ///         radius = 2,
 ///         )              
-///     |> hole(pipeHole, %)
+///     |> subtract2d(tool = pipeHole)
 ///     |> sweep(path = sweepPath)   
 /// ```
 ///

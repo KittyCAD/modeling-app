@@ -510,9 +510,7 @@ test('Restarting onboarding on desktop takes one attempt', async ({
   })
 
   await test.step('Navigate into project', async () => {
-    await expect(
-      page.getByRole('heading', { name: 'Your Projects' })
-    ).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Projects' })).toBeVisible()
     await expect(projectCard).toBeVisible()
     await projectCard.click()
     await u.waitForPageLoad()

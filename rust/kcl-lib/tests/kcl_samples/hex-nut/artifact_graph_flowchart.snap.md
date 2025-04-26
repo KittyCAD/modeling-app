@@ -11,12 +11,12 @@ flowchart LR
     9[Solid2d]
   end
   subgraph path10 [Path]
-    10["Path<br>[903, 963, 0]"]
-    11["Segment<br>[903, 963, 0]"]
+    10["Path<br>[916, 976, 0]"]
+    11["Segment<br>[916, 976, 0]"]
     12[Solid2d]
   end
   1["Plane<br>[546, 564, 0]"]
-  13["Sweep Extrusion<br>[975, 996, 0]"]
+  13["Sweep Extrusion<br>[985, 1006, 0]"]
   14[Wall]
   15[Wall]
   16[Wall]
