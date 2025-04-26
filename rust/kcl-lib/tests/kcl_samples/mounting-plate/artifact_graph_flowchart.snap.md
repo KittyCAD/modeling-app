@@ -44,22 +44,15 @@ flowchart LR
   30["SweepEdge Opposite"]
   31["SweepEdge Adjacent"]
   32["SweepEdge Opposite"]
-<<<<<<< HEAD
-  33["EdgeCut Fillet<br>[1895, 2160, 0]"]
-  34["EdgeCut Fillet<br>[1895, 2160, 0]"]
-  35["EdgeCut Fillet<br>[1895, 2160, 0]"]
-  36["EdgeCut Fillet<br>[1895, 2160, 0]"]
-=======
   33["SweepEdge Adjacent"]
   34["SweepEdge Opposite"]
   35["SweepEdge Adjacent"]
   36["SweepEdge Opposite"]
   37["SweepEdge Adjacent"]
-  38["EdgeCut Fillet<br>[1845, 2110, 0]"]
-  39["EdgeCut Fillet<br>[1845, 2110, 0]"]
-  40["EdgeCut Fillet<br>[1845, 2110, 0]"]
-  41["EdgeCut Fillet<br>[1845, 2110, 0]"]
->>>>>>> d43b13987 (artifact graph things)
+  38["EdgeCut Fillet<br>[1895, 2160, 0]"]
+  39["EdgeCut Fillet<br>[1895, 2160, 0]"]
+  40["EdgeCut Fillet<br>[1895, 2160, 0]"]
+  41["EdgeCut Fillet<br>[1895, 2160, 0]"]
   1 --- 2
   1 --- 8
   1 --- 11
