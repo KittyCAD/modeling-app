@@ -16,6 +16,7 @@ use kcmc::{
 use kittycad_modeling_cmds::{self as kcmc};
 use uuid::Uuid;
 
+use super::args::TyF64;
 #[cfg(feature = "artifact-graph")]
 use crate::execution::ArtifactId;
 use crate::{
@@ -24,8 +25,6 @@ use crate::{
     parsing::ast::types::TagNode,
     std::Args,
 };
-
-use super::args::TyF64;
 
 /// Extrudes by a given amount.
 pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {

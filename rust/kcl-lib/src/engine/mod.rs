@@ -9,8 +9,6 @@ pub mod conn_mock;
 #[cfg(feature = "engine")]
 pub mod conn_wasm;
 
-pub use async_tasks::AsyncTasks;
-
 use std::{
     collections::HashMap,
     sync::{
@@ -19,6 +17,7 @@ use std::{
     },
 };
 
+pub use async_tasks::AsyncTasks;
 use indexmap::IndexMap;
 #[cfg(feature = "artifact-graph")]
 use kcmc::id::ModelingCmdId;

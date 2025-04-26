@@ -20,6 +20,12 @@
           targets = ["wasm32-unknown-unknown"];
           extensions = ["rustfmt" "llvm-tools-preview" "rust-src"];
         };
+
+        # stand-alone nightly formatter so we get the fancy unstable flags
+        nightlyRustfmt = super.rust-bin.selectLatestNightlyWith (toolchain:
+          toolchain.default.override {
+            extensions = ["rustfmt"]; # just the formatter
+          });
       })
     ];
 
@@ -43,7 +49,8 @@
       default = pkgs.mkShell {
         packages =
           (with pkgs; [
-            rustToolchain
+            nightlyRustfmt # PATH-head so `cargo fmt` picks this one
+            rustToolchain # everything else still builds on stable
             cargo-criterion
             cargo-nextest
             cargo-sort
@@ -69,7 +76,7 @@
         PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH = "${pkgs.playwright-driver.browsers}/chromium-1091/chrome-linux/chrome";
         PLAYWRIGHT_BROWSERS_PATH = "${pkgs.playwright-driver.browsers}";
         NODE_ENV = "development";
-        RUSTFMT = "${pkgs.rust-bin.stable.latest.rustfmt}/bin/rustfmt";
+        RUSTFMT = "${pkgs.nightlyRustfmt}/bin/rustfmt";
       };
     });
 

@@ -9,13 +9,12 @@ use rgba_simple::Hex;
 use schemars::JsonSchema;
 use serde::Serialize;
 
+use super::args::TyF64;
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{types::RuntimeType, ExecState, KclValue, SolidOrImportedGeometry},
     std::Args,
 };
-
-use super::args::TyF64;
 
 lazy_static::lazy_static! {
     static ref HEX_REGEX: Regex = Regex::new(r"^#[0-9a-fA-F]{6}$").unwrap();

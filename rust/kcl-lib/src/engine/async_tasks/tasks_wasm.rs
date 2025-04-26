@@ -1,8 +1,7 @@
 //! This module contains the `AsyncTasks` struct, which is used to manage a set of asynchronous
 //! tasks.
 
-use std::ops::AddAssign;
-use std::sync::Arc;
+use std::{ops::AddAssign, sync::Arc};
 
 use tokio::sync::RwLock;
 

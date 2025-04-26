@@ -10,13 +10,12 @@ use kittycad_modeling_cmds::{
     websocket::OkWebSocketResponseData,
 };
 
+use super::{args::TyF64, DEFAULT_TOLERANCE};
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{types::RuntimeType, ExecState, KclValue, Solid},
     std::Args,
 };
-
-use super::{args::TyF64, DEFAULT_TOLERANCE};
 
 /// Union two or more solids into a single solid.
 pub async fn union(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
