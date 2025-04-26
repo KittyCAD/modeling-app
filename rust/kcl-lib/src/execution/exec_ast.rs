@@ -625,9 +625,8 @@ impl ExecutorContext {
                 let value = name.get_result(exec_state, self).await?.clone();
                 if let KclValue::Module { value: module_id, meta } = value {
                     self.exec_module_for_result(
-                        module_id, 
-                        #[cfg(feature = "artifact-graph")]
-                        name, 
+                        module_id,
+                        #[cfg(feature = "artifact-graph")] name, 
                         exec_state,
                         metadata.source_range
                         ).await?
