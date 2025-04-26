@@ -621,4 +621,190 @@ foreign
       })
     }
   )
+
+  test(
+    'Assembly parts can get cloned',
+    { tag: ['@electron'] },
+    async ({
+      context,
+      page,
+      homePage,
+      scene,
+      toolbar,
+      cmdBar,
+      tronApp,
+      editor,
+    }) => {
+      if (!tronApp) {
+        fail()
+      }
+
+      const projectName = 'assembly'
+
+      await test.step('Setup parts and expect imported model', async () => {
+        await context.folderSetupFn(async (dir) => {
+          const projectDir = path.join(dir, projectName)
+          await fsp.mkdir(projectDir, { recursive: true })
+          await Promise.all([
+            fsp.copyFile(
+              path.join('public', 'kcl-samples', 'washer', 'main.kcl'),
+              path.join(projectDir, 'washer.kcl')
+            ),
+            fsp.copyFile(
+              path.join(
+                'public',
+                'kcl-samples',
+                'socket-head-cap-screw',
+                'main.kcl'
+              ),
+              path.join(projectDir, 'screw.kcl')
+            ),
+            fsp.writeFile(
+              path.join(projectDir, 'main.kcl'),
+              `
+import "washer.kcl" as washer
+import "screw.kcl" as screw
+screw
+washer
+  |> rotate(roll = 90, pitch = 0, yaw = 0)`
+            ),
+          ])
+        })
+        await page.setBodyDimensions({ width: 1000, height: 500 })
+        await homePage.openProject(projectName)
+        await scene.settled(cmdBar)
+        await toolbar.closePane('code')
+      })
+
+      await test.step('Clone the part using the feature tree', async () => {
+        await toolbar.openPane('feature-tree')
+        const op = await toolbar.getFeatureTreeOperation('washer', 0)
+        await op.click({ button: 'right' })
+        await page.getByTestId('context-menu-clone').click()
+        await cmdBar.expectState({
+          stage: 'arguments',
+          currentArgKey: 'variableName',
+          currentArgValue: '',
+          headerArguments: {
+            VariableName: '',
+          },
+          highlightedHeaderArg: 'variableName',
+          commandName: 'Clone',
+        })
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          stage: 'review',
+          headerArguments: {
+            VariableName: 'clone001',
+          },
+          commandName: 'Clone',
+        })
+        await cmdBar.progressCmdBar()
+        await scene.settled(cmdBar)
+        await toolbar.closePane('feature-tree')
+
+        // Expect changes
+        await toolbar.openPane('code')
+        await editor.expectEditor.toContain(
+          `
+        washer 
+          |> rotate(roll = 90, pitch = 0, yaw = 0)
+        clone001 = clone(washer)
+        `,
+          { shouldNormalise: true }
+        )
+        await toolbar.closePane('code')
+      })
+
+      await test.step('Set translate on clone', async () => {
+        await toolbar.openPane('feature-tree')
+        const op = await toolbar.getFeatureTreeOperation('Clone', 0)
+        await op.click({ button: 'right' })
+        await page.getByTestId('context-menu-set-translate').click()
+        await cmdBar.expectState({
+          stage: 'arguments',
+          currentArgKey: 'x',
+          currentArgValue: '0',
+          headerArguments: {
+            X: '',
+            Y: '',
+            Z: '',
+          },
+          highlightedHeaderArg: 'x',
+          commandName: 'Translate',
+        })
+        await cmdBar.progressCmdBar()
+        await page.keyboard.insertText('-3')
+        await cmdBar.progressCmdBar()
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          stage: 'review',
+          headerArguments: {
+            X: '0',
+            Y: '-3',
+            Z: '0',
+          },
+          commandName: 'Translate',
+        })
+        await cmdBar.progressCmdBar()
+        await scene.settled(cmdBar)
+        await toolbar.closePane('feature-tree')
+
+        // Expect changes
+        await toolbar.openPane('code')
+        await editor.expectEditor.toContain(
+          `
+          screw
+          washer
+            |> rotate(roll = 90, pitch = 0, yaw = 0)
+          clone001 = clone(washer)
+            |> translate(x = 0, y = -3, z = 0)
+        `,
+          { shouldNormalise: true }
+        )
+      })
+
+      await test.step('Clone the translated clone', async () => {
+        await toolbar.openPane('feature-tree')
+        const op = await toolbar.getFeatureTreeOperation('Clone', 0)
+        await op.click({ button: 'right' })
+        await page.getByTestId('context-menu-clone').click()
+        await cmdBar.expectState({
+          stage: 'arguments',
+          currentArgKey: 'variableName',
+          currentArgValue: '',
+          headerArguments: {
+            VariableName: '',
+          },
+          highlightedHeaderArg: 'variableName',
+          commandName: 'Clone',
+        })
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          stage: 'review',
+          headerArguments: {
+            VariableName: 'clone002',
+          },
+          commandName: 'Clone',
+        })
+        await cmdBar.progressCmdBar()
+        await scene.settled(cmdBar)
+        await toolbar.closePane('feature-tree')
+
+        // Expect changes
+        await toolbar.openPane('code')
+        await editor.expectEditor.toContain(
+          `
+          screw
+          washer
+            |> rotate(roll = 90, pitch = 0, yaw = 0)
+          clone001 = clone(washer)
+            |> translate(x = 0, y = -3, z = 0)
+          clone002 = clone(clone001)
+        `,
+          { shouldNormalise: true }
+        )
+      })
+    }
+  )
 })
