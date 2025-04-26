@@ -124,14 +124,34 @@ test.describe('Point-and-click assemblies tests', () => {
         await toolbar.openPane('code')
       })
 
-      await test.step('Insert kcl second part as module', async () => {
-        await insertPartIntoAssembly(
-          'bracket.kcl',
-          'bracket',
-          toolbar,
-          cmdBar,
-          page
-        )
+      await test.step('Insert a second part with the same name and expect error', async () => {
+        await toolbar.insertButton.click()
+        await cmdBar.selectOption({ name: 'bracket.kcl' }).click()
+        await cmdBar.expectState({
+          stage: 'arguments',
+          currentArgKey: 'localName',
+          currentArgValue: '',
+          headerArguments: { Path: 'bracket.kcl', LocalName: '' },
+          highlightedHeaderArg: 'localName',
+          commandName: 'Insert',
+        })
+        await page.keyboard.insertText('cylinder')
+        await cmdBar.progressCmdBar()
+        await expect(
+          page.getByText('This variable name is already in use')
+        ).toBeVisible()
+      })
+
+      await test.step('Fix the name and expect the second part inserted', async () => {
+        await cmdBar.argumentInput.clear()
+        await page.keyboard.insertText('bracket')
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          stage: 'review',
+          headerArguments: { Path: 'bracket.kcl', LocalName: 'bracket' },
+          commandName: 'Insert',
+        })
+        await cmdBar.progressCmdBar()
         await editor.expectEditor.toContain(
           `
         import "cylinder.kcl" as cylinder
@@ -144,45 +164,12 @@ test.describe('Point-and-click assemblies tests', () => {
         await scene.settled(cmdBar)
       })
 
-      await test.step('Insert a second time with the same name and expect error', async () => {
+      await test.step('Insert a second time and expect error', async () => {
         await toolbar.insertButton.click()
         await cmdBar.selectOption({ name: 'bracket.kcl' }).click()
-        await cmdBar.expectState({
-          stage: 'arguments',
-          currentArgKey: 'localName',
-          currentArgValue: '',
-          headerArguments: { Path: 'bracket.kcl', LocalName: '' },
-          highlightedHeaderArg: 'localName',
-          commandName: 'Insert',
-        })
-        await page.keyboard.insertText('bracket')
-        await cmdBar.progressCmdBar()
         await expect(
-          page.getByText('This variable name is already in use')
+          page.getByText('This file is already imported')
         ).toBeVisible()
-      })
-
-      await test.step('Insert a second time with a different name and expect error', async () => {
-        await page.keyboard.insertText('2')
-        await cmdBar.progressCmdBar()
-        await cmdBar.expectState({
-          stage: 'review',
-          headerArguments: { Path: 'bracket.kcl', LocalName: 'bracket2' },
-          commandName: 'Insert',
-        })
-        await cmdBar.progressCmdBar()
-        await editor.expectEditor.toContain(
-          `
-        import "cylinder.kcl" as cylinder
-        import "bracket.kcl" as bracket
-        import "bracket.kcl" as bracket2
-        cylinder
-        bracket
-        bracket2
-      `,
-          { shouldNormalise: true }
-        )
-        // TODO: update once we have clone() with #6209
       })
     }
   )

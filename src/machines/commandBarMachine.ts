@@ -304,6 +304,7 @@ export const commandBarMachine = setup({
             context.selectedCommand &&
             (argConfig?.inputType === 'selection' ||
               argConfig?.inputType === 'string' ||
+              argConfig?.inputType === 'options' ||
               argConfig?.inputType === 'selectionMixed') &&
             argConfig?.validation
           ) {
