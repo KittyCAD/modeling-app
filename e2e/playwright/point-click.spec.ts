@@ -4312,7 +4312,7 @@ extrude001 = extrude(profile001, length = 1)
     })
   })
 
-  test(`Clone extrude through selection`, async ({
+  test('Point-and-click Clone extrude through selection', async ({
     context,
     page,
     homePage,

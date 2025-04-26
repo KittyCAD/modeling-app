@@ -623,7 +623,7 @@ foreign
   )
 
   test(
-    'Assembly parts can get cloned',
+    'Point-and-click Clone on assembly parts',
     { tag: ['@electron'] },
     async ({
       context,
