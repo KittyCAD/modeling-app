@@ -14,7 +14,6 @@ import {
 } from '@src/lang/create'
 import {
   addSketchTo,
-  deleteFromSelection,
   deleteSegmentFromPipeExpression,
   moveValueIntoNewVariable,
   removeSingleConstraintInfo,
@@ -32,6 +31,7 @@ import { assertParse, recast } from '@src/lang/wasm'
 import { initPromise } from '@src/lang/wasmUtils'
 import { enginelessExecutor } from '@src/lib/testHelpers'
 import { err } from '@src/lib/trap'
+import { deleteFromSelection } from '@src/lang/modifyAst/deleteFromSelection'
 
 beforeAll(async () => {
   await initPromise

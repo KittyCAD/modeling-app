@@ -1888,9 +1888,8 @@ sketch002 = startSketchOn(XZ)
   |> close()
 extrude001 = extrude(sketch001, length = -12)
 `
-    const firstFilletDeclaration = 'fillet(radius = 5, tags = [seg01])'
-    const secondFilletDeclaration =
-      'fillet(radius = 5, tags = [getOppositeEdge(seg01)])'
+    const firstFilletDeclaration = `fillet(radius=5,tags=[getCommonEdge(faces=[seg01,capEnd001])],)`
+    const secondFilletDeclaration = `fillet(radius=5,tags=[getCommonEdge(faces=[seg01,capStart001])],)`
 
     // Locators
     const firstEdgeLocation = { x: 600, y: 193 }
@@ -1987,10 +1986,12 @@ extrude001 = extrude(sketch001, length = -12)
     })
 
     await test.step(`Confirm code is added to the editor`, async () => {
-      await editor.expectEditor.toContain(firstFilletDeclaration)
+      await editor.expectEditor.toContain(firstFilletDeclaration, {
+        shouldNormalise: true,
+      })
       await editor.expectState({
         diagnostics: [],
-        activeLines: ['|> fillet(radius = 5, tags = [seg01])'],
+        activeLines: [')'],
         highlightedCode: '',
       })
     })
@@ -2039,12 +2040,15 @@ extrude001 = extrude(sketch001, length = -12)
       const editedRadius = '1'
       await editFillet(firstFilletFeatureTreeIndex, '5', editedRadius)
       await editor.expectEditor.toContain(
-        firstFilletDeclaration.replace('radius = 5', 'radius = ' + editedRadius)
+        firstFilletDeclaration.replace('radius=5', 'radius=' + editedRadius),
+        { shouldNormalise: true }
       )
 
       // Edit back to original radius
       await editFillet(firstFilletFeatureTreeIndex, editedRadius, '5')
-      await editor.expectEditor.toContain(firstFilletDeclaration)
+      await editor.expectEditor.toContain(firstFilletDeclaration, {
+        shouldNormalise: true,
+      })
     })
 
     // Test 2: Command bar flow without preselected edges
@@ -2118,10 +2122,12 @@ extrude001 = extrude(sketch001, length = -12)
     })
 
     await test.step(`Confirm code is added to the editor`, async () => {
-      await editor.expectEditor.toContain(secondFilletDeclaration)
+      await editor.expectEditor.toContain(secondFilletDeclaration, {
+        shouldNormalise: true,
+      })
       await editor.expectState({
         diagnostics: [],
-        activeLines: ['|>fillet(radius=5,tags=[getOppositeEdge(seg01)])'],
+        activeLines: [')'],
         highlightedCode: '',
       })
     })
@@ -2140,15 +2146,15 @@ extrude001 = extrude(sketch001, length = -12)
       const editedRadius = '2'
       await editFillet(secondFilletFeatureTreeIndex, '5', editedRadius)
       await editor.expectEditor.toContain(
-        secondFilletDeclaration.replace(
-          'radius = 5',
-          'radius = ' + editedRadius
-        )
+        secondFilletDeclaration.replace('radius=5', 'radius=' + editedRadius),
+        { shouldNormalise: true }
       )
 
       // Edit back to original radius
       await editFillet(secondFilletFeatureTreeIndex, editedRadius, '5')
-      await editor.expectEditor.toContain(secondFilletDeclaration)
+      await editor.expectEditor.toContain(secondFilletDeclaration, {
+        shouldNormalise: true,
+      })
     })
 
     // Test 3: Delete fillets
@@ -2158,7 +2164,9 @@ extrude001 = extrude(sketch001, length = -12)
         await page.waitForTimeout(500)
       })
       await test.step('Delete fillet via feature tree selection', async () => {
-        await editor.expectEditor.toContain(secondFilletDeclaration)
+        await editor.expectEditor.toContain(secondFilletDeclaration, {
+          shouldNormalise: true,
+        })
         const operationButton = await toolbar.getFeatureTreeOperation(
           'Fillet',
           1
@@ -2372,8 +2380,9 @@ profile001 = startProfile(sketch001, at = [0, 0])
   |> close()
 extrude001 = extrude(profile001, length = 5)
 `
-    const taggedSegment = `yLine(length = -1, tag = $seg01)`
-    const filletExpression = `fillet(radius = 1000, tags = [getNextAdjacentEdge(seg01)])`
+    const taggedSegment1 = `xLine(length = -10, tag = $seg01)`
+    const taggedSegment2 = `yLine(length = -1, tag = $seg02)`
+    const filletExpression = `fillet(radius = 1000, tags = [getCommonEdge(faces = [seg01, seg02])])`
 
     // Locators
     const edgeLocation = { x: 659, y: 313 }
@@ -2461,7 +2470,8 @@ extrude001 = extrude(profile001, length = 5)
     })
 
     await test.step('Verify code is updated regardless of execution errors', async () => {
-      await editor.expectEditor.toContain(taggedSegment)
+      await editor.expectEditor.toContain(taggedSegment1)
+      await editor.expectEditor.toContain(taggedSegment2)
       await editor.expectEditor.toContain(filletExpression)
     })
   })
@@ -2486,9 +2496,8 @@ sketch001 = startSketchOn(XY)
   |> close()
 extrude001 = extrude(sketch001, length = -12)
 `
-    const firstChamferDeclaration = 'chamfer(length = 5, tags = [seg01])'
-    const secondChamferDeclaration =
-      'chamfer(length = 5, tags = [getOppositeEdge(seg01)])'
+    const firstChamferDeclaration = `chamfer(length=5,tags=[getCommonEdge(faces=[seg01,capEnd001])],)`
+    const secondChamferDeclaration = `chamfer(length=5,tags=[getCommonEdge(faces=[seg01,capStart001])],)`
 
     // Locators
     const firstEdgeLocation = { x: 600, y: 193 }
@@ -2578,10 +2587,12 @@ extrude001 = extrude(sketch001, length = -12)
     })
 
     await test.step(`Confirm code is added to the editor`, async () => {
-      await editor.expectEditor.toContain(firstChamferDeclaration)
+      await editor.expectEditor.toContain(firstChamferDeclaration, {
+        shouldNormalise: true,
+      })
       await editor.expectState({
         diagnostics: [],
-        activeLines: ['|>chamfer(length=5,tags=[seg01])'],
+        activeLines: [')'],
         highlightedCode: '',
       })
     })
@@ -2634,15 +2645,15 @@ extrude001 = extrude(sketch001, length = -12)
       const editedLength = '1'
       await editChamfer(firstChamferFeatureTreeIndex, '5', editedLength)
       await editor.expectEditor.toContain(
-        firstChamferDeclaration.replace(
-          'length = 5',
-          'length = ' + editedLength
-        )
+        firstChamferDeclaration.replace('length=5', 'length=' + editedLength),
+        { shouldNormalise: true }
       )
 
       // Edit back to original radius
       await editChamfer(firstChamferFeatureTreeIndex, editedLength, '5')
-      await editor.expectEditor.toContain(firstChamferDeclaration)
+      await editor.expectEditor.toContain(firstChamferDeclaration, {
+        shouldNormalise: true,
+      })
     })
 
     // Test 2: Command bar flow without preselected edges
@@ -2716,10 +2727,12 @@ extrude001 = extrude(sketch001, length = -12)
     })
 
     await test.step(`Confirm code is added to the editor`, async () => {
-      await editor.expectEditor.toContain(secondChamferDeclaration)
+      await editor.expectEditor.toContain(secondChamferDeclaration, {
+        shouldNormalise: true,
+      })
       await editor.expectState({
         diagnostics: [],
-        activeLines: ['|>chamfer(length=5,tags=[getOppositeEdge(seg01)])'],
+        activeLines: [')'],
         highlightedCode: '',
       })
     })
@@ -2738,15 +2751,15 @@ extrude001 = extrude(sketch001, length = -12)
       const editedLength = '2'
       await editChamfer(secondChamferFeatureTreeIndex, '5', editedLength)
       await editor.expectEditor.toContain(
-        secondChamferDeclaration.replace(
-          'length = 5',
-          'length = ' + editedLength
-        )
+        secondChamferDeclaration.replace('length=5', 'length=' + editedLength),
+        { shouldNormalise: true }
       )
 
       // Edit back to original length
       await editChamfer(secondChamferFeatureTreeIndex, editedLength, '5')
-      await editor.expectEditor.toContain(secondChamferDeclaration)
+      await editor.expectEditor.toContain(secondChamferDeclaration, {
+        shouldNormalise: true,
+      })
     })
 
     // Test 3: Delete chamfer via feature tree selection
