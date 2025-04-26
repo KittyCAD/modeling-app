@@ -869,6 +869,21 @@ const CustomIconMap = {
       />
     </svg>
   ),
+  clone: (
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="move"
+    >
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M17 17H6V6H17V17ZM7 16H16V7H7V16ZM12 11H14V12H12V14H11V12H9V11H11V9H12V11ZM13 5H12V4H4V12H5V13H3V3H13V5Z"
+        fill="currentColor"
+      />
+    </svg>
+  ),
   network: (
     <svg
       viewBox="0 0 20 20"

@@ -1,6 +1,8 @@
 import type { Models } from '@kittycad/lib'
 
 import { angleLengthInfo } from '@src/components/Toolbar/angleLengthInfo'
+import { DEV } from '@src/env'
+import { findUniqueName } from '@src/lang/create'
 import { getNodeFromPath } from '@src/lang/queryAst'
 import { getVariableDeclaration } from '@src/lang/queryAst/getVariableDeclaration'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
@@ -22,6 +24,7 @@ import type {
   StateMachineCommandSetConfig,
 } from '@src/lib/commandTypes'
 import {
+  KCL_DEFAULT_CONSTANT_PREFIXES,
   KCL_DEFAULT_DEGREE,
   KCL_DEFAULT_LENGTH,
   KCL_DEFAULT_TRANSFORM,
@@ -31,6 +34,7 @@ import type { Selections } from '@src/lib/selections'
 import { codeManager, kclManager } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
 import type { SketchTool, modelingMachine } from '@src/machines/modelingMachine'
+import { IS_NIGHTLY_OR_DEBUG } from '@src/routes/utils'
 
 type OutputFormat = Models['OutputFormat3d_type']
 type OutputTypeKey = OutputFormat['type']
@@ -175,6 +179,11 @@ export type ModelingCommandSchema = {
     roll: KclCommandValue
     pitch: KclCommandValue
     yaw: KclCommandValue
+  }
+  Clone: {
+    nodeToEdit?: PathToNode
+    selection: Selections
+    variableName: string
   }
   'Boolean Subtract': {
     target: Selections
@@ -1099,6 +1108,50 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_TRANSFORM,
         required: true,
+      },
+    },
+  },
+  Clone: {
+    description: 'Clone a solid or sketch.',
+    icon: 'clone',
+    needsReview: true,
+    hide: DEV || IS_NIGHTLY_OR_DEBUG ? undefined : 'both',
+    args: {
+      nodeToEdit: {
+        description:
+          'Path to the node in the AST to edit. Never shown to the user.',
+        skip: true,
+        inputType: 'text',
+        required: false,
+        hidden: true,
+      },
+      selection: {
+        // selectionMixed allows for feature tree selection of module imports
+        inputType: 'selectionMixed',
+        multiple: false,
+        required: true,
+        skip: true,
+        selectionTypes: ['path'],
+        selectionFilter: ['object'],
+        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+      },
+      variableName: {
+        inputType: 'string',
+        required: true,
+        defaultValue: () => {
+          return findUniqueName(
+            kclManager.ast,
+            KCL_DEFAULT_CONSTANT_PREFIXES.CLONE
+          )
+        },
+        validation: async ({ data }: { data: string }) => {
+          const variableExists = kclManager.variables[data]
+          if (variableExists) {
+            return 'This variable name is already in use.'
+          }
+
+          return true
+        },
       },
     },
   },

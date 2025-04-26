@@ -376,6 +376,22 @@ const OperationItem = (props: {
     }
   }
 
+  function enterCloneFlow() {
+    if (
+      props.item.type === 'StdLibCall' ||
+      props.item.type === 'KclStdLibCall' ||
+      props.item.type === 'GroupBegin'
+    ) {
+      props.send({
+        type: 'enterCloneFlow',
+        data: {
+          targetSourceRange: sourceRangeFromRust(props.item.sourceRange),
+          currentOperation: props.item,
+        },
+      })
+    }
+  }
+
   function deleteOperation() {
     if (
       props.item.type === 'StdLibCall' ||
@@ -478,6 +494,16 @@ const OperationItem = (props: {
               }
             >
               Set rotate
+            </ContextMenuItem>,
+            <ContextMenuItem
+              onClick={enterCloneFlow}
+              data-testid="context-menu-clone"
+              disabled={
+                props.item.type !== 'GroupBegin' &&
+                !stdLibMap[props.item.name]?.supportsTransform
+              }
+            >
+              Clone
             </ContextMenuItem>,
             <ContextMenuItem
               onClick={deleteOperation}

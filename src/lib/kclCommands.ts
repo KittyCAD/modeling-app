@@ -119,6 +119,20 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
           inputType: 'options',
           required: true,
           options: commandProps.specialPropsForInsertCommand.providedOptions,
+          validation: async ({ data }) => {
+            const importExists = kclManager.ast.body.find(
+              (n) =>
+                n.type === 'ImportStatement' &&
+                ((n.path.type === 'Kcl' && n.path.filename === data.path) ||
+                  (n.path.type === 'Foreign' && n.path.path === data.path))
+            )
+            if (importExists) {
+              return 'This file is already imported, use the Clone command instead.'
+              // TODO: see if we can transition to the clone command, see #6515
+            }
+
+            return true
+          },
         },
         localName: {
           inputType: 'string',

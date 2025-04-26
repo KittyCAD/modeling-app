@@ -4311,4 +4311,82 @@ extrude001 = extrude(profile001, length = 1)
       await scene.expectPixelColor(partColor, moreToTheRightPoint, tolerance)
     })
   })
+
+  test('Point-and-click Clone extrude through selection', async ({
+    context,
+    page,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+    cmdBar,
+  }) => {
+    const initialCode = `sketch001 = startSketchOn(XZ)
+profile001 = circle(sketch001, center = [0, 0], radius = 1)
+extrude001 = extrude(profile001, length = 1)
+  `
+    await context.addInitScript((initialCode) => {
+      localStorage.setItem('persistCode', initialCode)
+    }, initialCode)
+    await page.setBodyDimensions({ width: 1000, height: 500 })
+    await homePage.goToModelingScene()
+    await scene.settled(cmdBar)
+
+    // One dumb hardcoded screen pixel value
+    const midPoint = { x: 500, y: 250 }
+    const [clickMidPoint] = scene.makeMouseHelpers(midPoint.x, midPoint.y)
+
+    await test.step('Clone through command bar flow', async () => {
+      await toolbar.closePane('code')
+      await cmdBar.openCmdBar()
+      await cmdBar.chooseCommand('Clone a solid or sketch')
+      await cmdBar.expectState({
+        stage: 'arguments',
+        currentArgKey: 'selection',
+        currentArgValue: '',
+        headerArguments: {
+          Selection: '',
+          VariableName: '',
+        },
+        highlightedHeaderArg: 'selection',
+        commandName: 'Clone',
+      })
+      await clickMidPoint()
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'arguments',
+        currentArgKey: 'variableName',
+        currentArgValue: '',
+        headerArguments: {
+          Selection: '1 path',
+          VariableName: '',
+        },
+        highlightedHeaderArg: 'variableName',
+        commandName: 'Clone',
+      })
+      await page.keyboard.insertText('yoyoyo')
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'review',
+        headerArguments: {
+          Selection: '1 path',
+          VariableName: 'yoyoyo',
+        },
+        commandName: 'Clone',
+      })
+      await cmdBar.progressCmdBar()
+
+      // Expect changes
+      await toolbar.openPane('code')
+      await editor.expectEditor.toContain(
+        `
+        sketch001 = startSketchOn(XZ)
+        profile001 = circle(sketch001, center = [0, 0], radius = 1)
+        extrude001 = extrude(profile001, length = 1)
+        yoyoyo = clone(extrude001)
+          `,
+        { shouldNormalise: true }
+      )
+    })
+  })
 })
