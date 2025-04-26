@@ -117,7 +117,11 @@ fn transform(i) {
     // Move down each time.
     translate = [0, 0, -i * width],
     // Make the cube longer, wider and flatter each time.
-    scale = [pow(1.1, i), pow(1.1, i), pow(0.9, i)],
+    scale = [
+      pow(1.1, exp = i),
+      pow(1.1, exp = i),
+      pow(0.9, exp = i)
+    ],
     // Turn by 15 degrees each time.
     rotation = { angle = 15 * i, origin = "local" }
   }

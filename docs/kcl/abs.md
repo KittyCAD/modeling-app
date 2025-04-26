@@ -9,7 +9,7 @@ Compute the absolute value of a number.
 
 
 ```js
-abs(num: number): number
+abs(input: number): number
 ```
 
 ### Tags
@@ -21,7 +21,7 @@ abs(num: number): number
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `num` | [`number`](/docs/kcl/types/number) |  | Yes |
+| `input` | [`number`](/docs/kcl/types/number) | The number to compute the absolute value of. | Yes |
 
 ### Returns
 

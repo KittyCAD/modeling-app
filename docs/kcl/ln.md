@@ -9,7 +9,7 @@ Compute the natural logarithm of the number.
 
 
 ```js
-ln(num: number): number
+ln(input: number): number
 ```
 
 ### Tags
@@ -21,7 +21,7 @@ ln(num: number): number
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `num` | [`number`](/docs/kcl/types/number) |  | Yes |
+| `input` | [`number`](/docs/kcl/types/number) | The number to compute the logarithm of. | Yes |
 
 ### Returns
 

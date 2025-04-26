@@ -9,7 +9,7 @@ Compute the square root of a number.
 
 
 ```js
-sqrt(num: number): number
+sqrt(input: number): number
 ```
 
 ### Tags
@@ -21,7 +21,7 @@ sqrt(num: number): number
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `num` | [`number`](/docs/kcl/types/number) |  | Yes |
+| `input` | [`number`](/docs/kcl/types/number) | The number to compute the square root of. | Yes |
 
 ### Returns
 

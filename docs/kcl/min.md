@@ -9,7 +9,7 @@ Compute the minimum of the given arguments.
 
 
 ```js
-min(args: [number]): number
+min(input: [number]): number
 ```
 
 ### Tags
@@ -21,7 +21,7 @@ min(args: [number]): number
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `args` | [`[number]`](/docs/kcl/types/number) |  | Yes |
+| `input` | [`[number]`](/docs/kcl/types/number) | An array of numbers to compute the minimum of. | Yes |
 
 ### Returns
 
@@ -33,7 +33,7 @@ min(args: [number]): number
 ```js
 exampleSketch = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
-  |> angledLine(angle = 70, length = min(15, 31, 4, 13, 22))
+  |> angledLine(angle = 70, length = min([15, 31, 4, 13, 22]))
   |> line(end = [20, 0])
   |> close()
 

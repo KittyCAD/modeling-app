@@ -9,7 +9,7 @@ Compute the arccosine of a number (in radians).
 
 
 ```js
-acos(num: number): number
+acos(input: number): number
 ```
 
 ### Tags
@@ -21,7 +21,7 @@ acos(num: number): number
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `num` | [`number`](/docs/kcl/types/number) |  | Yes |
+| `input` | [`number`](/docs/kcl/types/number) | The number to compute arccosine of. | Yes |
 
 ### Returns
 
