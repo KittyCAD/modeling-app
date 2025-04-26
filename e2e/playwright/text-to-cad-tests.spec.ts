@@ -794,7 +794,7 @@ test.describe('Mocked Text-to-CAD API tests', { tag: ['@skipWin'] }, () => {
       // Create and navigate to the project then come home
       await createProject({ name: projectName, page, returnHome: true })
 
-      await expect(page.getByText('Your Projects')).toBeVisible()
+      await expect(page.getByText('Projects')).toBeVisible()
 
       await expect(page.getByText('1 file')).toBeVisible()
 
@@ -838,7 +838,7 @@ test.describe('Mocked Text-to-CAD API tests', { tag: ['@skipWin'] }, () => {
       // Create and navigate to the project then come home
       await createProject({ name: projectName, page, returnHome: true })
 
-      await expect(page.getByText('Your Projects')).toBeVisible()
+      await expect(page.getByText('Projects')).toBeVisible()
 
       // open commands
       await page.getByTestId('command-bar-open-button').click()
@@ -980,7 +980,7 @@ test.describe('Mocked Text-to-CAD API tests', { tag: ['@skipWin'] }, () => {
       // Create and navigate to the project then come home
       await createProject({ name: projectName, page, returnHome: true })
 
-      await expect(page.getByText('Your Projects')).toBeVisible()
+      await expect(page.getByText('Projects')).toBeVisible()
 
       // open commands
       await page.getByTestId('command-bar-open-button').click()
@@ -1035,7 +1035,7 @@ test.describe('Mocked Text-to-CAD API tests', { tag: ['@skipWin'] }, () => {
       // Create and navigate to the project then come home
       await createProject({ name: projectName, page, returnHome: true })
 
-      await expect(page.getByText('Your Projects')).toBeVisible()
+      await expect(page.getByText('Projects')).toBeVisible()
 
       // open commands
       await page.getByTestId('command-bar-open-button').click()
@@ -1097,7 +1097,7 @@ test.describe('Mocked Text-to-CAD API tests', { tag: ['@skipWin'] }, () => {
         returnHome: true,
       })
 
-      await expect(page.getByText('Your Projects')).toBeVisible()
+      await expect(page.getByText('Projects')).toBeVisible()
 
       // open commands
       await page.getByTestId('command-bar-open-button').click()
@@ -1174,7 +1174,7 @@ test.describe('Mocked Text-to-CAD API tests', { tag: ['@skipWin'] }, () => {
         returnHome: true,
       })
 
-      await expect(page.getByText('Your Projects')).toBeVisible()
+      await expect(page.getByText('Projects')).toBeVisible()
 
       // open commands
       await page.getByTestId('command-bar-open-button').click()
@@ -1246,10 +1246,10 @@ test.describe('Mocked Text-to-CAD API tests', { tag: ['@skipWin'] }, () => {
         page,
         returnHome: true,
       })
-      await expect(page.getByText('Your Projects')).toBeVisible()
+      await expect(page.getByText('Projects')).toBeVisible()
 
       await createProject({ name: projectName, page, returnHome: true })
-      await expect(page.getByText('Your Projects')).toBeVisible()
+      await expect(page.getByText('Projects')).toBeVisible()
 
       // open commands
       await page.getByTestId('command-bar-open-button').click()
@@ -1321,10 +1321,10 @@ test.describe('Mocked Text-to-CAD API tests', { tag: ['@skipWin'] }, () => {
         page,
         returnHome: true,
       })
-      await expect(page.getByText('Your Projects')).toBeVisible()
+      await expect(page.getByText('Projects')).toBeVisible()
 
       await createProject({ name: projectName, page, returnHome: true })
-      await expect(page.getByText('Your Projects')).toBeVisible()
+      await expect(page.getByText('Projects')).toBeVisible()
 
       // open commands
       await page.getByTestId('command-bar-open-button').click()

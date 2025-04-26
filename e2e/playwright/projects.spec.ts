@@ -737,7 +737,7 @@ test(
 
     await expect(page.getByText('router-template-slate')).toBeVisible()
     await expect(page.getByText('Loading your Projects...')).not.toBeVisible()
-    await expect(page.getByText('Your Projects')).toBeVisible()
+    await expect(page.getByText('Projects')).toBeVisible()
 
     await page.keyboard.press('Delete')
     await page.waitForTimeout(200)
@@ -745,7 +745,7 @@ test(
 
     // expect to still be on the home page
     await expect(page.getByText('router-template-slate')).toBeVisible()
-    await expect(page.getByText('Your Projects')).toBeVisible()
+    await expect(page.getByText('Projects')).toBeVisible()
   }
 )
 
