@@ -579,7 +579,7 @@ extrude002 = extrude(profile002, length = 150)
 
       // Locators
       const projectsHeading = page.getByRole('heading', {
-        name: 'Your projects',
+        name: 'Projects',
       })
       const projectLink = page.getByRole('link', { name: 'bracket' })
       const networkHealthIndicator = page.getByTestId('network-toggle')

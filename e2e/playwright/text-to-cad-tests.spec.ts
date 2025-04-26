@@ -786,7 +786,7 @@ test.describe('Mocked Text-to-CAD API tests', { tag: ['@skipWin'] }, () => {
   test(
     'Home Page -> Text To CAD -> Existing Project -> Stay in home page -> Reject -> should delete single file',
     { tag: '@electron' },
-    async ({ context, page }, testInfo) => {
+    async ({ homePage, page }, testInfo) => {
       const projectName = 'my-project-name'
       const prompt = '2x2x2 cube'
       await mockPageTextToCAD(page)
@@ -794,7 +794,7 @@ test.describe('Mocked Text-to-CAD API tests', { tag: ['@skipWin'] }, () => {
       // Create and navigate to the project then come home
       await createProject({ name: projectName, page, returnHome: true })
 
-      await expect(page.getByText('Your Projects')).toBeVisible()
+      await homePage.expectIsCurrentPage()
 
       await expect(page.getByText('1 file')).toBeVisible()
 
@@ -829,7 +829,7 @@ test.describe('Mocked Text-to-CAD API tests', { tag: ['@skipWin'] }, () => {
   test(
     'Home Page -> Text To CAD -> Existing Project -> Stay in home page -> Accept -> should navigate to file',
     { tag: '@electron' },
-    async ({ context, page }, testInfo) => {
+    async ({ homePage, page }, testInfo) => {
       const u = await getUtils(page)
       const projectName = 'my-project-name'
       const prompt = '2x2x2 cube'
@@ -838,7 +838,7 @@ test.describe('Mocked Text-to-CAD API tests', { tag: ['@skipWin'] }, () => {
       // Create and navigate to the project then come home
       await createProject({ name: projectName, page, returnHome: true })
 
-      await expect(page.getByText('Your Projects')).toBeVisible()
+      await homePage.expectIsCurrentPage()
 
       // open commands
       await page.getByTestId('command-bar-open-button').click()
@@ -880,7 +880,7 @@ test.describe('Mocked Text-to-CAD API tests', { tag: ['@skipWin'] }, () => {
   test(
     'Home Page -> Text To CAD -> New Project -> Navigate to the project -> Reject -> should go to home page',
     { tag: '@electron' },
-    async ({ context, page }, testInfo) => {
+    async ({ homePage, page }, testInfo) => {
       const projectName = 'my-project-name'
       const prompt = '2x2x2 cube'
       await mockPageTextToCAD(page)
@@ -919,16 +919,14 @@ test.describe('Mocked Text-to-CAD API tests', { tag: ['@skipWin'] }, () => {
       await page.getByRole('button', { name: 'Reject' }).click()
 
       // Make sure we went back home
-      await expect(
-        page.getByText('No Projects found, ready to make your first one?')
-      ).toBeVisible()
+      await homePage.expectIsCurrentPage()
     }
   )
 
   test(
     'Home Page -> Text To CAD -> New Project -> Navigate to the project -> Accept -> should stay in same file',
     { tag: '@electron' },
-    async ({ context, page }, testInfo) => {
+    async ({ homePage, page }, testInfo) => {
       const projectName = 'my-project-name'
       const prompt = '2x2x2 cube'
       await mockPageTextToCAD(page)
@@ -971,7 +969,7 @@ test.describe('Mocked Text-to-CAD API tests', { tag: ['@skipWin'] }, () => {
   test(
     'Home Page -> Text To CAD -> Existing Project -> Navigate to the project -> Reject -> should load main.kcl',
     { tag: '@electron' },
-    async ({ context, page }, testInfo) => {
+    async ({ homePage, page }, testInfo) => {
       const u = await getUtils(page)
       const projectName = 'my-project-name'
       const prompt = '2x2x2 cube'
@@ -980,7 +978,7 @@ test.describe('Mocked Text-to-CAD API tests', { tag: ['@skipWin'] }, () => {
       // Create and navigate to the project then come home
       await createProject({ name: projectName, page, returnHome: true })
 
-      await expect(page.getByText('Your Projects')).toBeVisible()
+      await homePage.expectIsCurrentPage()
 
       // open commands
       await page.getByTestId('command-bar-open-button').click()
@@ -1026,7 +1024,7 @@ test.describe('Mocked Text-to-CAD API tests', { tag: ['@skipWin'] }, () => {
   test(
     'Home Page -> Text To CAD -> Existing Project -> Navigate to the project -> Accept -> should load 2x2x2-cube.kcl',
     { tag: '@electron' },
-    async ({ context, page }, testInfo) => {
+    async ({ homePage, page }, testInfo) => {
       const u = await getUtils(page)
       const projectName = 'my-project-name'
       const prompt = '2x2x2 cube'
@@ -1035,7 +1033,7 @@ test.describe('Mocked Text-to-CAD API tests', { tag: ['@skipWin'] }, () => {
       // Create and navigate to the project then come home
       await createProject({ name: projectName, page, returnHome: true })
 
-      await expect(page.getByText('Your Projects')).toBeVisible()
+      await homePage.expectIsCurrentPage()
 
       // open commands
       await page.getByTestId('command-bar-open-button').click()
@@ -1083,7 +1081,7 @@ test.describe('Mocked Text-to-CAD API tests', { tag: ['@skipWin'] }, () => {
   test(
     'Home Page -> Text To CAD -> New Project -> Navigate to different project -> Reject -> should stay in project',
     { tag: '@electron' },
-    async ({ context, page, homePage }, testInfo) => {
+    async ({ homePage, page }, testInfo) => {
       const u = await getUtils(page)
       const projectName = 'my-project-name'
       const unrelatedProjectName = 'unrelated-project'
@@ -1097,7 +1095,7 @@ test.describe('Mocked Text-to-CAD API tests', { tag: ['@skipWin'] }, () => {
         returnHome: true,
       })
 
-      await expect(page.getByText('Your Projects')).toBeVisible()
+      await homePage.expectIsCurrentPage()
 
       // open commands
       await page.getByTestId('command-bar-open-button').click()
@@ -1160,7 +1158,7 @@ test.describe('Mocked Text-to-CAD API tests', { tag: ['@skipWin'] }, () => {
   test(
     'Home Page -> Text To CAD -> New Project -> Navigate to different project -> Accept -> should go to new project',
     { tag: '@electron' },
-    async ({ context, page, homePage }, testInfo) => {
+    async ({ page, homePage }, testInfo) => {
       const u = await getUtils(page)
       const projectName = 'my-project-name'
       const unrelatedProjectName = 'unrelated-project'
@@ -1174,7 +1172,7 @@ test.describe('Mocked Text-to-CAD API tests', { tag: ['@skipWin'] }, () => {
         returnHome: true,
       })
 
-      await expect(page.getByText('Your Projects')).toBeVisible()
+      await homePage.expectIsCurrentPage()
 
       // open commands
       await page.getByTestId('command-bar-open-button').click()
@@ -1233,7 +1231,7 @@ test.describe('Mocked Text-to-CAD API tests', { tag: ['@skipWin'] }, () => {
   test(
     'Home Page -> Text To CAD -> Existing Project -> Navigate to different project -> Reject -> should stay in same project',
     { tag: '@electron' },
-    async ({ context, page, homePage }, testInfo) => {
+    async ({ page, homePage }, testInfo) => {
       const u = await getUtils(page)
       const projectName = 'my-project-name'
       const unrelatedProjectName = 'unrelated-project'
@@ -1246,10 +1244,10 @@ test.describe('Mocked Text-to-CAD API tests', { tag: ['@skipWin'] }, () => {
         page,
         returnHome: true,
       })
-      await expect(page.getByText('Your Projects')).toBeVisible()
+      await homePage.expectIsCurrentPage()
 
       await createProject({ name: projectName, page, returnHome: true })
-      await expect(page.getByText('Your Projects')).toBeVisible()
+      await homePage.expectIsCurrentPage()
 
       // open commands
       await page.getByTestId('command-bar-open-button').click()
@@ -1308,7 +1306,7 @@ test.describe('Mocked Text-to-CAD API tests', { tag: ['@skipWin'] }, () => {
   test(
     'Home Page -> Text To CAD -> Existing Project -> Navigate to different project -> Accept -> should navigate to new project',
     { tag: '@electron' },
-    async ({ context, page, homePage }, testInfo) => {
+    async ({ page, homePage }, testInfo) => {
       const u = await getUtils(page)
       const projectName = 'my-project-name'
       const unrelatedProjectName = 'unrelated-project'
@@ -1321,10 +1319,10 @@ test.describe('Mocked Text-to-CAD API tests', { tag: ['@skipWin'] }, () => {
         page,
         returnHome: true,
       })
-      await expect(page.getByText('Your Projects')).toBeVisible()
+      await homePage.expectIsCurrentPage()
 
       await createProject({ name: projectName, page, returnHome: true })
-      await expect(page.getByText('Your Projects')).toBeVisible()
+      await homePage.expectIsCurrentPage()
 
       // open commands
       await page.getByTestId('command-bar-open-button').click()
