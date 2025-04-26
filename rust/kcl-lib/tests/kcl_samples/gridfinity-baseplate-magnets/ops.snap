@@ -1108,7 +1108,7 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
       "name": "magnetBase",
       "functionSourceRange": [
         4155,
-        4497,
+        4507,
         0
       ],
       "unlabeledArg": null,
@@ -1166,16 +1166,7 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
   },
   {
     "labeledArgs": {
-      "holeSketch": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "sketch": {
+      "tool": {
         "value": {
           "type": "Sketch",
           "value": {
@@ -1185,17 +1176,25 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
         "sourceRange": []
       }
     },
-    "name": "hole",
+    "name": "subtract2d",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
   },
   {
     "type": "GroupEnd"
   },
   {
     "labeledArgs": {
-      "holeSketch": {
+      "tool": {
         "value": {
           "type": "Array",
           "value": [
@@ -1226,21 +1225,20 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
           ]
         },
         "sourceRange": []
-      },
-      "sketch": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
       }
     },
-    "name": "hole",
+    "name": "subtract2d",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
   },
   {
     "labeledArgs": {
@@ -1367,7 +1365,7 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
       "name": "magnetBase",
       "functionSourceRange": [
         4155,
-        4497,
+        4507,
         0
       ],
       "unlabeledArg": null,
@@ -1425,16 +1423,7 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
   },
   {
     "labeledArgs": {
-      "holeSketch": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "sketch": {
+      "tool": {
         "value": {
           "type": "Sketch",
           "value": {
@@ -1444,10 +1433,18 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
         "sourceRange": []
       }
     },
-    "name": "hole",
+    "name": "subtract2d",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
   },
   {
     "type": "GroupEnd"

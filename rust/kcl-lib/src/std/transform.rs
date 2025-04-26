@@ -95,7 +95,7 @@ pub async fn scale(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///         center = [0, 0],
 ///         radius = 2,
 ///         )              
-///     |> hole(pipeHole, %)
+///     |> subtract2d(tool = pipeHole)
 ///     |> sweep(path = sweepPath)   
 ///     |> scale(
 ///     z = 2.5,
@@ -261,7 +261,7 @@ pub async fn translate(exec_state: &mut ExecState, args: Args) -> Result<KclValu
 ///         center = [0, 0],
 ///         radius = 2,
 ///         )              
-///     |> hole(pipeHole, %)
+///     |> subtract2d(tool = pipeHole)
 ///     |> sweep(path = sweepPath)   
 ///     |> translate(
 ///         x = 1.0,
@@ -600,7 +600,7 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 ///         center = [0, 0],
 ///         radius = 2,
 ///         )              
-///     |> hole(pipeHole, %)
+///     |> subtract2d(tool = pipeHole)
 ///     |> sweep(path = sweepPath)   
 ///     |> rotate(
 ///         roll = 10,
@@ -633,7 +633,7 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 ///         center = [0, 0],
 ///         radius = 2,
 ///         )              
-///     |> hole(pipeHole, %)
+///     |> subtract2d(tool = pipeHole)
 ///     |> sweep(path = sweepPath)   
 ///     |> rotate(
 ///         roll = 10,
@@ -664,7 +664,7 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 ///         center = [0, 0],
 ///         radius = 2,
 ///         )              
-///     |> hole(pipeHole, %)
+///     |> subtract2d(tool = pipeHole)
 ///     |> sweep(path = sweepPath)   
 ///     |> rotate(
 ///     axis =  [0, 0, 1.0],
@@ -850,7 +850,7 @@ sweepSketch = startSketchOn('XY')
         center = [0, 0],
         radius = 2,
         )              
-    |> hole(pipeHole, %)
+    |> subtract2d(tool = pipeHole)
     |> sweep(
         path = sweepPath,
     )"#;

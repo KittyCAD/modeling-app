@@ -48,6 +48,6 @@ let inner = startSketchOn(XY)
   |> close()
 
 let final = brace_base
-  |> hole(inner, %)
+  |> subtract2d(tool = inner)
   |> extrude(length = 3.0)
 

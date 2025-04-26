@@ -727,16 +727,7 @@ description: Operations executed walkie-talkie.kcl
   },
   {
     "labeledArgs": {
-      "holeSketch": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "sketch": {
+      "tool": {
         "value": {
           "type": "Sketch",
           "value": {
@@ -746,14 +737,22 @@ description: Operations executed walkie-talkie.kcl
         "sourceRange": []
       }
     },
-    "name": "hole",
+    "name": "subtract2d",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
   },
   {
     "labeledArgs": {
-      "holeSketch": {
+      "tool": {
         "value": {
           "type": "Array",
           "value": [
@@ -1618,21 +1617,20 @@ description: Operations executed walkie-talkie.kcl
           ]
         },
         "sourceRange": []
-      },
-      "sketch": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
       }
     },
-    "name": "hole",
+    "name": "subtract2d",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
   },
   {
     "labeledArgs": {
@@ -1669,16 +1667,7 @@ description: Operations executed walkie-talkie.kcl
   },
   {
     "labeledArgs": {
-      "holeSketch": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "sketch": {
+      "tool": {
         "value": {
           "type": "Sketch",
           "value": {
@@ -1688,10 +1677,18 @@ description: Operations executed walkie-talkie.kcl
         "sourceRange": []
       }
     },
-    "name": "hole",
+    "name": "subtract2d",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
   },
   {
     "labeledArgs": {
@@ -1728,16 +1725,7 @@ description: Operations executed walkie-talkie.kcl
   },
   {
     "labeledArgs": {
-      "holeSketch": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "sketch": {
+      "tool": {
         "value": {
           "type": "Sketch",
           "value": {
@@ -1747,10 +1735,18 @@ description: Operations executed walkie-talkie.kcl
         "sourceRange": []
       }
     },
-    "name": "hole",
+    "name": "subtract2d",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
   },
   {
     "labeledArgs": {
@@ -1787,16 +1783,7 @@ description: Operations executed walkie-talkie.kcl
   },
   {
     "labeledArgs": {
-      "holeSketch": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "sketch": {
+      "tool": {
         "value": {
           "type": "Sketch",
           "value": {
@@ -1806,10 +1793,18 @@ description: Operations executed walkie-talkie.kcl
         "sourceRange": []
       }
     },
-    "name": "hole",
+    "name": "subtract2d",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
   },
   {
     "labeledArgs": {
@@ -1846,16 +1841,7 @@ description: Operations executed walkie-talkie.kcl
   },
   {
     "labeledArgs": {
-      "holeSketch": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "sketch": {
+      "tool": {
         "value": {
           "type": "Sketch",
           "value": {
@@ -1865,10 +1851,18 @@ description: Operations executed walkie-talkie.kcl
         "sourceRange": []
       }
     },
-    "name": "hole",
+    "name": "subtract2d",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
   },
   {
     "labeledArgs": {
@@ -1905,16 +1899,7 @@ description: Operations executed walkie-talkie.kcl
   },
   {
     "labeledArgs": {
-      "holeSketch": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "sketch": {
+      "tool": {
         "value": {
           "type": "Sketch",
           "value": {
@@ -1924,10 +1909,18 @@ description: Operations executed walkie-talkie.kcl
         "sourceRange": []
       }
     },
-    "name": "hole",
+    "name": "subtract2d",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
   },
   {
     "labeledArgs": {

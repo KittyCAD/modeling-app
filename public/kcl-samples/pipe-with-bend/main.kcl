@@ -21,7 +21,7 @@ innerProfile = circle(sketch000, center = [bendRadius, 0], radius = innerDiamete
 
 // Create the profile of the pipe
 pipeProfile = outerProfile
-  |> hole(innerProfile, %)
+  |> subtract2d(tool = innerProfile)
 
 // Revolve the pipe profile at the desired angle
 pipe = revolve(pipeProfile, axis = Y, angle = bendAngle)

@@ -3662,27 +3662,30 @@ description: Result of parsing i_shape.kcl
               {
                 "arguments": [
                   {
-                    "abs_path": false,
-                    "commentStart": 0,
-                    "end": 0,
-                    "name": {
+                    "type": "LabeledArg",
+                    "label": {
                       "commentStart": 0,
                       "end": 0,
-                      "name": "inner",
+                      "name": "tool",
                       "start": 0,
                       "type": "Identifier"
                     },
-                    "path": [],
-                    "start": 0,
-                    "type": "Name",
-                    "type": "Name"
-                  },
-                  {
-                    "commentStart": 0,
-                    "end": 0,
-                    "start": 0,
-                    "type": "PipeSubstitution",
-                    "type": "PipeSubstitution"
+                    "arg": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "name": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "name": "inner",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
+                    }
                   }
                 ],
                 "callee": {
@@ -3692,7 +3695,7 @@ description: Result of parsing i_shape.kcl
                   "name": {
                     "commentStart": 0,
                     "end": 0,
-                    "name": "hole",
+                    "name": "subtract2d",
                     "start": 0,
                     "type": "Identifier"
                   },
@@ -3703,8 +3706,9 @@ description: Result of parsing i_shape.kcl
                 "commentStart": 0,
                 "end": 0,
                 "start": 0,
-                "type": "CallExpression",
-                "type": "CallExpression"
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
               },
               {
                 "arguments": [

@@ -82,7 +82,7 @@ description: Operations executed pipe-flange-assembly.kcl
       "name": "flange",
       "functionSourceRange": [
         509,
-        1743,
+        1753,
         8
       ],
       "unlabeledArg": null,
@@ -122,7 +122,7 @@ description: Operations executed pipe-flange-assembly.kcl
   },
   {
     "labeledArgs": {
-      "holeSketch": {
+      "tool": {
         "value": {
           "type": "Array",
           "value": [
@@ -153,21 +153,20 @@ description: Operations executed pipe-flange-assembly.kcl
           ]
         },
         "sourceRange": []
-      },
-      "sketch": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
       }
     },
-    "name": "hole",
+    "name": "subtract2d",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
   },
   {
     "labeledArgs": {
@@ -376,7 +375,7 @@ description: Operations executed pipe-flange-assembly.kcl
       "name": "flange",
       "functionSourceRange": [
         509,
-        1743,
+        1753,
         8
       ],
       "unlabeledArg": null,
@@ -416,7 +415,7 @@ description: Operations executed pipe-flange-assembly.kcl
   },
   {
     "labeledArgs": {
-      "holeSketch": {
+      "tool": {
         "value": {
           "type": "Array",
           "value": [
@@ -447,21 +446,20 @@ description: Operations executed pipe-flange-assembly.kcl
           ]
         },
         "sourceRange": []
-      },
-      "sketch": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
       }
     },
-    "name": "hole",
+    "name": "subtract2d",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
   },
   {
     "labeledArgs": {

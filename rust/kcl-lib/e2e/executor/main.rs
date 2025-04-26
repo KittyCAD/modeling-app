@@ -49,11 +49,9 @@ async fn kcl_test_execute_engine_error_return() {
 "#;
 
     let result = execute_and_snapshot(code, None).await;
-    assert!(result.is_err());
-    assert_eq!(
-        result.err().unwrap().to_string(),
-        r#"engine: KclErrorDetails { source_ranges: [SourceRange([226, 245, 0])], message: "Modeling command failed: [ApiError { error_code: BadRequest, message: \"The path is not closed.  Solid2D construction requires a closed path!\" }]" }"#,
-    );
+    let expected_msg = "engine: Modeling command failed: [ApiError { error_code: BadRequest, message: \"The path is not closed.  Solid2D construction requires a closed path!\" }]";
+    let err = result.unwrap_err().as_kcl_error().unwrap().get_message();
+    assert_eq!(err, expected_msg);
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -275,8 +273,8 @@ async fn kcl_test_holes() {
   |> line(end = [10, 0])
   |> line(end = [0, -10])
   |> close()
-  |> hole(circle(center = [2, 2], radius= .5), %)
-  |> hole(circle(center = [2, 8], radius= .5), %)
+  |> subtract2d(tool = circle(center = [2, 2], radius= .5))
+  |> subtract2d(tool = circle(center = [2, 8], radius= .5))
   |> extrude(length = 2)
 "#;
 
@@ -328,10 +326,10 @@ holeRadius = 1
 holeIndex = 6
 
 part = roundedRectangle([0, 0], 20, 20, 4)
-  |> hole(circle(center = [-holeIndex, holeIndex], radius= holeRadius), %)
-  |> hole(circle(center = [holeIndex, holeIndex], radius= holeRadius), %)
-  |> hole(circle(center = [-holeIndex, -holeIndex], radius= holeRadius), %)
-  |> hole(circle(center = [holeIndex, -holeIndex], radius= holeRadius), %)
+  |> subtract2d(tool = circle(center = [-holeIndex, holeIndex], radius= holeRadius))
+  |> subtract2d(tool = circle(center = [holeIndex, holeIndex], radius= holeRadius))
+  |> subtract2d(tool = circle(center = [-holeIndex, -holeIndex], radius= holeRadius))
+  |> subtract2d(tool = circle(center = [holeIndex, -holeIndex], radius= holeRadius))
   |> extrude(length = 2)
 "#;
 
@@ -425,7 +423,7 @@ rectangle = startSketchOn(XY)
   |> line(end = [50, 0])
   |> line(end = [0, -50])
   |> close()
-  |> hole(circles, %)
+  |> subtract2d(tool = circles)
   |> extrude(length = 10)
 
 "#;
@@ -780,8 +778,8 @@ async fn kcl_test_stdlib_kcl_error_right_code_path() {
   |> line(end = [10, 0])
   |> line(end = [0, -10])
   |> close()
-  |> hole(circle(), %)
-  |> hole(circle(center = [2, 8], radius= .5), %)
+  |> subtract2d(tool = circle())
+  |> subtract2d(tool = circle(center = [2, 8], radius= .5))
   |> extrude(length = 2)
 "#;
 
@@ -842,10 +840,10 @@ holeIndex = 6
 
 // Create the mounting plate extrusion, holes, and fillets
 part = rectShape([0, 0], 20, 20)
-  |> hole(circle('XY', center = [-holeIndex, holeIndex], radius = holeRadius))
-  |> hole(circle('XY', center = [holeIndex, holeIndex], radius = holeRadius))
-  |> hole(circle('XY', center = [-holeIndex, -holeIndex], radius = holeRadius))
-  |> hole(circle('XY', center = [holeIndex, -holeIndex], radius = holeRadius))
+  |> subtract2d(tool = circle('XY', center = [-holeIndex, holeIndex], radius = holeRadius))
+  |> subtract2d(tool = circle('XY', center = [holeIndex, holeIndex], radius = holeRadius))
+  |> subtract2d(tool = circle('XY', center = [-holeIndex, -holeIndex], radius = holeRadius))
+  |> subtract2d(tool = circle('XY', center = [holeIndex, -holeIndex], radius = holeRadius))
   |> extrude(length = 2)
   |> fillet(
        radius = 4,
@@ -1378,16 +1376,15 @@ fn squareHole = (l, w) => {
 
 extrusion = startSketchOn(XY)
   |> circle(center = [0, 0], radius= dia/2 )
-  |> hole(squareHole(length, width, height), %)
+  |> subtract2d(tool = squareHole(length, width, height))
   |> extrude(length = height)
 "#;
 
     let result = execute_and_snapshot(code, None).await;
     assert!(result.is_err());
-    assert_eq!(
-        result.err().unwrap().to_string(),
-        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([68, 358, 0]), SourceRange([445, 478, 0])], message: "Expected 2 arguments, got 3" }"#
-    );
+    let expected_msg = "semantic: Expected 2 arguments, got 3";
+    let err = result.unwrap_err().as_kcl_error().unwrap().get_message();
+    assert_eq!(err, expected_msg);
 }
 
 #[tokio::test(flavor = "multi_thread")]
