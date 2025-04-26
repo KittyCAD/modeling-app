@@ -1082,4 +1082,4 @@ describe('Testing button states', () => {
   it('should return false when body exists and not a segment is selected', async () => {
     await runButtonStateTest(codeWithBody, `close()`, false)
   })
-}, 100_000)
+})
