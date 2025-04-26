@@ -951,7 +951,7 @@ export function addClone({
   ast: Node<Program>
   geometryName: string
   variableName: string
-}): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
+}): { modifiedAst: Node<Program>; pathToNode: PathToNode } {
   const modifiedAst = structuredClone(ast)
   const variable = createVariableDeclaration(
     variableName,
