@@ -49,8 +49,8 @@
       default = pkgs.mkShell {
         packages =
           (with pkgs; [
-            nightlyRustfmt # PATH-head so `cargo fmt` picks this one
-            rustToolchain # everything else still builds on stable
+            rustToolchain
+            nightlyRustfmt
             cargo-criterion
             cargo-nextest
             cargo-sort
