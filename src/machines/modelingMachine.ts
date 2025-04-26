@@ -2875,13 +2875,11 @@ export const modelingMachine = setup({
       }: {
         input: ModelingCommandSchema['Clone'] | undefined
       }) => {
-        if (!input) return new Error('No input provided')
+        if (!input) return Promise.reject(new Error('No input provided'))
         const ast = kclManager.ast
         const { nodeToEdit, selection, variableName } = input
         let pathToNode = nodeToEdit
         if (!(pathToNode && typeof pathToNode[1][0] === 'number')) {
-          // TODO: this was copied from translate, but we should probably
-          // make a helper function for this, might not work for all cases
           if (selection?.graphSelections[0].artifact) {
             const children = findAllChildrenAndOrderByPlaceInCode(
               selection?.graphSelections[0].artifact,
@@ -2889,13 +2887,17 @@ export const modelingMachine = setup({
             )
             const variable = getLastVariable(children, ast)
             if (!variable) {
-              return new Error("Couldn't find corresponding path to node")
+              return Promise.reject(
+                new Error("Couldn't find corresponding path to node")
+              )
             }
             pathToNode = variable.pathToNode
           } else if (selection?.graphSelections[0].codeRef.pathToNode) {
             pathToNode = selection?.graphSelections[0].codeRef.pathToNode
           } else {
-            return new Error("Couldn't find corresponding path to node")
+            return Promise.reject(
+              new Error("Couldn't find corresponding path to node")
+            )
           }
         }
 
@@ -2909,7 +2911,9 @@ export const modelingMachine = setup({
           returnEarly
         )
         if (err(geometryNode)) {
-          return new Error("Couldn't find corresponding path to node")
+          return Promise.reject(
+            new Error("Couldn't find corresponding path to node")
+          )
         }
 
         let geometryName: string | undefined
@@ -2927,8 +2931,9 @@ export const modelingMachine = setup({
         ) {
           geometryName = geometryNode.node.expression.body[0].name.name
         } else {
-          console.log('no cases yo')
-          return new Error("Couldn't find corresponding geometry")
+          return Promise.reject(
+            new Error("Couldn't find corresponding geometry")
+          )
         }
 
         const result = addClone({
@@ -2937,7 +2942,7 @@ export const modelingMachine = setup({
           variableName,
         })
         if (err(result)) {
-          return err(result)
+          return Promise.reject(err(result))
         }
 
         await updateModelingState(
@@ -4685,7 +4690,10 @@ export const modelingMachine = setup({
           return event.data
         },
         onDone: ['idle'],
-        onError: ['idle'],
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
       },
     },
 
