@@ -1,6 +1,6 @@
 arr = [1, 2, 3]
-new_arr1 = push(arr, 4)
-new_arr2 = push(new_arr1, 5)
+new_arr1 = push(arr, item = 4)
+new_arr2 = push(new_arr1, item = 5)
 assert(new_arr1[0], isEqualTo = 1, error = "element 0 should not have changed")
 assert(new_arr1[1], isEqualTo = 2, error = "element 1 should not have changed")
 assert(new_arr1[2], isEqualTo = 3, error = "element 2 should not have changed")
