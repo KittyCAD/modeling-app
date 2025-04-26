@@ -1,0 +1,4 @@
+startSketchOn(XY)
+|> startProfileAt([0, 0], %)
+|> xLine(length = 5)
+|> involuteCircular(startRadius = 12, endRadius = 10, angle = 0, reverse = true)

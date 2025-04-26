@@ -52,6 +52,26 @@ An extruded arc.
 
 
 ----
+An extruded involute.
+
+**Type:** `object`
+
+
+
+
+
+## Properties
+
+| Property | Type | Description | Required |
+|----------|------|-------------|----------|
+| `type` |enum: `extrudeInvolute`|  | No |
+| `faceId` |[`string`](/docs/kcl/types/string)| The face id for the extrude surface. | No |
+| [`tag`](/docs/kcl/types/tag) |[`TagDeclarator`](/docs/kcl/types#tag-declaration)| The tag. | No |
+| `id` |[`string`](/docs/kcl/types/string)| The id of the geometry. | No |
+| `sourceRange` |`[integer, integer, integer]`| The source range. | No |
+
+
+----
 Geometry metadata.
 
 **Type:** `object`

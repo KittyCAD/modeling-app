@@ -1132,6 +1132,19 @@ pub enum Path {
         /// True if the arc is counterclockwise.
         ccw: bool,
     },
+    /// An involute of a circle of start_radius ending at end_radius
+    CircularInvolute {
+        #[serde(flatten)]
+        base: BasePath,
+        /// The radius of the base circle of the involute
+        start_radius: f64,
+        /// The radius that the involute ends at
+        end_radius: f64,
+        /// Angle about which the whole involute is rotated
+        angle: f64,
+        /// If true, the path segment starts at the end radius and goes towards the start radius
+        reverse: bool,
+    },
 }
 
 /// What kind of path is this?
@@ -1146,6 +1159,7 @@ enum PathType {
     Horizontal,
     AngledLineTo,
     Arc,
+    CircularInvolute,
 }
 
 impl From<&Path> for PathType {
@@ -1161,6 +1175,7 @@ impl From<&Path> for PathType {
             Path::Base { .. } => Self::Base,
             Path::Arc { .. } => Self::Arc,
             Path::ArcThreePoint { .. } => Self::Arc,
+            Path::CircularInvolute { .. } => Self::CircularInvolute,
         }
     }
 }
@@ -1178,6 +1193,7 @@ impl Path {
             Path::CircleThreePoint { base, .. } => base.geo_meta.id,
             Path::Arc { base, .. } => base.geo_meta.id,
             Path::ArcThreePoint { base, .. } => base.geo_meta.id,
+            Path::CircularInvolute { base, .. } => base.geo_meta.id,
         }
     }
 
@@ -1193,6 +1209,7 @@ impl Path {
             Path::CircleThreePoint { base, .. } => base.geo_meta.id = id,
             Path::Arc { base, .. } => base.geo_meta.id = id,
             Path::ArcThreePoint { base, .. } => base.geo_meta.id = id,
+            Path::CircularInvolute { base, .. } => base.geo_meta.id = id,
         }
     }
 
@@ -1208,6 +1225,7 @@ impl Path {
             Path::CircleThreePoint { base, .. } => base.tag.clone(),
             Path::Arc { base, .. } => base.tag.clone(),
             Path::ArcThreePoint { base, .. } => base.tag.clone(),
+            Path::CircularInvolute { base, .. } => base.tag.clone(),
         }
     }
 
@@ -1223,6 +1241,7 @@ impl Path {
             Path::CircleThreePoint { base, .. } => base,
             Path::Arc { base, .. } => base,
             Path::ArcThreePoint { base, .. } => base,
+            Path::CircularInvolute { base, .. } => base,
         }
     }
 
@@ -1284,6 +1303,15 @@ impl Path {
                 // TODO: Call engine utils to figure this out.
                 linear_distance(&self.get_base().from, &self.get_base().to)
             }
+            Self::CircularInvolute {
+                base: _,
+                start_radius,
+                end_radius,
+                ..
+            } => {
+                let angle = (end_radius * end_radius - start_radius * start_radius).sqrt() / start_radius;
+                0.5 * start_radius * angle * angle
+            }
         };
         TyF64::new(n, self.get_base().units.into())
     }
@@ -1300,6 +1328,7 @@ impl Path {
             Path::CircleThreePoint { base, .. } => Some(base),
             Path::Arc { base, .. } => Some(base),
             Path::ArcThreePoint { base, .. } => Some(base),
+            Path::CircularInvolute { base, .. } => Some(base),
         }
     }
 
@@ -1335,7 +1364,11 @@ impl Path {
                     radius: circle.radius,
                 }
             }
-            Path::ToPoint { .. } | Path::Horizontal { .. } | Path::AngledLineTo { .. } | Path::Base { .. } => {
+            Path::CircularInvolute { .. }
+            | Path::ToPoint { .. }
+            | Path::Horizontal { .. }
+            | Path::AngledLineTo { .. }
+            | Path::Base { .. } => {
                 let base = self.get_base();
                 GetTangentialInfoFromPathsResult::PreviousPoint(base.from)
             }
@@ -1362,6 +1395,7 @@ pub enum ExtrudeSurface {
     /// An extrude plane.
     ExtrudePlane(ExtrudePlane),
     ExtrudeArc(ExtrudeArc),
+    ExtrudeInvolute(ExtrudeInvolute),
     Chamfer(ChamferSurface),
     Fillet(FilletSurface),
 }
@@ -1422,11 +1456,26 @@ pub struct ExtrudeArc {
     pub geo_meta: GeoMeta,
 }
 
+/// An extruded involute.
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub struct ExtrudeInvolute {
+    /// The face id for the extrude surface.
+    pub face_id: uuid::Uuid,
+    /// The tag.
+    pub tag: Option<Node<TagDeclarator>>,
+    /// Metadata.
+    #[serde(flatten)]
+    pub geo_meta: GeoMeta,
+}
+
 impl ExtrudeSurface {
     pub fn get_id(&self) -> uuid::Uuid {
         match self {
             ExtrudeSurface::ExtrudePlane(ep) => ep.geo_meta.id,
             ExtrudeSurface::ExtrudeArc(ea) => ea.geo_meta.id,
+            ExtrudeSurface::ExtrudeInvolute(ea) => ea.geo_meta.id,
             ExtrudeSurface::Fillet(f) => f.geo_meta.id,
             ExtrudeSurface::Chamfer(c) => c.geo_meta.id,
         }
@@ -1436,6 +1485,7 @@ impl ExtrudeSurface {
         match self {
             ExtrudeSurface::ExtrudePlane(ep) => ep.tag.clone(),
             ExtrudeSurface::ExtrudeArc(ea) => ea.tag.clone(),
+            ExtrudeSurface::ExtrudeInvolute(ea) => ea.tag.clone(),
             ExtrudeSurface::Fillet(f) => f.tag.clone(),
             ExtrudeSurface::Chamfer(c) => c.tag.clone(),
         }
