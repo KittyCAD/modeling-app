@@ -82,7 +82,7 @@ const tabsR = startSketchOn(tabPlane)
          length / 2 + thk - (tabLength / (3 / 2))
        ],
        radius = holeDiam / 2
-     ), %)
+     ))
   |> extrude(length = -tabThk)
   |> fillet(
        radius = holeDiam / 2,
@@ -110,7 +110,7 @@ const tabsL = startSketchOn(tabPlane)
          length / 2 + thk - (tabLength / (3 / 2))
        ],
        radius= holeDiam / 2
-     ), %)
+     ))
   |> extrude(length = -tabThk)
   |> fillet(
        radius = holeDiam / 2,
