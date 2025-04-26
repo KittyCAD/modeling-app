@@ -50,7 +50,6 @@ import {
   addOffsetPlane,
   addShell,
   addSweep,
-  deleteNodeInExtrudePipe,
   extrudeSketch,
   insertNamedConstant,
   insertVariableAndOffsetPathToNode,
@@ -132,6 +131,7 @@ import {
 import type { ToolbarModeName } from '@src/lib/toolbar'
 import { err, reportRejection, trap } from '@src/lib/trap'
 import { isArray, uuidv4 } from '@src/lib/utils'
+import { deleteNodeInExtrudePipe } from '@src/lang/modifyAst/deleteNodeInExtrudePipe'
 
 export const MODELING_PERSIST_KEY = 'MODELING_PERSIST_KEY'
 
@@ -374,7 +374,6 @@ export type ModelingMachineEvent =
   | { type: 'Chamfer'; data?: ModelingCommandSchema['Chamfer'] }
   | { type: 'Offset plane'; data: ModelingCommandSchema['Offset plane'] }
   | { type: 'Helix'; data: ModelingCommandSchema['Helix'] }
-  | { type: 'Text-to-CAD'; data: ModelingCommandSchema['Text-to-CAD'] }
   | { type: 'Prompt-to-edit'; data: ModelingCommandSchema['Prompt-to-edit'] }
   | {
       type: 'Delete selection'
@@ -4568,6 +4567,7 @@ export const modelingMachine = setup({
 
     parameter: {
       type: 'parallel',
+
       states: {
         creating: {
           invoke: {

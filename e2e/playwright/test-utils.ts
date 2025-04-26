@@ -411,6 +411,7 @@ export async function getUtils(page: Page, test_?: typeof test) {
     closeFilePanel: () => closeFilePanel(page),
     openVariablesPane: () => openVariablesPane(page),
     openLogsPane: () => openLogsPane(page),
+    goToHomePageFromModeling: () => goToHomePageFromModeling(page),
     openAndClearDebugPanel: () => openAndClearDebugPanel(page),
     clearAndCloseDebugPanel: async () => {
       await clearCommandLogs(page)
@@ -1009,6 +1010,11 @@ export async function createProject({
       await page.getByTestId('app-logo').click()
     }
   })
+}
+
+async function goToHomePageFromModeling(page: Page) {
+  await page.getByTestId('app-logo').click()
+  await expect(page.getByText('Your Projects')).toBeVisible()
 }
 
 export function executorInputPath(fileName: string): string {

@@ -228,5 +228,28 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
         return result
       }
     ),
+    [SystemIOMachineActors.deleteKCLFile]: fromPromise(
+      async ({
+        input,
+      }: {
+        input: {
+          context: SystemIOContext
+          requestedProjectName: string
+          requestedFileName: string
+        }
+      }) => {
+        const path = window.electron.path.join(
+          input.context.projectDirectoryPath,
+          input.requestedProjectName,
+          input.requestedFileName
+        )
+        await window.electron.rm(path)
+        return {
+          message: 'File deleted successfully',
+          projectName: input.requestedProjectName,
+          fileName: input.requestedFileName,
+        }
+      }
+    ),
   },
 })

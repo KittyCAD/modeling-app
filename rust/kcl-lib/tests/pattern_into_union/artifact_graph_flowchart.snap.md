@@ -12,21 +12,21 @@ flowchart LR
     10["Segment<br>[738, 745, 0]"]
     11[Solid2d]
   end
-  subgraph path40 [Path]
-    40["Path<br>[810, 851, 0]"]
-    41["Segment<br>[857, 900, 0]"]
-    42["Segment<br>[906, 1006, 0]"]
-    43["Segment<br>[1012, 1041, 0]"]
-    44["Segment<br>[1047, 1054, 0]"]
-    45[Solid2d]
+  subgraph path31 [Path]
+    31["Path<br>[810, 851, 0]"]
+    32["Segment<br>[857, 900, 0]"]
+    33["Segment<br>[906, 1006, 0]"]
+    34["Segment<br>[1012, 1041, 0]"]
+    35["Segment<br>[1047, 1054, 0]"]
+    36[Solid2d]
   end
-  subgraph path62 [Path]
-    62["Path<br>[1384, 1433, 0]"]
-    63["Segment<br>[1439, 1479, 0]"]
-    64["Segment<br>[1485, 1585, 0]"]
-    65["Segment<br>[1591, 1628, 0]"]
-    66["Segment<br>[1634, 1641, 0]"]
-    67[Solid2d]
+  subgraph path49 [Path]
+    49["Path<br>[1384, 1433, 0]"]
+    50["Segment<br>[1439, 1479, 0]"]
+    51["Segment<br>[1485, 1585, 0]"]
+    52["Segment<br>[1591, 1628, 0]"]
+    53["Segment<br>[1634, 1641, 0]"]
+    54[Solid2d]
   end
   1["Plane<br>[389, 406, 0]"]
   12["Sweep Extrusion<br>[751, 775, 0]"]
@@ -41,53 +41,36 @@ flowchart LR
   21["Cap Start"]
   22["Cap End"]
   23["SweepEdge Opposite"]
-  24["SweepEdge Adjacent"]
+  24["SweepEdge Opposite"]
   25["SweepEdge Opposite"]
-  26["SweepEdge Adjacent"]
+  26["SweepEdge Opposite"]
   27["SweepEdge Opposite"]
-  28["SweepEdge Adjacent"]
+  28["SweepEdge Opposite"]
   29["SweepEdge Opposite"]
-  30["SweepEdge Adjacent"]
-  31["SweepEdge Opposite"]
-  32["SweepEdge Adjacent"]
-  33["SweepEdge Opposite"]
-  34["SweepEdge Adjacent"]
-  35["SweepEdge Opposite"]
-  36["SweepEdge Adjacent"]
-  37["SweepEdge Opposite"]
-  38["SweepEdge Adjacent"]
-  39["Plane<br>[787, 804, 0]"]
-  46["Sweep Extrusion<br>[1060, 1098, 0]"]
-  47[Wall]
-  48[Wall]
-  49[Wall]
-  50[Wall]
-  51["Cap Start"]
-  52["Cap End"]
-  53["SweepEdge Opposite"]
-  54["SweepEdge Adjacent"]
-  55["SweepEdge Opposite"]
-  56["SweepEdge Adjacent"]
-  57["SweepEdge Opposite"]
-  58["SweepEdge Adjacent"]
-  59["SweepEdge Opposite"]
-  60["SweepEdge Adjacent"]
-  61["Plane<br>[1361, 1378, 0]"]
-  68["Sweep Extrusion<br>[1647, 1685, 0]"]
-  69[Wall]
-  70[Wall]
-  71[Wall]
-  72[Wall]
-  73["Cap Start"]
-  74["Cap End"]
-  75["SweepEdge Opposite"]
-  76["SweepEdge Adjacent"]
-  77["SweepEdge Opposite"]
-  78["SweepEdge Adjacent"]
-  79["SweepEdge Opposite"]
-  80["SweepEdge Adjacent"]
-  81["SweepEdge Opposite"]
-  82["SweepEdge Adjacent"]
+  30["Plane<br>[787, 804, 0]"]
+  37["Sweep Extrusion<br>[1060, 1098, 0]"]
+  38[Wall]
+  39[Wall]
+  40[Wall]
+  41[Wall]
+  42["Cap Start"]
+  43["Cap End"]
+  44["SweepEdge Opposite"]
+  45["SweepEdge Opposite"]
+  46["SweepEdge Opposite"]
+  47["SweepEdge Adjacent"]
+  48["Plane<br>[1361, 1378, 0]"]
+  55["Sweep Extrusion<br>[1647, 1685, 0]"]
+  56[Wall]
+  57[Wall]
+  58[Wall]
+  59[Wall]
+  60["Cap Start"]
+  61["Cap End"]
+  62["SweepEdge Opposite"]
+  63["SweepEdge Opposite"]
+  64["SweepEdge Opposite"]
+  65["SweepEdge Adjacent"]
   1 --- 2
   2 --- 3
   2 --- 4
@@ -100,29 +83,28 @@ flowchart LR
   2 ---- 12
   2 --- 11
   3 --- 13
-  3 --- 23
-  3 --- 24
+  3 x--> 22
   4 --- 14
-  4 --- 25
-  4 --- 26
+  4 --- 23
+  4 x--> 22
   5 --- 15
-  5 --- 27
-  5 --- 28
+  5 --- 24
+  5 x--> 22
   6 --- 16
-  6 --- 29
-  6 --- 30
+  6 --- 25
+  6 x--> 22
   7 --- 17
-  7 --- 31
-  7 --- 32
+  7 --- 26
+  7 x--> 22
   8 --- 18
-  8 --- 33
-  8 --- 34
+  8 --- 27
+  8 x--> 22
   9 --- 19
-  9 --- 35
-  9 --- 36
+  9 --- 28
+  9 x--> 22
   10 --- 20
-  10 --- 37
-  10 --- 38
+  10 --- 29
+  10 x--> 22
   12 --- 13
   12 --- 14
   12 --- 15
@@ -140,79 +122,88 @@ flowchart LR
   12 --- 27
   12 --- 28
   12 --- 29
-  12 --- 30
-  12 --- 31
-  12 --- 32
-  12 --- 33
-  12 --- 34
-  12 --- 35
-  12 --- 36
-  12 --- 37
-  12 --- 38
-  39 --- 40
-  40 --- 41
-  40 --- 42
-  40 --- 43
-  40 --- 44
-  40 ---- 46
-  40 --- 45
-  41 --- 47
-  41 --- 53
-  41 --- 54
-  42 --- 48
-  42 --- 55
-  42 --- 56
-  43 --- 49
-  43 --- 57
-  43 --- 58
-  44 --- 50
-  44 --- 59
-  44 --- 60
-  46 --- 47
-  46 --- 48
-  46 --- 49
-  46 --- 50
-  46 --- 51
-  46 --- 52
-  46 --- 53
-  46 --- 54
-  46 --- 55
-  46 --- 56
-  46 --- 57
-  46 --- 58
-  46 --- 59
-  46 --- 60
-  61 --- 62
-  62 --- 63
-  62 --- 64
-  62 --- 65
-  62 --- 66
-  62 ---- 68
-  62 --- 67
-  63 --- 72
-  63 --- 81
-  63 --- 82
-  64 --- 71
-  64 --- 79
-  64 --- 80
-  65 --- 70
-  65 --- 77
-  65 --- 78
-  66 --- 69
-  66 --- 75
-  66 --- 76
-  68 --- 69
-  68 --- 70
-  68 --- 71
-  68 --- 72
-  68 --- 73
-  68 --- 74
-  68 --- 75
-  68 --- 76
-  68 --- 77
-  68 --- 78
-  68 --- 79
-  68 --- 80
-  68 --- 81
-  68 --- 82
+  23 <--x 14
+  23 <--x 21
+  24 <--x 15
+  24 <--x 21
+  25 <--x 16
+  25 <--x 21
+  26 <--x 17
+  26 <--x 21
+  27 <--x 18
+  27 <--x 21
+  28 <--x 19
+  28 <--x 21
+  29 <--x 20
+  29 <--x 21
+  30 --- 31
+  31 --- 32
+  31 --- 33
+  31 --- 34
+  31 --- 35
+  31 ---- 37
+  31 --- 36
+  32 --- 38
+  32 x--> 43
+  33 --- 39
+  33 --- 44
+  33 --- 47
+  33 x--> 43
+  34 --- 40
+  34 --- 45
+  34 x--> 43
+  35 --- 41
+  35 --- 46
+  35 x--> 43
+  37 --- 38
+  37 --- 39
+  37 --- 40
+  37 --- 41
+  37 --- 42
+  37 --- 43
+  37 --- 44
+  37 --- 45
+  37 --- 46
+  37 --- 47
+  44 <--x 39
+  44 <--x 42
+  45 <--x 40
+  45 <--x 42
+  46 <--x 41
+  46 <--x 42
+  48 --- 49
+  49 --- 50
+  49 --- 51
+  49 --- 52
+  49 --- 53
+  49 ---- 55
+  49 --- 54
+  50 --- 59
+  50 --- 64
+  50 x--> 61
+  51 --- 58
+  51 --- 63
+  51 --- 65
+  51 x--> 61
+  52 --- 57
+  52 --- 62
+  52 x--> 61
+  53 --- 56
+  53 x--> 61
+  55 --- 56
+  55 --- 57
+  55 --- 58
+  55 --- 59
+  55 --- 60
+  55 --- 61
+  55 --- 62
+  55 --- 63
+  55 --- 64
+  55 --- 65
+  62 <--x 57
+  62 <--x 60
+  63 <--x 58
+  63 <--x 60
+  64 <--x 59
+  64 <--x 60
 ```

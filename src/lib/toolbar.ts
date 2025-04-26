@@ -1,5 +1,6 @@
 import { DEV } from '@src/env'
 import type { EventFrom, StateFrom } from 'xstate'
+import { settingsActor } from '@src/lib/singletons'
 
 import type { CustomIconName } from '@src/components/CustomIcon'
 import { createLiteral } from '@src/lang/create'
@@ -423,11 +424,21 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         array: [
           {
             id: 'text-to-cad',
-            onClick: () =>
+            onClick: () => {
+              const currentProject =
+                settingsActor.getSnapshot().context.currentProject
               commandBarActor.send({
                 type: 'Find and select command',
-                data: { name: 'Text-to-CAD', groupId: 'modeling' },
-              }),
+                data: {
+                  name: 'Text-to-CAD',
+                  groupId: 'application',
+                  argDefaultValues: {
+                    method: 'existingProject',
+                    projectName: currentProject?.name,
+                  },
+                },
+              })
+            },
             icon: 'sparkles',
             iconColor: '#29FFA4',
             alwaysDark: true,

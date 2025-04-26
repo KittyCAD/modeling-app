@@ -83,7 +83,7 @@ test.describe('Command bar tests', () => {
     await page.keyboard.press('Enter') // submit
     await page.waitForTimeout(100)
     await expect(page.locator('.cm-activeLine')).toContainText(
-      `fillet( radius = ${KCL_DEFAULT_LENGTH}, tags = [seg01] )`
+      `fillet(radius = ${KCL_DEFAULT_LENGTH}, tags = [getCommonEdge(faces=[seg01,capEnd001])])`
     )
   })
 
