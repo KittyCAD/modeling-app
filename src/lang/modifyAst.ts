@@ -974,7 +974,6 @@ export function addClone({
     createCallExpressionStdLibKw('clone', createLocalName(geometryName), [])
   )
 
-  // TODO: update to support variable assigment
   modifiedAst.body.push(variable)
   const insertAt = modifiedAst.body.length - 1
   const pathToNode: PathToNode = [
