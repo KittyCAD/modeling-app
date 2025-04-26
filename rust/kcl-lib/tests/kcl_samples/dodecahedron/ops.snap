@@ -789,8 +789,8 @@ description: Operations executed dodecahedron.kcl
       "type": "FunctionCall",
       "name": "createIntersection",
       "functionSourceRange": [
-        1871,
-        2143,
+        1933,
+        2219,
         0
       ],
       "unlabeledArg": null,
@@ -804,8 +804,8 @@ description: Operations executed dodecahedron.kcl
       "type": "FunctionCall",
       "name": "calculateArrayLength",
       "functionSourceRange": [
-        1759,
-        1848,
+        1786,
+        1910,
         0
       ],
       "unlabeledArg": null,

@@ -26,28 +26,18 @@ flowchart LR
   20["Cap Start"]
   21["Cap End"]
   22["SweepEdge Opposite"]
-  23["SweepEdge Adjacent"]
+  23["SweepEdge Opposite"]
   24["SweepEdge Opposite"]
-  25["SweepEdge Adjacent"]
-  26["SweepEdge Opposite"]
-  27["SweepEdge Adjacent"]
-  28["SweepEdge Opposite"]
-  29["SweepEdge Adjacent"]
-  30["Sweep Extrusion<br>[716, 781, 0]"]
-  31[Wall]
-  32[Wall]
-  33[Wall]
-  34[Wall]
-  35["Cap Start"]
-  36["Cap End"]
-  37["SweepEdge Opposite"]
-  38["SweepEdge Adjacent"]
-  39["SweepEdge Opposite"]
-  40["SweepEdge Adjacent"]
-  41["SweepEdge Opposite"]
-  42["SweepEdge Adjacent"]
-  43["SweepEdge Opposite"]
-  44["SweepEdge Adjacent"]
+  25["Sweep Extrusion<br>[716, 781, 0]"]
+  26[Wall]
+  27[Wall]
+  28[Wall]
+  29[Wall]
+  30["Cap Start"]
+  31["Cap End"]
+  32["SweepEdge Opposite"]
+  33["SweepEdge Opposite"]
+  34["SweepEdge Opposite"]
   1 --- 2
   2 --- 3
   2 --- 4
@@ -56,36 +46,34 @@ flowchart LR
   2 ---- 15
   2 --- 11
   3 --- 19
-  3 --- 28
-  3 --- 29
+  3 --- 24
+  3 x--> 20
   4 --- 18
-  4 --- 26
-  4 --- 27
+  4 --- 23
+  4 x--> 20
   5 --- 6
   6 --- 7
   6 --- 8
   6 --- 12
   6 --- 13
-  6 ---- 30
+  6 ---- 25
   6 --- 14
+  7 --- 29
   7 --- 34
-  7 --- 43
-  7 --- 44
+  7 x--> 30
+  8 --- 28
   8 --- 33
-  8 --- 41
-  8 --- 42
+  8 x--> 30
   9 --- 17
-  9 --- 24
-  9 --- 25
+  9 --- 22
+  9 x--> 20
   10 --- 16
-  10 --- 22
-  10 --- 23
+  10 x--> 20
+  12 --- 27
   12 --- 32
-  12 --- 39
-  12 --- 40
-  13 --- 31
-  13 --- 37
-  13 --- 38
+  12 x--> 30
+  13 --- 26
+  13 x--> 30
   15 --- 16
   15 --- 17
   15 --- 18
@@ -95,23 +83,25 @@ flowchart LR
   15 --- 22
   15 --- 23
   15 --- 24
-  15 --- 25
-  15 --- 26
-  15 --- 27
-  15 --- 28
-  15 --- 29
-  30 --- 31
-  30 --- 32
-  30 --- 33
-  30 --- 34
-  30 --- 35
-  30 --- 36
-  30 --- 37
-  30 --- 38
-  30 --- 39
-  30 --- 40
-  30 --- 41
-  30 --- 42
-  30 --- 43
-  30 --- 44
+  22 <--x 17
+  22 <--x 21
+  23 <--x 18
+  23 <--x 21
+  24 <--x 19
+  24 <--x 21
+  25 --- 26
+  25 --- 27
+  25 --- 28
+  25 --- 29
+  25 --- 30
+  25 --- 31
+  25 --- 32
+  25 --- 33
+  25 --- 34
+  32 <--x 27
+  32 <--x 31
+  33 <--x 28
+  33 <--x 31
+  34 <--x 29
+  34 <--x 31
 ```

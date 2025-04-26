@@ -49,7 +49,6 @@ import {
   addOffsetPlane,
   addShell,
   addSweep,
-  deleteNodeInExtrudePipe,
   extrudeSketch,
   insertNamedConstant,
   insertVariableAndOffsetPathToNode,
@@ -129,6 +128,7 @@ import {
 import type { ToolbarModeName } from '@src/lib/toolbar'
 import { err, reportRejection, trap } from '@src/lib/trap'
 import { isArray, uuidv4 } from '@src/lib/utils'
+import { deleteNodeInExtrudePipe } from '@src/lang/modifyAst/deleteNodeInExtrudePipe'
 
 export const MODELING_PERSIST_KEY = 'MODELING_PERSIST_KEY'
 
@@ -4472,6 +4472,7 @@ export const modelingMachine = setup({
 
     parameter: {
       type: 'parallel',
+
       states: {
         creating: {
           invoke: {

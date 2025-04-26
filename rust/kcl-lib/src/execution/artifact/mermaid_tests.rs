@@ -119,6 +119,7 @@ impl Artifact {
                 if let Some(edge_cut_id) = a.edge_cut_id {
                     ids.push(edge_cut_id);
                 }
+                ids.extend(&a.common_surface_ids);
                 ids
             }
             Artifact::Solid2d(_) => {
@@ -155,10 +156,12 @@ impl Artifact {
                 ids.extend(&a.path_ids);
                 ids
             }
-            Artifact::SweepEdge(_) => {
+            Artifact::SweepEdge(a) => {
                 // Note: Don't include these since they're parents: seg_id,
                 // sweep_id.
-                Vec::new()
+                let mut ids = Vec::new();
+                ids.extend(&a.common_surface_ids);
+                ids
             }
             Artifact::EdgeCut(a) => {
                 // Note: Don't include these since they're parents:

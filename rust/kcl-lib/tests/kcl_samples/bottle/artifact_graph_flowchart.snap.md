@@ -19,9 +19,7 @@ flowchart LR
   13["Sweep Extrusion<br>[794, 821, 0]"]
   14[Wall]
   15["Cap End"]
-  16["SweepEdge Opposite"]
-  17["SweepEdge Adjacent"]
-  18["StartSketchOnFace<br>[695, 732, 0]"]
+  16["StartSketchOnFace<br>[695, 732, 0]"]
   1 --- 2
   2 --- 3
   2 --- 4
@@ -34,11 +32,8 @@ flowchart LR
   10 ---- 13
   10 --- 12
   11 --- 14
-  11 --- 16
-  11 --- 17
+  11 <--x 9
   13 --- 14
   13 --- 15
-  13 --- 16
-  13 --- 17
-  9 <--x 18
+  9 <--x 16
 ```
