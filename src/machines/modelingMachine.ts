@@ -2877,7 +2877,6 @@ export const modelingMachine = setup({
       }) => {
         if (!input) return new Error('No input provided')
         const ast = kclManager.ast
-        const modifiedAst = structuredClone(ast)
         const { nodeToEdit, selection, variableName } = input
         let pathToNode = nodeToEdit
         if (!(pathToNode && typeof pathToNode[1][0] === 'number')) {
@@ -2888,7 +2887,7 @@ export const modelingMachine = setup({
               selection?.graphSelections[0].artifact,
               kclManager.artifactGraph
             )
-            const variable = getLastVariable(children, modifiedAst)
+            const variable = getLastVariable(children, ast)
             if (!variable) {
               return new Error("Couldn't find corresponding path to node")
             }
@@ -2904,7 +2903,7 @@ export const modelingMachine = setup({
         const geometryNode = getNodeFromPath<
           VariableDeclaration | ExpressionStatement | PipeExpression
         >(
-          modifiedAst,
+          ast,
           pathToNode,
           ['VariableDeclaration', 'ExpressionStatement', 'PipeExpression'],
           returnEarly
@@ -2933,7 +2932,7 @@ export const modelingMachine = setup({
         }
 
         const result = addClone({
-          modifiedAst,
+          ast,
           geometryName,
           variableName,
         })

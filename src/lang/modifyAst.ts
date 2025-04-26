@@ -944,14 +944,15 @@ export function addHelix({
  * Add clone statement
  */
 export function addClone({
-  modifiedAst,
+  ast,
   geometryName,
   variableName,
 }: {
-  modifiedAst: Node<Program>
+  ast: Node<Program>
   geometryName: string
   variableName: string
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
+  const modifiedAst = structuredClone(ast)
   const variable = createVariableDeclaration(
     variableName,
     createCallExpressionStdLibKw('clone', createLocalName(geometryName), [])
