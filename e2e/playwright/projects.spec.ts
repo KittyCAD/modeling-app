@@ -723,7 +723,7 @@ test(
 test(
   'pressing "delete" on home screen should do nothing',
   { tag: '@electron' },
-  async ({ context, page }, testInfo) => {
+  async ({ context, page, homePage }, testInfo) => {
     await context.folderSetupFn(async (dir) => {
       await fsp.mkdir(`${dir}/router-template-slate`, { recursive: true })
       await fsp.copyFile(
@@ -737,7 +737,7 @@ test(
 
     await expect(page.getByText('router-template-slate')).toBeVisible()
     await expect(page.getByText('Loading your Projects...')).not.toBeVisible()
-    await expect(page.getByText('Projects')).toBeVisible()
+    await homePage.expectIsCurrentPage()
 
     await page.keyboard.press('Delete')
     await page.waitForTimeout(200)
@@ -745,7 +745,7 @@ test(
 
     // expect to still be on the home page
     await expect(page.getByText('router-template-slate')).toBeVisible()
-    await expect(page.getByText('Projects')).toBeVisible()
+    await homePage.expectIsCurrentPage()
   }
 )
 

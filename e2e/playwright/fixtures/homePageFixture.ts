@@ -92,6 +92,13 @@ export class HomePageFixture {
     }
   }
 
+  expectIsCurrentPage = async () => {
+    await expect(this.page).toHaveURL(/.*home/)
+    await expect(
+      this.page.getByRole('heading', { name: 'Projects' })
+    ).toBeVisible()
+  }
+
   projectsLoaded = async () => {
     await expect(this.projectSection).not.toHaveText('Loading your Projects...')
   }

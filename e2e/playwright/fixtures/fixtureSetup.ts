@@ -247,7 +247,7 @@ export class ElectronZoo {
     }
 
     if (!this.firstUrl) {
-      await this.page.getByText('Projects').count()
+      await this.page.getByRole('heading', { name: 'Projects' }).count()
       this.firstUrl = this.page.url()
     }
 
