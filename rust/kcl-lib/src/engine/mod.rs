@@ -20,9 +20,10 @@ use std::{
 };
 
 use indexmap::IndexMap;
+#[cfg(feature = "artifact-graph")]
+use kcmc::id::ModelingCmdId;
 use kcmc::{
     each_cmd as mcmd,
-    id::ModelingCmdId,
     length_unit::LengthUnit,
     ok_response::OkModelingCmdResponse,
     shared::Color,
@@ -38,9 +39,11 @@ use serde::{Deserialize, Serialize};
 use tokio::sync::RwLock;
 use uuid::Uuid;
 
+#[cfg(feature = "artifact-graph")]
+use crate::execution::ArtifactCommand;
 use crate::{
     errors::{KclError, KclErrorDetails},
-    execution::{types::UnitLen, ArtifactCommand, DefaultPlanes, IdGenerator, Point3d},
+    execution::{types::UnitLen, DefaultPlanes, IdGenerator, Point3d},
     SourceRange,
 };
 
@@ -77,6 +80,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
     fn responses(&self) -> Arc<RwLock<IndexMap<Uuid, WebSocketResponse>>>;
 
     /// Get the artifact commands that have accumulated so far.
+    #[cfg(feature = "artifact-graph")]
     fn artifact_commands(&self) -> Arc<RwLock<Vec<ArtifactCommand>>>;
 
     /// Get the ids of the async commands we are waiting for.
@@ -96,11 +100,13 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
     }
 
     /// Clear all artifact commands that have accumulated so far.
+    #[cfg(feature = "artifact-graph")]
     async fn clear_artifact_commands(&self) {
         self.artifact_commands().write().await.clear();
     }
 
     /// Take the artifact commands that have accumulated so far and clear them.
+    #[cfg(feature = "artifact-graph")]
     async fn take_artifact_commands(&self) -> Vec<ArtifactCommand> {
         std::mem::take(&mut *self.artifact_commands().write().await)
     }
@@ -193,6 +199,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
 
         // Ensure artifact commands are cleared so that we don't accumulate them
         // across runs.
+        #[cfg(feature = "artifact-graph")]
         self.clear_artifact_commands().await;
 
         // Do the after clear scene hook.
@@ -265,7 +272,9 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         // we previously called something on, it might no longer exist. In which case,
         // the artifact graph won't care either if its gone since you can't select it
         // anymore anyways.
-        self.async_tasks().join_all().await.unwrap_or_default();
+        if let Err(err) = self.async_tasks().join_all().await {
+            crate::log::logln!("Error waiting for async tasks (this is typically fine and just means that an edge became something else): {:?}", err);
+        }
 
         // Flush the batch to make sure nothing remains.
         self.flush_batch(true, SourceRange::default()).await?;
@@ -290,6 +299,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         Ok(())
     }
 
+    #[cfg(feature = "artifact-graph")]
     async fn handle_artifact_command(
         &self,
         cmd: &ModelingCmd,
@@ -430,6 +440,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         self.ids_of_async_commands().write().await.insert(id, source_range);
 
         // Add to artifact commands.
+        #[cfg(feature = "artifact-graph")]
         self.handle_artifact_command(cmd, id.into(), &HashMap::from([(id, source_range)]))
             .await?;
 
@@ -503,6 +514,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         }
 
         // Do the artifact commands.
+        #[cfg(feature = "artifact-graph")]
         for (req, _) in orig_requests.iter() {
             match &req {
                 WebSocketRequest::ModelingCmdBatchReq(ModelingBatch { requests, .. }) => {

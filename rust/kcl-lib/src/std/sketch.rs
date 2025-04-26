@@ -12,21 +12,22 @@ use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
-use super::utils::{point_to_len_unit, point_to_mm, untype_point, untyped_point_to_mm};
-use crate::execution::types::ArrayLen;
+#[cfg(feature = "artifact-graph")]
+use crate::execution::{Artifact, ArtifactId, CodeRef, StartSketchOnFace, StartSketchOnPlane};
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
-        types::{NumericType, PrimitiveType, RuntimeType, UnitLen},
-        Artifact, ArtifactId, BasePath, CodeRef, ExecState, Face, GeoMeta, KclValue, Path, Plane, Point2d, Point3d,
-        Sketch, SketchSurface, Solid, StartSketchOnFace, StartSketchOnPlane, TagEngineInfo, TagIdentifier,
+        types::{ArrayLen, NumericType, PrimitiveType, RuntimeType, UnitLen},
+        BasePath, ExecState, Face, GeoMeta, KclValue, Path, Plane, Point2d, Point3d, Sketch, SketchSurface, Solid,
+        TagEngineInfo, TagIdentifier,
     },
     parsing::ast::types::TagNode,
     std::{
         args::{Args, TyF64},
         utils::{
             arc_center_and_end, get_tangential_arc_to_info, get_x_component, get_y_component,
-            intersection_with_parallel_line, TangentialArcInfoInput,
+            intersection_with_parallel_line, point_to_len_unit, point_to_mm, untype_point, untyped_point_to_mm,
+            TangentialArcInfoInput,
         },
     },
 };
@@ -981,7 +982,7 @@ pub async fn start_sketch_on(exec_state: &mut ExecState, args: Args) -> Result<K
 
 /// Start a new 2-dimensional sketch on a specific plane or face.
 ///
-/// ### Sketch on Face Behavior
+/// ## Sketch on Face Behavior
 ///
 /// There are some important behaviors to understand when sketching on a face:
 ///
@@ -1180,12 +1181,15 @@ async fn inner_start_sketch_on(
                 Ok(SketchSurface::Plane(plane))
             } else {
                 // Create artifact used only by the UI, not the engine.
-                let id = exec_state.next_uuid();
-                exec_state.add_artifact(Artifact::StartSketchOnPlane(StartSketchOnPlane {
-                    id: ArtifactId::from(id),
-                    plane_id: plane.artifact_id,
-                    code_ref: CodeRef::placeholder(args.source_range),
-                }));
+                #[cfg(feature = "artifact-graph")]
+                {
+                    let id = exec_state.next_uuid();
+                    exec_state.add_artifact(Artifact::StartSketchOnPlane(StartSketchOnPlane {
+                        id: ArtifactId::from(id),
+                        plane_id: plane.artifact_id,
+                        code_ref: CodeRef::placeholder(args.source_range),
+                    }));
+                }
 
                 Ok(SketchSurface::Plane(plane))
             }
@@ -1199,13 +1203,16 @@ async fn inner_start_sketch_on(
             };
             let face = start_sketch_on_face(solid, tag, exec_state, args).await?;
 
-            // Create artifact used only by the UI, not the engine.
-            let id = exec_state.next_uuid();
-            exec_state.add_artifact(Artifact::StartSketchOnFace(StartSketchOnFace {
-                id: ArtifactId::from(id),
-                face_id: face.artifact_id,
-                code_ref: CodeRef::placeholder(args.source_range),
-            }));
+            #[cfg(feature = "artifact-graph")]
+            {
+                // Create artifact used only by the UI, not the engine.
+                let id = exec_state.next_uuid();
+                exec_state.add_artifact(Artifact::StartSketchOnFace(StartSketchOnFace {
+                    id: ArtifactId::from(id),
+                    face_id: face.artifact_id,
+                    code_ref: CodeRef::placeholder(args.source_range),
+                }));
+            }
 
             Ok(SketchSurface::Face(face))
         }
@@ -1222,6 +1229,7 @@ async fn start_sketch_on_face(
 
     Ok(Box::new(Face {
         id: extrude_plane_id,
+        #[cfg(feature = "artifact-graph")]
         artifact_id: extrude_plane_id.into(),
         value: tag.to_string(),
         // TODO: get this from the extrude plane data.
@@ -1401,6 +1409,7 @@ pub(crate) async fn inner_start_profile(
     let sketch = Sketch {
         id: path_id,
         original_id: path_id,
+        #[cfg(feature = "artifact-graph")]
         artifact_id: path_id.into(),
         on: sketch_surface.clone(),
         paths: vec![],

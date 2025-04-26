@@ -262,6 +262,7 @@ impl KclValue {
         }
     }
 
+    #[cfg(feature = "artifact-graph")]
     pub(crate) fn function_def_source_range(&self) -> Option<SourceRange> {
         let KclValue::Function {
             value: FunctionSource::User { ast, .. },

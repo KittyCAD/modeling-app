@@ -108,6 +108,7 @@ tower-lsp = { workspace = true, features = ["proposed", "default"] }
 
 [features]
 default = ["cli", "engine"]
+artifact-graph = []
 benchmark-execution = []
 cli = ["dep:clap", "kittycad/clap"]
 dhat-heap = ["dep:dhat"]

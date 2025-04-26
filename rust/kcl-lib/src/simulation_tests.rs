@@ -1,16 +1,17 @@
+#[cfg(feature = "artifact-graph")]
+use std::collections::HashMap;
 use std::{
-    collections::HashMap,
     panic::{catch_unwind, AssertUnwindSafe},
     path::{Path, PathBuf},
 };
 
 use insta::rounded_redaction;
 
+use crate::{errors::KclError, ModuleId};
+#[cfg(feature = "artifact-graph")]
 use crate::{
-    errors::KclError,
     exec::ArtifactCommand,
     execution::{ArtifactGraph, Operation},
-    ModuleId,
 };
 
 mod kcl_samples;
@@ -156,9 +157,12 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
     let ast = crate::Program::parse_no_errs(&input).unwrap();
 
     // Run the program.
-    let exec_res =
-        crate::test_server::execute_and_snapshot_ast(ast, Some(test.input_dir.join(&test.entry_point)), export_step)
-            .await;
+    let exec_res = crate::test_server::execute_and_snapshot_ast_single_threaded(
+        ast,
+        Some(test.input_dir.join(&test.entry_point)),
+        export_step,
+    )
+    .await;
     match exec_res {
         Ok((exec_state, env_ref, png, step)) => {
             let fail_path = test.output_dir.join("execution_error.snap");
@@ -178,7 +182,7 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
                     panic!("Step data was empty");
                 }
             }
-            let outcome = exec_state.to_wasm_outcome(env_ref).await;
+            let outcome = exec_state.to_exec_outcome(env_ref).await;
 
             let mem_result = catch_unwind(AssertUnwindSafe(|| {
                 assert_snapshot(test, "Variables in memory after executing", || {
@@ -196,6 +200,7 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
                 })
             }));
 
+            #[cfg(feature = "artifact-graph")]
             assert_common_snapshots(
                 test,
                 outcome.operations,
@@ -230,6 +235,7 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
                         })
                     }));
 
+                    #[cfg(feature = "artifact-graph")]
                     assert_common_snapshots(test, error.operations, error.artifact_commands, error.artifact_graph);
                     err_result.unwrap();
                 }
@@ -246,6 +252,7 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
 
 /// Assert snapshots that should happen both when KCL execution succeeds and
 /// when it results in an error.
+#[cfg(feature = "artifact-graph")]
 fn assert_common_snapshots(
     test: &Test,
     operations: Vec<Operation>,

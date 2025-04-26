@@ -4,6 +4,8 @@ cita := "cargo insta test --accept"
 # Run the same lint checks we run in CI.
 lint:
     cargo clippy --workspace --all-targets --tests --all-features --examples --benches -- -D warnings
+    # Ensure we can build without extra feature flags.
+    cargo clippy -p kcl-lib --tests --examples --benches -- -D warnings
 
 # Run the stdlib docs generation
 redo-kcl-stdlib-docs-no-imgs:
@@ -35,18 +37,18 @@ new-sim-test test_name render_to_png="true":
 overwrite-sim-test-sample test_name:
     EXPECTORATE=overwrite TWENTY_TWENTY=overwrite {{cita}} -p kcl-lib --no-quiet -- simulation_tests::kcl_samples::parse_{{test_name}}
     EXPECTORATE=overwrite TWENTY_TWENTY=overwrite {{cita}} -p kcl-lib --no-quiet -- simulation_tests::kcl_samples::unparse_{{test_name}}
-    EXPECTORATE=overwrite TWENTY_TWENTY=overwrite {{cita}} -p kcl-lib --no-quiet -- simulation_tests::kcl_samples::kcl_test_execute_{{test_name}}
+    EXPECTORATE=overwrite TWENTY_TWENTY=overwrite {{cita}} -p kcl-lib --feature artifact-graph --no-quiet -- simulation_tests::kcl_samples::kcl_test_execute_{{test_name}}
     EXPECTORATE=overwrite TWENTY_TWENTY=overwrite {{cita}} -p kcl-lib --no-quiet -- simulation_tests::kcl_samples::test_after_engine_generate_manifest
 
 overwrite-sim-test test_name:
     EXPECTORATE=overwrite TWENTY_TWENTY=overwrite {{cita}} -p kcl-lib --no-quiet -- simulation_tests::{{test_name}}::parse
     EXPECTORATE=overwrite TWENTY_TWENTY=overwrite {{cita}} -p kcl-lib --no-quiet -- simulation_tests::{{test_name}}::unparse
-    EXPECTORATE=overwrite TWENTY_TWENTY=overwrite {{cita}} -p kcl-lib --no-quiet -- simulation_tests::{{test_name}}::kcl_test_execute
+    EXPECTORATE=overwrite TWENTY_TWENTY=overwrite {{cita}} -p kcl-lib --feature artifact-graph --no-quiet -- simulation_tests::{{test_name}}::kcl_test_execute
     [ {{test_name}} != "kcl_samples" ] || EXPECTORATE=overwrite TWENTY_TWENTY=overwrite {{cita}} -p kcl-lib --no-quiet -- simulation_tests::{{test_name}}::test_after_engine_generate_manifest
 
 # Regenerate all the simulation test output.
 redo-sim-tests:
-    EXPECTORATE=overwrite TWENTY_TWENTY=overwrite {{cita}} -p kcl-lib --no-quiet -- simulation_tests
+    EXPECTORATE=overwrite TWENTY_TWENTY=overwrite {{cita}} -p kcl-lib --feature artifact-graph --no-quiet -- simulation_tests
 
 test:
     export RUST_BRACKTRACE="full" && {{cnr}} --workspace --no-fail-fast

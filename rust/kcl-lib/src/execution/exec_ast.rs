@@ -3,23 +3,21 @@ use std::collections::HashMap;
 use async_recursion::async_recursion;
 use indexmap::IndexMap;
 
-use super::{cad_op::Group, kcl_value::TypeDef, types::PrimitiveType};
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
         annotations,
-        cad_op::{OpArg, OpKclValue, Operation},
-        kcl_value::FunctionSource,
+        kcl_value::{FunctionSource, TypeDef},
         memory,
         state::ModuleState,
-        types::{NumericType, RuntimeType},
+        types::{NumericType, PrimitiveType, RuntimeType},
         BodyType, EnvironmentRef, ExecState, ExecutorContext, KclValue, Metadata, PlaneType, TagEngineInfo,
         TagIdentifier,
     },
     modules::{ModuleId, ModulePath, ModuleRepr},
     parsing::ast::types::{
         Annotation, ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem,
-        BoxNode, CallExpression, CallExpressionKw, Expr, FunctionExpression, IfExpression, ImportPath, ImportSelector,
+        CallExpression, CallExpressionKw, Expr, FunctionExpression, IfExpression, ImportPath, ImportSelector,
         ItemVisibility, LiteralIdentifier, LiteralValue, MemberExpression, MemberObject, Name, Node, NodeRef,
         ObjectExpression, PipeExpression, Program, TagDeclarator, Type, UnaryExpression, UnaryOperator,
     },
@@ -29,6 +27,11 @@ use crate::{
         FunctionKind,
     },
     CompilationError,
+};
+#[cfg(feature = "artifact-graph")]
+use crate::{
+    execution::cad_op::{Group, OpArg, OpKclValue, Operation},
+    parsing::ast::types::BoxNode,
 };
 
 enum StatementKind<'a> {
@@ -516,10 +519,11 @@ impl ExecutorContext {
     async fn exec_module_for_result(
         &self,
         module_id: ModuleId,
-        module_name: &BoxNode<Name>,
+        #[cfg(feature = "artifact-graph")] module_name: &BoxNode<Name>,
         exec_state: &mut ExecState,
         source_range: SourceRange,
     ) -> Result<Option<KclValue>, KclError> {
+        #[cfg(feature = "artifact-graph")]
         exec_state.global.operations.push(Operation::GroupBegin {
             group: Group::ModuleInstance {
                 name: module_name.to_string(),
@@ -566,6 +570,7 @@ impl ExecutorContext {
 
         exec_state.global.module_infos[&module_id].restore_repr(repr);
 
+        #[cfg(feature = "artifact-graph")]
         exec_state.global.operations.push(Operation::GroupEnd);
 
         result
@@ -619,8 +624,13 @@ impl ExecutorContext {
             Expr::Name(name) => {
                 let value = name.get_result(exec_state, self).await?.clone();
                 if let KclValue::Module { value: module_id, meta } = value {
-                    self.exec_module_for_result(module_id, name, exec_state,  metadata.source_range)
-                        .await?
+                    self.exec_module_for_result(
+                        module_id, 
+                        #[cfg(feature = "artifact-graph")]
+                        name, 
+                        exec_state,
+                        metadata.source_range
+                        ).await?
                         .unwrap_or_else(|| {
                             exec_state.warn(CompilationError::err(
                                 metadata.source_range,
@@ -1340,6 +1350,7 @@ impl Node<CallExpressionKw> {
                     ));
                 }
 
+                #[cfg(feature = "artifact-graph")]
                 let op = if func.feature_tree_operation() {
                     let op_labeled_args = args
                         .kw_args
@@ -1389,6 +1400,7 @@ impl Node<CallExpressionKw> {
                     let result = func.std_lib_fn()(exec_state, args).await;
                     exec_state.mut_stack().pop_env();
 
+                    #[cfg(feature = "artifact-graph")]
                     if let Some(mut op) = op {
                         op.set_std_lib_call_is_error(result.is_err());
                         // Track call operation.  We do this after the call
@@ -1398,6 +1410,7 @@ impl Node<CallExpressionKw> {
                         // so we need to build the op before the call.
                         exec_state.global.operations.push(op);
                     }
+
                     result
                 }?;
 
@@ -1426,6 +1439,7 @@ impl Node<CallExpressionKw> {
                         e.add_source_ranges(vec![callsite])
                     })?;
 
+                #[cfg(feature = "artifact-graph")]
                 if matches!(fn_src, FunctionSource::User { .. }) {
                     // Track return operation.
                     exec_state.global.operations.push(Operation::GroupEnd);
@@ -1478,6 +1492,7 @@ impl Node<CallExpression> {
                     ));
                 }
 
+                #[cfg(feature = "artifact-graph")]
                 let op = if func.feature_tree_operation() {
                     let op_labeled_args = func
                         .args(false)
@@ -1514,6 +1529,7 @@ impl Node<CallExpression> {
                     let result = func.std_lib_fn()(exec_state, args).await;
                     exec_state.mut_stack().pop_env();
 
+                    #[cfg(feature = "artifact-graph")]
                     if let Some(mut op) = op {
                         op.set_std_lib_call_is_error(result.is_err());
                         // Track call operation.  We do this after the call
@@ -1537,6 +1553,7 @@ impl Node<CallExpression> {
                 let func = fn_name.get_result(exec_state, ctx).await?.clone();
 
                 // Track call operation.
+                #[cfg(feature = "artifact-graph")]
                 exec_state.global.operations.push(Operation::GroupBegin {
                     group: Group::FunctionCall {
                         name: Some(fn_name.to_string()),
@@ -1576,6 +1593,7 @@ impl Node<CallExpression> {
                 })?;
 
                 // Track return operation.
+                #[cfg(feature = "artifact-graph")]
                 exec_state.global.operations.push(Operation::GroupEnd);
 
                 Ok(result)
@@ -1671,7 +1689,7 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
                 let sketches_to_update: Vec<_> = exec_state
                     .stack()
                     .find_keys_in_current_env(|v| match v {
-                        KclValue::Sketch { value: sk } => sk.artifact_id == value.sketch.artifact_id,
+                        KclValue::Sketch { value: sk } => sk.original_id == value.sketch.original_id,
                         _ => false,
                     })
                     .cloned()
@@ -2391,6 +2409,7 @@ impl FunctionSource {
                     }
                 }
 
+                #[cfg(feature = "artifact-graph")]
                 let op = if props.include_in_feature_tree {
                     let op_labeled_args = args
                         .kw_args
@@ -2418,6 +2437,7 @@ impl FunctionSource {
                     let result = func(exec_state, args).await;
                     exec_state.mut_stack().pop_env();
 
+                    #[cfg(feature = "artifact-graph")]
                     if let Some(mut op) = op {
                         op.set_std_lib_call_is_error(result.is_err());
                         // Track call operation.  We do this after the call
@@ -2436,25 +2456,28 @@ impl FunctionSource {
             }
             FunctionSource::User { ast, memory, .. } => {
                 // Track call operation.
-                let op_labeled_args = args
-                    .kw_args
-                    .labeled
-                    .iter()
-                    .map(|(k, arg)| (k.clone(), OpArg::new(OpKclValue::from(&arg.value), arg.source_range)))
-                    .collect();
-                exec_state.global.operations.push(Operation::GroupBegin {
-                    group: Group::FunctionCall {
-                        name: fn_name.clone(),
-                        function_source_range: ast.as_source_range(),
-                        unlabeled_arg: args
-                            .kw_args
-                            .unlabeled
-                            .as_ref()
-                            .map(|arg| OpArg::new(OpKclValue::from(&arg.value), arg.source_range)),
-                        labeled_args: op_labeled_args,
-                    },
-                    source_range: callsite,
-                });
+                #[cfg(feature = "artifact-graph")]
+                {
+                    let op_labeled_args = args
+                        .kw_args
+                        .labeled
+                        .iter()
+                        .map(|(k, arg)| (k.clone(), OpArg::new(OpKclValue::from(&arg.value), arg.source_range)))
+                        .collect();
+                    exec_state.global.operations.push(Operation::GroupBegin {
+                        group: Group::FunctionCall {
+                            name: fn_name.clone(),
+                            function_source_range: ast.as_source_range(),
+                            unlabeled_arg: args
+                                .kw_args
+                                .unlabeled
+                                .as_ref()
+                                .map(|arg| OpArg::new(OpKclValue::from(&arg.value), arg.source_range)),
+                            labeled_args: op_labeled_args,
+                        },
+                        source_range: callsite,
+                    });
+                }
 
                 call_user_defined_function_kw(fn_name.as_deref(), args.kw_args, *memory, ast, exec_state, ctx).await
             }

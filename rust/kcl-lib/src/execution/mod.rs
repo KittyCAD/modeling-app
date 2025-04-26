@@ -3,11 +3,13 @@
 use std::{path::PathBuf, sync::Arc};
 
 use anyhow::Result;
+#[cfg(feature = "artifact-graph")]
 pub use artifact::{
     Artifact, ArtifactCommand, ArtifactGraph, ArtifactId, CodeRef, StartSketchOnFace, StartSketchOnPlane,
 };
 use cache::OldAstState;
 pub use cache::{bust_cache, clear_mem_cache};
+#[cfg(feature = "artifact-graph")]
 pub use cad_op::Operation;
 pub use geometry::*;
 pub use id_generator::IdGenerator;
@@ -26,11 +28,12 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 pub use state::{ExecState, MetaSettings};
 
+#[cfg(feature = "artifact-graph")]
+use crate::execution::artifact::build_artifact_graph;
 use crate::{
     engine::EngineManager,
     errors::{KclError, KclErrorDetails},
     execution::{
-        artifact::build_artifact_graph,
         cache::{CacheInformation, CacheResult},
         types::{UnitAngle, UnitLen},
     },
@@ -43,8 +46,10 @@ use crate::{
 };
 
 pub(crate) mod annotations;
+#[cfg(feature = "artifact-graph")]
 mod artifact;
 pub(crate) mod cache;
+#[cfg(feature = "artifact-graph")]
 mod cad_op;
 mod exec_ast;
 mod geometry;
@@ -64,10 +69,13 @@ pub struct ExecOutcome {
     pub variables: IndexMap<String, KclValue>,
     /// Operations that have been performed in execution order, for display in
     /// the Feature Tree.
+    #[cfg(feature = "artifact-graph")]
     pub operations: Vec<Operation>,
     /// Output commands to allow building the artifact graph by the caller.
+    #[cfg(feature = "artifact-graph")]
     pub artifact_commands: Vec<ArtifactCommand>,
     /// Output artifact graph.
+    #[cfg(feature = "artifact-graph")]
     pub artifact_graph: ArtifactGraph,
     /// Non-fatal errors and warnings.
     pub errors: Vec<CompilationError>,
@@ -567,7 +575,7 @@ impl ExecutorContext {
 
         let mut mem = exec_state.stack().clone();
         let module_infos = exec_state.global.module_infos.clone();
-        let outcome = exec_state.to_mock_wasm_outcome(result.0).await;
+        let outcome = exec_state.to_mock_exec_outcome(result.0).await;
 
         mem.squash_env(result.0);
         cache::write_old_memory((mem, module_infos)).await;
@@ -635,13 +643,13 @@ impl ExecutorContext {
                         })
                         .await;
 
-                        let outcome = old_state.to_wasm_outcome(result_env).await;
+                        let outcome = old_state.to_exec_outcome(result_env).await;
                         return Ok(outcome);
                     }
                     (true, program)
                 }
                 CacheResult::NoAction(false) => {
-                    let outcome = old_state.to_wasm_outcome(result_env).await;
+                    let outcome = old_state.to_exec_outcome(result_env).await;
                     return Ok(outcome);
                 }
             };
@@ -691,7 +699,7 @@ impl ExecutorContext {
         })
         .await;
 
-        let outcome = exec_state.to_wasm_outcome(result.0).await;
+        let outcome = exec_state.to_exec_outcome(result.0).await;
         Ok(outcome)
     }
 
@@ -775,8 +783,11 @@ impl ExecutorContext {
 
             KclErrorWithOutputs::new(
                 err,
+                #[cfg(feature = "artifact-graph")]
                 exec_state.global.operations.clone(),
+                #[cfg(feature = "artifact-graph")]
                 exec_state.global.artifact_commands.clone(),
+                #[cfg(feature = "artifact-graph")]
                 exec_state.global.artifact_graph.clone(),
                 module_id_to_module_path,
                 exec_state.global.id_to_source.clone(),
@@ -795,8 +806,11 @@ impl ExecutorContext {
 
                 KclErrorWithOutputs::new(
                     err,
+                    #[cfg(feature = "artifact-graph")]
                     exec_state.global.operations.clone(),
+                    #[cfg(feature = "artifact-graph")]
                     exec_state.global.artifact_commands.clone(),
+                    #[cfg(feature = "artifact-graph")]
                     exec_state.global.artifact_graph.clone(),
                     module_id_to_module_path,
                     exec_state.global.id_to_source.clone(),
@@ -940,8 +954,11 @@ impl ExecutorContext {
 
                         return Err(KclErrorWithOutputs::new(
                             e,
+                            #[cfg(feature = "artifact-graph")]
                             exec_state.global.operations.clone(),
+                            #[cfg(feature = "artifact-graph")]
                             exec_state.global.artifact_commands.clone(),
+                            #[cfg(feature = "artifact-graph")]
                             exec_state.global.artifact_graph.clone(),
                             module_id_to_module_path,
                             exec_state.global.id_to_source.clone(),
@@ -992,8 +1009,11 @@ impl ExecutorContext {
 
             KclErrorWithOutputs::new(
                 e,
+                #[cfg(feature = "artifact-graph")]
                 exec_state.global.operations.clone(),
+                #[cfg(feature = "artifact-graph")]
                 exec_state.global.artifact_commands.clone(),
+                #[cfg(feature = "artifact-graph")]
                 exec_state.global.artifact_graph.clone(),
                 module_id_to_module_path,
                 exec_state.global.id_to_source.clone(),
@@ -1042,31 +1062,38 @@ impl ExecutorContext {
         // and should be dropped.
         self.engine.clear_queues().await;
 
-        // Move the artifact commands and responses to simplify cache management
-        // and error creation.
-        exec_state
-            .global
-            .artifact_commands
-            .extend(self.engine.take_artifact_commands().await);
-        exec_state
-            .global
-            .artifact_responses
-            .extend(self.engine.take_responses().await);
-        // Build the artifact graph.
-        match build_artifact_graph(
-            &exec_state.global.artifact_commands,
-            &exec_state.global.artifact_responses,
-            program,
-            &exec_state.global.artifacts,
-        ) {
-            Ok(artifact_graph) => {
-                exec_state.global.artifact_graph = artifact_graph;
-                exec_result.map(|(_, env_ref, _)| env_ref)
+        #[cfg(feature = "artifact-graph")]
+        {
+            // Move the artifact commands and responses to simplify cache management
+            // and error creation.
+            exec_state
+                .global
+                .artifact_commands
+                .extend(self.engine.take_artifact_commands().await);
+            exec_state
+                .global
+                .artifact_responses
+                .extend(self.engine.take_responses().await);
+            // Build the artifact graph.
+            match build_artifact_graph(
+                &exec_state.global.artifact_commands,
+                &exec_state.global.artifact_responses,
+                program,
+                &exec_state.global.artifacts,
+            ) {
+                Ok(artifact_graph) => {
+                    exec_state.global.artifact_graph = artifact_graph;
+                    exec_result.map(|(_, env_ref, _)| env_ref)
+                }
+                Err(err) => {
+                    // Prefer the exec error.
+                    exec_result.and(Err(err))
+                }
             }
-            Err(err) => {
-                // Prefer the exec error.
-                exec_result.and(Err(err))
-            }
+        }
+        #[cfg(not(feature = "artifact-graph"))]
+        {
+            exec_result.map(|(_, env_ref, _)| env_ref)
         }
     }
 

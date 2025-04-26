@@ -11,15 +11,15 @@ flowchart LR
     9["Segment<br>[2431, 2438, 0]"]
     10[Solid2d]
   end
-  subgraph path25 [Path]
-    25["Path<br>[2583, 2773, 0]"]
-    26["Segment<br>[2583, 2773, 0]"]
-    27[Solid2d]
+  subgraph path32 [Path]
+    32["Path<br>[2583, 2773, 0]"]
+    33["Segment<br>[2583, 2773, 0]"]
+    34[Solid2d]
   end
-  subgraph path33 [Path]
-    33["Path<br>[3207, 3409, 0]"]
-    34["Segment<br>[3207, 3409, 0]"]
-    35[Solid2d]
+  subgraph path42 [Path]
+    42["Path<br>[3207, 3409, 0]"]
+    43["Segment<br>[3207, 3409, 0]"]
+    44[Solid2d]
   end
   1["Plane<br>[2042, 2059, 0]"]
   11["Sweep Extrusion<br>[2444, 2470, 0]"]
@@ -32,27 +32,37 @@ flowchart LR
   18["Cap Start"]
   19["Cap End"]
   20["SweepEdge Opposite"]
-  21["SweepEdge Opposite"]
+  21["SweepEdge Adjacent"]
   22["SweepEdge Opposite"]
-  23["SweepEdge Opposite"]
+  23["SweepEdge Adjacent"]
   24["SweepEdge Opposite"]
-  28["Sweep Extrusion<br>[3059, 3096, 0]"]
-  29[Wall]
-  30["Sweep Extrusion<br>[3059, 3096, 0]"]
-  31["Sweep Extrusion<br>[3059, 3096, 0]"]
-  32["Sweep Extrusion<br>[3059, 3096, 0]"]
-  36["Sweep Extrusion<br>[3524, 3561, 0]"]
-  37[Wall]
-  38["Sweep Extrusion<br>[3524, 3561, 0]"]
-  39["SweepEdge Adjacent"]
-  40["EdgeCut Fillet<br>[3578, 3658, 0]"]
-  41["EdgeCut Fillet<br>[3659, 3736, 0]"]
-  42["EdgeCut Fillet<br>[3762, 3904, 0]"]
-  43["EdgeCut Fillet<br>[3762, 3904, 0]"]
-  44["EdgeCut Fillet<br>[3762, 3904, 0]"]
-  45["EdgeCut Fillet<br>[3762, 3904, 0]"]
-  46["StartSketchOnFace<br>[2537, 2577, 0]"]
-  47["StartSketchOnFace<br>[3161, 3201, 0]"]
+  25["SweepEdge Adjacent"]
+  26["SweepEdge Opposite"]
+  27["SweepEdge Adjacent"]
+  28["SweepEdge Opposite"]
+  29["SweepEdge Adjacent"]
+  30["SweepEdge Opposite"]
+  31["SweepEdge Adjacent"]
+  35["Sweep Extrusion<br>[3059, 3096, 0]"]
+  36[Wall]
+  37["SweepEdge Opposite"]
+  38["SweepEdge Adjacent"]
+  39["Sweep Extrusion<br>[3059, 3096, 0]"]
+  40["Sweep Extrusion<br>[3059, 3096, 0]"]
+  41["Sweep Extrusion<br>[3059, 3096, 0]"]
+  45["Sweep Extrusion<br>[3524, 3561, 0]"]
+  46[Wall]
+  47["SweepEdge Opposite"]
+  48["SweepEdge Adjacent"]
+  49["Sweep Extrusion<br>[3524, 3561, 0]"]
+  50["EdgeCut Fillet<br>[3578, 3658, 0]"]
+  51["EdgeCut Fillet<br>[3659, 3736, 0]"]
+  52["EdgeCut Fillet<br>[3762, 3904, 0]"]
+  53["EdgeCut Fillet<br>[3762, 3904, 0]"]
+  54["EdgeCut Fillet<br>[3762, 3904, 0]"]
+  55["EdgeCut Fillet<br>[3762, 3904, 0]"]
+  56["StartSketchOnFace<br>[2537, 2577, 0]"]
+  57["StartSketchOnFace<br>[3161, 3201, 0]"]
   1 --- 2
   2 --- 3
   2 --- 4
@@ -64,24 +74,30 @@ flowchart LR
   2 ---- 11
   2 --- 10
   3 --- 12
+  3 --- 20
+  3 --- 21
   3 x--> 18
   4 --- 13
-  4 --- 20
-  4 --- 42
+  4 --- 22
+  4 --- 23
+  4 --- 52
   4 x--> 18
   5 --- 14
-  5 --- 21
-  5 --- 39
+  5 --- 24
+  5 --- 25
   5 x--> 18
   6 --- 15
-  6 --- 22
+  6 --- 26
+  6 --- 27
   6 x--> 18
   7 --- 16
-  7 --- 23
-  7 --- 44
+  7 --- 28
+  7 --- 29
+  7 --- 54
   7 x--> 18
   8 --- 17
-  8 --- 24
+  8 --- 30
+  8 --- 31
   8 x--> 18
   11 --- 12
   11 --- 13
@@ -96,34 +112,61 @@ flowchart LR
   11 --- 22
   11 --- 23
   11 --- 24
-  11 --- 39
-  14 --- 25
-  15 --- 33
-  20 <--x 13
+  11 --- 25
+  11 --- 26
+  11 --- 27
+  11 --- 28
+  11 --- 29
+  11 --- 30
+  11 --- 31
+  14 --- 32
+  15 --- 42
+  20 <--x 12
   20 <--x 19
-  21 <--x 14
-  21 <--x 19
-  22 <--x 15
-  22 <--x 19
-  23 <--x 16
-  23 <--x 19
-  24 <--x 17
+  21 <--x 12
+  21 <--x 13
+  23 <--x 13
+  23 <--x 14
+  24 <--x 14
   24 <--x 19
-  25 --- 26
-  25 ---- 28
-  25 --- 27
-  26 --- 29
-  26 <--x 14
-  28 --- 29
-  33 --- 34
-  33 ---- 36
-  33 --- 35
-  34 --- 37
-  34 <--x 15
-  36 --- 37
-  39 <--x 40
-  20 <--x 43
-  23 <--x 45
-  14 <--x 46
-  15 <--x 47
+  26 <--x 15
+  26 <--x 19
+  27 <--x 15
+  27 <--x 16
+  29 <--x 16
+  29 <--x 17
+  30 <--x 17
+  30 <--x 19
+  32 --- 33
+  32 ---- 35
+  32 --- 34
+  33 --- 36
+  33 --- 37
+  33 --- 38
+  33 <--x 14
+  35 --- 36
+  35 --- 37
+  35 --- 38
+  37 <--x 36
+  37 <--x 12
+  38 <--x 36
+  42 --- 43
+  42 ---- 45
+  42 --- 44
+  43 --- 46
+  43 --- 47
+  43 --- 48
+  43 <--x 15
+  45 --- 46
+  45 --- 47
+  45 --- 48
+  47 <--x 46
+  47 <--x 17
+  48 <--x 46
+  25 <--x 50
+  31 <--x 51
+  22 <--x 53
+  28 <--x 55
+  14 <--x 56
+  15 <--x 57
 ```

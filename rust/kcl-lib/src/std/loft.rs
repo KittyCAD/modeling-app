@@ -176,6 +176,7 @@ async fn inner_loft(
     Ok(Box::new(
         do_post_extrude(
             &sketch,
+            #[cfg(feature = "artifact-graph")]
             id.into(),
             TyF64::new(0.0, NumericType::mm()),
             false,

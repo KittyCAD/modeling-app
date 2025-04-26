@@ -34,7 +34,6 @@ flowchart LR
   end
   subgraph path28 [Path]
     28["Path<br>[631, 865, 0]"]
-    29["Segment<br>[875, 959, 0]"]
     35["Segment<br>[1282, 1290, 0]"]
     36[Solid2d]
   end
@@ -46,6 +45,7 @@ flowchart LR
   1["Plane<br>[587, 620, 0]"]
   14["Plane<br>[587, 620, 0]"]
   27["Plane<br>[587, 620, 0]"]
+  29["SweepEdge Opposite"]
   30["SweepEdge Opposite"]
   31["SweepEdge Opposite"]
   32["SweepEdge Opposite"]
@@ -60,9 +60,15 @@ flowchart LR
   46[Wall]
   47["Cap Start"]
   48["Cap End"]
-  49["StartSketchOnPlane<br>[573, 621, 0]"]
-  50["StartSketchOnPlane<br>[573, 621, 0]"]
-  51["StartSketchOnPlane<br>[573, 621, 0]"]
+  49["SweepEdge Adjacent"]
+  50["SweepEdge Adjacent"]
+  51["SweepEdge Adjacent"]
+  52["SweepEdge Adjacent"]
+  53["SweepEdge Adjacent"]
+  54["SweepEdge Adjacent"]
+  55["StartSketchOnPlane<br>[573, 621, 0]"]
+  56["StartSketchOnPlane<br>[573, 621, 0]"]
+  57["StartSketchOnPlane<br>[573, 621, 0]"]
   1 --- 2
   1 --- 11
   2 --- 3
@@ -75,21 +81,28 @@ flowchart LR
   2 ---- 40
   2 --- 10
   3 --- 41
+  3 --- 29
+  3 --- 49
   3 x--> 47
   4 --- 42
   4 --- 30
+  4 --- 50
   4 x--> 47
   5 --- 43
   5 --- 31
+  5 --- 51
   5 x--> 47
   6 --- 44
   6 --- 32
+  6 --- 52
   6 x--> 47
   7 --- 45
   7 --- 33
+  7 --- 53
   7 x--> 47
   8 --- 46
   8 --- 34
+  8 --- 54
   8 x--> 47
   11 --- 12
   11 --- 13
@@ -108,7 +121,7 @@ flowchart LR
   24 --- 26
   27 --- 28
   27 --- 37
-  28 --- 29
+  28 x--> 29
   28 x--> 30
   28 x--> 31
   28 x--> 32
@@ -117,6 +130,7 @@ flowchart LR
   28 --- 35
   28 x---> 40
   28 --- 36
+  40 --- 29
   29 x--> 41
   29 x--> 48
   40 --- 30
@@ -144,7 +158,25 @@ flowchart LR
   40 --- 46
   40 --- 47
   40 --- 48
-  1 <--x 49
-  14 <--x 50
-  27 <--x 51
+  40 --- 49
+  40 --- 50
+  40 --- 51
+  40 --- 52
+  40 --- 53
+  40 --- 54
+  49 <--x 46
+  49 <--x 41
+  50 <--x 41
+  50 <--x 42
+  51 <--x 42
+  51 <--x 43
+  52 <--x 43
+  52 <--x 44
+  53 <--x 44
+  53 <--x 45
+  54 <--x 45
+  54 <--x 46
+  1 <--x 55
+  14 <--x 56
+  27 <--x 57
 ```
