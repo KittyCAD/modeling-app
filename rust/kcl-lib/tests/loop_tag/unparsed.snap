@@ -31,9 +31,13 @@ initialSketch = startSketchOn(XY)
   |> startProfile(at = calculatePoint(0))
 
 // Draw lines to form the base of the cylinder
-finalSketch = reduce([1 .. numSides - 1], initialSketch, fn(index, sketch) {
-  return line(sketch, end =   calculatePoint(index), tag = $problematicTag)
-})
+finalSketch = reduce(
+  [1 .. numSides - 1],
+  initial = initialSketch,
+  f = fn(index, sketch) {
+    return line(sketch, end =     calculatePoint(index), tag = $problematicTag)
+  },
+)
 
 // Close the sketch to complete the base
 closedSketch = close(finalSketch)

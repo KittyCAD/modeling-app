@@ -17,28 +17,43 @@ gearHeight = 3
 
 // Interpolate points along the involute curve
 cmo = 101
-rs = map([0..cmo], fn(i) {
-  return baseDiameter / 2 + i / cmo * (tipDiameter - baseDiameter) / 2
-})
+rs = map(
+  [0..cmo],
+  f = fn(i) {
+    return baseDiameter / 2 + i / cmo * (tipDiameter - baseDiameter) / 2
+  },
+)
 
 // Calculate operating pressure angle
-angles = map(rs, fn(r) {
-  return toDegrees(  acos(baseDiameter / 2 / r))
-})
+angles = map(
+  rs,
+  f = fn(r) {
+    return toDegrees(    acos(baseDiameter / 2 / r))
+  },
+)
 
 // Calculate the involute function
-invas = map(angles, fn(a) {
-  return tan(toRadians(a)) - toRadians(a)
-})
+invas = map(
+  angles,
+  f = fn(a) {
+    return tan(toRadians(a)) - toRadians(a)
+  },
+)
 
 // Map the involute curve
-xs = map([0..cmo], fn(i) {
-  return rs[i] * cos(invas[i]: number(rad))
-})
+xs = map(
+  [0..cmo],
+  f = fn(i) {
+    return rs[i] * cos(invas[i]: number(rad))
+  },
+)
 
-ys = map([0..cmo], fn(i) {
-  return rs[i] * sin(invas[i]: number(rad))
-})
+ys = map(
+  [0..cmo],
+  f = fn(i) {
+    return rs[i] * sin(invas[i]: number(rad))
+  },
+)
 
 // Extrude the gear body
 body = startSketchOn(XY)
@@ -62,9 +77,9 @@ fn rightInvolute(i, sg) {
 // Draw gear teeth
 start = startSketchOn(XY)
   |> startProfile(at = [xs[101], ys[101]])
-teeth = reduce([0..100], start, leftInvolute)
+teeth = reduce([0..100], initial = start, f = leftInvolute)
   |> arc(angleStart = 0, angleEnd = toothAngle, radius = baseDiameter / 2)
-  |> reduce([1..101], %, rightInvolute)
+  |> reduce([1..101], initial = %, f = rightInvolute)
   |> close()
   |> extrude(length = gearHeight)
   |> patternCircular3d(
