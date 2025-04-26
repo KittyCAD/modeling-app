@@ -382,7 +382,6 @@ pub(crate) async fn do_post_extrude<'a>(
                 args.batch_modeling_cmd(
                     exec_state.next_uuid(),
                     ModelingCmd::from(mcmd::Solid3dGetAllEdgeFaces {
-                        // edge_id: next_adjacent_edge.edge,
                         edge_id,
                         object_id: sketch.id,
                     }),
