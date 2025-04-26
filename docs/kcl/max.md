@@ -9,7 +9,7 @@ Compute the maximum of the given arguments.
 
 
 ```js
-max(args: [number]): number
+max(input: [number]): number
 ```
 
 ### Tags
@@ -21,7 +21,7 @@ max(args: [number]): number
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `args` | [`[number]`](/docs/kcl/types/number) |  | Yes |
+| `input` | [`[number]`](/docs/kcl/types/number) | An array of numbers to compute the maximum of. | Yes |
 
 ### Returns
 
@@ -33,7 +33,7 @@ max(args: [number]): number
 ```js
 exampleSketch = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
-  |> angledLine(angle = 70, length = max(15, 31, 4, 13, 22))
+  |> angledLine(angle = 70, length = max([15, 31, 4, 13, 22]))
   |> line(end = [20, 0])
   |> close()
 

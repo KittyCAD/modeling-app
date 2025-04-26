@@ -9,7 +9,7 @@ Compute the base 2 logarithm of the number.
 
 
 ```js
-log2(num: number): number
+log2(input: number): number
 ```
 
 ### Tags
@@ -21,7 +21,7 @@ log2(num: number): number
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `num` | [`number`](/docs/kcl/types/number) |  | Yes |
+| `input` | [`number`](/docs/kcl/types/number) | The number to compute the logarithm of. | Yes |
 
 ### Returns
 

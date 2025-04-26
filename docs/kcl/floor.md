@@ -9,7 +9,7 @@ Compute the largest integer less than or equal to a number.
 
 
 ```js
-floor(num: number): number
+floor(input: number): number
 ```
 
 ### Tags
@@ -21,7 +21,7 @@ floor(num: number): number
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `num` | [`number`](/docs/kcl/types/number) |  | Yes |
+| `input` | [`number`](/docs/kcl/types/number) | The number to round. | Yes |
 
 ### Returns
 

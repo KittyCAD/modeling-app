@@ -2054,10 +2054,10 @@ o = 3mm / 3
 p = 3_ / 4
 q = 4inch / 2_
 
-r = min(0, 3, 42)
-s = min(0, 3mm, -42)
-t = min(100, 3in, 142mm)
-u = min(3rad, 4in)
+r = min([0, 3, 42])
+s = min([0, 3mm, -42])
+t = min([100, 3in, 142mm])
+u = min([3rad, 4in])
 "#;
 
         let result = parse_execute(program).await.unwrap();

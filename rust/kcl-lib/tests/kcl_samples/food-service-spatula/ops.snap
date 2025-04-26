@@ -25,7 +25,7 @@ description: Operations executed food-service-spatula.kcl
       "name": "slot",
       "functionSourceRange": [
         462,
-        1306,
+        1318,
         0
       ],
       "unlabeledArg": null,
@@ -133,7 +133,7 @@ description: Operations executed food-service-spatula.kcl
       "name": "slot",
       "functionSourceRange": [
         462,
-        1306,
+        1318,
         0
       ],
       "unlabeledArg": null,
@@ -241,7 +241,7 @@ description: Operations executed food-service-spatula.kcl
       "name": "slot",
       "functionSourceRange": [
         462,
-        1306,
+        1318,
         0
       ],
       "unlabeledArg": null,
@@ -877,7 +877,7 @@ description: Operations executed food-service-spatula.kcl
       "name": "slot",
       "functionSourceRange": [
         462,
-        1306,
+        1318,
         0
       ],
       "unlabeledArg": null,

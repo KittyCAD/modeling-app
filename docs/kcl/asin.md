@@ -9,7 +9,7 @@ Compute the arcsine of a number (in radians).
 
 
 ```js
-asin(num: number): number
+asin(input: number): number
 ```
 
 ### Tags
@@ -21,7 +21,7 @@ asin(num: number): number
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `num` | [`number`](/docs/kcl/types/number) |  | Yes |
+| `input` | [`number`](/docs/kcl/types/number) | The number to compute arcsine of. | Yes |
 
 ### Returns
 

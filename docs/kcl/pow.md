@@ -10,8 +10,8 @@ Compute the number to a power.
 
 ```js
 pow(
-  num: number,
-  pow: number,
+  input: number,
+  exp: number,
 ): number
 ```
 
@@ -24,8 +24,8 @@ pow(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `num` | [`number`](/docs/kcl/types/number) |  | Yes |
-| `pow` | [`number`](/docs/kcl/types/number) |  | Yes |
+| `input` | [`number`](/docs/kcl/types/number) | The number to raise. | Yes |
+| `exp` | [`number`](/docs/kcl/types/number) | The power to raise to. | Yes |
 
 ### Returns
 
@@ -37,7 +37,7 @@ pow(
 ```js
 exampleSketch = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
-  |> angledLine(angle = 50, length = pow(5, 2))
+  |> angledLine(angle = 50, length = pow(5, exp = 2))
   |> yLine(endAbsolute = 0)
   |> close()
 

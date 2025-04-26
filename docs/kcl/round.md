@@ -9,7 +9,7 @@ Round a number to the nearest integer.
 
 
 ```js
-round(num: number): number
+round(input: number): number
 ```
 
 ### Tags
@@ -21,7 +21,7 @@ round(num: number): number
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `num` | [`number`](/docs/kcl/types/number) |  | Yes |
+| `input` | [`number`](/docs/kcl/types/number) | The number to round. | Yes |
 
 ### Returns
 
