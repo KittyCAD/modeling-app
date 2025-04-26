@@ -151,9 +151,6 @@ export type ModelingCommandSchema = {
     }
     namedValue: KclCommandValue
   }
-  'Text-to-CAD': {
-    prompt: string
-  }
   'Prompt-to-edit': {
     prompt: string
     selection: Selections
@@ -956,16 +953,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           }
           return currentValue.valueText
         },
-      },
-    },
-  },
-  'Text-to-CAD': {
-    description: 'Use the Zoo Text-to-CAD API to generate part starters.',
-    icon: 'chat',
-    args: {
-      prompt: {
-        inputType: 'text',
-        required: true,
       },
     },
   },

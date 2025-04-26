@@ -716,25 +716,6 @@ pub trait FromKclValue<'a>: Sized {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self>;
 }
 
-impl<'a> FromArgs<'a> for Vec<KclValue> {
-    fn from_args(args: &'a Args, i: usize) -> Result<Self, KclError> {
-        let Some(arg) = args.args.get(i) else {
-            return Err(KclError::Semantic(KclErrorDetails {
-                message: format!("Expected an argument at index {i}"),
-                source_ranges: vec![args.source_range],
-            }));
-        };
-        let KclValue::MixedArray { value: array, meta: _ } = &arg.value else {
-            let message = format!("Expected an array but found {}", arg.value.human_friendly_type());
-            return Err(KclError::Type(KclErrorDetails {
-                source_ranges: arg.source_ranges(),
-                message,
-            }));
-        };
-        Ok(array.to_owned())
-    }
-}
-
 impl<'a, T> FromArgs<'a> for T
 where
     T: FromKclValue<'a> + Sized,
@@ -849,6 +830,12 @@ impl<'a> FromKclValue<'a> for Vec<TagIdentifier> {
             }
             _ => None,
         }
+    }
+}
+
+impl<'a> FromKclValue<'a> for Vec<KclValue> {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        arg.as_array().map(|v| v.to_vec())
     }
 }
 

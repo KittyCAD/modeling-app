@@ -1,15 +1,20 @@
 import { useFileSystemWatcher } from '@src/hooks/useFileSystemWatcher'
 import { PATHS } from '@src/lib/paths'
-import { systemIOActor, useSettings } from '@src/lib/singletons'
+import { systemIOActor, useSettings, useToken } from '@src/lib/singletons'
 import {
   useHasListedProjects,
   useProjectDirectoryPath,
   useRequestedFileName,
   useRequestedProjectName,
+  useRequestedTextToCadGeneration,
+  useFolders,
 } from '@src/machines/systemIO/hooks'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { useNavigate } from 'react-router-dom'
 import { useEffect } from 'react'
+import { submitAndAwaitTextToKclSystemIO } from '@src/lib/textToCad'
+import { reportRejection } from '@src/lib/trap'
+import { getUniqueProjectName } from '@src/lib/desktopFS'
 
 export function SystemIOMachineLogicListenerDesktop() {
   const requestedProjectName = useRequestedProjectName()
@@ -18,6 +23,9 @@ export function SystemIOMachineLogicListenerDesktop() {
   const hasListedProjects = useHasListedProjects()
   const navigate = useNavigate()
   const settings = useSettings()
+  const requestedTextToCadGeneration = useRequestedTextToCadGeneration()
+  const token = useToken()
+  const folders = useFolders()
 
   const useGlobalProjectNavigation = () => {
     useEffect(() => {
@@ -95,6 +103,27 @@ export function SystemIOMachineLogicListenerDesktop() {
         ? [settings.app.projectDirectory.current]
         : []
     )
+
+    // TODO: Move this generateTextToCAD to another machine in the future and make a whole machine out of it.
+    useEffect(() => {
+      const requestedPromptTrimmed =
+        requestedTextToCadGeneration.requestedPrompt.trim()
+      const requestedProjectName =
+        requestedTextToCadGeneration.requestedProjectName
+      const isProjectNew = requestedTextToCadGeneration.isProjectNew
+      if (!requestedPromptTrimmed || !requestedProjectName) return
+      const uniqueNameIfNeeded = isProjectNew
+        ? getUniqueProjectName(requestedProjectName, folders)
+        : requestedProjectName
+      submitAndAwaitTextToKclSystemIO({
+        trimmedPrompt: requestedPromptTrimmed,
+        projectName: uniqueNameIfNeeded,
+        navigate,
+        token,
+        isProjectNew,
+        settings: { highlightEdges: settings.modeling.highlightEdges.current },
+      }).catch(reportRejection)
+    }, [requestedTextToCadGeneration])
   }
 
   useGlobalProjectNavigation()

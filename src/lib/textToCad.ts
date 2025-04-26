@@ -2,8 +2,6 @@ import type { Models } from '@kittycad/lib'
 import { VITE_KC_API_BASE_URL } from '@src/env'
 import toast from 'react-hot-toast'
 import type { NavigateFunction } from 'react-router-dom'
-import type { ContextFrom, EventFrom } from 'xstate'
-
 import {
   ToastTextToCadError,
   ToastTextToCadSuccess,
@@ -12,13 +10,12 @@ import { FILE_EXT } from '@src/lib/constants'
 import crossPlatformFetch from '@src/lib/crossPlatformFetch'
 import { getNextFileName } from '@src/lib/desktopFS'
 import { isDesktop } from '@src/lib/isDesktop'
-import { kclManager } from '@src/lib/singletons'
-import type { Themes } from '@src/lib/theme'
+import { kclManager, systemIOActor } from '@src/lib/singletons'
+import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { reportRejection } from '@src/lib/trap'
 import { toSync } from '@src/lib/utils'
-import type { fileMachine } from '@src/machines/fileMachine'
 
-async function submitTextToCadPrompt(
+export async function submitTextToCadPrompt(
   prompt: string,
   projectName: string,
   token?: string
@@ -52,7 +49,7 @@ async function submitTextToCadPrompt(
   return data
 }
 
-async function getTextToCadResult(
+export async function getTextToCadResult(
   id: string,
   token?: string
 ): Promise<Models['TextToCad_type'] | Error> {
@@ -68,29 +65,25 @@ async function getTextToCadResult(
   return data
 }
 
-interface TextToKclProps {
+interface TextToKclPropsApplicationLevel {
   trimmedPrompt: string
-  fileMachineSend: (
-    type: EventFrom<typeof fileMachine>,
-    data?: unknown
-  ) => unknown
   navigate: NavigateFunction
-  context: ContextFrom<typeof fileMachine>
   token?: string
-  settings: {
-    theme: Themes
+  projectName: string
+  isProjectNew: boolean
+  settings?: {
     highlightEdges: boolean
   }
 }
 
-export async function submitAndAwaitTextToKcl({
+export async function submitAndAwaitTextToKclSystemIO({
   trimmedPrompt,
-  fileMachineSend,
-  navigate,
-  context,
   token,
+  projectName,
+  navigate,
+  isProjectNew,
   settings,
-}: TextToKclProps) {
+}: TextToKclPropsApplicationLevel) {
   const toastId = toast.loading('Submitting to Text-to-CAD API...')
   const showFailureToast = (message: string) => {
     toast.error(
@@ -99,6 +92,9 @@ export async function submitAndAwaitTextToKcl({
           toastId,
           message,
           prompt: trimmedPrompt,
+          method: isProjectNew ? 'newProject' : 'existingProject',
+          projectName: isProjectNew ? '' : projectName,
+          newProjectName: isProjectNew ? projectName : '',
         }),
       {
         id: toastId,
@@ -109,7 +105,7 @@ export async function submitAndAwaitTextToKcl({
 
   const textToCadQueued = await submitTextToCadPrompt(
     trimmedPrompt,
-    context.project.name,
+    projectName,
     token
   )
     .then((value) => {
@@ -174,12 +170,16 @@ export async function submitAndAwaitTextToKcl({
     }
   )
 
+  let newFileName = ''
+
   const textToCadOutputCreated = await textToCadComplete
     .catch((e) => {
       showFailureToast('Failed to generate parametric model')
       return e
     })
     .then(async (value) => {
+      console.log('completed')
+      console.log(value)
       if (value.code === undefined || !value.code || value.code.length === 0) {
         // We want to show the real error message to the user.
         if (value.error && value.error.length > 0) {
@@ -193,7 +193,7 @@ export async function submitAndAwaitTextToKcl({
       }
 
       const TRUNCATED_PROMPT_LENGTH = 24
-      let newFileName = `${value.prompt
+      newFileName = `${value.prompt
         .slice(0, TRUNCATED_PROMPT_LENGTH)
         .replace(/\s/gi, '-')
         .replace(/\W/gi, '-')
@@ -205,16 +205,15 @@ export async function submitAndAwaitTextToKcl({
         // and by extension the file-deletion-on-reject logic.
         newFileName = getNextFileName({
           entryName: newFileName,
-          baseDir: context.selectedDirectory.path,
+          baseDir: projectName,
         }).name
 
-        fileMachineSend({
-          type: 'Create file',
+        systemIOActor.send({
+          type: SystemIOMachineEvents.createKCLFile,
           data: {
-            name: newFileName,
-            makeDir: false,
-            content: value.code,
-            silent: true,
+            requestedProjectName: projectName,
+            requestedCode: value.code,
+            requestedFileName: newFileName,
           },
         })
       }
@@ -234,13 +233,16 @@ export async function submitAndAwaitTextToKcl({
   // and options to reject or accept the model
   toast.success(
     () =>
+      // EXPECTED: This will throw a error in dev mode, do not worry about it.
+      // Warning: Internal React error: Expected static flag was missing. Please notify the React team.
       ToastTextToCadSuccess({
         toastId,
         data: textToCadOutputCreated,
         token,
+        projectName: projectName,
+        fileName: newFileName,
         navigate,
-        context,
-        fileMachineSend,
+        isProjectNew,
         settings,
       }),
     {
