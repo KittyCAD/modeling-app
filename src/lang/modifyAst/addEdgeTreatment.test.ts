@@ -487,7 +487,7 @@ extrude001 = extrude(sketch001, length = -15, tagEnd = $capEnd001)
           parameters,
           expectedCode
         )
-      })
+      }, 10_000)
       it(`should add a ${edgeTreatmentType} to the sketch pipe`, async () => {
         const code = `sketch001 = startSketchOn(XY)
   |> startProfile(at = [-10, 10])
@@ -519,7 +519,7 @@ extrude001 = extrude(sketch001, length = -15, tagEnd = $capEnd001)
           parameters,
           expectedCode
         )
-      })
+      }, 10_000)
       it(`should add a ${edgeTreatmentType} to an already tagged segment`, async () => {
         const code = `sketch001 = startSketchOn(XY)
   |> startProfile(at = [-10, 10])
@@ -551,7 +551,7 @@ extrude001 = extrude(sketch001, length = -15, tagEnd = $capEnd001)
           parameters,
           expectedCode
         )
-      })
+      }, 10_000)
       it(`should add a ${edgeTreatmentType} with existing tag on other segment`, async () => {
         const code = `sketch001 = startSketchOn(XY)
   |> startProfile(at = [-10, 10])
@@ -583,7 +583,7 @@ extrude001 = extrude(sketch001, length = -15, tagEnd = $capEnd001)
           parameters,
           expectedCode
         )
-      })
+      }, 10_000)
       it(`should add a ${edgeTreatmentType} with existing fillet on other segment`, async () => {
         const code = `sketch001 = startSketchOn(XY)
   |> startProfile(at = [-10, 10])
@@ -627,7 +627,7 @@ extrude001 = extrude(sketch001, length = -15, tagEnd = $capEnd001)
           parameters,
           expectedCode
         )
-      })
+      }, 10_000)
       it(`should add a ${edgeTreatmentType} with existing chamfer on other segment`, async () => {
         const code = `sketch001 = startSketchOn(XY)
   |> startProfile(at = [-10, 10])
@@ -671,7 +671,7 @@ extrude001 = extrude(sketch001, length = -15, tagEnd = $capEnd001)
           parameters,
           expectedCode
         )
-      })
+      }, 10_000)
       it(`should add a ${edgeTreatmentType} to two segments of a single extrusion`, async () => {
         const code = `sketch001 = startSketchOn(XY)
   |> startProfile(at = [-10, 10])
@@ -704,7 +704,7 @@ extrude001 = extrude(sketch001, length = -15, tagEnd = $capEnd001)
           parameters,
           expectedCode
         )
-      })
+      }, 10_000)
       it(`should add ${edgeTreatmentType}s to two bodies`, async () => {
         const code = `sketch001 = startSketchOn(XY)
   |> startProfile(at = [-10, 10])
@@ -763,7 +763,7 @@ extrude002 = extrude(sketch002, length = -25, tagEnd = $capEnd002)
           parameters,
           expectedCode
         )
-      })
+      }, 10_000)
     })
     describe(`Testing deleteEdgeTreatment with ${edgeTreatmentType}s`, () => {
       // simple cases

@@ -33,7 +33,8 @@ const executeCode = async (code: string) => {
   const ast = assertParse(code)
   await kclManager.executeAst({ ast })
   const artifactGraph = kclManager.artifactGraph
-  await new Promise((resolve) => setTimeout(resolve, 100))
+  // Wait for artifact graph to be populated
+  await new Promise((resolve) => setTimeout(resolve, 1000))
   return { ast, artifactGraph }
 }
 
@@ -51,10 +52,20 @@ const createSelectionWithFirstMatchingArtifact = async (
     return true
   })
 
-  // get first artifact of this type
-  const firstArtifactsOfType = allArtifactsOfType[0][1]
-  if (!firstArtifactsOfType) {
+  // Check if we found any artifacts
+  if (allArtifactsOfType.length === 0) {
     return new Error(`No artifacts of type ${artifactType} found`)
+  }
+
+  // get first artifact of this type
+  const firstArtifact = allArtifactsOfType[0]
+  if (!firstArtifact) {
+    return new Error(`Failed to get first artifact of type ${artifactType}`)
+  }
+
+  const firstArtifactsOfType = firstArtifact[1]
+  if (!firstArtifactsOfType) {
+    return new Error(`No artifact data found for type ${artifactType}`)
   }
 
   // get codeRef
@@ -68,6 +79,9 @@ const createSelectionWithFirstMatchingArtifact = async (
       if (artifact.id !== firstArtifactsOfType.segId) return false
       return true
     })
+    if (segment.length === 0) {
+      return new Error(`No parent segment found for sweepEdge ${firstArtifactsOfType.id}`)
+    }
     if ('codeRef' in segment[0][1]) {
       codeRef = segment[0][1].codeRef
     }
