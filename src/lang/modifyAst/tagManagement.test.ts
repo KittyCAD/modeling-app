@@ -90,7 +90,7 @@ const createSelectionWithFirstMatchingArtifact = async (
 describe('modifyAstWithTagsForSelection', () => {
   const basicExampleCode = `
 sketch001 = startSketchOn(XY)
-  |> startProfileAt([-10, 10], %)
+  |> startProfile(at = [-10, 10])
   |> line(end = [20, 0])
   |> line(end = [0, -20])
   |> line(end = [-20, 0])
