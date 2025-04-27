@@ -8,7 +8,7 @@ use std::sync::{
 
 use tokio::sync::{mpsc, Notify};
 
-use crate::errors::{KclError, KclErrorDetails};
+use crate::errors::KclError;
 
 #[derive(Debug, Clone)]
 pub struct AsyncTasks {
