@@ -3,7 +3,6 @@ import { type NonCodeMeta } from '@rust/kcl-lib/bindings/NonCodeMeta'
 
 import {
   ARG_ANGLE,
-  ARG_END,
   ARG_END_ABSOLUTE,
   ARG_END_ABSOLUTE_X,
   ARG_END_ABSOLUTE_Y,
@@ -1288,7 +1287,7 @@ const transformMap: TransformMap = {
 }
 
 export function getRemoveConstraintsTransform(
-  sketchFnExp: CallExpression | CallExpressionKw,
+  sketchFnExp: CallExpressionKw,
   constraintType: ConstraintType
 ): TransformInfo | false {
   let name = sketchFnExp.callee.name.name as ToolTip
@@ -1335,19 +1334,14 @@ export function getRemoveConstraintsTransform(
   ) {
     return false
   }
-  const isAbsolute =
-    // isAbsolute doesn't matter if the call is positional.
-    sketchFnExp.type === 'CallExpression' ? false : isAbsoluteLine(sketchFnExp)
+  const isAbsolute = isAbsoluteLine(sketchFnExp)
   if (err(isAbsolute)) {
     console.error(isAbsolute)
     return false
   }
 
   // check if the function is locked down and so can't be transformed
-  const firstArg =
-    sketchFnExp.type === 'CallExpression'
-      ? getFirstArg(sketchFnExp)
-      : getArgForEnd(sketchFnExp)
+  const firstArg = getArgForEnd(sketchFnExp)
   if (err(firstArg)) {
     return false
   }
@@ -1386,19 +1380,14 @@ export function removeSingleConstraint({
   inputDetails: SimplifiedArgDetails
   ast: Program
 }): TransformInfo | false {
-  const callExp = getNodeFromPath<CallExpressionKw>(
-    ast,
-    pathToCallExp,
-    ['CallExpressionKw']
-  )
+  const callExp = getNodeFromPath<CallExpressionKw>(ast, pathToCallExp, [
+    'CallExpressionKw',
+  ])
   if (err(callExp)) {
     console.error(callExp)
     return false
   }
-  if (
-    callExp.node.type !== 'CallExpression' &&
-    callExp.node.type !== 'CallExpressionKw'
-  ) {
+  if (callExp.node.type !== 'CallExpressionKw') {
     console.error(new Error('Invalid node type'))
     return false
   }
@@ -1454,51 +1443,6 @@ export function removeSingleConstraint({
           undefined,
           noncode
         )
-      }
-      if (inputToReplace.type === 'arrayItem') {
-        const values = inputs.map((arg) => {
-          const argExpr = arg.overrideExpr ?? arg.expr
-          if (
-            !(
-              (arg.type === 'arrayItem' || arg.type === 'arrayOrObjItem') &&
-              arg.index === inputToReplace.index
-            )
-          )
-            return argExpr
-          const rawArg = rawArgs.find(
-            (rawValue) =>
-              (rawValue.type === 'arrayItem' ||
-                rawValue.type === 'arrayOrObjItem') &&
-              rawValue.index === inputToReplace.index
-          )
-          const literal = rawArg?.overrideExpr ?? rawArg?.expr
-          return (arg.index === inputToReplace.index && literal) || argExpr
-        })
-        if (callExp.node.type === 'CallExpression') {
-          return createStdlibCallExpression(
-            callExp.node.callee.name.name as any,
-            createArrayExpression(values),
-            tag
-          )
-        } else {
-          // It's a kw call.
-          const isAbsolute = callExp.node.callee.name.name == 'lineTo'
-          if (isAbsolute) {
-            const args = [
-              createLabeledArg(ARG_END_ABSOLUTE, createArrayExpression(values)),
-            ]
-            return createStdlibCallExpressionKw('line', args, tag)
-          } else {
-            const args = [
-              createLabeledArg(ARG_END, createArrayExpression(values)),
-            ]
-            return createStdlibCallExpressionKw(
-              callExp.node.callee.name.name as ToolTip,
-              args,
-              tag
-            )
-          }
-        }
       }
       if (
         inputToReplace.type === 'arrayInObject' ||
@@ -1870,7 +1814,7 @@ export function getRemoveConstraintsTransforms(
     }
 
     const node = nodeMeta.node
-    if (node?.type === 'CallExpression' || node?.type === 'CallExpressionKw') {
+    if (node?.type === 'CallExpressionKw') {
       return getRemoveConstraintsTransform(node, constraintType)
     }
 

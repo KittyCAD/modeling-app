@@ -20,7 +20,6 @@ import {
 } from '@src/lang/std/artifactGraph'
 import type {
   ArtifactGraph,
-  CallExpression,
   CallExpressionKw,
   ExpressionStatement,
   KclValue,

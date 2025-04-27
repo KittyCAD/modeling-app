@@ -427,11 +427,9 @@ export function giveSketchFnCallTag(
   | Error {
   const path = getNodePathFromSourceRange(ast, range)
   const maybeTag = (() => {
-    const callNode = getNodeFromPath<CallExpressionKw>(
-      ast,
-      path,
-      ['CallExpressionKw']
-    )
+    const callNode = getNodeFromPath<CallExpressionKw>(ast, path, [
+      'CallExpressionKw',
+    ])
     if (!err(callNode) && callNode.node.type === 'CallExpressionKw') {
       const { node: primaryCallExp } = callNode
       const existingTag = findKwArg(ARG_TAG, primaryCallExp)

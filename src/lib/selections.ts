@@ -19,7 +19,6 @@ import type { PathToNodeMap } from '@src/lang/std/sketchcombos'
 import { isCursorInSketchCommandRange, topLevelRange } from '@src/lang/util'
 import type {
   ArtifactGraph,
-  CallExpression,
   CallExpressionKw,
   Expr,
   Program,

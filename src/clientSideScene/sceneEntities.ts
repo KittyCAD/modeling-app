@@ -2911,8 +2911,7 @@ export class SceneEntities {
     if (trap(_node)) return
     const node = _node.node
 
-    if (node.type !== 'CallExpression' && node.type !== 'CallExpressionKw')
-      return
+    if (node.type !== 'CallExpressionKw') return
 
     let modded:
       | {
@@ -3335,12 +3334,11 @@ export class SceneEntities {
           if (trap(pResult) || !resultIsOk(pResult))
             return Promise.reject(pResult)
           const updatedAst = pResult.program
-          const _node = getNodeFromPath<
-            Node<CallExpressionKw>
-          >(updatedAst, parent.userData.pathToNode, [
-            'CallExpressionKw',
-            'CallExpression',
-          ])
+          const _node = getNodeFromPath<Node<CallExpressionKw>>(
+            updatedAst,
+            parent.userData.pathToNode,
+            ['CallExpressionKw', 'CallExpression']
+          )
           if (trap(_node, { suppress: true })) return
           const node = _node.node
           this.editorManager.setHighlightRange([

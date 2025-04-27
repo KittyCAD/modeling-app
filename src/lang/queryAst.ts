@@ -9,7 +9,7 @@ import type { ToolTip } from '@src/lang/langHelpers'
 import { splitPathAtLastIndex } from '@src/lang/modifyAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import { codeRefFromRange } from '@src/lang/std/artifactGraph'
-import { getArgForEnd, getFirstArg } from '@src/lang/std/sketch'
+import { getArgForEnd } from '@src/lang/std/sketch'
 import { getSketchSegmentFromSourceRange } from '@src/lang/std/sketchConstraints'
 import {
   getConstraintLevelFromSourceRange,
@@ -565,10 +565,7 @@ export function isLinesParallelAndConstrained(
       Math.abs(primaryAngle - secondaryAngleAlt) < EPSILON
 
     // is secondary line fully constrain, or has constrain type of 'angle'
-    const secondaryFirstArg =
-      secondaryNode.type === 'CallExpression'
-        ? getFirstArg(secondaryNode)
-        : getArgForEnd(secondaryNode)
+    const secondaryFirstArg = getArgForEnd(secondaryNode)
     if (err(secondaryFirstArg)) return secondaryFirstArg
 
     const isAbsolute = false // ADAM: TODO
@@ -677,11 +674,9 @@ export function findUsesOfTagInPipe(
     'segEndY',
     'segLen',
   ]
-  const nodeMeta = getNodeFromPath<CallExpressionKw>(
-    ast,
-    pathToNode,
-    ['CallExpressionKw']
-  )
+  const nodeMeta = getNodeFromPath<CallExpressionKw>(ast, pathToNode, [
+    'CallExpressionKw',
+  ])
   if (err(nodeMeta)) {
     console.error(nodeMeta)
     return []
@@ -689,11 +684,7 @@ export function findUsesOfTagInPipe(
   const node = nodeMeta.node
   if (node.type !== 'CallExpressionKw' && node.type !== 'CallExpression')
     return []
-  const tagIndex = node.callee.name.name === 'close' ? 1 : 2
-  const tagParam =
-    node.type === 'CallExpression'
-      ? node.arguments[tagIndex]
-      : findKwArg(ARG_TAG, node)
+  const tagParam = findKwArg(ARG_TAG, node)
   if (!(tagParam?.type === 'TagDeclarator' || tagParam?.type === 'Name'))
     return []
   const tag =

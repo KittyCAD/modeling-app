@@ -588,21 +588,15 @@ export const hasValidEdgeTreatmentSelection = ({
   // selection exists:
   for (const selection of selectionRanges.graphSelections) {
     // check if all selections are in sketchLineHelperMap
-    const segmentNode = getNodeFromPath<
-      Node<CallExpressionKw>
-    >(ast, selection.codeRef.pathToNode, ['CallExpressionKw'])
+    const segmentNode = getNodeFromPath<Node<CallExpressionKw>>(
+      ast,
+      selection.codeRef.pathToNode,
+      ['CallExpressionKw']
+    )
     if (err(segmentNode)) return false
-    if (
-      !(
-        segmentNode.node.type === 'CallExpression' ||
-        segmentNode.node.type === 'CallExpressionKw'
-      )
-    ) {
+    if (!(segmentNode.node.type === 'CallExpressionKw')) return false
+    if (!(segmentNode.node.callee.name.name in sketchLineHelperMapKw))
       return false
-    }
-    if (!(segmentNode.node.callee.name.name in sketchLineHelperMapKw)) {
-      return false
-    }
 
     // check if selection is extruded
     // TODO: option 1 : extrude is in the sketch pipe

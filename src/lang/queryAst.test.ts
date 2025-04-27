@@ -3,7 +3,6 @@ import type { Name } from '@rust/kcl-lib/bindings/Name'
 import {
   createArrayExpression,
   createCallExpression,
-  createCallExpressionStdLib,
   createLiteral,
   createPipeSubstitution,
 } from '@src/lang/create'
@@ -21,7 +20,7 @@ import {
 } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import { codeRefFromRange } from '@src/lang/std/artifactGraph'
-import { addCallExpressionsToPipe, addCloseToPipe } from '@src/lang/std/sketch'
+import { addCloseToPipe } from '@src/lang/std/sketch'
 import { topLevelRange } from '@src/lang/util'
 import type { Identifier, PathToNode } from '@src/lang/wasm'
 import { assertParse, recast } from '@src/lang/wasm'
@@ -697,60 +696,6 @@ describe('Testing specific sketch getNodeFromPath workflow', () => {
     const ast = assertParse(openSketch)
     expect(ast.start).toEqual(0)
     expect(ast.end).toEqual(243)
-  })
-  it('should find the location to add new lineTo', () => {
-    const openSketch = `sketch001 = startSketchOn(XZ)
-|> startProfile(at = [0.02, 0.22])
-|> xLine(length = 0.39)
-|> line([0.02, -0.17], %)
-|> yLine(length = -0.15)
-|> line([-0.21, -0.02], %)
-|> xLine(length = -0.15)
-|> line([-0.02, 0.21], %)
-|> line([-0.08, 0.05], %)`
-    const ast = assertParse(openSketch)
-
-    const sketchSnippet = `startProfile(at = [0.02, 0.22])`
-    const sketchRange = topLevelRange(
-      openSketch.indexOf(sketchSnippet),
-      openSketch.indexOf(sketchSnippet) + sketchSnippet.length
-    )
-    const sketchPathToNode = getNodePathFromSourceRange(ast, sketchRange)
-    const modifiedAst = addCallExpressionsToPipe({
-      node: ast,
-      variables: {},
-      pathToNode: sketchPathToNode,
-      expressions: [
-        createCallExpressionStdLib(
-          'lineTo', // We are forcing lineTo!
-          [
-            createArrayExpression([
-              createCallExpressionStdLib('profileStartX', [
-                createPipeSubstitution(),
-              ]),
-              createCallExpressionStdLib('profileStartY', [
-                createPipeSubstitution(),
-              ]),
-            ]),
-            createPipeSubstitution(),
-          ]
-        ),
-      ],
-    })
-    if (err(modifiedAst)) throw modifiedAst
-    const recasted = recast(modifiedAst)
-    const expectedCode = `sketch001 = startSketchOn(XZ)
-  |> startProfile(at = [0.02, 0.22])
-  |> xLine(length = 0.39)
-  |> line([0.02, -0.17], %)
-  |> yLine(length = -0.15)
-  |> line([-0.21, -0.02], %)
-  |> xLine(length = -0.15)
-  |> line([-0.02, 0.21], %)
-  |> line([-0.08, 0.05], %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-`
-    expect(recasted).toEqual(expectedCode)
   })
   it('it should find the location to add close', () => {
     const openSketch = `sketch001 = startSketchOn(XZ)
