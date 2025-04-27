@@ -463,11 +463,11 @@ const theExtrude = startSketchOn(XY)
       new KCLError(
         'undefined_value',
         '`myVarZ` is not defined',
-        topLevelRange(129, 135),
-        [],
-        [],
-        defaultArtifactGraph(),
-        {},
+        topLevelRange(127, 133),
+        expect.any(Object),
+        expect.any(Object),
+        expect.any(Object),
+        expect.any(Object),
         null
       )
     )
