@@ -65,7 +65,6 @@ import {
 } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import {
-  getArtifactFromRange,
   getFaceCodeRef,
   getPathsFromArtifact,
   getPlaneFromArtifact,
