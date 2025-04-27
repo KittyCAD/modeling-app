@@ -597,6 +597,8 @@ export const hasValidEdgeTreatmentSelection = ({
     if (!(segmentNode.node.type === 'CallExpressionKw')) return false
     if (!(segmentNode.node.callee.name.name in sketchLineHelperMapKw))
       return false
+    if (!(segmentNode.node.callee.name.name in sketchLineHelperMapKw))
+      return false
 
     // check if selection is extruded
     // TODO: option 1 : extrude is in the sketch pipe
