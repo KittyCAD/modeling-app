@@ -60,7 +60,6 @@ import type {
   SegmentInputs,
   SimplifiedArgDetails,
   SingleValueInput,
-  SketchLineHelper,
   SketchLineHelperKw,
   addCall,
 } from '@src/lang/std/stdTypes'
@@ -428,18 +427,6 @@ const horzVertConstraintInfoHelper = (
       pathToFirstArg
     ),
   ]
-}
-
-function getTag(index = 2): SketchLineHelper['getTag'] {
-  return (callExp: CallExpression) => {
-    if (callExp.type !== 'CallExpression')
-      return new Error('Not a CallExpression')
-    const arg = callExp.arguments?.[index]
-    if (!arg) return new Error('No argument')
-    if (arg.type !== 'TagDeclarator')
-      return new Error('Tag not a TagDeclarator')
-    return arg.value
-  }
 }
 
 function getTagKwArg(): SketchLineHelperKw['getTag'] {
@@ -2947,7 +2934,7 @@ export const angledLineThatIntersects: SketchLineHelperKw = {
   },
 }
 
-export const updateStartProfileAtArgs: SketchLineHelper['updateArgs'] = ({
+export const updateStartProfileAtArgs: SketchLineHelperKw['updateArgs'] = ({
   node,
   pathToNode,
   input,
@@ -2995,10 +2982,6 @@ export const updateStartProfileAtArgs: SketchLineHelper['updateArgs'] = ({
   }
 }
 
-// TODO: Just remove this.
-export const sketchLineHelperMap: { [key: string]: SketchLineHelper } =
-  {} as const
-
 export const sketchLineHelperMapKw: { [key: string]: SketchLineHelperKw } = {
   arc,
   arcTo,
@@ -3045,19 +3028,6 @@ export function changeSketchArguments(
   const { node: callExpression, shallowPath } = nodeMeta
 
   const fnName = callExpression?.callee?.name.name
-  if (fnName in sketchLineHelperMap) {
-    const { updateArgs } = sketchLineHelperMap[callExpression.callee.name.name]
-    if (!updateArgs) {
-      return new Error('not a sketch line helper')
-    }
-
-    return updateArgs({
-      node: _node,
-      variables,
-      pathToNode: shallowPath,
-      input,
-    })
-  }
   if (fnName in sketchLineHelperMapKw) {
     const correctFnName =
       callExpression.type === 'CallExpressionKw'
@@ -3170,22 +3140,6 @@ export function tooltipToFnName(tooltip: ToolTip): string | Error {
   }
 }
 
-export function getConstraintInfo(
-  callExpression: Node<CallExpression>,
-  code: string,
-  pathToNode: PathToNode,
-  filterValue?: string
-): ConstrainInfo[] {
-  const fnName = callExpression?.callee?.name.name || ''
-  if (!(fnName in sketchLineHelperMap)) return []
-  return sketchLineHelperMap[fnName].getConstraintInfo(
-    callExpression,
-    code,
-    pathToNode,
-    filterValue
-  )
-}
-
 export function getConstraintInfoKw(
   callExpression: Node<CallExpressionKw>,
   code: string,
@@ -3264,8 +3218,7 @@ export function addNewSketchLn({
     }
   | Error {
   const node = structuredClone(_node)
-  const { add, updateArgs } =
-    sketchLineHelperMap?.[fnName] || sketchLineHelperMapKw?.[fnName] || {}
+  const { add, updateArgs } = sketchLineHelperMapKw?.[fnName] || {}
   if (!add || !updateArgs) {
     return new Error(`${fnName} is not a sketch line helper`)
   }
@@ -3275,7 +3228,7 @@ export function addNewSketchLn({
     pathToNode,
     'VariableDeclarator'
   )
-  getNodeFromPath<Node<PipeExpression | CallExpression | CallExpressionKw>>(
+  getNodeFromPath<Node<PipeExpression | CallExpressionKw>>(
     node,
     pathToNode,
     'PipeExpression'
@@ -3289,7 +3242,6 @@ export function addNewSketchLn({
     snaps,
   })
 }
-
 export function addCallExpressionsToPipe({
   node,
   pathToNode,
@@ -3367,10 +3319,7 @@ export function replaceSketchLine({
   }
   const _node = { ...node }
 
-  const { add } =
-    sketchLineHelperMap[fnName] === undefined
-      ? sketchLineHelperMapKw[fnName]
-      : sketchLineHelperMap[fnName]
+  const { add } = sketchLineHelperMapKw[fnName]
   const addRetVal = add({
     node: _node,
     variables,
@@ -3561,22 +3510,7 @@ export function addTagForSketchOnFace(
     const { addTag } = sketchLineHelperMapKw[expressionName]
     return addTag(tagInfo)
   }
-  if (expressionName in sketchLineHelperMap) {
-    const { addTag } = sketchLineHelperMap[expressionName]
-    return addTag(tagInfo)
-  }
   return new Error(`"${expressionName}" is not a sketch line helper`)
-}
-
-export function getTagFromCallExpression(
-  callExp: CallExpression
-): string | Error {
-  if (callExp.callee.name.name === 'close') return getTag(1)(callExp)
-  if (callExp.callee.name.name in sketchLineHelperMap) {
-    const { getTag } = sketchLineHelperMap[callExp.callee.name.name]
-    return getTag(callExp)
-  }
-  return new Error(`"${callExp.callee.name.name}" is not a sketch line helper`)
 }
 
 function isAngleLiteral(lineArgument: Expr): boolean {

@@ -11,7 +11,6 @@ import {
   deleteEdgeTreatment,
   getPathToExtrudeForSegmentSelection,
   hasValidEdgeTreatmentSelection,
-  isTagUsedInEdgeTreatment,
   modifyAstWithEdgeTreatmentAndTag,
 } from '@src/lang/modifyAst/addEdgeTreatment'
 import { getNodeFromPath } from '@src/lang/queryAst'
@@ -945,78 +944,6 @@ chamfer001 = chamfer(extrude001, length = 5, tags = [getOppositeEdge(seg01)])`
     })
   }
 )
-
-describe('Testing isTagUsedInEdgeTreatment', () => {
-  const code = `sketch001 = startSketchOn(XZ)
-  |> startProfile(at = [7.72, 4.13])
-  |> line(end = [7.11, 3.48], tag = $seg01)
-  |> line(end = [-3.29, -13.85])
-  |> line(end = [-6.37, 3.88], tag = $seg02)
-  |> close()
-extrude001 = extrude(sketch001, length = -5)
-  |> fillet(
-       radius = 1.11,
-       tags = [
-         getOppositeEdge(seg01),
-         seg01,
-         getPreviousAdjacentEdge(seg02)
-       ]
-     )
-`
-  it('should correctly identify getOppositeEdge and baseEdge edges', () => {
-    const ast = assertParse(code)
-    const lineOfInterest = `line(end = [7.11, 3.48], tag = $seg01)`
-    const range = topLevelRange(
-      code.indexOf(lineOfInterest),
-      code.indexOf(lineOfInterest) + lineOfInterest.length
-    )
-    const pathToNode = getNodePathFromSourceRange(ast, range)
-    if (err(pathToNode)) return
-    const callExp = getNodeFromPath<CallExpression | CallExpressionKw>(
-      ast,
-      pathToNode,
-      ['CallExpression', 'CallExpressionKw']
-    )
-    if (err(callExp)) return
-    const edges = isTagUsedInEdgeTreatment({ ast, callExp: callExp.node })
-    expect(edges).toEqual(['getOppositeEdge', 'baseEdge'])
-  })
-  it('should correctly identify getPreviousAdjacentEdge edges', () => {
-    const ast = assertParse(code)
-    const lineOfInterest = `line(end = [-6.37, 3.88], tag = $seg02)`
-    const range = topLevelRange(
-      code.indexOf(lineOfInterest),
-      code.indexOf(lineOfInterest) + lineOfInterest.length
-    )
-    const pathToNode = getNodePathFromSourceRange(ast, range)
-    if (err(pathToNode)) return
-    const callExp = getNodeFromPath<CallExpression | CallExpressionKw>(
-      ast,
-      pathToNode,
-      ['CallExpression', 'CallExpressionKw']
-    )
-    if (err(callExp)) return
-    const edges = isTagUsedInEdgeTreatment({ ast, callExp: callExp.node })
-    expect(edges).toEqual(['getPreviousAdjacentEdge'])
-  })
-  it('should correctly identify no edges', () => {
-    const ast = assertParse(code)
-    const lineOfInterest = `line(end = [-3.29, -13.85])`
-    const start = code.indexOf(lineOfInterest)
-    expect(start).toBeGreaterThan(-1)
-    const range = topLevelRange(start, start + lineOfInterest.length)
-    const pathToNode = getNodePathFromSourceRange(ast, range)
-    if (err(pathToNode)) return
-    const callExp = getNodeFromPath<CallExpressionKw>(
-      ast,
-      pathToNode,
-      'CallExpression'
-    )
-    if (err(callExp)) return
-    const edges = isTagUsedInEdgeTreatment({ ast, callExp: callExp.node })
-    expect(edges).toEqual([])
-  })
-})
 
 describe('Testing button states', () => {
   const runButtonStateTest = async (
