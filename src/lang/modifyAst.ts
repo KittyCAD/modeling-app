@@ -690,10 +690,10 @@ export function sketchOnExtrudedFace(
   const { node: oldSketchNode } = _node1
 
   const oldSketchName = oldSketchNode.id.name
-  const _node2 = getNodeFromPath<CallExpression | CallExpressionKw>(
+  const _node2 = getNodeFromPath<CallExpressionKw>(
     _node,
     sketchPathToNode,
-    ['CallExpression', 'CallExpressionKw']
+    ['CallExpressionKw']
   )
   if (err(_node2)) return _node2
   const { node: expression } = _node2

@@ -287,7 +287,7 @@ export function useEngineConnectionSubscriptions() {
                 >(
                   kclManager.ast,
                   chamferInfo?.segment.codeRef.pathToNode || [],
-                  ['CallExpression', 'CallExpressionKw']
+                  ['CallExpressionKw']
                 )
                 if (err(segmentCallExpr)) return null
                 if (

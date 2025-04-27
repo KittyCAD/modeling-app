@@ -33,7 +33,6 @@ import {
   createPipeExpression,
   createTagDeclarator,
   findUniqueName,
-  nonCodeMetaEmpty,
 } from '@src/lang/create'
 import type { ToolTip } from '@src/lang/langHelpers'
 import { toolTips } from '@src/lang/langHelpers'
@@ -3250,7 +3249,7 @@ export function addCallExpressionsToPipe({
   node: Node<Program>
   variables: VariableMap
   pathToNode: PathToNode
-  expressions: Node<CallExpression | CallExpressionKw>[]
+  expressions: Node<CallExpressionKw>[]
 }) {
   const _node: Node<Program> = structuredClone(node)
   const pipeExpression = getNodeFromPath<Node<PipeExpression>>(
@@ -3529,26 +3528,15 @@ function addTagKw(): addTagFn {
     // is a keyword or positional call.
     // In fact, even something like `close(%)` could be either (because we allow 1 unlabeled
     // starting param).
-    const callExpr = getNodeFromPath<Node<CallExpressionKw | CallExpression>>(
+    const callExpr = getNodeFromPath<Node<CallExpressionKw>>(
       _node,
       pathToNode,
-      ['CallExpressionKw', 'CallExpression']
+      ['CallExpressionKw']
     )
     if (err(callExpr)) return callExpr
 
     // If the original node is a call expression, we'll need to change it to a call with keyword args.
-    const primaryCallExp: CallExpressionKw =
-      callExpr.node.type === 'CallExpressionKw'
-        ? callExpr.node
-        : {
-            type: 'CallExpressionKw',
-            callee: callExpr.node.callee,
-            unlabeled: callExpr.node.arguments.length
-              ? callExpr.node.arguments[0]
-              : null,
-            nonCodeMeta: nonCodeMetaEmpty(),
-            arguments: [],
-          }
+    const primaryCallExp: CallExpressionKw = callExpr.node
     const tagArg = findKwArg(ARG_TAG, primaryCallExp)
     const tagDeclarator =
       tagArg || createTagDeclarator(findUniqueName(_node, 'seg', 2))
@@ -3603,17 +3591,6 @@ export function getXComponent(
   return [sign * xComponent, sign * yComponent]
 }
 
-function getFirstArgValuesForXYFns(callExpression: CallExpression):
-  | {
-      val: [Expr, Expr]
-      tag?: Expr
-    }
-  | Error {
-  // used for lineTo, line
-  const firstArg = callExpression.arguments[0]
-  return getValuesForXYFns(firstArg)
-}
-
 function getValuesForXYFns(arg: Expr):
   | {
       val: [Expr, Expr]
@@ -3632,63 +3609,6 @@ function getValuesForXYFns(arg: Expr):
     }
   }
   return new Error('expected ArrayExpression or ObjectExpression')
-}
-
-function getFirstArgValuesForAngleFns(callExpression: CallExpression):
-  | {
-      val: [Expr, Expr]
-      tag?: Expr
-    }
-  | Error {
-  // used for angledLine, angledLineOfXLength, angledLineToX, angledLineOfYLength, angledLineToY
-  const firstArg = callExpression.arguments[0]
-  if (firstArg.type === 'ArrayExpression') {
-    return { val: [firstArg.elements[0], firstArg.elements[1]] }
-  }
-  if (firstArg.type === 'ObjectExpression') {
-    const tag = firstArg.properties.find((p) => p.key.name === 'tag')?.value
-    const angle = firstArg.properties.find((p) => p.key.name === 'angle')?.value
-    const secondArgName = ['angledLineToX', 'angledLineToY'].includes(
-      callExpression?.callee?.name.name as ToolTip
-    )
-      ? 'to'
-      : 'length'
-    const length = firstArg.properties.find(
-      (p) => p.key.name === secondArgName
-    )?.value
-    if (angle && length) {
-      return { val: [angle, length], tag }
-    }
-  }
-  return new Error('expected ArrayExpression or ObjectExpression')
-}
-
-function getFirstArgValuesForXYLineFns(callExpression: CallExpression): {
-  val: Expr
-  tag?: Expr
-} {
-  // used for xLine, yLine, xLineTo, yLineTo
-  const firstArg = callExpression.arguments[0]
-  if (firstArg.type !== 'ObjectExpression') {
-    return { val: firstArg }
-  }
-  const tag = firstArg.properties.find((p) => p.key.name === 'tag')?.value
-  const secondArgName = ['xLineTo', 'yLineTo'].includes(
-    // const secondArgName = ['xLineTo', 'yLineTo', 'angledLineToX', 'angledLineToY'].includes(
-    callExpression?.callee?.name.name
-  )
-    ? 'to'
-    : 'length'
-  const length = firstArg.properties.find(
-    (p) => p.key.name === secondArgName
-  )?.value
-  if (length) {
-    return { val: length, tag }
-  }
-  console.warn('expected ArrayExpression or ObjectExpression')
-  return {
-    val: createLiteral(1),
-  }
 }
 
 export const getAngledLine = (
@@ -3888,34 +3808,6 @@ export function getArgForEnd(lineCall: CallExpressionKw):
     default:
       return new Error(`unknown function ${name}`)
   }
-}
-
-export function getFirstArg(callExp: CallExpression):
-  | {
-      val: Expr | [Expr, Expr] | [Expr, Expr, Expr]
-      tag?: Expr
-    }
-  | Error {
-  const name = callExp?.callee?.name.name
-  if (
-    [
-      'angledLine',
-      'angledLineOfXLength',
-      'angledLineToX',
-      'angledLineOfYLength',
-      'angledLineToY',
-    ].includes(name)
-  ) {
-    return getFirstArgValuesForAngleFns(callExp)
-  }
-  if (['xLine', 'yLine', 'xLineTo', 'yLineTo'].includes(name)) {
-    return getFirstArgValuesForXYLineFns(callExp)
-  }
-  if (['tangentialArc'].includes(name)) {
-    // TODO probably needs it's own implementation
-    return getFirstArgValuesForXYFns(callExp)
-  }
-  return new Error('unexpected call expression: ' + name)
 }
 
 /** A determining arg is one that determines the line, e.g. for xLine it's either 'length' or 'endAbsolute'
