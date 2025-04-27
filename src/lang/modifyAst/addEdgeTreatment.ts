@@ -326,10 +326,10 @@ export function mutateAstWithTagForSketchSegment(
   astClone: Node<Program>,
   pathToSegmentNode: PathToNode
 ): { modifiedAst: Node<Program>; tag: string } | Error {
-  const segmentNode = getNodeFromPath<CallExpression | CallExpressionKw>(
+  const segmentNode = getNodeFromPath<CallExpressionKw>(
     astClone,
     pathToSegmentNode,
-    ['CallExpression', 'CallExpressionKw']
+    ['CallExpressionKw']
   )
   if (err(segmentNode)) return segmentNode
 
@@ -589,8 +589,8 @@ export const hasValidEdgeTreatmentSelection = ({
   for (const selection of selectionRanges.graphSelections) {
     // check if all selections are in sketchLineHelperMap
     const segmentNode = getNodeFromPath<
-      Node<CallExpression | CallExpressionKw>
-    >(ast, selection.codeRef.pathToNode, ['CallExpression', 'CallExpressionKw'])
+      Node<CallExpressionKw>
+    >(ast, selection.codeRef.pathToNode, ['CallExpressionKw'])
     if (err(segmentNode)) return false
     if (
       !(

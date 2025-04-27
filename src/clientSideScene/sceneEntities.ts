@@ -764,10 +764,10 @@ export class SceneEntities {
         )
 
         let seg: Group
-        const _node1 = getNodeFromPath<Node<CallExpression | CallExpressionKw>>(
+        const _node1 = getNodeFromPath<Node<CallExpressionKw>>(
           maybeModdedAst,
           segPathToNode,
-          ['CallExpression', 'CallExpressionKw']
+          ['CallExpressionKw']
         )
         if (err(_node1)) {
           this.tearDownSketch({ removeAxis: false })
@@ -2903,10 +2903,10 @@ export class SceneEntities {
       Number(nodePathWithCorrectedIndexForTruncatedAst[1][0]) -
       Number(sketchNodePaths[0][1][0])
 
-    const _node = getNodeFromPath<Node<CallExpression | CallExpressionKw>>(
+    const _node = getNodeFromPath<Node<CallExpressionKw>>(
       modifiedAst,
       draftInfo ? nodePathWithCorrectedIndexForTruncatedAst : pathToNode,
-      ['CallExpression', 'CallExpressionKw']
+      ['CallExpressionKw']
     )
     if (trap(_node)) return
     const node = _node.node
@@ -3336,7 +3336,7 @@ export class SceneEntities {
             return Promise.reject(pResult)
           const updatedAst = pResult.program
           const _node = getNodeFromPath<
-            Node<CallExpression | CallExpressionKw>
+            Node<CallExpressionKw>
           >(updatedAst, parent.userData.pathToNode, [
             'CallExpressionKw',
             'CallExpression',

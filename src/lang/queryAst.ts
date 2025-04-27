@@ -521,10 +521,10 @@ export function isLinesParallelAndConstrained(
       ast,
       secondaryLine?.codeRef?.range
     )
-    const _secondaryNode = getNodeFromPath<CallExpression | CallExpressionKw>(
+    const _secondaryNode = getNodeFromPath<CallExpressionKw>(
       ast,
       secondaryPath,
-      ['CallExpression', 'CallExpressionKw']
+      ['CallExpressionKw']
     )
     if (err(_secondaryNode)) return _secondaryNode
     const secondaryNode = _secondaryNode.node
@@ -677,10 +677,10 @@ export function findUsesOfTagInPipe(
     'segEndY',
     'segLen',
   ]
-  const nodeMeta = getNodeFromPath<CallExpression | CallExpressionKw>(
+  const nodeMeta = getNodeFromPath<CallExpressionKw>(
     ast,
     pathToNode,
-    ['CallExpression', 'CallExpressionKw']
+    ['CallExpressionKw']
   )
   if (err(nodeMeta)) {
     console.error(nodeMeta)

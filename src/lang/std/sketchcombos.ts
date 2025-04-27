@@ -1386,10 +1386,10 @@ export function removeSingleConstraint({
   inputDetails: SimplifiedArgDetails
   ast: Program
 }): TransformInfo | false {
-  const callExp = getNodeFromPath<CallExpression | CallExpressionKw>(
+  const callExp = getNodeFromPath<CallExpressionKw>(
     ast,
     pathToCallExp,
-    ['CallExpression', 'CallExpressionKw']
+    ['CallExpressionKw']
   )
   if (err(callExp)) {
     console.error(callExp)
@@ -2210,7 +2210,7 @@ export function getConstraintLevelFromSourceRange(
     const path = getNodePathFromSourceRange(ast, cursorRange)
     const nodeMeta = getNodeFromPath<
       Node<CallExpression> | Node<CallExpressionKw>
-    >(ast, path, ['CallExpression', 'CallExpressionKw'])
+    >(ast, path, ['CallExpressionKw'])
     if (err(nodeMeta)) return nodeMeta
 
     const { node: sketchFnExp } = nodeMeta
