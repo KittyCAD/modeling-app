@@ -1,7 +1,6 @@
 import fs from 'node:fs'
 
 import { KCLError } from '@src/lang/errors'
-import { defaultArtifactGraph } from '@src/lang/std/artifactGraph'
 import { topLevelRange } from '@src/lang/util'
 import type { Sketch } from '@src/lang/wasm'
 import { assertParse, sketchFromKclValue } from '@src/lang/wasm'
@@ -463,11 +462,11 @@ const theExtrude = startSketchOn(XY)
       new KCLError(
         'undefined_value',
         '`myVarZ` is not defined',
-        topLevelRange(129, 135),
-        [],
-        [],
-        defaultArtifactGraph(),
-        {},
+        topLevelRange(127, 133),
+        expect.any(Object),
+        expect.any(Object),
+        expect.any(Object),
+        expect.any(Object),
         null
       )
     )

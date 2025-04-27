@@ -3598,11 +3598,20 @@ export class SceneEntities {
         entity_id: entityId,
       },
     })
-    const resp = await this.engineCommandManager.sendSceneCommand({
+    let resp = await this.engineCommandManager.sendSceneCommand({
       type: 'modeling_cmd_req',
       cmd_id: uuidv4(),
       cmd: { type: 'get_sketch_mode_plane' },
     })
+
+    if (!resp) {
+      return Promise.reject('no response')
+    }
+
+    if (isArray(resp)) {
+      resp = resp[0]
+    }
+
     const faceInfo =
       resp?.success &&
       resp?.resp.type === 'modeling' &&

@@ -309,16 +309,10 @@ class EngineConnection extends EventTarget {
   private engineCommandManager: EngineCommandManager
 
   private pingPongSpan: { ping?: number; pong?: number }
-  private pingIntervalId: ReturnType<typeof setInterval> = setInterval(
-    () => {},
-    60_000
-  )
+  private pingIntervalId: ReturnType<typeof setInterval> | null = null
   isUsingConnectionLite: boolean = false
 
-  timeoutToForceConnectId: ReturnType<typeof setTimeout> = setTimeout(
-    () => {},
-    3000
-  )
+  timeoutToForceConnectId: ReturnType<typeof setTimeout> | null = null
 
   constructor({
     engineCommandManager,
@@ -391,8 +385,6 @@ class EngineConnection extends EventTarget {
 
     this.websocket?.addEventListener('message', ((event: MessageEvent) => {
       const message: Models['WebSocketResponse_type'] = JSON.parse(event.data)
-      const pending =
-        this.engineCommandManager.pendingCommands[message.request_id || '']
       if (!('resp' in message)) return
 
       let resp = message.resp
@@ -412,54 +404,7 @@ class EngineConnection extends EventTarget {
           return
       }
 
-      if (
-        !(
-          pending &&
-          message.success &&
-          (message.resp.type === 'modeling' ||
-            message.resp.type === 'modeling_batch')
-        )
-      )
-        return
-
-      if (
-        message.resp.type === 'modeling' &&
-        pending.command.type === 'modeling_cmd_req' &&
-        message.request_id
-      ) {
-        this.engineCommandManager.responseMap[message.request_id] = message.resp
-      } else if (
-        message.resp.type === 'modeling_batch' &&
-        pending.command.type === 'modeling_cmd_batch_req'
-      ) {
-        let individualPendingResponses: {
-          [key: string]: Models['WebSocketRequest_type']
-        } = {}
-        pending.command.requests.forEach(({ cmd, cmd_id }) => {
-          individualPendingResponses[cmd_id] = {
-            type: 'modeling_cmd_req',
-            cmd,
-            cmd_id,
-          }
-        })
-        Object.entries(message.resp.data.responses).forEach(
-          ([commandId, response]) => {
-            if (!('response' in response)) return
-            const command = individualPendingResponses[commandId]
-            if (!command) return
-            if (command.type === 'modeling_cmd_req')
-              this.engineCommandManager.responseMap[commandId] = {
-                type: 'modeling',
-                data: {
-                  modeling_response: response.response,
-                },
-              }
-          }
-        )
-      }
-
-      pending.resolve([message])
-      delete this.engineCommandManager.pendingCommands[message.request_id || '']
+      this.engineCommandManager.handleMessage(event)
     }) as EventListener)
   }
 
@@ -473,7 +418,12 @@ class EngineConnection extends EventTarget {
 
   tearDown(opts?: { idleMode: boolean }) {
     this.idleMode = opts?.idleMode ?? false
-    clearInterval(this.pingIntervalId)
+    if (this.pingIntervalId) {
+      clearInterval(this.pingIntervalId)
+    }
+    if (this.timeoutToForceConnectId) {
+      clearTimeout(this.timeoutToForceConnectId)
+    }
 
     this.disconnectAll()
 
@@ -1230,9 +1180,7 @@ class EngineConnection extends EventTarget {
     )
   }
   disconnectAll() {
-    clearTimeout(this.timeoutToForceConnectId)
-
-    if (this.websocket?.readyState === 1) {
+    if (this.websocket && this.websocket?.readyState < 3) {
       this.websocket?.close()
     }
     if (this.unreliableDataChannel?.readyState === 'open') {
@@ -1322,7 +1270,10 @@ interface PendingMessage {
   range: SourceRange
   idToRangeMap: { [key: string]: SourceRange }
   resolve: (data: [Models['WebSocketResponse_type']]) => void
-  reject: (reason: string) => void
+  // BOTH resolve and reject get passed back to the rust side which
+  // assumes it is this type! Do not change it!
+  // Format your errors as this type!
+  reject: (reason: [Models['WebSocketResponse_type']]) => void
   promise: Promise<[Models['WebSocketResponse_type']]>
   isSceneCommand: boolean
 }
@@ -1595,117 +1546,7 @@ export class EngineCommandManager extends EventTarget {
       engineConnection.websocket?.addEventListener('message', ((
         event: MessageEvent
       ) => {
-        let message: Models['WebSocketResponse_type'] | null = null
-
-        if (event.data instanceof ArrayBuffer) {
-          // BSON deserialize the command.
-          message = BSON.deserialize(
-            new Uint8Array(event.data)
-          ) as Models['WebSocketResponse_type']
-          // The request id comes back as binary and we want to get the uuid
-          // string from that.
-          if (message.request_id) {
-            message.request_id = binaryToUuid(message.request_id)
-          }
-        } else {
-          message = JSON.parse(event.data)
-        }
-
-        if (message === null) {
-          // We should never get here.
-          console.error('Received a null message from the engine', event)
-          return
-        }
-
-        // In either case we want to send the response back over the wire to
-        // the rust side.
-        this.rustContext?.sendResponse(message).catch((err) => {
-          console.error('Error sending response to rust', err)
-        })
-
-        const pending = this.pendingCommands[message.request_id || '']
-
-        if (pending && !message.success) {
-          // handle bad case
-          pending.reject(JSON.stringify(message))
-          delete this.pendingCommands[message.request_id || '']
-        }
-        if (
-          !(
-            pending &&
-            message.success &&
-            (message.resp.type === 'modeling' ||
-              message.resp.type === 'modeling_batch' ||
-              message.resp.type === 'export')
-          )
-        )
-          return
-
-        if (message.resp.type === 'export' && message.request_id) {
-          this.responseMap[message.request_id] = message.resp
-        } else if (
-          message.resp.type === 'modeling' &&
-          pending.command.type === 'modeling_cmd_req' &&
-          message.request_id
-        ) {
-          this.addCommandLog({
-            type: CommandLogType.ReceiveReliable,
-            data: message.resp,
-            id: message?.request_id || '',
-            cmd_type: pending?.command?.cmd?.type,
-          })
-
-          const modelingResponse = message.resp.data.modeling_response
-
-          Object.values(
-            this.subscriptions[modelingResponse.type] || {}
-          ).forEach((callback) => callback(modelingResponse))
-
-          this.responseMap[message.request_id] = message.resp
-        } else if (
-          message.resp.type === 'modeling_batch' &&
-          pending.command.type === 'modeling_cmd_batch_req'
-        ) {
-          let individualPendingResponses: {
-            [key: string]: Models['WebSocketRequest_type']
-          } = {}
-          pending.command.requests.forEach(({ cmd, cmd_id }) => {
-            individualPendingResponses[cmd_id] = {
-              type: 'modeling_cmd_req',
-              cmd,
-              cmd_id,
-            }
-          })
-          Object.entries(message.resp.data.responses).forEach(
-            ([commandId, response]) => {
-              if (!('response' in response)) return
-              const command = individualPendingResponses[commandId]
-              if (!command) return
-              if (command.type === 'modeling_cmd_req')
-                this.addCommandLog({
-                  type: CommandLogType.ReceiveReliable,
-                  data: {
-                    type: 'modeling',
-                    data: {
-                      modeling_response: response.response,
-                    },
-                  },
-                  id: commandId,
-                  cmd_type: command?.cmd?.type,
-                })
-
-              this.responseMap[commandId] = {
-                type: 'modeling',
-                data: {
-                  modeling_response: response.response,
-                },
-              }
-            }
-          )
-        }
-
-        pending.resolve([message])
-        delete this.pendingCommands[message.request_id || '']
+        this.handleMessage(event)
       }) as EventListener)
 
       this.onVideoTrackMute = () => {
@@ -1737,6 +1578,132 @@ export class EngineCommandManager extends EventTarget {
     return
   }
 
+  handleMessage(event: MessageEvent) {
+    let message: Models['WebSocketResponse_type'] | null = null
+
+    if (event.data instanceof ArrayBuffer) {
+      // BSON deserialize the command.
+      message = BSON.deserialize(
+        new Uint8Array(event.data)
+      ) as Models['WebSocketResponse_type']
+      // The request id comes back as binary and we want to get the uuid
+      // string from that.
+      if (message.request_id) {
+        message.request_id = binaryToUuid(message.request_id)
+      }
+    } else {
+      message = JSON.parse(event.data)
+    }
+
+    if (message === null) {
+      // We should never get here.
+      console.error('Received a null message from the engine', event)
+      return
+    }
+
+    if (message.request_id === undefined || message.request_id === null) {
+      // We only care about messages that have a request id, so we can
+      // ignore the rest.
+      return
+    }
+
+    // In either case (success / fail) we want to send the response back over the wire to
+    // the rust side.
+    this.rustContext?.sendResponse(message).catch((err) => {
+      console.error('Error sending response to rust', err)
+    })
+
+    const pending = this.pendingCommands[message.request_id || '']
+
+    if (pending && !message.success) {
+      // handle bad case
+      pending.reject([message])
+      delete this.pendingCommands[message.request_id || '']
+    }
+
+    if (
+      !(
+        pending &&
+        message.success &&
+        (message.resp.type === 'modeling' ||
+          message.resp.type === 'modeling_batch' ||
+          message.resp.type === 'export')
+      )
+    ) {
+      if (pending) {
+        pending.reject([message])
+        delete this.pendingCommands[message.request_id || '']
+      }
+      return
+    }
+
+    pending.resolve([message])
+    delete this.pendingCommands[message.request_id || '']
+
+    if (message.resp.type === 'export' && message.request_id) {
+      this.responseMap[message.request_id] = message.resp
+    } else if (
+      message.resp.type === 'modeling' &&
+      pending.command.type === 'modeling_cmd_req' &&
+      message.request_id
+    ) {
+      this.addCommandLog({
+        type: CommandLogType.ReceiveReliable,
+        data: message.resp,
+        id: message?.request_id || '',
+        cmd_type: pending?.command?.cmd?.type,
+      })
+
+      const modelingResponse = message.resp.data.modeling_response
+
+      Object.values(this.subscriptions[modelingResponse.type] || {}).forEach(
+        (callback) => callback(modelingResponse)
+      )
+
+      this.responseMap[message.request_id] = message.resp
+    } else if (
+      message.resp.type === 'modeling_batch' &&
+      pending.command.type === 'modeling_cmd_batch_req'
+    ) {
+      let individualPendingResponses: {
+        [key: string]: Models['WebSocketRequest_type']
+      } = {}
+      pending.command.requests.forEach(({ cmd, cmd_id }) => {
+        individualPendingResponses[cmd_id] = {
+          type: 'modeling_cmd_req',
+          cmd,
+          cmd_id,
+        }
+      })
+      Object.entries(message.resp.data.responses).forEach(
+        ([commandId, response]) => {
+          if (!('response' in response)) return
+          const command = individualPendingResponses[commandId]
+          if (!command) return
+          if (command.type === 'modeling_cmd_req')
+            this.addCommandLog({
+              type: CommandLogType.ReceiveReliable,
+              data: {
+                type: 'modeling',
+                data: {
+                  modeling_response: response.response,
+                },
+              },
+              id: commandId,
+              cmd_type: command?.cmd?.type,
+            })
+
+          this.responseMap[commandId] = {
+            type: 'modeling',
+            data: {
+              modeling_response: response.response,
+            },
+          }
+        }
+      )
+    }
+  }
+
   handleResize({ width, height }: { width: number; height: number }) {
     if (!this.engineConnection?.isReady()) {
       return
@@ -1761,8 +1728,19 @@ export class EngineCommandManager extends EventTarget {
 
   tearDown(opts?: { idleMode: boolean }) {
     if (this.engineConnection) {
-      for (const pending of Object.values(this.pendingCommands)) {
-        pending.reject('no connection to send on')
+      for (const [cmdId, pending] of Object.entries(this.pendingCommands)) {
+        pending.reject([
+          {
+            success: false,
+            errors: [
+              {
+                error_code: 'connection_problem',
+                message: 'no connection to send on, tearing down',
+              },
+            ],
+          },
+        ])
+        delete this.pendingCommands[cmdId]
       }
 
       this.engineConnection?.removeEventListener?.(
@@ -1852,7 +1830,9 @@ export class EngineCommandManager extends EventTarget {
   async sendSceneCommand(
     command: EngineCommand,
     forceWebsocket = false
-  ): Promise<Models['WebSocketResponse_type'] | null> {
+  ): Promise<
+    Models['WebSocketResponse_type'] | [Models['WebSocketResponse_type']] | null
+  > {
     if (this.engineConnection === undefined) {
       return Promise.resolve(null)
     }
@@ -2059,10 +2039,17 @@ export class EngineCommandManager extends EventTarget {
    * to the engine
    */
   rejectAllModelingCommands(rejectionMessage: string) {
-    Object.values(this.pendingCommands).forEach(
-      ({ reject, isSceneCommand }) =>
-        !isSceneCommand && reject(rejectionMessage)
-    )
+    for (const [cmdId, pending] of Object.entries(this.pendingCommands)) {
+      if (!pending.isSceneCommand) {
+        pending.reject([
+          {
+            success: false,
+            errors: [{ error_code: 'internal_api', message: rejectionMessage }],
+          },
+        ])
+        delete this.pendingCommands[cmdId]
+      }
+    }
   }
 
   async setPlaneHidden(id: string, hidden: boolean) {
