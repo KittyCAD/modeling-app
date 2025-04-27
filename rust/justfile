@@ -1,6 +1,6 @@
 cnr := "cargo nextest run"
 cita := "cargo insta test --accept"
-kcl_lib_flags := "-p kcl-lib --feature artifact-graph --no-fail-fast"
+kcl_lib_flags := "-p kcl-lib --features artifact-graph"
 
 # Run the same lint checks we run in CI.
 lint:
