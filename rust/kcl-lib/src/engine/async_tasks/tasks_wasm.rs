@@ -6,113 +6,98 @@ use std::sync::{
     Arc,
 };
 
-use tokio::sync::RwLock;
+use tokio::sync::{mpsc, Notify};
 
 use crate::errors::KclError;
 
 #[derive(Debug, Clone)]
 pub struct AsyncTasks {
-    sender: Arc<RwLock<tokio::sync::mpsc::Sender<Result<(), KclError>>>>,
-    receiver: Arc<RwLock<tokio::sync::mpsc::Receiver<Result<(), KclError>>>>,
-    sent: Arc<AtomicUsize>,
+    // Results arrive here      (unbounded = never blocks the producer)
+    tx: mpsc::UnboundedSender<Result<(), KclError>>,
+    rx: Arc<tokio::sync::Mutex<mpsc::UnboundedReceiver<Result<(), KclError>>>>,
+
+    // How many tasks we started since last clear()
+    spawned: Arc<AtomicUsize>,
+
+    // Used to wake `join_all()` as soon as a task finishes.
+    notifier: Arc<Notify>,
 }
 
 // Safety: single-threaded wasm ⇒ these are sound.
 unsafe impl Send for AsyncTasks {}
 unsafe impl Sync for AsyncTasks {}
 
+impl Default for AsyncTasks {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl AsyncTasks {
     pub fn new() -> Self {
-        let (results_tx, results_rx) = tokio::sync::mpsc::channel(10);
+        let (tx, rx) = mpsc::unbounded_channel();
         Self {
-            sender: Arc::new(RwLock::new(results_tx)),
-            receiver: Arc::new(RwLock::new(results_rx)),
-            sent: Arc::new(AtomicUsize::new(0)),
+            tx,
+            rx: Arc::new(tokio::sync::Mutex::new(rx)),
+            spawned: Arc::new(AtomicUsize::new(0)),
+            notifier: Arc::new(Notify::new()),
         }
     }
 
-    pub async fn spawn<F>(&mut self, task: F)
+    pub async fn spawn<F>(&mut self, fut: F)
     where
-        F: std::future::Future<Output = anyhow::Result<(), KclError>>,
-        F: Send + 'static,
+        F: std::future::Future<Output = anyhow::Result<(), KclError>> + Send + 'static,
     {
-        // Add one to the sent counter.
-        self.sent.fetch_add(1, Ordering::Relaxed);
+        self.spawned.fetch_add(1, Ordering::Relaxed);
+        let tx = self.tx.clone();
+        let notify = self.notifier.clone();
 
-        let counter = self.sent.load(Ordering::Acquire);
-
-        // Spawn the task and send the result to the channel.
-        let sender_clone = self.sender.clone();
         wasm_bindgen_futures::spawn_local(async move {
-            web_sys::console::log_1(&format!("Task {} started", counter).into());
-            let result = task.await;
-            let sender = sender_clone.read().await;
-            if let Err(_) = sender.send(result).await {
-                web_sys::console::error_1(&"Failed to send result".into());
-            }
-            web_sys::console::log_1(&format!("Task {} finished", counter).into());
+            let _ = tx.send(fut.await); // ignore if receiver disappeared
+            notify.notify_one(); // wake any join_all waiter
         });
     }
 
     // Wait for all tasks to finish.
     // Return an error if any of them failed.
     pub async fn join_all(&mut self) -> anyhow::Result<(), KclError> {
-        if self.sent.load(Ordering::Acquire) == 0 {
+        let total = self.spawned.load(Ordering::Acquire);
+        if total == 0 {
             return Ok(());
         }
 
-        let mut results = Vec::new();
-        let mut receiver = self.receiver.write().await;
+        web_sys::console::log_1(&format!("Waiting for {total} async tasks to finish").into());
 
-        web_sys::console::log_1(&format!("Waiting for {} tasks to finish", self.sent.load(Ordering::Acquire)).into());
-
-        // Wait for all tasks to finish.
-        loop {
-            let result = receiver.recv().await;
-            match result {
-                Some(result) => {
-                    results.push(result);
-
-                    if results.len() == self.sent.load(Ordering::Acquire) {
-                        // All tasks have finished.
-                        break;
-                    }
-                }
-                None => {
-                    // The channel is closed, which means all tasks have finished.
-                    break;
+        let mut done = 0;
+        while done < total {
+            // 1) Drain whatever is already in the channel
+            {
+                let mut rx = self.rx.lock().await;
+                while let Ok(res) = rx.try_recv() {
+                    done += 1;
+                    web_sys::console::log_1(&format!("Task finished: {done}").into());
+                    res?; // propagate first Err
                 }
             }
+
+            if done >= total {
+                break;
+            }
+
+            // 2) Nothing ready yet → wait for a notifier poke
+            self.notifier.notified().await;
         }
 
-        // Reset the sent counter.
-        self.sent.store(0, Ordering::Release);
-
-        web_sys::console::log_1(&format!("Received {} results", results.len()).into());
-
-        // Check if any of the tasks failed.
-        for result in results {
-            result?;
-        }
+        web_sys::console::log_1(&"All async tasks finished".into());
 
         Ok(())
     }
 
     pub async fn clear(&mut self) {
-        web_sys::console::log_1(&"Clearing tasks".into());
+        self.spawned.store(0, Ordering::Release);
 
-        // Clear the sent counter.
-        self.sent.store(0, Ordering::Release);
-
-        // Clear the channel.
-        let (results_tx, results_rx) = tokio::sync::mpsc::channel(1);
-        *self.sender.write().await = results_tx;
-        *self.receiver.write().await = results_rx;
-    }
-}
-
-impl Default for AsyncTasks {
-    fn default() -> Self {
-        Self::new()
+        // Drain channel so old results don’t confuse the next join_all.
+        let mut rx = self.rx.lock().await;
+        while rx.try_recv().is_ok() {}
     }
 }

@@ -599,6 +599,9 @@ async fn get_bg_edge_info_next(
     get_all_edge_faces_uuid: uuid::Uuid,
     single_threaded: bool,
 ) -> Result<(), KclError> {
+    #[cfg(target_arch = "wasm32")]
+    web_sys::console::log_1(&format!("get_bg_edge_info_next: {:?}", curve_id).into());
+
     let next_adjacent_edge_id = args
         .send_modeling_cmd(
             edge_uuid,
@@ -629,6 +632,8 @@ async fn get_bg_edge_info_next(
         }
     }
 
+    #[cfg(target_arch = "wasm32")]
+    web_sys::console::log_1(&format!("FINISHED get_bg_edge_info_next: {:?}", curve_id).into());
     Ok(())
 }
 
@@ -643,6 +648,9 @@ async fn get_bg_edge_info_opposite(
     get_all_edge_faces_uuid: uuid::Uuid,
     single_threaded: bool,
 ) -> Result<(), KclError> {
+    #[cfg(target_arch = "wasm32")]
+    web_sys::console::log_1(&format!("get_bg_edge_info_opposite: {:?}", curve_id).into());
+
     let opposite_edge_id = args
         .send_modeling_cmd(
             edge_uuid,
@@ -670,6 +678,9 @@ async fn get_bg_edge_info_opposite(
         )
         .await?;
     }
+
+    #[cfg(target_arch = "wasm32")]
+    web_sys::console::log_1(&format!("FINISHED get_bg_edge_info_opposite: {:?}", curve_id).into());
 
     Ok(())
 }
