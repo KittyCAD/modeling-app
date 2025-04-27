@@ -205,7 +205,7 @@
     "eslint-plugin-react-perf": "^3.3.3",
     "eslint-plugin-suggest-no-throw": "^1.0.0",
     "eslint-plugin-testing-library": "^7.1.1",
-    "happy-dom": "^16.3.0",
+    "happy-dom": "^17.4.4",
     "http-server": "^14.1.1",
     "husky": "^9.1.7",
     "kill-port": "^2.0.1",

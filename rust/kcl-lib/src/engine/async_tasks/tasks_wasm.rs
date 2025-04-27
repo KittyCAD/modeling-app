@@ -8,7 +8,7 @@ use std::sync::{
 
 use tokio::sync::{mpsc, Notify};
 
-use crate::errors::KclError;
+use crate::errors::{KclError, KclErrorDetails};
 
 #[derive(Debug, Clone)]
 pub struct AsyncTasks {
@@ -35,6 +35,8 @@ impl Default for AsyncTasks {
 
 impl AsyncTasks {
     pub fn new() -> Self {
+        console_error_panic_hook::set_once();
+
         let (tx, rx) = mpsc::unbounded_channel();
         Self {
             tx,
@@ -84,6 +86,11 @@ impl AsyncTasks {
             if done >= total {
                 break;
             }
+
+            web_sys::console::log_1(&format!("Waiting for {done}/{total} async tasks to finish").into());
+            // Yield to the event loop so that we don’t block the UI thread.
+            // No seriously WE DO NOT WANT TO PAUSE THE WHOLE APP ON THE JS SIDE.
+            futures_lite::future::yield_now().await;
 
             // 2) Nothing ready yet → wait for a notifier poke
             self.notifier.notified().await;
