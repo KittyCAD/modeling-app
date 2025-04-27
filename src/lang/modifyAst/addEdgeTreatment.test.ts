@@ -142,6 +142,8 @@ const runGetPathToExtrudeForSegmentSelectionTest = async (
   await kclManager.executeAst({ ast })
   const artifactGraph = kclManager.artifactGraph
 
+    expect(kclManager.errors).toEqual([])
+
   // find artifact
   const maybeArtifact = [...artifactGraph].find(([, artifact]) => {
     if (!('codeRef' in artifact && artifact.codeRef)) return false
@@ -160,7 +162,10 @@ const runGetPathToExtrudeForSegmentSelectionTest = async (
     selection,
     artifactGraph
   )
-  if (err(pathResult)) return pathResult
+  if (err(pathResult)) {
+    expect(pathResult).toBeUndefined()
+      return pathResult
+  }
   const { pathToExtrudeNode } = pathResult
   const extrudeExpression = getExtrudeExpression(ast, pathToExtrudeNode)
 
@@ -351,6 +356,8 @@ const runModifyAstCloneWithEdgeTreatmentAndTag = async (
   await kclManager.executeAst({ ast })
   const artifactGraph = kclManager.artifactGraph
 
+    expect(kclManager.errors).toEqual([])
+
   const selection: Selections = {
     graphSelections: segmentRanges.map((segmentRange) => {
       const maybeArtifact = [...artifactGraph].find(([, a]) => {
@@ -373,7 +380,7 @@ const runModifyAstCloneWithEdgeTreatmentAndTag = async (
     dependencies
   )
   if (err(result)) {
-    //expect(result).toContain(expectedCode)
+    expect(result).toContain(expectedCode)
     return result
   }
   const { modifiedAst } = result
@@ -393,6 +400,8 @@ const runDeleteEdgeTreatmentTest = async (
   // update artifact graph
   await kclManager.executeAst({ ast })
   const artifactGraph = kclManager.artifactGraph
+
+    expect(kclManager.errors).toEqual([])
 
   // define snippet range
   const edgeTreatmentRange = topLevelRange(
@@ -415,7 +424,7 @@ const runDeleteEdgeTreatmentTest = async (
   // delete edge treatment
   const result = await deleteEdgeTreatment(ast, selection)
   if (err(result)) {
-    //expect(result).toContain(expectedCode)
+    expect(result).toContain(expectedCode)
     return result
   }
 
