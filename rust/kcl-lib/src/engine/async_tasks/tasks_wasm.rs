@@ -53,6 +53,7 @@ impl AsyncTasks {
         let notify = self.notifier.clone();
 
         wasm_bindgen_futures::spawn_local(async move {
+            console_error_panic_hook::set_once();
             let _ = tx.send(fut.await); // ignore if receiver disappeared
             notify.notify_one(); // wake any join_all waiter
         });

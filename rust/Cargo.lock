@@ -1882,6 +1882,7 @@ dependencies = [
  "bson",
  "chrono",
  "clap",
+ "console_error_panic_hook",
  "convert_case",
  "criterion",
  "dashmap 6.1.0",
