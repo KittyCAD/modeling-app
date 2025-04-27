@@ -1620,7 +1620,6 @@ export class EngineCommandManager extends EventTarget {
 
     if (pending && !message.success) {
       // handle bad case
-      console.log('Error in response to request', JSON.stringify(message))
       pending.reject([message])
       delete this.pendingCommands[message.request_id || '']
     }
@@ -1634,7 +1633,6 @@ export class EngineCommandManager extends EventTarget {
           message.resp.type === 'export')
       )
     ) {
-      console.log('got some other message', JSON.stringify(message))
       if (pending) {
         pending.reject([message])
         delete this.pendingCommands[message.request_id || '']
