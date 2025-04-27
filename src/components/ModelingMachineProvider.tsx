@@ -1970,20 +1970,25 @@ export const ModelingMachineProvider = ({
     platform() === 'macos' ? ['backspace', 'delete', 'del'] : ['delete', 'del']
 
   useHotkeys(deleteKeys, () => {
-    // When the current selection is a segment, delete that directly ('Delete selection' doesn't seem to support it)
-    const codeRef =
-      modelingState.context.selectionRanges.graphSelections[0]?.codeRef
-    if (codeRef?.pathToNode && codeRef?.range) {
-      const artifact = getArtifactFromRange(
-        codeRef.range,
-        kclManager.artifactGraph
+    // When the current selection is a segment, delete that directly ('Delete selection' doesn't support it)
+    const segmentNodePaths = Object.keys(modelingState.context.segmentOverlays)
+    const selections =
+      modelingState.context.selectionRanges.graphSelections.filter((sel) =>
+        segmentNodePaths.includes(JSON.stringify(sel.codeRef.pathToNode))
       )
-      if (artifact?.type === 'segment') {
-        modelingSend({ type: 'Delete segment', data: codeRef.pathToNode })
-        return
-      }
+    selections.forEach((selection) => {
+      modelingSend({
+        type: 'Delete segment',
+        data: selection.codeRef.pathToNode,
+      })
+    })
+    if (
+      modelingState.context.selectionRanges.graphSelections.length >
+      selections.length
+    ) {
+      // Not all selection were segments -> keep the default delete behavior
+      modelingSend({ type: 'Delete selection' })
     }
-    modelingSend({ type: 'Delete selection' })
   })
 
   // Allow ctrl+alt+c to center to selection
