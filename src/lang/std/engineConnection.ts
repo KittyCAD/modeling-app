@@ -309,16 +309,10 @@ class EngineConnection extends EventTarget {
   private engineCommandManager: EngineCommandManager
 
   private pingPongSpan: { ping?: number; pong?: number }
-  private pingIntervalId: ReturnType<typeof setInterval> = setInterval(
-    () => {},
-    60_000
-  )
+  private pingIntervalId: ReturnType<typeof setInterval> | null = null
   isUsingConnectionLite: boolean = false
 
-  timeoutToForceConnectId: ReturnType<typeof setTimeout> = setTimeout(
-    () => {},
-    3000
-  )
+  timeoutToForceConnectId: ReturnType<typeof setTimeout> | null = null
 
   constructor({
     engineCommandManager,
@@ -424,7 +418,12 @@ class EngineConnection extends EventTarget {
 
   tearDown(opts?: { idleMode: boolean }) {
     this.idleMode = opts?.idleMode ?? false
-    clearInterval(this.pingIntervalId)
+    if (this.pingIntervalId) {
+      clearInterval(this.pingIntervalId)
+    }
+    if (this.timeoutToForceConnectId) {
+      clearTimeout(this.timeoutToForceConnectId)
+    }
 
     this.disconnectAll()
 
@@ -1181,9 +1180,7 @@ class EngineConnection extends EventTarget {
     )
   }
   disconnectAll() {
-    clearTimeout(this.timeoutToForceConnectId)
-
-    if (this.websocket?.readyState === 1) {
+    if (this.websocket && this.websocket?.readyState < 3) {
       this.websocket?.close()
     }
     if (this.unreliableDataChannel?.readyState === 'open') {

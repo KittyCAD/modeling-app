@@ -71,6 +71,7 @@
     "vscode-languageserver-protocol": "^3.17.5",
     "vscode-uri": "^3.1.0",
     "web-vitals": "^3.5.2",
+    "why-is-node-running": "^3.2.2",
     "win-ca": "^3.5.1",
     "xstate": "^5.19.2",
     "yargs": "^17.7.2"
@@ -150,7 +151,11 @@
     "test:unit:kcl-samples:local": "npm run simpleserver:bg && npm run test:unit:kcl-samples; kill-port 3000"
   },
   "browserslist": {
-    "production": [">0.2%", "not dead", "not op_mini all"],
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
     "development": [
       "last 1 chrome version",
       "last 1 firefox version",
