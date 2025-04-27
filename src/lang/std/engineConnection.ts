@@ -1830,7 +1830,9 @@ export class EngineCommandManager extends EventTarget {
   async sendSceneCommand(
     command: EngineCommand,
     forceWebsocket = false
-  ): Promise<Models['WebSocketResponse_type'] | null> {
+  ): Promise<
+    Models['WebSocketResponse_type'] | [Models['WebSocketResponse_type']] | null
+  > {
     if (this.engineConnection === undefined) {
       return Promise.resolve(null)
     }
