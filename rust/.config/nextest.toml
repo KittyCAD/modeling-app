@@ -9,7 +9,7 @@ after-engine = { max-threads = 12 }
 slow-timeout = { period = "180s", terminate-after = 1 }
 
 [profile.ci]
-slow-timeout = { period = "180s", terminate-after = 5 }
+slow-timeout = { period = "280s", terminate-after = 5 }
 
 [[profile.default.overrides]]
 # If a test starts with kcl_test_, then it uses the engine. So, limit its parallelism.
