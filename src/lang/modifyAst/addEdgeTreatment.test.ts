@@ -58,7 +58,9 @@ beforeAll(async () => {
 }, 30_000)
 
 afterAll(() => {
+  console.log('TEAR DOWN')
   engineCommandManager.tearDown()
+  console.log('TEAR DOWN 2')
 })
 
 const dependencies = {

@@ -2028,16 +2028,17 @@ export class EngineCommandManager extends EventTarget {
    * to the engine
    */
   rejectAllModelingCommands(rejectionMessage: string) {
-    Object.values(this.pendingCommands).forEach(
-      ({ reject, isSceneCommand }) =>
-        !isSceneCommand &&
-        reject([
+    for (const [cmdId, pending] of Object.entries(this.pendingCommands)) {
+      if (!pending.isSceneCommand) {
+        pending.reject([
           {
             success: false,
             errors: [{ error_code: 'internal_api', message: rejectionMessage }],
           },
         ])
-    )
+        delete this.pendingCommands[cmdId]
+      }
+    }
   }
 
   async setPlaneHidden(id: string, hidden: boolean) {
