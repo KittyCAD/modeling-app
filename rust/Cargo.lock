@@ -1952,6 +1952,7 @@ dependencies = [
  "web-sys",
  "web-time",
  "winnow 0.6.24",
+ "zduny-wasm-timer",
  "zip",
 ]
 
@@ -4955,6 +4956,21 @@ dependencies = [
  "quote",
  "syn 2.0.100",
  "synstructure",
+]
+
+[[package]]
+name = "zduny-wasm-timer"
+version = "0.2.9"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f52bd30296679f51dce4a4da2a5050d9401d09866d89b89d860da37bc3ec08df"
+dependencies = [
+ "futures",
+ "js-sys",
+ "parking_lot",
+ "pin-utils",
+ "wasm-bindgen",
+ "wasm-bindgen-futures",
+ "web-sys",
 ]
 
 [[package]]
